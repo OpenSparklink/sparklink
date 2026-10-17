@@ -51,6 +51,7 @@ pub(crate) type NativeLease = Arc<Mutex<NativeManagement>>;
 pub struct AdapterState {
     pub(crate) security_policy: crate::security_policy::Shared,
     pub(crate) ssap_database: Arc<std::sync::Mutex<crate::ssap_database::Database>>,
+    pub(crate) ssap_owner_slots: Arc<tokio::sync::Semaphore>,
     pub adapter: Arc<Adapter>,
     pub native_control: Option<Arc<Adapter>>,
     pub(crate) native_lease: Option<NativeLease>,
@@ -97,6 +98,7 @@ impl AdapterState {
             ssap_database: Arc::new(std::sync::Mutex::new(
                 crate::ssap_database::Database::default(),
             )),
+            ssap_owner_slots: Arc::new(tokio::sync::Semaphore::new(16)),
             native_control: None,
             native_lease: None,
             native_discovery_policy: None,
@@ -494,6 +496,17 @@ pub type RegistrationDirectory = Arc<Mutex<BTreeMap<String, RegistrationObserver
 /// Drain experimental callbacks and Bond I/O without holding adapter state.
 pub async fn shutdown_services(state: &SharedState) {
     crate::security_policy::retire(state).await;
+    let database = state.lock().await.ssap_database.clone();
+    let owners = match database.lock() {
+        Ok(mut database) => database.retire(),
+        Err(_) => {
+            tracing::error!("SSAP database poisoned at retirement; clean retirement unverified");
+            Vec::new()
+        }
+    };
+    for owner in owners {
+        owner.shutdown().await;
+    }
     let bonding = state.lock().await.bonding.clone();
     #[cfg(any(test, feature = "experimental-legacy-profiles"))]
     {

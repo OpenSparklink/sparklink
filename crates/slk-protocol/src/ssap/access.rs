@@ -26,10 +26,21 @@ impl SsapAccess {
         self.0 & (SSAP_ACCESS_WRITE_AUTHORIZED | SSAP_ACCESS_READ_AUTHORIZED) != 0
     }
     /// level is a verified original receipt observation, never an application
-    /// assertion. Local authorization is not connected, so it cannot pass.
+    /// assertion. No local authorization is supplied by this default helper.
     pub fn check(self, level: u32, write: bool) -> Result<(), u8> {
+        self.check_authorization_result(level, write, false)
+    }
+    /// Pure predicate, not an authority or an application approval API.
+    /// The server must validate the original owner/registration/request before
+    /// supplying a local decision. Authentication/encryption remain required.
+    pub fn check_authorization_result(
+        self,
+        level: u32,
+        write: bool,
+        authorized: bool,
+    ) -> Result<(), u8> {
         let bits = if write { self.0 & 7 } else { (self.0 >> 3) & 7 };
-        if bits & 4 != 0 {
+        if bits & 4 != 0 && !authorized {
             Err(9)
         } else if level > 2 || (bits & 2 != 0 && level < 2) {
             Err(8)
@@ -70,5 +81,26 @@ mod tests {
             }
         }
         assert!(SsapAccess::from_bits(1 << 31).is_err());
+    }
+    #[test]
+    fn approval_only_discharges_the_selected_directions_authorization_bit() {
+        for bits in 0..=63 {
+            let policy = SsapAccess::from_bits(bits).unwrap();
+            for write in [false, true] {
+                for level in 0..=3 {
+                    let direction = if write { 4 } else { 32 };
+                    assert_eq!(
+                        policy.check_authorization_result(level, write, true),
+                        SsapAccess::from_bits(bits & !direction)
+                            .unwrap()
+                            .check(level, write)
+                    );
+                    assert_eq!(
+                        policy.check_authorization_result(level, write, false),
+                        policy.check(level, write)
+                    );
+                }
+            }
+        }
     }
 }

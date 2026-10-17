@@ -41,7 +41,7 @@ fn reference() -> SleLinkInfo {
         ..Default::default()
     }
 }
-fn state() -> SharedState {
+pub(crate) fn state() -> SharedState {
     let fd = Arc::new(Adapter::open("/dev/null").unwrap());
     let mut st = AdapterState::new(
         fd.clone(),

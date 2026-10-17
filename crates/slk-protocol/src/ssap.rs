@@ -14,6 +14,15 @@ pub mod value;
 #[path = "ssap/access.rs"]
 pub mod access;
 
+/// D-Bus service authorization context, not a kernel Grant or peer identity:
+/// controller, generation, lifetime, connection handle, original RX security
+/// epoch/level, local TCID, remote TCID, PI.
+pub type SsapAuthorizationIdentity = (u16, u64, u64, u16, u64, u32, u8, u8, u8);
+/// Request ID, original context, local property, write?, original monotonic
+/// deadline, proposed write value (empty for reads). Reads disclose no value
+/// to the authorizer before its decision. This is a D-Bus-only tuple contract.
+pub type SsapAuthorizationPrompt = (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>);
+
 use core::{fmt, ops::BitOr};
 
 #[cfg(test)]

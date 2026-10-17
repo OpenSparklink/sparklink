@@ -51,7 +51,7 @@ fn monotonic_ns() -> anyhow::Result<u64> {
         .and_then(|v| v.checked_add(time.tv_nsec as u64))
         .context("monotonic clock overflow")
 }
-fn remaining(deadline: u64) -> anyhow::Result<Duration> {
+pub(crate) fn remaining(deadline: u64) -> anyhow::Result<Duration> {
     let ns = deadline.saturating_sub(monotonic_ns()?);
     ensure!(ns > 0, "original request deadline expired");
     Ok(Duration::from_nanos(ns))
@@ -59,7 +59,7 @@ fn remaining(deadline: u64) -> anyhow::Result<Duration> {
 
 /// Original unique owner, with subscription established before lookup. Never
 /// follow a replacement daemon, even if it reuses paths and request numbers.
-struct Daemon {
+pub(crate) struct Daemon {
     owner: String,
     lost: watch::Receiver<bool>,
     task: tokio::task::JoinHandle<()>,
@@ -70,7 +70,7 @@ impl Drop for Daemon {
     }
 }
 impl Daemon {
-    async fn pin(conn: &Connection) -> anyhow::Result<Self> {
+    pub(crate) async fn pin(conn: &Connection) -> anyhow::Result<Self> {
         let bus = zbus::fdo::DBusProxy::new(conn).await?;
         let mut changes = bus
             .receive_name_owner_changed_with_args(&[(0, SERVICE)])
@@ -85,7 +85,13 @@ impl Daemon {
         });
         Ok(Self { owner, lost, task })
     }
-    async fn proxy(
+    pub(crate) fn owner(&self) -> &str {
+        &self.owner
+    }
+    pub(crate) fn loss(&self) -> watch::Receiver<bool> {
+        self.lost.clone()
+    }
+    pub(crate) async fn proxy(
         &self,
         conn: &Connection,
         path: &str,
@@ -102,7 +108,7 @@ impl Daemon {
     }
 }
 
-fn controller_generation(controller: &str) -> anyhow::Result<u64> {
+pub(crate) fn controller_generation(controller: &str) -> anyhow::Result<u64> {
     let (index, generation) = controller
         .strip_prefix("/org/sparklink/slk")
         .and_then(|v| v.split_once("_g"))
@@ -275,12 +281,12 @@ impl Agent {
 
 /// A separate open file description avoids changing the shell's shared stdin
 /// flags. AsyncFd keeps D-Bus and signals live while waiting for human input.
-struct Input {
+pub(crate) struct Input {
     fd: AsyncFd<std::fs::File>,
     bytes: Vec<u8>,
 }
 impl Input {
-    fn stdin() -> anyhow::Result<Self> {
+    pub(crate) fn stdin() -> anyhow::Result<Self> {
         let fd = std::fs::OpenOptions::new()
             .read(true)
             .custom_flags(nix::libc::O_NONBLOCK | nix::libc::O_CLOEXEC)
@@ -290,7 +296,7 @@ impl Input {
             bytes: Vec::new(),
         })
     }
-    fn discard_before_prompt(&mut self) -> anyhow::Result<()> {
+    pub(crate) fn discard_before_prompt(&mut self) -> anyhow::Result<()> {
         self.bytes.clear();
         let mut consumed = 0usize;
         let mut buffer = [0u8; 256];
@@ -307,7 +313,7 @@ impl Input {
             }
         }
     }
-    async fn line(&mut self) -> anyhow::Result<Option<String>> {
+    pub(crate) async fn line(&mut self) -> anyhow::Result<Option<String>> {
         loop {
             if let Some(end) = self.bytes.iter().position(|&b| b == b'\n') {
                 let line = self.bytes.drain(..=end).collect::<Vec<_>>();

@@ -15,6 +15,128 @@ impl SsapManagerIface {
 
 #[interface(name = "org.sparklink.ServiceManager")]
 impl SsapManagerIface {
+    /// Caller-owned local service. '/' disables the authorizer, not access
+    /// checks; authorization bits then remain unsupported. The bus policy
+    /// separately controls who may register services, not controller rights.
+    async fn register_owned_local_service(
+        &self,
+        uuid: Vec<u8>,
+        properties: Vec<crate::ssap_database::PropertyDefinition>,
+        authorizer: zbus::zvariant::OwnedObjectPath,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
+        // Bounded validation precedes watches and allocation of a service.
+        if properties.is_empty()
+            || properties.len() > 64
+            || !matches!(uuid.len(), 2 | 16)
+            || !uuid.iter().any(|b| *b != 0)
+        {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "invalid UUID/property count".into(),
+            ));
+        }
+        for (uuid, ops, access, value) in &properties {
+            let access = slk_protocol::ssap::access::SsapAccess::from_bits(*access)
+                .map_err(|e| zbus::fdo::Error::InvalidArgs(e.into()))?;
+            let ops = slk_protocol::SsapOperations::from_bits(*ops)
+                .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+            if ops.bits() & !5 != 0
+                || access.needs_local_authorization() && authorizer.as_str() == "/"
+            {
+                return Err(zbus::fdo::Error::NotSupported(
+                    "operation or local authorizer unavailable".into(),
+                ));
+            }
+            if !matches!(uuid.len(), 2 | 16) || !uuid.iter().any(|b| *b != 0) || value.len() > 2042
+            {
+                return Err(zbus::fdo::Error::InvalidArgs(
+                    "invalid property UUID/value length".into(),
+                ));
+            }
+        }
+        let sender = crate::security_policy::sender(&header)?;
+        let (database, lease, generation, slots) = {
+            let state = self.state.lock().await;
+            if !state.present {
+                return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+            }
+            (
+                state.ssap_database.clone(),
+                state.native_lease.clone().ok_or_else(|| {
+                    zbus::fdo::Error::NotSupported("Native management required".into())
+                })?,
+                state.controller.generation,
+                state.ssap_owner_slots.clone(),
+            )
+        };
+        let slot = slots
+            .try_acquire_owned()
+            .map_err(|_| zbus::fdo::Error::LimitsExceeded("local service owner capacity".into()))?;
+        let owner =
+            crate::ssap_authorization::Owner::pin(connection, sender, authorizer, &database, slot)
+                .await?;
+        {
+            let state = self.state.lock().await;
+            if !state.present
+                || state.controller.generation != generation
+                || !std::sync::Arc::ptr_eq(&database, &state.ssap_database)
+                || state
+                    .native_lease
+                    .as_ref()
+                    .is_none_or(|current| !std::sync::Arc::ptr_eq(current, &lease))
+            {
+                return Err(zbus::fdo::Error::Failed(
+                    "adapter/management changed during owner registration".into(),
+                ));
+            }
+        }
+        let admission = lease
+            .try_lock_owned()
+            .map_err(|_| zbus::fdo::Error::Failed("management handoff busy".into()))?;
+        if !admission.accepting || admission.token.is_none() {
+            return Err(zbus::fdo::Error::Failed("management revoked".into()));
+        }
+        database
+            .lock()
+            .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
+            .register_owned(uuid, properties, owner)
+            .map_err(zbus::fdo::Error::InvalidArgs)
+    }
+    async fn unregister_owned_local_service(
+        &self,
+        start: u16,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        let caller = crate::security_policy::sender(&header)?;
+        let state = self.state.lock().await;
+        if !state.present {
+            return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+        }
+        state
+            .ssap_database
+            .lock()
+            .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
+            .remove_owned(start, &caller)
+            .map_err(zbus::fdo::Error::AccessDenied)
+    }
+    async fn read_owned_local_value(
+        &self,
+        handle: u16,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        let caller = crate::security_policy::sender(&header)?;
+        let state = self.state.lock().await;
+        if !state.present {
+            return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+        }
+        state
+            .ssap_database
+            .lock()
+            .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
+            .local_read_owned(handle, &caller)
+            .map_err(zbus::fdo::Error::AccessDenied)
+    }
     /// Adapter-local only; no remote service-discovery/publication receipt.
     async fn register_local_service(
         &self,

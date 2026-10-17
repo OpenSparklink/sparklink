@@ -437,6 +437,227 @@ struct Pending {
     purpose: Purpose,
     constraint: Option<slk_protocol::SleSendConstraint>,
 }
+struct ServerPacket {
+    bytes: Vec<u8>,
+    deadline: Instant,
+    constraint: Option<slk_protocol::SleSendConstraint>,
+    mtu: u16,
+    level: u32,
+    request_id: u64,
+}
+struct ServerDecision {
+    packet: ServerPacket,
+    approvals: Vec<crate::ssap_authorization::Approval>,
+}
+type ServerTask = std::pin::Pin<Box<dyn std::future::Future<Output = ServerDecision> + Send>>;
+
+/// Only the front server obligation is polled, preserving response order.
+/// No database/Host lock is held across a policy callback or a wait.
+async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecision {
+    let targets = if packet.bytes[0] == 10 {
+        slk_protocol::ssap::read_uuid::Request::decode(packet.mtu, &packet.bytes)
+            .ok()
+            .map(|request| {
+                database
+                    .lock()
+                    .map(|d| d.uuid_targets(request, packet.level))
+                    .unwrap_or_default()
+            })
+            .unwrap_or_default()
+    } else {
+        ValuePdu::decode(packet.mtu, &packet.bytes)
+            .ok()
+            .map(|request| {
+                database
+                    .lock()
+                    .map(|d| d.value_targets(request, packet.level))
+                    .unwrap_or_default()
+            })
+            .unwrap_or_default()
+    };
+    let mut approvals = Vec::new();
+    if let Some(c) = packet.constraint {
+        let write = packet.bytes[0] == 13;
+        let value = match ValuePdu::decode(packet.mtu, &packet.bytes) {
+            Ok(ValuePdu::Write { value, .. }) => value.to_vec(),
+            _ => vec![],
+        };
+        for target in targets {
+            if Instant::now() >= packet.deadline {
+                break;
+            }
+            let prompt = (
+                packet.request_id,
+                (
+                    c.controller,
+                    c.generation,
+                    c.lifetime,
+                    c.handle,
+                    c.security_epoch,
+                    packet.level,
+                    c.local_tcid,
+                    c.remote_tcid,
+                    c.pi,
+                ),
+                target.handle,
+                write,
+                c.deadline_monotonic_ns,
+                value.clone(),
+            );
+            if target.owner.authorize(prompt, packet.deadline).await {
+                approvals.push(crate::ssap_authorization::Approval {
+                    handle: target.handle,
+                    owner: target.owner,
+                });
+            }
+        }
+    }
+    ServerDecision { packet, approvals }
+}
+
+fn server_response(
+    packet: &ServerPacket,
+    database: &Store,
+    approvals: &[crate::ssap_authorization::Approval],
+) -> io::Result<Vec<u8>> {
+    let raw = &packet.bytes;
+    let negotiated = packet.mtu;
+    if raw[0] == 10 {
+        return match slk_protocol::ssap::read_uuid::Request::decode(negotiated, raw) {
+            Ok(request) => {
+                let database = database
+                    .lock()
+                    .map_err(|_| io::Error::other("database poisoned"))?;
+                if approvals.is_empty() {
+                    database.read_uuid(request, negotiated, packet.level)
+                } else {
+                    database.read_uuid_authorized(request, negotiated, packet.level, approvals)
+                }
+                .map_err(io::Error::other)
+            }
+            Err(_) => {
+                let mut out = vec![0; 6];
+                ValuePdu::Error {
+                    request: 10,
+                    handle: 0,
+                    error: 1,
+                }
+                .encode(negotiated, &mut out)
+                .map_err(|_| io::Error::other("read UUID error codec"))?;
+                Ok(out)
+            }
+        };
+    }
+    if matches!(raw[0], 4 | 6) {
+        return match slk_protocol::ssap::discovery::FindRequest::decode(negotiated, raw) {
+            Ok(request) => database
+                .lock()
+                .map_err(|_| io::Error::other("database poisoned"))?
+                .find(request, negotiated)
+                .map_err(io::Error::other),
+            Err(error) => {
+                let mut out = vec![0; 6];
+                let handle = if matches!(error, slk_protocol::ssap::discovery::FindError::Handle)
+                    && raw.len() >= 4
+                {
+                    u16::from_le_bytes([raw[2], raw[3]])
+                } else {
+                    0
+                };
+                ValuePdu::Error {
+                    request: raw[0],
+                    handle,
+                    error: match error {
+                        slk_protocol::ssap::discovery::FindError::Handle => 4,
+                        slk_protocol::ssap::discovery::FindError::Unsupported => 2,
+                        _ => 1,
+                    },
+                }
+                .encode(negotiated, &mut out)
+                .map_err(|_| io::Error::other("find error codec"))?;
+                Ok(out)
+            }
+        };
+    }
+    match ValuePdu::decode(negotiated, raw) {
+        Ok(request) => {
+            let mut database = database
+                .lock()
+                .map_err(|_| io::Error::other("database poisoned"))?;
+            if approvals.is_empty() {
+                database.answer(request, negotiated, packet.level)
+            } else {
+                database.answer_authorized(request, negotiated, packet.level, approvals)
+            }
+            .map_err(io::Error::other)
+        }
+        Err(e) => {
+            let mut out = vec![0; 6];
+            ValuePdu::Error {
+                request: raw[0],
+                handle: 0,
+                error: if raw.get(1).is_some_and(|v| v & 3 != 3) {
+                    16
+                } else if matches!(e, slk_protocol::ssap::value::ValueError::Unsupported) {
+                    2
+                } else {
+                    1
+                },
+            }
+            .encode(negotiated, &mut out)
+            .map_err(|_| io::Error::other("error response exceeds MTU"))?;
+            Ok(out)
+        }
+    }
+}
+fn complete_server(wire: &Wire, decision: ServerDecision, database: &Store) -> io::Result<Pending> {
+    if Instant::now() >= decision.packet.deadline {
+        return Err(io::Error::new(
+            io::ErrorKind::TimedOut,
+            "original SSAP authorization deadline",
+        ));
+    }
+    if let Some(original) = decision.packet.constraint {
+        // A recheck is an admission snapshot, not an atomic transaction across
+        // kernel security state and the userspace database. Later revocation
+        // can stop the original response; it cannot roll back a prior write.
+        let now = wire
+            .prepare(original.minimum, decision.packet.deadline)?
+            .ok_or_else(|| io::Error::other("missing native authorization recheck"))?;
+        if (
+            now.controller,
+            now.generation,
+            now.lifetime,
+            now.handle,
+            now.security_epoch,
+            now.local_tcid,
+            now.remote_tcid,
+            now.pi,
+        ) != (
+            original.controller,
+            original.generation,
+            original.lifetime,
+            original.handle,
+            original.security_epoch,
+            original.local_tcid,
+            original.remote_tcid,
+            original.pi,
+        ) {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "SSAP original authorization context changed",
+            ));
+        }
+    }
+    let response = server_response(&decision.packet, database, &decision.approvals)?;
+    Ok(Pending {
+        bytes: response,
+        deadline: decision.packet.deadline,
+        purpose: Purpose::ValueResponse,
+        constraint: decision.packet.constraint,
+    })
+}
+
 // Native always checks actual kernel receipt facts. Local fixtures are explicit
 // test-only transports, never a production fallback or fabricated security.
 struct Wire {
@@ -673,7 +894,19 @@ async fn exchange_loop(
     let mut client: Option<ClientRequest> = None;
     let mut incoming_wait: Option<IncomingWait> = None;
     let mut buffer = [0; 2042];
+    let mut server_queue: VecDeque<ServerPacket> = VecDeque::new();
+    let mut server: Option<(Instant, ServerTask)> = None;
+    let mut next_server_id = 0u64;
     loop {
+        if server.is_none()
+            && let Some(packet) = server_queue.pop_front()
+        {
+            server = Some((
+                packet.deadline,
+                Box::pin(authorize_server(packet, database.clone())),
+            ));
+        }
+        let server_load = server_queue.len() + usize::from(server.is_some());
         if incoming_wait
             .as_ref()
             .is_some_and(|w| w.reply.is_closed() || Instant::now() >= w.deadline)
@@ -712,6 +945,8 @@ async fn exchange_loop(
             .iter()
             .map(|p| p.deadline)
             .chain(client.as_ref().map(|v| v.deadline))
+            .chain(server.as_ref().map(|v| v.0))
+            .chain(server_queue.iter().map(|v| v.deadline))
             .chain(
                 incoming_wait
                     .as_ref()
@@ -727,7 +962,7 @@ async fn exchange_loop(
         tokio::select! {
             _ = &mut *stopped => return Ok(()),
             _ = tokio::time::sleep_until(deadline) => {
-                if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.deadline) {
+                if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.deadline) || server.as_ref().is_some_and(|v|Instant::now()>=v.0) || server_queue.iter().any(|v|Instant::now()>=v.deadline) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP obligation deadline"));
                 }
                 slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
@@ -741,7 +976,7 @@ async fn exchange_loop(
                     incoming_wait=Some(IncomingWait{handles,modes,deadline,reply});continue;
                 }
                 if let Query::Value{bytes,deadline,minimum,reply}=query {
-                    if client.is_some() || pending.len()>=8 || !initial_done || Instant::now()>=deadline {let _=reply.send(Err("SSAP busy/not-ready/expired".into()));continue;}
+                    if client.is_some() || pending.len()+server_load>=8 || !initial_done || Instant::now()>=deadline {let _=reply.send(Err("SSAP busy/not-ready/expired".into()));continue;}
                     slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                     if bytes.len()>usize::from(capabilities.mtu) {let _=reply.send(Err("SSAP request exceeds channel".into()));continue;}
                     if reply.is_closed(){continue;}
@@ -774,6 +1009,10 @@ async fn exchange_loop(
                 };
                 let _=reply.send(result);
             }
+            decision = async { server.as_mut().expect("guarded server obligation").1.as_mut().await }, if server.is_some() => {
+                server.take();
+                pending.push_back(complete_server(&wire,decision,&database)?);
+            }
             ready = wire.fd.writable(), if !pending.is_empty() => {
                 let mut ready = ready?;
                 let packet = pending.front().expect("guarded queue");
@@ -800,30 +1039,18 @@ async fn exchange_loop(
                     let raw = &buffer[..size];
                     if !initial_done && Instant::now() >= original_deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "late SSAP reply")); }
                     if matches!(raw[0],15|16) {
-                        if raw[0]==16 && pending.len()>=8{return Err(io::Error::other("SSAP ACK queue full"));}
+                        if raw[0]==16 && pending.len()+server_load>=8{return Err(io::Error::other("SSAP ACK queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                         let ack=incoming_packet(negotiated,raw,&mut incoming_wait)?;
                         if !ack.is_empty(){pending.push_back(Pending{bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});}
                     } else if matches!(raw[0],4|6|8|10|13) {
-                        if pending.len()>=8 {return Err(io::Error::other("SSAP response queue full"));}
+                        if !initial_done {return Err(io::Error::other("SSAP value/discovery before ExchangeInfo completion"));}
+                        if pending.len()+server_load>=8 {return Err(io::Error::other("SSAP response obligation queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
-                        let response=if raw[0]==10 {
-                            match slk_protocol::ssap::read_uuid::Request::decode(negotiated,raw) {
-                                Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.read_uuid(request,negotiated,receipt.map_or(0,|m|m.security)).map_err(io::Error::other)?,
-                                Err(_)=>{let mut out=vec![0;6];ValuePdu::Error{request:10,handle:0,error:1}.encode(negotiated,&mut out).map_err(|_|io::Error::other("read UUID error codec"))?;out}
-                            }
-                        }else if matches!(raw[0],4|6) {
-                            match slk_protocol::ssap::discovery::FindRequest::decode(negotiated,raw) {
-                                Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.find(request,negotiated).map_err(io::Error::other)?,
-                                Err(error)=>{let mut out=vec![0;6];let handle=if matches!(error,slk_protocol::ssap::discovery::FindError::Handle)&&raw.len()>=4{u16::from_le_bytes([raw[2],raw[3]])}else{0};ValuePdu::Error{request:raw[0],handle,error:match error{slk_protocol::ssap::discovery::FindError::Handle=>4,slk_protocol::ssap::discovery::FindError::Unsupported=>2,_=>1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("find error codec"))?;out}
-                            }
-                        }else{match ValuePdu::decode(negotiated,raw) {
-                            Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.answer(request,negotiated,receipt.map_or(0,|m|m.security)).map_err(io::Error::other)?,
-                            Err(e)=> {let mut out=vec![0;6];ValuePdu::Error{request:raw[0],handle:0,error:if raw.get(1).is_some_and(|v|v&3!=3){16}else if matches!(e,slk_protocol::ssap::value::ValueError::Unsupported){2}else{1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("error response exceeds MTU"))?;out},
-                        }};
-                        pending.push_back(Pending{bytes:response,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});
+                        next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
+                        server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:negotiated,level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
                     } else if matches!(raw[0],1|5|7|9|11|14) {
                         let Some(ClientRequest{bytes:request,deadline,minimum,epoch,admitted,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
                         if let Some(epoch)=epoch {
@@ -1112,3 +1339,7 @@ mod tests {
         assert_eq!(error.kind(), io::ErrorKind::TimedOut);
     }
 }
+
+#[cfg(test)]
+#[path = "ssap_authorization_tests.rs"]
+mod authorization_tests;

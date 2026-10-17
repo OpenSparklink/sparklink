@@ -1,9 +1,11 @@
 //! Bounded adapter-local service data. Handles are never reused within this
 //! registration. Local insertion is not remote discovery/publication success.
+use crate::ssap_authorization::{Approval, Owner, Target};
 use slk_protocol::ssap::access::SsapAccess;
 use slk_protocol::ssap::discovery::{Entry, FindKind, FindRequest, encode_page};
 use slk_protocol::{SsapOperations, ssap::value::ValuePdu};
 use std::collections::BTreeMap;
+use std::sync::Arc;
 
 pub(crate) type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
 pub(crate) type LocalService = (u16, u16, Vec<u8>, Vec<(u16, Vec<u8>, u32, u32)>);
@@ -17,6 +19,7 @@ struct Service {
     end: u16,
     uuid: Vec<u8>,
     properties: BTreeMap<u16, Property>,
+    owner: Option<Arc<Owner>>,
 }
 pub(crate) struct Database {
     next: u32,
@@ -33,10 +36,44 @@ impl Default for Database {
     }
 }
 impl Database {
+    /// Retirement invalidates under the value-admission mutex; join watches
+    /// afterwards, outside both adapter and database locks.
+    pub(crate) fn retire(&mut self) -> Vec<Arc<Owner>> {
+        let owners = self
+            .services
+            .values()
+            .filter_map(|s| s.owner.clone())
+            .collect::<Vec<_>>();
+        for owner in &owners {
+            owner.revoke();
+        }
+        self.services.clear();
+        self.bytes = 0;
+        owners
+    }
     pub(crate) fn register(
         &mut self,
         uuid: Vec<u8>,
         definitions: Vec<PropertyDefinition>,
+    ) -> Result<(u16, u16, Vec<u16>), String> {
+        self.register_inner(uuid, definitions, None)
+    }
+    pub(crate) fn register_owned(
+        &mut self,
+        uuid: Vec<u8>,
+        definitions: Vec<PropertyDefinition>,
+        owner: Arc<Owner>,
+    ) -> Result<(u16, u16, Vec<u16>), String> {
+        if !owner.current() {
+            return Err("service owner retired".into());
+        }
+        self.register_inner(uuid, definitions, Some(owner))
+    }
+    fn register_inner(
+        &mut self,
+        uuid: Vec<u8>,
+        definitions: Vec<PropertyDefinition>,
+        owner: Option<Arc<Owner>>,
     ) -> Result<(u16, u16, Vec<u16>), String> {
         fn uuid_valid(v: &[u8]) -> bool {
             matches!(v.len(), 2 | 16) && v.iter().any(|b| *b != 0)
@@ -51,7 +88,9 @@ impl Database {
         let mut added = 0;
         for (uuid, ops, access, value) in &definitions {
             let access = SsapAccess::from_bits(*access)?;
-            if access.needs_local_authorization() {
+            if access.needs_local_authorization()
+                && owner.as_ref().is_none_or(|o| !o.supports_authorization())
+            {
                 return Err("SSAP local authorization not connected".into());
             }
             let ops = SsapOperations::from_bits(*ops).map_err(|e| e.to_string())?;
@@ -96,6 +135,7 @@ impl Database {
                 end,
                 uuid,
                 properties,
+                owner,
             },
         );
         self.bytes += added;
@@ -124,7 +164,112 @@ impl Database {
             .remove(&start)
             .ok_or("unknown local service")?;
         self.bytes -= s.properties.values().map(|p| p.value.len()).sum::<usize>();
+        if let Some(owner) = s.owner {
+            owner.revoke();
+        }
         Ok(())
+    }
+    pub(crate) fn revoke_owner(&mut self, owner: &str) {
+        let starts: Vec<_> = self
+            .services
+            .iter()
+            .filter(|(_, s)| s.owner.as_ref().is_some_and(|o| o.name == owner))
+            .map(|(h, _)| *h)
+            .collect();
+        for start in starts {
+            let _ = self.remove(start);
+        }
+    }
+    pub(crate) fn remove_owned(&mut self, start: u16, owner: &str) -> Result<(), String> {
+        if !self.services.get(&start).is_some_and(|s| {
+            s.owner
+                .as_ref()
+                .is_some_and(|o| o.current() && o.name == owner)
+        }) {
+            return Err("service is not owned by caller".into());
+        }
+        self.remove(start)
+    }
+    pub(crate) fn local_read_owned(&self, handle: u16, owner: &str) -> Result<Vec<u8>, String> {
+        if !self.services.values().any(|s| {
+            s.properties.contains_key(&handle)
+                && s.owner
+                    .as_ref()
+                    .is_some_and(|o| o.current() && o.name == owner)
+        }) {
+            return Err("property is not owned by caller".into());
+        }
+        self.local_read(handle)
+    }
+    fn target(&self, handle: u16, level: u32, write: bool) -> Option<Target> {
+        let service = self
+            .services
+            .values()
+            .find(|s| s.properties.contains_key(&handle))?;
+        let p = service.properties.get(&handle)?;
+        let operation = if write {
+            SsapOperations::WRITE_WITH_RSP
+        } else {
+            SsapOperations::READ
+        };
+        if !p.operations.contains(operation)
+            || p.access.check(level, write) != Err(9)
+            || p.access
+                .check_authorization_result(level, write, true)
+                .is_err()
+        {
+            return None;
+        }
+        let owner = service.owner.as_ref()?;
+        if !owner.current() || !owner.supports_authorization() {
+            return None;
+        }
+        Some(Target {
+            handle,
+            owner: owner.clone(),
+        })
+    }
+    pub(crate) fn value_targets(&self, request: ValuePdu<'_>, level: u32) -> Vec<Target> {
+        let (handle, write) = match request {
+            ValuePdu::Read {
+                handle,
+                data_type: 0,
+            } => (handle, false),
+            ValuePdu::Write {
+                handle,
+                data_type: 0,
+                ..
+            } => (handle, true),
+            _ => return vec![],
+        };
+        self.target(handle, level, write).into_iter().collect()
+    }
+    pub(crate) fn uuid_targets(
+        &self,
+        request: slk_protocol::ssap::read_uuid::Request<'_>,
+        level: u32,
+    ) -> Vec<Target> {
+        if request.start == 0 || request.start > request.end || request.data_type != 0 {
+            return vec![];
+        }
+        self.services
+            .values()
+            .flat_map(|s| s.properties.range(request.start..=request.end))
+            .filter(|(_, p)| p.uuid == request.uuid)
+            .filter_map(|(h, _)| self.target(*h, level, false))
+            .collect()
+    }
+    fn locally_authorized(&self, handle: u16, approvals: &[Approval]) -> bool {
+        self.services
+            .values()
+            .find(|s| s.properties.contains_key(&handle))
+            .and_then(|s| s.owner.as_ref())
+            .is_some_and(|o| {
+                o.current()
+                    && approvals
+                        .iter()
+                        .any(|a| a.handle == handle && Arc::ptr_eq(o, &a.owner))
+            })
     }
     pub(crate) fn find(&self, request: FindRequest<'_>, mtu: u16) -> Result<Vec<u8>, String> {
         let mut entries = Vec::new();
@@ -190,6 +335,15 @@ impl Database {
         mtu: u16,
         level: u32,
     ) -> Result<Vec<u8>, String> {
+        self.read_uuid_authorized(request, mtu, level, &[])
+    }
+    pub(crate) fn read_uuid_authorized(
+        &self,
+        request: slk_protocol::ssap::read_uuid::Request<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<Vec<u8>, String> {
         use slk_protocol::ssap::read_uuid::{Item, encode};
         let mut items = Vec::new();
         if request.start == 0 || request.start > request.end {
@@ -205,7 +359,11 @@ impl Database {
                             Err(13)
                         } else if !p.operations.contains(SsapOperations::READ) {
                             Err(6)
-                        } else if let Err(error) = p.access.check(level, false) {
+                        } else if let Err(error) = p.access.check_authorization_result(
+                            level,
+                            false,
+                            self.locally_authorized(*handle, approvals),
+                        ) {
                             Err(u16::from(error))
                         } else {
                             Ok(p.value.as_slice())
@@ -260,14 +418,39 @@ impl Database {
         mtu: u16,
         level: u32,
     ) -> Result<Vec<u8>, String> {
+        self.answer_authorized(request, mtu, level, &[])
+    }
+    pub(crate) fn answer_authorized(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<Vec<u8>, String> {
         let mut out = vec![0; usize::from(mtu)];
         let response = match request {
             ValuePdu::Read { handle, data_type } => match self.property(handle) {
                 None => ValuePdu::ReadError(4),
                 Some(_) if data_type != 0 => ValuePdu::ReadError(13),
                 Some(p) if !p.operations.contains(SsapOperations::READ) => ValuePdu::ReadError(6),
-                Some(p) if p.access.check(level, false).is_err() => {
-                    ValuePdu::ReadError(u16::from(p.access.check(level, false).unwrap_err()))
+                Some(p)
+                    if p.access
+                        .check_authorization_result(
+                            level,
+                            false,
+                            self.locally_authorized(handle, approvals),
+                        )
+                        .is_err() =>
+                {
+                    ValuePdu::ReadError(u16::from(
+                        p.access
+                            .check_authorization_result(
+                                level,
+                                false,
+                                self.locally_authorized(handle, approvals),
+                            )
+                            .unwrap_err(),
+                    ))
                 }
                 Some(p) if p.value.len() + 2 > usize::from(mtu) => ValuePdu::Error {
                     request: 8,
@@ -286,8 +469,22 @@ impl Database {
                     None => Some(4),
                     Some(_) if data_type != 0 => Some(13),
                     Some(p) if !p.operations.contains(SsapOperations::WRITE_WITH_RSP) => Some(7),
-                    Some(p) if p.access.check(level, true).is_err() => {
-                        p.access.check(level, true).err()
+                    Some(p)
+                        if p.access
+                            .check_authorization_result(
+                                level,
+                                true,
+                                self.locally_authorized(handle, approvals),
+                            )
+                            .is_err() =>
+                    {
+                        p.access
+                            .check_authorization_result(
+                                level,
+                                true,
+                                self.locally_authorized(handle, approvals),
+                            )
+                            .err()
                     }
                     Some(p)
                         if value.len() > 2042

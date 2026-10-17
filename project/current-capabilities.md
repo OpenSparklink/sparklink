@@ -1,5 +1,10 @@
 # 当前能力与资格
 
+正在开发的 Owned 服务/逐请求本地授权已接入唯一 Engine，严格构建及私有 D-Bus
+结果按本批日志记录；**新 artifact 实机资格尚未取得**。下面封存836镜像的资格不转授
+该新路径。service-only部署、原期限/撤权/Down实机交错、CPCD与完整多应用范围仍缺。
+
+
 [历史文档日志保留事故](../docs/evidence/hcc110-document-retention-incident-20261017.json)：
 初始HCC110整包的一份已封存文档日志被后续构建覆盖。五条原记录与原hash按准确git
 快照保留，但已撤出当前PASS，替换为必须处理的UNPROVED项；没有用新hash冒充原件。

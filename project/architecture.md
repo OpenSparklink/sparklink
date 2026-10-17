@@ -779,3 +779,18 @@ HCC查询的原始期限还约束每一次USB OUT：每次提交传入剩余2秒
 开始后续OUT或读通知；保留普通DLI默认超时与恢复上限。该收紧不改协议credit或
 Session原期限。离线时钟fixture不证明USB调度/stop/drain的硬实时界；准确0cd实机
 数据与另源f887生命周期资格分开记录，首5.509秒数据超时根因继续开放。
+
+
+## Owned SSAP local policy implementation boundary
+
+The sole userspace SSAP actor now admits application-owned local registrations
+and asynchronous per-request policy callbacks, alongside explicit manager staging.
+See [ADR0004](../docs/decisions/0004-application-ownership-and-delivery.md) and the
+[exact interface contract](../docs/reference/ssap-permissions.md#应用拥有的本地服务与逐请求审批).
+The implementation binds the real D-Bus unique owner and original RX identity,
+security epoch and absolute deadline. It does not create a second Engine or grant
+security from local approval. Retirement revokes registrations under the database
+mutex, then joins owner watches outside locks. Kernel/DB admission is a snapshot,
+not an atomic cross-process transaction; already committed writes cannot be undone
+by later revocation. Current-artifact real qualification, service-only deployment,
+revocation/Down/deadline interleavings, CPCD and Bond remain separately gated.

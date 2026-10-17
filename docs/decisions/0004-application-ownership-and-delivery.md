@@ -249,16 +249,27 @@ security epoch、属性登记版本、方向及原请求身份，不由可复用
 须由管理策略授权，普通客户端、Agent 的安全协商批准及任意布尔值不能自授属性
 访问。登记者绑定 D-Bus unique owner/登记epoch；先订阅退出再验证存活。服务消失、
 撤销、重复/迟到批准、属性删除重建、Down/rekey 与旧 lifetime 均不能完成新请求。
-目前本地数据库仍由管理组 staging，尚无上述逐服务应用所有权/审批 API，不能把
-现有管理组权限描述成已经完成多应用服务所有权。
+本批引入 Owned 三方法与原 unique owner 的逐请求审批，保留独立管理 staging。
+16 owner watch / 8 actor义务有界；实现不等于完整多应用部署或实机资格。
 
 授权等待与物理响应义务分别记账，共用原始绝对期限及有限条目/字节预算。等待不得
 阻塞其他 controller、Session RX、ACK 或已在途清理。批准在读值/改值之前再次核对
 原请求和属性版本；响应继续携带原 RX epoch/机制下限/期限，经原 Grant/Ticket
 准入。应用取消不撤销已发生的写入，队列接收不表示对端处理；重复批准只允许一个
-终态。未接通这些条件前，授权位和 CPCD 继续明确不支持，不增加配置布尔放行。
+终态。旧 staging 的授权位继续不支持；Owned 路径核对当前 owner/登记、原 RX 及期限。
+CPCD 仍未接通，不增加配置布尔放行。
 
 实施门禁只覆盖该链路：允许/拒绝/缺少审批者、审批者退出、原期限、晚到/重复批准、
 删除重建、实际安全上下文改变及撤权/Down；真实两端验证值读取或写入、拒绝时不
 泄漏/不修改，并保留普通业务同行。通知/指示发送与 CPCD 另取真实证据。无需等待
 全部控制面组合，也不把此决策文字作为已实现、已证明或实机通过。
+
+
+本批源码映射：`ssap_authorization.rs::Owner::pin/authorize` 订阅在存活检查之前，
+owner watch持有连接，数据库仅持弱连接以避免对象服务循环；`Database::remove/revoke_owner`
+与值准入共用数据库锁。`ssap_engine::authorize_server/complete_server` 保留原接收
+身份/期限，真正发送继续经过唯一 Wire/Session/Grant/Ticket。`complete_server` 的
+PREPARE 与数据库修改不是跨内核/daemon原子事务；后续失效不回滚已准入写入。
+同数据库句柄不复用与 owner Arc 身份隔离旧审批；未证明的调度、kernel callback、
+USB drain 和固件假设仍保持原未决条件。私有 D-Bus 测试中的 Ready/lease/RX上下文
+是明确 fixture，不能升级为真实内核并发或安全证明。

@@ -582,3 +582,11 @@ SDK110的真实E回复使用slot=96、HCC分配长度=96、平台分配长度=88
 ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点阶段不能
 使用该查询决定首次下载镜像；部署必须显式提供匹配输入，禁止按端口/VIDPID默认U。
 切换固件后的资格需重新取得，旧111和旧四U结果不能转授110或混合E/U设备。
+
+
+### 应用拥有的 SSAP 服务
+
+`ServiceManager` 的 Owned 三方法和 `SsapAuthorizer.AuthorizeValue` 的精确字段、
+权限、原期限、所有者退出及写入不确定性见[SSAP 服务所有权](ssap-permissions.md#应用拥有的本地服务与逐请求审批)。
+旧 `RegisterLocalService` 继续拒绝授权位；新登记与等待审批复用唯一 Engine 和
+实际约束发送，不代表 CPCD、长写、可信身份、Bond 或全部多应用部署已验收。

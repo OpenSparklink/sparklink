@@ -119,6 +119,21 @@ impl Context {
                 println!("SsapLocalServices: {}", serde_json::to_string(&services)?);
                 Ok(())
             }
+            "ssap-serve" if matches!(args.len(), 6 | 7) => {
+                crate::ssap_server::serve(
+                    &self.conn,
+                    &self.selected_path().await?,
+                    parse_hex_bytes(args[1])?,
+                    (
+                        parse_hex_bytes(args[2])?,
+                        args[3].parse()?,
+                        args[4].parse()?,
+                        parse_hex_bytes(args[5])?,
+                    ),
+                    args.get(6).copied().unwrap_or("ask"),
+                )
+                .await
+            }
             "ssap-register" if args.len() == 6 => {
                 let path = format!("{}/services", self.selected_path().await?);
                 let object = zbus::Proxy::new(
@@ -1788,7 +1803,7 @@ fn random_bytes<const N: usize>() -> anyhow::Result<[u8; N]> {
     std::fs::File::open("/dev/urandom")?.read_exact(&mut bytes)?;
     Ok(bytes)
 }
-fn hex_bytes(bytes: &[u8]) -> String {
+pub(crate) fn hex_bytes(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 fn print_native_result(r: slk_protocol::DiscoveryResultRecord) -> anyhow::Result<()> {

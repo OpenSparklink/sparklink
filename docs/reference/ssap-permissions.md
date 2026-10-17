@@ -99,16 +99,15 @@ sendmsg 必须携带限制；没有 raw-send 回退。准备不预留 credit、�
 |---|---:|---|
 | WRITE_ENCRYPTED | 1 | 写原请求观察机制至少 1 |
 | WRITE_AUTHENTICATED | 2 | 写原请求观察机制至少 2 |
-| WRITE_AUTHORIZED | 4 | 本地逐属性授权尚未接通，注册 NotSupported |
+| WRITE_AUTHORIZED | 4 | 仅 Owned 登记及有效原请求审批可满足；旧 staging 仍 NotSupported |
 | READ_ENCRYPTED | 8 | 读原请求观察机制至少 1 |
 | READ_AUTHENTICATED | 16 | 读原请求观察机制至少 2 |
-| READ_AUTHORIZED | 32 | 本地逐属性授权尚未接通，注册 NotSupported |
+| READ_AUTHORIZED | 32 | 仅 Owned 登记及有效原请求审批可满足；旧 staging 仍 NotSupported |
 
 保留位返回 InvalidArgs；授权位不能由任意应用布尔值授予。当前内核的等级 2 表示
 SDK111 数字比较机制，不能推导命名身份、Bond 或独立 RF 加密证明。服务端在读取
 值或修改数据库之前检查真实原 RX 上下文；普通读取、按 UUID 读取、响应写共用同一
-检查。认证不足返回表51错误 8，加密不足返回 10；本地授权纯检查始终返回 9，生产
-注册先拒绝这项尚未接通的能力。公开发现元数据不包含受保护的值或 access 要求。
+检查。认证不足返回表51错误 8，加密不足返回 10；未获本地授权返回 9；只有当前 Owned 登记的原审批者可满足该要求。公开发现元数据不包含受保护的值或 access 要求。
 
 `slctl ssap-register SERVICE_HEX PROPERTY_HEX OPS ACCESS VALUE_HEX` 只配置本地库。
 `ssap-list` 列出本地元数据，不能当作远端发现。`ssap-read`、`ssap-write` 和
@@ -123,3 +122,40 @@ SDK111 数字比较机制，不能推导命名身份、Bond 或独立 RF 加密�
 `sdk111-*` 是现有实验Agent方法的历史方言名称，不是执行固件的版本证明。
 SDK110 U设备两机制的准确短消息/SSAP资格已单列；E、完整负向部署矩阵、命名身份/
 Bond及属性授权不继承。当前版本适用范围仍只由能力入口的准确artifact记录决定。
+
+
+## 应用拥有的本地服务与逐请求审批
+
+`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), authorizer:o)` 的 properties
+沿用上述四字段（实际 D-Bus 签名 `a(ayuuay)`），返回 `(start:q,end:q,handles:aq)`。
+登记者来自真实消息 sender 的 unique name，不能指定其他 owner。`authorizer=/`
+表示不提供审批；带授权位的登记此时返回 NotSupported。服务登记仍只表示本地配置。
+`UnregisterOwnedLocalService(start:q)` 和 `ReadOwnedLocalValue(handle:q)->ay` 只允许
+原 owner；管理组的显式全局移除/本地读权限仍独立。`sparklink-services` 策略只允许
+这三个 Owned 方法，不授 controller 管理或普通通道权限；实际最小权限部署门禁待验。
+
+审批调用原 unique owner 的 `org.sparklink.SsapAuthorizer.AuthorizeValue(prompt)->b`。
+`prompt` 是 `(request_id:t, identity:(qttqtuyyy), property:q, write:b, deadline:t, value:ay)`；
+identity 的实际签名为 `(qttqtuyyy)`，依次为 controller、generation、lifetime、connection
+handle、原 RX security epoch、原 RX security level、local TCID、remote TCID、PI。
+READ 不发送秘密值；WRITE 携带有界 proposed value。期限是原 RX 响应义务的绝对
+CLOCK_MONOTONIC 纳秒，最长五秒；排队和审批不重置期限。超时/方法错误/退出不批准。
+
+每 adapter 最多16个正在登记/活跃 owner watch（单服务一个），同 actor 待发响应、
+排队请求和正在审批请求合计最多8条。先监听 owner 退出再核对存活。句柄在同数据库
+不复用；删除重建、原 owner 退出或失效审批不能访问新属性。controller退休时先撤销登记，
+再在数据库锁之外等待owner watch退出；最终析构保留abort兜底。审批等待不持数据库锁，
+不预留协议 credit；唯一 actor 继续处理其他 RX/client/ACK，但按服务请求顺序答复。
+期限失败仍失败该 Engine，不承诺同 lifetime 自动重绑。
+
+读/写前通过原 fd 重查 generation/lifetime/security epoch，数据库锁下再核对登记和
+owner；这是一份准入快照，不是内核与数据库的原子事务。已经提交的本地写入不会因
+随后撤权/断链回滚；原响应继续受原 Grant/Ticket/epoch/期限限制。超时的写入结果
+可能不确定。批准只满足本地授权，不满足缺失的加密/认证，也不产生可信身份或 Bond。
+
+`slctl --adapter PATH ssap-serve SERVICE_HEX PROPERTY_HEX OPS ACCESS VALUE_HEX [ask|allow|deny]`
+以前台连接拥有服务。默认 ask 要求 `yes REQUEST_ID` 或 `no REQUEST_ID`；原期限外及
+旧编号无效。allow/deny 是服务所有者显式本地策略，不是安全 Agent 自动批准。标准
+输入 `value` 通过同 owner 读取实际本地值，`quit` 主动注销；进程被杀时由 unique owner
+退出清理。新入口沿用唯一 Engine，不新增远端协议引擎。实现、私有 D-Bus、VM 实机和
+形式化结果分别记于能力入口，不继承旧 artifact 的资格。

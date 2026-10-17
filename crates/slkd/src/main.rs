@@ -19,6 +19,7 @@ mod registration;
 mod security;
 mod security_policy;
 mod service;
+mod ssap_authorization;
 mod ssap_database;
 mod ssap_engine;
 mod state;

@@ -791,7 +791,7 @@
       "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
     ]
   },
-  "execution_phase": "ACTIVE_ROM_CANDIDATE_UNPROVED_EXPLICIT_FIRMWARE_SSAP_AUTH_PARALLEL",
+  "execution_phase": "ACTIVE_OWNED_SSAP_AUTHORIZATION_NEW_ARTIFACT_QUALIFICATION_PENDING",
   "next_resume_tasks": [
     "ROMcandidate:resolveindependentaccessvalidityandtruecoldstartup,thenperdevicewholee/usimage-selectionandgenerationbinding;noautomaticUfallback. NotprerequisiteforSSAP/data.",
     "ContinueuniqueEngineboundedper-requestlocalattributeauthorizer withowner/epoch/attributeversion/originalRXlifetime/securityepoch/direction/deadline;thenCPCDandsecureupdates. NoBooleanapprovalorsecondEngine.",
@@ -2984,5 +2984,26 @@
     "active_real_captures_unchanged": true,
     "whole_history_bytes_verified": false,
     "verification": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED"
+  },
+  "owned_ssap_current_batch": {
+    "production": "Sole actor owner-bound local authorization; original receipt/deadline and fd recheck; no new Engine",
+    "status": "IMPLEMENTED_PRIVATE_DBUS_TESTED_REAL_NEW_ARTIFACT_PENDING",
+    "limits": {
+      "owner_watches_per_adapter": 16,
+      "combined_response_obligations_per_actor": 8
+    },
+    "exit": [
+      "Strict default/all-features builds and actual private D-Bus negatives",
+      "New sealed artifact, both connection roles, actual allow/deny read/write/UUID and owner-loss remote rejection",
+      "Actual opposite owner value check plus four USB legs per exchange, exact NOCP accounting",
+      "Original broadcast/connect/socket regression and remaining conditions accurately recorded"
+    ],
+    "remaining": [
+      "service-only group deployment",
+      "real revocation/Down/original deadline and late owner decision interleavings",
+      "CPCD/protected updates",
+      "full original S0-S6/19WP/10FV/12DG, natural RCA/nonmanual recovery unchanged"
+    ],
+    "old_qualification_not_transferred": true
   }
 }

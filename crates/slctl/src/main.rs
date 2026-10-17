@@ -1,5 +1,6 @@
 mod commands;
 mod security_agent;
+mod ssap_server;
 
 use std::process;
 
@@ -141,6 +142,7 @@ Commands:
   ssap-discover <path> [structure|service|property uuid-hex] Discover actual peer metadata
   ssap-list                            Inspect local service metadata only
   ssap-register <service-hex> <property-hex> <ops> <access> <value-hex> Configure local database only
+  ssap-serve <service-hex> <property-hex> <ops> <access> <value-hex> [ask|allow|deny] Own a foreground local service; policy decision is not peer receipt
   ssap-remove <start-handle>                 Remove local service (handles not reused)
   ssap-local-read <handle>                   Inspect local database, not peer receipt
   ssap-observe <path> <handle> [notify|indicate|both] [wait-ms] Observe one actual incoming packet; no remote subscription

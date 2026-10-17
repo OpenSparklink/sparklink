@@ -1017,4 +1017,4 @@ async fn supervise(
 
 #[cfg(test)]
 #[path = "security_policy_tests.rs"]
-mod tests;
+pub(crate) mod tests;

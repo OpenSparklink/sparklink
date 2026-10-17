@@ -86,12 +86,7 @@ def corroborate(row,matched):
         if i['error']!=e or i['level']!=level or t!=1-s:raise CaptureError('expected policy must match original mode and direction')
         reg=i['registration'];expected=[str(access),secret.hex()]
         if reg['exit'] or reg['args'][-2:]!=expected or f'SsapLocalService: start={i["start"]} end={h} properties={h}' not in reg['stdout'].splitlines():raise CaptureError('original security registration arguments required')
-        read=b'\x08\x03'+h.to_bytes(2,'little')+b'\x00';write=b'\x0d\x23'+h.to_bytes(2,'little')+b'\x00'+value
-        uuid_req=b'\x0a\x01\x10\x00\xff\xff\x00'+uuid
-        operations=[('read',read,b'\x09\x0b'+e.to_bytes(2,'little') if e else b'\x09\x03'+secret),
-          ('uuid_read',uuid_req,b'\x0b\x0b'+h.to_bytes(2,'little')+e.to_bytes(2,'little') if e else b'\x0b\x03'+h.to_bytes(2,'little')+secret),
-          ('write',write,b'\x0e\x07\x01'+h.to_bytes(2,'little')+bytes([e]) if e else b'\x0e\x03'+h.to_bytes(2,'little')+b'\x00'+value),
-          ('read_after',read,b'\x09\x0b'+e.to_bytes(2,'little') if e else b'\x09\x03'+value)]
+        operations=value_operations(h,uuid,secret,value,e)
         wire=[]
         for name,request,response in operations:
             c=i[name]
@@ -116,3 +111,13 @@ def corroborate(row,matched):
         if i['removal']['exit']:raise CaptureError('local attribute cleanup failed')
         proof.append(dict(sender=s,target=t,access=access,error=e,wire=wire,peer_value_unchanged=bool(e)))
     return proof,credit
+
+
+def value_operations(h,uuid,secret,value,e):
+    """Independent expected wire bytes shared by access and owner gates."""
+    read=b'\x08\x03'+h.to_bytes(2,'little')+b'\x00';write=b'\x0d\x23'+h.to_bytes(2,'little')+b'\x00'+value
+    uuid_req=b'\x0a\x01\x10\x00\xff\xff\x00'+uuid
+    return [('read',read,b'\x09\x0b'+e.to_bytes(2,'little') if e else b'\x09\x03'+secret),
+      ('uuid_read',uuid_req,b'\x0b\x0b'+h.to_bytes(2,'little')+e.to_bytes(2,'little') if e else b'\x0b\x03'+h.to_bytes(2,'little')+secret),
+      ('write',write,b'\x0e\x07\x01'+h.to_bytes(2,'little')+bytes([e]) if e else b'\x0e\x03'+h.to_bytes(2,'little')+b'\x00'+value),
+      ('read_after',read,b'\x09\x0b'+e.to_bytes(2,'little') if e else b'\x09\x03'+value)]

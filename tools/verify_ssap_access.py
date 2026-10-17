@@ -14,6 +14,9 @@ PROPERTIES = [
     'access authorization never fabricated', 'access success needs bounded receipt',
     'access authentication requires original level2', 'access encryption requires original level1',
     'access directions remain independent',
+    'approval only discharges selected authorization bit',
+    'denial preserves original access predicate',
+    'authorization metadata matches six-bit requirements',
 ]
 HARNESS = r'''pub mod access;
 #[kani::proof]
@@ -33,6 +36,12 @@ fn verify_access() {
     Ok(other)=>result==other.check(level,write),Err(_)=>false,
    };
    assert!(same,"access directions remain independent");
+   let allowed:bool=kani::any();
+   let approved=p.check_authorization_result(level,write,allowed);
+   let without=access::SsapAccess::from_bits(bits&!(if write{4}else{32})).unwrap();
+   assert!(!allowed||approved==without.check(level,write),"approval only discharges selected authorization bit");
+   assert!(allowed||approved==result,"denial preserves original access predicate");
+   assert!(p.needs_local_authorization()==(bits&36!=0),"authorization metadata matches six-bit requirements");
   }
  }
 

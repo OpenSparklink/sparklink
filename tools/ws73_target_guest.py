@@ -352,6 +352,9 @@ def verify_passthrough():
     requested_connection = 'ws73.connection_verify=1' in Path('/proc/cmdline').read_text().split()
     if requested_connection != ('connection_control' in run):
         raise ValueError('explicit connection request and evidence must agree')
+    owned_requested='ws73.ssap_owned=1' in Path('/proc/cmdline').read_text().split()
+    if any(bool(row.get('ssap_owned_required',False))!=owned_requested for row in run.get('channel_socket',[])) or (owned_requested and not run.get('channel_socket')):
+        raise ValueError('explicit owned SSAP request and evidence must agree')
     if requested_connection:
         from ws73_connection_control import corroborate as connection_corroborate
         connections=connection_corroborate(run,capture)

@@ -186,7 +186,7 @@ def stage_locked(args, build_fd):
         activation = ('[D-BUS Service]\nName=org.sparklink\nExec=/' + str(prefix / 'slkd')
                       + '\nUser=root\nSystemdService=opensparklink-native-lab.service\n')
         write(Path('usr/share/dbus-1/system-services/org.sparklink.service'), activation.encode())
-        write(Path('usr/lib/sysusers.d/opensparklink-native-lab.conf'), b'g sparklink -\n')
+        write(Path('usr/lib/sysusers.d/opensparklink-native-lab.conf'), b'g sparklink -\ng sparklink-apps -\ng sparklink-services -\n')
         plan = {'kernel_release': release, 'binary_prefix': '/' + str(prefix),
                 'service': 'opensparklink-native-lab.service', 'dbus_name': 'org.sparklink',
                 'control_group': 'sparklink', 'default_activation': 'not activated',

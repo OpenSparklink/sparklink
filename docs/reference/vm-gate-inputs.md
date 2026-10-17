@@ -241,3 +241,18 @@ IN请求512字节，实际回复必须恰好4字节；短/长/错误/型号不�
 访问有效性标记为false/未证明。软件复位不是冷断电，HCC是固件自报。每设备路径、
 真正冷启动、有效性及并行业务门禁未满足时继续显式板卡配置。证据核对使用现有
 USB配对/HCC/上传读器；运行期字节是guest观察，不宣称另一独立寄存器decoder。
+
+
+### Owned SSAP 的有界真实门禁
+
+`run --qmp-hotplug --connection-verify --channel-socket-verify --ssap-owned-verify`
+在原双设备交换连接角色门禁中运行真实前台 `slctl ssap-serve`。仅允许普通固定通道
+基线组合；不与 prefix-close、burst、boundary 或动态/公平性专用模式混合。可另外
+使用现有 Agent/SMTC policy 配置，但准确安全范围由实际镜像和安装证据决定。
+
+每连接角色、每发送方向运行 allow/deny 两种本地 owner 策略，实际读、UUID读、写、
+再读；owner 本进程通过 `value` 检查真实本地数据库。随后 SIGKILL 该前台进程，
+验证登记移除且旧handle经真实SMTC拒绝。使用原Run记录、双端USB匹配和NOCP记账，
+不能用日志或本地值核对替代远端 wire。该切片的发布者是 uid1000/caps0，实际 system
+bus 上使用管理组；不能据此宣称 service-only组权限或完整取消/Down/期限矩阵通过。
+所有实验驱动和真实硬件仍只在VM运行，不执行宿主安装或自动电源操作。

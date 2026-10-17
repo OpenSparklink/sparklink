@@ -1412,6 +1412,8 @@ R6a运行包复核另发现Python依赖开发`.so`链接：准确dd72源码在�
 首轮干净VM完成真实构建/安装/服务启动后，权限探针漏传角色而整轮FAIL，
 [原失败保留](../docs/evidence/deployment-clean-vm-first-failure-20261018.json)。仅修执行参数；
 新轮仍核对四角色实际system bus、无开发链接Python与原配置保留断言，不据局部成功封项。
+第二轮执行器提取后的内嵌缩进错误也保留为[独立失败](../docs/evidence/deployment-probe-extraction-failure-20261018.json)；
+加入实际两段内嵌源码语法预检，仍未宣称实际权限或Python安装通过。
 
 ##### R5a最小独立导出门禁
 

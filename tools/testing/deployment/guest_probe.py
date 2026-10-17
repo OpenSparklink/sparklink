@@ -16,6 +16,7 @@ import hashlib
 import time
 import shlex
 import traceback
+from textwrap import dedent
 
 
 def main():
@@ -74,7 +75,8 @@ def main():
       args=['useradd','--create-home','--shell','/bin/sh']
       if group:args+=['--groups',group]
       run('user-'+label,args+['slkr6-'+label])
-     policy=out/'policy.py';policy.write_text('''import dbus,sys,json,os
+     policy=out/'policy.py';policy.write_text(dedent('''
+    import dbus,sys,json,os
     mode=sys.argv[1];bus=dbus.SystemBus();dest='org.sparklink';rows=[]
     def call(path,iface,member,signature='',args=()):
      try:return ('OK',bus.call_blocking(dest,path,iface,member,signature,args,timeout=5))
@@ -92,7 +94,7 @@ def main():
     expected('unknown-method','/org/sparklink/missing','org.sparklink.Future','Unapproved',unknown if mode=='manager'else denied)
     assert os.getuid()!=0 and all(int(x,16)==0 for line in open('/proc/self/status')if line.startswith(('CapEff:','CapPrm:','CapAmb:'))for x in line.split()[1:])
     print(json.dumps(dict(mode=mode,uid=os.getuid(),groups=os.getgroups(),adapters=0,checks=rows)))
-    ''');policy.chmod(0o644);out.chmod(0o755)
+    '''));policy.chmod(0o644);out.chmod(0o755)
      for label in ['observer','application','publisher','manager']:run('system-bus-'+label,['runuser','-u','slkr6-'+label,'--','python3',str(policy),label])
      # External consumers compile and load only installed files via pkg-config/ldconfig.
      for kind in ['sparklink','sparklink-native']:
@@ -108,7 +110,8 @@ def main():
      run('python-venv',['runuser','-u','slkr6-observer','--','python3','-m','venv','/home/slkr6-observer/venv'])
      wheel=list((out/'wheel').glob('*.whl'));check(len(wheel)==1,'one wheel required')
      run('python-install',['runuser','-u','slkr6-observer','--','/home/slkr6-observer/venv/bin/pip','install','--no-index',str(wheel[0])])
-     py=out/'external.py';py.write_text('''import sparklink,errno,os
+     py=out/'external.py';py.write_text(dedent('''
+    import sparklink,errno,os
     assert '/home/slkr6-observer/venv/' in sparklink.__file__
     assert not hasattr(sparklink,'Adapter') and not hasattr(sparklink,'NativeAdapter')
     assert sparklink.SsapAccess(0).error(0)==0
@@ -120,7 +123,7 @@ def main():
     except OSError as e:assert e.errno==errno.ENOTTY
     else:raise AssertionError('non SparkLink device succeeded')
     print('INSTALLED_VENV_APPLICATION_AND_EXPLICIT_NATIVE_NEGATIVES_PASS')
-    ''')
+    '''))
      run('external-python',['runuser','-u','slkr6-observer','--','/home/slkr6-observer/venv/bin/python',str(py)])
      # Reinstall is not cross-version upgrade. Preserve explicit administrator state.
      config=Path('/etc/sparklink/main.conf');config.write_text(config.read_text()+'\n# R6 administrator marker\n');config.chmod(0o600);config.parent.chmod(0o700);state=Path('/var/lib/sparklink');(state/'retain').write_text('administrator state\n');before=hashlib.file_digest(config.open('rb'),'sha256').hexdigest()

@@ -228,9 +228,6 @@ class QualificationTests(unittest.TestCase):
         self.rejected()
 
 
-if __name__ == '__main__':
-    unittest.main()
-
 class RetirementTests(unittest.TestCase):
     setUp = QualificationTests.setUp
     run_check = QualificationTests.run_check
@@ -266,3 +263,7 @@ class RetirementTests(unittest.TestCase):
             elif mutation=='revision':retired['original_registry_commit']='0'*40
             else:self.data['records'].append(copy.deepcopy(retired['records'][0]))
             with self.subTest(mutation=mutation):self.assertTrue(self.run_check()['errors'])
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -667,9 +667,10 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "R5:existing AppSDK/CLI/SSAP/C-Python shared typedcontract;no second Engine",
-    "R6:cleanVM installation/externalSDK/systembuspermissions/upgrade/rollback/uninstall/configretention",
-    "Then originalfeaturedevelopment;keepfullscope andallprioracceptance"
+    "R5c:remainingtypedcontroller/explicitmanagementCLIviaexistingowner-pinnedClient/sharedcontract;realprivatebusownerchangebetweenallocate/submit/result andexactnewVMpreservation",
+    "R5:remaininglocalOwned/Agent/highlevel/C-Pythonactualclients/publicinterfaceaudit;noNativeleak orsecondEngine",
+    "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
+    "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
   ],
   "architecture_contract_adoption": "docs/decisions/0004-application-ownership-and-delivery.md",
   "proof_policy": {
@@ -3354,9 +3355,10 @@
       "next": "Resumepreserved101rawAPI/types/callers/currenttestmigration thenfullR5SDK/R6deploy;alloriginalscopeOPEN"
     },
     "remaining_order": [
-      "R5:existing AppSDK/CLI/SSAP/C-Python shared typedcontract;no second Engine",
-      "R6:cleanVM installation/externalSDK/systembuspermissions/upgrade/rollback/uninstall/configretention",
-      "Then originalfeaturedevelopment;keepfullscope andallprioracceptance"
+      "R5c:remainingtypedcontroller/explicitmanagementCLIviaexistingowner-pinnedClient/sharedcontract;realprivatebusownerchangebetweenallocate/submit/result andexactnewVMpreservation",
+      "R5:remaininglocalOwned/Agent/highlevel/C-Pythonactualclients/publicinterfaceaudit;noNativeleak orsecondEngine",
+      "R6:cleanVMbuild/install/systembuspermissions/externalSDK/upgrade/rollback/uninstall/configretention",
+      "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecoveryOPEN"
     ],
     "r5_remote_client_slice": {
       "state": "FINITE_SDK_CLI_FOUR_REAL_VM_AND_OFFLINE_QUALIFIED_FULL_R5_OPEN",
@@ -3364,6 +3366,13 @@
       "exit_reference": "CanonicalWP18/R5limitedclient slice",
       "remaining": "FullR5controller/management/Owned/Agent/highlevel/C-Python;R6cleanVM;positiveupdates/newSessionCLIhardwareinvocation andalloriginalscope/naturalRCA/nonmanualrecoveryOPEN",
       "qualification_report": "docs/evidence/application-ssap-client-qualification-20261018.json"
+    },
+    "next_limited_batch": {
+      "id": "R5c-controller-management-callers",
+      "scope": "ExistingCLIactualproductioncallers,notallcontrolracecombinations",
+      "source_review": "a37slctl stillhas directwell-knownmanager/adapter/controller proxies;potentialownerwindow notclaimedobservedhardwaremisdelivery",
+      "exit_reference": "CanonicalimplementationplanR5c",
+      "state": "PLANNED_NOT_IMPLEMENTED"
     }
   },
   "owned_ssap_c6_historical_batch": {

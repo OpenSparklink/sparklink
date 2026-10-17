@@ -1250,6 +1250,22 @@ R5b收尾依据：[准确资格](../docs/evidence/application-ssap-client-qualif
 候选在发布前被拒绝，原件保留。当前继续完整管理/Owned/Agent/高阶对象和C/Python
 实际客户端迁移及公开接口审计，再做R6干净VM部署；不能据本批关闭整架构或原issue。
 
+##### R5c下一批：剩余管理CLI与固定daemon owner
+
+最新a37源码仍有slctl `manager_proxy`／`adapter_proxy`／`controller_proxy`直接使用
+well-known服务名，部分控制/结果轮询尚未消费SDK。源码表明这是待审的owner切换窗口，
+不能描述为已经发生真实设备串单。R5b的依赖图通过不等于全部运行时调用者已经迁移。
+
+生产退出：现有控制器观察与显式受权管理操作复用Client固定owner，shared contract
+统一wire值/方法，slctl只做参数和显示；不公开万能Proxy、不暴露Native lease、不另建
+请求Engine。注册早期故障观察仍可用，未知/退休命令在无daemon时仍先明确拒绝。
+
+相关门禁：实际私有D-Bus与新CLI，覆盖分配/提交/结果间owner消失或替换、旧generation/
+request拒绝、原期限及完整错误；不得让重复请求/后来的owner伪造原请求终态。
+先只验证该迁移相关不变量，不等待控制面竞争全集。准确新artifact VM回归现有发现/
+连接/短消息/边界/Owned路径；通过后迁移本地Owned/Agent及C/Python实际客户端，再做R6。
+所有已有功能、未完成原始scope与历史失败保留。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

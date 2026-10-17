@@ -13,15 +13,16 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP06-WP09-current-artifact-originalIntent-lifecycle",
-    "production_behavior": "Reuse original ordinary workers/Session/Grant/Ticket;actualtypedprepare/send/recv observations, originalprefixintent retry afterwithdrawal/Down/deadline. Test-entry change,not a second protocol engine or new architecture.",
-    "state": "RUNNING_NOT_QUALIFIED",
+    "id": "WP03-WP06-WP09-firmware110-HCC-identity",
+    "production_behavior": "Per-controller bootstrap obtainsactualHCCmodel(U/S/E)andUSBbusbeforeRuntime registration;unknown/error/timeoutfailclosed. Exclusivepre-registrationUSBphase,notDLIcreditorReady. User110model-specificinputs;notcoldROMautomaticfirmwareselection.",
+    "state": "FIRMWARE110_SELECTED_HCC_IMPLEMENTED_BUILDING_NOT_DEVICE_QUALIFIED",
     "exit": [
-      "At exact1bcb/compiled-and-tools9fd:grade0/1/2 xrelease/lastmanagementfd/dup/directDown/original5s xbothsourceindices=30actualVMcases;originalfullpool5/incompletePB/QMP2sor8s assertions retained",
-      "OriginalRX/epoch/minimum/absolute deadline receipts plusfreshprepareandunchangedcachedintent rejection;actualboth-end randompeer replies;late physicalobligations retained;peerReady/lease/scan explicitlynot independentbusinesspair",
-      "Frozen717tool regressions and negative receipt mutations;strictbuilt/native48 ABI andrealSSAP/length regression fornewsealedbinary;allfailedattempts retained. FullLKM M/refs/Ownertruth/creditreuse/naturalrecovery stillUNPROVED"
+      "BoundedHCCqueryfailure/unknownreject;strictbuild;modelreplyactualUSBandperdevicephaseownership",
+      "OneVMpervariantperformcontrolledRAMreset110rebootstrapwithactualdownloadandbothfirmwarecalibrationhashes;notnaturalrecoveryorfirmwareattestation",
+      "ThenE/Udiscovery/connect/ordinaryapplicationrandomreplyandU2/3originaltypedlifecyclematrix;alloriginalclaimsremainsourcebound",
+      "RetainSDK111firstoracleFAILandinterruptedcorrectedmatrix;no110qualificationfrom111subPASS.NoEfromUtransfer;fullS0-S6/19WP/10FV/12DGunchanged"
     ],
-    "next": "Finite currentbatch then soleEngine policy-bound localauthorization/secureupdates;data/credit/multichannel/four/performance/RXgap/oldcleanup parallel,notallcontrolfront;fullS0-S6/19WP/10FV/12DG,VM-onlyU2/3,E1excluded,UserHostP4."
+    "next": "Finish110HCC E/U boundedphysicalcheck andreturntooriginalintentlifecycle,soleSSAPEngine/data/multichannel/four/perf;naturalRCA/nonmanualrecoveryopen,UserHostP4"
   },
   "overall_required_records": [
     "deadline-real21",

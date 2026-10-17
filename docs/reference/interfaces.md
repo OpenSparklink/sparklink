@@ -550,3 +550,35 @@ Connection.ReadSsapValue(handle,minimum)、WriteSsapValue(handle,value,minimum)
 及 ReadSsapByUuid(...,minimum) 是未发布的新签名。ServiceManager 属性注册/列表
 也增加独立 access 字段，详见[操作和访问要求](ssap-permissions.md)。只有唯一
 Native Engine 的真实内核 RX 观察可用于生产值访问；授权尚未接通，明确拒绝。
+
+
+### 原限制过期与失效 Session 的错误阶段
+
+PREPARE_TX 在 Session 不再活动时返回 ENOTCONN；在原 Runtime/Grant 仍有效的情况下，
+sendmsg 的 `sl_tx_access` 会先检查携带限制的原始期限，原限制过期返回 ETIMEDOUT，
+先于后续 `sl_admit` 的活动状态判断。因此原 PDU 超时后，新 prepare 和缓存旧限制的
+submit 可以分别返回 ENOTCONN 与 ETIMEDOUT；这不表示新准入或续期。撤权/旧 lifetime
+等更早的范围检查仍可返回 EACCES/ESTALE，不能任意接受所有错误或猜测优先级。
+
+一次重试被拒绝不能抹去之前已准入并开始的 USB/PB 前缀或未结清物理义务。errno
+不能充当“对端没有执行”、协议 credit 退款、排空或安全 handle 复用的证据。可复现门禁
+在同一单调时钟记录实际 prepare/submit 前后边界，并保留原5秒/满池/前缀及迟到NOCP。
+
+
+## WS73 HCC 型号观察与110固件
+
+运行期驱动在BSLE打开后、Runtime注册前发送HCC平台 GET_CHIP_TYPE（16），
+校验Complete（10）、成功状态、两字节输出、U/S/E枚举和USB总线。每次查询只发
+一条请求，原2秒期限不会因无关输入延长；失败/未知/非USB明确拒绝，不默认U，
+不借用DLI command/data credit。`chip_information` sysfs只读快照由每设备phase锁
+保护；忙时EAGAIN，元数据失效时ENODATA，不发布旧generation结果或授予Ready。
+该型号由固件报告，不认证硅片、板级校准或正在执行的固件内容。
+
+SDK110的真实E回复使用slot=96、HCC分配长度=96、平台分配长度=88，实际结果
+仅为result/output_len后的两字节。解析仅对OAM平台子类型9/queue9归一化包含头的
+长度；SLE/ACB仍采用原严格边界，填充不得作为型号、结果或额外消息消费。
+
+用户当前选择1.10.110：U/S使用SDK `firmware/us`，E使用`firmware/e`，分别保留
+ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点阶段不能
+使用该查询决定首次下载镜像；部署必须显式提供匹配输入，禁止按端口/VIDPID默认U。
+切换固件后的资格需重新取得，旧111和旧四U结果不能转授110或混合E/U设备。

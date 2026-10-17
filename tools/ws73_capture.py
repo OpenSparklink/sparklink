@@ -43,6 +43,11 @@ def hcc_receive(data):
             raise CaptureError('invalid HCC slot boundary')
         tag, queue, payload_length = struct.unpack_from('<BBH', data, offset)
         service = tag >> 4
+        # SDK110 platform replies stamp the complete HCC allocation here.
+        # Restrict normalization to OAM/PLAT_MSG_TRANSFER queue9; SLE/ACB
+        # remains payload-only. Validate the aggregate before any consumer.
+        if tag == 0x19 and queue == 9 and payload_length == length:
+            payload_length -= 4
         if payload_length > length - 4:
             raise CaptureError('HCC payload exceeds slot')
         # SDK SLE RX ignores subtype; real 111 CmdComplete uses a1.

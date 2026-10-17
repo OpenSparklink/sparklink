@@ -77,7 +77,7 @@
     "manual_request_pending": false,
     "host_installation": false,
     "constraint": "VM-only; no activity on unrelated libvirt VMs",
-    "current_operational_scope": "VM-only Hi3873U2/3; userconfirmed Hi3873E1 excluded. Exact qualification and currentbatch from generated qualification_view; original fourU evidence retained, not transferred.",
+    "current_operational_scope": "VM-only. User requests all devices1.10.110;model-specificSDK e/us files sealed,execution revalidation pending. Port1 Hi3873E nowauthorized independenttests,HCCreportedmodelrequired;noqualification transferred.",
     "recovery_qualification": false,
     "topology_revision": {
       "date": "2026-10-17",
@@ -1669,15 +1669,16 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP06-WP09-current-artifact-originalIntent-lifecycle",
-      "production_behavior": "Reuse original ordinary workers/Session/Grant/Ticket;actualtypedprepare/send/recv observations, originalprefixintent retry afterwithdrawal/Down/deadline. Test-entry change,not a second protocol engine or new architecture.",
-      "state": "RUNNING_NOT_QUALIFIED",
+      "id": "WP03-WP06-WP09-firmware110-HCC-identity",
+      "production_behavior": "Per-controller bootstrap obtainsactualHCCmodel(U/S/E)andUSBbusbeforeRuntime registration;unknown/error/timeoutfailclosed. Exclusivepre-registrationUSBphase,notDLIcreditorReady. User110model-specificinputs;notcoldROMautomaticfirmwareselection.",
+      "state": "FIRMWARE110_SELECTED_HCC_IMPLEMENTED_BUILDING_NOT_DEVICE_QUALIFIED",
       "exit": [
-        "At exact1bcb/compiled-and-tools9fd:grade0/1/2 xrelease/lastmanagementfd/dup/directDown/original5s xbothsourceindices=30actualVMcases;originalfullpool5/incompletePB/QMP2sor8s assertions retained",
-        "OriginalRX/epoch/minimum/absolute deadline receipts plusfreshprepareandunchangedcachedintent rejection;actualboth-end randompeer replies;late physicalobligations retained;peerReady/lease/scan explicitlynot independentbusinesspair",
-        "Frozen717tool regressions and negative receipt mutations;strictbuilt/native48 ABI andrealSSAP/length regression fornewsealedbinary;allfailedattempts retained. FullLKM M/refs/Ownertruth/creditreuse/naturalrecovery stillUNPROVED"
+        "BoundedHCCqueryfailure/unknownreject;strictbuild;modelreplyactualUSBandperdevicephaseownership",
+        "OneVMpervariantperformcontrolledRAMreset110rebootstrapwithactualdownloadandbothfirmwarecalibrationhashes;notnaturalrecoveryorfirmwareattestation",
+        "ThenE/Udiscovery/connect/ordinaryapplicationrandomreplyandU2/3originaltypedlifecyclematrix;alloriginalclaimsremainsourcebound",
+        "RetainSDK111firstoracleFAILandinterruptedcorrectedmatrix;no110qualificationfrom111subPASS.NoEfromUtransfer;fullS0-S6/19WP/10FV/12DGunchanged"
       ],
-      "next": "Finite currentbatch then soleEngine policy-bound localauthorization/secureupdates;data/credit/multichannel/four/performance/RXgap/oldcleanup parallel,notallcontrolfront;fullS0-S6/19WP/10FV/12DG,VM-onlyU2/3,E1excluded,UserHostP4."
+      "next": "Finish110HCC E/U boundedphysicalcheck andreturntooriginalintentlifecycle,soleSSAPEngine/data/multichannel/four/perf;naturalRCA/nonmanualrecoveryopen,UserHostP4"
     }
   },
   "agent_workstream": {
@@ -2850,10 +2851,34 @@
     "maintenance_report": "docs/evidence/ssap-attribute-maintenance-20261017.json"
   },
   "lifecycle_intent_batch": {
-    "execution_record": ".dev/intent-lifecycle-qualification-v1.json",
+    "execution_record": ".dev/intent-lifecycle-qualification-v2.json",
     "source": "9fd74a18a19e010daf103d136e83660cee3ccee4",
-    "state": "RUNNING_NOT_QUALIFIED",
+    "state": "INTERRUPTED_AT_COMPLETED_VM_BOUNDARY_BY_USER_FIRMWARE110_DIRECTIVE_NOT_QUALIFIED",
     "previous_turn": "PROGRESS_ATTRIBUTE_ACCESS_AND_SOURCE_PROVENANCE_REPAIR",
-    "source_of_current_batch": "qualification_view derived from qualification-records,not independent current qualification"
+    "source_of_current_batch": "qualification_view derived from qualification-records,not independent current qualification",
+    "original_attempt": ".dev/intent-lifecycle-qualification-v1.json",
+    "compiled_userspace": "9fd74a18a19e010daf103d136e83660cee3ccee4",
+    "executed_tools": "83625029e313552ffe7bb87d572245e232a58a49",
+    "original_failure": "New oracle conflated fresh inactive-Session prepare errno107 and original expired-intent submit errno110;old full5s/prefix/debt assertions passed unchanged. Per-call mono brackets added;source-mapped correction,not broad errno acceptance."
+  },
+  "firmware110_hcc_batch": {
+    "state": "SDK110_E_FIRST_PHYSICAL_EPROTO_COUNTEREXAMPLE_RETAINED_KERNEL_FIX_BUILT_RERUN_PENDING",
+    "kernel_source": "f887b477f0857aa83454b255ba681a9f7b95473f",
+    "firmware_selection": ".dev/firmware110-selection-v1.json",
+    "e_port": "1-2.1.1",
+    "u_ports": [
+      "1-2.1.2",
+      "1-2.1.3",
+      "1-2.1.4"
+    ],
+    "hcc": "SDK GET_CHIP_TYPE16/Complete10;automaticruntimefirmware-reportedmodel,noVIDPID/portinference. HCCunavailableonROM;initialfirmwareselectionnotresolvedbyHCC.",
+    "exit": [
+      "BoundedHCCqueryfailure/unknownreject;strictbuild;modelreplyactualUSBandperdevicephaseownership",
+      "OneVMpervariantperformcontrolledRAMreset110rebootstrapwithactualdownloadandbothfirmwarecalibrationhashes;notnaturalrecoveryorfirmwareattestation",
+      "ThenE/Udiscovery/connect/ordinaryapplicationrandomreplyandU2/3originaltypedlifecyclematrix;alloriginalclaimsremainsourcebound"
+    ],
+    "full_scope_unchanged": true,
+    "first_failure": ".dev/firmware110-e-reset-port1-v1/manifest.json",
+    "first_capture": "OAMslot96/HCCpay96/platformalloc88,result0/outputlen2/model2/bus0;first110E RAMbootdownloadobserved,notSetupPASS. Sourcefixnarrowonlyexactplatformroute,942productionfixturechecks/ASanUBSanpass."
   }
 }

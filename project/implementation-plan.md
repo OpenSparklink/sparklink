@@ -220,6 +220,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | C/Python当前Client新产物实际部署/内核Grant/WS73及高阶API仍缺 | `implemented` | `MISSING` |
 | U3ff/工具004c:C/Python真实授权fd与双端业务限定通过；完整矩阵仍缺 | `real_device` | `PASS` |
 | U3ff/工具004c:七真实VM原短包与七尺寸保持，完整架构未退出 | `real_device` | `PASS` |
+| 22cd C/Python固定Connection与SSAP读短写：实际private-bus限定通过，实机与权限仍缺 | `offline` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1420,6 +1421,10 @@ FAIL、warm启动观察、复制审计摘要的旧source/count标注及封存器
    依赖、第三方许可证、来源／SBOM和CI发布汇总；准确新产物原生权限与WS73另验。
    部署、文档或离线通过不改变原功能资格。
 
+R5f3 [准确22cd限定离线报告](../docs/evidence/application-connection-ssap-clients-offline-20261018.json)
+已封存实际两语言调用／共享库与源码映射；[原冷fd反例和Tokio来源](../docs/evidence/application-client-runtime-resource-counterexample-20261018.json)
+保留，固定依赖成本与每caller收敛分开检验。这不授予新SSAP入口实机或apps角色权限。
+
 R5f3 当前有限批：C/Python的`Connection`沿用原Client caller、固定daemon owner与
 既有`ApplicationConnection`身份核对；只把现有远端SSAP读／短写方法接到相同
 执行器及唯一daemon Engine。关闭Client仅释放一个引用，派生Connection最后释放
@@ -1429,6 +1434,9 @@ R5f3 当前有限批：C/Python的`Connection`沿用原Client caller、固定dae
 过期排队、超时、旧lifetime拒绝、输出不变、ENOBUFS及有界内存、错误与无echo；
 独立header/ELF、严格default/all-features、绑定、文档及相关退休边界一致。随后封存
 准确新artifact，在VM验证新C/Python SSAP入口的实际对端结果及原路径保持。
+候选Native服务包已在同一增量目录以12路完成构建／文件封存：实际编译HEAD为f7c5c68
+（生产源码字节来自22cd，后续为报告提交）、kernel2fc、显式SDK110-U；这仅是候选
+artifact，不是新VM／实机资格。实际新C/Python SSAP消费者与双端证据门禁继续接通。
 private bus仅序列化／身份fixture，不是协议、权限或RF资格。现有apps组没有SSAP
 RPC权利，不能把管理组调用门禁写成普通应用策略完成；对应授权继续单独整改。
 完整Owned／Agent／

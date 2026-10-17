@@ -40,6 +40,24 @@ class AttributeEvidence(unittest.TestCase):
             if k not in wire:raise CaptureError('missing exact USB endpoint')
             wire.remove(k);return dict(data=payload.hex())
         return row,matched,wire
+    def test_actual_cli_approval_uses_same_grade_and_keeps_higher_minimum_refusal(self):
+        from ws73_channel_socket import channel_security_for_agent
+        for mode,level,denied in [('cli-approve',1,2),('approve',1,2),('numeric-approve',2,0),('cli-reject',0,4),(None,0,4)]:
+            with self.subTest(mode=mode):
+                actual=channel_security_for_agent(mode)
+                self.assertEqual(actual,level)
+                row,matched,wire=self.fixture(actual)
+                proofs,credit=corroborate(row,matched)
+                self.assertEqual(sum(p['peer_value_unchanged'] for p in proofs),denied)
+                self.assertEqual(credit,{0:24,1:24});self.assertEqual(wire,[])
+                # Grade1 admits actual encrypted attribute work; the next
+                # minimum2 still refuses, and reserved minimum3 stays invalid.
+                for item in row['ssap_access']:
+                    if item['access']==0:
+                        self.assertEqual([v['minimum'] for v in item['local_rejections']], [level+1,3] if level<2 else [3])
+        for invalid in ['unknown','cli-typo',False,7]:
+            with self.subTest(invalid=invalid),self.assertRaises(CaptureError):channel_security_for_agent(invalid)
+
     def test_guest_copy_and_hashed_input_inventories_include_the_actual_gate(self):
         import ast
         root=Path(__file__).resolve().parents[1]

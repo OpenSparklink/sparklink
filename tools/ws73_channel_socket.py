@@ -82,6 +82,18 @@ def verify_retired_uapi_receipt(receipt):
         raise CaptureError('actual retired raw UAPI rejection failed')
 
 
+def channel_security_for_agent(mode):
+    """Required test admission level, not evidence of mechanism installation.
+
+    CLI/probe are two callers of the same method. Kernel binds, message receipts
+    and independent two-end relay/install/application proofs still must pass.
+    """
+    from ws73_security_agent import MODES
+    if mode is not None and mode not in MODES:
+        raise CaptureError('unknown Agent mode cannot choose a weaker channel test')
+    return {'approve':1,'cli-approve':1,'numeric-approve':2}.get(mode,0)
+
+
 def execute(run, phase):
     row = dict(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
@@ -89,7 +101,7 @@ def execute(run, phase):
     row['message_security_required']=not (row['close_prefix'] or row['burst'])
     row['tx_constraint_required']=row['message_security_required']
     row['application_tool']=test_program(run)
-    row['security_requirement']={'approve':1,'numeric-approve':2}.get(getattr(run.args,'security_agent',None),0)
+    row['security_requirement']=channel_security_for_agent(getattr(run.args,'security_agent',None))
     if run.data.get('security_agent') and run.data['security_agent'][-1].get('ssap_security_requirement'):
         row['ssap_security_requirement']=run.data['security_agent'][-1]['ssap_security_requirement']
     run.data.setdefault('channel_socket', []).append(row); run.save()

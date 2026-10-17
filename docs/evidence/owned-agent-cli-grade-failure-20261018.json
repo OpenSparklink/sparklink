@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "result": "FAIL",
+  "sources": {
+    "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+    "compiled_userspace": "41ae994b41b3064cae2dc52b5e0da657ef3961f2",
+    "executed_tools": "41ae994b41b3064cae2dc52b5e0da657ef3961f2"
+  },
+  "failure": "active minimum must refuse without raw fallback",
+  "finding": "Actual two CLI Agents/requests approved and observed mechanism state9/flags7. The existing channel runner assigned cli-approve grade0 while probe approve selected grade1; it wrongly expected minimum1 to refuse. Full run remains FAIL,not a new application/RF qualification.",
+  "correction": "Use one production runner selector for both approval callers. Required grade1 must pass actual kernel bind/message receipt and two-end USB evidence; higher minimum2 and invalid3 refusals stay. Existing unapproved grade0 refusal1 tests remain.",
+  "tests": "39 actual existing evidence/selector regression tests;no production Rust/kernel change",
+  "startup_observation": "The same failed VM logs a BSLE phase0 timeout and automatic warm recovery result0 before DLI/Ready. This is an observed warm/QMP startup scenario;root cause,peer isolation and nonmanual natural recovery acceptance remain open. No causality to client migration inferred.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5e-real-cli-approve-v1/manifest.json",
+      "sha256": "229e29b4c60e682acc4ab6d9f2e60df81dabefd0f24f7b5ffa9cd2419cf870bd",
+      "bytes": 48372,
+      "access": "private owner workspace;capture can contain install material,not public site"
+    },
+    {
+      "path": ".dev/architecture-r5e-real-cli-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "4c0f65b5909ef26349581ac8ad1d0cf7c4eb324654f633a97ae1172516846d7b",
+      "bytes": 208669,
+      "access": "private owner workspace;capture can contain install material,not public site"
+    },
+    {
+      "path": ".dev/architecture-r5e-real-cli-approve-v1/guest-output/ws73.pcap",
+      "sha256": "bac5adb0e9e8a2dd0c930e277ffc1bf614577ae8169d2c2469251a73ca8adb04",
+      "bytes": 224012,
+      "access": "private owner workspace;capture can contain install material,not public site"
+    },
+    {
+      "path": ".dev/architecture-r5e-real-cli-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private owner workspace;capture can contain install material,not public site"
+    }
+  ]
+}

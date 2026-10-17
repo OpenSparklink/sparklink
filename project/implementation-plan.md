@@ -1340,6 +1340,14 @@ CLI保留人工决策/输入/原期限，删除重复Daemon scope、身份拼接
 退出仍需实际SDK/CLI、独立签名/陈旧epoch/owner退出清理及准确新artifact正向实机；
 不改变R5d历史资格，不以本地登记或批准替代RF/认证/Bond，C/Python与R6仍缺。
 
+R5e首次真实CLI批准VM在后续属性门禁失败，不能记作整轮资格：
+[原失败/USB身份与启动观察](../docs/evidence/owned-agent-cli-grade-failure-20261018.json)。
+工具漏将cli-approve选择为与probe approve相同的等级1，误要求已有效等级1拒绝。
+只修测试要求选择器：实际等级1准入/消息/USB/对端回复仍须通过，等级2及非法3拒绝
+保留；原未批准等级0的拒绝1断言不变。原失败不改写，Rust/内核未因工具修正改变，
+新工具身份与新VM另封。该VM一次phase0超时/warm recovery日志保留，根因与
+非人工自然恢复/同行隔离不据此闭合。新增selector/原证据负对照39项通过。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

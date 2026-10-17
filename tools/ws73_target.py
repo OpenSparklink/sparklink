@@ -268,7 +268,7 @@ def prepare_locked(args, build_fd):
         for name,data in images.items(): (firmware/name).write_bytes(data)
         for name,p in board.items(): shutil.copy2(p,firmware/name)
         (root/'etc/passwd').write_text('root:x:0:0:root:/:/bin/sh\nws73:x:1000:1002:application:/tmp:/bin/sh\nobserver:x:1001:1001:observer:/tmp:/bin/sh\ncapture:x:1003:1003:capture:/:/bin/sh\nchannel:x:1004:1004:channel-only:/tmp:/bin/sh\n')
-        (root/'etc/group').write_text('root:x:0:\nsparklink:x:1000:ws73\nobserver:x:1001:observer\nws73:x:1002:ws73\ncapture:x:1003:\nsparklink-apps:x:1004:channel\n')
+        (root/'etc/group').write_text('root:x:0:\nsparklink:x:1000:ws73\nobserver:x:1001:observer\nws73:x:1002:ws73\ncapture:x:1003:\nsparklink-apps:x:1004:channel\nsparklink-services:x:1005:\n')
         (root/'etc/shadow').write_text('root:!:0:0:99999:7:::\nws73:!:0:0:99999:7:::\nobserver:!:0:0:99999:7:::\ncapture:!:0:0:99999:7:::\n')
         (root/'etc/shadow').chmod(0o600)
         shutil.copy2(USERSPACE/'data/dbus/sparklink.conf',root/'etc/sparklink.conf')

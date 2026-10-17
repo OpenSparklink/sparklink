@@ -52,11 +52,9 @@ impl Adapter {
         crate::SnoopReceiver::from_fd(self.fd, generation, self.dev_index)
     }
 
-    /// Get the number of registered devices
+    /// Allocated Core registration count, including pending/fault; never Ready count.
     pub fn device_count(&self) -> Result<u32> {
-        let mut count: u32 = 0;
-        unsafe { ioctl::sl_dev_count(self.raw_fd(), &mut count)? };
-        Ok(count)
+        Ok(self.device_indices()?.len() as u32)
     }
 
     /// Own native management on this open file description. Clones of an Arc

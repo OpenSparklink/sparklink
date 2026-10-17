@@ -6,7 +6,7 @@ use crate::{ControllerEventCursor, Error, SnoopCursor};
 use slk_protocol::*;
 use std::{ffi::c_int, os::fd::AsRawFd};
 
-fn errno(error: Error) -> c_int {
+pub(super) fn errno(error: Error) -> c_int {
     -match error {
         Error::Ioctl(error) => error as c_int,
         Error::OpenDevice(error) => error.raw_os_error().unwrap_or(nix::libc::EIO),

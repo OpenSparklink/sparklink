@@ -613,7 +613,7 @@ extern "C" {
 
 /**
  * Open a SparkLink adapter device.
- * Returns null on failure.
+ * Returns null and sets thread-local errno on failure.
  *
  * # Safety
  * `dev_path` must be a valid null-terminated C string.
@@ -629,8 +629,8 @@ struct SlkAdapter *slk_adapter_open(const char *dev_path);
 void slk_adapter_free(struct SlkAdapter *adapter);
 
 /**
- * Get the device count.
- * Returns -1 on error.
+ * Get allocated Core registration count, not Ready count.
+ * Returns count or negative errno.
  *
  * # Safety
  * `adapter` must be a valid non-null pointer.
@@ -685,8 +685,8 @@ int slk_disconnect(const struct SlkAdapter *adapter, uint16_t handle);
 int slk_conn_info(const struct SlkAdapter *adapter, uint16_t handle, struct SleConnInfo *out);
 
 /**
- * Get device info.
- * Returns 0 on success, -1 on error.
+ * Get device info; state 0xff is unknown, never Ready.
+ * Returns 0 or negative errno.
  *
  * # Safety
  * `adapter` and `out` must be valid non-null pointers.

@@ -167,8 +167,8 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(self.lib.slk_adapter_select(self.handle, 0), -errno.ENOTTY)
         self.assertEqual(self.lib.slk_adapter_select(self.handle, 65535), -errno.EINVAL)
         self.assertEqual(self.lib.slk_adapter_fd(None), -errno.EINVAL)
-        # Legacy consumers retain their original error convention.
-        self.assertEqual(self.lib.slk_device_count(self.handle), -1)
+        # Count/info preserve exact errno; other retired controls await removal.
+        self.assertEqual(self.lib.slk_device_count(self.handle), -errno.ENOTTY)
 
     def test_failed_queries_do_not_overwrite_caller_storage(self):
         for name, args, value in [
@@ -352,6 +352,27 @@ class ApplicationNativeBoundary(unittest.TestCase):
             self.assertEqual(lib.slk_adapter_open.restype,ctypes.c_void_p)
             handle=lib.slk_adapter_open(b"/dev/null")
             self.assertTrue(handle)
-            try:self.assertEqual(lib.slk_device_count(handle),-1)
+            try:self.assertEqual(lib.slk_device_count(handle),-errno.ENOTTY)
             finally:lib.slk_adapter_free(handle)
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:list(pool.map(call,range(64)))
+
+class NativeErrorContract(unittest.TestCase):
+    def test_open_count_and_info_keep_actual_errno_and_output(self):
+        from sparklink.native import NativeAdapter, _get_native_lib
+        from sparklink.structs import SciDevInfo
+        for path in ["/dev/null\0ignored",b"/dev/null\0ignored"]:
+            with self.assertRaises(ValueError):NativeAdapter(0,dev_path=path)
+        lib=_get_native_lib()
+        self.assertEqual(lib.slk_device_count(None),-errno.EINVAL)
+        handle=lib.slk_adapter_open(b"/dev/null")
+        self.assertTrue(handle)
+        try:
+            self.assertEqual(lib.slk_device_count(handle),-errno.ENOTTY)
+            value=SciDevInfo()
+            ctypes.memset(ctypes.byref(value),0xa5,ctypes.sizeof(value))
+            original=bytes(value)
+            self.assertEqual(lib.slk_device_info(handle,ctypes.byref(value)),-errno.ENOTTY)
+            self.assertEqual(bytes(value),original)
+        finally:lib.slk_adapter_free(handle)
+        with self.assertRaises(OSError) as error:NativeAdapter(0,dev_path="/missing-native-open-regression-device")
+        self.assertEqual(error.exception.errno,errno.ENOENT)

@@ -8,11 +8,10 @@ import errno
 import os
 import threading
 
-from .errors import SparkLinkError
 from ._library import load_library
 from ._validation import _unsigned
 from .structs import (
-    SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
+    SciDevInfo, SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
@@ -44,6 +43,7 @@ def _get_native_lib():
     u64, u32 = ctypes.c_uint64, ctypes.c_uint32
     signatures = {
         "slk_device_count": [handle],
+        "slk_device_info": [handle,ctypes.POINTER(SciDevInfo)],
         "slk_adapter_select": [handle, ctypes.c_uint16],
         "slk_adapter_fd": [handle],
         "slk_device_mask": [handle, ctypes.POINTER(ctypes.c_uint16)],
@@ -80,6 +80,13 @@ def _get_native_lib():
 
 
 
+def _native_path(value):
+    if isinstance(value,str):value=value.encode('utf-8')
+    if not isinstance(value,bytes):raise TypeError('device path must be str or bytes')
+    if b'\0' in value:raise ValueError('device path contains NUL')
+    return value
+
+
 def registration_snapshot(index, generation=0, dev_path="/dev/sparklink"):
     """Observe Core pending/fault/installed/retiring without selecting a Runtime.
 
@@ -88,11 +95,11 @@ def registration_snapshot(index, generation=0, dev_path="/dev/sparklink"):
     """
     index = _unsigned(index, 4, "index")
     generation = _unsigned(generation, 64, "generation")
+    path = _native_path(dev_path)
     lib = _get_native_lib()
-    path = dev_path.encode('utf-8') if isinstance(dev_path, str) else dev_path
     handle = lib.slk_adapter_open(path)
     if not handle:
-        raise SparkLinkError(f'Failed to open adapter: {dev_path}')
+        raise OSError(ctypes.get_errno() or errno.EIO, f'Failed to open adapter: {dev_path}')
     try:
         result = SleRegistrationSnapshot()
         code = lib.slk_registration_snapshot(handle, index, generation, ctypes.byref(result))
@@ -116,11 +123,11 @@ class NativeAdapter:
         self._lock = threading.RLock()
         index = _unsigned(index, 16, "index")
         generation = _unsigned(generation, 64, "generation")
+        path = _native_path(dev_path)
         lib = _get_native_lib()
-        path = dev_path.encode('utf-8') if isinstance(dev_path, str) else dev_path
         self._handle = lib.slk_adapter_open(path)
         if not self._handle:
-            raise SparkLinkError(f'Failed to open adapter: {dev_path}')
+            raise OSError(ctypes.get_errno() or errno.EIO, f'Failed to open adapter: {dev_path}')
         try:
             self._invoke('slk_adapter_select', index)
             snapshot = self.snapshot(generation)

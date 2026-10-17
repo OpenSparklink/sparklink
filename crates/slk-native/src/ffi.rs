@@ -13,22 +13,29 @@ pub struct SlkAdapter {
 }
 
 /// Open a SparkLink adapter device.
-/// Returns null on failure.
+/// Returns null and sets thread-local errno on failure.
 ///
 /// # Safety
 /// `dev_path` must be a valid null-terminated C string.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn slk_adapter_open(dev_path: *const c_char) -> *mut SlkAdapter {
     if dev_path.is_null() {
+        nix::errno::Errno::set_raw(nix::libc::EINVAL);
         return ptr::null_mut();
     }
     let path = match unsafe { CStr::from_ptr(dev_path) }.to_str() {
         Ok(s) => s,
-        Err(_) => return ptr::null_mut(),
+        Err(_) => {
+            nix::errno::Errno::set_raw(nix::libc::EINVAL);
+            return ptr::null_mut();
+        }
     };
     match Adapter::open(path) {
         Ok(adapter) => Box::into_raw(Box::new(SlkAdapter { inner: adapter })),
-        Err(_) => ptr::null_mut(),
+        Err(error) => {
+            nix::errno::Errno::set_raw(-native::errno(error));
+            ptr::null_mut()
+        }
     }
 }
 
@@ -43,8 +50,8 @@ pub unsafe extern "C" fn slk_adapter_free(adapter: *mut SlkAdapter) {
     }
 }
 
-/// Get the device count.
-/// Returns -1 on error.
+/// Get allocated Core registration count, not Ready count.
+/// Returns count or negative errno.
 ///
 /// # Safety
 /// `adapter` must be a valid non-null pointer.
@@ -52,11 +59,11 @@ pub unsafe extern "C" fn slk_adapter_free(adapter: *mut SlkAdapter) {
 pub unsafe extern "C" fn slk_device_count(adapter: *const SlkAdapter) -> c_int {
     let adapter = match unsafe { adapter.as_ref() } {
         Some(a) => a,
-        None => return -1,
+        None => return -nix::libc::EINVAL,
     };
     match adapter.inner.device_count() {
         Ok(n) => n as c_int,
-        Err(_) => -1,
+        Err(error) => native::errno(error),
     }
 }
 
@@ -171,8 +178,8 @@ pub unsafe extern "C" fn slk_conn_info(
     }
 }
 
-/// Get device info.
-/// Returns 0 on success, -1 on error.
+/// Get device info; state 0xff is unknown, never Ready.
+/// Returns 0 or negative errno.
 ///
 /// # Safety
 /// `adapter` and `out` must be valid non-null pointers.
@@ -183,17 +190,17 @@ pub unsafe extern "C" fn slk_device_info(
 ) -> c_int {
     let adapter = match unsafe { adapter.as_ref() } {
         Some(a) => a,
-        None => return -1,
+        None => return -nix::libc::EINVAL,
     };
     if out.is_null() {
-        return -1;
+        return -nix::libc::EINVAL;
     }
     match adapter.inner.device_info() {
         Ok(info) => {
             unsafe { *out = info };
             0
         }
-        Err(_) => -1,
+        Err(error) => native::errno(error),
     }
 }
 

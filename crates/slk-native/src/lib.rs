@@ -245,7 +245,7 @@ mod ffi_lifetime_tests {
         unsafe { ffi::slk_adapter_free(ptr::null_mut()) };
 
         let count = unsafe { ffi::slk_device_count(ptr::null()) };
-        assert_eq!(count, -1);
+        assert_eq!(count, -nix::libc::EINVAL);
 
         let ret = unsafe { ffi::slk_stop_scan(ptr::null()) };
         assert_eq!(ret, -1);
@@ -274,7 +274,7 @@ mod ffi_lifetime_tests {
         let path = b"/dev/null\0";
         let handle = unsafe { ffi::slk_adapter_open(path.as_ptr().cast()) };
         assert!(!handle.is_null());
-        assert_eq!(unsafe { ffi::slk_device_count(handle) }, -1);
+        assert_eq!(unsafe { ffi::slk_device_count(handle) }, -nix::libc::ENOTTY);
         unsafe { ffi::slk_adapter_free(handle) };
     }
 }

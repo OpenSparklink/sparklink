@@ -1758,20 +1758,24 @@
       "controller-security-retirement-r4a": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "ssap-facade-retirement-r4b": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R4b-retired-SSAP-facades",
-      "production_behavior": "R4a old controller-security interfaces retired and exact98c4b65 four real VM gates scoped PASS. R4b6434055 deletes old SSAP facade methods/callers/observer rules/handle-only publication;seven Local/Owned and sole Connection Engine preserved.",
-      "state": "R4A_EXACT_FOUR_REAL_GATES_SCOPED_PASS_R4B_NEW_ARTIFACT_RUNNING_NOT_QUALIFIED",
+      "id": "WP18-R4c-retired-Native-event",
+      "production_behavior": "R4a98/R4b643 old controller-security and SSAP facade retirement exact four VM gates each scoped PASS. R4c removes public mixed Native Event and production legacy construction/dispatch;typed records/link snapshots and same bounded advertisement consumer retained.",
+      "state": "R4B_EXACT_FOUR_REAL_GATES_SCOPED_PASS_R4C_IMPLEMENTING_NOT_QUALIFIED",
       "exit": [
-        "98c4b65:314unit/integration+5compilefail each default/allfeatures,strictclippy,755tools,48sealed current ABI",
-        "K0cd/U98c4b65:32peerreplies24Ownedcases96decisions120transactions68roledenials;5replays81negatives",
-        "6434055 strictdefault/allfeatures/clippy,actualDBus/CLIabsence,755tools,48sealedABI and strictdocs passed;new exact VM artifact gates pending",
-        "Retired rawkernel declarations/selftests,remaining Native API/events,R5 fullgates and R6 cleanVMdeploy remain;old failures/provenance incidents retained"
+        "6434055:314unit/integration+5compilefail each default/allfeatures,strictclippy,755tools,48sealed current ABI and strict115docs",
+        "K0cd/U6434055:32peerreplies24Ownedcases96decisions120transactions68roledenials;5replays81negatives",
+        "R4c strict/default/experimental/docs and new exact VM artifact gates required;no transfer from643",
+        "Rawkernel declarations/selftests,remaining Native API,R5 gates and R6 cleanVMdeploy remain;original failures retained"
       ],
-      "next": "Architecture-first R4 fullchain remaining API/events/rawABI/selftests;R5 contracts/provenance;R6 cleanVMdeploy/docs. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,verified paths/WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
+      "next": "Architecture-first remaining R4 APIs/rawABI/selftests;R5 contracts/provenance;R6 cleanVMdeploy/docs. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4,verified paths/WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
     }
   },
   "agent_workstream": {
@@ -3121,7 +3125,7 @@
       "userspace": "d795a3a6b1e98c24e984e2459b2cf1e7db46cff4",
       "linux": "0cd4731dd3e673d1309a2b570b38769f9a98681f"
     },
-    "latest_call_audit": ".dev/architecture-r4b-ssap-call-audit-v1.json (source98c4b65 and mapped R4b working changes,not qualification)",
+    "latest_call_audit": ".dev/architecture-r4b-ssap-call-audit-v2.json (corrected8Remote/18DBus source enumeration,not qualification)",
     "r4a": {
       "status": "EXACT_98C4B65_FOUR_REAL_GATES_SCOPED_PASS_FULL_ARCHITECTURE_INCOMPLETE",
       "exit_reference": "Canonical WP18 R4a",
@@ -3131,12 +3135,19 @@
       "report": "docs/evidence/controller-security-retirement-r4a-20261017.json"
     },
     "r4b": {
-      "status": "STRICT_AND_SEALED_ABI_PASS_EXACT_NEW_VM_GATES_RUNNING_NOT_QUALIFIED",
+      "status": "EXACT_6434055_FOUR_REAL_GATES_SCOPED_PASS_FULL_ARCHITECTURE_INCOMPLETE",
       "production": "Remove old SSAP D-Bus/CLI/observer/event facades;keep current Local/Owned and sole Connection Engine",
       "exit_reference": "Canonical WP18 R4b",
-      "remaining": "New exact artifact preservation gates;remaining R4/raw ABI,R5/R6;full original scope unchanged",
+      "remaining": "Remaining Native APIs/events/raw ABI/selftests,R5/R6 and full original scope",
       "compiled_source": "643405506e50e37cb4df0860a8ffec66ac3ff136",
-      "tools": "643405506e50e37cb4df0860a8ffec66ac3ff136"
+      "tools": "643405506e50e37cb4df0860a8ffec66ac3ff136",
+      "report": "docs/evidence/ssap-facade-retirement-r4b-20261017.json"
+    },
+    "r4c": {
+      "status": "IMPLEMENTED_STRICT_CHECKS_RUNNING_NOT_QUALIFIED",
+      "production": "Remove public Native legacy Event and runtime construction;direct same advertisement consumer;typed Native records/snapshots unchanged",
+      "exit_reference": "Canonical WP18 R4c",
+      "remaining": "New exact artifact VM gates;remaining Native APIs/raw ABI/selftests,R5/R6 and original full scope"
     }
   },
   "owned_ssap_c6_historical_batch": {

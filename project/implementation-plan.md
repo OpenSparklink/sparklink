@@ -238,6 +238,7 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | R3a Channel操作层迁移；17ed四实机保持，SDK整体仍缺失 | `real_device` | `PASS` |
 | R3c应用/Native/共享契约：6d30真实新SDK路径四门禁，整架构未完 | `real_device` | `PASS` |
 | R4a旧controller安全入口退休：98c4b65四真实门禁，整架构未完 | `real_device` | `PASS` |
+| R4b旧SSAP门面全链退休：6434055四真实门禁，整架构未完 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -999,7 +1000,9 @@ Grant/credit/Ticket、VM-only保留；UserHost为P4。保留在途生命周期�
 K`0cd4731dd3e6`/编译与工具`98c4b65ede54`四VM门禁32对端校验回复、
 61/249+16超限/2042/机制2、24Owned案例/96审批/120事务、guest service-only68拒绝；
 5重放81复制负对照。314默认+314实验/严格clippy、5compile-fail、755工具、两库48检查。
-**C/Python为离线两库/ABI资格，不是全部外部消费者RF/干净部署资格；当前643/R4b树不继承。**
+R4b准确6434055相同四门禁另取32真实回复、24Owned/96审批/120事务/68角色拒绝、
+5重放81负对照；18旧D-Bus/4slctl/10slkconfig和handle-only发布退休，七Local/Owned保留。
+**C/Python仅离线两库/ABI资格，不是全部外部消费者RF/干净部署资格；当前R4c树不继承。**
 无新增形式化证明，旧unsupported/unstable Kani保持UNPROVED。
 
 源码映射、完整失败/反例/假设/原始材料访问及回放均在对应报告，不在本计划逐轮堆叠：
@@ -1007,7 +1010,8 @@ K`0cd4731dd3e6`/编译与工具`98c4b65ede54`四VM门禁32对端校验回复、
 [R2观察预算](../docs/evidence/observation-retirement-r2-20261017.json)、
 [R3a操作层](../docs/evidence/channel-operation-boundary-r3a-20261017.json)、
 [R3c实际SDK路径](../docs/evidence/application-native-boundary-r3c-20261017.json)、
-[R4a旧安全门面退休](../docs/evidence/controller-security-retirement-r4a-20261017.json)。
+[R4a旧安全门面退休](../docs/evidence/controller-security-retirement-r4a-20261017.json)、
+[R4b旧SSAP门面退休](../docs/evidence/ssap-facade-retirement-r4b-20261017.json)。
 root-owned pipe失败、动态Proxy缓存失败、ctypes指针签名遗漏SIGSEGV、b0f同行不可查询
 反例、5509ms历史失败及材料保留事故原身份保留，不用新PASS覆盖。
 
@@ -1021,8 +1025,9 @@ root-owned pipe失败、动态Proxy缓存失败、ctypes指针签名遗漏SIGSEG
 | 等待完整接口/部署验收，R3核心边界已接通 | Native Rust/C/明确Python、SDK Client、Channel、独立contract、slktest、VM/bundle/CI | Native管理与普通fd分离；slkd不依赖SDK；protocol无设备/ioctl操作；App无Native依赖/导出 | 唯一Channel实现/Engine；旧默认Adapter及申请重复逻辑删除；typed路径/tuple共用、独立signature检查保留。C/Python完整broker/SSAP、高级Channel API仍属WP03/06/08，不生成假门面 | U#3/#6，K#5/#6 |
 | 立即删除，R4a准确98限定通过：旧controller安全门面 | Native11方法/C3导出、Security9方法/2属性、slctl pair/security、slkconfig五组、observer白名单、旧SDK2类型 | 仅拒绝，没有真实连接安全；实际机制/安装结果权威在Kernel，策略在slkd | 下方有限批次；真实Agent Register/Unregister和Connection机制保留；缺失入口/符号/CLI强负对照与新artifact回归 | U#5/#8，K#7/#19 |
 | 移入测试，R4a：旧PSK输入格式 | 仅旧SetPsk使用的十六进制/Unicode解析 | 历史格式fixture，无生产key/Host | 原Unicode拒绝测试保留；删除生产解析/业务入口，不把fixture当可信安装 | U#5，K#7 |
-| 立即删除，当前R4b：旧SSAP门面 | ServiceManager十旧方法、RemoteService全接口、slctl四旧命令/slkconfig十旧命令、observer三白名单；event_loop发布和adapter清理 | 没有真实wire功能，不得描述为现有Engine；保留七个当前本地/Owned方法和Connection唯一actor | 同批删生产门面与调用者；实际bus introspection/UnknownMethod、CLI未知命令；新artifact发现/连接/61/249/2042/Owned/机制2回归 | U#3/#6/#8，K#6/#17/#19 |
+| 立即删除，R4b准确643限定通过：旧SSAP门面 | ServiceManager十旧方法、RemoteService全接口、slctl四旧命令/slkconfig十旧命令、observer三白名单；event_loop发布和adapter清理 | 没有真实wire功能，不得描述为现有Engine；保留七个当前本地/Owned方法和Connection唯一actor | 同批删生产门面与调用者；实际bus introspection/UnknownMethod、CLI未知命令；新artifact发现/连接/61/249/2042/Owned/机制2回归 | U#3/#6/#8，K#6/#17/#19 |
 | 移入测试，R4b：旧连接callback模型 | EventTask fixture与on_conn_state_changed仅test/显式实验；历史codec/权限解析仅test | 无Native生产连接权威；实际链接来自gen/lifetime快照 | 删除伪RemoteService发布；保留阻塞callback、cancel、panic、drain、慢存储及权限/Unicode回归；新路径仍唯一Session | U#1/#2/#3，K#6/#17 |
+| 立即删除/移入测试，R4c当前：旧Native Event | slk-native混合Event公开导出；slkd广告dispatch借用旧enum及测试handle/metadata分支 | Native typed ControllerEventReceiver/LinkSnapshot为生产权威；广告只更新有界观察 | 删除公开Event/生产旧dispatch，广告直接同一consumer；旧codec/shape和callback actor回归仅test；实验feature不恢复旧路径；新准确artifact四VM保留门禁 | U#2/#3/#6，K#3/#6/#19 |
 | 等待调用者迁移，R4其他旧API/事件 | Controller/ExtAdv、旧连接/scan/PM/AFH/sync/privacy/measurement、slkconfig/CLI/C/Python/policy；旧handle事件 | Native typed Peer/Connection按地址类型/gen/lifetime；Device地址alias仅观察 | 按入口审计所有消费者，迁移/拒绝当前未支持新模式后删除旧入口；保留合法管理staging/Owned。抽出实际Native广告消费者，旧模型移test，保留慢callback/cancel/panic/drain；新artifact发现/连接/数据/SSAP及同行回归 | U#1/#2/#3/#5/#6/#8，K#3/#5/#6/#7 |
 | 等待同批迁移，R4 raw ABI/测试 | 内核sle_uapi、UAPI声明及retired C/Rust selftests仍有明确消费者 | 不是支持旧语义或兼容承诺；未发布旧编号不复用 | 审计/迁移selftests和全部绑定后删声明，更新准确CI pin/独立ABI与内核新artifact门禁；不能因旧pin年龄判不一致 | K#5/#7/#19，U#3/#8 |
 | 等待闭合，R5/R6：契约与部署 | Cargo/公开导出/D-Bus/CLI/头/SDK、Makefile/systemd/包/CI/文档 | 管理员配置/状态属于管理员；构建artifact不是合格release | 实际default依赖闭包和删除入口负对照已接线，继续完整导出/依赖/fixtures范围。R6a卸载保留配置/嵌套/symlink/状态仅staged通过；prefix/库/SONAME/pc/组/权限/启动/升级回滚/C-Python消费者需干净VM实测 | U#8，K#19 |
@@ -1045,7 +1050,7 @@ Agent、权限语义、合法管理staging或Owned；旧Kernel声明与剩余sel
 
 ##### 当前R4b有限退出
 
-基于98c4b65生产调用链审计：旧ServiceManager十方法与RemoteService九方法只拒绝；
+基于98c4b65生产调用链审计：旧ServiceManager十方法与RemoteService八方法只拒绝；
 旧handle事件分支仍发布无功能对象。保留实际七个Local/Owned接口、原权限类型、
 唯一Connection SSAP actor及当前ssap-* CLI。移除旧四slctl/十slkconfig命令、白名单与
 公开返回类型，callback生命周期fixture继续，不生成第二Engine。实际旧方法返回
@@ -1053,6 +1058,19 @@ UnknownMethod，旧RemoteService对象不再发布；未实现的新模式继续
 严格default/all-features/clippy、实际D-Bus/CLI缺失负对照、755工具和严格文档；新准确
 artifact必须重验61/249+超限/2042/Owned/机制2以及发现/连接/同行。离线或旧98资格
 不能代替新回归。原WIP不覆盖；R4 rawABI/剩余API、R5/R6与全部未完成scope继续开放。
+
+##### 当前R4c有限退出
+
+起点643/d99调用审计：Native公开混合Event只有广告仍被生产消费者构造；
+其余旧handle/配对/PM仅旧模型/测试。删除公开Event，原codec/shape移为test-only；
+生产Native广告直接进入同一有界观察函数，typed RX/完整LinkSnapshot不变。
+daemon旧Source/dispatch/handle模型仅test；删除没有Native调用者的experimental-legacy-profiles
+入口及normal依赖，独立实验crate/dev-dependency和原actor测试保留。default与allfeatures
+均核对实际normal依赖闭包，不能通过恢复旧事件模型消除死代码告警。
+callback/慢存储/cancel/panic/drain测试保留；不能将fixture当真实并发/排空证明。
+退出：严格default/allfeatures/clippy、旧导出compile-fail、实际旧对象缺失、工具/文档，
+新准确artifact四VM发现/连接/普通socket 61/249+超限/2042/Owned/机制2和同行回归。
+其他Native旧API、rawABI/selftests、R5/R6/完整原始scope与自然恢复保持开放。
 
 ##### R3后续需保持的准入契约
 

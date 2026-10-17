@@ -77,7 +77,7 @@
     "manual_request_pending": false,
     "host_installation": false,
     "constraint": "VM-only; no activity on unrelated libvirt VMs",
-    "current_operational_scope": "OnlyU2/3 newprotectedSSAP1/2 bothroles32readwritechecks/16CUTC RT;defaultshortwholeFAIL peerDownoutside5s;originalU2/3 qualificationsretainoriginalidentities. Hi3873E1 excluded;no mixedfourdevicequalification.",
+    "current_operational_scope": "U2/3 only K619/U8bd sixSSAP/data gates48CUTC/96SSAPpeerchecks;Hi3873E1 excluded,nomixedfourdevicequalification. Original331FAIL andfresh13fastcounterexample bothretained,originaltimeoutRCA/naturalrecoveryOPEN.",
     "recovery_qualification": false,
     "topology_revision": {
       "date": "2026-10-17",
@@ -1579,18 +1579,38 @@
       "protected-ssap-331-remaining": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "disconnect-reason-8b-real": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "disconnect-reason-8b-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "disconnect-reason-8b-formal": {
+        "level": "formal_bounded",
+        "result": "UNPROVED"
+      },
+      "disconnect-reason-8b-root": {
+        "level": "real_device",
+        "result": "UNPROVED"
+      },
+      "disconnect-reason-8b-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "wp06-wp09-sole-SSAP-first-bind-partial-real-baselineFAIL",
-      "production_behavior": "UniqueexistingSMTCEngine firstbind freezes0/1/2;nativecompletion prompts,originalK619Grant enforceslivegrade/epoch/lease;no fallback/rebind/secondEngine",
+      "id": "wp06-wp09-SSAP-requalified-SLEreason10-rootOPEN",
+      "production_behavior": "DaemonRemoteUserReason10;sameK619Session/Grant/credit/Ticket andsoleSSAPEngine;protectedfirstbind andfullwindowauditor physical1/2 actual;kernelcleanupstill13",
       "exit": [
-        "Two331protectedrealcasesPASS,32SSAPreadwritepeerchecks/32discoveryrecords/16CUTC RT;original331tools separatefromf46offlinefullwindowaudit",
-        "WholedefaultbaselineFAIL:peerDown5.064s exceedsoriginal5s;249/2042NOT_RUN. FullbatchexitNOT_ACHIEVED",
-        "90cleanfrozen331daemon/704cleanf46tools and6accurateCI;no newformalproof,fullgoalINCOMPLETE"
+        "Sixexact8brealcasesPASS:48CUTC/96SSAPpeerchecks/96discovery,249refusals16,full2042RT8;960protectedSMTCobservations",
+        "12actualCreatebodiesidenticaland24newDown11/10withoriginal5spropertybudget;6exactreplays42copiednegatives,705cleantools,6exact8bCI",
+        "Freshlegacy13alsoPASSfast11/13;reason-alonecausalityNOTproved. Original331FAIL retained,currentrootUNPROVED. SelectedSSAP/dataexitmet,fullgoalINCOMPLETE"
       ],
-      "next": "BoundedVM SDK111 reason0x13/current vsSDK/OHOS0x10 comparison withunchangedtimeouts/parameters;currentconstdiscrepancy iscandidateNOT provenRCA. NewcorrectedauditorVM anddefaultshort/249/2042;thenperattributeauthorization onsoleEngine. Data/multi/fourdevice/performance andnaturalRCA/nonmanualrecovery remainparallel,noallcontrolprecondition."
+      "next": "Continue soleSSAPattribute authentication/encryption/localAuthorization overexistingSession/Grant,keepunsupportedrequirements explicit;kernelcleanup/probe13->10 semanticsmigration andsourceboundlifecycle parallel. Original0d/07lateDown/nativeRCA diagnosis continuesusingrawtimeline,not allcontrolprecondition. No naturalrecovery/fourdevice/performance/Bond waiver."
     }
   },
   "agent_workstream": {
@@ -2620,10 +2640,11 @@
     "reference_audit": ".dev/protected-ssap-disconnect-reference-audit-v1.json",
     "full_window_audit": ".dev/protected-ssap-full-window-replay-v1.json",
     "issues_receipt": ".dev/protected-ssap-issue-receipts-v1.json",
-    "formal_strength": "No newformalrun;actualconsumercompositionunproved;unchangedK619pureGrant79retainsoriginalboundaryonly"
+    "formal_strength": "No newformalrun;actualconsumercompositionunproved;unchangedK619pureGrant79retainsoriginalboundaryonly",
+    "successor": "disconnect_reason_batch:exact8bd6realcases exit scopedachieved;old331wholeFAIL remainshistorical/unresolvedRCA"
   },
   "disconnect_reason_batch": {
-    "status": "DAEMON_CANDIDATE_IMPLEMENTED_PENDING_CLEAN_VM_COMPARE",
+    "status": "SIX_REAL_GATES_SCOPED_PASS_ORIGINAL_TIMEOUT_RCA_OPEN",
     "kernel_unchanged": "61905139ff8c3ed2937ccdba697d880880582234",
     "parent_userspace": "52175f1f843a7d8d8107f64b22ae723aca295b81",
     "scope": "Onlynative daemon typedDisconnect request reason13->10;finalcredit/lifetime/lease unchanged. Kernelcleanup/pre-daemontests remain13 untilVM evidence. Currentwireverifier requires10;historicalfixture explicitlyaudits13 withoutrewritingcapture.",
@@ -2638,6 +2659,30 @@
     "still_open": [
       "CauseofoldlateDown notinferredfromsourceconstant alone",
       "NaturalRCA/nonmanualrecovery/fulloriginalS0-S6 scopes unchanged"
-    ]
+    ],
+    "compiled_userspace": "8bda4e0e3dd32c737957b2cdfd19d062d68cef3a",
+    "executed_tools": "8bda4e0e3dd32c737957b2cdfd19d062d68cef3a",
+    "report": "docs/evidence/disconnect-reason-ssap-regression-20261017.json",
+    "report_commit": "88aebccde2666b97bc1ba95057ca5b0b161c5116",
+    "timeout_timeline": "docs/evidence/disconnect-timeout-timeline-20261017.json",
+    "real": {
+      "cases": 6,
+      "CUTC_RT": 48,
+      "SSAP_peer_checks": 96,
+      "discovery_records": 96,
+      "oversize_rejections": 16,
+      "protected_SMTC_USB_observations": 960
+    },
+    "counterevidence": "Freshlegacy331/reason13alsoPASSfast:local11/peer13. Original331FAILretained,reason-alonecauseUNPROVED;no naturalrecoveryqualification.",
+    "next": [
+      "SoleSSAPattribute authentication/encryption/localAuthorization usingexistingSession/Grant/types,no newEngine;unsupportedrequirementsdeny",
+      "Kernelcleanup/pre-daemonprobes still13;unify intendedremoteuser10 andsourceboundlifecycle inparallel,notallcontrolracesfront",
+      "Original0d/07lateDown boundeddiagnostics withrawtimelines,firmware/RF/retainedstate/lifetimeassumptions explicit",
+      "KeepfullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery/multi/fourdevice/performance/PM/releaseOPEN"
+    ],
+    "next_dependency_audit": ".dev/ssap-attribute-security-context-audit-v1.json",
+    "attribute_context_status": "READONLY_AUDIT_NOT_IMPLEMENTED;wholeSMTCminimum != generalattributeauthorization. Need verifiedRXcontext/finalTXintent viaexistingGrant,not querythenrawsend. Unknownancillaryunsupported handling missing. KernelcleanupmigrationandrelatedVM gatesparallel.",
+    "issues_receipt": ".dev/disconnect-reason-issue-receipts-v1.json",
+    "maintenance_report": "docs/evidence/disconnect-reason-maintenance-20261017.json"
   }
 }

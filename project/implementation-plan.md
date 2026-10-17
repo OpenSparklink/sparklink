@@ -2,16 +2,27 @@
 
 ## 本批退出条件与近期执行顺序
 
-当前 WP06/WP09 切片：唯一用户态 SSAP 的首次 SMTC 安全要求在绑定前固定。
-默认基本路径保持，非零 `[ssap] channel_security` 延迟初次绑定；实际原生安全完成
-只提示重新准入，最终等级/epoch/lease 仍由原内核 Grant 强制，无普通回退或同
-lifetime 重绑。新 K619/U331 已完成两等级、两角色真实 discovery/读写/对端数据库检查、
-安装前拒绝及16次 CUTC 回复；但默认短包对端 Down 约5.064秒、超原5秒预算，
-整轮 FAIL 保留，249/2042未运行。本批退出未达。下一步在 VM 中保持原连接参数、
-期限和断言，核对当前0x13与 SDK/OHOS0x10断链原因的差异；它目前是源码线索，
-不能宣布根因。f46完整 SMTC 时窗检查只已离线重放，须新硬件执行与默认路径／
-长度保持。属性级安全/本地授权、Bond 与完整生命周期组合继续开放，非本批替代项。
-沿用唯一 Engine，不恢复旧内核 wire 实现；完整 S0–S6 及数据/性能并行条件不变。
+当前 WP06/WP09 的唯一用户态 SSAP 首次安全 SMTC 切片，限定退出已在
+K619/U8bda 达成：六项真实门禁、48次 CUTC 往返、96组 SSAP 对端数据库核对、
+249边界及完整2042、受保护1/2完整时窗。主动断链请求改为 SDK 远端用户原因10，
+原 Create 参数、五秒预算和断言保持；不恢复旧内核 SSAP 或新增 Engine。
+
+旧 U331 原超时 FAIL 不改写：重新运行旧13产物也快，说明 reason-alone 因果
+未建立。原包中 USB OUT/Status很快，本端0d约1.977ms、对端07约5.083s；
+仍需核对 firmware/LL/RF/残留状态及事件 lifetime 假设，不能声称已排除全部 Host。
+诊断与主线并行，不要求穷尽控制面竞争才继续 SSAP／数据。
+
+下一条纵向链路是在同一 Engine/Session/Grant 上接通属性级认证／加密与本地授权
+消费，未支持要求明确拒绝，不把最低机制当命名身份或 Bond。
+先核对请求的 RX 安全归属与响应最终提交的约束：当前裸 send/recv 没有每 PDU
+安全上下文 ABI，不能仅在 answer 前查询快照。复用原 Kernel Grant/Ticket 机制
+承接用户态属性策略；未知 ancillary 的显式拒绝也需接通，不能假定忽略的控制
+信息已生效。具体 ABI 仍为计划，不能宣称已支持或缩减为全通道最低要求。
+内核内部清理和
+预 daemon 探针默认13→10的语义统一及相关生命周期回归并行；原自然故障／
+非人工恢复、完整多通道／四设备、性能、PM、部署与发布继续开放。仅将本批变化
+相关不变量设为门禁，完整 S0–S6／19WP／10FV／12DG 和原整项 scope 不缩减。
+
 
 WP09 [真实安装后原请求取消](../docs/evidence/security-install-cancel-real-20261017.json)
 已在 K14d9/U6166、SDK111、U2/3 上完成两角色门禁：真实 G 安装提交、原接受帧
@@ -152,6 +163,11 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | U331默认短包整轮FAIL：对端Down超原5秒，249/2042未运行 | `real_device` | `FAIL` |
 | 新SSAP消费者的实际锁/Grant/撤权/提交与晚到组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 默认回归、属性权限/Bond及完整S0-S6/恢复：仍缺 | `real_device` | `UNPROVED` |
+| K619/U8bd：SLE主动断链10，六项SSAP/61/249/2042实机，48往返 | `real_device` | `PASS` |
+| 干净8bd705工具、六原件重放42负对照及相同Create参数 | `offline` | `PASS` |
+| 实际锁/引用/Grant/提交撤权/晚到复用及SSAP组合：未证明 | `formal_bounded` | `UNPROVED` |
+| 原超时根因未闭合：新旧13对照反证单字节致因，仍需诊断 | `real_device` | `UNPROVED` |
+| 内核清理迁移/属性权限/Bond及完整S0-S6/恢复：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

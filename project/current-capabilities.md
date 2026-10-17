@@ -1,13 +1,18 @@
 # 当前能力与资格
 
-K619/U331 新产物已通过两个受保护 SSAP 门禁（等级1/2、交换连接角色）：
-32组远端读写及对端数据库核对、32份 discovery、16次 CUTC 随机回复；
-安装前8次真实 SSAP 拒绝。唯一 Engine 首次绑定固定最低机制，无普通回退。
-但默认普通短包整轮因对端 Down 超原5秒预算而 FAIL，249/2042未运行，
-本批退出未达。f46完整 SMTC 时窗检查目前仅离线重放，未获新硬件执行资格。
-属性级授权、命名身份、Bond 和自然恢复仍未完成，不从此最低传输机制推导。
-准确身份、失败和范围见[本批原件](../docs/evidence/protected-ssap-first-bind-20261017.json)
-及[冻结离线结果](../docs/evidence/protected-ssap-offline-20261017.json)。
+K619/U8bda 的六项新产物门禁已通过：普通61字节两次、受保护 SSAP 等级1/2、
+249边界与完整2042字节，各交换连接角色；48次 CUTC 对端往返、96组 SSAP 读写／
+对端数据库核对、96份 discovery、16次超限拒绝。受保护 SMTC 的960份完整 USB
+观察由实际执行的新工具核对，首次绑定前8次真实拒绝；不继承旧 artifact 资格。
+本批限定退出已达，属性级授权、命名身份、Bond、内核清理迁移及完整性能／恢复仍缺。
+
+主动断链请求按 SDK／NearLink Host 改为 `0x10`，实际返回调用端 `0x11`／对端
+`0x10`，原5秒预算和 Create 参数未改。但新做的旧 `0x13` 对照也快速通过，
+所以**原 U331 的5秒失败仍为 FAIL，超时根因未闭合**，不能归因于该字节或升级
+为自动恢复。准确限定范围见[六项新原件及反证](../docs/evidence/disconnect-reason-ssap-regression-20261017.json)、
+[原超时事件线](../docs/evidence/disconnect-timeout-timeline-20261017.json)。
+旧[首次 SSAP 记录](../docs/evidence/protected-ssap-first-bind-20261017.json)和
+[离线结果](../docs/evidence/protected-ssap-offline-20261017.json)保留原身份。
 
 本页是唯一当前资格入口；[架构](architecture.md)是目标，
 [唯一计划](implementation-plan.md)是待办。当前摘要从
@@ -339,6 +344,11 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | U331默认短包整轮FAIL：对端Down超原5秒，249/2042未运行 | `real_device` | `FAIL` |
 | 新SSAP消费者的实际锁/Grant/撤权/提交与晚到组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 默认回归、属性权限/Bond及完整S0-S6/恢复：仍缺 | `real_device` | `UNPROVED` |
+| K619/U8bd：SLE主动断链10，六项SSAP/61/249/2042实机，48往返 | `real_device` | `PASS` |
+| 干净8bd705工具、六原件重放42负对照及相同Create参数 | `offline` | `PASS` |
+| 实际锁/引用/Grant/提交撤权/晚到复用及SSAP组合：未证明 | `formal_bounded` | `UNPROVED` |
+| 原超时根因未闭合：新旧13对照反证单字节致因，仍需诊断 | `real_device` | `UNPROVED` |
+| 内核清理迁移/属性权限/Bond及完整S0-S6/恢复：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

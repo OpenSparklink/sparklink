@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 from types import SimpleNamespace
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_rom_chip import COMMAND, candidate_variant, decode_candidate, rom_observations, runtime_observations, runtime_setup
+from ws73_rom_chip import COMMAND, candidate_variant, decode_candidate, observe_candidate, rom_observations, runtime_observations, runtime_setup
 from ws73_vm_register_reset import Bulk
 
 class RomChipTests(unittest.TestCase):
@@ -23,6 +23,13 @@ class RomChipTests(unittest.TestCase):
     def test_zero_all_one_short_long_and_wrong_types_never_default_to_u(self):
         for raw in [bytes(4),b'\xff'*4,b'',b'\x08',b'\x08'*3,b'\x08'*5,None,0,bytearray([8,0,0,0])]:
             with self.subTest(raw=raw),self.assertRaises(ValueError):decode_candidate(raw)
+        observed=observe_candidate(bytes(4))
+        self.assertTrue(observed['zero_reply_ambiguous']);self.assertFalse(observed['automatic_selection_permitted'])
+        self.assertEqual(observed['access_validity'],'UNPROVED')
+        with self.assertRaises(ValueError):candidate_variant(bytes(4))
+        with patch('ws73_rom_chip.fcntl.ioctl',side_effect=self.ioctl(bytes(4))):
+            rows=rom_observations(71,{},lambda:None,'U')
+        self.assertTrue(all(r['candidate']['zero_reply_ambiguous'] for r in rows))
     def test_exact_read_only_runtime_encoding_and_command_terminator(self):
         self.assertEqual(runtime_setup(),bytes.fromhex('00000000000000000090000008000040'))
         self.assertEqual(COMMAND,b'READM 0x40019000 4 ')

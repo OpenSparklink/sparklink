@@ -3472,7 +3472,13 @@
       "scope": "OneMake/debian layout;actualSONAMEs/pc/header/Exec;separateapp/native;sharedgroups,no generic rawUSB;config/state retained",
       "private_development_evidence": ".dev/architecture-r6a-stage-v1/manifest.json",
       "remaining": "Frozen source/artifact,new real VM gates,cleanVM actual systembus/udev/service/external C-Python andupgrade/rollback/uninstall;wholeoriginalscope remains",
-      "qualification": "SelectedR5e remains old exact source-bound artifact,not current dirty R6 tree"
+      "qualification": "SelectedR5e remains old exact source-bound artifact,not current dirty R6 tree",
+      "python_runtime_loader": {
+        "state": "ACTUAL_ELF_OFFLINE_FIX_VM_WHEEL_PENDING",
+        "report": "docs/evidence/python-runtime-loader-20261018.json"
+      },
+      "first_vm_failure": "docs/evidence/deployment-clean-vm-first-failure-20261018.json",
+      "next_gate": "Fresh marked disposable VM:actual bus roles,C/Python installed runtime withoutdevlinks,configretention;package upgrade/rollback separatelyopen"
     }
   },
   "owned_ssap_c6_historical_batch": {

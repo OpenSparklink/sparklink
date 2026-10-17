@@ -115,8 +115,9 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 仍按实际实现开放。
 
 Python默认导出仅访问要求和授权fd操作，旧`Adapter`及默认`NativeAdapter`导出已删除。
-Native需显式`from sparklink.native import NativeAdapter`并加载`libslk_native.so`；应用
-fd操作用`libsparklink.so`。`LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定准确产物，
+Native需显式`from sparklink.native import NativeAdapter`并加载`libslk_native.so.0`；应用
+fd操作用`libsparklink.so.0`。Python使用运行库major，不要求开发包的无版本链接。
+`LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定准确产物，
 错误覆盖路径直接失败，不静默回退。两库C头/符号分别检查。**C/Python尚无完整broker、
 远端SSAP或回调客户端**；不得从新库名称推导已实现所有目标API。Native旧不支持入口
 仍按R4全链清单退休，不以移动文件表示整改全部完成。

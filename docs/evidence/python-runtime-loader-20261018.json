@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "status": "ACTUAL_RUNTIME_LIBRARY_LOADER_COUNTEREXAMPLE_AND_FIX_OFFLINE_ONLY",
+  "baseline_userspace": "dd72c5857efff4033d8fd018590130b0dcbebe8a",
+  "scope": "Python runtime major loading and explicit override fail-closed using actual ELF;not kernel/RF or installed wheel qualification",
+  "counterexample": "Old source asks for unversioned .so,missing in runtime-only layout,despite actual correct .so.0 being present",
+  "fix": "Load explicit .so.0 by default;invalid explicit path never falls back",
+  "remaining": [
+    "Clean VM installed wheel without development links",
+    "Full R5f/R6 and original S0-S6 acceptance remain open"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r6a-python-runtime-baseline-v1/result.json",
+      "sha256": "280fafccc6eb3685448d8267f5b1dd9422e60392dfb240f4439971d2b1ff882a",
+      "bytes": 1854,
+      "access": "private workspace retained;no device or VM qualification"
+    },
+    {
+      "path": ".dev/architecture-r6a-python-runtime-fixed-v1.log",
+      "sha256": "6cbc6eff2f938e56e76814165b8a515b5d5fc15ff89dab178b3afecf34de7a5c",
+      "bytes": 265,
+      "access": "private workspace retained;no device or VM qualification"
+    }
+  ]
+}

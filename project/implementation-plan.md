@@ -1402,8 +1402,16 @@ R6a当前源码批：统一Make install-files及Debian分包文件表，固定�
 渲染实际Exec/pc，增加两库SONAME、现有三角色sysusers、仅Native字符设备udev；
 配置/状态/权限/symlink和非本版本库保留。已完成开发ELF的两个PREFIX实际暂存、
 外部C/Native链接/errno、配置解析、重装与卸载；这不是新artifact实机或干净VM资格。
-7项布局/原卸载及原bundle文件测试通过，严格新构建已执行；准确新提交、封存产物、
+8项布局/原卸载及原bundle文件测试通过，严格新构建已执行；准确新提交、封存产物、
 实际VM服务/组/bus、Python安装消费及包管理升级回滚仍待本批门禁。
+
+R6a运行包复核另发现Python依赖开发`.so`链接：准确dd72源码在仅有真实`.so.0`
+运行库时失败，原反例保留。加载器改为ABI major，显式错误路径继续拒绝；实际ELF
+无开发链接及失败不fallback回归接通。干净VM中的安装wheel与真实system bus另验，
+此修正不改变Rust/内核数据路径，也不转授旧实机资格。
+首轮干净VM完成真实构建/安装/服务启动后，权限探针漏传角色而整轮FAIL，
+[原失败保留](../docs/evidence/deployment-clean-vm-first-failure-20261018.json)。仅修执行参数；
+新轮仍核对四角色实际system bus、无开发链接Python与原配置保留断言，不据局部成功封项。
 
 ##### R5a最小独立导出门禁
 

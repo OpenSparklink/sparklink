@@ -144,6 +144,25 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
             .output()?;
         std::fs::write(directory.join(format!("{language}.stdout")), &output.stdout)?;
         std::fs::write(directory.join(format!("{language}.stderr")), &output.stderr)?;
+        // The deliberate fork-negative on Python>=3.12 warns about inheriting
+        // a multithreaded process. Preserve and recognize only that warning;
+        // it is not evidence that opening/using a client after fork is safe.
+        if language == "python" && !output.stderr.is_empty() {
+            let warning = std::str::from_utf8(&output.stderr)?;
+            let lines: Vec<_> = warning.lines().collect();
+            anyhow::ensure!(
+                lines.len() == 2
+                    && lines[0].contains("application_client.py:")
+                    && lines[0].contains(": DeprecationWarning: This process (pid=")
+                    && lines[0].ends_with(
+                        "is multi-threaded, use of fork() may lead to deadlocks in the child."
+                    )
+                    && lines[1].trim() == "child = os.fork()",
+                "unexpected Python consumer diagnostic: {warning}"
+            );
+        } else {
+            anyhow::ensure!(output.stderr.is_empty(), "unexpected C consumer diagnostic");
+        }
         anyhow::ensure!(
             output.status.success(),
             "{language} client failed {:?}: {} {}",

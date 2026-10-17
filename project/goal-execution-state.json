@@ -1757,7 +1757,8 @@
     "docs/evidence/security-install-cancel-maintenance-20261017.json",
     "docs/evidence/security-numeric-maintenance-20261017.json",
     "docs/evidence/security-numeric-agent-maintenance-20261017.json",
-    "docs/evidence/security-grant-maintenance-20261017.json"
+    "docs/evidence/security-grant-maintenance-20261017.json",
+    "docs/evidence/protected-channel-maintenance-20261017.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -2548,6 +2549,8 @@
     "executed_tools": "390a634b60320706e5fb619d3c0b1df661378261",
     "report": "docs/evidence/protected-channel-lifecycle-20261017.json",
     "selected_lengths_report": "docs/evidence/protected-channel-lengths-20261017.json",
-    "result": "20protectedFile/Down/5s,48beforecontrolRT,170peerrelays40installations80queries;20replays360negatives;selected249/full2042 add16RT16rejects;originalc51FAIL unchanged"
+    "result": "20protectedFile/Down/5s,48beforecontrolRT,170peerrelays40installations80queries;20replays360negatives;selected249/full2042 add16RT16rejects;originalc51FAIL unchanged",
+    "maintenance_report": "docs/evidence/protected-channel-maintenance-20261017.json",
+    "issues": "K6/K7/K17/K19/U3/U5/U8OPEN;originalscopebodyunchanged"
   }
 }

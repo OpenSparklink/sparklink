@@ -230,3 +230,39 @@ class QualificationTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class RetirementTests(unittest.TestCase):
+    setUp = QualificationTests.setUp
+    run_check = QualificationTests.run_check
+    update_report = QualificationTests.update_report
+    def retire(self):
+        import copy
+        directory=self.repo/'project';directory.mkdir()
+        (directory/'qualification-records.json').write_text(json.dumps(self.data))
+        subprocess.run(['git','-C',str(self.repo),'add','project/qualification-records.json'],check=True)
+        subprocess.run(['git','-C',str(self.repo),'-c','user.name=Fixture','-c','user.email=fixture@example.invalid','-c','commit.gpgsign=false','commit','-qm','original registry'],check=True)
+        revision=q.git(self.repo,'rev-parse','HEAD').decode().strip()
+        old=copy.deepcopy(self.data['records'][0]);material=self.data['materials'].pop('artifact')
+        record=self.data['records'][0];record.update(id='incident',result='UNPROVED',artifact_materials=['report.json'],tool_materials=['report.json'])
+        record['gates'][0].update(result='UNPROVED',materials=['report.json'])
+        self.report['status']='UNSUPPORTED';self.update_report()
+        self.data['overall_required_records']=['incident']
+        self.data['retirements']=[dict(original_registry_commit=revision,incident_record='incident',reason='original artifact lost; no replacement digest',records=[old],materials={'artifact':material})]
+        (self.repo/'artifact').write_bytes(b'corrupted replacement is not the original')
+    def test_retirement_preserves_originals_and_requires_unproved_incident(self):
+        self.retire();result=self.run_check()
+        self.assertEqual(result['errors'],[]);self.assertEqual(result['overall'],'INCOMPLETE')
+        self.assertEqual(result['verification'],'ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED')
+        self.assertEqual(result['retired_evidence_unavailable'],['incident'])
+    def test_retirement_cannot_waive_requirement_or_rewrite_old_hash(self):
+        import copy
+        self.retire();original=copy.deepcopy(self.data)
+        for mutation in ['unrequired','pass','old-hash','old-record','revision','active']:
+            self.data=copy.deepcopy(original);retired=self.data['retirements'][0]
+            if mutation=='unrequired':self.data['overall_required_records']=[]
+            elif mutation=='pass':self.data['records'][0]['result']='PASS'
+            elif mutation=='old-hash':retired['materials']['artifact']['sha256']='0'*64
+            elif mutation=='old-record':retired['records'][0]['result']='UNPROVED'
+            elif mutation=='revision':retired['original_registry_commit']='0'*40
+            else:self.data['records'].append(copy.deepcopy(retired['records'][0]))
+            with self.subTest(mutation=mutation):self.assertTrue(self.run_check()['errors'])

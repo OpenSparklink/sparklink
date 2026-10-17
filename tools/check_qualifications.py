@@ -202,6 +202,36 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
                 errors.append('baseline/report commit mismatch')
     if not set(data['overall_required_records']).issubset(record_ids):
         errors.append('unknown overall required record')
+    # Loss/corruption must not leave a historical PASS in the current view.
+    # Preserve exact original metadata from git, and replace its requirement
+    # with an explicitly required, non-PASS incident. This is not a waiver or
+    # a way to bless replacement bytes under the original digest.
+    retired_ids = set()
+    for retirement in data.get('retirements', []):
+        incident = next((r for r in data['records'] if r['id'] == retirement.get('incident_record')), None)
+        if (incident is None or incident['id'] not in data['overall_required_records'] or
+                incident['result'] not in ('FAIL', 'UNPROVED') or not retirement.get('reason')):
+            errors.append('retirement requires a required non-PASS incident')
+        revision = retirement.get('original_registry_commit', '')
+        if not re.fullmatch(r'[a-f0-9]{40}', revision):
+            errors.append('retirement requires original registry revision')
+            continue
+        try:
+            original = json.loads(git(repo, 'show', f'{revision}:project/qualification-records.json'))
+        except (subprocess.CalledProcessError, ValueError):
+            errors.append('retirement original registry unavailable')
+            continue
+        originals = {r['id']: r for r in original['records']}
+        if not retirement.get('records') or not retirement.get('materials'):
+            errors.append('retirement must preserve records and damaged material metadata')
+        for old in retirement.get('records', []):
+            ident = old['id']
+            if ident in retired_ids or ident in record_ids or old != originals.get(ident):
+                errors.append(f'{ident}: invalid/changed/active retired record')
+            retired_ids.add(ident)
+        for ident, old in retirement.get('materials', {}).items():
+            if ident in materials or old != original['materials'].get(ident):
+                errors.append(f'{ident}: original damaged material metadata changed or still active')
     if require_current and mode != 'local':
         errors.append('current qualification requires local material verification')
     if changed:
@@ -209,7 +239,8 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
     complete = all(r['result'] == 'PASS' for r in data['records'] if r['id'] in data['overall_required_records'])
     return {'errors': errors, 'unavailable_private_materials': unavailable,
             'unavailable_source_checkouts': unavailable_sources,
-            'verification': 'INVALID' if errors else ('METADATA_ONLY_NOT_REVERIFIED' if unavailable or unavailable_sources else 'RETAINED_BYTES_VERIFIED_NOT_REPLAYED'),
+            'verification': 'INVALID' if errors else ('METADATA_ONLY_NOT_REVERIFIED' if unavailable or unavailable_sources else 'ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED' if retired_ids else 'RETAINED_BYTES_VERIFIED_NOT_REPLAYED'),
+            'retired_evidence_unavailable': [r['incident_record'] for r in data.get('retirements', [])],
             'current': 'NOT_CHECKED' if not require_current else ('NOT_QUALIFIED' if errors else 'SCOPED_SOURCE_AND_BYTES_MATCH_NOT_REPLAYED'),
             'overall': 'RECORDED_REQUIRED_RESULTS_PASS' if complete else 'INCOMPLETE'}
 

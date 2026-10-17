@@ -660,3 +660,37 @@ pub unsafe extern "C" fn slk_channel_send_constrained(
         Err(error) => -(error.raw_os_error().unwrap_or(nix::libc::EPROTO) as isize),
     }
 }
+
+/// Prepare a restrictive intent through the already authorized fd, no Grant
+/// renewal or credit reservation. Actual sendmsg must still carry the result.
+/// # Safety
+/// Caller holds a stable fd and exclusive live aligned writable output object.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_channel_prepare_tx(
+    fd: c_int,
+    minimum: u32,
+    deadline: u64,
+    out: *mut SleSendConstraint,
+) -> c_int {
+    if out.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    match slk_protocol::message_security::prepare(fd, minimum, deadline) {
+        Ok(c) => {
+            unsafe { out.write(c) };
+            0
+        }
+        Err(e) => -e.raw_os_error().unwrap_or(nix::libc::EIO),
+    }
+}
+/// Pure requirement validation, not a grant or native security observation.
+#[unsafe(no_mangle)]
+pub extern "C" fn slk_ssap_access_error(bits: u32, level: u32, write: u32) -> c_int {
+    if write > 1 || level > 2 {
+        return -nix::libc::EINVAL;
+    }
+    match slk_protocol::ssap::access::SsapAccess::from_bits(bits) {
+        Err(_) => -nix::libc::EINVAL,
+        Ok(p) => p.check(level, write != 0).map_or_else(i32::from, |()| 0),
+    }
+}

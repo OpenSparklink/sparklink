@@ -1,3 +1,5 @@
+type LocalProperty = (u16, Vec<u8>, u32, u32);
+type LocalService = (u16, u16, Vec<u8>, Vec<LocalProperty>);
 type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
 use zbus::Connection;
 
@@ -104,7 +106,20 @@ impl Context {
                 );
                 Ok(())
             }
-            "ssap-register" if args.len() == 5 => {
+            "ssap-list" if args.len() == 1 => {
+                let path = format!("{}/services", self.selected_path().await?);
+                let object = zbus::Proxy::new(
+                    &self.conn,
+                    "org.sparklink",
+                    path,
+                    "org.sparklink.ServiceManager",
+                )
+                .await?;
+                let services: Vec<LocalService> = object.call("ListLocalServices", &()).await?;
+                println!("SsapLocalServices: {}", serde_json::to_string(&services)?);
+                Ok(())
+            }
+            "ssap-register" if args.len() == 6 => {
                 let path = format!("{}/services", self.selected_path().await?);
                 let object = zbus::Proxy::new(
                     &self.conn,
@@ -116,11 +131,12 @@ impl Context {
                 let service = parse_hex_bytes(args[1])?;
                 let property = parse_hex_bytes(args[2])?;
                 let ops: u32 = args[3].parse()?;
-                let value = parse_hex_bytes(args[4])?;
+                let access: u32 = args[4].parse()?;
+                let value = parse_hex_bytes(args[5])?;
                 let registered: (u16, u16, Vec<u16>) = object
                     .call(
                         "RegisterLocalService",
-                        &(service, vec![(property, ops, value)]),
+                        &(service, vec![(property, ops, access, value)]),
                     )
                     .await?;
                 println!(
@@ -203,8 +219,8 @@ impl Context {
                 Ok(())
             }
             "ssap-read-uuid" => {
-                if args.len() != 5 {
-                    anyhow::bail!("ssap-read-uuid CONNECTION START END UUID_HEX");
+                if !(5..=6).contains(&args.len()) {
+                    anyhow::bail!("ssap-read-uuid CONNECTION START END UUID_HEX [MINIMUM]");
                 }
                 let object = self.connection_proxy(args[1]).await?;
                 let start: u16 = args[2].parse()?;
@@ -212,7 +228,13 @@ impl Context {
                 let (entries, request, response): UuidValues = object
                     .call(
                         "ReadSsapByUuid",
-                        &(start, end, 0u8, parse_hex_bytes(args[4])?),
+                        &(
+                            start,
+                            end,
+                            0u8,
+                            parse_hex_bytes(args[4])?,
+                            args.get(5).map_or(Ok(0u32), |v| v.parse())?,
+                        ),
                     )
                     .await?;
                 for (handle, success, error, value) in entries {
@@ -230,8 +252,8 @@ impl Context {
                 Ok(())
             }
             "ssap-read" | "ssap-write" => {
-                if (args[0] == "ssap-read" && args.len() != 3)
-                    || (args[0] == "ssap-write" && args.len() != 4)
+                if (args[0] == "ssap-read" && !(3..=4).contains(&args.len()))
+                    || (args[0] == "ssap-write" && !(4..=5).contains(&args.len()))
                 {
                     anyhow::bail!(
                         "SSAP value requires connection path, handle and write hex value"
@@ -240,10 +262,22 @@ impl Context {
                 let object = self.connection_proxy(args[1]).await?;
                 let handle: u16 = args[2].parse()?;
                 let value: Vec<u8> = if args[0] == "ssap-read" {
-                    object.call("ReadSsapValue", &(handle,)).await?
+                    object
+                        .call(
+                            "ReadSsapValue",
+                            &(handle, args.get(3).map_or(Ok(0u32), |v| v.parse())?),
+                        )
+                        .await?
                 } else {
                     object
-                        .call("WriteSsapValue", &(handle, parse_hex_bytes(args[3])?))
+                        .call(
+                            "WriteSsapValue",
+                            &(
+                                handle,
+                                parse_hex_bytes(args[3])?,
+                                args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                            ),
+                        )
                         .await?
                 };
                 println!(

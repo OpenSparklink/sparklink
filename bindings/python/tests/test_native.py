@@ -101,6 +101,24 @@ class NativeBindingTests(unittest.TestCase):
         for args in [(True,b'x',c),(0,bytearray(b'x'),c),(0,b'x'*2043,c)]:
             with self.assertRaises(ValueError):channel_send_constrained(*args)
 
+    def test_prepare_tx_requires_real_domain_and_preserves_failed_output(self):
+        from sparklink.structs import SleSendConstraint
+        from sparklink.native import channel_prepare_tx
+        import socket
+        out=SleSendConstraint(generation=99,security_epoch=123);before=bytes(out)
+        fn=self.lib.slk_channel_prepare_tx
+        self.assertEqual(fn(-1,0,1,ctypes.byref(out)),-errno.EBADF)
+        self.assertEqual(bytes(out),before)
+        self.assertEqual(fn(-1,0,1,None),-errno.EINVAL)
+        for minimum,deadline in [(3,1),(0,0)]:
+            self.assertEqual(fn(-1,minimum,deadline,ctypes.byref(out)),-errno.EINVAL)
+        with socket.socket(socket.AF_UNIX,socket.SOCK_DGRAM) as unix:
+            with self.assertRaises(OSError) as caught:channel_prepare_tx(unix.fileno(),0,1)
+            self.assertEqual(caught.exception.errno,errno.EAFNOSUPPORT)
+        for args in [(True,0,1),(0,True,1),(0,0,True),(0,0,1<<64)]:
+            with self.assertRaises(ValueError):channel_prepare_tx(*args)
+        self.assertEqual(bytes(out),before)
+
     def test_channel_info_errors_preserve_output_and_errno(self):
         out = SleChannelInfo(generation=99, reserved=123)
         before = bytes(out)

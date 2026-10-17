@@ -60,6 +60,7 @@ enum Query {
     Value {
         bytes: Vec<u8>,
         deadline: Instant,
+        minimum: u32,
         reply: oneshot::Sender<Result<Vec<u8>, String>>,
     },
 }
@@ -119,12 +120,18 @@ pub(crate) struct Observer {
     queries: mpsc::Sender<Query>,
 }
 impl Observer {
-    async fn request(&self, bytes: Vec<u8>, deadline: Instant) -> Result<Vec<u8>, String> {
+    async fn request(
+        &self,
+        bytes: Vec<u8>,
+        deadline: Instant,
+        minimum: u32,
+    ) -> Result<Vec<u8>, String> {
         let (reply, result) = oneshot::channel();
         self.queries
             .try_send(Query::Value {
                 bytes,
                 deadline,
+                minimum,
                 reply,
             })
             .map_err(|_| "SSAP request queue unavailable/full".to_string())?;
@@ -167,7 +174,7 @@ impl Observer {
                     .encode(info.5, &mut bytes)
                     .map_err(|e| format!("find request: {e:?}"))?;
                 bytes.truncate(n);
-                let raw = self.request(bytes.clone(), deadline).await?;
+                let raw = self.request(bytes.clone(), deadline, 0).await?;
                 trace.push((bytes, raw.clone()));
                 if let Ok(ValuePdu::Error {
                     request: op,
@@ -247,6 +254,7 @@ impl Observer {
         end: u16,
         data_type: u8,
         uuid: Vec<u8>,
+        minimum: u32,
     ) -> Result<UuidValues, String> {
         let deadline = Instant::now() + Duration::from_secs(5);
         let info = Observer {
@@ -266,7 +274,7 @@ impl Observer {
             .encode(info.5, &mut bytes)
             .map_err(|e| format!("read UUID request: {e:?}"))?;
         bytes.truncate(n);
-        let raw = self.request(bytes.clone(), deadline).await?;
+        let raw = self.request(bytes.clone(), deadline, minimum).await?;
         let entries = slk_protocol::ssap::read_uuid::decode(info.5, &raw)
             .map_err(|e| format!("read UUID response: {e:?}"))?
             .into_iter()
@@ -281,6 +289,7 @@ impl Observer {
         self,
         handle: u16,
         value: Option<Vec<u8>>,
+        minimum: u32,
     ) -> Result<Vec<u8>, String> {
         let deadline = Instant::now() + Duration::from_secs(5);
         let queries = self.queries.clone();
@@ -307,6 +316,7 @@ impl Observer {
             .try_send(Query::Value {
                 bytes,
                 deadline,
+                minimum,
                 reply,
             })
             .map_err(|_| "SSAP request queue unavailable/full".to_string())?;
@@ -414,6 +424,8 @@ fn incoming_packet(mtu: u16, raw: &[u8], waiter: &mut Option<IncomingWait>) -> i
     Ok(out)
 }
 struct ClientRequest {
+    minimum: u32,
+    epoch: Option<u64>,
     bytes: Vec<u8>,
     deadline: Instant,
     admitted: bool,
@@ -491,6 +503,25 @@ impl Wire {
         }
         Ok((size, Some(m)))
     }
+    fn prepare(
+        &self,
+        minimum: u32,
+        deadline: Instant,
+    ) -> io::Result<Option<slk_protocol::SleSendConstraint>> {
+        #[cfg(test)]
+        if self.fixture {
+            if minimum != 0 {
+                return Err(io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP));
+            }
+            return Ok(None);
+        }
+        slk_protocol::message_security::prepare(
+            self.fd.get_ref().as_raw_fd(),
+            minimum,
+            monotonic_deadline(deadline)?,
+        )
+        .map(Some)
+    }
     fn send(&self, fd: &OwnedFd, packet: &Pending) -> io::Result<()> {
         #[cfg(test)]
         if self.fixture {
@@ -508,8 +539,8 @@ impl Wire {
             }
             Ok(())
         } else {
-            send(fd, &packet.bytes)
-        } // Initiated requests retain original fd Grant.
+            Err(io::Error::other("missing Native SSAP TX intent"))
+        }
     }
 }
 fn monotonic_deadline(deadline: Instant) -> io::Result<u64> {
@@ -529,6 +560,7 @@ fn encode(kind: ExchangeKind, mtu: u16) -> io::Result<Vec<u8>> {
         .map_err(|_| io::Error::other("invalid actual SMTC MTU"))?;
     Ok(bytes[..size].to_vec())
 }
+#[cfg(test)]
 fn send(fd: &OwnedFd, bytes: &[u8]) -> io::Result<()> {
     let count = unsafe {
         nix::libc::send(
@@ -631,7 +663,7 @@ async fn exchange_loop(
         bytes: request.clone(),
         deadline: original_deadline,
         purpose: Purpose::Request,
-        constraint: None,
+        constraint: wire.prepare(0, original_deadline)?,
     }]);
     let mut request_admitted = false;
     let mut initial_done = false;
@@ -708,11 +740,14 @@ async fn exchange_loop(
                     slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                     incoming_wait=Some(IncomingWait{handles,modes,deadline,reply});continue;
                 }
-                if let Query::Value{bytes,deadline,reply}=query {
+                if let Query::Value{bytes,deadline,minimum,reply}=query {
                     if client.is_some() || pending.len()>=8 || !initial_done || Instant::now()>=deadline {let _=reply.send(Err("SSAP busy/not-ready/expired".into()));continue;}
                     slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                     if bytes.len()>usize::from(capabilities.mtu) {let _=reply.send(Err("SSAP request exceeds channel".into()));continue;}
-                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client,constraint:None});client=Some(ClientRequest{bytes,deadline,admitted:false,reply});continue;
+                    if reply.is_closed(){continue;}
+                    let constraint=match wire.prepare(minimum,deadline) {Ok(c)=>c,Err(e)=>{let _=reply.send(Err(format!("SSAP send intent refused: {e}")));continue;}};
+                    let epoch=constraint.map(|c|c.security_epoch);
+                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client,constraint});client=Some(ClientRequest{bytes,deadline,minimum,epoch,admitted:false,reply});continue;
                 }
                 if let Query::TransportStatus{deadline,reply}=query {
                     if reply.is_closed() {continue;}
@@ -776,7 +811,7 @@ async fn exchange_loop(
                         slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                         let response=if raw[0]==10 {
                             match slk_protocol::ssap::read_uuid::Request::decode(negotiated,raw) {
-                                Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.read_uuid(request,negotiated).map_err(io::Error::other)?,
+                                Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.read_uuid(request,negotiated,receipt.map_or(0,|m|m.security)).map_err(io::Error::other)?,
                                 Err(_)=>{let mut out=vec![0;6];ValuePdu::Error{request:10,handle:0,error:1}.encode(negotiated,&mut out).map_err(|_|io::Error::other("read UUID error codec"))?;out}
                             }
                         }else if matches!(raw[0],4|6) {
@@ -785,12 +820,16 @@ async fn exchange_loop(
                                 Err(error)=>{let mut out=vec![0;6];let handle=if matches!(error,slk_protocol::ssap::discovery::FindError::Handle)&&raw.len()>=4{u16::from_le_bytes([raw[2],raw[3]])}else{0};ValuePdu::Error{request:raw[0],handle,error:match error{slk_protocol::ssap::discovery::FindError::Handle=>4,slk_protocol::ssap::discovery::FindError::Unsupported=>2,_=>1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("find error codec"))?;out}
                             }
                         }else{match ValuePdu::decode(negotiated,raw) {
-                            Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.answer(request,negotiated).map_err(io::Error::other)?,
+                            Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.answer(request,negotiated,receipt.map_or(0,|m|m.security)).map_err(io::Error::other)?,
                             Err(e)=> {let mut out=vec![0;6];ValuePdu::Error{request:raw[0],handle:0,error:if raw.get(1).is_some_and(|v|v&3!=3){16}else if matches!(e,slk_protocol::ssap::value::ValueError::Unsupported){2}else{1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("error response exceeds MTU"))?;out},
                         }};
                         pending.push_back(Pending{bytes:response,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});
                     } else if matches!(raw[0],1|5|7|9|11|14) {
-                        let Some(ClientRequest{bytes:request,deadline,admitted,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        let Some(ClientRequest{bytes:request,deadline,minimum,epoch,admitted,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        if let Some(epoch)=epoch {
+                            let m=receipt.ok_or_else(||io::Error::other("missing reply receipt"))?;
+                            if m.security_epoch!=epoch || m.security<minimum{return Err(io::Error::other("SSAP reply differs from original request security intent"));}
+                        }
                         if !admitted || Instant::now()>=deadline {return Err(io::Error::other("SSAP reply before submit or after original deadline"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         if request[0]==10 {

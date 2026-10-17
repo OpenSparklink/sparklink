@@ -142,6 +142,34 @@ pub fn deadline_at(deadline: std::time::Instant) -> io::Result<u64> {
         .ok_or_else(|| io::Error::from_raw_os_error(nix::libc::EOVERFLOW))
 }
 
+nix::ioctl_readwrite!(sl_channel_prepare_tx, b'S', 0xe3, SleSendConstraint);
+/// Snapshot a restriction through the existing TX fd, without renewing its
+/// Grant or reserving credit. It must still accompany the actual sendmsg.
+pub fn prepare(
+    fd: RawFd,
+    minimum: u32,
+    deadline_monotonic_ns: u64,
+) -> io::Result<SleSendConstraint> {
+    if minimum > 2 || deadline_monotonic_ns == 0 {
+        return Err(io::Error::from_raw_os_error(nix::libc::EINVAL));
+    }
+    check_domain(fd)?;
+    let mut c = SleSendConstraint {
+        version: 1,
+        size: 48,
+        minimum,
+        deadline_monotonic_ns,
+        ..Default::default()
+    };
+    unsafe { sl_channel_prepare_tx(fd, &mut c) }
+        .map_err(|e| io::Error::from_raw_os_error(e as i32))?;
+    c.validate()?;
+    if c.minimum != minimum || c.deadline_monotonic_ns != deadline_monotonic_ns {
+        return Err(io::Error::from_raw_os_error(nix::libc::EPROTO));
+    }
+    Ok(c)
+}
+
 /// Software admission with an explicit restrictive intent. No credit refund,
 /// current-security promise after return, controller or peer completion.
 pub fn send(

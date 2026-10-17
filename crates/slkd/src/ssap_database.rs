@@ -1,14 +1,16 @@
 //! Bounded adapter-local service data. Handles are never reused within this
 //! registration. Local insertion is not remote discovery/publication success.
+use slk_protocol::ssap::access::SsapAccess;
 use slk_protocol::ssap::discovery::{Entry, FindKind, FindRequest, encode_page};
 use slk_protocol::{SsapOperations, ssap::value::ValuePdu};
 use std::collections::BTreeMap;
 
-pub(crate) type PropertyDefinition = (Vec<u8>, u32, Vec<u8>);
-pub(crate) type LocalService = (u16, u16, Vec<u8>, Vec<(u16, Vec<u8>, u32)>);
+pub(crate) type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
+pub(crate) type LocalService = (u16, u16, Vec<u8>, Vec<(u16, Vec<u8>, u32, u32)>);
 struct Property {
     uuid: Vec<u8>,
     operations: SsapOperations,
+    access: SsapAccess,
     value: Vec<u8>,
 }
 struct Service {
@@ -47,7 +49,11 @@ impl Database {
             return Err("local database capacity".into());
         }
         let mut added = 0;
-        for (uuid, ops, value) in &definitions {
+        for (uuid, ops, access, value) in &definitions {
+            let access = SsapAccess::from_bits(*access)?;
+            if access.needs_local_authorization() {
+                return Err("SSAP local authorization not connected".into());
+            }
             let ops = SsapOperations::from_bits(*ops).map_err(|e| e.to_string())?;
             if !uuid_valid(uuid) || ops.bits() & !5 != 0 {
                 return Err(
@@ -71,12 +77,13 @@ impl Database {
         let properties = definitions
             .into_iter()
             .enumerate()
-            .map(|(i, (uuid, ops, value))| {
+            .map(|(i, (uuid, ops, access, value))| {
                 (
                     (self.next + 1 + i as u32) as u16,
                     Property {
                         uuid,
                         operations: SsapOperations::from_bits(ops).expect("validated"),
+                        access: SsapAccess::from_bits(access).expect("validated"),
                         value,
                     },
                 )
@@ -105,7 +112,7 @@ impl Database {
                     s.uuid.clone(),
                     s.properties
                         .iter()
-                        .map(|(h, p)| (*h, p.uuid.clone(), p.operations.bits()))
+                        .map(|(h, p)| (*h, p.uuid.clone(), p.operations.bits(), p.access.bits()))
                         .collect(),
                 )
             })
@@ -181,6 +188,7 @@ impl Database {
         &self,
         request: slk_protocol::ssap::read_uuid::Request<'_>,
         mtu: u16,
+        level: u32,
     ) -> Result<Vec<u8>, String> {
         use slk_protocol::ssap::read_uuid::{Item, encode};
         let mut items = Vec::new();
@@ -197,6 +205,8 @@ impl Database {
                             Err(13)
                         } else if !p.operations.contains(SsapOperations::READ) {
                             Err(6)
+                        } else if let Err(error) = p.access.check(level, false) {
+                            Err(u16::from(error))
                         } else {
                             Ok(p.value.as_slice())
                         };
@@ -244,13 +254,21 @@ impl Database {
     }
     /// Returns a real protocol response. Mutates only on validated single-value
     /// writes with sufficient permission, value budget and negotiated PDU size.
-    pub(crate) fn answer(&mut self, request: ValuePdu<'_>, mtu: u16) -> Result<Vec<u8>, String> {
+    pub(crate) fn answer(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+    ) -> Result<Vec<u8>, String> {
         let mut out = vec![0; usize::from(mtu)];
         let response = match request {
             ValuePdu::Read { handle, data_type } => match self.property(handle) {
                 None => ValuePdu::ReadError(4),
                 Some(_) if data_type != 0 => ValuePdu::ReadError(13),
                 Some(p) if !p.operations.contains(SsapOperations::READ) => ValuePdu::ReadError(6),
+                Some(p) if p.access.check(level, false).is_err() => {
+                    ValuePdu::ReadError(u16::from(p.access.check(level, false).unwrap_err()))
+                }
                 Some(p) if p.value.len() + 2 > usize::from(mtu) => ValuePdu::Error {
                     request: 8,
                     handle: 0,
@@ -268,6 +286,9 @@ impl Database {
                     None => Some(4),
                     Some(_) if data_type != 0 => Some(13),
                     Some(p) if !p.operations.contains(SsapOperations::WRITE_WITH_RSP) => Some(7),
+                    Some(p) if p.access.check(level, true).is_err() => {
+                        p.access.check(level, true).err()
+                    }
                     Some(p)
                         if value.len() > 2042
                             || self.bytes - p.value.len() + value.len() > 8192 =>
@@ -313,11 +334,120 @@ impl Database {
 mod tests {
     use super::*;
     #[test]
+    fn attribute_security_checks_original_level_before_values_or_mutation() {
+        use slk_protocol::ssap::read_uuid::{Request, decode};
+        for level in 0..=2 {
+            let mut d = Database::default();
+            let (_, _, handles) = d
+                .register(
+                    vec![1, 0],
+                    vec![
+                        (vec![2, 0], 5, 0, vec![7]),
+                        (vec![2, 0], 5, 9, vec![7]),
+                        (vec![2, 0], 5, 18, vec![7]),
+                    ],
+                )
+                .unwrap();
+            for (index, handle) in handles.iter().copied().enumerate() {
+                let error = if index == 2 && level < 2 {
+                    Some(8)
+                } else if index == 1 && level == 0 {
+                    Some(10)
+                } else {
+                    None
+                };
+                let raw = d
+                    .answer(
+                        ValuePdu::Read {
+                            handle,
+                            data_type: 0,
+                        },
+                        249,
+                        level,
+                    )
+                    .unwrap();
+                match error {
+                    Some(e) => {
+                        assert_eq!(ValuePdu::decode(249, &raw).unwrap(), ValuePdu::ReadError(e))
+                    }
+                    None => assert_eq!(
+                        ValuePdu::decode(249, &raw).unwrap(),
+                        ValuePdu::ReadValue(&[7])
+                    ),
+                }
+                let raw = d
+                    .answer(
+                        ValuePdu::Write {
+                            handle,
+                            data_type: 0,
+                            value: &[9],
+                            verify: true,
+                        },
+                        249,
+                        level,
+                    )
+                    .unwrap();
+                if let Some(e) = error {
+                    assert_eq!(
+                        ValuePdu::decode(249, &raw).unwrap(),
+                        ValuePdu::WriteError {
+                            handle,
+                            error: e as u8
+                        }
+                    );
+                    assert_eq!(d.local_read(handle).unwrap(), [7]);
+                } else {
+                    assert_eq!(
+                        ValuePdu::decode(249, &raw).unwrap(),
+                        ValuePdu::WrittenValue {
+                            handle,
+                            data_type: 0,
+                            value: &[9]
+                        }
+                    );
+                    assert_eq!(d.local_read(handle).unwrap(), [9]);
+                }
+            }
+            let raw = d
+                .read_uuid(
+                    Request {
+                        start: 16,
+                        end: 65535,
+                        data_type: 0,
+                        uuid: &[2, 0],
+                    },
+                    249,
+                    level,
+                )
+                .unwrap();
+            let items = decode(249, &raw).unwrap();
+            assert_eq!(items.len(), 3);
+            assert_eq!(items[0].value, Ok(&[9][..]));
+            assert_eq!(
+                items[1].value,
+                if level == 0 { Err(10) } else { Ok(&[9][..]) }
+            );
+            assert_eq!(
+                items[2].value,
+                if level < 2 { Err(8) } else { Ok(&[9][..]) }
+            );
+        }
+        let mut d = Database::default();
+        for access in [4, 32, 36, 64, 1 << 31] {
+            assert!(
+                d.register(vec![1, 0], vec![(vec![2, 0], 5, access, vec![1])])
+                    .is_err()
+            );
+            assert!(d.list().is_empty());
+            assert_eq!((d.bytes, d.next), (0, 16));
+        }
+    }
+    #[test]
     fn discovery_uses_real_local_metadata_and_reserved_handle_floor() {
         use slk_protocol::ssap::discovery::{EntryClass, decode_page};
         let mut d = Database::default();
         let (start, end, handles) = d
-            .register(vec![9; 16], vec![(vec![7; 16], 5, vec![1])])
+            .register(vec![9; 16], vec![(vec![7; 16], 5, 0, vec![1])])
             .unwrap();
         assert_eq!((start, end, handles[0]), (16, 17, 17));
         for (kind, uuid, expected) in [
@@ -353,7 +483,7 @@ mod tests {
         let (_, _, h) = d
             .register(
                 vec![1, 0],
-                vec![(vec![2, 0], 1, vec![1, 2]), (vec![2, 0], 4, vec![3])],
+                vec![(vec![2, 0], 1, 0, vec![1, 2]), (vec![2, 0], 4, 0, vec![3])],
             )
             .unwrap();
         let r = Request {
@@ -362,19 +492,19 @@ mod tests {
             data_type: 0,
             uuid: &[2, 0],
         };
-        let raw = d.read_uuid(r, 249).unwrap();
+        let raw = d.read_uuid(r, 249, 0).unwrap();
         let v = decode(249, &raw).unwrap();
         assert_eq!(v.len(), 2);
         assert_eq!(v[0].handle, h[0]);
         assert_eq!(v[0].value, Ok(&[1, 2][..]));
         assert_eq!(v[1].value, Err(6));
-        assert_eq!(d.read_uuid(r, 9).unwrap(), [9, 11, 16, 0]);
+        assert_eq!(d.read_uuid(r, 9, 0).unwrap(), [9, 11, 16, 0]);
         assert_eq!(
-            d.read_uuid(Request { start: 0, ..r }, 249).unwrap(),
+            d.read_uuid(Request { start: 0, ..r }, 249, 0).unwrap(),
             [11, 11, 0, 0, 4, 0]
         );
         assert_eq!(
-            d.read_uuid(Request { uuid: &[9, 0], ..r }, 249).unwrap(),
+            d.read_uuid(Request { uuid: &[9, 0], ..r }, 249, 0).unwrap(),
             [11, 11, 16, 0, 11, 0]
         );
         assert_eq!(
@@ -386,7 +516,8 @@ mod tests {
                         end: h[0],
                         ..r
                     },
-                    249
+                    249,
+                    0
                 )
                 .unwrap()
             )
@@ -399,7 +530,7 @@ mod tests {
     fn permissions_budget_and_nonreuse_are_production_state() {
         let mut d = Database::default();
         let (start, _, hs) = d
-            .register(vec![1, 0], vec![(vec![2, 0], 5, vec![1])])
+            .register(vec![1, 0], vec![(vec![2, 0], 5, 0, vec![1])])
             .unwrap();
         let h = hs[0];
         assert_eq!(
@@ -408,7 +539,8 @@ mod tests {
                     handle: h,
                     data_type: 0
                 },
-                249
+                249,
+                0
             )
             .unwrap(),
             [9, 3, 1]
@@ -421,7 +553,8 @@ mod tests {
                     value: &[7, 8],
                     verify: true
                 },
-                249
+                249,
+                0
             )
             .unwrap(),
             [14, 3, 17, 0, 0, 7, 8]
@@ -433,14 +566,15 @@ mod tests {
                     handle: h,
                     data_type: 2
                 },
-                249
+                249,
+                0
             )
             .unwrap(),
             [9, 11, 13, 0]
         );
         d.remove(start).unwrap();
         let (_, _, hs) = d
-            .register(vec![1, 0], vec![(vec![2, 0], 1, vec![4])])
+            .register(vec![1, 0], vec![(vec![2, 0], 1, 0, vec![4])])
             .unwrap();
         assert!(hs[0] > h);
         assert_eq!(
@@ -451,7 +585,8 @@ mod tests {
                     value: &[9],
                     verify: false
                 },
-                249
+                249,
+                0
             )
             .unwrap(),
             [14, 7, 1, 19, 0, 7]
@@ -460,23 +595,23 @@ mod tests {
         let before = (d.next, d.bytes, d.list());
         for ops in [2, 3, 6, 7] {
             assert!(
-                d.register(vec![1, 0], vec![(vec![2, 0], ops, vec![])])
+                d.register(vec![1, 0], vec![(vec![2, 0], ops, 0, vec![])])
                     .is_err()
             );
             assert_eq!((d.next, d.bytes, d.list()), before);
         }
 
         assert!(
-            d.register(vec![1, 0], vec![(vec![2, 0], 8, vec![])])
+            d.register(vec![1, 0], vec![(vec![2, 0], 8, 0, vec![])])
                 .is_err()
         );
         assert_eq!((d.next, d.bytes, d.list()), before);
         for _ in 0..15 {
-            d.register(vec![1, 0], vec![(vec![2, 0], 1, vec![])])
+            d.register(vec![1, 0], vec![(vec![2, 0], 1, 0, vec![])])
                 .unwrap();
         }
         assert!(
-            d.register(vec![1, 0], vec![(vec![2, 0], 1, vec![])])
+            d.register(vec![1, 0], vec![(vec![2, 0], 1, 0, vec![])])
                 .is_err()
         );
     }

@@ -13,7 +13,7 @@ def execute(run,row):
     for owner in owners:
         value=secrets.token_bytes(32)
         service=secrets.token_bytes(16);property_uuid=secrets.token_bytes(16)
-        registered=command(owner,['ssap-register',service.hex(),property_uuid.hex(),'5',value.hex()])
+        registered=command(owner,['ssap-register',service.hex(),property_uuid.hex(),'5','0',value.hex()])
         matches=re.findall(r'^SsapLocalService: start=(\d+) end=(\d+) properties=(\d+)$',registered['stdout'],re.M)
         if len(matches)!=1:raise CaptureError('one actual local database registration required')
         start,end,handle=map(int,matches[0]);local.append(dict(owner=owner,start=start,handle=handle,value=value,registration=registered,service_uuid=service.hex(),property_uuid=property_uuid.hex()))

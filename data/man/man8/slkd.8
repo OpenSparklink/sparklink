@@ -113,12 +113,15 @@ invalid arguments may be rejected first. ListBonded()/RemoveBond(s) operate
 legacy local metadata only and do not establish or revoke real trusted keys.
 .SS Local service data and remote SSAP
 org.sparklink.ServiceManager is at /services.
-RegisterLocalService(ay uuid, a(ayuay) properties) returns (qqaq): service
+RegisterLocalService(ay uuid, a(ayuuay) properties) returns (qqaq): service
 start, end and property handles. UUIDs are nonzero 2 or 16-byte values;
-properties contain UUID, operations and initial value. Current operations
+properties contain UUID, operations, access requirements and initial value.
+Access mask 0x3f is separate from operation bits; encryption bits 1/8 and
+numeric-comparison mechanism bits 2/16 govern write/read respectively.
+Local-authorization bits 4/32 remain NotSupported; reserved bits are InvalidArgs. Current operations
 are READ=1 and WRITE_WITH_RSP=4. Limits are 16 services, 64 properties,
 2042 bytes per value and 8192 aggregate value bytes per registration.
-ListLocalServices() returns a(qqaya(qayu)); RemoveLocalService(q start) and
+ListLocalServices() returns a(qqaya(qayuu)); RemoveLocalService(q start) and
 ReadLocalValue(q handle) operate the local database. Local registration
 success is not remote service-discovery or publication success.
 .PP
@@ -166,3 +169,13 @@ remain tracked; this manual does not certify a clean-distribution deployment.
 .BR slctl (1),
 .BR sparklink.conf (5),
 .BR dbus-daemon (1)
+
+.PP
+Connection ReadSsapValue(q handle,u minimum), WriteSsapValue(q handle,ay value,u minimum)
+and ReadSsapByUuid(q start,q end,y data_type,ay uuid,u minimum) use mechanism
+minimum 0..2 and the existing authorized SMTC fd. Initial requests and responses
+carry restrictive per-send epoch and original deadline constraints. Preparing
+an intent does not renew authorization or reserve credit. Numeric comparison
+is not a named identity or Bond. Read denial error 8/10 and write denial leave
+protected values undisclosed or unchanged; timeout after admitted write does
+not imply rollback. Exact source/artifact qualification is separate.

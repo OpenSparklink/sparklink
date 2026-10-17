@@ -31,6 +31,23 @@
 
 #define SECURITY_UNAUTHENTICATED_ENCRYPTION 3
 
+/**
+ * Local SSAP API access requirements, separate from operation indicators.
+ */
+#define SSAP_ACCESS_WRITE_ENCRYPTED 1
+
+#define SSAP_ACCESS_WRITE_AUTHENTICATED 2
+
+#define SSAP_ACCESS_WRITE_AUTHORIZED 4
+
+#define SSAP_ACCESS_READ_ENCRYPTED 8
+
+#define SSAP_ACCESS_READ_AUTHENTICATED 16
+
+#define SSAP_ACCESS_READ_AUTHORIZED 32
+
+#define SSAP_ACCESS_VALID_MASK 63
+
 #define WS73_DISCOVERY_POLICY_VERSION 3
 
 enum BusType
@@ -1143,6 +1160,22 @@ intptr_t slk_channel_send_constrained(int fd,
                                       uintptr_t length,
                                       int flags,
                                       const struct SleSendConstraint *constraint);
+
+/**
+ * Prepare a restrictive intent through the already authorized fd, no Grant
+ * renewal or credit reservation. Actual sendmsg must still carry the result.
+ * # Safety
+ * Caller holds a stable fd and exclusive live aligned writable output object.
+ */
+int slk_channel_prepare_tx(int fd,
+                           uint32_t minimum,
+                           uint64_t deadline,
+                           struct SleSendConstraint *out);
+
+/**
+ * Pure requirement validation, not a grant or native security observation.
+ */
+int slk_ssap_access_error(uint32_t bits, uint32_t level, uint32_t write);
 
 #ifdef __cplusplus
 }  // extern "C"

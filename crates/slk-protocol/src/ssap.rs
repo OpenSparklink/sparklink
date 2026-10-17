@@ -11,6 +11,9 @@ pub mod updates;
 #[path = "ssap/value.rs"]
 pub mod value;
 
+#[path = "ssap/access.rs"]
+pub mod access;
+
 use core::{fmt, ops::BitOr};
 
 #[cfg(test)]

@@ -36,6 +36,8 @@ def _get_native_lib():
     u64, u32 = ctypes.c_uint64, ctypes.c_uint32
     signatures = {
         "slk_channel_send_constrained": [ctypes.c_int, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int, ctypes.POINTER(SleSendConstraint)],
+        "slk_channel_prepare_tx": [ctypes.c_int, ctypes.c_uint32, ctypes.c_uint64, ctypes.POINTER(SleSendConstraint)],
+        "slk_ssap_access_error": [ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32],
         "slk_channel_recv_security": [ctypes.c_int, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int, ctypes.POINTER(SleMessageSecurity), ctypes.POINTER(ctypes.c_int)],
         "slk_channel_info": [ctypes.c_int, ctypes.POINTER(SleChannelInfo)],
         "slk_channel_tx_status": [ctypes.c_int, ctypes.POINTER(SleChannelTxStatus)],
@@ -406,3 +408,14 @@ def channel_send_constrained(fd, payload, constraint, flags=0):
     result=_get_native_lib().slk_channel_send_constrained(fd,buffer,len(payload),flags,ctypes.byref(constraint))
     if result<0:raise OSError(-result,os.strerror(-result))
     return result
+
+
+def channel_prepare_tx(fd, minimum, deadline_monotonic_ns):
+    """Snapshot a restriction, not authorization; carry it with actual sendmsg."""
+    if type(fd) is not int or not 0<=fd<=2147483647 or type(minimum) is not int or not 0<=minimum<=2:
+        raise ValueError("valid fd and mechanism0..2 required")
+    if type(deadline_monotonic_ns) is not int or not 0<deadline_monotonic_ns<(1<<64):
+        raise ValueError("nonzero uint64 original deadline required")
+    c=SleSendConstraint();result=_get_native_lib().slk_channel_prepare_tx(fd,minimum,deadline_monotonic_ns,ctypes.byref(c))
+    if result<0:raise OSError(-result,os.strerror(-result))
+    return c

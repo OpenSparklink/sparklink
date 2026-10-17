@@ -21,7 +21,14 @@ impl SsapManagerIface {
         uuid: Vec<u8>,
         properties: Vec<crate::ssap_database::PropertyDefinition>,
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
-        for (_, ops, _) in &properties {
+        for (_, ops, access, _) in &properties {
+            let policy = slk_protocol::ssap::access::SsapAccess::from_bits(*access)
+                .map_err(|e| zbus::fdo::Error::InvalidArgs(e.into()))?;
+            if policy.needs_local_authorization() {
+                return Err(zbus::fdo::Error::NotSupported(
+                    "SSAP local authorization not connected".into(),
+                ));
+            }
             let validated = slk_protocol::SsapOperations::from_bits(*ops)
                 .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
             if validated.bits() & !5 != 0 {
@@ -384,7 +391,7 @@ mod validation_tests {
         let _locked = state.lock().await;
         let unsupported = tokio::time::timeout(
             std::time::Duration::from_secs(1),
-            service.register_local_service(vec![1, 0], vec![(vec![2, 0], 2, vec![])]),
+            service.register_local_service(vec![1, 0], vec![(vec![2, 0], 2, 0, vec![])]),
         )
         .await
         .unwrap();

@@ -82,7 +82,39 @@ lifetime/channel不匹配或control截断均失败，不从最新连接快照给
 单调期限，由原Session/Grant/Ticket在实际USB提交时再次强制；软件准入不等于
 物理或对端完成。显式AF_UNIX测试Wire不生成安全上下文，不进入生产构建。
 
-此机制仍不是逐属性安全策略或本地授权。主动ExchangeInfo/客户端请求继续受原
-fd Grant管理，细粒度主动意图另行接通。操作位、命名身份/Bond、实际机制和本地
-授权保持独立；失败响应不会回滚已发生的数据库写入，请求超时也不能证明对端未
-执行。精确ABI/错误/原期限见[接口参考](interfaces.md)，资格只在唯一能力入口维护。
+主动 ExchangeInfo 和客户端请求也通过原 fd 的 PREPARE_TX ioctl 取得限制，实际
+sendmsg 必须携带限制；没有 raw-send 回退。准备不预留 credit、不续 Grant、不升级
+旧 protected fd 的 epoch。客户端回复须匹配原请求 epoch 和机制下限。操作位、命名
+身份/Bond、实际机制和本地授权保持独立；失败响应不会回滚已发生的数据库写入，
+请求超时也不能证明对端未执行。精确ABI/错误/原期限见[接口参考](interfaces.md)，资格只在唯一能力入口维护。
+
+## 逐属性值访问要求
+
+本地注册 properties 项现为 `(uuid:ay, operations:u32, access:u32, value:ay)`。
+`ListLocalServices` 的属性项为 `(handle:u16,uuid:ay,operations:u32,access:u32)`。
+未发布接口同步迁移，无旧签名兼容期。操作位仍用表32的 0x73f；access 是独立六位
+本地 API 编码，复用固定 NearLink Host 的 NapiPermission，不把它写入远端属性声明。
+
+| access 位 | 值 | 限制 |
+|---|---:|---|
+| WRITE_ENCRYPTED | 1 | 写原请求观察机制至少 1 |
+| WRITE_AUTHENTICATED | 2 | 写原请求观察机制至少 2 |
+| WRITE_AUTHORIZED | 4 | 本地逐属性授权尚未接通，注册 NotSupported |
+| READ_ENCRYPTED | 8 | 读原请求观察机制至少 1 |
+| READ_AUTHENTICATED | 16 | 读原请求观察机制至少 2 |
+| READ_AUTHORIZED | 32 | 本地逐属性授权尚未接通，注册 NotSupported |
+
+保留位返回 InvalidArgs；授权位不能由任意应用布尔值授予。当前内核的等级 2 表示
+SDK111 数字比较机制，不能推导命名身份、Bond 或独立 RF 加密证明。服务端在读取
+值或修改数据库之前检查真实原 RX 上下文；普通读取、按 UUID 读取、响应写共用同一
+检查。认证不足返回表51错误 8，加密不足返回 10；本地授权纯检查始终返回 9，生产
+注册先拒绝这项尚未接通的能力。公开发现元数据不包含受保护的值或 access 要求。
+
+`slctl ssap-register SERVICE_HEX PROPERTY_HEX OPS ACCESS VALUE_HEX` 只配置本地库。
+`ssap-list` 列出本地元数据，不能当作远端发现。`ssap-read`、`ssap-write` 和
+`ssap-read-uuid` 末尾可指定 `MINIMUM`（0/1/2，默认 0），经唯一 Engine 和原 fd
+约束实际发送；超出当前机制或输入范围明确失败，无明文降级。局部数据库检查、
+访问谓词测试和工具有界结果不能替代真实双端请求/拒绝/修改及 USB 证据。
+
+实现已接通；本批新源码的实机资格须单独取得。Kani 检查原生产谓词的七项性质，
+工具仍有编译诊断，当前保持“未证明”，不升级为全生命周期或安全协议证明。

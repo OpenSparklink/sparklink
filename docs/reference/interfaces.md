@@ -261,9 +261,9 @@ Connection新增DiscoverSsap(uuid,kind)/GetCachedSsap，按实际SMTC响应产�
 
 ### ReadByUUID：有限完整PDU模式
 
-U514cf733aab4新增Connection.ReadSsapByUuid(start:u16,end:u16,data_type:u8,uuid:ay)，
+U514cf733aab4新增Connection.ReadSsapByUuid(start:u16,end:u16,data_type:u8,uuid:ay,minimum:u32)，
 返回逐条(handle,success,error,value)与原始请求/响应。普通用户CLI为
-`slctl --adapter PATH ssap-read-uuid CONNECTION START END UUID_HEX`；数据类型为0。
+`slctl --adapter PATH ssap-read-uuid CONNECTION START END UUID_HEX [MINIMUM]`；数据类型为0。
 UUID须2/16字节，范围非零且start≤end；无效本地参数为InvalidArgs，退休lifetime
 或actor/队列失败为Failed。远端条目错误保留在每条结果，不描述成读成功。
 
@@ -528,3 +528,25 @@ Command Status、调用端 Down、对端 Down 和 D-Bus 属性同步分别核对
 K619/U8bda 新产物六项门禁实际取得请求10、本端11／对端10；原参数和五秒预算
 未变。旧13产物的反向对照也快速断链并返回对端13，因此新请求语义正确不证明
 原超时根因。原默认短包5秒失败继续保留，不授自动恢复或完整安全资格。
+
+
+## 原 fd 准备发送限制与属性值要求
+
+`SPARKLINK_CHANNEL_PREPARE_TX` 是 `_IOWR('S',0xe3,struct sparklink_send_constraint)`，
+结构仍为 48 字节。输入仅 version=1、size=48、minimum=0..2 和非零原始
+CLOCK_MONOTONIC 绝对期限；所有身份/epoch/TCID/保留字段须为零。成功填回原 fd
+所属当前 Session/channel/epoch，期限不得续期，首次准备最多剩余 5 秒；不预留
+credit、不授予权限、不重绑或续 Grant。实际发送仍须携带 `SCM_TX_CONSTRAINT`，
+最终 USB 提交重新检查原身份、授权、epoch、期限；准备成功不是发送成功。
+未绑定/未就绪、RX-only、过期、撤权及旧 protected epoch 均失败；非法形状 EINVAL，
+用户地址错误 EFAULT。不支持的 fd/协议由实际 syscall 返回错误，无成功模拟。
+
+Rust `message_security::prepare`、C `slk_channel_prepare_tx`、Python
+`channel_prepare_tx` 使用同一 ioctl。C 输出仅成功时修改，调用者须提供稳定 fd 和
+有效对齐存储。`slk_ssap_access_error` 是纯 access 谓词（0 或 SSAP 错误 8/9/10，
+非法输入 -EINVAL），不能接收应用伪造等级并据此授予实际权限。
+
+Connection.ReadSsapValue(handle,minimum)、WriteSsapValue(handle,value,minimum)
+及 ReadSsapByUuid(...,minimum) 是未发布的新签名。ServiceManager 属性注册/列表
+也增加独立 access 字段，详见[操作和访问要求](ssap-permissions.md)。只有唯一
+Native Engine 的真实内核 RX 观察可用于生产值访问；授权尚未接通，明确拒绝。

@@ -49,3 +49,29 @@ SsapOperations.BROADCAST = SsapOperations(1 << 5)
 SsapOperations.DESC_WRITABLE = SsapOperations(1 << 8)
 SsapOperations.CLIENT_CFG_WR = SsapOperations(1 << 9)
 SsapOperations.SERVER_CFG_WR = SsapOperations(1 << 10)
+
+
+@dataclass(frozen=True)
+class SsapAccess:
+    """Value security requirements, not operation indicators or a Grant."""
+    bits: int
+    WRITE_ENCRYPTED: ClassVar[int] = 1
+    WRITE_AUTHENTICATED: ClassVar[int] = 2
+    WRITE_AUTHORIZED: ClassVar[int] = 4
+    READ_ENCRYPTED: ClassVar[int] = 8
+    READ_AUTHENTICATED: ClassVar[int] = 16
+    READ_AUTHORIZED: ClassVar[int] = 32
+    VALID_MASK: ClassVar[int] = 63
+
+    def __post_init__(self):
+        if type(self.bits) is not int or not 0<=self.bits<=self.VALID_MASK:
+            raise ValueError('invalid or reserved SSAP access bits')
+
+    def error(self, level, write=False):
+        """Pure production requirement check; never observes/mints authority."""
+        if type(level) is not int or not 0<=level<=2 or type(write) is not bool:
+            raise ValueError('bounded mechanism and bool direction required')
+        from .native import _get_native_lib
+        result=_get_native_lib().slk_ssap_access_error(self.bits,level,int(write))
+        if result<0:raise ValueError('invalid access context')
+        return result

@@ -139,13 +139,14 @@ Commands:
   connection-info <path>        Show one immutable connection identity
   disconnect-object <path>      Disconnect the exact physical lifetime
   ssap-discover <path> [structure|service|property uuid-hex] Discover actual peer metadata
-  ssap-register <service-hex> <property-hex> <ops> <value-hex> Configure local database only
+  ssap-list                            Inspect local service metadata only
+  ssap-register <service-hex> <property-hex> <ops> <access> <value-hex> Configure local database only
   ssap-remove <start-handle>                 Remove local service (handles not reused)
   ssap-local-read <handle>                   Inspect local database, not peer receipt
   ssap-observe <path> <handle> [notify|indicate|both] [wait-ms] Observe one actual incoming packet; no remote subscription
-  ssap-read-uuid <path> <start> <end> <uuid-hex> Read actual peer values by UUID
-  ssap-read <path> <handle>                  Read actual peer value on SMTC
-  ssap-write <path> <handle> <value-hex>      Write with peer verification and reply
+  ssap-read-uuid <path> <start> <end> <uuid-hex> [minimum] Read actual peer values by UUID
+  ssap-read <path> <handle> [minimum]                  Read actual peer value on SMTC
+  ssap-write <path> <handle> <value-hex> [minimum]      Write with peer verification and reply
   transport-status <path>                    Read current Session queues/debt/state (not drain/reuse proof)
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   disconnect <address> [type]    Disconnect an unambiguous current peer

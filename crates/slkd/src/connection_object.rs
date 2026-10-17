@@ -278,7 +278,13 @@ impl ConnectionIface {
         &self,
         handle: u16,
         value: Option<Vec<u8>>,
+        minimum: u32,
     ) -> zbus::fdo::Result<Vec<u8>> {
+        if minimum > 2 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "mechanism minimum0..2 required".into(),
+            ));
+        }
         let (known, current) = self.observation().await;
         if !known || !current {
             return Err(zbus::fdo::Error::Failed(
@@ -293,7 +299,7 @@ impl ConnectionIface {
             .observer();
         drop(actor);
         let result = observer
-            .value(handle, value)
+            .value(handle, value, minimum)
             .await
             .map_err(zbus::fdo::Error::Failed)?;
         let (known, current) = self.observation().await;
@@ -685,7 +691,13 @@ impl ConnectionIface {
         end: u16,
         data_type: u8,
         uuid: Vec<u8>,
+        minimum: u32,
     ) -> zbus::fdo::Result<crate::ssap_engine::UuidValues> {
+        if minimum > 2 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "mechanism minimum0..2 required".into(),
+            ));
+        }
         if start == 0 || start > end || !matches!(uuid.len(), 2 | 16) {
             return Err(zbus::fdo::Error::InvalidArgs(
                 "valid range and 2/16-byte UUID required".into(),
@@ -699,7 +711,7 @@ impl ConnectionIface {
             .observer();
         drop(actor);
         let result = observer
-            .read_uuid(start, end, data_type, uuid)
+            .read_uuid(start, end, data_type, uuid, minimum)
             .await
             .map_err(zbus::fdo::Error::Failed)?;
         if self.observation().await != (true, true) {
@@ -709,11 +721,17 @@ impl ConnectionIface {
         }
         Ok(result)
     }
-    async fn read_ssap_value(&self, handle: u16) -> zbus::fdo::Result<Vec<u8>> {
-        self.synchronous_ssap_value(handle, None).await
+    async fn read_ssap_value(&self, handle: u16, minimum: u32) -> zbus::fdo::Result<Vec<u8>> {
+        self.synchronous_ssap_value(handle, None, minimum).await
     }
-    async fn write_ssap_value(&self, handle: u16, value: Vec<u8>) -> zbus::fdo::Result<Vec<u8>> {
-        self.synchronous_ssap_value(handle, Some(value)).await
+    async fn write_ssap_value(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        self.synchronous_ssap_value(handle, Some(value), minimum)
+            .await
     }
     /// Read-only native mechanism state via an existing owner. Do not start an
     /// SSAP Engine, open a channel, mutate credit or mint authorization here.

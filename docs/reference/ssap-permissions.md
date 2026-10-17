@@ -72,3 +72,17 @@ Engine 启动后的过期、撤权、断链和旧安全 epoch 由原 Grant/socke
 `policy.min_encryption` 的非零值仍明确不支持。READ/WRITE 等操作位不携带安全
 等级。数字比较机制不等于已绑定命名身份，也不构成独立 RF 加密证明。
 新增实现的离线、形式化和实机资格分别记录，不能继承旧普通 SSAP 通过结论。
+
+
+## 原请求观察与响应限制
+
+唯一Engine的生产Native Wire读取真实内核消息上下文；unknown、非current、身份/
+lifetime/channel不匹配或control截断均失败，不从最新连接快照给旧请求升级资格。
+响应、错误和指示ACK携带该原RX epoch与观察机制下限，并固定原响应义务的绝对
+单调期限，由原Session/Grant/Ticket在实际USB提交时再次强制；软件准入不等于
+物理或对端完成。显式AF_UNIX测试Wire不生成安全上下文，不进入生产构建。
+
+此机制仍不是逐属性安全策略或本地授权。主动ExchangeInfo/客户端请求继续受原
+fd Grant管理，细粒度主动意图另行接通。操作位、命名身份/Bond、实际机制和本地
+授权保持独立；失败响应不会回滚已发生的数据库写入，请求超时也不能证明对端未
+执行。精确ABI/错误/原期限见[接口参考](interfaces.md)，资格只在唯一能力入口维护。

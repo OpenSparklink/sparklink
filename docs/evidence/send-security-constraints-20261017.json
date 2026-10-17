@@ -1,0 +1,1196 @@
+{
+  "schema_version": 1,
+  "status": "TX_CONSTRAINT_SSAP_SIX_REAL_GATES_SCOPED_PASS_ATTRIBUTE_AND_COMBINATION_OPEN",
+  "compiled_kernel": "1bcd766d07bba2b045f4b381d41b7af9e96c05ad",
+  "compiled_userspace": "b4ad7dcf6930a7e2382d8bd4fa4f31674deab02b",
+  "executed_tools": "b4ad7dcf6930a7e2382d8bd4fa4f31674deab02b",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "formal_helper_result": "PASS",
+  "formal_combination_result": "UNPROVED",
+  "full_goal_result": "UNPROVED",
+  "scope": [
+    "Exact cleanK1bcd766d/U b4ad7dc compiledandexecuted artifacts;SDK111 unchanged,VM-only Hi3873U2/3;userconfirmedHi3873E1excluded,nohostdriver/install.",
+    "48byteTXconstraint onlyrestricts existingGrant,originalscope/epoch/mechanismfloor andabsoluteCLOCK_MONOTONICdeadline. minimum0 pins epoch;typedRXrecordneverTXauthority;unknowncontrolrefused. Admission/everyactualUSBfragment enforceoriginalGrant andintent;wait/queuecleanup bounded bysameabsolute deadline without renewal.",
+    "SoleSSAPEngineNativeWire nowrequires realknown/current scopedRXcontext;response/error/indicationACK pinsoriginalRXepoch,observedminimum andoriginalresponsedeadline. Explicit cfgtest Wire returnsNone,neverfabricatesmechanism. Activeinitiatedrequests stilloriginalfdGrant;no secondEngine or fullattributepolicy/localAuthorization claim.",
+    "Sixselectedcasesbothconnectionroles:plain61twice,protectedSMTC1/2,plain249boundary,complete2042.48actualCUTCpeerRT and48constrainedresponses,96receiptcontexts,144staleepoch/lifetime/expiredintentrefusals plus24unknowncontrolrefusals withno correspondingUSBpayload.96SSAPpeerDBchecks/discovery,16oversizerefusals and8full2042RT maintained.",
+    "SSAPconstraint use is established by exactproductionbinary/uniqueNativeWire andactualpeerresponsevalidation;ancillary islocalkernelinterface,not carriedonUSB. Captures corroborate actualboth-endSMTCdata,notindependentlytrace everyancillary orproveRFcryptography. Protectedcontexts correlatedwithsameOwner nativeepoch/grade,notindependentsecurityoracle.",
+    "DirectproductionTXconstraintshape/identity/mechanism/epoch/deadline andoriginalGranthelpers CBMC168properties plus3negativecontrols:onearbitraryfull-width candidate snapshot,nottemporalqueue/locks/refs/USB/credit/Ownertruth orimplementationrefinement proof. ActualSession/parse/submitASanUBSan fixtures includeexplicitdependencies;testunsubmittedchannelisolation andprefixfailure/originaldeadline,no physicalcreditledger substitute.",
+    "707cleanexecutedtools/44sealedcrosslanguageCABI32layoutonly/82protocol/91soleDaemon/28slktest+2entryand5startup/strictclippy/115docs;6exactreplays132copiedactualevidence negatives. SamecheckerTCB/notindependentdecoder ornewphysicalfaultinjection.",
+    "Kernel12solo fixedO buildPASS,compilerwarning0 andmakejobserverwarning1retained. FrozenRustwithrealVMuses8jobs/sharedlock/fixedCargoDev;notperformancequalification. OriginalfixtureHostassertion/missingDBuspath29fails/sharedlockrefusal/earlysealer/testmutation mistakes retained withscope andcorrections,not erased orrelabeledPASS.",
+    "Perattributeauthentication/encryption/localAuthorization/activeclientintent remainmissing;newartifactqueue-after-rekey/off/revocation/release/dup/Down/originaldeadlineinflightcomposition pending. OriginalU331FAIL andlegacy13fast counterevidence preserved. NaturalRCA/nonmanualrecovery/NOCPtruth/drain/reuse/fullS0-S6/19WP/10FV/12DG/allwholeissuesOPEN."
+  ],
+  "bounds": {
+    "real_cases": 6,
+    "peer_round_trips": 48,
+    "receipt_contexts": 96,
+    "send_control_refusals": 24,
+    "SSAP_peer_checks": 96,
+    "discovery": 96,
+    "oversize_refusals": 16,
+    "full2042_round_trips": 8,
+    "protected_SMTC_USB_observations": 960,
+    "exact_replays": 6,
+    "constrained_responses": 48,
+    "invalid_intent_refusals": 144,
+    "copied_negatives": 132,
+    "CBMC_properties": 168,
+    "CBMC_negative_controls": 3
+  },
+  "real_gates": [
+    {
+      "name": "plain-short0",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/tx-constraint-plain-short0-v1/manifest.json",
+      "message_bytes": 61,
+      "minimum": 0,
+      "peer_round_trips": 8,
+      "receipt_contexts": 16,
+      "send_control_refusals": 4,
+      "constrained_replies": 8,
+      "invalid_intent_refusals": 24
+    },
+    {
+      "name": "plain-short1",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/tx-constraint-plain-short1-v1/manifest.json",
+      "message_bytes": 61,
+      "minimum": 0,
+      "peer_round_trips": 8,
+      "receipt_contexts": 16,
+      "send_control_refusals": 4,
+      "constrained_replies": 8,
+      "invalid_intent_refusals": 24
+    },
+    {
+      "name": "sec1-short",
+      "result": "PASS",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": ".dev/tx-constraint-sec1-short-v1/manifest.json",
+      "message_bytes": 61,
+      "minimum": 1,
+      "peer_round_trips": 8,
+      "receipt_contexts": 16,
+      "send_control_refusals": 4,
+      "constrained_replies": 8,
+      "invalid_intent_refusals": 24
+    },
+    {
+      "name": "sec2-short",
+      "result": "PASS",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": ".dev/tx-constraint-sec2-short-v1/manifest.json",
+      "message_bytes": 61,
+      "minimum": 2,
+      "peer_round_trips": 8,
+      "receipt_contexts": 16,
+      "send_control_refusals": 4,
+      "constrained_replies": 8,
+      "invalid_intent_refusals": 24
+    },
+    {
+      "name": "plain-boundary249",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/tx-constraint-plain-boundary249-v1/manifest.json",
+      "message_bytes": 249,
+      "minimum": 0,
+      "peer_round_trips": 8,
+      "receipt_contexts": 16,
+      "send_control_refusals": 4,
+      "constrained_replies": 8,
+      "invalid_intent_refusals": 24
+    },
+    {
+      "name": "plain-long2042",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/tx-constraint-plain-long2042-v1/manifest.json",
+      "message_bytes": 2042,
+      "minimum": 0,
+      "peer_round_trips": 8,
+      "receipt_contexts": 16,
+      "send_control_refusals": 4,
+      "constrained_replies": 8,
+      "invalid_intent_refusals": 24
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "707-cleanexecuted-tools",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "44-sealed-library-ABIs-anderrors-32bit-layoutonly",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "82protocol-91daemon-28slktest-2entrytests-5startup-strictclippy",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "actualSession-extraction-ASan-UBSan-explicitdependencies",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "six-replays-132-copiedactualnegatives",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "115-strictdocs",
+      "result": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "formal_helper_gates": [
+    {
+      "name": "actualpure-constraint-Grant-168-and3negatives",
+      "result": "PASS",
+      "status": "BOUNDED_TX_CONSTRAINT_AND_GRANT_THREE_NEGATIVES_PASS"
+    }
+  ],
+  "formal_combination_gates": [
+    {
+      "name": "actualOwnerTruth-locks-refs-USB-credit-revoke-late-reuse",
+      "result": "UNPROVED",
+      "status": "UNPROVED"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "Perattributeauthentication/encryption/localauthorization/CPCD andactiveinitiatedrequestgranularconstraints;onlyresponses/errors/ACKs migrated,originalwholefdGrant retained.",
+      "result": "UNPROVED",
+      "status": "NOT_COMPLETE"
+    },
+    {
+      "name": "Newartifact actualqueuedrekey/off/unknown/leasewithdrawal/finalfd/dup/Down/originaldeadline afteradmission andduringprefix;oldK619results nottransferred.",
+      "result": "UNPROVED",
+      "status": "NOT_COMPLETE"
+    },
+    {
+      "name": "ActualOwnertruth/locks/refs/USBdrain/credit/revoke-lateNOCP-handlereusecomposition UNPROVED;modelchecks onlyonecandidatepureguards.",
+      "result": "UNPROVED",
+      "status": "NOT_COMPLETE"
+    },
+    {
+      "name": "Naturalstartup/re-enumeration/disappearanceRCA andnonmanualrecovery,originalU331lateDownRCA/fullS0-S6/Bond/multi/four/performance/PM/deployment/release remainOPEN.",
+      "result": "UNPROVED",
+      "status": "NOT_COMPLETE"
+    }
+  ],
+  "formal": {
+    "status": "BOUNDED_TX_CONSTRAINT_AND_GRANT_THREE_NEGATIVES_PASS",
+    "source_head": "1bcd766d07bba2b045f4b381d41b7af9e96c05ad",
+    "source_tree_clean": true,
+    "sources": {
+      "net/sparklink/sle_message_security.h": "ffd0efc0ed80051f0dc2704f60ec2a1dc2098cfd598aa5b02d07790c81ff2c44",
+      "tools/testing/selftests/sparklink/session/send_constraint_cbmc.c": "fbb8b4c781dd7e29ec228ecbcdba5c1b6ba012c047e6ec8c5bdf2f047e2c008a",
+      "net/sparklink/sle_channel_grant.h": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+      "include/uapi/linux/sparklink_socket.h": "da2c3b0b05d56b6dc7d58530eb35e501a606de132573b0b3be945cf4ad728c84",
+      "tools/testing/selftests/sparklink/run_send_constraint_cbmc.py": "3f2b594647f768d5a07e1416d73b9ac0e155d23c5041e460ca47bf5380e45e85"
+    },
+    "tool": "6.11.0 (cbmc-6.11.0)",
+    "scope": "Actual production TX constraint shape/scope/epoch/deadline plus existingGrant factory/permission helpers; arbitrary full-width fields,onecandidate admission andsubmit snapshot,not actualkernel interleavings/locks/ref/USB/credit/firmware or long-running proof",
+    "assumptions": [
+      "Valid kernel-owned pointers",
+      "Runtime supplies truthful level/revision observations from sole physical Owner under its locks; helpers do not prove that source, locking, reference retention or dequeue integration"
+    ],
+    "expected": [
+      "constraint cannot weaken the original grant floor or epoch",
+      "constraint requires original epoch and bounded sufficient mechanism",
+      "constraint shape excludes unset scope and deadline",
+      "expired absolute deadline rejects a candidate submit",
+      "foreign lifetime or channel cannot obtain submission consent",
+      "minimum zero cannot bypass old epoch"
+    ],
+    "runs": [
+      {
+        "kind": "production",
+        "command": [
+          "cbmc",
+          "WORKSPACE/.dev/tx-constraint-cbmc-v3/production/harness.c",
+          "-I",
+          "WORKSPACE/.dev/tx-constraint-cbmc-v3/production",
+          "--function",
+          "verify_send_constraint",
+          "--drop-unused-functions",
+          "--unwind",
+          "3",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--pointer-overflow-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--json-ui",
+          "--trace"
+        ],
+        "exit": 0,
+        "raw_sha256": "d53400eb7965f0052ce7bb1dc0047786ac7d0fdd9d019aa2c95018b63924810b",
+        "status": "BOUNDED_HELPER_PASS",
+        "properties": 168,
+        "complete_inventory": true,
+        "terminal": [
+          "success"
+        ],
+        "diagnostics": [],
+        "failed": []
+      },
+      {
+        "kind": "missing-epoch-negative",
+        "command": [
+          "cbmc",
+          "WORKSPACE/.dev/tx-constraint-cbmc-v3/missing-epoch-negative/harness.c",
+          "-I",
+          "WORKSPACE/.dev/tx-constraint-cbmc-v3/missing-epoch-negative",
+          "--function",
+          "verify_send_constraint",
+          "--drop-unused-functions",
+          "--unwind",
+          "3",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--pointer-overflow-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--json-ui",
+          "--trace"
+        ],
+        "exit": 10,
+        "raw_sha256": "84cfec5a6eceb8a164b54e268a19b8262435ebb1d3a56b555e5c1cc193ada55a",
+        "status": "NOT_PROVEN",
+        "properties": 168,
+        "complete_inventory": true,
+        "terminal": [
+          "failure"
+        ],
+        "diagnostics": [],
+        "failed": [
+          "constraint requires original epoch and bounded sufficient mechanism",
+          "minimum zero cannot bypass old epoch"
+        ]
+      },
+      {
+        "kind": "missing-level-negative",
+        "command": [
+          "cbmc",
+          "WORKSPACE/.dev/tx-constraint-cbmc-v3/missing-level-negative/harness.c",
+          "-I",
+          "WORKSPACE/.dev/tx-constraint-cbmc-v3/missing-level-negative",
+          "--function",
+          "verify_send_constraint",
+          "--drop-unused-functions",
+          "--unwind",
+          "3",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--pointer-overflow-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--json-ui",
+          "--trace"
+        ],
+        "exit": 10,
+        "raw_sha256": "ceac1f1c8e18de482b7a247c7644b160cdd71d06cd3804e5b18e8a9d41340a32",
+        "status": "NOT_PROVEN",
+        "properties": 168,
+        "complete_inventory": true,
+        "terminal": [
+          "failure"
+        ],
+        "diagnostics": [],
+        "failed": [
+          "constraint requires original epoch and bounded sufficient mechanism"
+        ]
+      },
+      {
+        "kind": "missing-properties-negative",
+        "command": [
+          "cbmc",
+          "WORKSPACE/.dev/tx-constraint-cbmc-v3/missing-properties-negative/harness.c",
+          "-I",
+          "WORKSPACE/.dev/tx-constraint-cbmc-v3/missing-properties-negative",
+          "--function",
+          "empty_check",
+          "--drop-unused-functions",
+          "--unwind",
+          "3",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--pointer-overflow-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--json-ui",
+          "--trace"
+        ],
+        "exit": 0,
+        "raw_sha256": "8d98056549928c292432330ec8b1214c77c206c28388aae2bd57777feffa4a05",
+        "status": "NOT_PROVEN",
+        "properties": 1,
+        "complete_inventory": false,
+        "terminal": [
+          "success"
+        ],
+        "diagnostics": [],
+        "failed": []
+      }
+    ],
+    "end_wall_ns": 1792203562611794602
+  },
+  "remaining": [
+    "Perattributeauthentication/encryption/localauthorization/CPCD andactiveinitiatedrequestgranularconstraints;onlyresponses/errors/ACKs migrated,originalwholefdGrant retained.",
+    "Newartifact actualqueuedrekey/off/unknown/leasewithdrawal/finalfd/dup/Down/originaldeadline afteradmission andduringprefix;oldK619results nottransferred.",
+    "ActualOwnertruth/locks/refs/USBdrain/credit/revoke-lateNOCP-handlereusecomposition UNPROVED;modelchecks onlyonecandidatepureguards.",
+    "Naturalstartup/re-enumeration/disappearanceRCA andnonmanualrecovery,originalU331lateDownRCA/fullS0-S6/Bond/multi/four/performance/PM/deployment/release remainOPEN."
+  ],
+  "materials": [
+    {
+      "path": ".dev/tx-constraint-plain-short0-v1/manifest.json",
+      "sha256": "0495041bf1ddec2a2257df320ac3daa99fd392e4a9e3d89d0254d5b9e5d275f0",
+      "bytes": 1182759,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short0-v1/console.log",
+      "sha256": "17ab6b52f6b17bb9418bc85ef9268b3b258630c2cb3c4c12cebbaded20a01218",
+      "bytes": 16211,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short0-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short0-v1/guest-output/ws73.pcap",
+      "sha256": "be625e1fdcc625fc10c5e9b577f0ba162e7435f34f88a9cfef518571ff638cf2",
+      "bytes": 489724,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short0-v1/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short0-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "cadd2647b99cafd0e0a133d5d4a7b5fbf6d3634f967a1dc72794ff2d5c06526e",
+      "bytes": 673632,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short0-audit-v1.json",
+      "sha256": "ff4d5e5c73b2b25548d09183d809539c1961e52108022c4fe9922d5244f249e0",
+      "bytes": 6988,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short1-v1/manifest.json",
+      "sha256": "79cfbd0c774f8ea43fba6d635bf70c2abd665dd258226f904c9add70ffb21b07",
+      "bytes": 1182761,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short1-v1/console.log",
+      "sha256": "0fbf77f332dcebe7e739c9bb245281271fe4461c646fc0d8422f37e559a1f30d",
+      "bytes": 16211,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short1-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short1-v1/guest-output/ws73.pcap",
+      "sha256": "4dce380feedc2005e46fa89da95edcab51d3c12d436b38c73026deb5a07ec098",
+      "bytes": 489724,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short1-v1/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short1-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "ad9816c0b1064287b54cabb9a213b3e61ea01cb1d378839e03b9ff56f5ef55b0",
+      "bytes": 673047,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-short1-audit-v1.json",
+      "sha256": "2e496157ecf3dc2be9d756e2c389463e747c379d893da60f67d84ea66357229e",
+      "bytes": 6988,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-short-v1/manifest.json",
+      "sha256": "1d54e0a09b8b8704c784dff2411b2a117caea3eb8a7df0ea7ab4f7219949f4c8",
+      "bytes": 1232136,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-short-v1/console.log",
+      "sha256": "786a4746ddbb9b3433708c21c2767d157f831fe914176585470752a5e01dad4d",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-short-v1/guest-output/ws73.pcap",
+      "sha256": "87dd87b491819b455707f1693b6d9aa9438a6778c8fa79f7bb512cec7ec53a77",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-short-v1/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "81124fa54bb7c2a76ad8357cb9b4f3e4069d81429bf3b8eed75a1ef1e43436b7",
+      "bytes": 730086,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-short-audit-v1.json",
+      "sha256": "ff37a8b286e65acfa34de637cf66089483e5ce9779f7e85d75b6a8658bde2bca",
+      "bytes": 6959,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-short-v1/manifest.json",
+      "sha256": "c40397b5ff69008b8a8107d09f3d220990394c1ec1101011eaad5c051497e2c9",
+      "bytes": 1232121,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-short-v1/console.log",
+      "sha256": "ae28829527c171aac9f304cce97d620969a7462b13bceb28c62d972fecae13b9",
+      "bytes": 16247,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-short-v1/guest-output/ws73.pcap",
+      "sha256": "231086cb7e6d1c940142a9167eed17929b24e91edfdcbc2f111e8bc155e3dfd3",
+      "bytes": 532732,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-short-v1/guest-output/capture-stats.txt",
+      "sha256": "798730e9c9f533387c50ca93d2823ff8118fb865f8d005f3fadd6e4d074e8a45",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "3305bf6fa1568c8c6b6f72f116dab9cda811950edf1a783d253fbf9ab59e4927",
+      "bytes": 734234,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-short-audit-v1.json",
+      "sha256": "56243f147b35254a0e7ab7cb698ff9cbc8372de18d59482ef6a466fbe50dcea1",
+      "bytes": 6959,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-boundary249-v1/manifest.json",
+      "sha256": "30f6a23538b2658c6c10604ca0124d47c4121fb3284e88adbd78e3fbd29a2578",
+      "bytes": 1271113,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-boundary249-v1/console.log",
+      "sha256": "4641118d5b02b60ede43e821155677709a1117050362a95cb72691c75c8aa456",
+      "bytes": 16238,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-boundary249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-boundary249-v1/guest-output/ws73.pcap",
+      "sha256": "2538a3e3c04a3794c999ff863f1134e98b3e1f8621f459870e66b1904dfe378d",
+      "bytes": 530588,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-boundary249-v1/guest-output/capture-stats.txt",
+      "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-boundary249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "20f6b53b510d88274ea1380784258312b4c4e1f7f3e232bc22248f4e295d7b82",
+      "bytes": 751570,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-boundary249-audit-v1.json",
+      "sha256": "fbfc6d1707e778723df6775513c4eb45f2708d65581112a3e24256a4aea4abb3",
+      "bytes": 6998,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-long2042-v1/manifest.json",
+      "sha256": "fef63809968ae433ccf655955b957d0eecebca5920204937f2618d37526a6a40",
+      "bytes": 2250919,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-long2042-v1/console.log",
+      "sha256": "05f5791416679fd41697ee3eb7455102abb60d0d1bbc48e4aa67ba82bb298bab",
+      "bytes": 16213,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-long2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-long2042-v1/guest-output/ws73.pcap",
+      "sha256": "7f4f322b2a051ce6d423c2a46bffa318531d9f42fc1b9f69b4242dae59bf1313",
+      "bytes": 1016972,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-long2042-v1/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-long2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "ae08c35f64d1999970539ce18af9404c5d8e906d23f1ea1d9f75a0ce61380461",
+      "bytes": 799874,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-long2042-audit-v1.json",
+      "sha256": "b84caf607be6e4eab24769b0104c8025f1c7f21623b6183385ceb8eb4f96d055",
+      "bytes": 6993,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-qualification-v1.json",
+      "sha256": "766d2ffd67da807a2a92bfeca72fb4a6ff5ff08605c26bb3cef5bd2ac58522cc",
+      "bytes": 8351,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-qualify-v1.py",
+      "sha256": "abc71d2677a5413c105801e3abacbe254b19f8c012ed4829857c5cf34042d0bf",
+      "bytes": 3433,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-case-audit-v1.py",
+      "sha256": "dae81daed9e570098b1c5dfbfe37c799170ab01080c10205d48c2a56c0c97375",
+      "bytes": 9459,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-kernel-build-v1.json",
+      "sha256": "76eb575a17cc796d2712eebc4f58f9ea039d6225709ceae122ffe94ed28566f7",
+      "bytes": 1737,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-kernel-build-v1.log",
+      "sha256": "7d2023d8734f6caca8d6426b6128e327856b7387868b07757f987239dd9f8d18",
+      "bytes": 2795,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-kernel-budget-v1.json",
+      "sha256": "ce0d7c8b0075430502f211adc22e77f31a589083a5fa47474da0d61ccf5f43d8",
+      "bytes": 1076,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-build-check-input-v1.json",
+      "sha256": "cadfac5638e17071bc4033757bb5b8a5598b0166ec4176c2ed927e8d99bb4e52",
+      "bytes": 756,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-kernel-artifacts-v1/manifest.json",
+      "sha256": "99140a292f879ef32a2f98b67681b021f404c6905a650e6c63c14fba39fa6b08",
+      "bytes": 228953,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-modules-v1/manifest.json",
+      "sha256": "89d3e0eca2519eeb1efd90f2b2747a27cc305a859de5b8b85aca0de0f8f12cdb",
+      "bytes": 2376,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/manifest.json",
+      "sha256": "930126702c768ec6acedf4684c5b3de4fea717eb0eb2f69057d00a72d29db0e5",
+      "bytes": 26734,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-root-smoke-v1/manifest.json",
+      "sha256": "f14c1e6f068ae237c1af588bc9e7e8235cbeb6048d11fef6870d2bfe93b615df",
+      "bytes": 36864,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-build-prepare-v1.json",
+      "sha256": "462a47d386d6534dd305b35bec337da0bef21baf5a6b06ae5a1df6da3cddbad6",
+      "bytes": 7983,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-build-prepare-v1.py",
+      "sha256": "969cb2263e48bb3e94594a87d929deb495df8d65bcd41232762b501025b70a06",
+      "bytes": 3516,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-seal-build-v1.log",
+      "sha256": "b0b5d414a2e5cbdfab006e40a4ff08d0f08d915b9a0a53b9c3add6d0b528c647",
+      "bytes": 1312,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-seal-build-v2.log",
+      "sha256": "548aecf7ba8b7d3f9d7fa75a99b7e1af3ca4e0a967472b4ee91532c5daae0d19",
+      "bytes": 115,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sealed-python-v1.log",
+      "sha256": "910e734cc92dc18825cfb10fcaacffa535d78a8f21fe0b059c2eef2186923deb",
+      "bytes": 5806,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-frozen-tools-v1.log",
+      "sha256": "affe296214dd1675daa85e25e6b132d3a068c2902f063d8820c92bd8c8b3e5b5",
+      "bytes": 115540,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-clippy-v4.log",
+      "sha256": "9003a15db175acf537fbf555341ec79e3240834d4c536b616c28c0c16a13ab05",
+      "bytes": 498,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-rust-tests-v1.log",
+      "sha256": "ad90b5d6309ee656403185646f6de4a16d6915958070c35c138bf375257565e3",
+      "bytes": 27417,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-rust-tests-v2.log",
+      "sha256": "3321f69b90816368250b6bb08cf5e6bf83257402120e6a84f508c9751a2c70e8",
+      "bytes": 1138,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-rust-tests-v3.log",
+      "sha256": "8ac8fcedb0eedaca4691d93561153461616233b6c87100837ade9cf19a7a65f7",
+      "bytes": 17641,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-native-wire-v1.log",
+      "sha256": "0dd482ff41ab73172fd4908a4115caeead26c85da0d16777527f3c755e8265fa",
+      "bytes": 983,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-frozen-rust-tests-v1.log",
+      "sha256": "6f62a78fe6b1569f3cba05ad3f60fef88f49ecf4d1253d998af38e8755e93b2f",
+      "bytes": 18566,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-frozen-rust-budget-v1.json",
+      "sha256": "64e4fe0adbdcda8d0a06f845a1d3a80a5010f9b61de3dc8dc78afefa7f726e27",
+      "bytes": 892,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-docs-v1.log",
+      "sha256": "089d0e3418fcf0ab8523fd33a5a03d679bec468e4b8b8dc70e82d61186fced0e",
+      "bytes": 336227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-dispatch-v7.json",
+      "sha256": "eaa1b87f357d307224ebadbc00294682ebd95fc42c95631be6f20b8de51cd725",
+      "bytes": 2673,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-dispatch-v7.log",
+      "sha256": "b25e83364e3471a8b3c66779af9de56e780b7f9a357fcf7d5a3b90cbe72d5c23",
+      "bytes": 2743,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-cbmc-v3/report.json",
+      "sha256": "50bff4ace53ed31fffe74ef28c076178cb99ee2e31f4d1f8741ab0391d92f3cb",
+      "bytes": 5874,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-dispatch-v1.log",
+      "sha256": "d2d383aefdd28ec46893078ce943e00bf23af0599db1eace0d5ee1aff3e94fe0",
+      "bytes": 2038,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-dispatch-v2.log",
+      "sha256": "ad146d5dfda7b0e361829199615e792fa6ef5de1bad9ed9670c7ddbe2f0859ae",
+      "bytes": 1313,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-dispatch-v3.log",
+      "sha256": "fff90241becac9183aca687d45da000433c704590dffb43856a9998b323e5d4e",
+      "bytes": 1313,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-dispatch-v4.log",
+      "sha256": "5a8defad0a443466cf66eea9aed2a2bd6b2e227cf48c8e7e7d8de4ab26206766",
+      "bytes": 2743,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-dispatch-v5.log",
+      "sha256": "d55f23130efc6741e46af8732c87f7f716a26dc8df4581c22f18bc31a519e49f",
+      "bytes": 2743,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-dispatch-v6.log",
+      "sha256": "b0a02e2de3cb3d41561180a67decfe3cd84185cbb8b682d97875256b0d6fbfa3",
+      "bytes": 2743,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-cbmc-v3/production/raw.json",
+      "sha256": "d53400eb7965f0052ce7bb1dc0047786ac7d0fdd9d019aa2c95018b63924810b",
+      "bytes": 206873,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-cbmc-v3/missing-epoch-negative/raw.json",
+      "sha256": "84cfec5a6eceb8a164b54e268a19b8262435ebb1d3a56b555e5c1cc193ada55a",
+      "bytes": 518343,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-cbmc-v3/missing-level-negative/raw.json",
+      "sha256": "ceac1f1c8e18de482b7a247c7644b160cdd71d06cd3804e5b18e8a9d41340a32",
+      "bytes": 363377,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-cbmc-v3/missing-properties-negative/raw.json",
+      "sha256": "8d98056549928c292432330ec8b1214c77c206c28388aae2bd57777feffa4a05",
+      "bytes": 1899,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-prepared-v1/manifest.json",
+      "sha256": "07a69aa20aca94b16346180aa2513e62aaea03371ac2d70be7a9c78f2b2570ad",
+      "bytes": 270297,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-prepared-v1/bzImage",
+      "sha256": "bc459044e902e4e12f42b4a07a4be01f8d9f8f02d36d5f183e0347edb234a0d4",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-plain-prepared-v1/root.btrfs",
+      "sha256": "b3de6396a88e9007685e85bdb119f0992c9b09f94d4bca40218d0030ba109e5b",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-prepared-v1/manifest.json",
+      "sha256": "8475dcfccdeec78dad009951caa803e8cfd8b0f06adf817dc77bce8a7d7fa823",
+      "bytes": 270860,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-prepared-v1/bzImage",
+      "sha256": "bc459044e902e4e12f42b4a07a4be01f8d9f8f02d36d5f183e0347edb234a0d4",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec1-prepared-v1/root.btrfs",
+      "sha256": "e4d82f7ee72394614b841cec393ab3805b9b9e7d45b12d65ec8dca57f86b4e58",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-prepared-v1/manifest.json",
+      "sha256": "ea2e14277b78b597d6c533bb36b39361a03c0b98f7b3c6858dfabe65f0840266",
+      "bytes": 270860,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-prepared-v1/bzImage",
+      "sha256": "bc459044e902e4e12f42b4a07a4be01f8d9f8f02d36d5f183e0347edb234a0d4",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-sec2-prepared-v1/root.btrfs",
+      "sha256": "e22f2eda1ca85edf162105bd83f6b68e5210fd71e485a45de7eff677c41ddc9c",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b4ad7dcf6930/slkd",
+      "sha256": "fad3d28abcbf5ca1eb7d7ead7fe72bf360fa5a6983c56f5baa7ff1cdcfc435df",
+      "bytes": 10620008,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b4ad7dcf6930/slctl",
+      "sha256": "d9051f174a60c9e5b1ec48f319c13cb59ff96cc9cf0e0f703f54f6575d7d4eb0",
+      "bytes": 7828512,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b4ad7dcf6930/slktest",
+      "sha256": "728ba65468bf1a35f60a1355e8ba246fc0c978675614ed33e87aa679de7bc198",
+      "bytes": 5277720,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b4ad7dcf6930/slkconfig",
+      "sha256": "033488e7736c50f2933a1cba91644d1414cf1157f17c8ba48674c4aaf1d0fee8",
+      "bytes": 1403352,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b4ad7dcf6930/slkmon",
+      "sha256": "eb95280539c17baea16afb930fbaf0c7267792af2b9b36a80a2d1378fe819b2d",
+      "bytes": 1661520,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b4ad7dcf6930/slkdump",
+      "sha256": "675570653232874dc38cfe693beae59018fcac545b287b3833fc0cacad5b10f1",
+      "bytes": 1661392,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/b4ad7dcf6930/liblibsparklink.so",
+      "sha256": "8b1e3401911294e7c795c6b29c4c7cc8cfc0608835f9260124d5b51fa61c3e46",
+      "bytes": 550512,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "30895f352efa6be330e3863adf50a06bcab5c06fc37668af7fc883218b2925fa",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "5f776c32de3c9e316a4a7eeed78798f4cd287c8b2afdc3e0f18e2f16d07a9810",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/tx-constraint-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "71617a38b169ede37501072756b6e6de93a53d0e6b0df7ab887b2314d0a3c58a",
+      "bytes": 138049,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Authorized ownerworkspace;USBmaycontain actualkeys,firmware/SDKrestricted. No verifiedoffsitearchive;missing/hash/source/scope mismatch cannotPASS."
+    }
+  ],
+  "replay": [
+    "Authorizedownerworkspace:read_capture withexactguestidentities,checkcompletecapturestats;runfrozen625connection/object/channel/Agentcorroborators,compareoriginalmanifest. Thenruntx-constraint-case-audit-v1 for22mutantsandprotectedsnapshotcorrelation.",
+    "RawUSBcontainskeymaterial;notpubliclycopied. Missingprivateoriginals/artifacts meanunavailable/notPASS. Originalfailures neverrewritten. Samefrozenchecker issharedTCB,not independentdecoder;modelnotimplementationrefinement."
+  ],
+  "wall_ns": 1792204371983609162
+}

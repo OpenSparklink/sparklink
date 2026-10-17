@@ -235,7 +235,9 @@ Rust `SleSendConstraint::from_receipt`拒绝unknown/non-current或机制不足�
 唯一SSAP Engine开始严格读取实际RX上下文，响应/错误/指示ACK保留原epoch、原响应
 期限与原观察机制下限至实际TX。主动ExchangeInfo/客户端请求仍使用原通道Grant，
 逐属性策略/本地授权及主动请求细粒度intent尚缺；不能描述为完整属性安全。AF_UNIX
-actor回归仅显式test-only Wire，生产没有模拟上下文或域降级。准确编译及限定门禁见
+actor回归仅显式test-only Wire，生产没有模拟上下文或域降级。响应被撤权/期限拒绝
+不回滚已发生的本地数据库写入；请求方超时不能推断对端没有应用，需实际读回或
+上层业务序号确认，不能把异常改写成“未执行”。准确编译及限定门禁见
 [当前资格](../../project/current-capabilities.md)，旧K8c接收资格不转授此新发送路径。
 
 ServiceManager新增明确本地 RegisterLocalService/ListLocalServices/ReadLocalValue/RemoveLocalService；

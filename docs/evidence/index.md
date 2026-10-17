@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+[R6b实际分包基础限定资格](debian-package-base-qualification-20261018.json)：准确247的
+构建与全新运行环境，真实组/普通用户bus、安装后的C/Python、许可原文、同版本重装
+和remove配置保留分别核对。原缺组FAIL保留；不是跨版本升级回滚、发布、内核授权
+或新WS73资格，debug/动态依赖及完整第三方许可审计仍开放。
+
 [R6b实际包构建产物](debian-package-build-receipt-20261018.json)绑定准确6cb；
 实际root完整构建和测试完成，但保留debug/动态依赖警告，不是安装或发布资格。
 [实际安装角色组失败](debian-role-install-failure-20261018.json)证明APT/服务成功不能

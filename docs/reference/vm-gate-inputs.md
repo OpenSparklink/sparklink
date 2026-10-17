@@ -256,3 +256,18 @@ USB配对/HCC/上传读器；运行期字节是guest观察，不宣称另一独�
 不能用日志或本地值核对替代远端 wire。该切片的发布者是 uid1000/caps0，实际 system
 bus 上使用管理组；不能据此宣称 service-only组权限或完整取消/Down/期限矩阵通过。
 所有实验驱动和真实硬件仍只在VM运行，不执行宿主安装或自动电源操作。
+
+
+### Service-only 的实际 system bus 权限门禁
+
+`--ssap-service-policy` 与原普通双设备连接/socket门禁组合，先在VM的`type=system`
+实验总线（`/run/slkbus`）上验证权限，再运行原RF业务回归。使用正式`data/dbus/sparklink.conf`，
+真实uid/gid1005、空附加组、零capabilities的前台`slctl ssap-serve`登记/读回/注销自己的
+服务；独立unique owner、channel组及observer组客户端验证拒绝。覆盖well-known和
+unique destination、接口缺省调用、controller管理/普通通道及直接设备访问的隔离。
+
+root guest监督器只切换测试进程凭据，不实现业务或安全回复；宿主不创建组或安装
+服务。这项证明的是该VM实验system bus上的本地角色契约，不能替代service-only
+发布者的真实远端业务交付、完整多应用竞争、发行版systemd安装或sandbox验收。
+必须保存准确probe ELF、生产程序、策略/账号文件和全部原始结果；缺失角色、拒绝、
+凭据、正向登记/读回/清理或错误身份不得通过。原始WS73业务仍由普通用户实际校验。

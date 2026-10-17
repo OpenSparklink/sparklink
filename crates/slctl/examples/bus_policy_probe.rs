@@ -19,12 +19,7 @@ fn denied(label: &str, result: zbus::Result<zbus::Message>) -> anyhow::Result<()
     }
 }
 
-async fn probe(path: &str, mode: &str, native_phase: Option<&str>) -> anyhow::Result<()> {
-    let (uid, gid) = match mode {
-        "observer" => (1001, 1001),
-        "control" => (1000, 1002),
-        _ => anyhow::bail!("unknown mode"),
-    };
+fn credentials(uid: u32, gid: u32) -> anyhow::Result<()> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     for (field, expected) in [("Uid:", uid), ("Gid:", gid)] {
         let values = status
@@ -51,6 +46,16 @@ async fn probe(path: &str, mode: &str, native_phase: Option<&str>) -> anyhow::Re
         );
     }
     println!("AUTH_CREDENTIALS: uid={uid} gid={gid} caps=0");
+    Ok(())
+}
+
+async fn probe(path: &str, mode: &str, native_phase: Option<&str>) -> anyhow::Result<()> {
+    let (uid, gid) = match mode {
+        "observer" => (1001, 1001),
+        "control" => (1000, 1002),
+        _ => anyhow::bail!("unknown mode"),
+    };
+    credentials(uid, gid)?;
     let connection = Connection::session().await?;
     let bus = DBusProxy::new(&connection).await?;
     let owner = bus.get_name_owner(SERVICE.try_into()?).await?;
@@ -412,8 +417,25 @@ async fn native_observations(
 async fn main() -> anyhow::Result<()> {
     let args: Vec<_> = std::env::args().collect();
     ensure!(
+        matches!(args.len(), 3..=5),
+        "usage: bus_policy_probe ADAPTER observer|control [native-initial|native-business], or ADAPTER service-only|service-channel|service-observer START HANDLE"
+    );
+    if args[2].starts_with("service-") {
+        ensure!(
+            args.len() == 5,
+            "service role requires foreign start and handle"
+        );
+        tokio::time::timeout(
+            std::time::Duration::from_secs(10),
+            service_policy(&args[1], &args[2], args[3].parse()?, args[4].parse()?),
+        )
+        .await
+        .context("service role original deadline")??;
+        return Ok(());
+    }
+    ensure!(
         matches!(args.len(), 3 | 4),
-        "usage: bus_policy_probe ADAPTER observer|control [native-initial|native-business]"
+        "legacy role takes at most one explicit native phase"
     );
     tokio::time::timeout(
         std::time::Duration::from_secs(20),
@@ -421,5 +443,203 @@ async fn main() -> anyhow::Result<()> {
     )
     .await
     .context("policy probe timeout")??;
+    Ok(())
+}
+
+async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyhow::Result<()> {
+    let (uid, gid) = match role {
+        "service-only" => (1005, 1005),
+        "service-channel" => (1004, 1004),
+        "service-observer" => (1001, 1001),
+        _ => anyhow::bail!("unknown service role"),
+    };
+    credentials(uid, gid)?;
+    for path in ["/dev/sparklink", "/dev/usbmon1"] {
+        ensure!(
+            std::fs::metadata(path).is_ok(),
+            "expected actual VM kernel device absent"
+        );
+        let path = std::ffi::CString::new(path)?;
+        for mode in [nix::libc::R_OK, nix::libc::W_OK] {
+            // SAFETY: valid terminated device path; access does not perform I/O.
+            ensure!(
+                unsafe { nix::libc::access(path.as_ptr(), mode) } != 0,
+                "service role has direct kernel device access"
+            );
+        }
+    }
+    println!("AUTH_SERVICE_KERNEL_ACCESS: denied");
+    ensure!(
+        start != 0 && handle > start,
+        "actual foreign registration required"
+    );
+    let connection = Connection::session().await?;
+    let bus = DBusProxy::new(&connection).await?;
+    let owner = bus.get_name_owner(SERVICE.try_into()?).await?;
+    denied(
+        "own-service",
+        connection
+            .call_method(
+                Some("org.freedesktop.DBus"),
+                "/org/freedesktop/DBus",
+                Some("org.freedesktop.DBus"),
+                "RequestName",
+                &(SERVICE, 4u32),
+            )
+            .await,
+    )?;
+    let server = format!("{path}/services");
+    let definition = (
+        vec![1u8, 2],
+        vec![(vec![3u8, 4], 5u32, 0u32, vec![7u8])],
+        zbus::zvariant::OwnedObjectPath::try_from("/")?,
+    );
+    let own = connection
+        .call_method(
+            Some(SERVICE),
+            server.as_str(),
+            Some("org.sparklink.ServiceManager"),
+            "RegisterOwnedLocalService",
+            &definition,
+        )
+        .await;
+    if role == "service-only" {
+        let (begin, _, handles): (u16, u16, Vec<u16>) = own?.body().deserialize()?;
+        ensure!(handles.len() == 1, "one actual owned value required");
+        let value: Vec<u8> = connection
+            .call_method(
+                Some(SERVICE),
+                server.as_str(),
+                Some("org.sparklink.ServiceManager"),
+                "ReadOwnedLocalValue",
+                &(handles[0],),
+            )
+            .await?
+            .body()
+            .deserialize()?;
+        ensure!(value == [7], "actual owner read required");
+        denied(
+            "interface-less-own-read",
+            connection
+                .call_method(
+                    Some(SERVICE),
+                    server.as_str(),
+                    None::<&str>,
+                    "ReadOwnedLocalValue",
+                    &(handles[0],),
+                )
+                .await,
+        )?;
+
+        connection
+            .call_method(
+                Some(SERVICE),
+                server.as_str(),
+                Some("org.sparklink.ServiceManager"),
+                "UnregisterOwnedLocalService",
+                &(begin,),
+            )
+            .await?;
+        println!(
+            "AUTH_SERVICE_OWNED: start={begin} property={} value=07 removed=true",
+            handles[0]
+        );
+    } else {
+        denied("RegisterOwnedLocalService", own)?;
+    }
+    for destination in [SERVICE, owner.as_str()] {
+        for (method, label) in [
+            ("ReadOwnedLocalValue", "foreign-owned-read"),
+            ("ReadLocalValue", "global-value-read"),
+        ] {
+            denied(
+                label,
+                connection
+                    .call_method(
+                        Some(destination),
+                        server.as_str(),
+                        Some("org.sparklink.ServiceManager"),
+                        method,
+                        &(handle,),
+                    )
+                    .await,
+            )?;
+        }
+        denied(
+            "foreign-owned-remove",
+            connection
+                .call_method(
+                    Some(destination),
+                    server.as_str(),
+                    Some("org.sparklink.ServiceManager"),
+                    "UnregisterOwnedLocalService",
+                    &(start,),
+                )
+                .await,
+        )?;
+        if role == "service-only" {
+            denied(
+                "RemoveLocalService",
+                connection
+                    .call_method(
+                        Some(destination),
+                        server.as_str(),
+                        Some("org.sparklink.ServiceManager"),
+                        "RemoveLocalService",
+                        &(start,),
+                    )
+                    .await,
+            )?;
+            denied(
+                "RegisterLocalService",
+                connection
+                    .call_method(
+                        Some(destination),
+                        server.as_str(),
+                        Some("org.sparklink.ServiceManager"),
+                        "RegisterLocalService",
+                        &(vec![1u8, 2], vec![(vec![3u8, 4], 5u32, 0u32, vec![7u8])]),
+                    )
+                    .await,
+            )?;
+            denied(
+                "StopControllerScan",
+                connection
+                    .call_method(
+                        Some(destination),
+                        path,
+                        Some(ADAPTER),
+                        "StopControllerScan",
+                        &(),
+                    )
+                    .await,
+            )?;
+            denied(
+                "interface-less-owned-read",
+                connection
+                    .call_method(
+                        Some(destination),
+                        server.as_str(),
+                        None::<&str>,
+                        "ReadOwnedLocalValue",
+                        &(handle,),
+                    )
+                    .await,
+            )?;
+            denied(
+                "OpenChannel",
+                connection
+                    .call_method(
+                        Some(destination),
+                        format!("{path}/connections/not_a_lifetime"),
+                        Some("org.sparklink.Connection"),
+                        "OpenChannel",
+                        &(31u8, 31u8, 241u8, 3u8, 0u32),
+                    )
+                    .await,
+            )?;
+        }
+    }
+    println!("AUTH_SERVICE_ROLE: {role}");
     Ok(())
 }

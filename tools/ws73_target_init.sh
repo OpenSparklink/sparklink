@@ -328,6 +328,9 @@ if grep -q 'ws73.daemon_crash=1' /proc/cmdline; then
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py daemon-crash after "$daemon" || fail 'same-generation successor'
 fi
 cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'daemon process credentials'
+if grep -qw ws73.ssap_service_policy=1 /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py service-policy "$daemon" || fail 'actual service-only policy gate'
+fi
 if grep -q 'ws73.observer_policy=1' /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py observer-policy initial || fail 'native observer initial role gate'
 fi

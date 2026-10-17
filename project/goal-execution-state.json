@@ -791,7 +791,7 @@
       "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
     ]
   },
-  "execution_phase": "ACTIVE_OWNED_SSAP_C6_SCOPED_REAL_PASS_FULL_LIFECYCLE_DEPLOYMENT_AND_CPCD_PENDING",
+  "execution_phase": "ACTIVE_SERVICE_ONLY_POLICY_AND_FINITE_OWNER_CALLBACK_LIFECYCLE_GATES",
   "next_resume_tasks": [
     "ROMcandidate:resolveindependentaccessvalidityandtruecoldstartup,thenperdevicewholee/usimage-selectionandgenerationbinding;noautomaticUfallback. NotprerequisiteforSSAP/data.",
     "ContinueuniqueEngineboundedper-requestlocalattributeauthorizer withowner/epoch/attributeversion/originalRXlifetime/securityepoch/direction/deadline;thenCPCDandsecureupdates. NoBooleanapprovalorsecondEngine.",
@@ -3037,5 +3037,21 @@
   "previous_goal_turn_audit": {
     "classification": "NO_PROGRESS_REVALIDATED",
     "reason": "ROM readonly replay restated the already-bounded conclusion;continued with pending production work rather than treating it as a blocker"
+  },
+  "service_callback_current_batch": {
+    "status": "IMPLEMENTING_NOT_QUALIFIED",
+    "production_programs": "Existing sealed c6 artifact; no new Host/Engine or native protocol implementation",
+    "finite_exit": [
+      "VM service-only local register/read/unregister plus actual cross-owner/management/channel/kernel-device refusals",
+      "Real owner exit during approval",
+      "Original deadline and late old approval rejected with opposite DB value unchanged",
+      "Existing CUTC ordinary app reply and peer remain after failed SMTC"
+    ],
+    "remaining_after_exit": [
+      "Active-owner controller retirement",
+      "CPCD/protected update delivery",
+      "Full original S0-S6/19WP/10FV/12DG and prior open conditions"
+    ],
+    "constraint": "VM-only;12 jobs solo/8 with VM;do not overwrite user WIP or sealed evidence"
   }
 }

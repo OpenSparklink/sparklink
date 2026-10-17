@@ -154,8 +154,9 @@ owner；这是一份准入快照，不是内核与数据库的原子事务。已
 可能不确定。批准只满足本地授权，不满足缺失的加密/认证，也不产生可信身份或 Bond。
 
 `slctl --adapter PATH ssap-serve SERVICE_HEX PROPERTY_HEX OPS ACCESS VALUE_HEX [ask|allow|deny]`
-以前台连接拥有服务。默认 ask 要求 `yes REQUEST_ID` 或 `no REQUEST_ID`；原期限外及
-旧编号无效。allow/deny 是服务所有者显式本地策略，不是安全 Agent 自动批准。标准
+以前台连接拥有服务。默认 ask 要求 `yes TOKEN` 或 `no TOKEN`；TOKEN是该前台进程内
+不复用的提示序号，区别于每Engine可重置的原请求编号。提示同时显示原controller/
+generation/lifetime/handle/security epoch及原期限。原期限外、旧token或附加字段无效。allow/deny 是服务所有者显式本地策略，不是安全 Agent 自动批准。标准
 输入 `value` 通过同 owner 读取实际本地值，`quit` 主动注销；进程被杀时由 unique owner
 退出清理。新入口沿用唯一 Engine，不新增远端协议引擎。实现、私有 D-Bus、VM 实机和
 形式化结果分别记于能力入口，不继承旧 artifact 的资格。

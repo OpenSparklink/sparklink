@@ -798,8 +798,8 @@
     "Parallel actual data/credit/multichannel/fourdevices/SSAP/performance and singleRXURB-gap measurement, old cleanup; no allcontrolrace prerequisite",
     "Full S0-S6/19WP/10FV/12DG unchanged; UserHost P4; VM-only U2/3,E1 excluded; build12solo/8withVM/shared lock"
   ],
-  "issue_sync_status": "Existing seven OPEN; attribute access update pending exact readback",
-  "issue_sync_receipt": ".dev/tx-constraint-issue-receipts-v1.json",
+  "issue_sync_status": "Seven existing issues OPEN with exact comment readback and original bodies unchanged;attribute slice scoped exit,fullscope incomplete",
+  "issue_sync_receipt": ".dev/attribute-access-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
   "current_goal_turn_classification": "PROGRESS_ATTRIBUTE_ACCESS_SIX_REAL_CASES_SCOPED_EXIT_NOT_COMPLETE",
   "goal_api_status_observed": "active",
@@ -2845,6 +2845,7 @@
     "report": "docs/evidence/ssap-attribute-access-20261017.json",
     "registry_prefix": "ssap-access-d4",
     "state_source": "qualification_view generated from qualification-records; no independent current qualification",
-    "scope": "Restricted original receipt/active TX intent; local authorization/identity/Bond and actual invalidation combinations remain open"
+    "scope": "Restricted original receipt/active TX intent; local authorization/identity/Bond and actual invalidation combinations remain open",
+    "maintenance_report": "docs/evidence/ssap-attribute-maintenance-20261017.json"
   }
 }

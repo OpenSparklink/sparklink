@@ -873,7 +873,7 @@ impl Context {
             .await??;
             self.wait_native_result(&proxy, id).await?;
             if let Some((marker, address)) = matching {
-                let expected = libsparklink::ws73_marker_data(&marker);
+                let expected = slk_protocol::ws73_marker_data(&marker);
                 let timing: (u64, u64, u64, u32, u32, u16, u8) = tokio::time::timeout(
                     std::time::Duration::from_secs(7),
                     proxy.call("GetDiscoveryTiming", &(id,)),

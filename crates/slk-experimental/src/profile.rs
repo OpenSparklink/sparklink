@@ -2,7 +2,7 @@
 //! routed by slkd; UUID/permission/interop qualification remains outstanding.
 use std::collections::HashMap;
 
-use libsparklink::Adapter;
+use slk_native::Adapter;
 use slk_protocol::SsapOperations;
 
 /// Definition of a characteristic to register with the SSAP database

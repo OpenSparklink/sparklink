@@ -41,7 +41,7 @@
 未激活完整事件或 snoop 订阅的旧 poll 使用方式返回 `POLLERR`，不能继续等待旧队列。
 Python `NativeAdapter.poll_event` 是现有非消费完整事件接口，名称相似不代表旧 ABI。
 
-源码：`crates/slkd/src/controller.rs`、`crates/slk-protocol/src/ioctl.rs`、
+源码：`crates/slkd/src/controller.rs`、`crates/slk-native/src/ioctl.rs`、
 Linux `net/sparklink/sparklink_core.rs` 与 `include/uapi/linux/sparklink.h`。
 [本批准确证据](../evidence/read-retirement-progress-20261014.json) 和
 [历史 read 审计](../../history/diagnostics/event-copy-remediation.md) 分开阅读。

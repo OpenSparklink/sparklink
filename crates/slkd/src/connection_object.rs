@@ -421,7 +421,7 @@ impl ConnectionIface {
             .await
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
             .map_err(|e| match e {
-                libsparklink::Error::Ioctl(
+                slk_native::Error::Ioctl(
                     nix::errno::Errno::ENOTTY | nix::errno::Errno::EOPNOTSUPP,
                 ) => zbus::fdo::Error::NotSupported("kernel security snapshot unavailable".into()),
                 _ => zbus::fdo::Error::Failed(e.to_string()),
@@ -878,7 +878,7 @@ mod grant_tests {
 
     #[tokio::test]
     async fn security_snapshot_never_uses_cached_policy_or_creates_an_engine() {
-        let adapter = Arc::new(libsparklink::Adapter::open("/dev/null").unwrap());
+        let adapter = Arc::new(slk_native::Adapter::open("/dev/null").unwrap());
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
             adapter.clone(),
             crate::config::DaemonConfig::default(),
@@ -936,7 +936,7 @@ mod grant_tests {
         for security in [1, 2] {
             let state =
                 std::sync::Arc::new(tokio::sync::Mutex::new(crate::state::AdapterState::new(
-                    libsparklink::Adapter::open("/dev/null").unwrap(),
+                    slk_native::Adapter::open("/dev/null").unwrap(),
                     crate::config::DaemonConfig::default(),
                     crate::bonding::BondingStore::new(
                         std::path::Path::new("/tmp"),
@@ -973,7 +973,7 @@ mod grant_tests {
     #[tokio::test]
     async fn ssap_start_context_releases_one_adapter_guard_before_actor_arguments() {
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
-            libsparklink::Adapter::open("/dev/null").unwrap(),
+            slk_native::Adapter::open("/dev/null").unwrap(),
             crate::config::DaemonConfig::default(),
             crate::bonding::BondingStore::new(
                 std::path::Path::new("/tmp"),
@@ -996,7 +996,7 @@ mod grant_tests {
     #[tokio::test]
     async fn transport_snapshot_never_starts_owner_and_has_one_original_deadline() {
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
-            Arc::new(libsparklink::Adapter::open("/dev/null").unwrap()),
+            Arc::new(slk_native::Adapter::open("/dev/null").unwrap()),
             crate::config::DaemonConfig::default(),
             crate::bonding::BondingStore::new(
                 std::path::Path::new("/tmp"),
@@ -1046,7 +1046,7 @@ mod grant_tests {
     #[tokio::test]
     async fn actual_scoped_handler_rejects_before_held_business_state() {
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
-            Arc::new(libsparklink::Adapter::open("/dev/null").unwrap()),
+            Arc::new(slk_native::Adapter::open("/dev/null").unwrap()),
             crate::config::DaemonConfig::default(),
             crate::bonding::BondingStore::new(
                 std::path::Path::new("/tmp"),

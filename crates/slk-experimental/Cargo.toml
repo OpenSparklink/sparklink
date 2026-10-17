@@ -6,6 +6,6 @@ edition.workspace = true
 publish = false
 
 [dependencies]
-libsparklink = { workspace = true }
+slk-native = { workspace = true }
 slk-protocol = { workspace = true }
 tracing = { workspace = true }

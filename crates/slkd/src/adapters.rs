@@ -19,7 +19,7 @@ use crate::{
         NativeManagement, RegistrationDirectory, SharedState,
     },
 };
-use libsparklink::Adapter;
+use slk_native::Adapter;
 use slk_protocol::{CONTROLLER_READY, SleControllerSnapshot};
 use std::{sync::Arc, time::Duration};
 use tokio::{
@@ -44,7 +44,7 @@ pub(crate) async fn relinquish(
     .await?
     {
         Ok(()) => {}
-        Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => return Ok(()),
+        Err(slk_native::Error::Ioctl(nix::errno::Errno::ENODEV)) => return Ok(()),
         Err(error) => return Err(error.into()),
     }
     let deadline = tokio::time::Instant::now() + Duration::from_secs(20);
@@ -53,7 +53,7 @@ pub(crate) async fn relinquish(
         let status =
             match tokio::task::spawn_blocking(move || fd.management_status(generation)).await? {
                 Ok(status) => status,
-                Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => return Ok(()),
+                Err(slk_native::Error::Ioctl(nix::errno::Errno::ENODEV)) => return Ok(()),
                 Err(error) => return Err(error.into()),
             };
         match status.state {
@@ -114,7 +114,7 @@ async fn observe_registration(
     let fd = observer.as_ref().unwrap().clone();
     match tokio::task::spawn_blocking(move || fd.registration_snapshot(id, 0)).await? {
         Ok(snapshot) => Ok(Some(snapshot)),
-        Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => Ok(None),
+        Err(slk_native::Error::Ioctl(nix::errno::Errno::ENODEV)) => Ok(None),
         Err(error) => {
             *observer = None;
             Err(error.into())
@@ -128,7 +128,7 @@ async fn initialize(
     adapter: Arc<Adapter>,
     snapshot: SleControllerSnapshot,
     lease: Option<NativeLease>,
-    policy: Option<libsparklink::Ws73DiscoveryPolicy>,
+    policy: Option<slk_native::Ws73DiscoveryPolicy>,
     mut cancelled: watch::Receiver<bool>,
 ) -> anyhow::Result<()> {
     if snapshot.profile == 0 || snapshot.flags == CONTROLLER_READY {
@@ -178,7 +178,7 @@ async fn initialize(
                 request_id: request.request_id,
                 operation,
             });
-            Ok::<_, libsparklink::Error>(())
+            Ok::<_, slk_native::Error>(())
         })
         .await??;
         let deadline = tokio::time::Instant::now() + Duration::from_secs(7);
@@ -242,7 +242,7 @@ impl Node {
         };
         let path = object_path(&snapshot);
         let device = device.to_owned();
-        let receiver = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
+        let receiver = tokio::task::spawn_blocking(move || -> slk_native::Result<_> {
             let mut receiver = Adapter::open(&device)?;
             receiver.select_device(snapshot.dev_index)?;
             receiver.controller_snapshot(snapshot.generation)?;
@@ -250,7 +250,7 @@ impl Node {
         })
         .await??;
         let subscription = receiver.into_controller_event_receiver()?;
-        let (adapter, lease) = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
+        let (adapter, lease) = tokio::task::spawn_blocking(move || -> slk_native::Result<_> {
             let lease =
                 if snapshot.profile != 0 {
                     Some(adapter.acquire_management(
@@ -352,7 +352,7 @@ impl Node {
     async fn refresh(&self) -> anyhow::Result<()> {
         let fd = self.control.clone();
         let generation = self.state.lock().await.controller.generation;
-        let (snapshot, radio) = tokio::task::spawn_blocking(move || -> libsparklink::Result<_> {
+        let (snapshot, radio) = tokio::task::spawn_blocking(move || -> slk_native::Result<_> {
             let snapshot = fd.controller_snapshot(generation)?;
             let radio = if snapshot.profile == 1 {
                 Some(fd.discovery_snapshot()?)

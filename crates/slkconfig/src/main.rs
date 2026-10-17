@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand, ValueEnum};
-use libsparklink::Adapter;
+use slk_native::Adapter;
 
 #[derive(Parser)]
 #[command(name = "slkconfig", about = "SparkLink offline configuration tool")]
@@ -216,7 +216,7 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         for index in adapter.device_indices()? {
             let registration = match adapter.registration_snapshot(index, 0) {
                 Ok(value) => value,
-                Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => continue,
+                Err(slk_native::Error::Ioctl(nix::errno::Errno::ENODEV)) => continue,
                 Err(error) => return Err(error.into()),
             };
             print_registration(&registration);
@@ -482,7 +482,7 @@ fn fmt_addr(addr: &[u8; 6]) -> String {
     )
 }
 
-fn cmd_info(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_info(adapter: &Adapter) -> slk_native::Result<()> {
     let info = adapter.device_info()?;
     let name_end = info
         .name
@@ -503,12 +503,12 @@ fn cmd_info(adapter: &Adapter) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_dli(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_dli(adapter: &Adapter) -> slk_native::Result<()> {
     print_controller(&adapter.controller_snapshot(0)?);
     Ok(())
 }
 
-fn cmd_phy(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_phy(adapter: &Adapter) -> slk_native::Result<()> {
     let info = adapter.phy_info()?;
 
     println!("PHY Configuration:");
@@ -531,7 +531,7 @@ fn cmd_phy(adapter: &Adapter) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_role(adapter: &Adapter, value: Option<u8>) -> libsparklink::Result<()> {
+fn cmd_role(adapter: &Adapter, value: Option<u8>) -> slk_native::Result<()> {
     match value {
         Some(v) => {
             adapter.set_role(v)?;
@@ -547,20 +547,20 @@ fn cmd_role(adapter: &Adapter, value: Option<u8>) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_reset(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_reset(adapter: &Adapter) -> slk_native::Result<()> {
     // DLI reset
-    use slk_protocol::ioctl;
+    use slk_native::ioctl;
     use std::os::fd::AsRawFd;
     unsafe { ioctl::sl_dli_reset(adapter.as_fd().as_raw_fd())? };
     println!("Controller reset complete");
     Ok(())
 }
 
-fn cmd_stats(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_stats(adapter: &Adapter) -> slk_native::Result<()> {
     let identity = adapter.controller_snapshot(0)?;
     let links = adapter.native_link_snapshot(identity.generation)?;
     if links.flags != slk_protocol::LINK_SNAPSHOT_KNOWN || links.error != 0 {
-        return Err(libsparklink::Error::InvalidParam(
+        return Err(slk_native::Error::InvalidParam(
             "physical link state is unknown",
         ));
     }
@@ -571,7 +571,7 @@ fn cmd_stats(adapter: &Adapter) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_connections(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_connections(adapter: &Adapter) -> slk_native::Result<()> {
     let list = adapter.conn_list()?;
 
     if list.count == 0 {
@@ -611,17 +611,17 @@ fn cmd_connections(adapter: &Adapter) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_scan(_adapter: &Adapter, _duration: u64) -> libsparklink::Result<()> {
-    Err(libsparklink::Error::InvalidParam(
+fn cmd_scan(_adapter: &Adapter, _duration: u64) -> slk_native::Result<()> {
+    Err(slk_native::Error::InvalidParam(
         "legacy scan is removed; use slctl Native discovery",
     ))
 }
 
-fn cmd_connect(adapter: &Adapter, address: &str) -> libsparklink::Result<()> {
+fn cmd_connect(adapter: &Adapter, address: &str) -> slk_native::Result<()> {
     use slk_protocol::SleConnectParams;
 
     let addr = parse_addr(address)
-        .map_err(|_| libsparklink::Error::InvalidParam("address must be AA:BB:CC:DD:EE:FF"))?;
+        .map_err(|_| slk_native::Error::InvalidParam("address must be AA:BB:CC:DD:EE:FF"))?;
 
     let params = SleConnectParams {
         peer_addr: addr,
@@ -637,14 +637,14 @@ fn cmd_connect(adapter: &Adapter, address: &str) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_disconnect(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()> {
+fn cmd_disconnect(adapter: &Adapter, handle_str: &str) -> slk_native::Result<()> {
     let handle = if let Some(hex) = handle_str.strip_prefix("0x") {
         u16::from_str_radix(hex, 16)
-            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex handle"))?
+            .map_err(|_| slk_native::Error::InvalidParam("invalid hex handle"))?
     } else {
         handle_str
             .parse::<u16>()
-            .map_err(|_| libsparklink::Error::InvalidParam("invalid handle number"))?
+            .map_err(|_| slk_native::Error::InvalidParam("invalid handle number"))?
     };
 
     adapter.disconnect(handle)?;
@@ -664,7 +664,7 @@ fn parse_addr(s: &str) -> Result<[u8; 6], &'static str> {
     Ok(addr)
 }
 
-fn cmd_security(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_security(adapter: &Adapter) -> slk_native::Result<()> {
     let info = adapter.sec_info()?;
 
     let state_label = match info.state {
@@ -697,7 +697,7 @@ fn cmd_security(adapter: &Adapter) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_pair(adapter: &Adapter, method: &str) -> libsparklink::Result<()> {
+fn cmd_pair(adapter: &Adapter, method: &str) -> slk_native::Result<()> {
     use slk_protocol::SlePairParams;
 
     let m = match method {
@@ -705,7 +705,7 @@ fn cmd_pair(adapter: &Adapter, method: &str) -> libsparklink::Result<()> {
         "psk" => 2,
         "none" => 0,
         _ => {
-            return Err(libsparklink::Error::InvalidParam(
+            return Err(slk_native::Error::InvalidParam(
                 "method must be 'just_works', 'psk', or 'none'",
             ));
         }
@@ -720,18 +720,18 @@ fn cmd_pair(adapter: &Adapter, method: &str) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_encrypt(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_encrypt(adapter: &Adapter) -> slk_native::Result<()> {
     adapter.encrypt_on()?;
     println!("Encryption enabled");
     Ok(())
 }
 
-fn cmd_set_psk(adapter: &Adapter, psk_hex: &str) -> libsparklink::Result<()> {
+fn cmd_set_psk(adapter: &Adapter, psk_hex: &str) -> slk_native::Result<()> {
     use slk_protocol::SlePskParams;
 
     let hex = psk_hex.strip_prefix("0x").unwrap_or(psk_hex);
     if hex.len() != 32 {
-        return Err(libsparklink::Error::InvalidParam(
+        return Err(slk_native::Error::InvalidParam(
             "PSK must be exactly 32 hex chars (16 bytes)",
         ));
     }
@@ -739,7 +739,7 @@ fn cmd_set_psk(adapter: &Adapter, psk_hex: &str) -> libsparklink::Result<()> {
     let mut params = SlePskParams { psk: [0; 16] };
     for i in 0..16 {
         params.psk[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16)
-            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex character in PSK"))?;
+            .map_err(|_| slk_native::Error::InvalidParam("invalid hex character in PSK"))?;
     }
 
     adapter.set_psk(&params)?;
@@ -747,63 +747,55 @@ fn cmd_set_psk(adapter: &Adapter, psk_hex: &str) -> libsparklink::Result<()> {
     Ok(())
 }
 
-fn cmd_sec_reset(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_sec_reset(adapter: &Adapter) -> slk_native::Result<()> {
     adapter.sec_reset()?;
     println!("Security state reset");
     Ok(())
 }
 
-fn cmd_services(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_services(adapter: &Adapter) -> slk_native::Result<()> {
     let _ = adapter;
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
 
-fn cmd_list_services(adapter: &Adapter) -> libsparklink::Result<()> {
+fn cmd_list_services(adapter: &Adapter) -> slk_native::Result<()> {
     let _ = adapter;
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
 
-fn cmd_read_prop(adapter: &Adapter, handle_str: &str) -> libsparklink::Result<()> {
+fn cmd_read_prop(adapter: &Adapter, handle_str: &str) -> slk_native::Result<()> {
     let _ = (adapter, handle_str);
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
 
-fn cmd_write_prop(
-    adapter: &Adapter,
-    handle_str: &str,
-    value_hex: &str,
-) -> libsparklink::Result<()> {
+fn cmd_write_prop(adapter: &Adapter, handle_str: &str, value_hex: &str) -> slk_native::Result<()> {
     if parse_hex_bytes(value_hex)?.len() > 252 {
-        return Err(libsparklink::Error::InvalidParam(
+        return Err(slk_native::Error::InvalidParam(
             "removed legacy service input limit exceeded",
         ));
     }
     let _ = (adapter, handle_str, value_hex);
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
 
-fn cmd_remote_discover(adapter: &Adapter, conn_str: &str) -> libsparklink::Result<()> {
+fn cmd_remote_discover(adapter: &Adapter, conn_str: &str) -> slk_native::Result<()> {
     let _ = (adapter, conn_str);
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
 
-fn cmd_remote_read(
-    adapter: &Adapter,
-    conn_str: &str,
-    handle_str: &str,
-) -> libsparklink::Result<()> {
+fn cmd_remote_read(adapter: &Adapter, conn_str: &str, handle_str: &str) -> slk_native::Result<()> {
     let _ = (adapter, conn_str, handle_str);
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
@@ -813,14 +805,14 @@ fn cmd_remote_write(
     conn_str: &str,
     handle_str: &str,
     value_hex: &str,
-) -> libsparklink::Result<()> {
+) -> slk_native::Result<()> {
     if parse_hex_bytes(value_hex)?.len() > 248 {
-        return Err(libsparklink::Error::InvalidParam(
+        return Err(slk_native::Error::InvalidParam(
             "removed legacy service input limit exceeded",
         ));
     }
     let _ = (adapter, conn_str, handle_str, value_hex);
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
@@ -830,52 +822,52 @@ fn cmd_call_method(
     conn_str: &str,
     handle_str: &str,
     input_hex: &str,
-) -> libsparklink::Result<()> {
+) -> slk_native::Result<()> {
     if parse_hex_bytes(input_hex)?.len() > 248 {
-        return Err(libsparklink::Error::InvalidParam(
+        return Err(slk_native::Error::InvalidParam(
             "removed legacy service input limit exceeded",
         ));
     }
     let _ = (adapter, conn_str, handle_str, input_hex);
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
 
-fn cmd_find_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libsparklink::Result<()> {
+fn cmd_find_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> slk_native::Result<()> {
     let _ = (adapter, conn_str, uuid_str);
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
 
-fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> libsparklink::Result<()> {
+fn cmd_read_by_uuid(adapter: &Adapter, conn_str: &str, uuid_str: &str) -> slk_native::Result<()> {
     let _ = (adapter, conn_str, uuid_str);
-    Err(libsparklink::Error::NotSupported(
+    Err(slk_native::Error::NotSupported(
         "kernel SSAP API removed; user Engine not implemented",
     ))
 }
 
 #[cfg(test)]
-fn parse_handle(s: &str) -> libsparklink::Result<u16> {
+fn parse_handle(s: &str) -> slk_native::Result<u16> {
     let s = s.strip_prefix("0x").unwrap_or(s);
-    u16::from_str_radix(s, 16).map_err(|_| libsparklink::Error::InvalidParam("invalid hex handle"))
+    u16::from_str_radix(s, 16).map_err(|_| slk_native::Error::InvalidParam("invalid hex handle"))
 }
 
-fn parse_hex_bytes(hex: &str) -> libsparklink::Result<Vec<u8>> {
+fn parse_hex_bytes(hex: &str) -> slk_native::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
     if !hex.len().is_multiple_of(2) {
-        return Err(libsparklink::Error::InvalidParam(
+        return Err(slk_native::Error::InvalidParam(
             "hex string must have even length",
         ));
     }
     if !hex.is_ascii() {
-        return Err(libsparklink::Error::InvalidParam("invalid hex character"));
+        return Err(slk_native::Error::InvalidParam("invalid hex character"));
     }
     let mut bytes = Vec::with_capacity(hex.len() / 2);
     for i in (0..hex.len()).step_by(2) {
         let byte = u8::from_str_radix(&hex[i..i + 2], 16)
-            .map_err(|_| libsparklink::Error::InvalidParam("invalid hex character"))?;
+            .map_err(|_| slk_native::Error::InvalidParam("invalid hex character"))?;
         bytes.push(byte);
     }
     Ok(bytes)
@@ -1048,7 +1040,7 @@ mod tests {
         ] {
             // An attempted ioctl on /dev/null would yield an Ioctl error,
             // not this input validation error.
-            assert!(matches!(result, Err(libsparklink::Error::InvalidParam(_))));
+            assert!(matches!(result, Err(slk_native::Error::InvalidParam(_))));
         }
     }
 

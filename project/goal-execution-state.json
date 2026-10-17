@@ -3040,7 +3040,7 @@
     },
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
-    "batch": "Architecture-first R3a actual Channel operations/caller migration;R3b Native/sharedcontract/application SDK follows",
+    "batch": "R3a sealed source17ed actual VM gates in progress;R3b Native Rust move implementing",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
       "R3 Native/Channel/shared D-Bus contract/application Client migration",
@@ -3071,7 +3071,7 @@
       "slk-protocol contains ABI/value/pure codec-state only,no device/ioctl/DBus operations",
       "slktest uses same application Channel;load/timing/assertions/report remain in tool"
     ],
-    "transition_exception": "R1a allows existing libsparklink Native wrapper only until R3 production callers migrate;delete edge and update gate at R3 exit",
+    "transition_exception": "slkd Native-wrapper edge removed in R3b source;remaining C/Python Native facade only until R3c production callers migrate and old Native exports removed",
     "r2": {
       "status": "SOURCE_BOUND_KEEP_PATH_REAL_PASS_NOT_RF_CACHE_STRESS",
       "production": "Bound per-controller observations;one Entry publication state;existing EventTask/time budget/ownership check;do not change physical connection state",
@@ -3090,6 +3090,12 @@
       "production": "Move existing authorized-fd operations/test bodies without wire/authority/deadline changes;delete ABI operations and migrate callers",
       "exit_reference": "project/implementation-plan.md WP18 R3a",
       "remaining": "Native ioctl still in protocol;slkd still temporary libsparklink wrapper;application/sharedcontract/C/Python boundaries and cleanVM deployment remain"
+    },
+    "r3b": {
+      "status": "IMPLEMENTING_NOT_REAL_QUALIFIED",
+      "production": "Move actual Native Rust owner and ioctl operations;slkd/diagnostics/experimental consumers migrated;protocol pure;slctl marker pure shared codec",
+      "transition_exception": "libsparklink C/Python facade temporarily depends on Native until immediate R3c application/sharedcontract/language migration;not target SDK or publish qualification",
+      "remaining": "Strict checks in progress;exact new artifact;remove facade Native dependency/exports and retired APIs across all callers"
     }
   },
   "owned_ssap_c6_historical_batch": {

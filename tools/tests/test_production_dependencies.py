@@ -9,12 +9,12 @@ from check_production_dependencies import check_tree
 class DependencyBoundary(unittest.TestCase):
     internal={'slkd','libsparklink','slk-protocol','slctl','slktest','slk-experimental','slk-channel','slk-native'}
 
-    def test_current_native_wrapper_direction_and_external_libraries(self):
-        output='slkd v0.1.0\nlibsparklink v0.1.0\nslk-protocol v0.1.0\nzbus v5.14.0\n'
-        self.assertEqual(check_tree('slkd',output,self.internal),['libsparklink','slk-protocol','slkd'])
+    def test_native_daemon_direction_and_external_libraries(self):
+        output='slkd v0.1.0\nslk-native v0.1.0\nslk-protocol v0.1.0\nzbus v5.14.0\n'
+        self.assertEqual(check_tree('slkd',output,self.internal),['slk-native','slk-protocol','slkd'])
 
     def test_test_backend_application_client_and_reverse_direction_fail(self):
-        for root,dependency in [('slkd','slk-experimental'),('slkd','slctl'),('slkd','slktest'),('libsparklink','slkd'),('slk-protocol','libsparklink'),('slk-protocol','slk-channel'),('slk-channel','libsparklink'),('slk-channel','slkd'),('slk-channel','slk-native')]:
+        for root,dependency in [('slkd','libsparklink'),('slkd','slk-experimental'),('slkd','slctl'),('slkd','slktest'),('libsparklink','slkd'),('slk-protocol','libsparklink'),('slk-protocol','slk-channel'),('slk-channel','libsparklink'),('slk-channel','slkd'),('slk-channel','slk-native'),('slk-native','libsparklink'),('slk-native','slkd'),('slk-native','slk-channel')]:
             with self.subTest(root=root,dependency=dependency),self.assertRaises(ValueError):
                 check_tree(root,f'{root} v0.1.0\n{dependency} v0.1.0\n',self.internal)
 

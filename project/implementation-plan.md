@@ -2070,3 +2070,13 @@ Linux `cdab733c4ed8`、修复 `f887b477f085` 在注册前通过真实HCC GET_CHI
 HCC运行于固件，ROM下载阶段尚无HCC；不能以该接口实现首次冷启动固件自动选择，
 也不能把固件自报当硅片或执行固件认证。该缺口明确保留，禁止端口/VIDPID默认U。
 全S0–S6/19WP/10FV/12DG不变，不增重复目标；UserHost低优先级。
+
+
+WP18/R3b有限切片：实际迁移Native Adapter/错误/事件/观察/抓包/ioctl及生产Rust
+调用者到slk-native，slkd不再依赖libsparklink；protocol无设备或ioctl操作。测试跟随
+生产代码，旧ioctl路径删除并用compile-fail拒绝恢复。slctl共享纯marker codec，
+不因查询广告而取得Native依赖。C/Python混合门面仍暂时使用Native：明确仅限紧接R3c
+应用Client/独立契约/语言绑定全链接通后删除，不是目标应用SDK完成或已验收状态。
+退出为default/all-features/严格clippy、实际依赖闭包、头和跨语言独立校验；准确新
+artifact实机保持，不把17ed的R3a资格转授此变更。原121候选方法/46C导出词法审计
+只是迁移输入，仍须R4逐项语义审查，不以全部源码搬家取代退休。

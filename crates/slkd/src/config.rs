@@ -171,7 +171,7 @@ pub struct Ws73PolicyConfig {
 impl Default for Ws73PolicyConfig {
     fn default() -> Self {
         let (_, min, max, power, interval, window) =
-            libsparklink::Ws73DiscoveryPolicy::default().parameters();
+            slk_native::Ws73DiscoveryPolicy::default().parameters();
         Self {
             advertising_interval_min_slots: min,
             advertising_interval_max_slots: max,
@@ -183,8 +183,8 @@ impl Default for Ws73PolicyConfig {
 }
 
 impl Ws73PolicyConfig {
-    fn build(&self) -> Result<libsparklink::Ws73DiscoveryPolicy, ConfigError> {
-        libsparklink::Ws73DiscoveryPolicy::new(
+    fn build(&self) -> Result<slk_native::Ws73DiscoveryPolicy, ConfigError> {
+        slk_native::Ws73DiscoveryPolicy::new(
             self.advertising_interval_min_slots,
             self.advertising_interval_max_slots,
             self.tx_power_dbm,
@@ -218,7 +218,7 @@ impl Ws73Config {
     /// Offline host configuration only, never firmware or RF qualification.
     pub fn diagnostic_policies(&self) -> Result<String, ConfigError> {
         self.validate()?;
-        let line = |prefix: &str, policy: libsparklink::Ws73DiscoveryPolicy| {
+        let line = |prefix: &str, policy: slk_native::Ws73DiscoveryPolicy| {
             let (version, min, max, power, interval, window) = policy.parameters();
             format!(
                 "{prefix} version={version} adv_slots={min}..{max} tx_power_dbm={power} scan_slots={interval}/{window}\n"
@@ -256,7 +256,7 @@ impl Ws73Config {
     pub fn for_address(
         &self,
         address: [u8; 6],
-    ) -> Result<libsparklink::Ws73DiscoveryPolicy, ConfigError> {
+    ) -> Result<slk_native::Ws73DiscoveryPolicy, ConfigError> {
         self.validate()?;
         if address == [0; 6] {
             return Err(ConfigError::Invalid(

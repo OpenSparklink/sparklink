@@ -1,0 +1,13 @@
+[package]
+name = "slk-native"
+description = "SparkLink Native controller management and observation operations"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+slk-protocol = { workspace = true }
+tokio = { workspace = true }
+nix = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }

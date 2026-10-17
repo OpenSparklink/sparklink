@@ -77,20 +77,7 @@ impl Ws73DiscoveryPolicy {
     }
 }
 
-/// T/XS 20001 §6.5 public information inside the SLE access-layer type 255
-/// envelope (T/XS 10002 §7.1.4). A full local name avoids inventing a vendor UUID.
-pub fn ws73_marker_data(marker: &[u8; 16]) -> Vec<u8> {
-    let name = format!(
-        "slk-{}",
-        marker
-            .iter()
-            .map(|b| format!("{b:02x}"))
-            .collect::<String>()
-    );
-    let mut data = vec![255, (5 + name.len()) as u8, 1, 1, 1, 0x0b, name.len() as u8];
-    data.extend_from_slice(name.as_bytes());
-    data
-}
+use slk_protocol::ws73_marker_data;
 
 fn identity(
     snapshot: &SleControllerSnapshot,

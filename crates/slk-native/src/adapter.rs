@@ -5,7 +5,7 @@ use nix::fcntl::{OFlag, open};
 use nix::sys::stat::Mode;
 use tracing::debug;
 
-use slk_protocol::ioctl;
+use crate::ioctl;
 use slk_protocol::*;
 
 use crate::{Error, Result};

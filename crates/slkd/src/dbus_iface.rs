@@ -38,7 +38,7 @@ impl Root {
                     .registration_snapshot(entry.index, entry.generation)
                 {
                     Ok(_) => paths.push(path),
-                    Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => {}
+                    Err(slk_native::Error::Ioctl(nix::errno::Errno::ENODEV)) => {}
                     Err(error) => {
                         return Err(zbus::fdo::Error::Failed(format!(
                             "Core registration observation failed for {path}: {error}"
@@ -65,7 +65,7 @@ impl Root {
                     .controller_snapshot(registration.generation)
                 {
                     Ok(_) => paths.push(path),
-                    Err(libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV)) => {}
+                    Err(slk_native::Error::Ioctl(nix::errno::Errno::ENODEV)) => {}
                     Err(error) => {
                         return Err(zbus::fdo::Error::Failed(format!(
                             "registration snapshot failed for {path}: {error}"
@@ -136,9 +136,9 @@ impl AdapterIface {
         negotiable: bool,
     ) -> zbus::fdo::Result<Vec<u8>> {
         let role = if negotiable {
-            libsparklink::Ws73ConnectableRole::NegotiableTerminal
+            slk_native::Ws73ConnectableRole::NegotiableTerminal
         } else {
-            libsparklink::Ws73ConnectableRole::FixedTerminal
+            slk_native::Ws73ConnectableRole::FixedTerminal
         };
         crate::radio::advertise(&self.state, request_id, marker, Some(role)).await
     }
@@ -181,7 +181,7 @@ impl AdapterIface {
     }
     #[zbus(property)]
     fn radio_policy_version(&self) -> u32 {
-        libsparklink::WS73_DISCOVERY_POLICY_VERSION
+        slk_native::WS73_DISCOVERY_POLICY_VERSION
     }
     /// Immutable registration policy. Admission/Complete/RF are observed separately.
     async fn get_discovery_policy(&self) -> zbus::fdo::Result<(u32, u32, u32, i32, u32, u32)> {

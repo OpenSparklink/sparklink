@@ -32,10 +32,10 @@
 
 | 范围 | 当前状态与限制 | 源码定位 |
 |---|---|---|
-| Native 管理／诊断 | 版本化请求，controller generation／所有权检查；已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-protocol/src/ioctl.rs`、内核 `sparklink_core.rs` |
+| Native 管理／诊断 | 版本化请求，controller generation／所有权检查；已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-native/src/ioctl.rs`、内核 `sparklink_core.rs` |
 | Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`libsparklink` Native API、内核 socket |
 | D-Bus ServiceManager／RemoteService | 新 RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；旧 facade 与 RemoteService 仍 NotSupported；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
-| 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-protocol/src/ioctl.rs`、内核 UAPI |
+| 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-native/src/ioctl.rs`、内核 UAPI |
 | 旧 property／write facade | property 超 248、write 超 252 字节拒绝；这是遗留输入校验，不是新 Engine MTU 承诺 | `slkd/src/service.rs` |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |

@@ -1,7 +1,7 @@
 //! Per-controller consent and call ownership. The kernel's physical Session is
 //! the only protocol/crypto engine. No keys or wire packets cross this broker.
 use crate::state::{NativeLease, SharedState};
-use libsparklink::Adapter;
+use slk_native::Adapter;
 use slk_protocol::{
     SleLinkInfo, SleSecurityNegotiationCancel, SleSecurityNegotiationResult,
     SleSecurityNegotiationSubmit, SleSecurityNumericConfirm,
@@ -125,11 +125,11 @@ fn monotonic_ns() -> zbus::fdo::Result<u64> {
         .and_then(|v| v.checked_add(time.tv_nsec as u64))
         .ok_or_else(|| failed("clock overflow"))
 }
-fn native_errno(error: libsparklink::Error) -> i32 {
+fn native_errno(error: slk_native::Error) -> i32 {
     match error {
-        libsparklink::Error::Ioctl(e) => -(e as i32),
-        libsparklink::Error::Timeout => -nix::libc::ETIMEDOUT,
-        libsparklink::Error::NotSupported(_) => -nix::libc::EOPNOTSUPP,
+        slk_native::Error::Ioctl(e) => -(e as i32),
+        slk_native::Error::Timeout => -nix::libc::ETIMEDOUT,
+        slk_native::Error::NotSupported(_) => -nix::libc::EOPNOTSUPP,
         _ => -nix::libc::EIO,
     }
 }
@@ -805,7 +805,7 @@ async fn supervise(
             });
             let result = query
                 .await
-                .unwrap_or(Err(libsparklink::Error::Ioctl(nix::errno::Errno::EIO)));
+                .unwrap_or(Err(slk_native::Error::Ioctl(nix::errno::Errno::EIO)));
             match result {
                 Ok(result) => {
                     if let Some(current) = registry.lock().await.entries.get_mut(&id) {
@@ -995,7 +995,7 @@ async fn supervise(
     .await
     .unwrap_or((
         -nix::libc::EIO,
-        Err(libsparklink::Error::Ioctl(nix::errno::Errno::EIO)),
+        Err(slk_native::Error::Ioctl(nix::errno::Errno::EIO)),
     ));
     if let Some(current) = registry.lock().await.entries.get_mut(&id) {
         let out = &mut current.observation;

@@ -179,8 +179,8 @@ mod tests {
     #[tokio::test]
     async fn actual_data_methods_reject_oversize_before_state_lock_or_ioctl() {
         use crate::{bonding::BondingStore, config::DaemonConfig, state::AdapterState};
-        use libsparklink::Adapter;
         use slk_experimental::profile::ProfileRegistry;
+        use slk_native::Adapter;
         use std::sync::Arc;
         use tokio::sync::Mutex;
         let state = Arc::new(Mutex::new(AdapterState::new(

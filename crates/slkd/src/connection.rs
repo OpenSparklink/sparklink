@@ -1,7 +1,7 @@
 //! Native typed connection RPCs. No business state lock spans ioctl/wait;
 //! admission retains the same per-device credential gate used by discovery.
 use crate::state::SharedState;
-use libsparklink::Adapter;
+use slk_native::Adapter;
 use slk_protocol::{
     LINK_SNAPSHOT_KNOWN, SleConnectionResult, SleConnectionSubmit, SleLinkInfo, SleLinkSnapshot,
 };
@@ -80,7 +80,7 @@ pub(crate) async fn submit(
         let mut authority = authority;
         let snapshot = fd.controller_snapshot(generation)?;
         if snapshot.profile != 1 || snapshot.flags != slk_protocol::CONTROLLER_READY {
-            return Err(libsparklink::Error::InvalidParam("Ready WS73 required"));
+            return Err(slk_native::Error::InvalidParam("Ready WS73 required"));
         }
         let mut request = SleConnectionSubmit {
             version: 2,

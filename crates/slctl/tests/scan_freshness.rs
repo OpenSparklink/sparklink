@@ -83,7 +83,7 @@ impl ScanPeer {
             0
         );
         let fresh = time.tv_sec as u64 * 1_000_000_000 + time.tv_nsec as u64;
-        let data = libsparklink::ws73_marker_data(&[1; 16]);
+        let data = slk_protocol::ws73_marker_data(&[1; 16]);
         let row = |seq, generation, timestamp, address: &str, bytes, lost| {
             (
                 seq,
@@ -108,7 +108,7 @@ impl ScanPeer {
                 7,
                 fresh,
                 ADDRESS,
-                libsparklink::ws73_marker_data(&[2; 16]),
+                slk_protocol::ws73_marker_data(&[2; 16]),
                 0,
             ),
             row(7, 7, fresh, ADDRESS, data, 0),

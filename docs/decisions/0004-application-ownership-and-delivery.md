@@ -305,3 +305,11 @@ slk-protocol保留同一ABI及纯校验，旧操作导出删除，不保留转�
 slktest和C桥用同一操作实现，测试/decoder一并迁移，不能复制循环或创建新Engine。
 这只完成Channel操作边界；Native ioctl与SDK/共享D-Bus契约仍须下一切片迁移，
 不能以一个新crate或离线通过宣称三视图架构全部达成。
+
+
+R3b将已有Native Adapter、观察/事件/抓包与ioctl从旧混合层迁出，slkd、诊断和
+实验调用者直接使用slk-native；不新造Runtime或状态机。protocol移除全部操作宏，
+slctl共用纯marker编码不再依赖Native包装。剩余例外转为C/Python门面→Native，
+仅限紧接的R3c完整调用者迁移；该门面不能以应用SDK名义发布，不是最终权限隔离。
+R3c退出必须删除Native默认导出及依赖，不保留长期转发别名。旧未支持入口按R4全链
+清单退休，不能将移动到Native误写成能力已验收。Native库自身不依赖Channel或客户端。

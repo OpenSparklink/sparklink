@@ -2,7 +2,7 @@
 //! is held across a device ioctl or a wait. IDs come from callers so admission
 //! can be recovered after a disconnected D-Bus request.
 use crate::state::{InitializationOff, SharedState};
-use libsparklink::Adapter;
+use slk_native::Adapter;
 use slk_protocol::{DiscoveryResultRecord, SleControllerSnapshot, SleDiscoverySubmit};
 use std::{sync::Arc, time::Duration};
 fn failed(error: impl std::fmt::Display) -> zbus::fdo::Error {
@@ -48,8 +48,8 @@ async fn submit(
     state: &SharedState,
     build: impl FnOnce(
         SleControllerSnapshot,
-        libsparklink::Ws73DiscoveryPolicy,
-    ) -> libsparklink::Result<SleDiscoverySubmit>
+        slk_native::Ws73DiscoveryPolicy,
+    ) -> slk_native::Result<SleDiscoverySubmit>
     + Send
     + 'static,
 ) -> zbus::fdo::Result<Vec<u8>> {
@@ -82,7 +82,7 @@ async fn submit(
         let domain = usize::from(matches!(request.operation, 3 | 4 | 6));
         authority.initialized_off[domain] = None;
         fd.submit_discovery(&request)?;
-        Ok::<_, libsparklink::Error>(request.data[..request.data_len as usize].to_vec())
+        Ok::<_, slk_native::Error>(request.data[..request.data_len as usize].to_vec())
     })
     .await
     .map_err(failed)?
@@ -168,7 +168,7 @@ pub(crate) async fn advertise(
     state: &SharedState,
     id: u64,
     marker: Vec<u8>,
-    role: Option<libsparklink::Ws73ConnectableRole>,
+    role: Option<slk_native::Ws73ConnectableRole>,
 ) -> zbus::fdo::Result<Vec<u8>> {
     let marker: [u8; 16] = marker
         .try_into()
@@ -188,7 +188,7 @@ pub(crate) async fn scan(state: &SharedState, id: u64) -> zbus::fdo::Result<()> 
 }
 pub(crate) async fn stop(state: &SharedState, id: u64, op: u32) -> zbus::fdo::Result<()> {
     submit(state, move |snapshot, _policy| {
-        libsparklink::ws73_discovery_stop(&snapshot, id, op)
+        slk_native::ws73_discovery_stop(&snapshot, id, op)
     })
     .await?;
     Ok(())
@@ -698,13 +698,12 @@ mod tests {
             discovery_policy(&first).await,
             Err(zbus::fdo::Error::NotSupported(_))
         ));
-        let configured =
-            libsparklink::Ws73DiscoveryPolicy::new(1237, 1301, -20, 1703, 997).unwrap();
+        let configured = slk_native::Ws73DiscoveryPolicy::new(1237, 1301, -20, 1703, 997).unwrap();
         first.lock().await.controller.profile = slk_protocol::CONTROLLER_EVENT_PROFILE_WS73_HCC;
         peer.lock().await.controller.profile = slk_protocol::CONTROLLER_EVENT_PROFILE_WS73_HCC;
         first.lock().await.native_discovery_policy = Some(configured);
         peer.lock().await.native_discovery_policy =
-            Some(libsparklink::Ws73DiscoveryPolicy::default());
+            Some(slk_native::Ws73DiscoveryPolicy::default());
         assert_eq!(
             discovery_policy(&first).await.unwrap(),
             configured.parameters()
@@ -732,9 +731,9 @@ mod tests {
         let first = selected_null();
         let peer = selected_null();
         first.lock().await.native_discovery_policy =
-            Some(libsparklink::Ws73DiscoveryPolicy::default());
+            Some(slk_native::Ws73DiscoveryPolicy::default());
         peer.lock().await.native_discovery_policy =
-            Some(libsparklink::Ws73DiscoveryPolicy::default());
+            Some(slk_native::Ws73DiscoveryPolicy::default());
         let lease = first.lock().await.native_lease.clone().unwrap();
         let mut guard = lease.lock().await;
         for operation in 1..=4 {

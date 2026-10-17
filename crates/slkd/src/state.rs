@@ -3,7 +3,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
 
-use libsparklink::Adapter;
+use slk_native::Adapter;
 use slk_protocol::{SleAddr, SleConnectParams, SleScanParams};
 
 #[cfg(test)]
@@ -85,7 +85,7 @@ pub struct AdapterState {
     pub adapter: Arc<Adapter>,
     pub native_control: Option<Arc<Adapter>>,
     pub(crate) native_lease: Option<NativeLease>,
-    pub(crate) native_discovery_policy: Option<libsparklink::Ws73DiscoveryPolicy>,
+    pub(crate) native_discovery_policy: Option<slk_native::Ws73DiscoveryPolicy>,
     pub radio_advertising: u32,
     pub radio_scanning: u32,
     pub object_path: String,
@@ -167,9 +167,9 @@ impl AdapterState {
     }
 
     /// Start scanning with default parameters
-    pub fn start_scan(&mut self) -> libsparklink::Result<()> {
+    pub fn start_scan(&mut self) -> slk_native::Result<()> {
         if self.controller.profile != 0 {
-            return Err(libsparklink::Error::InvalidParam(
+            return Err(slk_native::Error::InvalidParam(
                 "native scan requires an explicit WS73 policy; legacy scan is unsupported",
             ));
         }
@@ -186,9 +186,9 @@ impl AdapterState {
     }
 
     /// Stop scanning
-    pub fn stop_scan(&mut self) -> libsparklink::Result<()> {
+    pub fn stop_scan(&mut self) -> slk_native::Result<()> {
         if self.controller.profile != 0 {
-            return Err(libsparklink::Error::InvalidParam(
+            return Err(slk_native::Error::InvalidParam(
                 "legacy stop scan is unsupported on native WS73",
             ));
         }
@@ -198,7 +198,7 @@ impl AdapterState {
     }
 
     /// Initiate connection to a peer by address
-    pub fn connect_device(&mut self, addr: &SleAddr) -> libsparklink::Result<()> {
+    pub fn connect_device(&mut self, addr: &SleAddr) -> slk_native::Result<()> {
         let params = SleConnectParams {
             peer_addr: *addr,
             gt_role: 0,
@@ -213,7 +213,7 @@ impl AdapterState {
     }
 
     /// Disconnect a device by connection handle
-    pub fn disconnect_device(&mut self, handle: u16) -> libsparklink::Result<()> {
+    pub fn disconnect_device(&mut self, handle: u16) -> slk_native::Result<()> {
         self.adapter.disconnect(handle)?;
         Ok(())
     }
@@ -564,7 +564,7 @@ impl AdapterState {
     }
 
     /// Query connection info from the kernel for a given handle.
-    pub fn conn_info(&self, handle: u16) -> libsparklink::Result<slk_protocol::SleConnInfo> {
+    pub fn conn_info(&self, handle: u16) -> slk_native::Result<slk_protocol::SleConnInfo> {
         self.adapter.conn_info(handle)
     }
 }

@@ -9,6 +9,7 @@ crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 slk-protocol = { workspace = true }
+slk-native = { workspace = true }
 slk-channel = { workspace = true }
 tokio = { workspace = true }
 nix = { workspace = true }

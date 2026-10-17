@@ -1,6 +1,7 @@
 use std::os::fd::{AsRawFd, OwnedFd, RawFd};
 
-use slk_protocol::{CONTROLLER_EVENT_VERSION, SleControllerEvent, SleControllerEventQuery, ioctl};
+use crate::ioctl;
+use slk_protocol::{CONTROLLER_EVENT_VERSION, SleControllerEvent, SleControllerEventQuery};
 use tokio::io::unix::AsyncFd;
 
 use crate::{Error, Result};

@@ -488,7 +488,7 @@ fn known_link_summary(
     ))
 }
 
-fn map_err(e: libsparklink::Error) -> zbus::fdo::Error {
+fn map_err(e: slk_native::Error) -> zbus::fdo::Error {
     zbus::fdo::Error::Failed(e.to_string())
 }
 

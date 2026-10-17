@@ -1,4 +1,3 @@
-use crate::ioctl;
 use crate::*;
 
 #[test]
@@ -96,12 +95,6 @@ fn uapi_struct_sizes_match_kernel() {
             errors.join("\n  ")
         );
     }
-}
-
-#[test]
-fn ioctl_magic_is_correct() {
-    assert_eq!(ioctl::SL_MAGIC, b'S');
-    assert_eq!(ioctl::SL_MAGIC, 0x53);
 }
 
 #[test]
@@ -274,12 +267,6 @@ fn sle_conn_data_capacity() {
     let cd: SleConnData = unsafe { std::mem::zeroed() };
     assert_eq!(cd.data.len(), 255);
     assert_eq!(std::mem::size_of::<SleConnData>(), 260);
-}
-
-#[test]
-fn ioctl_number_ranges() {
-    // Verify ioctl magic is correct across all categories
-    assert_eq!(ioctl::SL_MAGIC, 0x53);
 }
 
 #[test]

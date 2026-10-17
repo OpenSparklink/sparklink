@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Check actual default Cargo normal-dependency closures, not protocol behavior.
 
-The daemon still uses libsparklink as its Native wrapper pending WP18/R3. This
-allowlist does not claim its application/management API split is complete.
+Native Rust consumers have moved to slk-native. The C/Python facade still
+uses Native pending WP18/R3c; this is not the finished application SDK split.
 """
 from pathlib import Path
 import re
@@ -12,10 +12,11 @@ import tomllib
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={
-    'slkd':{'slkd','libsparklink','slk-channel','slk-protocol'},
-    'libsparklink':{'libsparklink','slk-channel','slk-protocol'},
+    'slkd':{'slkd','slk-native','slk-channel','slk-protocol'},
+    'libsparklink':{'libsparklink','slk-native','slk-channel','slk-protocol'},
     'slk-protocol':{'slk-protocol'},
     'slk-channel':{'slk-channel','slk-protocol'},
+    'slk-native':{'slk-native','slk-protocol'},
 }
 
 

@@ -558,6 +558,7 @@ version = "0.1.0"
 dependencies = [
  "nix 0.30.1",
  "slk-channel",
+ "slk-native",
  "slk-protocol",
  "thiserror",
  "tokio",
@@ -966,7 +967,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "libsparklink",
  "nix 0.30.1",
  "rustyline",
  "serde",
@@ -988,8 +988,19 @@ dependencies = [
 name = "slk-experimental"
 version = "0.1.0"
 dependencies = [
- "libsparklink",
+ "slk-native",
  "slk-protocol",
+ "tracing",
+]
+
+[[package]]
+name = "slk-native"
+version = "0.1.0"
+dependencies = [
+ "nix 0.30.1",
+ "slk-protocol",
+ "thiserror",
+ "tokio",
  "tracing",
 ]
 
@@ -1007,8 +1018,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "libsparklink",
  "nix 0.30.1",
+ "slk-native",
  "slk-protocol",
 ]
 
@@ -1018,11 +1029,11 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "libsparklink",
  "nix 0.30.1",
  "serde",
  "slk-channel",
  "slk-experimental",
+ "slk-native",
  "slk-protocol",
  "thiserror",
  "tokio",
@@ -1039,7 +1050,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "libsparklink",
+ "slk-native",
  "slk-protocol",
  "tokio",
 ]
@@ -1051,7 +1062,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "clap",
- "libsparklink",
+ "slk-native",
  "slk-protocol",
  "tokio",
 ]

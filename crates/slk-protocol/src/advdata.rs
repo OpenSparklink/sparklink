@@ -547,6 +547,21 @@ pub fn has_service_uuid16(entries: &[AdvDataEntry], target: u16) -> bool {
 // Tests
 // ---------------------------------------------------------------------------
 
+/// T/XS 20001 §6.5 public information in the SLE type255 envelope
+/// (T/XS10002 §7.1.4). Full local name, not a security nonce or identity.
+pub fn ws73_marker_data(marker: &[u8; 16]) -> Vec<u8> {
+    let name = format!(
+        "slk-{}",
+        marker
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>()
+    );
+    let mut data = vec![255, (5 + name.len()) as u8, 1, 1, 1, 0x0b, name.len() as u8];
+    data.extend_from_slice(name.as_bytes());
+    data
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

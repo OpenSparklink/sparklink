@@ -1,7 +1,7 @@
 #[cfg(test)]
 use std::future::Future;
 
-use libsparklink::{Event, Result};
+use slk_native::{Event, Result};
 use tokio::sync::oneshot;
 use tokio::task::{JoinError, JoinHandle};
 use tracing::{error, info};
@@ -53,7 +53,7 @@ impl EventTask {
 
     /// Native subscribers preserve full parameters and never use the legacy ring.
     pub(crate) fn start_native(
-        mut receiver: libsparklink::ControllerEventReceiver,
+        mut receiver: slk_native::ControllerEventReceiver,
         state: SharedState,
         connection: zbus::Connection,
         expected: slk_protocol::SleControllerSnapshot,
@@ -155,7 +155,7 @@ pub(crate) async fn start_ssap_after_security(
 
 async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::Connection) {
     match event {
-        Ok(libsparklink::Event::AdvReport {
+        Ok(slk_native::Event::AdvReport {
             addr,
             rssi,
             discovery_level,
@@ -167,7 +167,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
             drop(st);
             maintain_observations(state, connection).await;
         }
-        Ok(libsparklink::Event::ConnectionStateChanged {
+        Ok(slk_native::Event::ConnectionStateChanged {
             handle,
             state: conn_state,
             peer_addr,
@@ -198,7 +198,7 @@ async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::
             }
         }
         #[cfg(test)]
-        Ok(libsparklink::Event::SecurityChanged {
+        Ok(slk_native::Event::SecurityChanged {
             state: sec_state,
             method,
             encrypted,
@@ -566,7 +566,7 @@ async fn refresh_native(
 }
 
 async fn dispatch_native(
-    event: libsparklink::Result<slk_protocol::SleControllerEvent>,
+    event: slk_native::Result<slk_protocol::SleControllerEvent>,
     state: &SharedState,
     connection: &zbus::Connection,
     expected: slk_protocol::SleControllerSnapshot,
@@ -582,7 +582,7 @@ async fn dispatch_native(
 async fn dispatch_native_with<
     F: Future<Output = zbus::fdo::Result<slk_protocol::SleLinkSnapshot>>,
 >(
-    event: libsparklink::Result<slk_protocol::SleControllerEvent>,
+    event: slk_native::Result<slk_protocol::SleControllerEvent>,
     state: &SharedState,
     connection: &zbus::Connection,
     expected: slk_protocol::SleControllerSnapshot,

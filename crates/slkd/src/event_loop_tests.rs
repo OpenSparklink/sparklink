@@ -3,7 +3,7 @@ use std::process::{Child, Command, Stdio};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use libsparklink::{Adapter, Error};
+use slk_native::{Adapter, Error};
 use tokio::sync::{Mutex, mpsc, oneshot};
 use tokio::time::timeout;
 

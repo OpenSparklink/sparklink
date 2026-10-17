@@ -1,7 +1,7 @@
 use std::process;
 
 use clap::Parser;
-use libsparklink::Adapter;
+use slk_native::Adapter;
 
 #[derive(Parser)]
 #[command(name = "slkmon", about = "SparkLink protocol monitor")]
@@ -67,21 +67,21 @@ async fn capture_native(cli: &Cli) -> anyhow::Result<()> {
     let mut output = cli
         .write
         .as_ref()
-        .map(libsparklink::create_snoop_capture)
+        .map(slk_native::create_snoop_capture)
         .transpose()?;
     if let Some(out) = &mut output {
-        libsparklink::write_snoop_header(out)?;
+        slk_native::write_snoop_header(out)?;
         out.flush()?;
     }
     let mut captured = 0;
     loop {
         let record = receiver.next_record().await?;
-        if filter.is_some_and(|code| libsparklink::snoop_packet_code(&record) != Some(code)) {
+        if filter.is_some_and(|code| slk_native::snoop_packet_code(&record) != Some(code)) {
             continue;
         }
-        println!("{}", libsparklink::describe_snoop(&record));
+        println!("{}", slk_native::describe_snoop(&record));
         if let Some(out) = &mut output {
-            libsparklink::write_snoop_record(out, &record)?;
+            slk_native::write_snoop_record(out, &record)?;
             out.flush()?;
         }
         captured += 1;

@@ -39,7 +39,7 @@ impl RegistrationIface {
                 .registration_snapshot(observer.index, observer.generation)
                 .map(record)
                 .map_err(|e| match e {
-                    libsparklink::Error::Ioctl(nix::errno::Errno::ENODEV) => {
+                    slk_native::Error::Ioctl(nix::errno::Errno::ENODEV) => {
                         zbus::fdo::Error::UnknownObject(
                             "registration removed or generation replaced".into(),
                         )
@@ -71,7 +71,7 @@ impl RegistrationNode {
     pub(crate) async fn create(
         connection: &zbus::Connection,
         directory: &RegistrationDirectory,
-        adapter: std::sync::Arc<libsparklink::Adapter>,
+        adapter: std::sync::Arc<slk_native::Adapter>,
         snapshot: SleRegistrationSnapshot,
     ) -> anyhow::Result<Self> {
         let path = path(&snapshot);
@@ -194,7 +194,7 @@ mod tests {
             .build()
             .await
             .unwrap();
-        let fd = Arc::new(libsparklink::Adapter::open("/dev/null").unwrap());
+        let fd = Arc::new(slk_native::Adapter::open("/dev/null").unwrap());
         let fixture = SleRegistrationSnapshot {
             version: 1,
             generation: 7,

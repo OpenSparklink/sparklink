@@ -418,8 +418,8 @@ pub struct NotificationData {
 mod validation_tests {
     use super::*;
     use crate::{bonding::BondingStore, config::DaemonConfig, state::AdapterState};
-    use libsparklink::Adapter;
     use slk_experimental::profile::ProfileRegistry;
+    use slk_native::Adapter;
     use std::sync::Arc;
     use tokio::sync::Mutex;
 

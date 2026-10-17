@@ -1,4 +1,5 @@
 //! Privileged, independently selected, non-consuming DLI seam observation.
+use crate::ioctl;
 use crate::{Error, Result};
 
 /// A capture is private and never overwrites existing evidence.
@@ -14,7 +15,7 @@ pub fn create_snoop_capture(
     Ok(std::io::BufWriter::new(file))
 }
 use slk_protocol::{
-    SNOOP_PAYLOAD_MAX, SNOOP_TRUNCATED, SNOOP_VERSION, SleSnoopQuery, SleSnoopRecord, ioctl,
+    SNOOP_PAYLOAD_MAX, SNOOP_TRUNCATED, SNOOP_VERSION, SleSnoopQuery, SleSnoopRecord,
 };
 use std::{
     io::Write,

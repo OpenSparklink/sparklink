@@ -48,7 +48,8 @@ with
 or
 .BR "advertise on" .
 .SH SUPPORT BOUNDARY
-This unreleased CLI retains legacy command spellings. Pair/security, legacy
+Controller-wide pair/security spellings are removed; actual Connection security
+uses security-request and Agent. This unreleased CLI still retains legacy
 services/remote-services/read/write, PHY setters, RAL/RPA, sync, measurement,
 PM and extended-advertising commands are not qualified Native capabilities
 and may explicitly fail NotSupported. Their descriptions below name the
@@ -73,9 +74,6 @@ List discovered devices.
 .TP
 .BI info " address"
 Show detailed information for a device.
-.TP
-.BI pair " address"
-Legacy pairing facade; currently NotSupported.
 .TP
 .BI connect " address"
 Connect to a device.

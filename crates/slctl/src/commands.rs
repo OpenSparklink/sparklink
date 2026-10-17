@@ -341,12 +341,6 @@ impl Context {
                 }
                 self.cmd_info(args[1]).await
             }
-            "pair" => {
-                if args.len() < 2 {
-                    anyhow::bail!("usage: pair <address>");
-                }
-                self.cmd_pair(args[1]).await
-            }
             "connect" => {
                 if args.len() < 2 {
                     anyhow::bail!("usage: connect <address> [address-type]");
@@ -423,7 +417,6 @@ impl Context {
                 }
                 self.cmd_write(args[1], args[2]).await
             }
-            "security" => self.cmd_security().await,
             "role" => {
                 let value = args.get(1).copied();
                 self.cmd_role(value).await
@@ -532,16 +525,6 @@ impl Context {
             "org.sparklink",
             self.selected_path().await?,
             "org.sparklink.Adapter",
-        )
-        .await?)
-    }
-
-    async fn security_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
-        Ok(zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            format!("{}/security", self.selected_path().await?),
-            "org.sparklink.Security",
         )
         .await?)
     }
@@ -1001,14 +984,6 @@ impl Context {
         Ok(())
     }
 
-    async fn cmd_pair(&self, address: &str) -> anyhow::Result<()> {
-        let sec = self.security_proxy().await?;
-        println!("Pairing with {address}...");
-        let _: () = sec.call("Pair", &("just_works",)).await?;
-        println!("Pairing initiated");
-        Ok(())
-    }
-
     async fn cmd_connect(&self, address: &str, address_type: Option<&str>) -> anyhow::Result<()> {
         let proxy = self.adapter_proxy().await?;
         let profile: u32 = proxy.get_property("Profile").await?;
@@ -1301,16 +1276,6 @@ impl Context {
         let proxy = self.service_proxy().await?;
         let _: () = proxy.call("WriteProperty", &(handle, value)).await?;
         println!("Written to property {:#06x}", handle);
-        Ok(())
-    }
-
-    async fn cmd_security(&self) -> anyhow::Result<()> {
-        let proxy = self.security_proxy().await?;
-        let encrypted: bool = proxy.get_property("Encrypted").await?;
-        let paired: bool = proxy.get_property("Paired").await?;
-        println!("Security:");
-        println!("  Encrypted: {encrypted}");
-        println!("  Paired:    {paired}");
         Ok(())
     }
 

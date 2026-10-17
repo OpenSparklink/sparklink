@@ -1,5 +1,9 @@
 //! Native management, diagnostics and kernel observations. Not an application SDK.
 //! Existing unpublished legacy entry retirement continues under WP18/R4.
+//! Retired controller-wide security has no forwarding facade:
+//! ```compile_fail
+//! use slk_native::ffi::{slk_pair, slk_sec_info, slk_encrypt_on};
+//! ```
 mod adapter;
 mod controller_events;
 mod error;
@@ -207,9 +211,6 @@ mod ffi_lifetime_tests {
         assert_eq!(count, -1);
 
         let ret = unsafe { ffi::slk_stop_scan(ptr::null()) };
-        assert_eq!(ret, -1);
-
-        let ret = unsafe { ffi::slk_encrypt_on(ptr::null()) };
         assert_eq!(ret, -1);
 
         let ret = unsafe { ffi::slk_get_role(ptr::null()) };

@@ -360,26 +360,6 @@ pub struct SlePskParams {
     pub psk: [u8; 16],
 }
 
-/// Pair params (ioctl 0x41)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SlePairParams {
-    pub method: u8,
-    pub _reserved: [u8; 3],
-}
-
-/// Security info (ioctl 0x42)
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct SleSecInfo {
-    pub state: u8,
-    pub method: u8,
-    pub mode: u8,
-    pub enc_enabled: u8,
-    pub enc_key_fingerprint: [u8; 4],
-    pub _reserved: [u8; 8],
-}
-
 /// SM3 hash test (ioctl 0x44)
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]

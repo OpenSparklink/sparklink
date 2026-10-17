@@ -12,10 +12,8 @@ from sparklink.structs import (
     SleConnInfo,
     SleConnectParams,
     SleDliInfo,
-    SlePairParams,
     SlePhyInfo,
     SleScanParams,
-    SleSecInfo,
 )
 
 
@@ -34,11 +32,7 @@ class TestStructSizes(unittest.TestCase):
     def test_sle_conn_info(self):
         self.assertEqual(ctypes.sizeof(SleConnInfo), 56)
 
-    def test_sle_sec_info(self):
-        self.assertEqual(ctypes.sizeof(SleSecInfo), 16)
 
-    def test_sle_pair_params(self):
-        self.assertEqual(ctypes.sizeof(SlePairParams), 4)
 
     def test_sci_dev_info(self):
         self.assertEqual(ctypes.sizeof(SciDevInfo), 66)

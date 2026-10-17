@@ -1,3 +1,6 @@
+//! ```compile_fail
+//! use slk_protocol::{SlePairParams, SleSecInfo};
+//! ```
 //! Shared ABI, values, codecs and pure validation. Device/ioctl operations live
 //! in Native or Channel, never in this crate.
 //! ```compile_fail

@@ -238,24 +238,6 @@ class SleConnInfo(ctypes.Structure):
     ]
 
 
-class SleSecInfo(ctypes.Structure):
-    _fields_ = [
-        ("state", ctypes.c_uint8),
-        ("method", ctypes.c_uint8),
-        ("mode", ctypes.c_uint8),
-        ("enc_enabled", ctypes.c_uint8),
-        ("enc_key_fingerprint", ctypes.c_uint8 * 4),
-        ("_reserved", ctypes.c_uint8 * 8),
-    ]
-
-
-class SlePairParams(ctypes.Structure):
-    _fields_ = [
-        ("method", ctypes.c_uint8),
-        ("_reserved", ctypes.c_uint8 * 3),
-    ]
-
-
 class SciDevInfo(ctypes.Structure):
     _fields_ = [
         ("index", ctypes.c_uint16),

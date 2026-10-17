@@ -34,7 +34,9 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 选择连接及每次准入只重新核对自己的Generation，不查询同行属性作为前置条件。`open_channel`与动态staging
 复用已有方法，接收fd检查实际AF_SPARKLINK；失败不降级，不暴露管理lease。
 `slk-contract`是独立的值类型/路径/方法名契约；slkd直接依赖Native、Channel和契约，
-不依赖SDK。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
+不依赖SDK。当前Rust Client仅提供现有成员/连接观察及fd申请；通用Operation/原始Deadline/
+EventStream和SSAP客户端尚未开放，future取消不承诺撤销已开始的物理义务。
+内核/daemon/工具既有原期限、最后关闭和Grant规则继续执行。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
 
 `slk-channel::Channel`持有一个fd引用，构造只检查实际domain，**不是Ready或交付**。
 `try_clone`共享同一内核binding，`into_owned_fd`明确转移所有权；关闭仍服从内核最后
@@ -86,7 +88,7 @@ K `5582a10c5ec8`／U `cd77ed935740`：旧连接／发现／角色／AFH/sync模�
 [准确消费者迁移、失败与范围](../evidence/protocol-state-retirement-progress-20261014.json)。
 
 K6f2f71298029 的默认Runtime不再包含旧安全/RPA模型。新版SDK拒绝旧安全/隐私
-facade；D-Bus Security 方法及Encrypted/Paired属性明确NotSupported，合法RAL/RPA
+facade已删除（Rust/C/CLI/SDK旧类型同步），D-Bus Security只保留Agent登记/撤销；旧方法UnknownMethod、Encrypted/Paired为UnknownProperty。合法RAL/RPA
 输入亦NotSupported，非法输入可InvalidArgs。C旧安全入口返回-EOPNOTSUPP且不改
 输出，Python映射OSError(EOPNOTSUPP)。旧 facade 的拒绝不代表新 per-Connection 安全流程缺失；现行流程如下，Bond 重连仍缺失。
 
@@ -148,7 +150,7 @@ C导出`slk_security_negotiation_submit/result/cancel`与Python NativeAdapter同
 另有版本1、40字节的`SL_IOCTL_SECURITY_NUMERIC_CONFIRM`（`0xd5`），
 C `slk_security_numeric_confirm`、Python `NativeAdapter.confirm_security_numeric`同步；
 RESULT末尾4字节现为u32 `comparison_code`，总长仍72字节，UAPI未发布、不保留旧布局语义。
-这是底层机制；显式 Agent 与 Connection 的 SDK111 限定流程已接线。旧 Pair／Encrypt facade 仍 NotSupported，不能用它启动新流程。实机范围见唯一当前资格入口。
+这是底层机制；显式 Agent 与 Connection 的 SDK111 限定流程已接线。旧 Pair／Encrypt门面已全链删除，无兼容期，不能用它启动新流程。实机范围见唯一当前资格入口。
 
 原始绝对期限必须在策略/Agent等待前设置，不能在批准后刷新。`timeout_ms`为
 1–5000ms剩余预算上界，实际期限仍是原始纳秒值；过期返回ETIMEDOUT，超过上界
@@ -411,7 +413,7 @@ CLI入口为`agent [method]`、`security-request <path> [ms] [method]`，省略m
 `confirm <id> <六位码>`或`reject <id>`；000000有效，`approve`不能代替数字确认，预输入
 不沿用到下一提示。两个提示共享最初1–5000ms期限，不刷新。5秒也包含前置人工等待，
 当前并非通用人机配对体验；更适合人类的期限策略仍须单独设计和验证。
-Pair/全局GetPasskey、命名可信身份/Bond仍明确不支持；固定CUTC机制要求及当前事实另见下文。
+Pair/全局GetPasskey门面已删除；命名可信身份/Bond仍未支持；固定CUTC机制要求及当前事实另见下文。
 旧镜像资格不继承本批；形式化状态/锁/引用/硬件假设与真实两端交付分别记录。
 
 ## 单个安全作者请求取消（未发布 ABI）

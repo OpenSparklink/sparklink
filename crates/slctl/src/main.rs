@@ -132,7 +132,6 @@ Commands:
   info <address>                Show device details
   agent [method]                Foreground Agent [sdk111-no-mitm|sdk111-numeric-comparison], no auto-approval
   security-request <path> [ms] [method]  Request exact Connection security (1..5000ms)
-  pair <address>                Pair with device
   connect <address>             Connect to device
   connections                   Show canonical native links and lifetimes
   connection-objects            List typed physical connection objects
@@ -157,7 +156,6 @@ Commands:
   remote-services               List remote services
   read <handle>                 Read property value
   write <handle> <hex>          Write property value
-  security                      Show security state
   role [g|t]                    Get/set role
   phy                           Show PHY parameters
   stats                         Show subsystem statistics

@@ -334,6 +334,11 @@ class ApplicationNativeBoundary(unittest.TestCase):
         for name in native_names:
             with self.subTest(name=name),self.assertRaises(AttributeError):getattr(app,name)
         native=_get_native_lib()
+        for name in ("slk_sec_info", "slk_pair", "slk_encrypt_on"):
+            with self.subTest(retired=name),self.assertRaises(AttributeError):getattr(native,name)
+        import sparklink.structs as structs
+        for name in ("SleSecInfo","SlePairParams"):
+            self.assertFalse(hasattr(structs,name))
         for name in app_names:
             with self.subTest(name=name),self.assertRaises(AttributeError):getattr(native,name)
 

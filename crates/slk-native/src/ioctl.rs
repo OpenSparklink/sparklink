@@ -142,10 +142,6 @@ nix::ioctl_write_ptr!(
 
 // ----- Security (0x40 - 0x4F) -----
 
-nix::ioctl_write_ptr!(sl_sec_set_psk, SL_MAGIC, 0x40, slk_protocol::SlePskParams);
-nix::ioctl_write_ptr!(sl_sec_pair, SL_MAGIC, 0x41, slk_protocol::SlePairParams);
-nix::ioctl_read!(sl_sec_info, SL_MAGIC, 0x42, slk_protocol::SleSecInfo);
-nix::ioctl_none!(sl_sec_encrypt_on, SL_MAGIC, 0x43);
 nix::ioctl_write_ptr!(sl_sec_sm3_test, SL_MAGIC, 0x44, slk_protocol::SleHashTest);
 nix::ioctl_write_ptr!(
     sl_sec_sm4_enc_test,
@@ -166,23 +162,6 @@ nix::ioctl_readwrite!(
     slk_protocol::SleSm4BlockTest
 );
 nix::ioctl_readwrite!(sl_sec_hmac_test, SL_MAGIC, 0x48, slk_protocol::SleHmacTest);
-nix::ioctl_none!(sl_sec_reset, SL_MAGIC, 0x49);
-nix::ioctl_read!(sl_sec_get_passkey, SL_MAGIC, 0x4A, u32);
-nix::ioctl_none!(sl_sec_confirm_passkey, SL_MAGIC, 0x4B);
-nix::ioctl_none!(sl_sec_reject_passkey, SL_MAGIC, 0x4C);
-nix::ioctl_write_ptr!(sl_sec_set_oob, SL_MAGIC, 0x4D, slk_protocol::SleOobData);
-nix::ioctl_write_ptr!(
-    sl_sec_input_passkey,
-    SL_MAGIC,
-    0x4E,
-    slk_protocol::SlePasskeyInput
-);
-nix::ioctl_write_ptr!(
-    sl_sec_set_password,
-    SL_MAGIC,
-    0x4F,
-    slk_protocol::SlePasswordParams
-);
 
 // Removed unpublished kernel SSAP commands; no compatibility fallback.
 

@@ -50,8 +50,6 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleAfhHopInfo, 8);
     check_size!(errors, SleAfhRetxReport, 4);
     check_size!(errors, SlePskParams, 16);
-    check_size!(errors, SlePairParams, 4);
-    check_size!(errors, SleSecInfo, 16);
     check_size!(errors, SleHashTest, 256);
     check_size!(errors, SleSm4BlockTest, 64);
     check_size!(errors, SleHmacTest, 260);
@@ -159,10 +157,6 @@ fn struct_zeroed_is_valid() {
     let conn: SleConnInfo = unsafe { std::mem::zeroed() };
     assert_eq!(conn.handle, 0);
     assert_eq!(conn.state, 0);
-
-    let sec: SleSecInfo = unsafe { std::mem::zeroed() };
-    assert_eq!(sec.state, 0);
-    assert_eq!(sec.enc_enabled, 0);
 
     let dli: SleDliInfo = unsafe { std::mem::zeroed() };
     assert_eq!(dli.firmware_version, 0);

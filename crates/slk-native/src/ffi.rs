@@ -171,76 +171,6 @@ pub unsafe extern "C" fn slk_conn_info(
     }
 }
 
-/// Unavailable controller-global security snapshot.
-/// Returns -EOPNOTSUPP for valid pointers without changing output; -1 for invalid pointers.
-///
-/// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_sec_info(
-    adapter: *const SlkAdapter,
-    out: *mut slk_protocol::SleSecInfo,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
-    }
-    match adapter.inner.sec_info() {
-        Ok(info) => {
-            unsafe { *out = info };
-            0
-        }
-        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
-        Err(_) => -1,
-    }
-}
-
-/// Unavailable legacy pairing facade.
-/// Returns -EOPNOTSUPP for a valid request, -1 for invalid pointers.
-///
-/// # Safety
-/// `adapter` and `params` must be valid non-null pointers.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_pair(
-    adapter: *const SlkAdapter,
-    params: *const slk_protocol::SlePairParams,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    let params = match unsafe { params.as_ref() } {
-        Some(p) => p,
-        None => return -1,
-    };
-    match adapter.inner.pair(params) {
-        Ok(()) => 0,
-        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
-        Err(_) => -1,
-    }
-}
-
-/// Unavailable legacy encryption facade.
-/// Returns -EOPNOTSUPP for a valid handle, -1 for an invalid pointer.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_encrypt_on(adapter: *const SlkAdapter) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.encrypt_on() {
-        Ok(()) => 0,
-        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
-        Err(_) => -1,
-    }
-}
-
 /// Get device info.
 /// Returns 0 on success, -1 on error.
 ///
@@ -351,28 +281,5 @@ pub unsafe extern "C" fn slk_get_role(adapter: *const SlkAdapter) -> c_int {
     match adapter.inner.get_role() {
         Ok(r) => r as c_int,
         Err(_) => -1,
-    }
-}
-
-#[cfg(test)]
-mod retired_security_tests {
-    use super::*;
-    #[test]
-    fn legacy_security_c_returns_unsupported_without_mutating_output() {
-        let handle = SlkAdapter {
-            inner: Adapter::open("/dev/null").unwrap(),
-        };
-        let mut info: slk_protocol::SleSecInfo = unsafe { std::mem::zeroed() };
-        info.state = 0xa5;
-        let params = slk_protocol::SlePairParams {
-            method: 0,
-            _reserved: [0; 3],
-        };
-        unsafe {
-            assert_eq!(slk_sec_info(&handle, &mut info), -nix::libc::EOPNOTSUPP);
-            assert_eq!(slk_pair(&handle, &params), -nix::libc::EOPNOTSUPP);
-            assert_eq!(slk_encrypt_on(&handle), -nix::libc::EOPNOTSUPP);
-        }
-        assert_eq!(info.state, 0xa5);
     }
 }

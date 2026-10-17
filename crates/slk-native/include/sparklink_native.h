@@ -137,26 +137,6 @@ typedef struct SleConnInfo {
 } SleConnInfo;
 
 /**
- * Security info (ioctl 0x42)
- */
-typedef struct SleSecInfo {
-    uint8_t state;
-    uint8_t method;
-    uint8_t mode;
-    uint8_t enc_enabled;
-    uint8_t enc_key_fingerprint[4];
-    uint8_t _reserved[8];
-} SleSecInfo;
-
-/**
- * Pair params (ioctl 0x41)
- */
-typedef struct SlePairParams {
-    uint8_t method;
-    uint8_t _reserved[3];
-} SlePairParams;
-
-/**
  * Device information (ioctl 0x04)
  */
 typedef struct SciDevInfo {
@@ -703,33 +683,6 @@ int slk_disconnect(const struct SlkAdapter *adapter, uint16_t handle);
  * `adapter` and `out` must be valid non-null pointers.
  */
 int slk_conn_info(const struct SlkAdapter *adapter, uint16_t handle, struct SleConnInfo *out);
-
-/**
- * Unavailable controller-global security snapshot.
- * Returns -EOPNOTSUPP for valid pointers without changing output; -1 for invalid pointers.
- *
- * # Safety
- * `adapter` and `out` must be valid non-null pointers.
- */
-int slk_sec_info(const struct SlkAdapter *adapter, struct SleSecInfo *out);
-
-/**
- * Unavailable legacy pairing facade.
- * Returns -EOPNOTSUPP for a valid request, -1 for invalid pointers.
- *
- * # Safety
- * `adapter` and `params` must be valid non-null pointers.
- */
-int slk_pair(const struct SlkAdapter *adapter, const struct SlePairParams *params);
-
-/**
- * Unavailable legacy encryption facade.
- * Returns -EOPNOTSUPP for a valid handle, -1 for an invalid pointer.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- */
-int slk_encrypt_on(const struct SlkAdapter *adapter);
 
 /**
  * Get device info.

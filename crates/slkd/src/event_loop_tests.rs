@@ -947,43 +947,53 @@ async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
                 zbus::fdo::Error::InvalidArgs(_) => {
                     assert_eq!(expected, "org.freedesktop.DBus.Error.InvalidArgs")
                 }
+                zbus::fdo::Error::UnknownProperty(_) => {
+                    assert_eq!(expected, "org.freedesktop.DBus.Error.UnknownProperty");
+                }
+                zbus::fdo::Error::UnknownMethod(_) => {
+                    assert_eq!(expected, "org.freedesktop.DBus.Error.UnknownMethod");
+                }
                 other => panic!("unexpected property error: {other}"),
             },
             other => panic!("unexpected D-Bus error: {other}"),
         }
     }
     let unsupported = "org.freedesktop.DBus.Error.NotSupported";
+    let retired_method = "org.freedesktop.DBus.Error.UnknownMethod";
     for method in ["Encrypt", "ConfirmPasskey", "RejectPasskey", "Reset"] {
-        error_name(security.call::<_, _, ()>(method, &()).await, unsupported);
+        error_name(security.call::<_, _, ()>(method, &()).await, retired_method);
     }
     error_name(
         security
-            .call::<_, _, crate::security::SecurityInfo>("GetInfo", &())
+            .call::<_, _, (String, String, u8, bool)>("GetInfo", &())
             .await,
-        unsupported,
+        retired_method,
     );
     error_name(
         security.call::<_, _, u32>("GetPasskey", &()).await,
-        unsupported,
+        retired_method,
     );
     error_name(
         security
             .call::<_, _, ()>("SetPsk", &("a1".repeat(16),))
             .await,
-        unsupported,
+        retired_method,
     );
     error_name(
         security.call::<_, _, ()>("Pair", &("psk",)).await,
-        unsupported,
+        retired_method,
     );
     error_name(
         security
             .call::<_, _, ()>("InputPasskey", &(123456u32,))
             .await,
-        unsupported,
+        retired_method,
     );
     for property in ["Encrypted", "Paired"] {
-        error_name(security.get_property::<bool>(property).await, unsupported);
+        error_name(
+            security.get_property::<bool>(property).await,
+            "org.freedesktop.DBus.Error.UnknownProperty",
+        );
     }
     error_name(
         controller
@@ -1062,15 +1072,15 @@ async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
         security
             .call::<_, _, ()>("InputPasskey", &(1_000_000u32,))
             .await,
-        invalid,
+        retired_method,
     );
     error_name(
         security.call::<_, _, ()>("SetPsk", &("bad",)).await,
-        invalid,
+        retired_method,
     );
     error_name(
         security.call::<_, _, ()>("Pair", &("invalid",)).await,
-        invalid,
+        retired_method,
     );
     error_name(
         controller

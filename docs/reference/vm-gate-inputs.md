@@ -220,3 +220,8 @@ prepare 与缓存 submit 的单调 before/after；期限用例必须证实原限
 执行混合E/U业务门禁。`ws73_model_evidence.py`复用现有成对USB读取器，要求唯一
 GET_CHIP_TYPE请求、同一USB身份的实际成功回复和后续DLI查询，原消息/长度/状态/
 型号/总线不符即拒绝。该工具没有设备访问；结果不认证硅片、执行固件或真实业务。
+
+SDK110 型号差异不能由 U 型常量覆盖：本轮 E 的实际 DLI ACB 为1526字节/6 credit，
+U 为254字节/5 credit。普通通道预算和分片证据必须逐发送controller匹配其原DLI
+元数据；仍检查debt/outstanding/peak/capacity守恒、队列上限和实际物理分片限长。
+错误的另一端容量、未知或缺失元数据不允许通过；E的较大容量不放宽U的限长。

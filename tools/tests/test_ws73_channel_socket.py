@@ -87,7 +87,7 @@ class ApplicationProof(unittest.TestCase):
 class TxStatusObservationProof(unittest.TestCase):
     def row(self):
         row=fixture();row['tx_status_required']=True
-        row['owners']=[dict(owner=dict(index=0,generation=1),object=dict(lifetime=3,handle=0)),dict(owner=dict(index=1,generation=2),object=dict(lifetime=4,handle=0))]
+        row['owners']=[dict(owner=dict(index=0,generation=1,buffers=[254,5,0,0]),object=dict(lifetime=3,handle=0)),dict(owner=dict(index=1,generation=2,buffers=[254,5,0,0]),object=dict(lifetime=4,handle=0))]
         for app in row['applications']:
             n=0 if app['role']=='initiator' else 1
             app['stdout']+=f'NativeTxStatus: stage=ready sequence=0 index={n} generation={n+1} lifetime={n+3} handle=0 maximum=254 capacity=5 outstanding=0 debt=0 peak=1 queued=0 limit=8 busy=0 bytes=0 offset=0 flags=0 blocks=0\n'
@@ -99,6 +99,19 @@ class TxStatusObservationProof(unittest.TestCase):
             changed=copy.deepcopy(row)
             for app in changed['applications']:app['stdout']=app['stdout'].replace(old,new)
             with self.subTest(old=old),self.assertRaises(CaptureError):tx_status_receipts(changed)
+
+    def test_e_u_budgets_remain_separate_and_fail_closed(self):
+        from ws73_channel_socket import tx_status_receipts
+        row=self.row()
+        row['owners'][0]['owner']['buffers']=[1526,6,0,0]
+        row['applications'][0]['stdout']=row['applications'][0]['stdout'].replace('maximum=254 capacity=5','maximum=1526 capacity=6')
+        samples=tx_status_receipts(row)
+        self.assertEqual([(v['maximum'],v['capacity']) for v in samples],[(1526,6),(254,5)])
+        for bad in [None,[],[True,6,0,0],[0,6,0,0],[2048,6,0,0],[1526,0,0,0],[1526,256,0,0],[254,5,0,0]]:
+            changed=copy.deepcopy(row);changed['owners'][0]['owner']['buffers']=bad
+            with self.subTest(buffers=bad),self.assertRaises(CaptureError):tx_status_receipts(changed)
+        changed=copy.deepcopy(row);changed['applications'][1]['stdout']=changed['applications'][1]['stdout'].replace('maximum=254 capacity=5','maximum=1526 capacity=6')
+        with self.assertRaises(CaptureError):tx_status_receipts(changed)
 
 
 class BurstPressureProof(unittest.TestCase):
@@ -154,7 +167,7 @@ class IndependentUSBProof(unittest.TestCase):
         phases=[];sdus=[];events=[]
         for n in range(2):
             row=fixture(rounds,message_bytes=message_bytes,boundaries=boundaries);row.update(phase=n,status='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING',start_wall_ns=n*100+1,end_wall_ns=n*100+90)
-            owners=[dict(owner=dict(bus=1,device=2+i,index=i,generation=i+1),object=dict(generation=i+1,lifetime=1+n*2,handle=0)) for i in range(2)]
+            owners=[dict(owner=dict(bus=1,device=2+i,index=i,generation=i+1,buffers=[254,5,0,0]),object=dict(generation=i+1,lifetime=1+n*2,handle=0)) for i in range(2)]
             if n:owners.reverse()
             row['owners']=owners
             # Distinct nonce in second phase, regenerate all matching receipts.

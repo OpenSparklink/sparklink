@@ -351,6 +351,15 @@ def application_frames(row):
     return sent,reply
 
 
+def controller_budget(entry):
+    buffers=entry['owner'].get('buffers')
+    if (not isinstance(buffers,(list,tuple)) or len(buffers)!=4
+            or any(type(n) is not int for n in buffers)
+            or not 1<=buffers[0]<=2047 or not 1<=buffers[1]<=255):
+        raise CaptureError('actual supported per-controller DLI buffer metadata required')
+    return buffers[0],buffers[1]
+
+
 def tx_status_receipts(row):
     samples=[]
     if not row.get('tx_status_required',False):return samples # historical never upgrades
@@ -361,12 +370,13 @@ def tx_status_receipts(row):
         if not values or len(values)!=app['stdout'].count('NativeTxStatus:'):
             raise CaptureError('original actual TX-status receipts required')
         owner=row['owners'][0 if app['role']=='initiator' else 1]
+        maximum,capacity=controller_budget(owner)
         last_peak=last_blocks=0
         for value in values:
             sample=dict(zip(fields,map(int,value[1:])));sample.update(stage=value[0],role=app['role'])
             if (sample['index'],sample['generation'],sample['lifetime'],sample['handle'])!=(owner['owner']['index'],owner['owner']['generation'],owner['object']['lifetime'],owner['object']['handle']):
                 raise CaptureError('TX status immutable identity mismatch')
-            if sample['maximum']!=254 or sample['capacity']!=5 or sample['limit']!=8 or sample['busy']>1 or sample['queued']+sample['busy']>8 or not 0<=sample['debt']<=sample['outstanding']<=sample['peak']<=5:
+            if sample['maximum']!=maximum or sample['capacity']!=capacity or sample['limit']!=8 or sample['busy']>1 or sample['queued']+sample['busy']>8 or not 0<=sample['debt']<=sample['outstanding']<=sample['peak']<=capacity:
                 raise CaptureError('native TX status budget invariant mismatch')
             if sample['flags']&~3 or not 0<=sample['offset']<=sample['bytes']<=2047 or (sample['flags']&1==0 and any(sample[k] for k in ['bytes','offset','flags','busy'])) or (sample['flags']&1 and (not sample['bytes'] or sample['busy']!=1)):
                 raise CaptureError('native TX status operation invariant mismatch')
@@ -594,13 +604,16 @@ def corroborate(run,capture):
         proof['prefix_close_phases']=sum(bool(row.get('close_prefix',False)) for row in rows)
         proof['physical_prefix_delivery_acceptance']=all(row.get('close_prefix',False) for row in rows)
     if proof['long_pdu_acceptance'] or proof.get('physical_prefix_delivery_acceptance',False):
-        for phase in proofs:
+        for row,phase in zip(rows,proofs):
             for leg in phase['legs']:
                 pieces=leg['tx'].get('fragments',[])
                 if len(pieces)<2 or [piece.get('boundary',0) for piece in pieces]!=[1]+[2]*(len(pieces)-2)+[3]:
                     raise CaptureError('long PDU requires actual ordered first/middle/last TX fragments')
-                if any(not 1<=len(bytes.fromhex(piece['data']))<=254 for piece in pieces):
-                    raise CaptureError('each actual WS73 TX packet must respect the 254-byte controller bound')
+                senders=[entry for entry in row['owners'] if (entry['owner']['bus'],entry['owner']['device'])==(leg['tx']['bus'],leg['tx']['device'])]
+                if len(senders)!=1:raise CaptureError('one original physical sender metadata required')
+                maximum,_=controller_budget(senders[0])
+                if any(not 1<=len(bytes.fromhex(piece['data']))<=maximum for piece in pieces):
+                    raise CaptureError('each actual WS73 TX packet must respect its controller DLI bound')
     if any(row.get('boundary_check',False) for row in rows):
         proof['application_boundary_rejections']=sum(len(rejected_frames(row)) for row in rows)
         proof['application_message_bytes']=rows[0].get('message_bytes',61)

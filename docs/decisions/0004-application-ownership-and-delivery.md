@@ -417,3 +417,10 @@ slctl移除该部分重复proxy/身份规则，参数显示仍留在CLI。共享
 现有方法及错误不改，通知观察不是远端订阅；其他管理/Owned/Agent/C-Python便利
 接口继续迁移，不能据此宣布完整R5。参考固定NearLink Host客户端/IPC职责分离，
 不复制其缓存权威、等待时长或按地址识别策略。
+
+
+R5c将剩余controller管理proxy/Peer及注册身份解析迁到既有Client，管理视图仅发起经
+broker授权的请求，不持有/泄露Native lease。每次操作固定owner/generation，结果身份
+另验；观察失败不等于物理取消或确定未提交。旧a37私有总线反例保留，不扩大成RF串包
+结论。地址Device只读观察是R5d明确待替代例外，先固定owner/无缓存/读后generation；
+不为旧接口新增SDK门面。管理staging与Owned注册及安全Agent保持不同职责，继续迁移。

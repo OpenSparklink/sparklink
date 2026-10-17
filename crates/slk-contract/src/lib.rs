@@ -156,3 +156,54 @@ mod tests {
         }
     }
 }
+
+/// Current controller observations and explicit privileged management requests.
+/// Values are wire observations, never a Native lease or readiness authority.
+pub mod controller {
+    pub const REGISTRATION: &str = "org.sparklink.Registration";
+    pub const CORE: &str = "org.sparklink.Controller";
+    pub const PEER: &str = "org.sparklink.Peer";
+    pub const LIST_REGISTRATIONS: &str = "ListRegistrations";
+    pub const REGISTRATION_SNAPSHOT: &str = "GetSnapshot";
+    pub const REPORTS: &str = "GetReports";
+    pub const TIMED_REPORTS: &str = "GetTimedReports";
+    pub const DISCOVERY_POLICY: &str = "GetDiscoveryPolicy";
+    pub const MANAGEMENT_STATUS: &str = "GetManagementStatus";
+    pub const ADVERTISE: &str = "SubmitAdvertising";
+    pub const CONNECTABLE: &str = "SubmitConnectableAdvertising";
+    pub const STOP_ADVERTISE: &str = "SubmitStopAdvertising";
+    pub const SCAN: &str = "SubmitScanning";
+    pub const STOP_SCAN: &str = "SubmitStopScanning";
+    pub const START_CONTROLLER_SCAN: &str = "StartControllerScan";
+    pub const STOP_CONTROLLER_SCAN: &str = "StopControllerScan";
+    pub const DISCOVERY_RESULT: &str = "GetDiscoveryResult";
+    pub const INITIALIZATION_OFF: &str = "GetInitializationOff";
+    pub const DISCOVERY_TIMING: &str = "GetDiscoveryTiming";
+    pub const CANCEL_DISCOVERY: &str = "CancelDiscoveryPolicies";
+    pub const ALLOCATE_CONNECTION: &str = "AllocateConnectionRequest";
+    pub const CONNECT: &str = "SubmitConnect";
+    pub const DISCONNECT: &str = "SubmitDisconnect";
+    pub const DISCONNECT_TYPED: &str = "SubmitDisconnectTyped";
+    pub const DISCONNECT_REFERENCE: &str = "SubmitDisconnectReference";
+    pub const CONNECTION_RESULT: &str = "GetConnectionResult";
+    pub const LINKS: &str = "GetNativeConnections";
+    pub const OBJECTS: &str = "GetNativeConnectionObjects";
+    pub const LINK_SUMMARY: &str = "GetLinkSummary";
+    pub const EVENT_POSITION: &str = "GetControllerEventPosition";
+    pub type Reports = Vec<(u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64)>;
+    pub type Links = (u64, u64, u64, u32, i32, Vec<(u64, u16, u8, u8, String)>);
+    pub type Policy = (u32, u32, u32, i32, u32, u32);
+    pub type ManagementStatus = (u64, u32, u32, u32, i32, u32, u32);
+    pub type Timing = (u64, u64, u64, u32, u32, u16, u8);
+    pub type ConnectionResult = (u64, u64, u32, u32, i32, i32, u32, u32, u32, u32);
+    pub type LinkSummary = (u16, u64, u64, u64, u32);
+    pub type EventPosition = (u16, u64, u64);
+}
+
+/// Identity/observation only; a peer's connection paths are still separately
+/// resolved and checked before any authorization or operation.
+pub fn matches_peer(controller: ControllerId, path: &str, info: &PeerInfo) -> bool {
+    info.0 == controller.generation
+        && parse_address(&info.2)
+            .is_some_and(|address| peer_path(&controller.path(), info.1, address) == path)
+}

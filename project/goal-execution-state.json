@@ -3370,9 +3370,11 @@
     "next_limited_batch": {
       "id": "R5c-controller-management-callers",
       "scope": "ExistingCLIactualproductioncallers,notallcontrolracecombinations",
-      "source_review": "a37slctl stillhas directwell-knownmanager/adapter/controller proxies;potentialownerwindow notclaimedobservedhardwaremisdelivery",
+      "source_review": "Olda37actualCLI/privatebus ownerlostterminalobservation counterexample retained;notRFmisdelivery",
       "exit_reference": "CanonicalimplementationplanR5c",
-      "state": "PLANNED_NOT_IMPLEMENTED"
+      "state": "SOURCE_MIGRATED_SDK_CLI_LOCAL_PASS_NEW_ARTIFACT_VM_PENDING",
+      "counterexample": "docs/evidence/controller-owner-counterexample-20261018.json",
+      "remaining": "Fullstrictworkspace/accuratenewartifactVM;R5daddressDevice/localOwned/Agent callers,C-Python,R6 andalloriginalscope"
     }
   },
   "owned_ssap_c6_historical_batch": {

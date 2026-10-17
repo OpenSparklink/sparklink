@@ -2,11 +2,10 @@ type LocalProperty = (u16, Vec<u8>, u32, u32);
 type LocalService = (u16, u16, Vec<u8>, Vec<LocalProperty>);
 use zbus::Connection;
 
-type NativeReportRecord = (u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
-type NativeLinksRecord = (u64, u64, u64, u32, i32, Vec<(u64, u16, u8, u8, String)>);
-type NativeObjectsRecord = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8, String)>);
 use slk_contract::ConnectionInfo as NativeObjectInfo;
+use slk_contract::ConnectionObjects as NativeObjectsRecord;
 use slk_contract::PeerInfo as NativePeerInfo;
+use slk_contract::controller::Links as NativeLinksRecord;
 
 pub struct Context {
     conn: Connection,
@@ -343,8 +342,8 @@ impl Context {
                     .get(1)
                     .ok_or_else(|| anyhow::anyhow!("usage: connection-result <request-id>"))?
                     .parse()?;
-                let proxy = self.adapter_proxy().await?;
-                let r: NativeConnectionRecord = proxy.call("GetConnectionResult", &(id,)).await?;
+                let proxy = self.controller().await?;
+                let r: NativeConnectionRecord = proxy.management().connection_result(id).await?;
                 println!(
                     "NativeConnectionResult: generation={} request={} operation={} state={} errno={} fault={} command_status={} outcome_status={} handle={} flags={}",
                     r.0, r.1, r.2, r.3, r.4, r.5, r.6, r.7, r.8, r.9
@@ -381,16 +380,14 @@ impl Context {
                 let handle: u16 = args[3].parse()?;
                 let lifetime: u64 = args[4].parse()?;
                 let role: u8 = args[5].parse()?;
-                let proxy = self.adapter_proxy().await?;
-                let id: u64 = proxy.call("AllocateConnectionRequest", &()).await?;
+                let proxy = self.controller().await?;
+                let id: u64 = proxy.management().allocate_connection_request().await?;
                 println!(
                     "NativeDisconnectReference: request={id} address={address} type={kind} handle={handle} lifetime={lifetime} role={role}"
                 );
                 let _: () = proxy
-                    .call(
-                        "SubmitDisconnectReference",
-                        &(id, address, kind, handle, lifetime, role),
-                    )
+                    .management()
+                    .disconnect_reference(id, &address, kind, handle, lifetime, role)
                     .await?;
                 wait_connection(&proxy, id).await
             }
@@ -403,11 +400,7 @@ impl Context {
     }
 
     async fn selected_path(&self) -> anyhow::Result<String> {
-        let paths: Vec<String> = self
-            .manager_proxy()
-            .await?
-            .call("ListAdapters", &())
-            .await?;
+        let paths = self.controller_paths().await?;
         if let Some(selected) = &self.selected {
             if paths.contains(selected) {
                 return Ok(selected.clone());
@@ -420,15 +413,11 @@ impl Context {
         anyhow::bail!("select one of the live adapter paths using 'select <path>'");
     }
     async fn cmd_select(&mut self, path: &str) -> anyhow::Result<()> {
-        let paths: Vec<String> = self
-            .manager_proxy()
-            .await?
-            .call("ListAdapters", &())
-            .await?;
+        let paths = self.controller_paths().await?;
         let candidate = if path.starts_with('/') {
             path.to_owned()
         } else {
-            format!("/org/sparklink/{path}")
+            format!("{}/{path}", slk_contract::MANAGER_PATH)
         };
         if !paths.contains(&candidate) {
             anyhow::bail!("adapter is not a live registration: {candidate}");
@@ -438,20 +427,14 @@ impl Context {
         Ok(())
     }
     async fn cmd_daemon(&self) -> anyhow::Result<()> {
-        let bus = zbus::fdo::DBusProxy::new(&self.conn).await?;
-        let service = zbus::names::BusName::try_from("org.sparklink")?;
-        let owner = bus.get_name_owner(service).await?;
-        let pid = bus
-            .get_connection_unix_process_id(owner.as_ref().into())
-            .await?;
-        let uid = bus.get_connection_unix_user(owner.as_ref().into()).await?;
+        let (owner, pid, uid) = self.application().await?.daemon_identity().await?;
         println!("DaemonIdentity: owner={owner} pid={pid} uid={uid}");
         Ok(())
     }
 
     async fn cmd_reports(&self) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
-        let reports: Vec<NativeReportRecord> = proxy.call("GetReports", &()).await?;
+        let proxy = self.controller().await?;
+        let reports = proxy.reports().await?;
         for (seq, generation, ms, address, rssi, header, data, lost) in reports {
             let hex = |bytes: &[u8]| bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
             println!(
@@ -463,39 +446,31 @@ impl Context {
         Ok(())
     }
 
-    async fn adapter_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
-        Ok(zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            self.selected_path().await?,
-            "org.sparklink.Adapter",
-        )
-        .await?)
+    async fn application(&self) -> anyhow::Result<&libsparklink::Client> {
+        Ok(self
+            .client
+            .get_or_try_init(|| libsparklink::Client::from_connection(self.conn.clone()))
+            .await?)
     }
-
-    async fn manager_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
-        Ok(zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            "/org/sparklink",
-            "org.sparklink.Manager",
-        )
-        .await?)
+    async fn controller(&self) -> anyhow::Result<libsparklink::controller::Controller> {
+        Ok(self
+            .application()
+            .await?
+            .controller(&self.selected_path().await?)
+            .await?)
     }
-
-    async fn controller_proxy(&self) -> anyhow::Result<zbus::Proxy<'_>> {
-        Ok(zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            format!("{}/controller", self.selected_path().await?),
-            "org.sparklink.Controller",
-        )
-        .await?)
+    async fn controller_paths(&self) -> anyhow::Result<Vec<String>> {
+        Ok(self
+            .application()
+            .await?
+            .controllers()
+            .await?
+            .into_iter()
+            .map(|id| id.path())
+            .collect())
     }
-
     async fn cmd_list(&self) -> anyhow::Result<()> {
-        let proxy = self.manager_proxy().await?;
-        let adapters: Vec<String> = proxy.call("ListAdapters", &()).await?;
+        let adapters = self.controller_paths().await?;
         if adapters.is_empty() {
             println!("No adapters found");
         } else {
@@ -507,11 +482,7 @@ impl Context {
     }
 
     async fn cmd_registrations(&self) -> anyhow::Result<()> {
-        let paths: Vec<String> = self
-            .manager_proxy()
-            .await?
-            .call("ListRegistrations", &())
-            .await?;
+        let paths = self.application().await?.registrations().await?;
         for path in paths {
             self.cmd_registration(&path).await?;
         }
@@ -521,35 +492,20 @@ impl Context {
         let path = if path.starts_with('/') {
             path.to_owned()
         } else {
-            format!("/org/sparklink/{path}")
+            format!("{}/{path}", slk_contract::MANAGER_PATH)
         };
-        let proxy = zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            path.as_str(),
-            "org.sparklink.Registration",
-        )
-        .await?;
-        let (generation,version,state,profile,phase,error,index,bus): slk_protocol::RegistrationSnapshotRecord = proxy.call("GetSnapshot", &()).await?;
-        let snapshot = slk_protocol::SleRegistrationSnapshot {
+        let snapshot = self.application().await?.registration(&path).await?;
+        let slk_protocol::SleRegistrationSnapshot {
             generation,
-            version,
+            version: _,
             state,
             profile,
             phase,
             error,
             dev_index: index,
             bus,
-            ..Default::default()
-        };
-        anyhow::ensure!(
-            snapshot.valid_for(index, generation),
-            "invalid registration observation"
-        );
-        anyhow::ensure!(
-            path == format!("/org/sparklink/slk{index}_g{generation}"),
-            "registration path/identity mismatch"
-        );
+            ..
+        } = snapshot;
         let name = match state {
             slk_protocol::REGISTRATION_PENDING => "Pending",
             slk_protocol::REGISTRATION_FAULT => "Fault",
@@ -564,29 +520,28 @@ impl Context {
     }
 
     async fn cmd_show(&self) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
-        let name: String = proxy.get_property("Name").await?;
-        let scanning: u32 = proxy.get_property("ScanningState").await?;
+        let proxy = self.controller().await?;
+        let name: String = proxy.name().await?;
+        let scanning: u32 = proxy.scanning_state().await?;
 
-        let status: String = proxy.get_property("ControllerState").await?;
-        let generation: u64 = proxy.get_property("Generation").await?;
-        let address: String = proxy.get_property("Address").await?;
-        let profile: u32 = proxy.get_property("Profile").await?;
-        let error: String = proxy.get_property("InitializationError").await?;
+        let status: String = proxy.state().await?;
+        let generation: u64 = proxy.generation().await?;
+        let address: String = proxy.address().await?;
+        let profile: u32 = proxy.profile().await?;
+        let error: String = proxy.initialization_error().await?;
         println!("Adapter {}:", self.selected_path().await?);
         println!("  State:       {status}");
         println!("  Generation:  {generation}");
         println!("  Address:     {address}");
         println!("  Profile:     {profile}");
         if profile == 1 {
-            let (seq, revision, known): (u64, u64, bool) =
-                proxy.get_property("NativeLinkObservation").await?;
-            let lost: u64 = proxy.get_property("EventsLost").await?;
+            let (seq, revision, known): (u64, u64, bool) = proxy.link_observation().await?;
+            let lost: u64 = proxy.events_lost().await?;
             println!(
                 "  Native links: event_seq={seq} revision={revision} known={known} lost={lost}"
             );
             let (version, min, max, power, interval, window): (u32, u32, u32, i32, u32, u32) =
-                proxy.call("GetDiscoveryPolicy", &()).await?;
+                proxy.discovery_policy().await?;
             println!(
                 "  Radio policy: version={version} adv_slots={min}..{max} tx_power_dbm={power} scan_slots={interval}/{window}"
             );
@@ -605,7 +560,7 @@ impl Context {
                 .cmd_initialization_off(slk_protocol::DISCOVERY_ADV_CONFIGURE_OFF)
                 .await;
         }
-        let proxy = self.adapter_proxy().await?;
+        let proxy = self.controller().await?;
         let id = random_bytes::<8>()?;
         let id = u64::from_ne_bytes(id).max(1);
         match args.get(1).copied() {
@@ -624,15 +579,16 @@ impl Context {
                 let data: Vec<u8> = if args[1] == "on" {
                     tokio::time::timeout(
                         std::time::Duration::from_secs(7),
-                        proxy.call("SubmitAdvertising", &(id, marker.to_vec())),
+                        proxy.management().advertise(id, marker.to_vec()),
                     )
                     .await??
                 } else {
                     tokio::time::timeout(
                         std::time::Duration::from_secs(7),
-                        proxy.call(
-                            "SubmitConnectableAdvertising",
-                            &(id, marker.to_vec(), args[1] == "negotiable"),
+                        proxy.management().advertise_connectable(
+                            id,
+                            marker.to_vec(),
+                            args[1] == "negotiable",
                         ),
                     )
                     .await??
@@ -647,7 +603,7 @@ impl Context {
                 println!("NativeStopAdvertisingRequest: request={id}");
                 let _: () = tokio::time::timeout(
                     std::time::Duration::from_secs(7),
-                    proxy.call("SubmitStopAdvertising", &(id,)),
+                    proxy.management().stop_advertising(id),
                 )
                 .await??;
             }
@@ -657,28 +613,31 @@ impl Context {
     }
     async fn cmd_result(&self, id: &str) -> anyhow::Result<()> {
         let id: u64 = id.parse()?;
-        let proxy = self.adapter_proxy().await?;
+        let proxy = self.controller().await?;
         let result: slk_protocol::DiscoveryResultRecord =
-            proxy.call("GetDiscoveryResult", &(id,)).await?;
+            proxy.management().discovery_result(id).await?;
         print_native_result(result)?;
         Ok(())
     }
     async fn cmd_initialization_off(&self, operation: u32) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
+        let proxy = self.controller().await?;
         let result: slk_protocol::DiscoveryResultRecord = tokio::time::timeout(
             std::time::Duration::from_secs(3),
-            proxy.call("GetInitializationOff", &(operation,)),
+            proxy.management().initialization_off(operation),
         )
         .await??;
         print_native_result(result)
     }
-    async fn wait_native_result(&self, proxy: &zbus::Proxy<'_>, id: u64) -> anyhow::Result<()> {
+    async fn wait_native_result(
+        &self,
+        proxy: &libsparklink::controller::Controller,
+        id: u64,
+    ) -> anyhow::Result<()> {
         let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(7);
-        let generation: u64 =
-            tokio::time::timeout_at(deadline, proxy.get_property("Generation")).await??;
+        let generation: u64 = tokio::time::timeout_at(deadline, proxy.generation()).await??;
         loop {
             let result: slk_protocol::DiscoveryResultRecord =
-                tokio::time::timeout_at(deadline, proxy.call("GetDiscoveryResult", &(id,)))
+                tokio::time::timeout_at(deadline, proxy.management().discovery_result(id))
                     .await??;
             if result.1 != id || result.0 != generation || result.13 != 1 {
                 anyhow::bail!("operation result identity mismatch");
@@ -697,12 +656,12 @@ impl Context {
     }
 
     async fn cmd_cancel_discovery(&self) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
-        let generation: u64 = proxy.get_property("Generation").await?;
+        let proxy = self.controller().await?;
+        let generation: u64 = proxy.generation().await?;
         println!("NativePoliciesCancelRequest: generation={generation}");
         let confirmed: u64 = tokio::time::timeout(
             std::time::Duration::from_secs(8),
-            proxy.call("CancelDiscoveryPolicies", &()),
+            proxy.management().cancel_discovery(),
         )
         .await??;
         anyhow::ensure!(
@@ -714,8 +673,8 @@ impl Context {
     }
 
     async fn cmd_management(&self) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
-        let expected: u64 = proxy.get_property("Generation").await?;
+        let proxy = self.controller().await?;
+        let expected: u64 = proxy.generation().await?;
         let (generation, mode, state, flags, error, status, opcode): (
             u64,
             u32,
@@ -724,11 +683,8 @@ impl Context {
             i32,
             u32,
             u32,
-        ) = tokio::time::timeout(
-            std::time::Duration::from_secs(3),
-            proxy.call("GetManagementStatus", &()),
-        )
-        .await??;
+        ) = tokio::time::timeout(std::time::Duration::from_secs(3), proxy.management_status())
+            .await??;
         anyhow::ensure!(generation == expected, "management generation mismatch");
         println!(
             "NativeManagementStatus: generation={generation} mode={mode} state={state} flags={flags} errno={error} status=0x{status:02x} opcode=0x{opcode:04x}"
@@ -742,13 +698,16 @@ impl Context {
                 .cmd_initialization_off(slk_protocol::DISCOVERY_SCAN_INITIALIZE_OFF)
                 .await;
         }
-        let toggle = args[1];
-        let proxy = self.adapter_proxy().await?;
-        if proxy.get_property::<u32>("Profile").await? == 1 {
+        let toggle = args
+            .get(1)
+            .copied()
+            .ok_or_else(|| anyhow::anyhow!("usage: scan on|off"))?;
+        let proxy = self.controller().await?;
+        if proxy.profile().await? == 1 {
             let id = u64::from_ne_bytes(random_bytes::<8>()?).max(1);
-            let method = match toggle {
-                "on" => "SubmitScanning",
-                "off" => "SubmitStopScanning",
+            let enable = match toggle {
+                "on" => true,
+                "off" => false,
                 _ => anyhow::bail!("usage: scan on|off"),
             };
             let matching = match args.len() {
@@ -762,9 +721,9 @@ impl Context {
                 }
                 _ => anyhow::bail!("usage: scan on [32-hex-marker advertiser-address]|off"),
             };
-            let generation: u64 = proxy.get_property("Generation").await?;
+            let generation: u64 = proxy.generation().await?;
             let before: Vec<slk_protocol::TimedDiscoveryReportRecord> =
-                proxy.call("GetTimedReports", &()).await?;
+                proxy.timed_reports().await?;
             let watermark = before.iter().map(|r| r.0).max().unwrap_or(0);
             // The invocation lower bound rejects queued older kernel RX;
             // the discovery deadline separately starts at matched Complete.
@@ -773,17 +732,20 @@ impl Context {
                 "NativeScanWindow: generation={generation} request={id} start_boottime_ns={scan_boottime_ns}"
             );
             println!("NativeScanRequest: request={id} enable={toggle}");
-            let _: () = tokio::time::timeout(
-                std::time::Duration::from_secs(7),
-                proxy.call(method, &(id,)),
-            )
+            let _: () = tokio::time::timeout(std::time::Duration::from_secs(7), async {
+                if enable {
+                    proxy.management().scan(id).await
+                } else {
+                    proxy.management().stop_scanning(id).await
+                }
+            })
             .await??;
             self.wait_native_result(&proxy, id).await?;
             if let Some((marker, address)) = matching {
                 let expected = slk_protocol::ws73_marker_data(&marker);
                 let timing: (u64, u64, u64, u32, u32, u16, u8) = tokio::time::timeout(
                     std::time::Duration::from_secs(7),
-                    proxy.call("GetDiscoveryTiming", &(id,)),
+                    proxy.management().discovery_timing(id),
                 )
                 .await??;
                 let completed = timing.2;
@@ -817,7 +779,7 @@ impl Context {
                                     )
                                 })?,
                         ),
-                        proxy.call("GetTimedReports", &()),
+                        proxy.timed_reports(),
                     )
                     .await??;
                     let observed_boottime_ns = boottime_ns()?;
@@ -857,11 +819,11 @@ impl Context {
         }
         match toggle {
             "on" => {
-                let _: () = proxy.call("StartControllerScan", &()).await?;
+                let _: () = proxy.management().start_controller_scan().await?;
                 println!("Discovery started");
             }
             "off" => {
-                let _: () = proxy.call("StopControllerScan", &()).await?;
+                let _: () = proxy.management().stop_controller_scan().await?;
                 println!("Discovery stopped");
             }
             _ => anyhow::bail!("usage: scan on|off"),
@@ -870,8 +832,18 @@ impl Context {
     }
 
     async fn cmd_devices(&self) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
-        let devices: Vec<(String, String, i16, bool)> = proxy.call("GetDevices", &()).await?;
+        let proxy = self.controller().await?;
+        // R5d: retire/replace the address-only observation facade. This
+        // temporary read-only caller cannot silently follow a new daemon.
+        let object = zbus::Proxy::new(
+            &self.conn,
+            self.application().await?.daemon_owner(),
+            proxy.path(),
+            "org.sparklink.Adapter",
+        )
+        .await?;
+        let devices: Vec<(String, String, i16, bool)> = object.call("GetDevices", &()).await?;
+        proxy.generation().await?;
         if devices.is_empty() {
             println!("No devices found");
         } else {
@@ -884,23 +856,26 @@ impl Context {
     }
 
     async fn cmd_info(&self, address: &str) -> anyhow::Result<()> {
+        let controller = self.controller().await?;
         let object_path = format!(
             "{}/dev_{}",
             self.selected_path().await?,
             address.replace(':', "").to_lowercase()
         );
-        let proxy = zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            object_path.as_str(),
-            "org.sparklink.Device",
-        )
-        .await?;
+        // R5d read-only exception; no new address-only SDK object.
+        let proxy = zbus::proxy::Builder::<zbus::Proxy<'_>>::new(&self.conn)
+            .destination(self.application().await?.daemon_owner())?
+            .path(object_path.as_str())?
+            .interface("org.sparklink.Device")?
+            .cache_properties(zbus::proxy::CacheProperties::No)
+            .build()
+            .await?;
 
         let name: String = proxy.get_property("Name").await?;
         let rssi: i16 = proxy.get_property("Rssi").await?;
         let connected: bool = proxy.get_property("Connected").await?;
 
+        controller.generation().await?;
         println!("Device {address}:");
         println!("  Name:      {name}");
         println!("  RSSI:      {rssi} dBm");
@@ -909,8 +884,8 @@ impl Context {
     }
 
     async fn cmd_connect(&self, address: &str, address_type: Option<&str>) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
-        let profile: u32 = proxy.get_property("Profile").await?;
+        let proxy = self.controller().await?;
+        let profile: u32 = proxy.profile().await?;
         if profile == 1 {
             let address_type: u8 = address_type
                 .ok_or_else(|| {
@@ -919,12 +894,13 @@ impl Context {
                     )
                 })?
                 .parse()?;
-            let id: u64 = proxy.call("AllocateConnectionRequest", &()).await?;
+            let id: u64 = proxy.management().allocate_connection_request().await?;
             println!(
                 "NativeConnectionRequest: request={id} address={address} address_type={address_type}"
             );
             let _: () = proxy
-                .call("SubmitConnect", &(id, address, address_type))
+                .management()
+                .connect(id, address, address_type)
                 .await?;
             wait_connection(&proxy, id).await?;
         } else {
@@ -938,18 +914,19 @@ impl Context {
         address: &str,
         address_type: Option<&str>,
     ) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
-        let profile: u32 = proxy.get_property("Profile").await?;
+        let proxy = self.controller().await?;
+        let profile: u32 = proxy.profile().await?;
         if profile == 1 {
-            let id: u64 = proxy.call("AllocateConnectionRequest", &()).await?;
+            let id: u64 = proxy.management().allocate_connection_request().await?;
             println!("NativeDisconnectRequest: request={id} address={address}");
             if let Some(kind) = address_type {
                 let kind: u8 = kind.parse()?;
                 let _: () = proxy
-                    .call("SubmitDisconnectTyped", &(id, address, kind))
+                    .management()
+                    .disconnect_typed(id, address, kind)
                     .await?;
             } else {
-                let _: () = proxy.call("SubmitDisconnect", &(id, address)).await?;
+                let _: () = proxy.management().disconnect(id, address).await?;
             }
             wait_connection(&proxy, id).await?;
         } else {
@@ -959,9 +936,9 @@ impl Context {
         Ok(())
     }
     async fn cmd_connections(&self) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
+        let proxy = self.controller().await?;
         let (generation, seq, revision, flags, error, links): NativeLinksRecord =
-            proxy.call("GetNativeConnections", &()).await?;
+            proxy.links().await?;
         println!(
             "NativeLinksSnapshot: generation={generation} event_seq={seq} revision={revision} flags={flags} errno={error}"
         );
@@ -976,9 +953,9 @@ impl Context {
         Ok(())
     }
     async fn cmd_connection_objects(&self) -> anyhow::Result<()> {
-        let proxy = self.adapter_proxy().await?;
+        let proxy = self.controller().await?;
         let (generation, seq, revision, known, objects): NativeObjectsRecord =
-            proxy.call("GetNativeConnectionObjects", &()).await?;
+            proxy.connection_objects().await?;
         println!(
             "NativeConnectionObjects: generation={generation} event_seq={seq} revision={revision} known={known}"
         );
@@ -993,23 +970,11 @@ impl Context {
         Ok(())
     }
     async fn cmd_peer_info(&self, path: &str) -> anyhow::Result<()> {
-        let adapter = self.adapter_proxy().await?;
-        let selected = self.selected_path().await?;
-        if !path.starts_with(&format!("{selected}/peer_t")) {
-            anyhow::bail!("peer does not belong to the selected adapter");
-        }
-        let peer =
-            zbus::Proxy::new(&self.conn, "org.sparklink", path, "org.sparklink.Peer").await?;
-        let (generation, kind, address, known, connected, objects): NativePeerInfo =
-            peer.call("GetInfo", &()).await?;
-        let selected_generation: u64 = adapter.get_property("Generation").await?;
-        let expected = format!(
-            "{selected}/peer_t{kind:02x}_{}",
-            address.replace(':', "").to_lowercase()
-        );
-        if generation != selected_generation || path != expected {
-            anyhow::bail!("typed peer identity mismatch");
-        }
+        let (generation, kind, address, known, connected, objects): NativePeerInfo = self
+            .application()
+            .await?
+            .peer_info(&self.selected_path().await?, path)
+            .await?;
         println!(
             "NativePeerInfo: generation={generation} type={kind} address={address} known={known} connected={connected} path={path}"
         );
@@ -1022,14 +987,13 @@ impl Context {
         &self,
         path: &str,
     ) -> anyhow::Result<libsparklink::ApplicationConnection> {
-        let client = self
-            .client
-            .get_or_try_init(|| libsparklink::Client::from_connection(self.conn.clone()))
-            .await?;
-        Ok(client
+        Ok(self
+            .application()
+            .await?
             .connection(&self.selected_path().await?, path)
             .await?)
     }
+
     async fn cmd_transport_status(&self, path: &str) -> anyhow::Result<()> {
         let v = self
             .application_connection(path)
@@ -1063,33 +1027,14 @@ impl Context {
     }
 
     async fn cmd_connection_object(&self, path: &str, disconnect: bool) -> anyhow::Result<()> {
-        let adapter = self.adapter_proxy().await?;
-        let selected = self.selected_path().await?;
-        if !path.starts_with(&format!("{selected}/peer_t")) {
-            anyhow::bail!("connection object does not belong to the selected adapter");
-        }
-        let object = zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            path,
-            "org.sparklink.Connection",
-        )
-        .await?;
-        let (generation, lifetime, handle, role, kind, address, known, connected): NativeObjectInfo = object.call("GetInfo", &()).await?;
-        let selected_generation: u64 = adapter.get_property("Generation").await?;
-        let expected = format!(
-            "{selected}/peer_t{kind:02x}_{}/link_{lifetime:016x}",
-            address.replace(':', "").to_lowercase()
-        );
-        if generation != selected_generation || path != expected {
-            anyhow::bail!("connection object identity mismatch");
-        }
+        let adapter = self.controller().await?;
+        let (generation, lifetime, handle, role, kind, address, known, connected): NativeObjectInfo = self.application_connection(path).await?.info().await?;
         if disconnect {
-            let id: u64 = adapter.call("AllocateConnectionRequest", &()).await?;
+            let id: u64 = adapter.management().allocate_connection_request().await?;
             println!(
                 "NativeDisconnectObject: request={id} generation={generation} lifetime={lifetime} handle={handle} role={role} type={kind} address={address} path={path}"
             );
-            let _: () = object.call("SubmitDisconnect", &(id,)).await?;
+            let _: () = adapter.management().disconnect_object(id, path).await?;
             wait_connection(&adapter, id).await
         } else {
             println!(
@@ -1100,8 +1045,8 @@ impl Context {
     }
 
     async fn cmd_stats(&self) -> anyhow::Result<()> {
-        let proxy = self.controller_proxy().await?;
-        let stats: (u16, u64, u64, u64, u32) = proxy.call("GetLinkSummary", &()).await?;
+        let proxy = self.controller().await?;
+        let stats: (u16, u64, u64, u64, u32) = proxy.link_summary().await?;
         println!(
             "ControllerLinkSummary: index={} generation={} revision={} event_sequence={} connections={}",
             stats.0, stats.1, stats.2, stats.3, stats.4
@@ -1113,9 +1058,8 @@ impl Context {
     }
 
     async fn cmd_events(&self) -> anyhow::Result<()> {
-        let proxy = self.controller_proxy().await?;
-        let (index, generation, sequence): (u16, u64, u64) =
-            proxy.call("GetControllerEventPosition", &()).await?;
+        let proxy = self.controller().await?;
+        let (index, generation, sequence): (u16, u64, u64) = proxy.event_position().await?;
         println!(
             "ControllerEventPosition: index={index} generation={generation} sequence={sequence}"
         );
@@ -1127,18 +1071,8 @@ impl Context {
 }
 
 fn parse_peer_address(text: &str) -> anyhow::Result<String> {
-    let bytes = text
-        .split(':')
-        .map(|part| {
-            if part.len() != 2 {
-                anyhow::bail!("invalid peer address");
-            }
-            Ok(u8::from_str_radix(part, 16)?)
-        })
-        .collect::<anyhow::Result<Vec<_>>>()?;
-    if bytes.len() != 6 {
-        anyhow::bail!("peer address must contain six bytes");
-    }
+    let bytes = slk_contract::parse_address(text)
+        .ok_or_else(|| anyhow::anyhow!("peer address requires six two-digit hex octets"))?;
     Ok(bytes
         .iter()
         .map(|b| format!("{b:02X}"))
@@ -1220,11 +1154,18 @@ fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
     Ok(bytes)
 }
 
-type NativeConnectionRecord = (u64, u64, u32, u32, i32, i32, u32, u32, u32, u32);
-async fn wait_connection(proxy: &zbus::Proxy<'_>, id: u64) -> anyhow::Result<()> {
+use slk_contract::controller::ConnectionResult as NativeConnectionRecord;
+async fn wait_connection(
+    proxy: &libsparklink::controller::Controller,
+    id: u64,
+) -> anyhow::Result<()> {
     let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(16);
     loop {
-        let r: NativeConnectionRecord = proxy.call("GetConnectionResult", &(id,)).await?;
+        let r: NativeConnectionRecord =
+            tokio::time::timeout_at(deadline, proxy.management().connection_result(id)).await??;
+        if tokio::time::Instant::now() >= deadline {
+            anyhow::bail!("connection observation timeout; query request={id}");
+        }
         if r.3 >= 4 {
             println!(
                 "NativeConnectionResult: generation={} request={} operation={} state={} errno={} fault={} command_status={} outcome_status={} handle={} flags={}",

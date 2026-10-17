@@ -38,6 +38,27 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 通用Operation/跨进程原始Deadline/EventStream尚未开放，future取消不承诺撤销已开始的物理义务。
 内核/daemon/工具既有原期限、最后关闭和Grant规则继续执行。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
 
+### 控制器观察与显式管理（R5c源码；新产物实机待验）
+
+`Client::controller(path)`返回固定daemon owner及index/generation的`Controller`观察对象，
+不是Ready或Native lease。属性不缓存；成员列举不读取同行属性作为本设备准入条件。
+`registrations()`／`registration(path)`直接读取Core生命周期，Pending/Fault观察不要求
+Ready Adapter存在。`peer_info()`及Connection采用共享的完整身份规则，不猜地址类型。
+
+`controller.management()`只是显式请求管理的客户端视图。构造它不授予权限，每次仍经
+实际D-Bus策略及内核检查。广播/扫描控制、取消、连接分配/提交/结果、强制断链均使用
+现有typed方法；关闭自己的应用通道与全controller管理不混为一个操作。管理者按地址
+断开时解析当前无歧义peer；要固定旧lifetime使用明确reference/object操作。
+
+SDK在实际调用前后检查owner/generation，并校验结果中原请求身份。owner变化后旧
+对象失败，需要显式创建新Client；不自动追随新daemon。已发生的提交不能因该错误
+撤销或退款，原请求结果可能仍有物理义务；失败不是“确定未提交”。观察仅在检查点
+有效，不承诺下一刻硬件状态。原协议期限不重置，CLI连接结果等待也覆盖身份RPC。
+
+`slctl`管理/注册/Peer/Connection观察已迁移这些方法。旧地址Device的只读观察和本地
+服务/Agent调用仍按唯一计划逐条迁移；当前不提供generic Proxy或Native逃生口。
+新方法源码和私有D-Bus检查不是完整新实机资格，范围以能力入口的准确artifact为准。
+
 ### Rust远端SSAP客户端与slctl
 
 `Client::connection(controller_path, connection_path)`固定daemon unique owner、controller

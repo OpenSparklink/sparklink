@@ -64,7 +64,7 @@ impl Client {
             .await?;
         Ok(manager.call(contract::LIST_ADAPTERS, &()).await?)
     }
-    async fn check_generation(&self, id: ControllerId) -> Result<()> {
+    pub(crate) async fn check_generation(&self, id: ControllerId) -> Result<()> {
         let current: u64 = self
             .proxy(&id.path(), contract::ADAPTER)
             .await?
@@ -89,6 +89,96 @@ impl Client {
             controllers.push(id);
         }
         Ok(controllers)
+    }
+    /// A registered controller view; not a management lease or Ready guarantee.
+    pub async fn controller(&self, path: &str) -> Result<crate::controller::Controller> {
+        let id =
+            ControllerId::from_path(path).ok_or(ApplicationError::Invalid("controller path"))?;
+        if !self.registration_paths().await?.iter().any(|p| p == path) {
+            return Err(ApplicationError::Identity("registration removed"));
+        }
+        self.check_generation(id).await?;
+        Ok(crate::controller::Controller::new(self.clone(), id))
+    }
+    pub async fn daemon_identity(&self) -> Result<(String, u32, u32)> {
+        let _ = self
+            .proxy(contract::MANAGER_PATH, contract::MANAGER)
+            .await?;
+        let bus = zbus::fdo::DBusProxy::new(&self.bus).await?;
+        let owner: zbus::names::BusName<'_> = self
+            .owner
+            .as_str()
+            .try_into()
+            .map_err(|_| ApplicationError::Identity("invalid daemon owner"))?;
+        let pid = bus
+            .get_connection_unix_process_id(owner.clone())
+            .await
+            .map_err(|e| ApplicationError::Bus(e.into()))?;
+        let uid = bus
+            .get_connection_unix_user(owner)
+            .await
+            .map_err(|e| ApplicationError::Bus(e.into()))?;
+        let _ = self
+            .proxy(contract::MANAGER_PATH, contract::MANAGER)
+            .await?;
+        Ok((self.owner.clone(), pid, uid))
+    }
+    pub async fn peer_info(&self, controller: &str, path: &str) -> Result<contract::PeerInfo> {
+        let view = self.controller(controller).await?;
+        let value: contract::PeerInfo = self
+            .proxy(path, contract::controller::PEER)
+            .await?
+            .call(contract::GET_INFO, &())
+            .await?;
+        if !contract::matches_peer(view.id(), path, &value) {
+            return Err(ApplicationError::Identity("typed peer identity"));
+        }
+        self.check_generation(view.id()).await?;
+        Ok(value)
+    }
+    /// Core observations include early setup/faults without requiring Adapter.
+    pub async fn registrations(&self) -> Result<Vec<String>> {
+        let paths: Vec<String> = self
+            .proxy(contract::MANAGER_PATH, contract::MANAGER)
+            .await?
+            .call(contract::controller::LIST_REGISTRATIONS, &())
+            .await?;
+        let mut unique = std::collections::HashSet::new();
+        if paths
+            .iter()
+            .any(|p| ControllerId::from_path(p).is_none() || !unique.insert(p))
+        {
+            return Err(ApplicationError::Identity(
+                "noncanonical/duplicate registration",
+            ));
+        }
+        Ok(paths)
+    }
+    pub async fn registration(&self, path: &str) -> Result<slk_protocol::SleRegistrationSnapshot> {
+        let id =
+            ControllerId::from_path(path).ok_or(ApplicationError::Invalid("registration path"))?;
+        let (generation,version,state,profile,phase,error,index,bus): slk_protocol::RegistrationSnapshotRecord = self.proxy(path, contract::controller::REGISTRATION).await?
+            .call(contract::controller::REGISTRATION_SNAPSHOT, &()).await?;
+        let value = slk_protocol::SleRegistrationSnapshot {
+            generation,
+            version,
+            state,
+            profile,
+            phase,
+            error,
+            dev_index: index,
+            bus,
+            ..Default::default()
+        };
+        if !value.valid_for(id.index, id.generation)
+            || generation != id.generation
+            || index != id.index
+        {
+            return Err(ApplicationError::Identity("registration snapshot"));
+        }
+        // Recheck ownership without requiring a Ready Adapter to exist.
+        let _ = self.proxy(path, contract::controller::REGISTRATION).await?;
+        Ok(value)
     }
     pub async fn connection(&self, controller: &str, path: &str) -> Result<ApplicationConnection> {
         let id = ControllerId::from_path(controller)

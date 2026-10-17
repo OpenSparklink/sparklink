@@ -1252,9 +1252,11 @@ R5b收尾依据：[准确资格](../docs/evidence/application-ssap-client-qualif
 
 ##### R5c下一批：剩余管理CLI与固定daemon owner
 
-最新a37源码仍有slctl `manager_proxy`／`adapter_proxy`／`controller_proxy`直接使用
-well-known服务名，部分控制/结果轮询尚未消费SDK。源码表明这是待审的owner切换窗口，
-不能描述为已经发生真实设备串单。R5b的依赖图通过不等于全部运行时调用者已经迁移。
+审计基线a37源码仍有slctl `manager_proxy`／`adapter_proxy`／`controller_proxy`直接使用
+well-known服务名，部分控制/结果轮询尚未消费SDK。旧a37私有D-Bus已复现owner更换后仍接受旧RPC成功观察，
+不是实机串包；[原失败与范围](../docs/evidence/controller-owner-counterexample-20261018.json)保留。
+R5b依赖图通过不等于全部运行时调用者已经迁移。R5c源码已移除通用管理proxy，
+实际SDK/CLI局部回归通过，准确新artifact/VM尚待验收。
 
 生产退出：现有控制器观察与显式受权管理操作复用Client固定owner，shared contract
 统一wire值/方法，slctl只做参数和显示；不公开万能Proxy、不暴露Native lease、不另建
@@ -1265,6 +1267,11 @@ request拒绝、原期限及完整错误；不得让重复请求/后来的owner�
 先只验证该迁移相关不变量，不等待控制面竞争全集。准确新artifact VM回归现有发现/
 连接/短消息/边界/Owned路径；通过后迁移本地Owned/Agent及C/Python实际客户端，再做R6。
 所有已有功能、未完成原始scope与历史失败保留。
+
+R5c保留的临时例外：`devices/info`是地址索引的旧只读观察，暂时固定owner、关闭属性
+缓存并在读后检查generation，没有为它新建SDK对象；R5d迁到typed Peer观察后删除旧
+入口。管理staging、Owned服务和Agent模块仍各有明确用途及待迁移调用，不能因名称
+相似合并，也不据本批宣布全部CLI已通过SDK。此处是有退出条件的清单，非长期并行实现。
 
 ##### R5a最小独立导出门禁
 

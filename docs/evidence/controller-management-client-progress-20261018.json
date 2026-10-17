@@ -1,0 +1,126 @@
+{
+  "status": "SOURCE_MIGRATED_OFFLINE_PASS_NEW_ARTIFACT_VM_PENDING",
+  "parent": "e3b5aa097ec06599dfe197f97eefb39221d3ecf7",
+  "production_files": {
+    "Cargo.lock": "da6600e3749ab74df4e465e13ba470140a2165b4b6db96c1e0bfca276b96a59e",
+    "crates/libsparklink/Cargo.toml": "110c2fd1a2b073e47ce69b7264d92981e4e87ad1c2333b9bd215a5a1c15c7a5f",
+    "crates/libsparklink/src/client.rs": "200deb3523d1f95bc1ccfb38dc73389e3074bb0da674b78fb06c96a45b0544e7",
+    "crates/libsparklink/src/controller.rs": "71557b350477d2f79b58b1246245021037504d0f7d4fabebbf5930db7f39ce99",
+    "crates/libsparklink/src/lib.rs": "5546144044d1c4065447737c82908954f1a93f33cda5dc4fb0ea7cc3ff04512f",
+    "crates/libsparklink/tests/controller_client.rs": "f543617762438b01ec63c907a144e165d7d748d4708aabc7027e34864605c6e1",
+    "crates/slctl/src/commands.rs": "ca4ba169b1f5161aa0eebad942ff5b6c1ae604c15ee0bd355b88fcf6669d98c1",
+    "crates/slctl/tests/management_owner.rs": "967c6d500492795dd9c294d397d3175bc9d82d098be79209e3260d1f4e07e057",
+    "crates/slk-contract/src/lib.rs": "a7e96a98d506fe3a881dce764887404f8456f6aa1b11ed130ad357336c67a62c"
+  },
+  "production": "ExistingClientnowownscontroller/explicitmanagement/registration/typedpeer/connectionobservation. CLIremovesgenericwell-knownmanager/adapter/controllerproxies andduplicatedidentityrules;privategenericRPChelpernotpublicescape. ManagementviewnevergrantsNativelease/authority.",
+  "invariants": [
+    "Fixeddaemonownerandcontrollergenerationpre/postRPC;resultoriginalgen/request/ABIidentitychecked;noautomaticfollowreplacement",
+    "CorePending/FaultobservationdoesnotrequireReadyAdapter;unrelatedpropertiesnoteligibilitygate",
+    "Alreadyadmittedwork/creditnotundonebyobservationfailure;noimplicitretry/fakeComplete",
+    "ExistingCLIoriginal16secondconnection-observationdeadlineboundsidentity/resultRPC;scanmissingargumentrejectsbeforecontrollerlookup,notpanic"
+  ],
+  "offline": {
+    "final_workspace_tests": 323,
+    "strict": "lockedoffline12sharedbudget default/allfeaturesClippy-Dwarnings,fmt,strictHTML;actualSDK4owner/policy/corecases,newCLI3andpreservedoldCLItests",
+    "c_surface": "Actualcbindgengeneratedapplicationheaderbyte-identical;newreleaseABI/ELFstillneednewartifact",
+    "counterexample": "Olda37immutableCLIacceptslateoriginalRPCobservationafterownerreplacementonprivatebus;newCLIrejects/replacementcalls0. NotRFmisdelivery/newownerreceivingoldrequest."
+  },
+  "temporary_exceptions": [
+    {
+      "entry": "slctl devices/info",
+      "role": "legacyaddress-onlyreadonlyobservation",
+      "enforced": "Pinnedowner,NoCacheandpostgenerationcheck;no newSDKfacade",
+      "retirement": "R5dtypedPeerobservationthenremoveoldDeviceinterface/callers"
+    },
+    {
+      "entry": "localstaging/Owned/Agent modules",
+      "role": "distinctexistingproductionuses",
+      "retirement": "Migrateeachthroughsharedclient/contractwithoutmergingrolesoraddingEngine;R5d"
+    }
+  ],
+  "remaining": [
+    "AccuratecleancommittednewartifactandfourVMWS73preservation,independentcapture/negativechecks beforeanynewqualification",
+    "RemainingR5dDevice/localOwned/Agent/C-Python/publictypeconsumer audit thenR6cleanVMdeployment",
+    "FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,alloriginalscopeOPEN;nonewformalproof"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5c-workspace-v1.log",
+      "sha256": "c2753b84c9778cdf26f272041d0526e2fee300310bf0c64beb03c07712a812bb",
+      "bytes": 34133,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-workspace-budget-v1.json",
+      "sha256": "df0666c1146cdf54d689c71648a253680232d63d07ce49805d231567b28df9d8",
+      "bytes": 891,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-strict-v1.log",
+      "sha256": "75f412607a5f0bc90adda581152694eec38fb5f2dabe0d9c4724f056c62a2fc0",
+      "bytes": 533,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-default-strict-v1.log",
+      "sha256": "4b4c8f15aa34ecbf2ee706af3907f72ba792a47192252af761291538896796e1",
+      "bytes": 406,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-sdk-v1.log",
+      "sha256": "dfab51a5e5bcb917fa479d2176c0b48c0bf808a409ee0b9e704b9cc2e5e12445",
+      "bytes": 1287,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-cli-v3.log",
+      "sha256": "c3467589d88d6d106b93c33cf8462de6c69061bc96fbab2b01936f0d7c6342d7",
+      "bytes": 4305,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-docs-v1.log",
+      "sha256": "a20c2efe68211b4eafb0753e364ee0942c5aaed5ab8c0fd538363635d6f47019",
+      "bytes": 5532,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-fmt-v1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-dependencies-v1.log",
+      "sha256": "aaa57004ae775b4baa0f563dffa39d6ecf250b372df3a99f6e2581d7a7cfb9cd",
+      "bytes": 1628,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-application-header-v1.h",
+      "sha256": "475214480b0fa05ec72d42fb7ab922b67f12cc8517cca2564511c12a05a8a7ba",
+      "bytes": 6189,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-cbindgen-v1.log",
+      "sha256": "eb130f6b3201193e1b7eb845676b8bc7c4b838cd4d3175d5236afe3327d10552",
+      "bytes": 294,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-old-cli-counterexample-v1.log",
+      "sha256": "d135f9445690cfebfb1b010547ca79bb793e66b196406f193964715c54c9365c",
+      "bytes": 1655,
+      "access": "privateownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-cli-v1.log",
+      "sha256": "ebe6c391956c1e8a2855d7ea815b1ce5c38758c114dff8e49b25cc1dbafbd2ea",
+      "bytes": 2984,
+      "access": "privateownerworkspace"
+    }
+  ]
+}

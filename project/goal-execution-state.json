@@ -3419,7 +3419,46 @@
       "state": "SIX_FRESH_VM_EXISTING_CLIENT_SLICE_QUALIFIED_FULL_ARCHITECTURE_OPEN",
       "exit_reference": "CanonicalimplementationplanR5e",
       "remaining": "R5f/R6 andfulloriginalscope;numeric-human-CLI hardware,C-Python highlevelclients,commonAPI/perappdiscovery,naturalRCA/nonmanualrecovery remain",
-      "qualification_report": "docs/evidence/owned-agent-client-qualification-20261018.json"
+      "qualification_report": "docs/evidence/owned-agent-client-qualification-20261018.json",
+      "maintenance_report": "docs/evidence/owned-agent-client-maintenance-20261018.json",
+      "issue_receipts": [
+        {
+          "repo": "sparklink",
+          "number": 3,
+          "comment": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6240433208",
+          "state": "OPEN"
+        },
+        {
+          "repo": "sparklink",
+          "number": 6,
+          "comment": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6240434133",
+          "state": "OPEN"
+        },
+        {
+          "repo": "sparklink",
+          "number": 8,
+          "comment": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6240435383",
+          "state": "OPEN"
+        },
+        {
+          "repo": "linux",
+          "number": 6,
+          "comment": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6240436416",
+          "state": "OPEN"
+        },
+        {
+          "repo": "linux",
+          "number": 17,
+          "comment": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6240437304",
+          "state": "OPEN"
+        },
+        {
+          "repo": "linux",
+          "number": 19,
+          "comment": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6240438216",
+          "state": "OPEN"
+        }
+      ]
     },
     "next_limited_batch": {
       "id": "R5f-R6-supported-public-consumers-deployment",

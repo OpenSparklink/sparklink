@@ -1,0 +1,294 @@
+{
+  "schema": 1,
+  "real_result": "PASS",
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "compiled_userspace": "cd35db3fd4e4e31197d261f8656a4880404e439e",
+  "executed_tools": "0568a3d1db1beee3ec57b668e369970092112505",
+  "scope": [
+    "Production retirement: unpublished Powered getter/setter/state/CLI consumer and metadata ListBonded/RemoveBond/bonded/--storage removed with active callers; legacy store and untyped pairing write are cfg(test), including experimental daemon builds. Historical files are not loaded,migrated,modified or deleted by daemon. Actual Agent/Connection security,management staging and sole Owned SSAP Engine retained.",
+    "Exact K0cd/compiled cd35/tools0568 SDK110 U2/3 only:four ordinary-user two-role gates,actual opposite application validation/reply and original paired USB/HCC/NOCP checks. Role gate uses UID1005/no extra groups/caps0,actual guest system bus/udev/device permissions;not service-only remote RF or full clean-distribution install.",
+    "Owned allow/deny/read/write/UUID/read-after plus original owner value check and owner SIGKILL/old-handle rejection retained on basic short/long and actual mechanism2 gates. Owner death occurs after transactions;inflight callback/deadline/revoke/Down/active watch retirement are NOT newly qualified.",
+    "No new formal proof. Existing access Kani unstable/unsupported diagnostics stay UNPROVED;no kernel/runtime/USB drain/firmware/NOCP assumptions proved. Old natural fault RCA and nonmanual recovery remain OPEN;manual/hub/QMP/injection not acceptance.",
+    "The first real service-only attempt failed because root-owned inherited stdin could not be independently reopened after setuid. Tool0568 assigns only the disposable guest pipe to1005;same production binary/CLI semantics. Original FAIL and assertions retained. Boundary+Owned combination rejected before VM;correct separate boundary mode unchanged.",
+    "R6a uninstall preservation is independently staged-only,not clean-VM deployment. New documentation/Makefile commits do not rename the compiled cd35 artifact;full current tree is NOT_QUALIFIED. Complete S0-S6/19WP/10FV/12DG and all original issues remain open as applicable;UserHost P4."
+  ],
+  "remaining": [
+    "Bounded per-controller observation cache/TTL/bytes and retryable publication;SDK application/Native split;full per-entry caller/binding/policy retirement and typed event migration.",
+    "Actual owner callback exit/original-deadline/late approval,active-controller retirement and full revoke/Down/lifetime matrix remain current work;d795 human-token source fix is not fully exercised by these allow/deny real runs.",
+    "E protected SSAP,full mechanism1/2 Agent negative matrix,CPCD/notifications/indications,long write,full multichannel/four-device/performance/soak and trusted identity/Bond remain.",
+    "Installation prefix/library/SONAME/pkg-config,actual clean-VM install/start/C-Python consumers/upgrade/rollback/uninstall;staged-only R6a is not that qualification.",
+    "Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;original 5509ms failure and required HCC110 documentation-retention incident unchanged."
+  ],
+  "bounds": {
+    "ordinary_round_trips": 32,
+    "owned_cases": 24,
+    "owner_decisions": 96,
+    "remote_owned_transactions": 120,
+    "owner_exits": 24,
+    "oversize_rejections": 16,
+    "service_role_denials": 68,
+    "real_gates": 4,
+    "exact_replays": 5,
+    "copied_negative_controls": 81,
+    "default_rust_tests": 303,
+    "all_features_rust_tests": 303,
+    "frozen_python_tests": 750,
+    "docs_inventory": 115
+  },
+  "real_gates": [
+    {
+      "name": "architecture-retirement-r1-real-short-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-retirement-r1-real-short-v1/manifest.json",
+        "sha256": "3bfc0c187700ce10bb00de995a7c61ea9298b44b6c3e08ef9f2692aa259aca94",
+        "bytes": 1789047,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "run": {
+        "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "0fd4890a015e61f74514a9981ea02594d954bb19c6b74e2905fc3ebbcb7e9fe4",
+        "bytes": 973070,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "capture": {
+        "path": ".dev/architecture-retirement-r1-real-short-v1/guest-output/ws73.pcap",
+        "sha256": "23c15b0316405eb47e285c9ab9b490697f445147db1ca7eee8328bc19f8021a9",
+        "bytes": 680528,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "replay": {
+        "path": ".dev/architecture-retirement-r1-real-short-v1-r1-owned-audit-v1.json",
+        "sha256": "7ee2e0da1b39126512c719299f2f41635c9169aaf9ac0aae9caff0bce095d51e",
+        "bytes": 2990,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "application_bytes": 61,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "owner_decisions": 32,
+      "service_role_acceptance": false,
+      "security_requirement": 0
+    },
+    {
+      "name": "architecture-retirement-r1-real-long-v2",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-retirement-r1-real-long-v2/manifest.json",
+        "sha256": "3e1df058ad7bcdaefc1806d2936ac7aa2a4556c568ee7d21a69fc1dd157d2e12",
+        "bytes": 2861464,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "run": {
+        "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/application/passthrough-control/run.json",
+        "sha256": "d60e40c83fca4e4bfa42998152f84f8a4f453fbaedaf633b2966b326b0ad8a22",
+        "bytes": 1099934,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "capture": {
+        "path": ".dev/architecture-retirement-r1-real-long-v2/guest-output/ws73.pcap",
+        "sha256": "b36b46f224f25f2311594d6c4e45b72719651e7ac0ea185f50670963759fa5fe",
+        "bytes": 1207776,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "replay": {
+        "path": ".dev/architecture-retirement-r1-real-long-v2-r1-owned-audit-v1.json",
+        "sha256": "50a128f9c9276eba72c569450d1e93bd979b687be714d69fcf97df1459b71a3a",
+        "bytes": 2990,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "application_bytes": 2042,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "owner_decisions": 32,
+      "service_role_acceptance": true,
+      "security_requirement": 0
+    },
+    {
+      "name": "architecture-retirement-r1-real-boundary-v2",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-retirement-r1-real-boundary-v2/manifest.json",
+        "sha256": "d0633f7758a6efc8d63672507c087faa245e700ab3621c6e731a705e5b7b1f19",
+        "bytes": 1600487,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "run": {
+        "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/application/passthrough-control/run.json",
+        "sha256": "2fec06fe57d5f51efdb6f9a0b4e1387072135368802d6bb444902187f83a0a70",
+        "bytes": 951840,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "capture": {
+        "path": ".dev/architecture-retirement-r1-real-boundary-v2/guest-output/ws73.pcap",
+        "sha256": "98a188f369f5493e045d21a83233f3056295b615b9db8ff8a35ab39dd8a4fade",
+        "bytes": 636160,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "replay": {
+        "path": ".dev/architecture-retirement-r1-real-boundary-v2-r1-length-audit-v1.json",
+        "sha256": "0ecaec516d070b45f1c2a25a853726e00e316f17308e9488b8583b8fc06e5fbb",
+        "bytes": 1508,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "application_bytes": 249,
+      "ordinary_round_trips": 8,
+      "owned_cases": 0,
+      "owner_decisions": 0,
+      "service_role_acceptance": false,
+      "security_requirement": 0
+    },
+    {
+      "name": "architecture-retirement-r1-real-sec2-v1",
+      "status": "PASS",
+      "manifest_status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": {
+        "path": ".dev/architecture-retirement-r1-real-sec2-v1/manifest.json",
+        "sha256": "ab8275cad3a05da20eefc9dd38c9bf1933f11a889e2090d698d21defec8749e5",
+        "bytes": 1879614,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "run": {
+        "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "ec7f0b037fbc78f95d54cfda3ddb3043aef1676ab4b83e66d0ad3c7c6ee1b3b3",
+        "bytes": 1034672,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "capture": {
+        "path": ".dev/architecture-retirement-r1-real-sec2-v1/guest-output/ws73.pcap",
+        "sha256": "9815da1ba2094a0773901cc8f8c5003dc990366fc9c54ea860d5447e70fecff6",
+        "bytes": 741112,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "replay": {
+        "path": ".dev/architecture-retirement-r1-real-sec2-v1-r1-owned-audit-v1.json",
+        "sha256": "6ddca169e95c8404fa62d54b991caec2a25e4ff65634e69c48ca9d50373995a5",
+        "bytes": 2990,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      "application_bytes": 61,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "owner_decisions": 32,
+      "service_role_acceptance": false,
+      "security_requirement": 2
+    }
+  ],
+  "offline": {
+    "result": "PASS",
+    "scope": "Actual production private-D-Bus exports with /dev/null/private bus fixtures;not kernel concurrency or deployed policy. Default and experimental strict checks;frozen tools use explicit kernel source and ordinary-user SO_PASSCRED permissions.",
+    "materials": [
+      {
+        "path": ".dev/architecture-retirement-r1-tests-v1.log",
+        "sha256": "4f48e37b6632e4abb5c2b07c5022604de51192e0101bed1107cd2db6aac7cfdf",
+        "bytes": 3602,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      {
+        "path": ".dev/architecture-retirement-r1-tests-v2.log",
+        "sha256": "6214045ca8d2518fae46bcad991328ff4ce975f5c1e513674c75d280dc8a3b05",
+        "bytes": 28691,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      {
+        "path": ".dev/architecture-retirement-r1-allfeatures-v1.log",
+        "sha256": "cba7b371ffc711fd3edafcf1a3fef06df30682abb41115f7550b15012db0944f",
+        "bytes": 27979,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      {
+        "path": ".dev/architecture-retirement-r1-clippy-default-v1.log",
+        "sha256": "35c06825b4f9cb1318f7d293be1c37e6c156b7792834f89566a0abdf4515b200",
+        "bytes": 592,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      {
+        "path": ".dev/architecture-retirement-r1-clippy-all-v1.log",
+        "sha256": "bad011128dfb9df1624566f2341b35ee502c638494bbf6198193377d705eabfc",
+        "bytes": 498,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      {
+        "path": ".dev/architecture-retirement-r1-docs-v1.log",
+        "sha256": "82a2cdb760d798cc118b3d4e8f82d700202d4dc8268e7615a44d41912a8659e8",
+        "bytes": 367617,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      {
+        "path": ".dev/architecture-retirement-r1-tools-v1.log",
+        "sha256": "5658f20d6beae0057ee2e380659be55dc1c5a989c7790999c88e230043a2979b",
+        "bytes": 128974,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      {
+        "path": ".dev/architecture-retirement-r1-tools-v2.log",
+        "sha256": "6c8b7b342a25970ba0e17331a4684eff3b268724ea7ea7d0b13c2aab41ad7786",
+        "bytes": 122694,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      },
+      {
+        "path": ".dev/architecture-retirement-r1-tools-v3.log",
+        "sha256": "111ecef8c12fa0465401438744bfceb264ba21b97411336b2aaf19ab15324372",
+        "bytes": 122694,
+        "access": "private local workspace;raw security/USB captures not publicly distributed"
+      }
+    ]
+  },
+  "role_audit": {
+    "path": ".dev/architecture-retirement-r1-service-audit-v1.json",
+    "sha256": "e49815c4ae5b43a6860ebf885128d555b88232f33e39fb12df455bca23db9f40",
+    "bytes": 3051,
+    "access": "private local workspace;raw security/USB captures not publicly distributed"
+  },
+  "failure_retained": {
+    "root_pipe_real_attempt": {
+      "path": ".dev/architecture-retirement-r1-real-long-v1/manifest.json",
+      "sha256": "548746549ed4ed2c5345791fc411a2c53f5d02163aae3c1666e035280bc85544",
+      "bytes": 49718,
+      "access": "private local workspace;raw security/USB captures not publicly distributed"
+    },
+    "raw_role_failure": {
+      "path": ".dev/architecture-retirement-r1-real-long-v1/guest-output/service-policy/run.json",
+      "sha256": "73a564a36d0c7a118315c9ffdc6d4527e1969ad5bc55293044189d47106d9a82",
+      "bytes": 5612,
+      "access": "private local workspace;raw security/USB captures not publicly distributed"
+    },
+    "invalid_combination_pre_vm": {
+      "path": ".dev/architecture-retirement-r1-real-boundary-v1.log",
+      "sha256": "4129788d9e33e578d959d7e9b41df4349e7bdb8394c7192745b6eb4bc6b93a3b",
+      "bytes": 1310,
+      "access": "private local workspace;raw security/USB captures not publicly distributed"
+    }
+  },
+  "replay": {
+    "tools_checkout": ".dev/architecture-retirement-r1-tools-v2",
+    "scripts": [
+      ".dev/architecture-retirement-r1-owned-audit-v1.py",
+      ".dev/architecture-retirement-r1-length-audit-v1.py",
+      ".dev/architecture-retirement-r1-service-audit-v1.py"
+    ],
+    "command": "SPARKLINK_KERNEL_SOURCE=<workspace>/linux python3 <matching audit script> <retained run directory>; role audit uses its declared fixed run. No device replay required.",
+    "raw_access": "Private .dev runs/bundle/profiles kept on developer machine. Raw key material and full pcaps not published. To reproduce live,matching existing SDK110 U firmware/calibration inputs and VM USB permissions required;all real drivers run only in VM."
+  },
+  "firmware_combined_sha256": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+  "native_bundle": {
+    "path": ".dev/architecture-retirement-r1-us-bundle-v1/manifest.json",
+    "sha256": "d63f06149805c2b2bd05cbc70857bc2ec27d681b47515cef1e1621ab974cd895",
+    "bytes": 27364,
+    "access": "private local workspace;raw security/USB captures not publicly distributed"
+  },
+  "uninstall_separate": {
+    "source": "e28d1ab2aa1db9976c2939737176797667c0d184",
+    "result": "STAGED_ONLY_PASS",
+    "log": {
+      "path": ".dev/architecture-retirement-r6a-uninstall-v1.log",
+      "sha256": "dddf59b5aa63b38edd99749945bdf7beb24130057730ff15f464a1aa7ba927ab",
+      "bytes": 287,
+      "access": "private local workspace;raw security/USB captures not publicly distributed"
+    },
+    "not_clean_vm_deployment": true
+  }
+}

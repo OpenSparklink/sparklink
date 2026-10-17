@@ -51,6 +51,168 @@ impl SleMessageSecurity {
     }
 }
 
+/// A restriction of an existing fd Grant, never a replacement authority.
+#[repr(C, align(8))]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct SleSendConstraint {
+    pub version: u16,
+    pub size: u16,
+    pub minimum: u32,
+    pub generation: u64,
+    pub lifetime: u64,
+    pub security_epoch: u64,
+    pub controller: u16,
+    pub handle: u16,
+    pub local_tcid: u8,
+    pub remote_tcid: u8,
+    pub pi: u8,
+    pub reserved: u8,
+    pub deadline_monotonic_ns: u64,
+}
+pub const SCM_TX_CONSTRAINT: i32 = 2;
+const _: () = assert!(mem::size_of::<SleSendConstraint>() == 48);
+impl SleSendConstraint {
+    pub fn validate(&self) -> io::Result<()> {
+        if self.version != 1
+            || self.size != 48
+            || self.minimum > 2
+            || self.reserved != 0
+            || self.generation == 0
+            || self.lifetime == 0
+            || self.security_epoch == 0
+            || self.deadline_monotonic_ns == 0
+        {
+            return Err(io::Error::from_raw_os_error(nix::libc::EINVAL));
+        }
+        Ok(())
+    }
+    /// Pins the original receipt epoch. Final kernel submission must still
+    /// satisfy both this restriction and the original fd Grant.
+    pub fn from_receipt(
+        m: SleMessageSecurity,
+        minimum: u32,
+        deadline_monotonic_ns: u64,
+    ) -> io::Result<Self> {
+        m.validate()?;
+        if m.flags != (MESSAGE_SECURITY_KNOWN | MESSAGE_SECURITY_CURRENT) || minimum > m.security {
+            return Err(io::Error::from_raw_os_error(nix::libc::EACCES));
+        }
+        let c = Self {
+            version: 1,
+            size: 48,
+            minimum,
+            generation: m.generation,
+            lifetime: m.lifetime,
+            security_epoch: m.security_epoch,
+            controller: m.controller,
+            handle: m.handle,
+            local_tcid: m.local_tcid,
+            remote_tcid: m.remote_tcid,
+            pi: m.pi,
+            reserved: 0,
+            deadline_monotonic_ns,
+        };
+        c.validate()?;
+        Ok(c)
+    }
+}
+
+/// Convert once from a local original Instant into the kernel CLOCK_MONOTONIC
+/// domain. Sampling before computing remaining time avoids extending the budget.
+/// The first TX constraint slice accepts at most five seconds remaining.
+pub fn deadline_at(deadline: std::time::Instant) -> io::Result<u64> {
+    let mut now: nix::libc::timespec = unsafe { mem::zeroed() };
+    if unsafe { nix::libc::clock_gettime(nix::libc::CLOCK_MONOTONIC, &mut now) } != 0 {
+        return Err(io::Error::last_os_error());
+    }
+    let left = deadline.saturating_duration_since(std::time::Instant::now());
+    if left.is_zero() {
+        return Err(io::Error::from_raw_os_error(nix::libc::ETIMEDOUT));
+    }
+    if left > std::time::Duration::from_secs(5)
+        || now.tv_sec < 0
+        || !(0..1_000_000_000).contains(&now.tv_nsec)
+    {
+        return Err(io::Error::from_raw_os_error(nix::libc::EINVAL));
+    }
+    (now.tv_sec as u64)
+        .checked_mul(1_000_000_000)
+        .and_then(|v| v.checked_add(now.tv_nsec as u64))
+        .and_then(|v| v.checked_add(left.as_nanos().try_into().ok()?))
+        .ok_or_else(|| io::Error::from_raw_os_error(nix::libc::EOVERFLOW))
+}
+
+/// Software admission with an explicit restrictive intent. No credit refund,
+/// current-security promise after return, controller or peer completion.
+pub fn send(
+    fd: RawFd,
+    bytes: &[u8],
+    flags: i32,
+    constraint: &SleSendConstraint,
+) -> io::Result<usize> {
+    constraint.validate()?;
+    if flags & !(nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL) != 0 {
+        return Err(io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP));
+    }
+    check_domain(fd)?;
+    let mut control = [0u64; 8];
+    // SAFETY: aligned live buffers contain complete initialized header/payload.
+    unsafe {
+        control
+            .as_mut_ptr()
+            .cast::<nix::libc::cmsghdr>()
+            .write(nix::libc::cmsghdr {
+                cmsg_len: nix::libc::CMSG_LEN(48) as _,
+                cmsg_level: SOL_SPARKLINK,
+                cmsg_type: SCM_TX_CONSTRAINT,
+            });
+        control
+            .as_mut_ptr()
+            .cast::<u8>()
+            .add(nix::libc::CMSG_LEN(0) as usize)
+            .cast::<SleSendConstraint>()
+            .write_unaligned(*constraint);
+    }
+    let mut io_vec = nix::libc::iovec {
+        iov_base: bytes.as_ptr().cast_mut().cast(),
+        iov_len: bytes.len(),
+    };
+    let mut message: nix::libc::msghdr = unsafe { mem::zeroed() };
+    message.msg_iov = &mut io_vec;
+    message.msg_iovlen = 1;
+    message.msg_control = control.as_mut_ptr().cast();
+    message.msg_controllen = unsafe { nix::libc::CMSG_SPACE(48) } as _;
+    // SAFETY: kernel only reads immutable payload, complete ancillary and msghdr.
+    let count = unsafe { nix::libc::sendmsg(fd, &message, flags) };
+    if count < 0 {
+        Err(io::Error::last_os_error())
+    } else {
+        Ok(count as usize)
+    }
+}
+
+fn check_domain(fd: RawFd) -> io::Result<()> {
+    let mut domain: i32 = 0;
+    let mut domain_size = mem::size_of_val(&domain) as nix::libc::socklen_t;
+    // SAFETY: live aligned output locals, caller retains fd through the syscall.
+    if unsafe {
+        nix::libc::getsockopt(
+            fd,
+            nix::libc::SOL_SOCKET,
+            nix::libc::SO_DOMAIN,
+            (&mut domain as *mut i32).cast(),
+            &mut domain_size,
+        )
+    } < 0
+    {
+        return Err(io::Error::last_os_error());
+    }
+    if domain_size as usize != mem::size_of_val(&domain) || domain != 46 {
+        return Err(io::Error::from_raw_os_error(nix::libc::EAFNOSUPPORT));
+    }
+    Ok(())
+}
+
 // This is the actual syscall decoder. Kernel data is checked before any typed
 // result escapes; tests/fuzz use the same bounds checks, not a simplified codec.
 fn decode(control: &[u64; 8], length: usize, flags: i32) -> io::Result<SleMessageSecurity> {
@@ -119,24 +281,7 @@ pub fn recv(
     if flags & !(nix::libc::MSG_DONTWAIT | nix::libc::MSG_PEEK | nix::libc::MSG_TRUNC) != 0 {
         return Err(io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP));
     }
-    let mut domain: i32 = 0;
-    let mut domain_size = mem::size_of_val(&domain) as nix::libc::socklen_t;
-    // SAFETY: output pointers are live aligned locals; fd is never closed here.
-    if unsafe {
-        nix::libc::getsockopt(
-            fd,
-            nix::libc::SOL_SOCKET,
-            nix::libc::SO_DOMAIN,
-            (&mut domain as *mut i32).cast(),
-            &mut domain_size,
-        )
-    } < 0
-    {
-        return Err(io::Error::last_os_error());
-    }
-    if domain_size as usize != mem::size_of_val(&domain) || domain != 46 {
-        return Err(io::Error::from_raw_os_error(nix::libc::EAFNOSUPPORT));
-    }
+    check_domain(fd)?;
     let mut control = [0u64; 8];
     let mut io_vec = nix::libc::iovec {
         iov_base: buffer.as_mut_ptr().cast(),
@@ -196,6 +341,62 @@ mod tests {
                 .write_unaligned(v);
         }
         (bytes, size)
+    }
+    #[test]
+    fn actual_constraint_constructor_and_syscall_fail_closed() {
+        let m = value();
+        let c = SleSendConstraint::from_receipt(m, 1, 123).unwrap();
+        assert_eq!(mem::size_of_val(&c), 48);
+        assert_eq!(c.security_epoch, m.security_epoch);
+        assert!(
+            SleSendConstraint::from_receipt(SleMessageSecurity { flags: 1, ..m }, 1, 123).is_err()
+        );
+        assert!(SleSendConstraint::from_receipt(m, 2, 123).is_err());
+        assert!(SleSendConstraint::from_receipt(m, 1, 0).is_err());
+        for bad in [
+            SleSendConstraint { minimum: 3, ..c },
+            SleSendConstraint { reserved: 1, ..c },
+            SleSendConstraint { size: 40, ..c },
+            SleSendConstraint {
+                security_epoch: 0,
+                ..c
+            },
+        ] {
+            assert!(bad.validate().is_err());
+        }
+        assert_eq!(
+            send(-1, b"x", 0, &c).unwrap_err().raw_os_error(),
+            Some(nix::libc::EBADF)
+        );
+        assert_eq!(
+            send(-1, b"x", nix::libc::MSG_WAITALL, &c)
+                .unwrap_err()
+                .raw_os_error(),
+            Some(nix::libc::EOPNOTSUPP)
+        );
+        let unix = std::os::unix::net::UnixDatagram::unbound().unwrap();
+        use std::os::fd::AsRawFd;
+        assert_eq!(
+            send(unix.as_raw_fd(), b"x", 0, &c)
+                .unwrap_err()
+                .raw_os_error(),
+            Some(nix::libc::EAFNOSUPPORT)
+        );
+        assert_eq!(
+            deadline_at(std::time::Instant::now())
+                .unwrap_err()
+                .raw_os_error(),
+            Some(nix::libc::ETIMEDOUT)
+        );
+        assert_eq!(
+            deadline_at(std::time::Instant::now() + std::time::Duration::from_secs(6))
+                .unwrap_err()
+                .raw_os_error(),
+            Some(nix::libc::EINVAL)
+        );
+        assert!(
+            deadline_at(std::time::Instant::now() + std::time::Duration::from_secs(1)).unwrap() > 0
+        );
     }
     #[test]
     fn actual_decoder_checks_complete_control_and_frozen_facts() {

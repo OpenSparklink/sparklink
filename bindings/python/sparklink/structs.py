@@ -479,3 +479,15 @@ class SleMessageSecurity(ctypes.Structure):
         ("controller", ctypes.c_uint16), ("handle", ctypes.c_uint16),
         ("local_tcid", ctypes.c_uint8), ("remote_tcid", ctypes.c_uint8),
         ("pi", ctypes.c_uint8), ("flags", ctypes.c_uint8)]
+
+
+class SleSendConstraint(ctypes.Structure):
+    """48-byte restrictive TX intent; original fd Grant remains mandatory."""
+    _align_ = 8
+    _fields_ = [("version", ctypes.c_uint16), ("size", ctypes.c_uint16),
+        ("minimum", ctypes.c_uint32), ("generation", ctypes.c_uint64),
+        ("lifetime", ctypes.c_uint64), ("security_epoch", ctypes.c_uint64),
+        ("controller", ctypes.c_uint16), ("handle", ctypes.c_uint16),
+        ("local_tcid", ctypes.c_uint8), ("remote_tcid", ctypes.c_uint8),
+        ("pi", ctypes.c_uint8), ("reserved", ctypes.c_uint8),
+        ("deadline_monotonic_ns", ctypes.c_uint64)]

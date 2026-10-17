@@ -81,6 +81,26 @@ class NativeBindingTests(unittest.TestCase):
         for args in [(True,8,0),(0,True,0),(0,2048,0),(0,8,socket.MSG_WAITALL)]:
             with self.assertRaises(ValueError):channel_recv_security(*args)
 
+    def test_typed_send_is_actual_syscall_without_plain_fallback(self):
+        from sparklink.structs import SleSendConstraint
+        from sparklink.native import channel_send_constrained
+        import socket
+        c=SleSendConstraint(version=1,size=48,minimum=1,generation=7,lifetime=9,
+            security_epoch=2,controller=1,handle=3,local_tcid=31,remote_tcid=31,pi=241,
+            deadline_monotonic_ns=123456)
+        payload=(ctypes.c_uint8*1)(42);before=bytes(c)
+        self.assertEqual(self.lib.slk_channel_send_constrained(-1,payload,1,0,ctypes.byref(c)),-errno.EBADF)
+        self.assertEqual(bytes(c),before)
+        self.assertEqual(self.lib.slk_channel_send_constrained(-1,payload,1,0,None),-errno.EINVAL)
+        self.assertEqual(self.lib.slk_channel_send_constrained(-1,None,1,0,ctypes.byref(c)),-errno.EINVAL)
+        with socket.socket(socket.AF_UNIX,socket.SOCK_DGRAM) as unix:
+            with self.assertRaises(OSError) as caught:channel_send_constrained(unix.fileno(),b'x',c,socket.MSG_DONTWAIT)
+            self.assertEqual(caught.exception.errno,errno.EAFNOSUPPORT)
+        c.minimum=3
+        self.assertEqual(self.lib.slk_channel_send_constrained(-1,payload,1,0,ctypes.byref(c)),-errno.EINVAL)
+        for args in [(True,b'x',c),(0,bytearray(b'x'),c),(0,b'x'*2043,c)]:
+            with self.assertRaises(ValueError):channel_send_constrained(*args)
+
     def test_channel_info_errors_preserve_output_and_errno(self):
         out = SleChannelInfo(generation=99, reserved=123)
         before = bytes(out)

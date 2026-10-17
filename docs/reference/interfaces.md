@@ -212,10 +212,31 @@ Rust返回 `(syscall_count, context, msg_flags)`；C返回字节数或负errno�
 fd必须在同步调用期间稳定持有；FFI指针须有效、独占且不别名。失败不更新C输出
 对象，但payload可能已经复制/消费，不能声称回滚。非SparkLink fd明确拒绝。
 
-目前**不支持发送ancillary**：任何sendmsg control均EOPNOTSUPP，不排队或提交，
-不能拿RX记录作为发送授权。唯一SSAP Engine尚未消费这项新上下文，也未接通
-逐属性安全、最终TX intent或本地授权；全通道最低机制仍按原契约工作。准确构建、
-离线和实机范围以[当前资格](../../project/current-capabilities.md)为准。
+K1bcd766d07bb新增唯一发送ancillary `SPARKLINK_SCM_TX_CONSTRAINT=2`，
+结构 `sparklink_send_constraint` 固定48字节、8对齐：version1/size48、minimum0..2、
+generation/lifetime/security_epoch、controller/handle/local/remote TCID/PI、reserved0、
+`deadline_monotonic_ns`。期限是一次确定的CLOCK_MONOTONIC绝对值，首次准入时最多
+剩余5秒；不能因等待/重试续期。它只收紧原fd Grant，minimum0也必须匹配原非零epoch，
+不能降低原Grant最低机制/范围，不能用RX记录当授权或发出RX类型的control。
+
+原始准入及每次实际USB提交（含PB后续分片）复核原epoch、机制、期限和原
+Grant/Ticket；等待及Session排队清理由同一绝对期限收紧，最终提交不等定时器才拒绝。无前缀的异步失效仅退休本Channel并通过错误/
+poll显露；已有前缀不伪装取消成功，不退款或抹去物理debt。机制/身份不符EACCES，
+原期限已过ETIMEDOUT，非法版本/size/保留位/超过5秒范围EINVAL；未知level/type
+EOPNOTSUPP，多记录/错误长度EINVAL。没有control仍按原fd Grant发送。
+
+Rust `SleSendConstraint::from_receipt`拒绝unknown/non-current或机制不足的原接收，
+`message_security::deadline_at`一次转换原Instant，`message_security::send`执行真实
+受约束sendmsg；C `slk_channel_send_constrained`及Python
+`native.channel_send_constrained`不作普通send降级。返回值只代表软件准入，异步提交
+仍可能因撤权/换epoch/期限失败，不能据此宣称对端处理。32位仅布局测试，实际compat
+调用仍待验。未知control继续明确拒绝；FFI输入必须有效，不能用坏用户地址模拟库指针。
+
+唯一SSAP Engine开始严格读取实际RX上下文，响应/错误/指示ACK保留原epoch、原响应
+期限与原观察机制下限至实际TX。主动ExchangeInfo/客户端请求仍使用原通道Grant，
+逐属性策略/本地授权及主动请求细粒度intent尚缺；不能描述为完整属性安全。AF_UNIX
+actor回归仅显式test-only Wire，生产没有模拟上下文或域降级。准确编译及限定门禁见
+[当前资格](../../project/current-capabilities.md)，旧K8c接收资格不转授此新发送路径。
 
 ServiceManager新增明确本地 RegisterLocalService/ListLocalServices/ReadLocalValue/RemoveLocalService；
 Connection新增ReadSsapValue/WriteSsapValue经真实SMTC，写要求peer校验回复。

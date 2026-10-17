@@ -693,6 +693,25 @@ typedef struct SPARKLINK_ALIGN(8) SleMessageSecurity {
     uint8_t flags;
 } SleMessageSecurity;
 
+/**
+ * A restriction of an existing fd Grant, never a replacement authority.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleSendConstraint {
+    uint16_t version;
+    uint16_t size;
+    uint32_t minimum;
+    uint64_t generation;
+    uint64_t lifetime;
+    uint64_t security_epoch;
+    uint16_t controller;
+    uint16_t handle;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t reserved;
+    uint64_t deadline_monotonic_ns;
+} SleSendConstraint;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -1112,6 +1131,18 @@ intptr_t slk_channel_recv_security(int fd,
                                    int flags,
                                    struct SleMessageSecurity *output,
                                    int *received_flags);
+
+/**
+ * Restrictive sendmsg software admission; never USB/controller/peer completion.
+ * # Safety
+ * Caller holds a stable fd and live readable, nonaliased input regions through
+ * the call. buffer may be null only for zero length; constraint must be valid.
+ */
+intptr_t slk_channel_send_constrained(int fd,
+                                      const uint8_t *buffer,
+                                      uintptr_t length,
+                                      int flags,
+                                      const struct SleSendConstraint *constraint);
 
 #ifdef __cplusplus
 }  // extern "C"

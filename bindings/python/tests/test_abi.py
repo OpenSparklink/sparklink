@@ -30,6 +30,7 @@ RUST_TYPES = WORKSPACE / "crates/slk-protocol/src/types.rs"
 # the actual declarations/compiler output, never from a second ABI definition.
 STRUCT_NAMES = {
     "SleMessageSecurity": "sparklink_message_security",
+    "SleSendConstraint": "sparklink_send_constraint",
     "SleChannelInfo": "sparklink_channel_info",
     "SleChannelTxStatus": "sparklink_channel_tx_status",
     "SleSessionTxStatus": "sparklink_session_tx_status",
@@ -132,6 +133,7 @@ class TestAbiConformance(unittest.TestCase):
         channel_type = "\n".join(re.findall(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct (?:SleChannel(?:Info|TxStatus)|SleSessionTxStatus) \{[^}]+\}", channel_source))
         message_source = (RUST_TYPES.parent / "message_security.rs").read_text()
         channel_type += "\n" + re.search(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct SleMessageSecurity \{[^}]+\}", message_source)[0]
+        channel_type += "\n" + re.search(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct SleSendConstraint \{[^}]+\}", message_source)[0]
         cls.rust_source = RUST_TYPES.read_text() + channel_source + message_source
         cls.fields = {
             name: c_fields(cls.kernel_source, kernel_name)

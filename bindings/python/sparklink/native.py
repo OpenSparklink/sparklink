@@ -14,7 +14,7 @@ from .structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
-    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity, SleMessageSecurity,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity, SleMessageSecurity, SleSendConstraint,
 )
 
 _native_library = None
@@ -35,6 +35,7 @@ def _get_native_lib():
     handle = ctypes.c_void_p
     u64, u32 = ctypes.c_uint64, ctypes.c_uint32
     signatures = {
+        "slk_channel_send_constrained": [ctypes.c_int, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int, ctypes.POINTER(SleSendConstraint)],
         "slk_channel_recv_security": [ctypes.c_int, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int, ctypes.POINTER(SleMessageSecurity), ctypes.POINTER(ctypes.c_int)],
         "slk_channel_info": [ctypes.c_int, ctypes.POINTER(SleChannelInfo)],
         "slk_channel_tx_status": [ctypes.c_int, ctypes.POINTER(SleChannelTxStatus)],
@@ -69,7 +70,7 @@ def _get_native_lib():
         except AttributeError as error:
             raise OSError("matching native libsparklink symbols required") from error
         function.argtypes = arguments
-        function.restype = ctypes.c_ssize_t if name == "slk_channel_recv_security" else ctypes.c_int
+        function.restype = ctypes.c_ssize_t if name in ("slk_channel_recv_security", "slk_channel_send_constrained") else ctypes.c_int
     _native_library = lib
     return lib
 
@@ -390,3 +391,18 @@ def channel_recv_security(fd, size, flags=0):
     if result < 0:
         raise OSError(-result,os.strerror(-result))
     return bytes(buffer[:min(result,size)]),context,actual.value,result
+
+
+def channel_send_constrained(fd, payload, constraint, flags=0):
+    """Software admission only, not USB/controller/peer receipt; no plain fallback."""
+    import socket
+    if type(fd) is not int or not 0 <= fd <= 2147483647:
+        raise ValueError("fd must be a nonnegative int")
+    if type(payload) is not bytes or len(payload)>2042 or not isinstance(constraint,SleSendConstraint):
+        raise ValueError("bounded bytes and typed constraint required")
+    if not isinstance(flags,int) or isinstance(flags,bool) or flags & ~(socket.MSG_DONTWAIT | socket.MSG_NOSIGNAL):
+        raise ValueError("unsupported send flags")
+    buffer=(ctypes.c_uint8 * len(payload)).from_buffer_copy(payload)
+    result=_get_native_lib().slk_channel_send_constrained(fd,buffer,len(payload),flags,ctypes.byref(constraint))
+    if result<0:raise OSError(-result,os.strerror(-result))
+    return result

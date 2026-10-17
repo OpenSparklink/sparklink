@@ -423,6 +423,97 @@ struct Pending {
     bytes: Vec<u8>,
     deadline: Instant,
     purpose: Purpose,
+    constraint: Option<slk_protocol::SleSendConstraint>,
+}
+// Native always checks actual kernel receipt facts. Local fixtures are explicit
+// test-only transports, never a production fallback or fabricated security.
+struct Wire {
+    fd: AsyncFd<OwnedFd>,
+    #[cfg(test)]
+    fixture: bool,
+}
+impl Wire {
+    fn native(fd: AsyncFd<OwnedFd>) -> Self {
+        Self {
+            fd,
+            #[cfg(test)]
+            fixture: false,
+        }
+    }
+    #[cfg(test)]
+    fn fixture(fd: AsyncFd<OwnedFd>) -> Self {
+        Self { fd, fixture: true }
+    }
+    fn receive(
+        &self,
+        fd: &OwnedFd,
+        bytes: &mut [u8],
+        cap: SleChannelInfo,
+    ) -> io::Result<(usize, Option<slk_protocol::SleMessageSecurity>)> {
+        #[cfg(test)]
+        if self.fixture {
+            return receive_fixture(fd, bytes).map(|n| (n, None));
+        }
+        let (size, m, flags) = slk_protocol::message_security::recv(
+            fd.as_raw_fd(),
+            bytes,
+            nix::libc::MSG_DONTWAIT | nix::libc::MSG_TRUNC,
+        )?;
+        if size > bytes.len()
+            || flags & nix::libc::MSG_TRUNC != 0
+            || (
+                m.controller,
+                m.generation,
+                m.lifetime,
+                m.handle,
+                m.local_tcid,
+                m.remote_tcid,
+                m.pi,
+            ) != (
+                cap.controller,
+                cap.generation,
+                cap.lifetime,
+                cap.handle,
+                cap.local_tcid,
+                cap.remote_tcid,
+                cap.pi,
+            )
+        {
+            return Err(io::Error::other(
+                "SSAP truncated or foreign receipt context",
+            ));
+        }
+        if m.flags != 3 {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "unknown/stale SSAP receipt mechanism",
+            ));
+        }
+        Ok((size, Some(m)))
+    }
+    fn send(&self, fd: &OwnedFd, packet: &Pending) -> io::Result<()> {
+        #[cfg(test)]
+        if self.fixture {
+            return send(fd, &packet.bytes);
+        }
+        if let Some(c) = packet.constraint {
+            let count = slk_protocol::message_security::send(
+                fd.as_raw_fd(),
+                &packet.bytes,
+                nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
+                &c,
+            )?;
+            if count != packet.bytes.len() {
+                return Err(io::Error::other("partial SSAP constrained admission"));
+            }
+            Ok(())
+        } else {
+            send(fd, &packet.bytes)
+        } // Initiated requests retain original fd Grant.
+    }
+}
+fn monotonic_deadline(deadline: Instant) -> io::Result<u64> {
+    slk_protocol::message_security::deadline_at(deadline.into_std())
 }
 fn encode(kind: ExchangeKind, mtu: u16) -> io::Result<Vec<u8>> {
     let info = ExchangeInfo {
@@ -455,7 +546,8 @@ fn send(fd: &OwnedFd, bytes: &[u8]) -> io::Result<()> {
     }
     Ok(()) // Software admission, never controller completion or peer receipt.
 }
-fn receive(fd: &OwnedFd, bytes: &mut [u8]) -> io::Result<usize> {
+#[cfg(test)]
+fn receive_fixture(fd: &OwnedFd, bytes: &mut [u8]) -> io::Result<usize> {
     let count = unsafe {
         nix::libc::recv(
             fd.as_raw_fd(),
@@ -514,7 +606,7 @@ async fn run(
         return Err(io::Error::other("SMTC binding identity mismatch"));
     }
     exchange_loop(
-        fd,
+        Wire::native(fd),
         capabilities,
         original_deadline,
         &mut stopped,
@@ -525,7 +617,7 @@ async fn run(
     .await
 }
 async fn exchange_loop(
-    fd: AsyncFd<OwnedFd>,
+    wire: Wire,
     capabilities: SleChannelInfo,
     original_deadline: Instant,
     stopped: &mut oneshot::Receiver<()>,
@@ -539,6 +631,7 @@ async fn exchange_loop(
         bytes: request.clone(),
         deadline: original_deadline,
         purpose: Purpose::Request,
+        constraint: None,
     }]);
     let mut request_admitted = false;
     let mut initial_done = false;
@@ -605,28 +698,28 @@ async fn exchange_loop(
                 if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.deadline) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP obligation deadline"));
                 }
-                slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
+                slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
             }
             query = incoming.recv() => {
                 let Some(query)=query else { return Ok(()); };
                 if let Query::Incoming{handles,modes,deadline,reply}=query {
                     if reply.is_closed(){continue;}
                     if incoming_wait.is_some() || !initial_done || Instant::now()>=deadline || handles.is_empty() || handles.len()>32 || modes==0 || modes&!3!=0 || handles.contains(&0) || handles.iter().enumerate().any(|(i,h)|handles[..i].contains(h)) {let _=reply.send(Err("SSAP local receive busy/not-ready/invalid/expired".into()));continue;}
-                    slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
+                    slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                     incoming_wait=Some(IncomingWait{handles,modes,deadline,reply});continue;
                 }
                 if let Query::Value{bytes,deadline,reply}=query {
                     if client.is_some() || pending.len()>=8 || !initial_done || Instant::now()>=deadline {let _=reply.send(Err("SSAP busy/not-ready/expired".into()));continue;}
-                    slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
+                    slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                     if bytes.len()>usize::from(capabilities.mtu) {let _=reply.send(Err("SSAP request exceeds channel".into()));continue;}
-                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client});client=Some(ClientRequest{bytes,deadline,admitted:false,reply});continue;
+                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client,constraint:None});client=Some(ClientRequest{bytes,deadline,admitted:false,reply});continue;
                 }
                 if let Query::TransportStatus{deadline,reply}=query {
                     if reply.is_closed() {continue;}
                     let result=if Instant::now()>=deadline {
                         Err("transport observation original deadline".into())
                     } else {
-                        slk_protocol::channel::query_session_tx_status(fd.get_ref().as_raw_fd())
+                        slk_protocol::channel::query_session_tx_status(wire.fd.get_ref().as_raw_fd())
                             .map_err(|error|error.to_string()).and_then(|current| {
                                 if (current.controller,current.generation,current.lifetime,current.handle)
                                     != (capabilities.controller,capabilities.generation,capabilities.lifetime,capabilities.handle) {
@@ -638,7 +731,7 @@ async fn exchange_loop(
                 }
                 let Query::Info(reply)=query else {unreachable!()};
                 let result=match state.borrow().clone() {
-                    Status::Negotiated(info) => slk_protocol::channel::query(fd.get_ref().as_raw_fd()).map_err(|e|e.to_string()).and_then(|current| {
+                    Status::Negotiated(info) => slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd()).map_err(|e|e.to_string()).and_then(|current| {
                         if current != capabilities { Err("SMTC capability/lifetime changed".into()) } else { Ok(info) }
                     }),
                     Status::Starting => Err("SSAP response obligation pending".into()),
@@ -646,11 +739,11 @@ async fn exchange_loop(
                 };
                 let _=reply.send(result);
             }
-            ready = fd.writable(), if !pending.is_empty() => {
+            ready = wire.fd.writable(), if !pending.is_empty() => {
                 let mut ready = ready?;
                 let packet = pending.front().expect("guarded queue");
                 if Instant::now() >= packet.deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "expired SSAP submit")); }
-                if let Ok(result) = ready.try_io(|fd| send(fd.get_ref(), &packet.bytes)) {
+                if let Ok(result) = ready.try_io(|fd| wire.send(fd.get_ref(), packet)) {
                     result?;
                     let packet = pending.pop_front().expect("guarded queue");
                     match packet.purpose {
@@ -661,23 +754,26 @@ async fn exchange_loop(
                     }
                 }
             }
-            ready = fd.readable() => {
+            ready = wire.fd.readable() => {
                 let mut ready = ready?;
-                if let Ok(result) = ready.try_io(|fd| receive(fd.get_ref(), &mut buffer)) {
-                    let size = result?;
+                if let Ok(result) = ready.try_io(|fd| wire.receive(fd.get_ref(), &mut buffer, capabilities)) {
+                    let (size, receipt) = result?;
+                    let reply_deadline = if initial_done { Instant::now()+Duration::from_secs(5) } else { original_deadline };
+                    let constraint = receipt.map(|m| slk_protocol::SleSendConstraint::from_receipt(m,m.security,
+                        monotonic_deadline(reply_deadline)?)).transpose()?;
                     if size == 0 || size > usize::from(capabilities.mtu) { return Err(io::Error::other("invalid SSAP PDU length")); }
                     let raw = &buffer[..size];
                     if !initial_done && Instant::now() >= original_deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "late SSAP reply")); }
                     if matches!(raw[0],15|16) {
                         if raw[0]==16 && pending.len()>=8{return Err(io::Error::other("SSAP ACK queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
-                        slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
+                        slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                         let ack=incoming_packet(negotiated,raw,&mut incoming_wait)?;
-                        if !ack.is_empty(){pending.push_back(Pending{bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse});}
+                        if !ack.is_empty(){pending.push_back(Pending{bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});}
                     } else if matches!(raw[0],4|6|8|10|13) {
                         if pending.len()>=8 {return Err(io::Error::other("SSAP response queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
-                        slk_protocol::channel::query(fd.get_ref().as_raw_fd())?;
+                        slk_protocol::channel::query(wire.fd.get_ref().as_raw_fd())?;
                         let response=if raw[0]==10 {
                             match slk_protocol::ssap::read_uuid::Request::decode(negotiated,raw) {
                                 Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.read_uuid(request,negotiated).map_err(io::Error::other)?,
@@ -692,7 +788,7 @@ async fn exchange_loop(
                             Ok(request)=>database.lock().map_err(|_|io::Error::other("database poisoned"))?.answer(request,negotiated).map_err(io::Error::other)?,
                             Err(e)=> {let mut out=vec![0;6];ValuePdu::Error{request:raw[0],handle:0,error:if raw.get(1).is_some_and(|v|v&3!=3){16}else if matches!(e,slk_protocol::ssap::value::ValueError::Unsupported){2}else{1}}.encode(negotiated,&mut out).map_err(|_|io::Error::other("error response exceeds MTU"))?;out},
                         }};
-                        pending.push_back(Pending{bytes:response,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse});
+                        pending.push_back(Pending{bytes:response,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});
                     } else if matches!(raw[0],1|5|7|9|11|14) {
                         let Some(ClientRequest{bytes:request,deadline,admitted,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
                         if !admitted || Instant::now()>=deadline {return Err(io::Error::other("SSAP reply before submit or after original deadline"));}
@@ -725,7 +821,7 @@ async fn exchange_loop(
                             Ok(info)=>info,
                             Err(_) if raw[0]==2 => {
                                 if pending.len()>=8 {return Err(io::Error::other("SSAP invalid-PDU response queue full"));}
-                                pending.push_back(Pending {bytes:vec![1,0,2,0,0,1],purpose:Purpose::Error,deadline:Instant::now()+Duration::from_secs(5)});
+                                pending.push_back(Pending {bytes:vec![1,0,2,0,0,1],purpose:Purpose::Error,constraint,deadline:Instant::now()+Duration::from_secs(5)});
                                 continue;
                             }
                             Err(_)=>return Err(io::Error::other("invalid ExchangeInfo response")),
@@ -738,13 +834,13 @@ async fn exchange_loop(
                             if response_owed || pending.len() >= 8 { return Err(io::Error::other("SSAP response queue full")); }
                             if let Some((peer,_)) = &peer_reply && peer.mtu != info.mtu { return Err(io::Error::other("peer dual-role MTU mismatch")); }
                             peer_request = raw.to_vec();
-                            pending.push_back(Pending { bytes: response.clone(), purpose: Purpose::Response,
+                            pending.push_back(Pending { bytes: response.clone(), purpose: Purpose::Response,constraint,
                                 deadline: if initial_done { Instant::now() + Duration::from_secs(5) } else { original_deadline } });
                         }
                     } else if matches!(raw[0] & 0x7f, 4 | 6 | 8 | 10 | 13 | 19) {
                         if pending.len() >= 8 { return Err(io::Error::other("SSAP error queue full")); }
                         // T/XS20001 table50: complete ErrorRsp including RFU MCC.
-                        pending.push_back(Pending { bytes: vec![1,0,raw[0],0,0,2], purpose: Purpose::Error,
+                        pending.push_back(Pending { bytes: vec![1,0,raw[0],0,0,2], purpose: Purpose::Error,constraint,
                             deadline: Instant::now() + Duration::from_secs(5) });
                     } else if matches!(raw[0], 12 | 18) {
                         // Unsupported commands/notifications carry no response obligation.
@@ -793,6 +889,26 @@ mod tests {
         .unwrap()
     }
     #[tokio::test]
+    async fn native_wire_never_accepts_local_fixture_as_security_context() {
+        let (a, b) = transport_pair();
+        send(&b, b"fixture-only").unwrap();
+        let native = Wire::native(AsyncFd::new(a).unwrap());
+        let mut bytes = [0u8; 64];
+        assert_eq!(
+            native
+                .receive(native.fd.get_ref(), &mut bytes, fixture_capabilities(0))
+                .unwrap_err()
+                .raw_os_error(),
+            Some(nix::libc::EAFNOSUPPORT)
+        );
+        let fixture = Wire::fixture(native.fd);
+        let (count, context) = fixture
+            .receive(fixture.fd.get_ref(), &mut bytes, fixture_capabilities(0))
+            .unwrap();
+        assert_eq!(&bytes[..count], b"fixture-only");
+        assert!(context.is_none());
+    }
+    #[tokio::test]
     async fn actual_transport_algorithm_exchanges_both_roles_without_native_fallback() {
         // Explicit AF_UNIX dependencies: tests the production message loop,
         // not kernel binding, metadata, controller completion or radio.
@@ -807,7 +923,7 @@ mod tests {
         let deadline = Instant::now() + Duration::from_secs(1);
         let task0 = tokio::spawn(async move {
             exchange_loop(
-                AsyncFd::new(a).unwrap(),
+                Wire::fixture(AsyncFd::new(a).unwrap()),
                 fixture_capabilities(0),
                 deadline,
                 &mut done0,
@@ -821,7 +937,7 @@ mod tests {
         });
         let task1 = tokio::spawn(async move {
             exchange_loop(
-                AsyncFd::new(b).unwrap(),
+                Wire::fixture(AsyncFd::new(b).unwrap()),
                 fixture_capabilities(1),
                 deadline,
                 &mut done1,
@@ -942,7 +1058,7 @@ mod tests {
         let (_stop, mut done) = oneshot::channel();
         let (_queries, incoming) = mpsc::channel(8);
         let error = exchange_loop(
-            AsyncFd::new(a).unwrap(),
+            Wire::fixture(AsyncFd::new(a).unwrap()),
             fixture_capabilities(0),
             Instant::now() + Duration::from_millis(30),
             &mut done,

@@ -634,3 +634,29 @@ pub unsafe extern "C" fn slk_channel_recv_security(
         Err(error) => -(error.raw_os_error().unwrap_or(nix::libc::EPROTO) as isize),
     }
 }
+
+/// Restrictive sendmsg software admission; never USB/controller/peer completion.
+/// # Safety
+/// Caller holds a stable fd and live readable, nonaliased input regions through
+/// the call. buffer may be null only for zero length; constraint must be valid.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_channel_send_constrained(
+    fd: c_int,
+    buffer: *const u8,
+    length: usize,
+    flags: c_int,
+    constraint: *const SleSendConstraint,
+) -> isize {
+    if constraint.is_null() || length > isize::MAX as usize || (buffer.is_null() && length != 0) {
+        return -(nix::libc::EINVAL as isize);
+    }
+    let bytes = if length == 0 {
+        &[]
+    } else {
+        unsafe { std::slice::from_raw_parts(buffer, length) }
+    };
+    match slk_protocol::message_security::send(fd, bytes, flags, unsafe { &*constraint }) {
+        Ok(count) => count as isize,
+        Err(error) => -(error.raw_os_error().unwrap_or(nix::libc::EPROTO) as isize),
+    }
+}

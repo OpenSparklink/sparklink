@@ -1788,23 +1788,27 @@
       "kernel-dli-metadata-retirement-r4f1": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "kernel-critical-fault-r4f2b": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP18-R4f2-DLI-events-raw-ABI-and-test-retirement",
-      "production_behavior": "DLI metadata7025 source-bound ten-gate matrix PASS:8offline subsets,wholeRustWerror,fullKernel/link,boot,49ABI,namespace and4realVM with paired replays. Main promoted only after gates;remaining event/globalmask/registry copy/rawABI consumers not completed.",
-      "state": "DLI_METADATA_SOURCE_BOUND_PASS_REMAINING_ARCHITECTURE_INCOMPLETE",
+      "production_behavior": "Critical HardwareError path uses existing Host/worker/pending ledger;production34a,compiledU8a,hardwaretools997 and test/probea991. Eleven exact gates include optionalVirtual2rounds and4real preservationVMs,not natural fault recovery. Remaining architecture incomplete.",
+      "state": "CRITICAL_FAULT_SCOPED_GATES_PASS_REMAINING_ARCHITECTURE_INCOMPLETE",
       "exit": [
-        "K7025/compiledc032/tools997:32peerreplies24Owned96decisions120transactions68roledenials;8C+8CLI and81+56negativecontrols",
-        "Current5Native snapshot cases and5separate historical projections,Backend19,pending9,Runtime8,Host70+cleanup2,Port2;USB19C and11historicalRust explicitly scoped;not wholeKernel concurrency/formal",
-        "Retire remaining DLI event/globalmask/packedversion and93rawAPI with full consumer/selftest/ABI migration;then fullR5/R6"
+        "First fault closes admission;critical slot cannot be lost to ordinary RX pressure;existing ledger preserves previous terminal/physical obligations;late credit cannot reopen",
+        "81Host+2cleanup,Managed58,Diagnostic54 and8offline subsets;full Rust/kernel/boot;49ABI and actual symbols;Virtual2rounds/12negativecontrols;4realVM32peerreplies24Owned96decisions120transactions68role denials,81+56negativecontrols",
+        "Finish remaining event/globalmask/registry duplicate and rawABI consumer migration,full AppSDK/CLI/C-Python contract then cleanVM deployment;old evidence retained"
       ],
-      "next": "Architecture-first finite cleanup;fullS0-S6/19WP/10FV/12DG and original scope,VM-only/UserHostP4,owner WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
+      "next": "Architecture-first;fullS0-S6/19WP/10FV/12DG and original scope;VM-only/UserHostP4 and owner WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
-      "record": "kernel-dli-metadata-retirement-r4f1"
+      "record": "kernel-critical-fault-r4f2b"
     }
   },
   "agent_workstream": {
@@ -3091,7 +3095,7 @@
     "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
   },
   "architecture_retirement_current_batch": {
-    "status": "R4F1_SOURCE_BOUND_PASS_R4F2_EVENT_RAW_ABI_MIGRATION",
+    "status": "R4F2B_CRITICAL_FAULT_SCOPED_GATES_PASS_REMAINING_ARCHITECTURE_INCOMPLETE",
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
     "batch": "R4f2 DLI event/global-mask/raw ABI and current/historical selftest migration",
@@ -3247,7 +3251,7 @@
       "referencing_source_files": 21,
       "scan_limits": "Exact names,not AST/dynamic call proof;two tracked broken historical absolute UAPI symlinks identified;do not copy host paths into current tests. Preserve existing lifecycle WIP.",
       "next": "Remaining DLI event/globalmask/registry version copy and full-chain raw declarations/auth/dispatch/test/private layout migration;actual typed Native and standard Diagnostic/file affinity retained.",
-      "first_production_gap": "HardwareError constructed in Native/standard codec returns from Host.receive unchanged;current RXworker handles only relay/installation then drops/counts remainder. Source-confirmed missing consumer,not observed RF/hardware incident. Connect existing per-controller fail/cleanup contract before removing unused event variants;preserve credit/physical obligations and othercontroller."
+      "first_production_gap": "HardwareError missingconsumer addressed7e7/34a,scoped report selected;remaining event/globalmask/registry/rawABI callers not retired"
     },
     "r4f1": {
       "status": "SOURCE_BOUND_TEN_GATE_MATRIX_PASS_MAIN_PROMOTED",
@@ -3264,6 +3268,19 @@
       "report": "docs/evidence/selftest-header-relocation-r4f2a-20261017.json",
       "selected_artifact_unchanged": "kernel-dli-metadata-retirement-r4f1",
       "remaining": "No raw ioctl/event/globalmask retirement completed by this two-link patch."
+    },
+    "r4f2b": {
+      "state": "SOURCE_BOUND_ELEVEN_GATES_PASS_NOT_FULL_ARCHITECTURE",
+      "implementation": "7e7f017c288985e1014f7ca778f95a21784b3bd5",
+      "test_barrier": "34a6ade26dc9faa5fd348b8fc8043121175378a0",
+      "exit_reference": "WP18 R4f2b critical fault contract in canonical implementation-plan",
+      "prior_weaker_virtual_scope": ".dev/architecture-r4f2b-callback-review-v1.json",
+      "qualification": "See generated qualification_view.selected_qualification;not an independent authority. Compiled kernel/module34a,probea991 distinct;wholeHEAD not revalidated",
+      "remaining": "Full oldevent/globalmask/rawABI/SDK/R5/R6 and original S0-S6/19WP/10FV/12DG;naturalRCA/nonmanualrecovery OPEN",
+      "probe_source": "a9915e820cccfaf9ce615b0b510ad7b814246986",
+      "report": "docs/evidence/kernel-critical-fault-r4f2b-20261017.json",
+      "callback_scope": "Returned callback witnessed;not controller completion or peer receipt;two requests from ONE author File,not multi-author proof",
+      "build_warning": "One localized objtool jobserver j1 warning retained;initial wrapper missed it;independent artifact/audit expose it"
     }
   },
   "owned_ssap_c6_historical_batch": {

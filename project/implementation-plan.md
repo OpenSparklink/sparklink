@@ -81,14 +81,14 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完**。
+选定保留产物（不是当前工作树整体资格）：**R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete**。
 仅记录范围：`real_device` / `PASS`。
-kernel `7025d21cf7be00d978ec959aab49708d58741c26`。
-compiled_userspace `c032da74ab42b1cbe41ce0d3166fc841095ce0fe`。
+kernel `34a6ade26dc9faa5fd348b8fc8043121175378a0`。
+compiled_userspace `8a648bff5a5cb8ef96ccb0d1ed510652ea3ee149`。
 executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
-kernel_selftest_tools `7025d21cf7be00d978ec959aab49708d58741c26`。
+kernel_selftest_tools `a9915e820cccfaf9ce615b0b510ad7b814246986`。
 independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
-[准确范围与剩余条件](../docs/evidence/kernel-dli-metadata-retirement-r4f1-20261017.json)。
+[准确范围与剩余条件](../docs/evidence/kernel-critical-fault-r4f2b-20261017.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -256,6 +256,7 @@ independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
 | R4e注册状态整改：K64/U0a/工具997四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4e2命令接线退休：Kb35/UEf/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 | R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
+| R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1169,6 +1170,45 @@ R4f2退出不等全部控制面组合：生产不再编入未消费历史业务�
 按未发布ABI契约ENOTTY且不复用；当前新模式不支持仍明确拒绝。随后进入完整R5
 SDK/CLI/共享契约收敛及R6干净VM部署，之后再完善新业务；不是只改文档即架构完成。
 包/版本/可信度不得因本批清理升级。原自然RCA/非人工恢复、旧材料保留事故继续OPEN。
+
+##### R4f2b限定退出：关键故障观察
+
+基线ccc缺少HardwareError消费者；7e7f017接现有Host/worker/ledger，34a6ade
+加强返回屏障。准确生产K34a／编译U8a／执行工具997已完成四真实保留门禁；
+可选Virtual使用同一K34a/module34a与探针a991，两轮实际VM通过。
+[源码、11项门禁与限定范围](../docs/evidence/kernel-critical-fault-r4f2b-20261017.json)
+分别记录；探针a991仅改同一作者两个请求的标签，不能授予整a991镜像或多作者资格。
+完整R4f2/R5/R6及原范围保留，不把局部退出当整架构完成。
+
+- 生产行为：在既有Host锁下锁定首个Fault，立即关闭Ready/命令与data准入；关键
+  code占一个有界观察slot，不依赖普通RX队列。已有active/reply/期限引用保留到
+  现有worker处理；不在USB回调或自己的worker内join/invalidate Runtime。
+- 消费契约：先关键故障后普通结果；复用既有pending ledger，只终结一次。原取消、
+  期限、已发布成功保持；首个故障不被后续传输错误覆盖。晚到Complete/credit不能
+  恢复Ready或退款，诊断slot被取走也不清除Fault。无handle的错误不猜测连接归属。
+- 离线：实际Host全方法、实际PendingEntry/PendingQueue前缀、RX enqueue、worker
+  process_host_events/fail_host及Native atomic command callback。替代Mutex/Arc、
+  时钟、强制满ring和未执行allocator类型明确；81项中新增5Host/ticket和6组合案例，
+  另cleanup2。原Managed58、Diagnostic54、Ingress8、Native data和Port2继续回归。
+  这是生产函数子集，不是IRQ、VFS、USB、并发或refinement证明。
+- Virtual VM：仅显式可选测试后端注入一帧标准HardwareError；穿过实际parser/
+  Host/worker/ledger。当前task CAP强制、EINVAL/EFAULT、同一作者File两个请求/同opcode、在途
+  与排队、首故障、晚到回调、credit0、另一controller查询、旧fd与generation复用、
+  两次模块装卸/taint0均须完成。Callback返回不等于Controller Complete或业务交付。
+- 屏障：7e7旧delivered计数早于回调返回，10ms等待不足，原运行仅限定保留、不授
+  回调返回资格。34a使用driver锁下的reply_callbacks_returned后置计数，不通过延时
+  猜测完成；旧56字节私有status编号ENOTTY，普通Native UAPI不新增注入入口。
+- 准确全Kernel/link、Rust组件Werror、新Virtual VM及四真实SDK110 U2/U3门禁；
+  61/249+原超限/2042/机制2、两端实际校验回复与既有Owned/权限/元数据回归，
+  独立抓包重放及负对照。正常五模块与可选Virtual分开。真实WS73门禁仅证明原路径保持，
+  不冒充实物HardwareError、自然根因或恢复通过；所有原故障/未证明项继续OPEN。
+
+本批结果：32次真实对端应用回复，24个Owned案例/96次决策/120次远端事务，
+68次实际system-bus角色拒绝；49 ABI/错误检查、8次C与8次CLI观察。两端USB
+独立重放81个负对照、元数据56个、Virtual12个均拒绝。此批无新增形式化证明；
+原未证明项不升级。完整Kernel有1条本地化objtool jobserver退回j1警告，原wrapper
+warning_lines遗漏它；原日志不改，artifact扫描与独立审计显式记录，不声称无警告。
+后续修构建监督器须保留本次诊断，不能把新工具结论写回旧记录。
 
 R4f2a已落实[两条selftest头路径修复](../docs/evidence/selftest-header-relocation-r4f2a-20261017.json)：
 ccc266仅绝对→相对symlink；当前empty-registry消费者和搬迁树两头严格编译通过，

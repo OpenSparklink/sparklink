@@ -10,24 +10,26 @@
 | 普通应用与显式Native分层 | App SDK无Native依赖；slkd不依赖App SDK；业务fd直达唯一Session | 完整C/Python broker/SSAP便利接口、全部CLI消费者收敛 |
 | 注册元数据 | 8次实际C bitmap/count、8次CLI完整身份快照，49新库ABI/历史布局检查 | allocation count不是Ready；不是C/Python业务、原子快照或芯片认证 |
 | 内核注册及命令整改 | 注册假状态/能力统计副本、未消费raw命令和DLI能力投影退休；当前Native快照5项与历史投影5项分开，实际Rust组件与完整Kernel均构建 | DLI/rawUAPI/旧selftests、剩余全局掩盖、完整生命周期/并发证明 |
+| 关键故障消费者K34a／探针a991 | 首Fault关闭准入、独立关键观察、原worker/ledger；81+2函数子集，实际可选Virtual两轮和四真实保留VM | 同一作者两个请求，非同controller多作者证明；不是实物HardwareError、自然根因或恢复资格 |
 | C导出守卫 | 两库实际ELF与独立公开头、失败/截断/变更负对照 | 名称/函数种类一致不等于ABI调用、权限或实机资格 |
 
-7025已按准确K7025/编译Uc032/工具997通过分层门禁并推进主分支；DLI未消费
-能力投影退休，实际查询由现有完整Native快照保存。b35命令退休资格独立保留；
-本批没有新增业务能力，也不使完整架构或其他门禁完成。
+选定产物为准确K34a／编译U8a／硬件工具997，Virtual测试探针a991单列。
+本批四VM保持已验证发现、连接、短长消息与限定Owned/机制2路径；故障输入仅在
+显式测试后端验证，不能转作自然硬件故障验收。旧7025/b35资格保留原身份。
+完整架构仍缺旧事件/rawUAPI退休、完整SDK调用者与干净VM部署。
 自然启动/重枚举/设备消失根因、非人工恢复继续开放。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完**。
+选定保留产物（不是当前工作树整体资格）：**R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete**。
 仅记录范围：`real_device` / `PASS`。
-kernel `7025d21cf7be00d978ec959aab49708d58741c26`。
-compiled_userspace `c032da74ab42b1cbe41ce0d3166fc841095ce0fe`。
+kernel `34a6ade26dc9faa5fd348b8fc8043121175378a0`。
+compiled_userspace `8a648bff5a5cb8ef96ccb0d1ed510652ea3ee149`。
 executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
-kernel_selftest_tools `7025d21cf7be00d978ec959aab49708d58741c26`。
+kernel_selftest_tools `a9915e820cccfaf9ce615b0b510ad7b814246986`。
 independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
-[准确范围与剩余条件](../docs/evidence/kernel-dli-metadata-retirement-r4f1-20261017.json)。
+[准确范围与剩余条件](../docs/evidence/kernel-critical-fault-r4f2b-20261017.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -195,6 +197,7 @@ independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
 | R4e注册状态整改：K64/U0a/工具997四真实门禁，整架构未完 | `real_device` | `PASS` |
 | R4e2命令接线退休：Kb35/UEf/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 | R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
+| R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

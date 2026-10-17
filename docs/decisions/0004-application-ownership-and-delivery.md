@@ -376,3 +376,9 @@ Runtime Host仍是唯一调度/credit/物理义务来源。Diagnostic、发现�
 快照提供。未消费的MTU/MPS、安全位等投影已退休，不能从全零/默认字段推导能力。
 历史UART/SPI/USB元数据只属隔离selftests；实际标准DLI codec和Runtime/Session/
 Grant/credit/Ticket保持原责任。剩余事件模型/全局掩盖及rawABI按唯一计划逐条退休。
+
+关键控制器故障采用同一Host锁和故障状态：回调仅做有界状态转换，关闭新提交并
+保留一项关键code观察，避免普通RX满队列吞掉处理义务。现有worker消费故障及
+作者ledger，原取消/期限/终态和在途引用遵循原契约。取走诊断观察不解除Fault，
+晚到credit不恢复Ready；其他controller不共享此状态。回调返回、控制器完成和
+对端交付仍是不同阶段，任何恢复Ready仍需已有生命周期与已验证控制器屏障。

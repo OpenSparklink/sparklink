@@ -112,10 +112,73 @@ fn send(fd: &OwnedFd, bytes: &[u8], deadline: Instant) -> anyhow::Result<()> {
     }
 }
 
+#[derive(Clone, Copy)]
+struct ReceiptExpectation {
+    channel: slk_protocol::SleChannelInfo,
+    minimum: u32,
+}
+impl ReceiptExpectation {
+    fn verify(self, m: slk_protocol::SleMessageSecurity) -> anyhow::Result<()> {
+        m.validate()?;
+        let c = self.channel;
+        anyhow::ensure!(
+            m.controller == c.controller
+                && m.generation == c.generation
+                && m.lifetime == c.lifetime
+                && m.handle == c.handle
+                && m.local_tcid == c.local_tcid
+                && m.remote_tcid == c.remote_tcid
+                && m.pi == c.pi
+                && m.flags == 3
+                && m.security >= self.minimum,
+            "receipt identity/current mechanism differs from authorized fd"
+        );
+        Ok(())
+    }
+}
 fn receive(fd: &OwnedFd, deadline: Instant) -> anyhow::Result<Vec<u8>> {
+    receive_checked(fd, deadline, None, 0)
+}
+fn receive_checked(
+    fd: &OwnedFd,
+    deadline: Instant,
+    receipt: Option<ReceiptExpectation>,
+    sequence: u32,
+) -> anyhow::Result<Vec<u8>> {
     loop {
         wait(fd, nix::libc::POLLIN, deadline)?;
         let mut buffer = [0u8; 2042];
+        if let Some(expected) = receipt {
+            match slk_protocol::message_security::recv(
+                fd.as_raw_fd(),
+                &mut buffer,
+                nix::libc::MSG_DONTWAIT | nix::libc::MSG_TRUNC,
+            ) {
+                Ok((count, context, flags)) => {
+                    expected.verify(context)?;
+                    anyhow::ensure!(
+                        count > 0 && count <= buffer.len() && flags & nix::libc::MSG_TRUNC == 0,
+                        "truncated/empty application receipt"
+                    );
+                    println!(
+                        "NativeMessageSecurity: sequence={sequence} index={} generation={} lifetime={} handle={} local={} remote={} pi={} security={} epoch={} flags={}",
+                        context.controller,
+                        context.generation,
+                        context.lifetime,
+                        context.handle,
+                        context.local_tcid,
+                        context.remote_tcid,
+                        context.pi,
+                        context.security,
+                        context.security_epoch,
+                        context.flags
+                    );
+                    return Ok(buffer[..count].to_vec());
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => continue,
+                Err(error) => return Err(error.into()),
+            }
+        }
         // SAFETY: writable stack buffer and valid owned socket; MSG_TRUNC reveals oversized messages.
         let result = unsafe {
             nix::libc::recv(
@@ -194,6 +257,53 @@ fn reject_boundaries(fd: &OwnedFd) -> anyhow::Result<()> {
             hex(&bytes)
         );
     }
+    Ok(())
+}
+
+// This tests refusal before software admission, never a security downgrade.
+fn reject_send_control(fd: &OwnedFd) -> anyhow::Result<()> {
+    let mut payload = [0u8; 61];
+    payload[..8].copy_from_slice(b"SLKCMREJ");
+    std::fs::File::open("/dev/urandom")?.read_exact(&mut payload[8..])?;
+    let mut control = [0u64; 8];
+    // SAFETY: aligned owned buffer covers header plus the complete 40-byte record.
+    unsafe {
+        control
+            .as_mut_ptr()
+            .cast::<nix::libc::cmsghdr>()
+            .write(nix::libc::cmsghdr {
+                cmsg_len: nix::libc::CMSG_LEN(40) as _,
+                cmsg_level: slk_protocol::message_security::SOL_SPARKLINK,
+                cmsg_type: slk_protocol::message_security::SCM_RX_SECURITY,
+            });
+    }
+    let mut io_vec = nix::libc::iovec {
+        iov_base: payload.as_mut_ptr().cast(),
+        iov_len: payload.len(),
+    };
+    let mut message: nix::libc::msghdr = unsafe { std::mem::zeroed() };
+    message.msg_iov = &mut io_vec;
+    message.msg_iovlen = 1;
+    message.msg_control = control.as_mut_ptr().cast();
+    message.msg_controllen = unsafe { nix::libc::CMSG_SPACE(40) } as _;
+    // SAFETY: all complete buffers and owned fd remain live through sendmsg.
+    let result = unsafe {
+        nix::libc::sendmsg(
+            fd.as_raw_fd(),
+            &message,
+            nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
+        )
+    };
+    let error = std::io::Error::last_os_error();
+    anyhow::ensure!(
+        result == -1 && error.raw_os_error() == Some(nix::libc::EOPNOTSUPP),
+        "unsupported send control was not rejected: {result} {error}"
+    );
+    println!(
+        "NativeControlRejected: errno={} bytes={}",
+        nix::libc::EOPNOTSUPP,
+        hex(&payload)
+    );
     Ok(())
 }
 
@@ -294,8 +404,20 @@ pub(crate) fn exercise(
     rounds: u32,
     message_bytes: usize,
     mode: Mode,
+    receipt_security: Option<u32>,
 ) -> anyhow::Result<()> {
-    exercise_channel(fd, responder, rounds, message_bytes, mode, false, false)
+    exercise_channel(
+        fd,
+        responder,
+        rounds,
+        message_bytes,
+        mode,
+        ExerciseSettings {
+            dynamic: false,
+            start_barrier: false,
+            receipt_security,
+        },
+    )
 }
 pub(crate) fn exercise_dynamic(
     fd: OwnedFd,
@@ -314,9 +436,17 @@ pub(crate) fn exercise_dynamic(
         rounds,
         message_bytes,
         mode,
-        true,
-        start_barrier,
+        ExerciseSettings {
+            dynamic: true,
+            start_barrier,
+            receipt_security: None,
+        },
     )
+}
+struct ExerciseSettings {
+    dynamic: bool,
+    start_barrier: bool,
+    receipt_security: Option<u32>,
 }
 fn exercise_channel(
     fd: OwnedFd,
@@ -324,9 +454,18 @@ fn exercise_channel(
     rounds: u32,
     message_bytes: usize,
     mode: Mode,
-    dynamic: bool,
-    start_barrier: bool,
+    settings: ExerciseSettings,
 ) -> anyhow::Result<()> {
+    let ExerciseSettings {
+        dynamic,
+        start_barrier,
+        receipt_security,
+    } = settings;
+    anyhow::ensure!(
+        receipt_security.is_none()
+            || (!dynamic && matches!(mode, Mode::Regular | Mode::Boundaries)),
+        "receipt check requires fixed regular/boundaries mode"
+    );
     validate_exercise(rounds, message_bytes)?;
     let fd = prepare_application_fd(fd)?;
     wait(
@@ -364,6 +503,9 @@ fn exercise_channel(
         info.directions
     );
     info_copy_retry(&fd, info)?;
+    if receipt_security.is_some() {
+        reject_send_control(&fd)?;
+    }
     tx_status(&fd, "ready", 0)?;
     if start_barrier {
         // Channel capability/authority checks above are real; this controls only
@@ -383,6 +525,10 @@ fn exercise_channel(
                 rounds,
                 message_bytes,
                 mode == Mode::Boundaries,
+                receipt_security.map(|minimum| ReceiptExpectation {
+                    channel: info,
+                    minimum,
+                }),
             )
         }
     }
@@ -559,6 +705,7 @@ fn exercise_messages(
     rounds: u32,
     message_bytes: usize,
     boundaries: bool,
+    receipt: Option<ReceiptExpectation>,
 ) -> anyhow::Result<()> {
     validate_exercise(rounds, message_bytes)?;
     println!(
@@ -575,7 +722,7 @@ fn exercise_messages(
         let started = Instant::now();
         let deadline = started + Duration::from_secs(10);
         if responder {
-            let mut frame = receive(&fd, deadline)?;
+            let mut frame = receive_checked(&fd, deadline, receipt, sequence)?;
             if frame.len() != message_bytes {
                 anyhow::bail!("peer application message length mismatch");
             }
@@ -613,7 +760,7 @@ fn exercise_messages(
                 hex(&frame)
             );
             send(&fd, &frame, deadline)?;
-            let received = receive(&fd, deadline)?;
+            let received = receive_checked(&fd, deadline, receipt, sequence)?;
             validate(&received, wire_sequence, true, message_bytes)?;
             frame[28] = 1;
             if received != frame {
@@ -635,6 +782,65 @@ mod tests {
     use std::os::fd::FromRawFd;
 
     #[test]
+    fn receipt_validator_rejects_old_unknown_wrong_scope_and_insufficient_mechanism() {
+        let channel = slk_protocol::SleChannelInfo {
+            controller: 1,
+            generation: 7,
+            lifetime: 9,
+            handle: 3,
+            local_tcid: 31,
+            remote_tcid: 31,
+            pi: 241,
+            ..Default::default()
+        };
+        let check = ReceiptExpectation {
+            channel,
+            minimum: 1,
+        };
+        let valid = slk_protocol::SleMessageSecurity {
+            version: 1,
+            size: 40,
+            controller: 1,
+            generation: 7,
+            lifetime: 9,
+            handle: 3,
+            local_tcid: 31,
+            remote_tcid: 31,
+            pi: 241,
+            security: 1,
+            security_epoch: 2,
+            flags: 3,
+        };
+        check.verify(valid).unwrap();
+        for bad in [
+            slk_protocol::SleMessageSecurity {
+                generation: 8,
+                ..valid
+            },
+            slk_protocol::SleMessageSecurity {
+                lifetime: 10,
+                ..valid
+            },
+            slk_protocol::SleMessageSecurity { handle: 4, ..valid },
+            slk_protocol::SleMessageSecurity {
+                remote_tcid: 10,
+                ..valid
+            },
+            slk_protocol::SleMessageSecurity { flags: 1, ..valid },
+            slk_protocol::SleMessageSecurity {
+                flags: 0,
+                security: 0,
+                ..valid
+            },
+            slk_protocol::SleMessageSecurity {
+                security: 0,
+                ..valid
+            },
+        ] {
+            assert!(check.verify(bad).is_err());
+        }
+    }
+    #[test]
     fn application_validates_and_replies_over_real_local_datagram_fds() {
         for message_bytes in [61, 249, 250, 253, 254, 255, 1024, 2042] {
             // Local AF_UNIX is application regression support, never WS73 acceptance.
@@ -653,7 +859,14 @@ mod tests {
             let (initiator, peer) =
                 unsafe { (OwnedFd::from_raw_fd(raw[0]), OwnedFd::from_raw_fd(raw[1])) };
             let task = std::thread::spawn(move || {
-                exercise_messages(prepare_application_fd(peer)?, true, 4, message_bytes, false)
+                exercise_messages(
+                    prepare_application_fd(peer)?,
+                    true,
+                    4,
+                    message_bytes,
+                    false,
+                    None,
+                )
             });
             exercise_messages(
                 prepare_application_fd(initiator).unwrap(),
@@ -661,6 +874,7 @@ mod tests {
                 4,
                 message_bytes,
                 false,
+                None,
             )
             .unwrap();
             task.join().unwrap().unwrap();
@@ -720,7 +934,7 @@ mod tests {
         );
         let task = std::thread::spawn(move || {
             std::thread::sleep(Duration::from_millis(100));
-            exercise_messages(peer, true, 16, 2042, false)
+            exercise_messages(peer, true, 16, 2042, false, None)
         });
         exercise_burst(source, 16, 2042, false).unwrap();
         task.join().unwrap().unwrap();

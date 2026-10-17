@@ -240,3 +240,13 @@ Host、guest cmdline、控制器监督器、实际 slktest argv、两端 schema2
 新范围是工具能力，不由参数验证推出实机或性能资格。固定速率过载时的失败与原始
 报告仍须保留；当前 Native 正向核对要求所有请求实际回复，不能将诊断失败改成完整
 性能 PASS。10000条的上限不代表该配置已完成压力、捕获容量或资源资格。
+
+
+## 接收机制正确性检查
+
+`slktest channel ping|peer ... --check --message-security [--security 0|1|2]`
+复用原随机载荷校验/回复循环，逐条核对真实recvmsg上下文与原fd身份、KNOWN/CURRENT
+和最低机制，并测试发送control的明确EOPNOTSUPP及随机拒绝载荷未进入USB。
+只支持固定CUTC regular/boundaries正确性门禁；动态、burst/prefix-close及性能报告
+模式明确拒绝该选项。当前VM runner新固定regular/boundaries记录要求这些原始收据；
+旧报告不增加新资格。此检查不是属性级授权、完整密码证明或性能资格。

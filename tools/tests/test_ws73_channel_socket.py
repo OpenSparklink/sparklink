@@ -469,3 +469,28 @@ class CurrentApplicationArguments(unittest.TestCase):
             if kind=='direction':args[4]='peer'
             if kind=='missing':bad['applications'][0].pop('args')
             with self.subTest(kind=kind),self.assertRaises(CaptureError):application_frames(bad)
+
+
+class MessageSecurityReceipts(unittest.TestCase):
+    def test_original_scope_mechanism_counts_and_refusals_are_required(self):
+        from ws73_channel_socket import message_security_receipts
+        row=fixture();row.update(message_security_required=True,security_requirement=1,
+            owners=[dict(owner=dict(index=1,generation=7),object=dict(lifetime=9,handle=0)),
+                    dict(owner=dict(index=2,generation=8),object=dict(lifetime=10,handle=1))])
+        for app,entry in zip(row['applications'],row['owners']):
+            o,c=entry['owner'],entry['object']
+            for n in range(4):
+                app['stdout']+=f"NativeMessageSecurity: sequence={n} index={o['index']} generation={o['generation']} lifetime={c['lifetime']} handle={c['handle']} local=31 remote=31 pi=241 security=1 epoch=2 flags=3\n"
+            raw=b'SLKCMREJ'+bytes([o['index']])*53
+            app['stdout']+=f"NativeControlRejected: errno=95 bytes={raw.hex()}\n"
+        good,rejected=message_security_receipts(row)
+        self.assertEqual((len(good),len(rejected)),(8,2))
+        for old,new in [('generation=7','generation=70'),('lifetime=9','lifetime=90'),
+            ('flags=3','flags=1'),('flags=3','flags=0'),('epoch=2','epoch=0'),
+            ('security=1','security=0'),('security=1','security=3'),('pi=241','pi=242'),
+            ('sequence=1','sequence=0'),('errno=95','errno=0'),
+            ('NativeMessageSecurity:','Missing:'),('NativeControlRejected:','Missing:')]:
+            bad=copy.deepcopy(row);bad['applications'][0]['stdout']=bad['applications'][0]['stdout'].replace(old,new)
+            with self.subTest(old=old,new=new),self.assertRaises(CaptureError):message_security_receipts(bad)
+        # The old source has no receipt flag and gains no new qualification.
+        self.assertEqual(message_security_receipts(fixture()),([],[]))

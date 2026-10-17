@@ -19,9 +19,12 @@ def test_program(run):
     return record
 
 
-def check_arguments(binary, entry, peer, rounds, message_bytes, exercise='regular', route=None, hold=False, start_barrier=False, security=0):
+def check_arguments(binary, entry, peer, rounds, message_bytes, exercise='regular', route=None, hold=False, start_barrier=False, security=0, message_security=False):
     args=[str(binary),'--adapter',entry['owner']['path'],'channel','peer' if peer else 'ping',
           entry['object']['path'],'--check','--count',str(rounds),'--bytes',str(message_bytes)]
+    if message_security:
+        if route is not None or exercise not in ('regular','boundaries'):raise CaptureError('receipt context requires fixed regular/boundaries exercise')
+        args+=['--message-security']
     if security:
         if security not in [1,2] or route is not None:raise CaptureError('explicit supported fixed security requirement needed')
         args+=['--security',str(security)]
@@ -74,6 +77,7 @@ def execute(run, phase):
     row = dict(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
                boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+    row['message_security_required']=not (row['close_prefix'] or row['burst'])
     row['application_tool']=test_program(run)
     row['security_requirement']={'approve':1,'numeric-approve':2}.get(getattr(run.args,'security_agent',None),0)
     if run.data.get('security_agent') and run.data['security_agent'][-1].get('ssap_security_requirement'):
@@ -92,7 +96,7 @@ def execute(run, phase):
         # Both binds must occur during the same live connection. Never synthesize RX.
         for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
             exercise='boundaries' if row['boundary_check'] else 'prefix-close' if row['close_prefix'] and role=='initiator' else 'burst' if row['burst'] and role=='initiator' else 'regular'
-            args=check_arguments(row['application_tool']['path'],entry,role=='peer',row['rounds'],row['message_bytes'],exercise,security=row['security_requirement'])
+            args=check_arguments(row['application_tool']['path'],entry,role=='peer',row['rounds'],row['message_bytes'],exercise,security=row['security_requirement'],message_security=row['message_security_required'])
             app=dict(role=role,args=args,start_wall_ns=time.time_ns())
             row['applications'].append(app);run.save()
             stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
@@ -223,6 +227,32 @@ def channel_info_receipts(row):
     return result
 
 
+def message_security_receipts(row):
+    if not row.get('message_security_required',False):return [],[]
+    if row.get('close_prefix') or row.get('burst') or 'ports' in row:raise CaptureError('unsupported receipt exercise')
+    receipts=[];rejected=[]
+    fields=['sequence','index','generation','lifetime','handle','local','remote','pi','security','epoch','flags']
+    pattern=r'^NativeMessageSecurity: '+r' '.join(name+r'=(\d+)' for name in fields)+r'$'
+    for app in row['applications']:
+        owner=row['owners'][app['role']=='peer'];o=owner['owner'];c=owner['object']
+        values=re.findall(pattern,app['stdout'],re.M)
+        if len(values)!=row['rounds'] or len(values)!=app['stdout'].count('NativeMessageSecurity:'):
+            raise CaptureError('each actual message needs one original complete security receipt')
+        samples=[dict(zip(fields,map(int,v))) for v in values]
+        for n,m in enumerate(samples):
+            if (m['sequence'],m['index'],m['generation'],m['lifetime'],m['handle'],m['local'],m['remote'],m['pi'])!=(n,o['index'],o['generation'],c['lifetime'],c['handle'],31,31,241):
+                raise CaptureError('receipt scope differs from original authorized fd')
+            if m['flags']!=3 or not m['epoch'] or not row.get('security_requirement',0)<=m['security']<=2:
+                raise CaptureError('receipt lacks known/current required mechanism')
+        refusal=re.findall(r'^NativeControlRejected: errno=(\d+) bytes=([0-9a-f]+)$',app['stdout'],re.M)
+        if len(refusal)!=1 or app['stdout'].count('NativeControlRejected:')!=1 or int(refusal[0][0])!=95:
+            raise CaptureError('unsupported ancillary must refuse before admission')
+        raw=bytes.fromhex(refusal[0][1])
+        if len(raw)!=61 or raw[:8]!=b'SLKCMREJ':raise CaptureError('original random refused control payload required')
+        rejected.append(raw);receipts.extend(dict(role=app['role'],**m) for m in samples)
+    return receipts,rejected
+
+
 def validate_application_arguments(row):
     # Historical receipts remain readable with their original commands. Current
     # execution always records a slktest artifact and must match the new argv.
@@ -237,7 +267,7 @@ def validate_application_arguments(row):
         if 'ports' in row:
             ports=row['ports'][::-1] if peer else row['ports']
             route=(*ports,row['aid'])
-        expected=check_arguments(row['application_tool']['path'],entry,peer,row['rounds'],row.get('message_bytes',61),exercise,route,route is not None,row.get('start_barrier',False),row.get('security_requirement',0))
+        expected=check_arguments(row['application_tool']['path'],entry,peer,row['rounds'],row.get('message_bytes',61),exercise,route,route is not None,row.get('start_barrier',False),row.get('security_requirement',0),row.get('message_security_required',False))
         if app.get('args')!=expected:raise CaptureError('actual slktest channel arguments/identity mismatch')
 
 
@@ -402,7 +432,8 @@ def corroborate(run,capture):
         prefix=None
         if row.get('close_prefix',False):sent,replies,prefix=prefix_application_frames(row)
         else:sent,replies=application_frames(row)
-        rejected=rejected_frames(row)
+        receipt_context,control_rejected=message_security_receipts(row)
+        rejected=rejected_frames(row)+control_rejected
         for raw in rejected:
             if any(raw.hex() in p['data'] and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('rejected message reached USB data path')
         limits=dtap_limits(row)
@@ -490,6 +521,9 @@ def corroborate(run,capture):
                     ssap_legs.append(dict(tx=matched(owner,'out',frame,True),rx=matched(receiver,'in',frame,True)))
                 ssap.append(dict(receipt=source,wire=ssap_legs))
         entry = dict(phase=n,owners=owners,capabilities=capabilities,legs=legs)
+        if row.get('message_security_required',False):
+            entry['message_security']=receipt_context
+            entry['unsupported_control_rejections']=len(control_rejected)
         if limits:entry.update(dtap_limits_version=1,independent_mtu_mps=True)
         if row.get('tx_status_required',False):entry['tx_status']=tx_status_receipts(row)
         if row.get('burst',False):entry['burst_pressure']=burst_pressure_receipts(row)

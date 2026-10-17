@@ -12,6 +12,7 @@ pub(crate) struct Client {
     conn: Connection,
     selected: String,
     security: u32,
+    message_security: bool,
 }
 impl Client {
     pub(crate) fn new(conn: Connection, selected: String) -> Self {
@@ -19,12 +20,17 @@ impl Client {
             conn,
             selected,
             security: 0,
+            message_security: false,
         }
     }
     pub(crate) fn requiring_security(mut self, security: u32) -> anyhow::Result<Self> {
         anyhow::ensure!(security <= 2, "unsupported security requirement");
         self.security = security;
         Ok(self)
+    }
+    pub(crate) fn observing_message_security(mut self, enabled: bool) -> Self {
+        self.message_security = enabled;
+        self
     }
     async fn selected_path(&self) -> anyhow::Result<String> {
         let manager = zbus::Proxy::new(
@@ -192,7 +198,14 @@ impl Client {
             "org.sparklink.Connection",
         )
         .await?;
-        crate::channel::exercise(fd, responder, rounds, bytes, mode)?;
+        crate::channel::exercise(
+            fd,
+            responder,
+            rounds,
+            bytes,
+            mode,
+            self.message_security.then_some(self.security),
+        )?;
         // Last-close must not silently recreate the connection CMTC session.
         // Basic CUTC has no qualified close/rebind barrier in this lifetime.
         let reopened: zbus::Result<zbus::zvariant::OwnedFd> = if self.security == 0 {

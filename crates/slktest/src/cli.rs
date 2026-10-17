@@ -22,6 +22,9 @@ struct Cli {
     /// Minimum kernel-enforced mechanism for fixed --check: 0 none,1 encryption,2 numeric.
     #[arg(long, global=true, default_value_t=0,value_parser=clap::value_parser!(u32).range(0..=2))]
     security: u32,
+    /// Fixed regular/boundaries --check only: verify kernel receipt scope and current mechanism.
+    #[arg(long, global = true)]
+    message_security: bool,
     #[command(subcommand)]
     command: Command,
 }
@@ -198,6 +201,17 @@ impl Cli {
             anyhow::bail!("--adapter requires the exact current object path");
         }
         let Command::Channel { command } = &self.command;
+        if self.message_security {
+            match command {
+                Channel::Ping(p) | Channel::Peer(p)
+                    if p.check
+                        && p.source_port.is_none()
+                        && matches!(p.exercise, Exercise::Regular | Exercise::Boundaries) => {}
+                _ => anyhow::bail!(
+                    "--message-security requires fixed regular/boundaries --check; no performance or dynamic qualification"
+                ),
+            }
+        }
         if self.security != 0 {
             match command {
                 Channel::Ping(p) | Channel::Peer(p)
@@ -227,7 +241,9 @@ impl Cli {
         } else {
             zbus::Connection::system().await?
         };
-        let client = Client::new(conn, self.adapter).requiring_security(self.security)?;
+        let client = Client::new(conn, self.adapter)
+            .requiring_security(self.security)?
+            .observing_message_security(self.message_security);
         let Command::Channel { command } = self.command;
         match command {
             Channel::Ping(p) => run_pair(client, p, false).await,
@@ -349,6 +365,67 @@ mod tests {
                 "--check",
                 "--security",
                 "2",
+                "--source-port",
+                "10",
+                "--destination-port",
+                "11",
+                "--aid",
+                "12",
+            ],
+        ] {
+            assert!(parse(&args).is_err(), "{args:?}");
+        }
+    }
+    #[test]
+    fn receipt_observation_requires_fixed_correctness_and_no_false_performance() {
+        for role in ["ping", "peer"] {
+            assert!(parse(&[role, "/link", "--check", "--message-security"]).is_ok());
+            assert!(
+                parse(&[
+                    role,
+                    "/link",
+                    "--check",
+                    "--message-security",
+                    "--security",
+                    "2",
+                    "--exercise",
+                    "boundaries"
+                ])
+                .is_ok()
+            );
+        }
+        for args in [
+            vec![
+                "ping",
+                "/link",
+                "--message-security",
+                "--report",
+                "new.json",
+            ],
+            vec![
+                "window",
+                "/link",
+                "--message-security",
+                "--report",
+                "new.json",
+            ],
+            vec![
+                "ping",
+                "/link",
+                "--message-security",
+                "--check",
+                "--exercise",
+                "burst",
+                "--count",
+                "16",
+                "--bytes",
+                "2042",
+            ],
+            vec![
+                "peer",
+                "/link",
+                "--message-security",
+                "--check",
                 "--source-port",
                 "10",
                 "--destination-port",

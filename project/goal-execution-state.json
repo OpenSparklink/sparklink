@@ -667,10 +667,9 @@
     "WP18-SSAP three-category audit and production separation is current remediation; preserve DTAP/CMTC/credit/socket/security"
   ],
   "next_slices": [
-    "R4f2:finish finite production event/metadata authority and full-chain unpublished raw ABI retirement with valuable historical tests preserved",
-    "R5:complete existing AppSDK/CLI/C-Python callers and independent contract/provenance gates;no second Engine",
-    "R6:cleanVM deployment/externalSDK/upgrade/rollback/uninstall/config retention",
-    "Only then refine next real vertical behavior under fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanual recovery stayOPEN"
+    "R5:existing AppSDK/CLI/SSAP/C-Python shared typedcontract;no second Engine",
+    "R6:cleanVM installation/externalSDK/systembuspermissions/upgrade/rollback/uninstall/configretention",
+    "Then originalfeaturedevelopment;keepfullscope andallprioracceptance"
   ],
   "architecture_contract_adoption": "docs/decisions/0004-application-ownership-and-delivery.md",
   "proof_policy": {
@@ -800,7 +799,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R4_RAW_ABI_VM_QUALIFICATION_THEN_FULL_R5_R6",
+  "execution_phase": "ARCHITECTURE_FIRST_R5_CLIENT_CONTRACT_THEN_R6_DEPLOYMENT",
   "next_resume_tasks": [
     "R4f2:finish finite production event/metadata authority and full-chain unpublished raw ABI retirement with valuable historical tests preserved",
     "R5:complete existing AppSDK/CLI/C-Python callers and independent contract/provenance gates;no second Engine",
@@ -1809,24 +1808,28 @@
       "parser-budget-source-correction": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "raw-uapi-retirement-r4f2e": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R4f2e-raw-ABI-and-test-retirement",
-      "production_behavior": "K2fc/U2c8retire101rawfacades/53unusedpubliclayouts;retain26actualcontrols andsameRuntime/Session/Grant/credit/Ticket/soleSSAPEngine. Kernelbuild/offlinechecks done;newVM/RFpending. Oldselectedqualification unchanged.",
-      "state": "RAW_ABI_SOURCE_MIGRATED_OFFLINE_PASS_NEW_VM_PENDING",
+      "id": "WP18-R5-application-client-and-shared-contract",
+      "production_behavior": "R4rawABI14gates scopedqualified:compiledK2fc/U2c8/executed2c8;currenttesttoolsc396/receipt29268 separate. Existing Runtime/Session/Grant/credit/Ticket/soleSSAPEngine retained. Now migrate duplicateCLI/applicationD-Bus clients through existingSDK/sharedcontract,then fullC/Python andR6deployment.",
+      "state": "R4_FINITE_SCOPED_QUALIFICATION_R5_R6_ARCHITECTURE_INCOMPLETE",
       "exit": [
-        "Strict current default/allfeatures+wholeKernel/component+independent32/64numeric/ABI/ELF/permission andnegativecontrols",
-        "ActualnewVirtual101ENOTTY/303checks root+ordinary andcurrent CAP/observation;Nativepartialopen/usercopy/peer isolation",
-        "ExactnewK2fc/U2c8/tools2c8/bundle WS73short/boundary/long/Owned/security peerverifiedUSB preservation",
-        "Complete callers/bindings/CIpin/docs andpreserved originalWIP;thenfullR5SDK/CLI/C-Python/contracts,R6cleanVMdeployment;notwholearchitecturecomplete"
+        "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
+        "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
+        "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
+        "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Finish finite newVM/RFpreservation;then fullR5/R6architecture beforefeature expansion. OriginalS0-S6/19WP/10FV/12DG,standard255,naturalRCA/nonmanualrecovery remainOPEN."
+      "next": "Complete R5SDK/CLI/SSAP/C-Python andR6deployment beforefeature expansion;alloriginalS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery remainOPEN."
     },
     "selected_qualification": {
       "version": 1,
-      "record": "parser-budget-source-correction"
+      "record": "raw-uapi-retirement-r4f2e"
     }
   },
   "agent_workstream": {
@@ -3315,7 +3318,7 @@
       "report": "docs/evidence/kernel-event-registry-retirement-r4f2cd-20261017.json"
     },
     "r4f2e": {
-      "state": "SOURCE_MIGRATED_FULL_KERNEL_AND_OFFLINE_PASS_NEW_VM_PENDING",
+      "state": "FINITE_FOURTEEN_GATES_SCOPED_QUALIFIED_ARCHITECTURE_INCOMPLETE",
       "source": "4b6dda28490d61864eacaa791e72cac1cfea2c0c",
       "candidates": 101,
       "previous_snapshot_candidates": 93,
@@ -3323,11 +3326,14 @@
       "retained_current_commands": 26,
       "numeric_scope": "x86_64/i386 Cmacro values identical,no collisions;not runtime compat/retirement proof",
       "exit_reference": "WP18 R4f2e canonical plan",
-      "remaining": "NewactualVMpermission/retirednumbers/Nativeopen+usercopy andexactWS73preservation;fullR5/R6. UsefuloldsyntheticUSBterminal/hotplug/recovery notclaimedcoveredbyVirtual.",
+      "remaining": "FullR5typedapplicationSDK/CLI/C-Python andR6cleanVMdeployment;alloriginalscope/naturalRCA/nonmanualrecovery OPEN",
       "kernel_source": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
       "userspace_source": "2c8e05cf8b467bed702adabf9ba42c577a862f4e",
       "unused_rust_layouts_privatized": 53,
-      "implementation_report": "docs/evidence/raw-uapi-retirement-progress-20261018.json"
+      "implementation_report": "docs/evidence/raw-uapi-retirement-progress-20261018.json",
+      "test_tools_kernel": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+      "independent_receipt_tools": "29268b70f091de442e873289dda5b88b3477d23f",
+      "qualification_report": "docs/evidence/raw-uapi-retirement-qualification-20261018.json"
     },
     "parser_budget_review": {
       "production": 240,
@@ -3342,7 +3348,12 @@
       "report": "docs/evidence/parser-budget-source-correction-20261017.json",
       "reused_scope": "Exactunchangedcomponent/build/boot/ABI/ELF/Virtual4b6 and4realVM4b6/U2bd/tools997;notfreshVM orwholeHEADqualification",
       "next": "Resumepreserved101rawAPI/types/callers/currenttestmigration thenfullR5SDK/R6deploy;alloriginalscopeOPEN"
-    }
+    },
+    "remaining_order": [
+      "R5:existing AppSDK/CLI/SSAP/C-Python shared typedcontract;no second Engine",
+      "R6:cleanVM installation/externalSDK/systembuspermissions/upgrade/rollback/uninstall/configretention",
+      "Then originalfeaturedevelopment;keepfullscope andallprioracceptance"
+    ]
   },
   "owned_ssap_c6_historical_batch": {
     "production": "Sole actor owner-bound local authorization; original receipt/deadline and fd recheck; no new Engine",

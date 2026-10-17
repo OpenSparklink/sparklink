@@ -4,21 +4,21 @@
 R6干净VM部署收敛，再扩展功能。采用唯一架构中的组件依赖、应用接口、运行时三视图；
 不是另建Host/Engine或把全部控制面竞争组合变成前置。保留完整S0–S6、19WP、10FV、
 12DG、VM-only、已封存WS73路径及未提交生命周期开发，UserHost仍为P4规划。
-当前有限批为WP18/R4f2e，退出条件和剩余条件见下文；历史Owned/安全/数据资格只按
+R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契约及R6部署整改；历史Owned/安全/数据资格只按
 [当前能力入口](current-capabilities.md)所选准确产物及记录保留，不转授新HEAD。
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K4b6/U2bd保留产物：2d268直接生产预算修正，实际240边界限定通过**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/U2c8旧rawABI退休：四真实VM与当前Native测试工具限定通过**。
 仅记录范围：`real_device` / `PASS`。
-kernel `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
-compiled_userspace `2bd9873a2cd99d40922a3f00c5ae1ebd19da8aaa`。
-executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
-kernel_selftest_tools `2d268bd0dfe53496d10309e645733d1a6cbe9a89`。
-independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
-compiled_virtual_tools `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
-[准确范围与剩余条件](../docs/evidence/parser-budget-source-correction-20261017.json)。
+kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
+compiled_userspace `2c8e05cf8b467bed702adabf9ba42c577a862f4e`。
+executed_tools `2c8e05cf8b467bed702adabf9ba42c577a862f4e`。
+kernel_offline_virtual_tools `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
+kernel_lifecycle_tools `c39686a8095818d8aed9e42ac1d15e0eee47e1e6`。
+independent_receipt_tools `29268b70f091de442e873289dda5b88b3477d23f`。
+[准确范围与剩余条件](../docs/evidence/raw-uapi-retirement-qualification-20261018.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -189,6 +189,7 @@ compiled_virtual_tools `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
 | R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete | `real_device` | `PASS` |
 | 历史K4b6/U2bd总门禁：parser预算依赖不匹配，聚合未证明 | `real_device` | `UNPROVED` |
 | K4b6/U2bd保留产物：2d268直接生产预算修正，实际240边界限定通过 | `real_device` | `PASS` |
+| K2fc/U2c8旧rawABI退休：四真实VM与当前Native测试工具限定通过 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1192,7 +1193,7 @@ Virtual4b6与四真实VM原件未重建/重跑，不授整个2d268 HEAD资格。
 240是当前标准profile软件预算，不是A3业务249/2042长度；标准255互通资格仍缺，
 不得将修测试描述成实现已符合完整标准。详见[反例](../docs/evidence/parser-budget-fixture-review-20261017.json)。
 
-##### R4f2e源码已迁移；新VM／实机资格待验
+##### R4f2e有限退出已验收；完整R5／R6继续
 
 签名源码K`2fc210af68ee`／U`2c8e05cf8b46`已落实101旧raw声明/分类/仅拒绝分派退休；
 26真实入口及现有状态权威保留。旧编码ENOTTY，在CAP、Runtime和usercopy之前拒绝，
@@ -1200,11 +1201,17 @@ Virtual4b6与四真实VM原件未重建/重跑，不授整个2d268 HEAD资格。
 cfg(test)见证，当前ABI和5份历史跨语言布局分开；实际权限类型和唯一SSAP Engine保留。
 [本批范围和材料身份](../docs/evidence/raw-uapi-retirement-progress-20261018.json)。
 
+本批准确资格见[14门禁报告](../docs/evidence/raw-uapi-retirement-qualification-20261018.json)：
+编译K2fc/U2c8、实机工具2c8、当前生命周期工具c396及独立回执校验29268分源。
+四真实VM共32次对端应用回复；另外的初始化/usercopy/权限交接VM是模拟controller，
+不替代空口或自然恢复。当前生产路径不增加功能，退出后进入下面R5，不追加全控制面前置。
+此前[离线进度快照](../docs/evidence/raw-uapi-retirement-progress-20261018.json)保留原“待验”时间语义。
+
 三类清单：
 
 | 处理 | 生产调用者／实际功能 | 替代与验收条件 | issues |
 |---|---|---|---|
-| 立即删除，源码已实施 | 101旧raw只有声明/拒绝门面，上层包装已退休；53旧Rust布局只有单元测试 | Typed Native/授权Channel；26数值不变、旧101实际ENOTTY和不改输出；新VM待验 | K#6/#17/#19、U#3/#6/#8 |
+| 立即删除，源码已实施 | 101旧raw只有声明/拒绝门面，上层包装已退休；53旧Rust布局只有单元测试 | Typed Native/授权Channel；26数值不变、旧101实际ENOTTY和不改输出；新VM已单独验收 | K#6/#17/#19、U#3/#6/#8 |
 | 移入测试，已实施 | 13原suite/CLI/runner精确来源、旧C/Rust布局、权限helper、原失败 | 当前初始化/usercopy/作者结果迁到Typed诊断；原文件/hash及取消/故障回归保留；不是旧raw成功接口 | 同上 |
 | 等待替代／验收 | 旧合成USB终态/重复回复/热插拔/恢复情景；完整AppSDK/CLI/C-Python及部署 | 有价值情景经当前接口重建后取新VM证据；当前Virtual不声称全覆盖。R5/R6及原全部范围开放 | K#19、U#8及原权限/socket/SSAP范围 |
 
@@ -1221,6 +1228,22 @@ cfg(test)见证，当前ABI和5份历史跨语言布局分开；实际权限类�
 
 原83项EOPNOTSUPP历史快照不改写为101ENOTTY。原parser预算反例及旧聚合UNPROVED
 继续保留；新raw批不是标准255互通、自然故障根因或非人工恢复资格。全部原scope开放。
+
+##### R5应用客户端与共享契约：下一批有限退出
+
+生产行为：复用现有owner-pinned `libsparklink::Client`、授权`slk-channel`及daemon唯一
+SSAP Engine；迁移slctl中自行拼接连接身份、SSAP方法字符串和长元组的重复调用。
+共享wire值/签名归slk-contract，应用封装不导出Native lease；daemon不依赖应用SDK。
+现有staging、Owned注册与安全Agent分别保留，不因名字相近合并。
+
+1. 先迁移实际远端SSAP/连接观察入口，保留CLI输出及真实调用者；检查daemon owner、
+   controller generation、physical lifetime，旧对象不自动跟随新daemon/连接。
+2. 原方法仍由唯一daemon Engine执行；SDK不维护事务、远端缓存或生成协议成功。
+   超限/不支持明确拒绝，错误不降级；回调授权与安全Agent仍是不同职责。
+3. 通过实际私有D-Bus调用、独立签名、拒绝/owner更换/旧身份负对照和严格构建，
+   再用准确新artifact VM验证迁移入口及原WS73路径保持，不能用内部旧函数测试代替。
+4. 此后补完整管理/本地Owned/Agent客户端和C/Python实际消费，删除迁移后的重复入口；
+   R6在干净VM验证部署链。局部入口迁移不是完整R5或整个架构完成。
 
 ##### R5a最小独立导出门禁
 

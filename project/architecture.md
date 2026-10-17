@@ -1077,74 +1077,36 @@ full clean deployment and Bond remain separately gated.
 资格只维护在[当前能力](current-capabilities.md)。完整原范围与VM-only不变。
 
 
-R3c源码已接通真实应用Client并迁移slktest授权fd申请；保留唯一Engine/Session。
-共享契约独立于SDK，实际producer和caller共用路径/元组。Client绑定唯一daemon owner、
-不缓存generation，不跟随替换者，内核仍最终强制Grant/身份；这是观察核对，不是跨
-D-Bus/内核原子证明。Native C导出移到独立库/头，App库不导出Native，Python默认
-Native入口和旧Adapter模块删除，错误显式库路径不回退。C/Python现有应用面仅授权fd
-操作，完整broker/SSAP便利客户端未实现，不添加假门面。slk-native仍含待R4逐入口
-退休的旧拒绝逻辑；部署完整性与实机资格按准确产物另验。
+### 应用与Native依赖契约
 
+App SDK不依赖Native，daemon不依赖自己的D-Bus客户端；授权fd业务走Channel，
+SSAP事务与远端缓存只属于daemon唯一Engine。共享D-Bus契约独立于SDK，生产者与
+调用者共同消费值/路径规则，同时保留独立签名和实际调用检查。完整三视图见本文
+应用API设计；没有实现及验收的接口不由图示自动开放。
 
-SDK的controller列表仅是注册成员观察；不能据此授予Ready或授权。连接选择/每次
-准入只核对选中controller的无缓存generation和固定lifetime，同行不可查询不作为
-前置条件；原b0f全controller属性前置造成的实际私有bus反例保留，旧generation的
-负对照改在实际fd准入处验证，不能以列表重排或缓存隐藏该故障。
+Client固定daemon unique owner。controller列表只表达注册成员观察，不授Ready；
+每次准入只检查所选generation和固定lifetime，不以同行可查询为前置。属性采用
+无缓存读取。旧对象不跟随daemon更换、重连或handle复用；内核最终强制Grant和身份，
+SDK检查不宣称跨D-Bus／内核原子证明。C/Python必须表达同一错误、身份及关闭语义。
 
-旧SSAP门面退休（R4b）：ServiceManager只保留实际Local/Owned数据库接口，
-旧RegisterServices/AddProperty等及RemoteService完整移除；旧handle事件不得再发布
-第二套SSAP对象。真正远端收发仍由完整generation/lifetime的Connection唯一actor承担。
-历史callback模型只保留在测试/明确实验构建，Native生产以typed事件/快照更新观察。
-删除门面不扩大当前资格；每批准确artifact单独回归，rawABI/部署剩余工作继续开放。
+### 唯一生产状态与历史隔离
 
-R4c事件边界：Native公开事件只有带注册generation的ControllerEventReceiver记录与
-完整链接快照；删除混合旧Event导出。生产广告消费直接使用现有有界观察维护函数，
-不再构造旧事件模型。历史连接/配对codec和callback/慢存储/cancel/drain仅测试，
-实验feature也不能复活旧生产事件消费者。未改变唯一Session、底层RX顺序或Grant。
+Core注册表拥有index/generation、setup/retirement、总线来源和观察元数据。
+Ready、wire版本/features、ACB/ICB及协议credit来自现有Runtime/Backend快照；
+注册计数只表示已分配成员。删除的能力、统计和packed版本投影不得重建第二权威。
+Native统计不生成零值成功投影。未知或退休命令在访问用户指针前拒绝，旧编号不复用。
 
-R4c同时退休没有Native消费者的daemon experimental-legacy-profiles构建入口，
-独立实验crate与原actor测试保留为dev-dependency，不恢复旧profile0接线。
-生产依赖门禁对default与all-features均执行实际normal闭包及原负对照；
-这不是完整公开接口/生命周期/部署或协议证明，R5/R6剩余条件不变。
+Native事件只有带generation的记录和完整链接快照，默认生产不消费旧handle事件、
+配对元数据或实验Profile。未接通标准业务事件在ingress拒绝计数，解析成功不制造
+连接/安全状态。历史codec、权限和callback故障测试保留在隔离selftests或实验crate；
+default与all-features生产闭包均禁止通过实验feature复活旧Engine/状态来源。
+生产模块以实际调用及死代码/可见性检查防回流，不通过全局豁免掩盖未接通职责。
 
-R4d职责边界：Native SDK不再公开旧广播/scan/连接收发/PHY/PM/AFH/privacy等拒绝包装，
-Controller只保留真实快照观察，ExtAdv和地址Device控制门面退休。版本化Native控制、
-唯一Session/Channel/Grant/credit/Ticket及用户态Engine不变。枚举和分配计数来自同一
-Core bitmap，计数不代表Ready；旧Discovering副本删除，UI读取已有ScanningState。
-错误从实际Kernel errno表达，指针open的线程errno与Python OSError一致。历史布局
-归测试，不在当前SDK；R4 raw声明/剩余全局掩盖及R5/R6尚未闭合。
+关键故障由同一Host锁关闭准入并保存独立关键观察，避免普通RX队列满而丢失处理义务。
+现有worker处理故障和作者ledger；读取观察不清除Fault，晚到credit不恢复Ready，
+其他controller不共享状态。Runtime open不由应用fd触发；作者取消不抹去物理义务。
+重新Ready必须经过生命周期和已验证的控制器状态屏障。
 
-R4e注册对象与测试边界：Core注册表只拥有index/generation、setup/retirement和观察
-元数据；Host Ready、发现/连接、能力与统计由实际Runtime/Backend状态表达。未消费的
-注册flags/能力副本/统计/便捷方法删除，注册模块以deny(dead_code)防回流；真实
-generation复用、候选分配、退休及partial init状态不变。该变更须准确新Kernel VM回归，
-不能沿用旧0cd资格。其余DLI/命令模块全局掩盖仍需实际调用审计，不能全模块换成
-局部allow以消除诊断。
-
-未链接的历史crypto Rust/C已逐字迁入selftests/retired-security-state。原故障依赖与
-专用VM probe继续消费这一份代码；实际生产P256/CMAC保留唯一来源，并由probe明确
-include。历史fixture的module属性不是生产豁免，测试通过不成为认证/Bond或WS73
-当前资格。旧报告原路径/commit/hash保留，新报告明确测试路径及boot/probe不同身份。
-
-R4e2命令所有权收敛：未消费的裸命令链和按opcode寻找作者的结果入口退休；当前
-Runtime Host仍是唯一调度/credit/物理义务来源。Diagnostic、发现、连接和relay使用
-原typed准入、原期限和实际提交票据；Backend视图仅元数据/受控关闭，Runtime open
-不由应用fd触发。历史raw ingress回归独立命名为测试，不能重新接入生产。该批准确
-门禁在相应报告，DLI目录/全局掩盖及rawUAPI其余消费者仍待迁移，不宣称整架构完成。
-
-注册元数据不得维护第二套协议能力：Provider的注册视图仅承担已验证总线来源、
-地址；写入却无消费者的packed版本副本已退休，完整wire version/features及ACB/ICB仍由现有Native
-快照提供。未消费的MTU/MPS、安全位等投影已退休，不能从全零/默认字段推导能力。
-历史UART/SPI/USB元数据只属隔离selftests；实际标准DLI codec和Runtime/Session/
-Grant/credit/Ticket保持原责任。剩余事件模型/全局掩盖及rawABI按唯一计划逐条退休。
-
-关键控制器故障采用同一Host锁和故障状态：回调仅做有界状态转换，关闭新提交并
-保留一项关键code观察，避免普通RX满队列吞掉处理义务。现有worker消费故障及
-作者ledger，原取消/期限/终态和在途引用遵循原契约。取走诊断观察不解除Fault，
-晚到credit不恢复Ready；其他controller不共享此状态。回调返回、控制器完成和
-对端交付仍是不同阶段，任何恢复Ready仍需已有生命周期与已验证控制器屏障。
-
-默认标准DLI只构造有实际消费者的命令结果/credit及关键故障；未接通业务事件在
-ingress拒绝并计数，不把解析成功当作连接或安全状态。WS73 Native的现有
-发现、连接、数据及安全仍经原lifetime-bound路径。未归属ring助手和旧业务
-decoder只在隔离selftests；生产DLI以deny死代码/可见性约束防回流。
+这里保留目标和持久契约，逐批进度只进入唯一计划、ADR及资格记录。
+先前R3/R4进度原文封存于[历史记录](../history/architecture-retirement-progress-before-r4f2e-20261018.txt)，
+其中“仍待迁移”描述其原始时间，不是当前能力；资格只从[能力入口](current-capabilities.md)取得。

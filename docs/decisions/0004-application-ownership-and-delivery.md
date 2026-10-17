@@ -396,3 +396,15 @@ decoder只在隔离selftests；生产DLI以deny死代码/可见性约束防回�
 未知旧编码须在权限、对象选择和usercopy前ENOTTY。新模式的不支持错误仍属其
 实际接口契约。无生产消费者的旧布局不得仅为ABI测试留在公开SDK；历史C/Rust/
 Python见证私有化，保留来源与原断言。Codec/权限语义和有效SSAP actor不机械删除。
+
+## R4 raw ABI有限退休与R5调用者边界（2026-10-18）
+
+101个未发布raw入口已从生产声明/授权/分派全链删除；26个当前入口数值保持，
+53个无消费者布局仅在私有历史测试中保留。旧编号不复用；无兼容期或只拒绝的旧SDK门面。
+当前Native统计不投影假零值，测试用实际typed request/result replay及观察快照，
+不把它们描述为物理credit/debt证明。编译源码与测试工具身份分开记录。
+
+后续调用者整改采用已有Client、Channel和共享D-Bus契约；SSAP客户端仅发起daemon
+操作并表达限定结果，不另维护wire Engine/远端事务状态。slctl与语言绑定逐条迁移，
+迁移后删除重复身份规则、tuple与方法字符串；不为赶进度公开万能Proxy或Native逃生口。
+局部迁移必须以实际新入口验收；普通应用业务fd仍直达socket，逐包不经D-Bus。

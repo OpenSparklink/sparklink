@@ -362,6 +362,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         posture=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connection_advertising=/){sub(/^ws73.connection_advertising=/,"",$i);print $i}}' /proc/cmdline)
         case "$posture" in fixed-t|negotiable-t) ;; *) fail 'explicit connection posture' ;; esac
         connection_arg="--connection-verify --connection-advertising $posture"
+        if grep -qw ws73.application_clients=1 /proc/cmdline; then connection_arg="$connection_arg --application-client-verify"; fi
         if grep -qw ws73.channel_socket=1 /proc/cmdline; then
             channel_rounds=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_rounds=/){sub(/^ws73.channel_rounds=/,"",$i);print $i}}' /proc/cmdline)
             channel_bytes=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_bytes=/){sub(/^ws73.channel_bytes=/,"",$i);print $i}}' /proc/cmdline)

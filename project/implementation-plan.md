@@ -1421,6 +1421,15 @@ canonical SONAME表，先核对两库再复制，旧显式路径探针指向同�
 保留前后原件，**尚未启动新VM或取得实际权限/设备资格**。继续完成上述R5f2门禁，
 不因修正镜像文件名关闭整项，也不以软件布局修复解释自然设备故障。
 
+R5f2 当前纵向退出：专用测试目录下的小型 C/Python 普通应用使用公共 Client，
+从实际 broker 取得固定通道，dup 后关闭原 fd 与 Client，再做单次随机请求/独立
+回复的完整校验；最后引用关闭后同 lifetime 重绑须拒绝。两种语言交换发起/应答
+和连接角色，核对实际身份、应用输出及双端 USB/HCC/ACB 数据。应用仅使用正常
+socket，不新增 Host、codec 或 benchmark 循环。原发现/连接/短包/长度回归使用
+现有 slktest、SSAP 和 capture 设施另验，不能代替新 API 正向交付。先离线实际
+API/参数/故障与镜像校验，再以准确新 artifact 运行 VM；完整权限、release/撤权/
+Down/原期限交错、SDK其余入口和R6c仍按原 scope开放，不弱化原验收范围。
+
 核对268源码后复用已有修复：Makefile已使用实际liblibsparklink.so源文件，e28卸载
 保留管理员配置/状态。尚未完成：默认/usr/local与服务/usr/sbin不一致；Debian仍取
 错误源库名且缺Native/pc统一安装；pc头目录不符；无正式SONAME与干净VM升级回滚

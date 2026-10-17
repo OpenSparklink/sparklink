@@ -6,6 +6,7 @@ Reuse a verified scratch-root boot and signed modules. This extends the target
 guest, not the native-host acceptance matrix or a systemd sandbox qualification.
 """
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -259,6 +260,27 @@ def stage(args, manifest, root, source, copy_elf):
     native_library = service_path / 'payload' / service['native_shared_library'].lstrip('/')
     manifest['native_runtime_libraries'] = stage_runtime_libraries(
         root, [library, native_library], copy_elf)
+    # Small external SDK consumers, isolated from daemon/default production.
+    fixtures = source / 'tools/testing/application_client'
+    c_probe = root / 'bin/ws73-application-client-c'
+    compiled_probe = root.parent / 'application-client-c'
+    compiler = Path(shutil.which(os.environ.get('CC', 'cc'))).resolve(strict=True)
+    command = [str(compiler), '-std=c11', '-O2', '-Wall', '-Wextra', '-Werror',
+               '-I' + str(source / 'crates/libsparklink/include'),
+               str(fixtures / 'client.c'), str(library), '-Wl,-rpath,/usr/lib',
+               '-o', str(compiled_probe)]
+    subprocess.run(command, check=True)
+    copy_elf(compiled_probe, c_probe, root)
+    python_probe = root / 'usr/share/sparklink/tools/ws73-application-client.py'
+    checked_copy(fixtures / 'client.py', python_probe)
+    checked_copy(source / 'tools/ws73_application_client.py',
+                 root / 'usr/share/sparklink/tools/ws73_application_client.py')
+    manifest['application_client_tools'] = dict(
+        sources=[file_record(fixtures / name) for name in ('client.c', 'client.py')],
+        verifier=file_record(source / 'tools/ws73_application_client.py'),
+        c_compile=command, compiler=file_record(compiler),
+        compiler_version=subprocess.check_output([str(compiler), '--version'],text=True),
+        c=file_record(c_probe), python=file_record(python_probe))
     custom_config = getattr(args, 'native_discovery_config', None)
     if custom_config is not None:
         stage_discovery_config(custom_config, service_path / 'payload' / prefix / 'slkd', root, manifest)

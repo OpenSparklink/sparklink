@@ -124,6 +124,7 @@ def main():
     parser.add_argument('--slctl',type=Path,required=True)
     parser.add_argument('--slkd-pid',type=int,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--application-client-verify',action='store_true',help='dedicated actual public C/Python fixed-channel one-shot/dup/final-close gate')
     parser.add_argument('--passthrough',action='store_true',help='real RF, QMP guest-only disconnect; excludes physical unplug acceptance')
     parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')
     parser.add_argument('--initializer-lifecycle',action='store_true',help='actual initializer withdrawal, eviction and guest-generation gate; excludes private File close/dup')
@@ -149,6 +150,8 @@ def main():
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
     parser.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t')
     args=parser.parse_args()
+    if args.application_client_verify and (not args.passthrough or not args.connection_verify or any(getattr(args,key,False) for key in ['channel_socket_verify','acb_transport_probe','security_agent','daemon_link_resync','channel_benchmark','dynamic_channel_verify','channel_fairness_verify'])):parser.error('application clients require a dedicated real connection gate')
+    if args.application_client_verify and any(value for key,value in vars(args).items() if type(value) is bool and key not in ['passthrough','connection_verify','application_client_verify']):parser.error('application clients cannot combine independent lifecycle/fault gates')
     if args.ssap_owned_verify and (not args.channel_socket_verify or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owned SSAP requires separate ordinary socket baseline')
     from ws73_socket_benchmark import requested_configuration
     try:requested_configuration(args)

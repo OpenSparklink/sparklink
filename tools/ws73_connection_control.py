@@ -216,6 +216,9 @@ def execute(run, a, b):
             if getattr(run.args, 'channel_socket_verify', False):
                 from ws73_channel_socket import execute as channel_execute
                 channel_execute(run, phase)
+            if getattr(run.args, 'application_client_verify', False):
+                from ws73_application_client import execute as application_execute
+                application_execute(run, phase)
             if getattr(run.args,'channel_benchmark',None):
                 from ws73_socket_benchmark import execute as benchmark_execute
                 benchmark_execute(run,phase)

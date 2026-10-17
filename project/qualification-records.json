@@ -13,16 +13,16 @@
     "replay": "冻结575工具/原bundle及各run manifest命令；仅在授权VM内。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP18-R5f1-offline-qualified-actual-client-VM-and-R6c-open",
-    "production_behavior": "C/Python reuses actualowner-pinned RustClient/Channel;release40c andconsumer867 separate. Eightfiniteofflinegates pass;no newRF/formalproof. Actualnewclient production/SystemBus/KernelGrant/RF andhigherAPI remainrequiredMISSING.",
-    "state": "R5F1_OFFLINE_FINITE_PASS_FULL_ARCHITECTURE_AND_ACTUAL_CLIENT_GATES_INCOMPLETE",
+    "id": "WP18-R5f2-public-client-VM-gate-preparation",
+    "production_behavior": "Existing publicRustClient/Channel reused byone-shot C/Python externalconsumers in dedicated VM gate;dup/closeClient/originaldeadline/lastclose plusopposite randomreply/USBcorroboration. No newHost/Engine/productionkernel;not yetqualified.",
+    "state": "R5F2_CONTROLLED_CONSUMERS_IMPLEMENTED_REAL_QUALIFICATION_PENDING",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "R5f actualnewclient deployment/WS73 andhigherSSAP/Agent/Owned/sharedAPI;R6c crossversionupgrade/rollback/debug/deps/license/provenance/release. Preserve fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanualrecovery andalloriginalscopeOPEN."
+    "next": "Build exactsource nativeimage,run newpublicclient positive andoriginalbaseline/length regression,then originalprivilege/revoke/deadline/peerisolation matrix andremainingR5f/R6c. No scope shrink orissueclosure."
   },
   "overall_required_records": [
     "deadline-real21",

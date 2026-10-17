@@ -350,6 +350,11 @@ def verify_passthrough():
         from ws73_acb_transport_probe import corroborate as acb_corroborate
         acb_corroborate(run,capture,(EVIDENCE/'kernel.log').read_text())
     requested_connection = 'ws73.connection_verify=1' in Path('/proc/cmdline').read_text().split()
+    requested_clients = 'ws73.application_clients=1' in Path('/proc/cmdline').read_text().split()
+    if requested_clients != ('application_clients' in run):raise ValueError('explicit application client request/evidence mismatch')
+    if requested_clients:
+        from ws73_application_client import corroborate as client_corroborate
+        proofs.append({'application_clients':client_corroborate(run,capture)})
     if requested_connection != ('connection_control' in run):
         raise ValueError('explicit connection request and evidence must agree')
     owned_requested='ws73.ssap_owned=1' in Path('/proc/cmdline').read_text().split()

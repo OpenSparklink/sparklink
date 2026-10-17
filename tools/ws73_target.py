@@ -517,6 +517,11 @@ def _run(args):
     if benchmark_mode and (benchmark_mode not in ['rate','window','duplex'] or not passthrough or not connection_verify or support or parallel or acb_probe or agent_mode or dynamic_channels or getattr(args,'daemon_link_resync',False) or getattr(args,'channel_socket_verify',False)):
         raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
+    application_clients=bool(getattr(args,'application_client_verify',False))
+    if application_clients and (not passthrough or not connection_verify or 'native_vm' not in package or any([channel_socket,benchmark_mode,acb_probe,agent_mode,dynamic_channels,fairness,getattr(args,'daemon_link_resync',False)])):
+        raise ValueError('application clients require a dedicated native real connection VM')
+    if application_clients and (any(value for key,value in vars(args).items() if type(value) is bool and key not in ['qmp_hotplug','connection_verify','application_client_verify']) or any(getattr(args,key,None) for key in ['managed_partial_case','managed_connected_case','managed_connected_reply','managed_real_later_step','daemon_hold_case']) or getattr(args,'connection_advertising','fixed-t')!='fixed-t'):
+        raise ValueError('application client gate cannot combine fault/lifecycle selectors or protocol contrasts')
     service_policy=bool(getattr(args,'ssap_service_policy',False))
     if service_policy and (not channel_socket or not passthrough or agent_mode or dynamic_channels or fairness):raise ValueError('service-role gate requires separate ordinary native two-device socket baseline')
     channel_bytes=getattr(args,'channel_socket_bytes',61)
@@ -709,6 +714,9 @@ def _run(args):
     m['socket_benchmark_acceptance']=False
     m['performance_qualified']=False
     m['channel_socket_verification_requested']=channel_socket
+    m['application_client_verification_requested']=application_clients
+    m['application_client_acceptance']=False
+    if application_clients:m['application_client_verifier']=file_record(HERE/'ws73_application_client.py')
     m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
     m['channel_socket_close_prefix_requested']=channel_close
@@ -896,6 +904,7 @@ def _run(args):
                      (' ws73.channel_prefix_close=1' if channel_close else '')+
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (' ws73.ssap_owned=1' if ssap_owned else '')+
+                     (' ws73.application_clients=1' if application_clients else '')+
                      (' ws73.ssap_service_policy=1' if service_policy else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
                      (' ws73.channel_fairness=1' if fairness else '')+
@@ -1263,6 +1272,17 @@ def _run(args):
                     if m['benchmark_verifiers']!=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py']]:raise ValueError('benchmark verifier changed during execution')
                     m['socket_benchmark_acceptance']=True
                 if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
+                if application_clients != ('application_clients' in control):raise ValueError('explicit application client request/evidence mismatch')
+                if application_clients:
+                    from ws73_application_client import corroborate as client_corroborate
+                    if file_record(HERE/'ws73_application_client.py')!=m['application_client_verifier']:raise ValueError('application client verifier changed during execution')
+                    m['application_client_corroboration']=client_corroborate(control,capture)
+                    for row in control['application_clients']:
+                        for key in ['c','python','library']:
+                            receipt=row['tools'][key];staged=args.prepared/'root'/receipt['path'].lstrip('/')
+                            matches=[x for x in package['guest_files'] if x['path']==str(staged)]
+                            if not staged.is_file() or len(matches)!=1 or matches[0]['sha256']!=receipt['sha256'] or file_record(staged)['sha256']!=receipt['sha256']:raise ValueError('application client differs from sealed image')
+                    m['application_client_acceptance']=True
                 if channel_socket:
                     from ws73_channel_socket import corroborate as channel_corroborate
                     if any(row.get('message_bytes',61)!=channel_bytes or row.get('boundary_check',False)!=channel_boundaries for row in control['channel_socket']):raise ValueError('socket message size or boundary request differs from actual gate')
@@ -1583,6 +1603,12 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record):
+    clients=record.get('application_client_verification_requested',False)
+    if type(clients) is not bool:return 1
+    if not clients and (record.get('application_client_acceptance') or 'application_client_corroboration' in record):return 1
+    if clients:
+        from ws73_application_client import valid_summary
+        if record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0 or record.get('application_client_acceptance') is not True or not valid_summary(record.get('application_client_corroboration',{})):return 1
     required=record.get('live_ssap_security_requirement',0)
     if type(required) is not int or required not in (0,1,2):return 1
     if not required and (any(v.get('ssap_security_requirement',0) for v in record.get('security_agent_corroboration',{}).get('phases',[])) or any(v.get('protected_ssap') for v in record.get('channel_socket_corroboration',{}).get('proofs',[]))):return 1
@@ -1834,6 +1860,7 @@ def main():
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
             cmd.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
+            cmd.add_argument('--application-client-verify',action='store_true',help='dedicated real public C/Python SDK one-shot/dup/final-close gate;not fullSDK orpermission qualification')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')
             cmd.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t',help='explicit announcement contrast for --connection-verify')

@@ -10,8 +10,8 @@
 | kernel build | 准确 Linux 源码、配置、工具链和独立输出目录中的镜像；不是宿主已运行的内核 |
 | native_module_tree | 与镜像 vermagic/配置匹配、已按实验路径签名的模块依赖树 |
 | native_boot_smoke | 成功 scratch-root 启动的 **manifest 文件**，不能传目录或用空 USB 结果代替真实 probe |
-| native_service_bundle | 准确编译用户态及 guest 工具的 bundle manifest，不能用文档提交代替编译身份 |
-| SDK111 inputs | 合法取得并记录 hash 的固件、校准和板级输入；不在公开文档分发 |
+| native_service_bundle | 含 manifest 的准确 bundle 目录，记录编译用户态及 guest 工具；不能用文档提交代替编译身份 |
+| SDK110 inputs | 显式选择已知 E/U 板卡对应主固件、两份校准及板级输入，记录 hash；不公开分发。不由 USB VID/PID 或运行期 HCC 查询推导冷 ROM 自动选择资格 |
 | physical USB selection | 明确物理端口、VID/PID 与当前枚举；device number 可变，不是稳定身份 |
 | execution tools | Host runner/独立核对器与 guest 程序身份分别记录，不假定等于编译服务提交 |
 | captures | 两端 USB/HCC、完整 console、capture-stats、进程退出与实际对端应用随机校验回复 |
@@ -20,6 +20,24 @@
 三个 native 输入共同描述实验 VM；它们不自动授予 Ready、连接或安全资格。
 Installed、transport 可用和每设备 Ready 分开观察。内核及所有真实 WS73 操作保持
 VM-only，主机不安装实验内核、驱动或服务。普通应用业务权限与环境管理/捕获权限分开。
+
+## 公共 C/Python 客户端的专用门禁
+
+`run --qmp-hotplug --connection-verify --application-client-verify` 选择独立的
+真实双设备 SDK 用例，要求完整 native VM 输入，不能与 socket benchmark、注入、
+Agent 或其他生命周期选择器组合。QMP 拔插仅是 guest 控制对照，不是自然恢复。
+本段描述 runner 输入，新增产物是否通过仍以准确资格记录为准。
+
+专用测试目录内的两个小应用调用公共 Client：固定连接对象申请 fd，dup 后关闭
+原 fd 与 Client，等待双方原期限内的 start 屏障，验证一次随机请求及不同的随机
+回复，最后关闭后确认同 lifetime 重绑拒绝。它们只做外部 SDK 消费，不提供另一个
+Host、协议 codec 或负载循环；持续负载/计时仍由 slktest 完成。
+两种语言交换发起/应答和连接角色；原发现、连接、长度及其他生命周期门禁另验。
+
+原始输出、UID/GID/组/全部能力、执行程序/库 hash、两端 USB/HCC/ACB 证据必须
+保留。缺一端实际校验或 capture 不能通过。linger 的有限清理等待不等于对端应用
+收到，只有实际回复校验可证明该次交付；普通 UID 且无 capability 也不自动证明
+apps-only 权限部署或所有撤权组合。未支持的模式、高阶 SDK 与恢复仍单列开放。
 
 输入不存在、hash/源码不符、模块不匹配、启动失败或缺必要记录时停止资格传播，
 保存原失败并使用新输出目录。人工拔插、hub 切电、QMP 操作只记录干预；不算自然恢复。

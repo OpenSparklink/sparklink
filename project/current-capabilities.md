@@ -1,5 +1,22 @@
 # 当前能力与资格
 
+[RX-only消息上下文限定资格](../docs/evidence/message-security-receipts-20261017.json)：
+准确K8c302d7cfc49／编译及执行U6251931，VM-only、SDK111、Hi3873U2/3；Hi3873E1排除。
+六项门禁各交换连接角色，48次实际对端随机校验回复、96条消息身份/epoch/机制观察、
+24次未知TX control拒绝且无对应USB载荷；96组SSAP对端核对/96discovery、16超限拒绝、
+8次完整2042往返保持。接收上下文不是未来TX许可、命名身份、Bond或独立RF密码证明。
+
+生产receipt/dequeue纯helper CBMC65及三负对照仅有界限定通过；Owner真值、实际锁/
+引用/USB与撤权晚到复用组合未证明。706冻结工具、43封存共享库/跨语言（32位仅布局）、
+实际Session抽取sanitizer、81protocol/28slktest+2入口、六原件重放90负对照分别记录。
+首轮完整内核宏冲突编译FAIL等原件保留；新12路增量构建compiler warning0，但make
+jobserver warning1不隐去。旧源码资格不转授新镜像，完整资格仍不成立。
+
+本批RX基础退出已达；唯一SSAP Engine尚未消费新上下文，下一批接通最终TX intent及
+属性策略/本地授权。新产物实际off/rekey/unknown及release/最后fd/dup/Down/原期限组合、
+NOCP/drain/复用、自然RCA/非人工恢复与完整S0–S6继续OPEN。以下先前切片均保留准确
+原身份和范围；历史未完成描述不能覆盖上述当前已取得的限定结果。
+
 K619/U8bda 的六项新产物门禁已通过：普通61字节两次、受保护 SSAP 等级1/2、
 249边界与完整2042字节，各交换连接角色；48次 CUTC 对端往返、96组 SSAP 读写／
 对端数据库核对、96份 discovery、16次超限拒绝。受保护 SMTC 的960份完整 USB
@@ -13,11 +30,6 @@ K619/U8bda 的六项新产物门禁已通过：普通61字节两次、受保护 
 [原超时事件线](../docs/evidence/disconnect-timeout-timeline-20261017.json)。
 旧[首次 SSAP 记录](../docs/evidence/protected-ssap-first-bind-20261017.json)和
 [离线结果](../docs/evidence/protected-ssap-offline-20261017.json)保留原身份。
-
-当前开发 K8c302d7cfc49 接通RX-only每消息机制观察及全部未知TX control拒绝，
-Rust/C/Python与slktest迁移正在回归；**尚无新artifact实机资格**。下面K619/U8bda
-记录保持原身份，不转授新路由/recvmsg。唯一SSAP Engine尚未使用新上下文，属性级
-授权、最终TX intent及完整失效组合仍缺。
 
 本页是唯一当前资格入口；[架构](architecture.md)是目标，
 [唯一计划](implementation-plan.md)是待办。当前摘要从
@@ -38,8 +50,8 @@ Rust/C/Python与slktest迁移正在回归；**尚无新artifact实机资格**。
 本批20项退出已达，转向唯一SSAP安全消费者；首次c51整轮FAIL保留，修复只计入
 已验证具体命令，不按opcode放宽。没有新增形式化证明，旧Grant helper79限定范围
 不扩展；live off/rekey/unknown/query及安装在途矩阵、NOCP/复用/drain、自然RCA/
-非人工恢复和完整S0–S6仍OPEN。SMTC自动普通绑定与Service忽略security实参须在
-首次受保护SMTC前整改，不能事后重绑或增加Engine；机制等级不是命名身份/Bond。
+非人工恢复和完整S0–S6仍OPEN。该K619/U390阶段的SMTC普通首次绑定及忽略security问题已由后续U331/8b整改并另验；
+属性策略仍缺，不能事后重绑或增加Engine；机制等级不是命名身份/Bond。
 
 [固定安全epoch Grant限定实机结果](../docs/evidence/security-grant-fixed-real-20261017.json)
 绑定K61905139/U73a2898，执行73a、后处理02ac：普通control组用户通过既有slkd与
@@ -354,6 +366,11 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | 实际锁/引用/Grant/提交撤权/晚到复用及SSAP组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 原超时根因未闭合：新旧13对照反证单字节致因，仍需诊断 | `real_device` | `UNPROVED` |
 | 内核清理迁移/属性权限/Bond及完整S0-S6/恢复：仍缺 | `real_device` | `UNPROVED` |
+| K8c/U625接收机制上下文：六实机门禁48回复/96上下文/24控制拒绝 | `real_device` | `PASS` |
+| 接收上下文：706冻结工具/43封存绑定/Session sanitizer/90实证负对照 | `offline` | `PASS` |
+| 生产receipt/dequeue纯转换CBMC65及三负对照：限定有界通过 | `formal_bounded` | `PASS` |
+| Owner真值/锁/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
+| SSAP属性策略/最终TX intent/实际失效矩阵与完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

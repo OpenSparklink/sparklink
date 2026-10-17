@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "status": "RX_FOUNDATION_QUALIFICATION_AND_SEVEN_OPEN_ISSUES_SYNCHRONIZED",
+  "compiled_kernel": "8c302d7cfc49ec05959dcb97bb60aeefd0134ebd",
+  "compiled_userspace": "62519313c07ef2fd1f5db5c609306d64af77db7f",
+  "executed_tools": "62519313c07ef2fd1f5db5c609306d64af77db7f",
+  "evidence_report_commit": "4076e9e048f4a401ff4e5cad579701cc75806259",
+  "scope": [
+    "5source-scoped qualificationrecords/122materials,5actualprovenance/scope negatives;currentwhole tree NOT_REVALIDATED andfullrequiredscope INCOMPLETE,oldFAIL/UNPROVED notoverridden.",
+    "115strictdocumentationinventory/HTML andexampleschecks;onlyfourreaderquadrants built,project/ADR/evidence sourceonly;not browser/contentcompleteness or newfunctionalqualification.",
+    "7originalissues remainOPEN,scopebodiesunchanged/commentreadbackexact;no duplicateissue/goal. GoalAPIactive/unbudgeted/fullobjectiveintact;canonicalplan carries scopedupdates.",
+    "320tracked crates/tools/Python productioninputs matchfrozen625exceptoriginaltwoWIP untouchedandnotinphysicalVM. Documentation/man/report commits notcompiledsource.",
+    "5onlineworkflows for exact625success observed;no Linux8c workflowrunobserved. Notbranchprotection/requiredcheck/runner-isolationattestation.",
+    "NextTX/SSAPaudit readonly,notimplemented;futureintentmuststrengthenoriginalGrantandholdoriginalepoch/deadline atactualUSBsubmit. No newEngine,protocolcredit orfakecontext."
+  ],
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 6,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6228286418",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 7,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6228286942",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6228287349",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6228288062",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6228288807",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 5,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6228289273",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6228289832",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/message-context-issue-receipts-v1.json",
+      "bytes": 2602,
+      "sha256": "94d5bb00dce5c4d2a41edf13ea87aecfed933a0664d63849b8c9f73e627f610f",
+      "access": "private"
+    },
+    {
+      "path": ".dev/message-context-registry-local-v1.json",
+      "bytes": 1290,
+      "sha256": "ca58ddf3eca87d832b74534b920941257900cbc6c0d11d8ecd40f3852e7c1490",
+      "access": "private"
+    },
+    {
+      "path": ".dev/message-context-source-mapping-v1.json",
+      "bytes": 470,
+      "sha256": "5c9eec13645894250843c13be8117f98ce174547427498011b02d820898eaa99",
+      "access": "private"
+    },
+    {
+      "path": ".dev/message-context-next-tx-audit-v1.json",
+      "bytes": 2225,
+      "sha256": "1038d0aead7b857bbb419c76da097272077edab9c666d92aec9ca6946b4de5a9",
+      "access": "private"
+    },
+    {
+      "path": ".dev/message-context-docs-v2.log",
+      "bytes": 336227,
+      "sha256": "6320232a601724a562986d19a07b77b8d8f3efa69ddddc364ebee0bff0b633ad",
+      "access": "private"
+    },
+    {
+      "path": ".dev/message-context-ci-user-v2.json",
+      "bytes": 67766,
+      "sha256": "f2c4e7eab623910e0b794b594f5d762f0c406aee316100055a32db9b3eac7aa5",
+      "access": "private"
+    }
+  ],
+  "remaining": [
+    "SoleSSAPcontextconsumer/finalTXintent/granularattributepolicy/localpermissions",
+    "Newartifactfullinvalidation/rekey/off/unknown/release/lastfd/dup/Down/originaldeadline combinations",
+    "Actuallocks/refs/submit-revoke-late-reuse proof,NOCPtruth/drain/reuse,naturalRCA/nonmanualrecovery,fullS0-S6/19WP/10FV/12DG/Bond/multi/four/performance/PM/deployment/release"
+  ],
+  "wall_ns": 1792202822525285933
+}

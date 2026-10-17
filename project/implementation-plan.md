@@ -2,7 +2,7 @@
 
 ## 本批退出条件与近期执行顺序
 
-当前 WP06/WP09 的唯一用户态 SSAP 首次安全 SMTC 切片，限定退出已在
+上一批 WP06/WP09 的唯一用户态 SSAP 首次安全 SMTC 切片，限定退出已在
 K619/U8bda 达成：六项真实门禁、48次 CUTC 往返、96组 SSAP 对端数据库核对、
 249边界及完整2042、受保护1/2完整时窗。主动断链请求改为 SDK 远端用户原因10，
 原 Create 参数、五秒预算和断言保持；不恢复旧内核 SSAP 或新增 Engine。
@@ -17,13 +17,13 @@ K619/U8bda 达成：六项真实门禁、48次 CUTC 往返、96组 SSAP 对端�
 近期先交付接收上下文基础：K8c302d7cfc49保留每条数据的原epoch及Owner机制观察，
 已授权dequeue重新核对currentness，不用新钥提升旧包；全部发送control明确拒绝。
 Rust/C/Python及slktest使用同一真实recvmsg解码器，不增加Engine。原全通道最低要求
-保持。新提交准确产物的VM实机资格仍待获取，旧K619资格不转授。
+保持。准确K8c/U625六项VM实机门禁已通过，旧K619资格不转授；[本批原件](../docs/evidence/message-security-receipts-20261017.json)。
 
-本批退出：严格构建与跨语言32/64布局、原Session生产函数sanitizer、实际纯helper
+本批限定退出已达：严格构建与跨语言32/64布局、原Session生产函数sanitizer、实际纯helper
 CBMC及三负对照；新slktest两端逐条身份/epoch/等级核对，随机载荷实际校验回复、
 未知control拒绝且无USB载荷、plain61/249/2042及protected1/2/原SSAP保持。
 该证明仅一次receipt/dequeue纯转换，不覆盖实际锁、引用、Owner真实性或固件/RF。
-通过后继续最终TX intent与属性策略、真实失效及生命周期组合，不把所有控制面
+现在继续最终TX intent与属性策略、真实失效及生命周期组合，不把所有控制面
 组合设为前置。SSAP Engine当前尚未消费新上下文，属性授权仍缺；不能query后裸send。
 内核内部清理和
 预 daemon 探针默认13→10的语义统一及相关生命周期回归并行；原自然故障／
@@ -175,6 +175,11 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | 实际锁/引用/Grant/提交撤权/晚到复用及SSAP组合：未证明 | `formal_bounded` | `UNPROVED` |
 | 原超时根因未闭合：新旧13对照反证单字节致因，仍需诊断 | `real_device` | `UNPROVED` |
 | 内核清理迁移/属性权限/Bond及完整S0-S6/恢复：仍缺 | `real_device` | `UNPROVED` |
+| K8c/U625接收机制上下文：六实机门禁48回复/96上下文/24控制拒绝 | `real_device` | `PASS` |
+| 接收上下文：706冻结工具/43封存绑定/Session sanitizer/90实证负对照 | `offline` | `PASS` |
+| 生产receipt/dequeue纯转换CBMC65及三负对照：限定有界通过 | `formal_bounded` | `PASS` |
+| Owner真值/锁/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
+| SSAP属性策略/最终TX intent/实际失效矩阵与完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

@@ -1,0 +1,525 @@
+{
+  "schema_version": 1,
+  "status": "SDK110_TWO_PROTECTED_SSAP_ACCESS_GATES_REAL_SCOPED_PASS_NOT_LOCAL_AUTHORIZATION",
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+  "executed_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+  "bounds": {
+    "peer_round_trips": 16,
+    "attribute_cases": 24,
+    "denied_attribute_cases": 4,
+    "allowed_attribute_cases": 20,
+    "ssap_value_peer_checks": 32,
+    "protected_smtc_usb_observations": 1344,
+    "security_installations": 8,
+    "opposite_relay_receipts": 34,
+    "current_security_snapshots": 16,
+    "rx_contexts": 32,
+    "invalid_intent_refusals": 48,
+    "unknown_control_refusals": 8,
+    "discovery_rounds": 44,
+    "replayed_cases": 2,
+    "copied_negative_controls": 64
+  },
+  "scope": [
+    "ExactK0cd/compiled836/executedandguestee8;twofreshVMs SDK110U2/3,grade1approveandgrade2numeric-approve,eachbothconnectionroles. SameactualproductionSession/credit/Ticket/Grant/soleSSAPEngine;nosyntheticComplete,echoEngineorraw-sendfallback. NoEprotectedclaim.",
+    "16ordinaryUID1000cap0randomCUTCpeer-verifiedRT,24attributecases20allowed/4denied,actualremoteWRITE mutationorunchangeddatabaseandREAD/UUIDresponsebothUSBs. 1344protectedSMTCUSBobservationsincludeTX/oppositeRXandareNOT1344uniqueapplicationmessages. Eightactualinstallations/0011andreceiptcontexts mapexactlifetimes/epochs;thisisnot independentRFcipherattestation,namedidentity,Bondorstandardsqualification.",
+    "OriginalCreateparameterscomparedbyte-for-byteagainstcurrent0cdU2/3plain gate;originaldeadline,supervision,MTUandworkloadnotrelaxed. Twosource-exactreplays/64copiednegatives;sharescapturecheckerTCB,nophysicalfaultinjection,newformalprooforindependentRFdecoder.",
+    "SDK110imagesactuallyuploadedandhashedinprior110bootstrapreport,notuploadedagainorattestedexecutedbywarmadoption. BothROMsearchpathsabsent;unexpectedROMfails. QMPremoval/readdiscontrolledisolation,notnaturalrecovery.",
+    "Earlier730frozen-tool/48sealedABIandproductionquerychecksremainexactpriorreports,not rerunorupgradedbythisreport. Nativeproductioncrates/data/Cargoinputsunchanged;no newcompiledartifact.",
+    "FixedNearLinkHostauthorizationcallbackpathsre-readatf0872dfaac33;requestId/addresslookupnotcopiedasourlifetimecontract. Actualfutureper-requestauthorizationmustbindauthorizerowner/epoch,attributeversion,originalreceipt/deadlineandphysicalSession. CurrentauthorizationbitsandCPCDstillreject;noapplicationbooleanorAgentapprovalmintsaccess."
+  ],
+  "remaining": [
+    "Localattributeauthorizer/per-serviceapplicationownership/approval/denial/loss/latecallbackandoriginaldeadline remainunimplemented;CPCDandsecureupdateTXnotqualified. Nextfiniteverticalslice,notfullcontrolfront.",
+    "SDK110EprotectedSSAP/fullAgentfailure/deploymentmatrix,Bond/identity,persistenttrust/fullprofiles,protectedlength/multi/fourdevice/performance notcoveredbythesetwoshortgates.",
+    "First1105508.767234-5508.861382msdeadlineFAIL andoldU331lateDownretainexactoriginals;RCAs/naturalstartup/reenumeration/disappearance/nonmanualrecovery OPEN. Manual/hub/QMP/RAMresetnotnaturalacceptance.",
+    "FormalaccessKaniwarnings,submit/revoke/credit/lateNOCP-reuse/ref-draincomposition remainunproved;notnewproof. EntireS0-S6/19WP/10FV/12DG,VM-only/UserHostP4andoriginalscopeunchanged."
+  ],
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "full_goal_result": "UNPROVED",
+  "real_gates": [
+    {
+      "name": "sec1",
+      "required": 1,
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/ssap110-protected-sec1-v1/manifest.json",
+      "round_trips": 8
+    },
+    {
+      "name": "sec2",
+      "required": 2,
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/ssap110-protected-sec2-v1/manifest.json",
+      "round_trips": 8
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "two-exact-replays-64-copied-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "Localattributeauthorizer/per-serviceapplicationownership/approval/denial/loss/latecallbackandoriginaldeadline remainunimplemented;CPCDandsecureupdateTXnotqualified. Nextfiniteverticalslice,notfullcontrolfront.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "SDK110EprotectedSSAP/fullAgentfailure/deploymentmatrix,Bond/identity,persistenttrust/fullprofiles,protectedlength/multi/fourdevice/performance notcoveredbythesetwoshortgates.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "First1105508.767234-5508.861382msdeadlineFAIL andoldU331lateDownretainexactoriginals;RCAs/naturalstartup/reenumeration/disappearance/nonmanualrecovery OPEN. Manual/hub/QMP/RAMresetnotnaturalacceptance.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "FormalaccessKaniwarnings,submit/revoke/credit/lateNOCP-reuse/ref-draincomposition remainunproved;notnewproof. EntireS0-S6/19WP/10FV/12DG,VM-only/UserHostP4andoriginalscopeunchanged.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    }
+  ],
+  "reference": {
+    "repository": "communication_nearlink_service",
+    "commit": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "files": [
+      {
+        "path": "services/stack/src/cp/bsl/sle/servm/ssap/src/ssaps_server_write.c",
+        "sha256": "0c349339071bf669d9a250bb9743955adecca361ad759a28eb9ac7fae7c7964b"
+      },
+      {
+        "path": "services/stack/src/cp/bsl/sle/servm/ssap/src/ssaps_server_app.c",
+        "sha256": "116a8ce99c5c40494212e753fbeaf320f37a5c36506f95370980451d6b8bde5a"
+      },
+      {
+        "path": "services/stack/src/cp/bsl/sle/servm/ssap/src/ssaps_server.c",
+        "sha256": "91b4aedfc97d85c56ad7c048b7c6dc50e29222be9a6a8b91ec81cb65f6a78ec1"
+      }
+    ],
+    "comparison_only": true
+  },
+  "materials": [
+    {
+      "path": ".dev/hcc-chip-kernel-build-v3.json",
+      "sha256": "389a7fbd3153cea5e2547c69e72eb5f159638ff294fea763490dcacb6a49408f",
+      "bytes": 1624,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-build-v3.log",
+      "sha256": "8aec90a8e850a413bd23a957d30ce3b9bfda15400a9e13822b97356fa2424d97",
+      "bytes": 1466,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-budget-v3.json",
+      "sha256": "c826bf6f9cafaf58b14cfbc1b3d9883bd38fd49cd2f17fc2c3a88d8fcd4d6aa9",
+      "bytes": 1067,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-artifacts-v3/manifest.json",
+      "sha256": "bc3f5827f0b31e4fa663bedf852abbd49e124ebbd8d3d486c4c521ccb22eecad",
+      "bytes": 229017,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/manifest.json",
+      "sha256": "9f79924c1c90ffa435329afe14c59b1f9d63f4a2aa6912021bda39dd5aa383aa",
+      "bytes": 2351,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-root-smoke-v4/manifest.json",
+      "sha256": "3b2054ed2603d77fe2a2d5328800e8cfa5494c8021e9e68480c046b24b55f2bc",
+      "bytes": 36324,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-selection-v1.json",
+      "sha256": "b6bac7ab7259a82a0f5feb2cdd659ef4876bb3ae9b22fb8baf812bc2468c5427",
+      "bytes": 2609,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "80bd5f638d65f574b738eee8f65cabf99d81cdf371c677a67d91115e25a4ef3f",
+      "bytes": 145497,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/manifest.json",
+      "sha256": "e0032c92d18d116badbf726eec92ee7a3bb6f129050a2bf2c8a33ec9b86daae2",
+      "bytes": 26979,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkd",
+      "sha256": "c86967115f9ba107d3ee42caf9f75ffe613707b202caf019b2ed5a997c6a271c",
+      "bytes": 10634880,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slctl",
+      "sha256": "138b84adfa8effbf6a528bf0dbaee9133d798e1f00c2f5aa4b1670c7413ba9fe",
+      "bytes": 7911664,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slktest",
+      "sha256": "0ffda53bcf2889ed8734398ee6d7a879142a8e80e46cf586e32041bba79675ad",
+      "bytes": 5278024,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkconfig",
+      "sha256": "b7b9678f35be4d7ac83e885c75f956d97ccde68ea50922448f9a273a588af299",
+      "bytes": 1403736,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkmon",
+      "sha256": "1d6402733c388a693a74764d4c9583701655cc662e20bcbb993ce49dc6585080",
+      "bytes": 1661896,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkdump",
+      "sha256": "880c446c2775675bbef373a3f9a07afe970765144eb05210e5c69bd09d37210c",
+      "bytes": 1661768,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/liblibsparklink.so",
+      "sha256": "30758249c58fd5db7fd9fe0fa8f47490a15bd5a45dbd7ff623d2904400d54c6e",
+      "bytes": 552048,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "153bd4d0a29cab95ea4674e6aa3c33510a8ce5dedb4cbc0686cc7e7e6b899f3a",
+      "bytes": 507,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "82d65094030f4302dda3df7927e7bb2f7ac9d3355deca287ede43785cf86e857",
+      "bytes": 154,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-v1/manifest.json",
+      "sha256": "1c29f829b675be73f24d17f64f8234c022ead9b904656e2b8a5be7fcaf40b072",
+      "bytes": 1582099,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-v1/console.log",
+      "sha256": "ccc3cec5e4259b87ecac4b132de472a1c766ef855191f51e40323f0f73f32a10",
+      "bytes": 16239,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-v1/guest-output/kernel.log",
+      "sha256": "96386af86e7f514424224b5e7927751bcb90acd54fba2e713d9286a1fcfb1a77",
+      "bytes": 49537,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-v1/guest-output/capture-stats.txt",
+      "sha256": "9b0e9f3475f8e564c0163d9f29e8968fa6bc044617ee1dd70826d143d5d1875f",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-v1/guest-output/ws73.pcap",
+      "sha256": "d4af5a92c5deecf2f6616f56d52c030934610a287770dcae739be01a98b0377a",
+      "bytes": 649696,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "66eec80d1f5bd7ec8e3ce6f8edc45f7589c94d378cc1e7e116ec7df1cfe4410f",
+      "bytes": 934975,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-v1-audit-ssap110-protected-v1.json",
+      "sha256": "9ff29e79c35694518a044557847367fdcea961c9c9674ad2ad6cfa259bf7a216",
+      "bytes": 7305,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-prepared-v1/manifest.json",
+      "sha256": "81949b6606864efc4d4d98d499aceba9ee664bf1c4380fd1ddcfe3d395e3100c",
+      "bytes": 273492,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-prepared-v1/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-prepared-v1/root.btrfs",
+      "sha256": "941528fb83f0412cdcd932d07b50c767e24e25c570f6de6df0baec188a44d79b",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-prepared-v1/root/etc/sparklink/main.conf",
+      "sha256": "1663a83d591c4331c82851dbc14c6b96d1ca8f05c269b3690e187ceeee002fb8",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-ssap-config1-v1.toml",
+      "sha256": "1663a83d591c4331c82851dbc14c6b96d1ca8f05c269b3690e187ceeee002fb8",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-v1/manifest.json",
+      "sha256": "de93953b1c69366740fc09d61ea8fbfe71784d2729664403fb0e78977b282d3d",
+      "bytes": 1596056,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-v1/console.log",
+      "sha256": "086c020822b3ab676c2620bf6852da1fa61fc352dff48ade1345541c642f41ba",
+      "bytes": 16247,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-v1/guest-output/kernel.log",
+      "sha256": "88acdae66f5a9c9aa24edc844f4b9b2b347ef45faaf6d1028a8d0be508cfdc86",
+      "bytes": 49664,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-v1/guest-output/capture-stats.txt",
+      "sha256": "3e2e1ea98ac65b533eb5b1718897e233a64930d80b464c23050008192169fae0",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-v1/guest-output/ws73.pcap",
+      "sha256": "00c2bee1825a4353a4b3593c288fdc655b57c930de6427e28a063a2603b5ac73",
+      "bytes": 653176,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "45a4433f90d10f7c6cc4a607537e11ac2e9ebb103b24f772cc6d9424ceea9d5b",
+      "bytes": 934976,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-v1-audit-ssap110-protected-v1.json",
+      "sha256": "8fe64ac02e5a168b222e602d8f16a46f8736771b620f768272aefda9e30106d1",
+      "bytes": 7308,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-prepared-v1/manifest.json",
+      "sha256": "c4fad83ee2a187db3390fbb003dba0d4251f354394b34f8e9f280f4d79cfe26c",
+      "bytes": 273492,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-prepared-v1/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-prepared-v1/root.btrfs",
+      "sha256": "156dc7fa18ea0a1154d2fa04b5babae614805434af0a8a6121250d8cc18da57f",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-prepared-v1/root/etc/sparklink/main.conf",
+      "sha256": "dcd8af544928f0d11684f015356545bd676273eb571af8d4d1ac0f3be7aa64a1",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-ssap-config2-v1.toml",
+      "sha256": "dcd8af544928f0d11684f015356545bd676273eb571af8d4d1ac0f3be7aa64a1",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-prepare-v1.py",
+      "sha256": "e8ede9cc64254b5e1bda180b777ddd281b28a29ca4be6e57884a3311e3919b40",
+      "bytes": 1666,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-prepare-v1.json",
+      "sha256": "439a74dc39175a5d70ed752ac4ef47e41d3557317a9a2d933f1ae3bfd0faf01e",
+      "bytes": 3901,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-qualify-v1.py",
+      "sha256": "78fd10a9d5618ac7137e82ae0fed857f7b12ee94575775e4eeeeba21e38a7c96",
+      "bytes": 2999,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-qualification-v1.json",
+      "sha256": "59c7e6193dea68f3b914f0aaaa04b7856c4393c02b2b1db6125af00cabc48b3a",
+      "bytes": 2748,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-case-audit-v1.py",
+      "sha256": "769f3d5465418fa297980b4bc84417508683e14565871ff237540ab6d8e3b71a",
+      "bytes": 9567,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec1-audit-v1.log",
+      "sha256": "0a61dccba320b89f3e3fdc9e98d422c5ecb52e949d95a461baee7117d557df78",
+      "bytes": 47,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ssap110-protected-sec2-audit-v1.log",
+      "sha256": "db80dea3d9656b345829097ddd7f97bb32c1cfd494d31c006818591d43669978",
+      "bytes": 47,
+      "access": "private"
+    }
+  ],
+  "retention": "Privateworkspace artifacts/capturesmaycontainkeys/SDK;publichash/path/sizeonly. Authorizedoriginalmachineaccess;noverifiedoffsite/downloadguarantee. Missing/hash/source/scopefailuredeniesqualification.",
+  "wall_ns": 1792213816315854702
+}

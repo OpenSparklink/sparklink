@@ -233,3 +233,32 @@ PREPARE_TX 仅在原 fd 上填回当前 scope/epoch 并固定最初绝对期限�
 客户端不接受与原意图 epoch/机制不符的回复。取消/超时和回复失败不能抹去已发生的
 写入或物理义务。部分权限门禁、Kani/CBMC 和实际并发/恢复的强度分开；工具诊断、
 缺性质或超时保持未证明，不凭局部谓词升级完整安全/身份/协议资格。
+
+### 本地属性授权接线约束（2026-10-17）
+
+继续参考固定 NearLink Host `f0872dfaac33` 的
+`ssaps_server_write.c:SSAPS_WriteSingleItem`、
+`ssaps_server_app.c:SsapServerAppWritePropertyCallback` 及
+`ssaps_server.c:SSAPS_SendUserResponse`：先核对操作/安全要求，再保留请求并询问
+本地服务端，批准后才读取或修改值。它的 requestId/address 查找不能原样作为本项目
+的生命周期契约；授权必须绑定当前 controller/generation/physical lifetime、原 RX
+security epoch、属性登记版本、方向及原请求身份，不由可复用地址/handle推导。
+该参考是职责比较，不是标准裁判或本项目已有能力声明。
+
+采用唯一 Engine 的有界异步授权义务，不另建 wire Engine。服务端登记与审批角色
+须由管理策略授权，普通客户端、Agent 的安全协商批准及任意布尔值不能自授属性
+访问。登记者绑定 D-Bus unique owner/登记epoch；先订阅退出再验证存活。服务消失、
+撤销、重复/迟到批准、属性删除重建、Down/rekey 与旧 lifetime 均不能完成新请求。
+目前本地数据库仍由管理组 staging，尚无上述逐服务应用所有权/审批 API，不能把
+现有管理组权限描述成已经完成多应用服务所有权。
+
+授权等待与物理响应义务分别记账，共用原始绝对期限及有限条目/字节预算。等待不得
+阻塞其他 controller、Session RX、ACK 或已在途清理。批准在读值/改值之前再次核对
+原请求和属性版本；响应继续携带原 RX epoch/机制下限/期限，经原 Grant/Ticket
+准入。应用取消不撤销已发生的写入，队列接收不表示对端处理；重复批准只允许一个
+终态。未接通这些条件前，授权位和 CPCD 继续明确不支持，不增加配置布尔放行。
+
+实施门禁只覆盖该链路：允许/拒绝/缺少审批者、审批者退出、原期限、晚到/重复批准、
+删除重建、实际安全上下文改变及撤权/Down；真实两端验证值读取或写入、拒绝时不
+泄漏/不修改，并保留普通业务同行。通知/指示发送与 CPCD 另取真实证据。无需等待
+全部控制面组合，也不把此决策文字作为已实现、已证明或实机通过。

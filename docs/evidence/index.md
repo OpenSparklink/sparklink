@@ -1,5 +1,13 @@
 # 证据入口与取得限制
 
+[R6a干净Debian VM部署限定资格](deployment-clean-vm-qualification-20261018.json)：
+准确668编译及执行，四角色真实system bus、当前支持的外部C/Native与安装Python、
+无开发链接运行库加载、重装/卸载保留配置，完整原件及独立负对照封存。没有连接
+WS73或实验内核；不是原生Grant、实机、软件包升级回滚或完整架构资格。
+[首轮参数失败](deployment-clean-vm-first-failure-20261018.json)、
+[第二轮内嵌脚本失败](deployment-probe-extraction-failure-20261018.json)及
+[运行库加载反例](python-runtime-loader-20261018.json)分别保留，不能被新通过覆盖。
+
 [Typed Peer统一与地址门面退休限定资格](typed-peer-retirement-qualification-20261018.json)：
 编译K2fc／U0fe，修正工具8aa，四个新VM；16次实际新SDK观察中12次与接收端USB
 一致，4次没有广告的被动端明确unknown。两种连接角色分别取得随机标识与RSSI。

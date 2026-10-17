@@ -69,7 +69,10 @@ generation、owner、恢复状态和证据链是我们的设计重点，需要�
 清理安排见[生产调用审计](../../../history/cleanup/legacy-cleanup-20261011.md)，不以全局 allow(dead_code)
 或过时“已完成”标记替代接通与验收。
 
-旧内核SSAP wire Engine已因标准格式不符限制并移除；用户态标准Engine尚未接通，不能将历史codec用例或本地staging视为服务互通。见[当前边界](../../../history/ssap/ssap-legacy-containment.md)。
+历史2026-10-11结论：旧内核SSAP wire Engine因标准格式不符被限制并移除，当时
+用户态Engine尚未接通。此结论不描述当前源码；唯一用户态Engine已接有限真实读写/发现/
+Owned授权，范围见[当前资格](../../current-capabilities.md)。历史codec或本地staging仍不能
+替代实际服务互通；[旧边界与失败](../../../history/ssap/ssap-legacy-containment.md)保留原身份。
 
 2026-10-11再次收到的分析已对最新bde171beb2e0/aece3407e1c1核对；
 [权限整改与实际调用门禁](../ssap/ssap-operations.md)、

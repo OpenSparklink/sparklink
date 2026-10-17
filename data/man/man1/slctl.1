@@ -19,6 +19,15 @@ enters an interactive shell with a
 .B [slk]#
 prompt. Command history is saved to
 .IR ~/.slctl_history .
+.SS Owned SSAP service
+.B ssap-serve SERVICE_HEX PROPERTY_HEX OPS ACCESS VALUE_HEX [ask|allow|deny]
+keeps one local service owned by its foreground D-Bus connection. Registration
+is local staging, not remote publication success. The default ask policy prints
+an original identity/deadline and accepts yes TOKEN or no TOKEN for that prompt;
+local tokens are not reused within this process. value reads the same owner's
+local value and quit unregisters. Owner exit revokes the registration.
+Explicit allow/deny is local service policy, not security Agent approval,
+authentication, encryption or Bond. Existing channel and Engine limits apply.
 .SH OPTIONS
 .TP
 .B \-h, \-\-help

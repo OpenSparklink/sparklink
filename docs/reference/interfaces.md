@@ -561,7 +561,8 @@ Rust `message_security::prepare`、C `slk_channel_prepare_tx`、Python
 Connection.ReadSsapValue(handle,minimum)、WriteSsapValue(handle,value,minimum)
 及 ReadSsapByUuid(...,minimum) 是未发布的新签名。ServiceManager 属性注册/列表
 也增加独立 access 字段，详见[操作和访问要求](ssap-permissions.md)。只有唯一
-Native Engine 的真实内核 RX 观察可用于生产值访问；授权尚未接通，明确拒绝。
+slkd Engine 的真实内核 RX 观察可用于生产值访问；管理 staging 仍拒绝授权位，
+逐请求本地授权经 Owned 注册接入，见[审批契约](ssap-permissions.md#应用拥有的本地服务与逐请求审批)。
 
 
 ### 原限制过期与失效 Session 的错误阶段
@@ -602,3 +603,11 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 权限、原期限、所有者退出及写入不确定性见[SSAP 服务所有权](ssap-permissions.md#应用拥有的本地服务与逐请求审批)。
 旧 `RegisterLocalService` 继续拒绝授权位；新登记与等待审批复用唯一 Engine 和
 实际约束发送，不代表 CPCD、长写、可信身份、Bond 或全部多应用部署已验收。
+
+
+## 通用卸载的配置保留边界
+
+`make uninstall` 保留管理员配置和状态目录，包括配置子目录及其symlink，不自动清除
+历史元数据。实际Makefile已在临时DESTDIR回归；这不是干净VM安装、服务启动、升级、
+回滚或外部C/Python消费者资格。PREFIX/服务路径、共享库命名/SONAME和pkg-config
+仍在整改，不能据此推荐通用安装已可投入使用。实验bundle与通用安装资格分别记录。

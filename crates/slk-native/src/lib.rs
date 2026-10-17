@@ -4,10 +4,13 @@
 //! ```compile_fail
 //! use slk_native::ffi::{slk_pair, slk_sec_info, slk_encrypt_on};
 //! ```
+//! Raw legacy event models are not public Native interfaces:
+//! ```compile_fail
+//! use slk_native::Event;
+//! ```
 mod adapter;
 mod controller_events;
 mod error;
-mod event;
 pub mod ioctl;
 #[cfg(test)]
 mod retired_event;
@@ -16,7 +19,8 @@ mod ws73_discovery;
 pub use adapter::{Adapter, DEFAULT_DEV_PATH};
 pub use controller_events::{ControllerEventCursor, ControllerEventReceiver};
 pub use error::Error;
-pub use event::Event;
+#[cfg(test)]
+use retired_event::Event;
 pub use snoop::{
     SnoopCursor, SnoopReceiver, create_snoop_capture, describe_snoop, snoop_packet_code,
     write_snoop_header, write_snoop_record,
@@ -114,47 +118,80 @@ mod tests {
     }
 
     #[test]
-    fn event_variants() {
-        let ev = Event::ConnectionStateChanged {
-            handle: 1,
-            state: 2,
-            peer_addr: [0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF],
+    fn retired_codec_preserves_actual_fields() {
+        use crate::retired_event::{SleDliEvent, decode_event};
+        use slk_protocol::*;
+        let mut raw = SleDliEvent {
+            event_type: EVT_CONN_COMPLETE,
+            handle: 42,
+            addr: [1; 6],
+            ..Default::default()
         };
-        assert!(format!("{ev:?}").contains("ConnectionStateChanged"));
-
-        let ev = Event::AdvReport {
-            addr: [1, 2, 3, 4, 5, 6],
-            rssi: -50,
-            discovery_level: 1,
-            name: "TestDevice".into(),
-            adv_data: vec![0x02, 0x01, 0x01],
-        };
-        assert!(format!("{ev:?}").contains("TestDevice"));
-
-        let ev = Event::SecurityChanged {
-            state: 3,
-            method: 1,
-            encrypted: true,
-        };
-        assert!(format!("{ev:?}").contains("encrypted: true"));
-
-        let ev = Event::PowerChanged { state: 0 };
-        assert!(format!("{ev:?}").contains("PowerChanged"));
-
-        let ev = Event::HwError { code: 0x42 };
-        assert!(format!("{ev:?}").contains("66") || format!("{ev:?}").contains("0x42"));
-
-        let ev = Event::DataReceived {
-            handle: 0x0001,
-            data: vec![0xAA, 0xBB, 0xCC],
-        };
-        let dbg = format!("{ev:?}");
-        assert!(dbg.contains("DataReceived"));
-        assert!(dbg.contains("handle: 1"));
-
-        let raw_evt: crate::retired_event::SleDliEvent = unsafe { std::mem::zeroed() };
-        let ev = Event::RawDli(raw_evt);
-        assert!(format!("{ev:?}").contains("RawDli"));
+        match decode_event(raw).unwrap() {
+            Event::ConnectionStateChanged {
+                handle,
+                state,
+                peer_addr,
+            } => assert_eq!(
+                (handle, state, peer_addr),
+                (42, ConnState::Connected as u8, [1; 6])
+            ),
+            other => panic!("{other:?}"),
+        }
+        raw.event_type = EVT_DISCONNECTED;
+        assert!(
+            matches!(decode_event(raw).unwrap(), Event::ConnectionStateChanged {
+            handle:42, state, peer_addr:[1,1,1,1,1,1]
+        } if state == ConnState::Idle as u8)
+        );
+        raw.event_type = EVT_ADV_REPORT;
+        raw.data_len = 14;
+        raw.data[..14].copy_from_slice(&[
+            206, 1, 0x0b, 10, b'T', b'e', b's', b't', b'D', b'e', b'v', b'i', b'c', b'e',
+        ]);
+        match decode_event(raw).unwrap() {
+            Event::AdvReport {
+                addr,
+                rssi,
+                discovery_level,
+                name,
+                adv_data,
+            } => {
+                assert_eq!(
+                    (addr, rssi, discovery_level, name.as_str()),
+                    ([1; 6], -50, 1, "TestDevice")
+                );
+                assert_eq!(adv_data, raw.data[2..14]);
+            }
+            other => panic!("{other:?}"),
+        }
+        raw.event_type = EVT_DATA_RECV;
+        raw.data_len = 3;
+        assert!(
+            matches!(decode_event(raw).unwrap(), Event::DataReceived { handle:42,data } if data == raw.data[..3])
+        );
+        raw.event_type = EVT_ENCRYPTION_CHANGED;
+        raw.data_len = 1;
+        raw.data[0] = 1;
+        assert!(matches!(
+            decode_event(raw).unwrap(),
+            Event::SecurityChanged {
+                state: 3,
+                method: 0,
+                encrypted: true
+            }
+        ));
+        raw.event_type = EVT_HW_ERROR;
+        raw.data[0] = 66;
+        assert!(matches!(
+            decode_event(raw).unwrap(),
+            Event::HwError { code: 66 }
+        ));
+        raw.event_type = 0xff;
+        raw.data_len = 0;
+        assert!(
+            matches!(decode_event(raw).unwrap(), Event::RawDli(v) if v.event_type==0xff && v.handle==42 && v.addr==[1;6])
+        );
     }
 
     #[test]

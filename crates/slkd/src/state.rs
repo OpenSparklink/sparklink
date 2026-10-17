@@ -9,9 +9,9 @@ use slk_protocol::{SleAddr, SleConnectParams, SleScanParams};
 #[cfg(test)]
 use crate::bonding::{BondingService, BondingStore};
 use crate::config::DaemonConfig;
-#[cfg(any(test, feature = "experimental-legacy-profiles"))]
+#[cfg(test)]
 use crate::profile::ProfileRegistry;
-#[cfg(any(test, feature = "experimental-legacy-profiles"))]
+#[cfg(test)]
 use crate::profile_runtime::ProfileService;
 
 pub(crate) const OBSERVATION_MAX_ENTRIES: usize = 128;
@@ -113,7 +113,7 @@ pub struct AdapterState {
     pub name: String,
     #[cfg(test)]
     pub bonding: BondingService,
-    #[cfg(any(test, feature = "experimental-legacy-profiles"))]
+    #[cfg(test)]
     pub profiles: ProfileService,
 }
 
@@ -122,7 +122,7 @@ impl AdapterState {
         adapter: impl Into<Arc<Adapter>>,
         config: DaemonConfig,
         #[cfg(test)] bonding: BondingStore,
-        #[cfg(any(test, feature = "experimental-legacy-profiles"))] profiles: ProfileRegistry,
+        #[cfg(test)] profiles: ProfileRegistry,
     ) -> Self {
         let adapter = adapter.into();
         let name = config.general.name.clone();
@@ -161,7 +161,7 @@ impl AdapterState {
             name,
             #[cfg(test)]
             bonding: BondingService::new(bonding),
-            #[cfg(any(test, feature = "experimental-legacy-profiles"))]
+            #[cfg(test)]
             profiles: ProfileService::new(profiles),
         }
     }
@@ -363,7 +363,7 @@ impl AdapterState {
     }
 
     /// Historical callback fixture; Native state comes from lifetime-scoped snapshots.
-    #[cfg(any(test, feature = "experimental-legacy-profiles"))]
+    #[cfg(test)]
     pub fn on_conn_state_changed(&mut self, handle: u16, state: u8, peer_addr: SleAddr) {
         let connected = state == slk_protocol::ConnState::Connected as u8;
         if !connected {
@@ -622,7 +622,7 @@ pub async fn shutdown_services(state: &SharedState) {
     }
     #[cfg(test)]
     let bonding = state.lock().await.bonding.clone();
-    #[cfg(any(test, feature = "experimental-legacy-profiles"))]
+    #[cfg(test)]
     {
         let profiles = state.lock().await.profiles.clone();
         profiles.shutdown().await;

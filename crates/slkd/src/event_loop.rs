@@ -1,13 +1,33 @@
 #[cfg(test)]
 use std::future::Future;
 
-use slk_native::{Event, Result};
+#[cfg(test)]
+use slk_native::Result;
 use tokio::sync::oneshot;
 use tokio::task::{JoinError, JoinHandle};
 use tracing::error;
 
 use crate::dbus_iface::DeviceIface;
 use crate::state::SharedState;
+
+// Historical event fixture only. Runtime consumes typed ControllerEventReceiver
+// records and complete link snapshots, never this handle-only representation.
+#[cfg(test)]
+#[derive(Debug)]
+pub(crate) enum Event {
+    AdvReport {
+        addr: slk_protocol::SleAddr,
+        rssi: i8,
+        discovery_level: u8,
+        name: String,
+        adv_data: Vec<u8>,
+    },
+    ConnectionStateChanged {
+        handle: u16,
+        state: u8,
+        peer_addr: slk_protocol::SleAddr,
+    },
+}
 
 #[cfg(test)]
 pub(crate) trait EventSource: Send + 'static {
@@ -152,81 +172,62 @@ pub(crate) async fn start_ssap_after_security(
     }
 }
 
+/// The sole production advertisement consumer; no legacy connection/security
+/// event branch. Caller already validated the Native generation and payload.
+async fn publish_advertisement(
+    state: &SharedState,
+    connection: &zbus::Connection,
+    addr: slk_protocol::SleAddr,
+    rssi: i8,
+    discovery_level: u8,
+    name: String,
+    adv_data: Vec<u8>,
+) {
+    let mut st = state.lock().await;
+    st.on_adv_report(addr, rssi, discovery_level, name, adv_data);
+    drop(st);
+    maintain_observations(state, connection).await;
+}
+
+/// Historical fixture dispatch retains callback/cancel/slow-state regressions.
+/// It is not a second production event receiver or a full Runtime proof.
+#[cfg(test)]
 async fn dispatch(event: Result<Event>, state: &SharedState, connection: &zbus::Connection) {
     match event {
-        Ok(slk_native::Event::AdvReport {
+        Ok(Event::AdvReport {
             addr,
             rssi,
             discovery_level,
             name,
             adv_data,
         }) => {
-            let mut st = state.lock().await;
-            st.on_adv_report(addr, rssi, discovery_level, name, adv_data);
-            drop(st);
-            maintain_observations(state, connection).await;
+            publish_advertisement(
+                state,
+                connection,
+                addr,
+                rssi,
+                discovery_level,
+                name,
+                adv_data,
+            )
+            .await;
         }
-        #[cfg(any(test, feature = "experimental-legacy-profiles"))]
-        Ok(slk_native::Event::ConnectionStateChanged {
+        Ok(Event::ConnectionStateChanged {
             handle,
             state: conn_state,
             peer_addr,
         }) => {
             let mut st = state.lock().await;
             st.on_conn_state_changed(handle, conn_state, peer_addr);
-            #[cfg(any(test, feature = "experimental-legacy-profiles"))]
             let profiles = st.profiles.clone();
             let connected = conn_state == slk_protocol::ConnState::Connected as u8;
             drop(st);
-            tracing::info!(
-                address = %crate::dbus_iface::format_addr(&peer_addr),
-                handle,
-                connected,
-                "connection state changed"
-            );
-
-            #[cfg(any(test, feature = "experimental-legacy-profiles"))]
             if let Err(e) = profiles.connection_changed(handle, connected).await {
-                error!(%e, handle, "profile connection callback failed");
+                error!(%e, handle, "historical profile callback failed");
             }
-        }
-        #[cfg(test)]
-        Ok(slk_native::Event::SecurityChanged {
-            state: sec_state,
-            method,
-            encrypted,
-        }) => {
-            let method_label = match method {
-                1 => "JustWorks",
-                2 => "PSK",
-                _ => "None",
-            };
-            tracing::info!(
-                state = sec_state,
-                method = method_label,
-                encrypted,
-                "security state changed"
-            );
-
-            // Legacy events have no peer/connection identity. Only record
-            // metadata when there is exactly one possible peer; never guess
-            // which HashMap entry owns an event on a multi-connection adapter.
-            if sec_state >= slk_protocol::SecState::Paired as u8 {
-                let record = pairing_record(state, method_label).await;
-                if let Some((bonding, addr, info)) = record {
-                    if let Err(e) = bonding.save(addr, info).await {
-                        error!(%e, "failed to save bonding");
-                    } else {
-                        tracing::info!(address = %crate::dbus_iface::format_addr(&addr), "legacy pairing metadata saved");
-                    }
-                }
-            }
-        }
-        Ok(event) => {
-            tracing::debug!(?event, "kernel event");
         }
         Err(e) => {
-            error!(%e, "event read error");
+            error!(%e, "event fixture read error");
             tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         }
     }
@@ -663,16 +664,14 @@ async fn dispatch_native_with<
     if event.lost != 0 {
         crate::adapters::invalidate_properties(connection, &path, &["EventsLost"]).await;
     }
-    dispatch(
-        Ok(Event::AdvReport {
-            addr: address,
-            rssi: report.rssi,
-            discovery_level: 0,
-            name: String::new(),
-            adv_data: report.data.to_vec(),
-        }),
+    publish_advertisement(
         state,
         connection,
+        address,
+        report.rssi,
+        0,
+        String::new(),
+        report.data.to_vec(),
     )
     .await;
 }

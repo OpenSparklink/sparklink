@@ -61,14 +61,14 @@ fd操作用`libsparklink.so`。`LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定�
 | Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`slk-native` API、内核 socket |
 | D-Bus ServiceManager／RemoteService | RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；Owned 三入口保留；旧 facade 方法与 RemoteService 已删除；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
 | 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-native/src/ioctl.rs`、内核 UAPI |
-| 旧 property／write facade | property 超 248、write 超 252 字节拒绝；这是遗留输入校验，不是新 Engine MTU 承诺 | `slkd/src/service.rs` |
+| 旧 property／write facade | 未发布入口与调用者已删除，历史 248/252 限制仅保留在原资格/纯测试；当前协商与长写限制单独表达 | 原 git／codec 回归 |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |
 | 新用户态 SSAP Engine | 唯一用户态actor的ExchangeInfo、单值读写、UUID/结构发现已接线；发送通知/指示、CCC与长写仍缺；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
 
 C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声明推导硬件支持。本表是状态查找参考，完整资格仍仅维护于能力入口；逐字段自动生成 API 及全错误矩阵尚待下一批。
 
-旧0x82 DLI poll、Raw256类型、Rust EventReceiver/poll/next_event、C slk_poll_event及Python旧Adapter.poll_event已删除，无兼容期。Python NativeAdapter.poll_event是现有非消费ControllerEvent路径，名称相似但契约不同；monitor的--legacy不再接受。详见当前资格与三类审计。
+旧0x82 DLI poll、Raw256类型、Rust Event/EventReceiver/poll/next_event、C slk_poll_event及Python旧Adapter.poll_event已删除，无兼容期。Python NativeAdapter.poll_event是现有非消费ControllerEvent路径，名称相似但契约不同；monitor的--legacy不再接受。详见当前资格与三类审计。
 
 旧read(2)／44字节队列及0x70/0x71统计接口已删除。当前ControllerEventGet按每注册游标提供完整记录，失败copy不推进readiness；snoop保留独立权限。slctl events／D-Bus GetControllerEventPosition返回(index,generation,sequence)，来自实际LinkSnapshot.event_seq，不能解释为pending、delivered、ACK或完整resync屏障。
 

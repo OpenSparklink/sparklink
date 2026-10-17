@@ -1,6 +1,4 @@
-#[cfg(feature = "experimental-legacy-profiles")]
-use slk_experimental::hid;
-#[cfg(any(test, feature = "experimental-legacy-profiles"))]
+#[cfg(test)]
 use slk_experimental::profile;
 mod adapters;
 #[cfg(test)]
@@ -13,7 +11,7 @@ mod controller;
 mod dbus_iface;
 mod event_loop;
 mod extadv;
-#[cfg(any(test, feature = "experimental-legacy-profiles"))]
+#[cfg(test)]
 mod profile_runtime;
 mod radio;
 mod registration;

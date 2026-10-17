@@ -1,6 +1,44 @@
 // Historical U96cafc4 codec/shape; test-only, never a kernel consumer.
-use crate::{Error, Event, Result};
+use crate::{Error, Result};
 use slk_protocol::*;
+
+/// Historical model for retired codec/shape tests only; not a kernel receiver.
+#[derive(Debug)]
+pub enum Event {
+    /// Connection state changed
+    ConnectionStateChanged {
+        handle: u16,
+        state: u8,
+        peer_addr: SleAddr,
+    },
+
+    /// Advertisement report received during scanning
+    AdvReport {
+        addr: SleAddr,
+        rssi: i8,
+        discovery_level: u8,
+        name: String,
+        adv_data: Vec<u8>,
+    },
+
+    /// Data received on a connection
+    DataReceived { handle: u16, data: Vec<u8> },
+
+    /// Security state changed
+    SecurityChanged {
+        state: u8,
+        method: u8,
+        encrypted: bool,
+    },
+
+    /// Hardware error
+    HwError { code: u8 },
+
+    /// Raw DLI event (for unhandled event types)
+    #[cfg(test)]
+    RawDli(crate::retired_event::SleDliEvent),
+}
+
 /// DLI event (ioctl 0x82)
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]

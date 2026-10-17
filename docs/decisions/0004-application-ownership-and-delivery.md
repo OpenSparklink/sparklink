@@ -329,3 +329,14 @@ R4b决定删除未发布旧SSAP门面，而不是将其永远保留为NotSupport
 实际管理staging和Owned注册有不同资源/权限用途，均保留；远端只经现有Connection
 actor/Channel。旧handle callback不发布RemoteService，保留原callback退出/阻塞/drain
 测试。旧codec/权限语义继续复用，缺失新模式仍明确拒绝；删除入口不复用编号。
+
+R4c删除Native公开混合Event：它曾承载没有generation/lifetime的旧handle、配对和
+PM模型。真实Native广告不必经过这个模型，改为直接调用同一有界观察消费者，
+typed记录与快照继续负责身份。原旧codec/shape测试留在test-only Native模块；
+daemon历史Source/callback fixture只在测试编译，不成为第二套生产协议或Runtime。
+现有callback退出/drain回归保留，编译缺失导出负对照防止恢复旧API。
+
+R4c同时退休没有Native消费者的daemon experimental-legacy-profiles构建入口，
+独立实验crate与原actor测试保留为dev-dependency，不恢复旧profile0接线。
+生产依赖门禁对default与all-features均执行实际normal闭包及原负对照；
+这不是完整公开接口/生命周期/部署或协议证明，R5/R6剩余条件不变。

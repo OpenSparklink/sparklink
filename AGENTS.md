@@ -185,7 +185,7 @@ how-to 解决任务，reference 写准确契约，explanation 解释理由；计
 ## 旧实验能力
 
 默认slkd不链接slk-experimental，不自动注册未经互通验收的旧Profile/HID；
-transport无生产消费者，仅实验crate。旧注册/连接callback由显式
-experimental-legacy-profiles构建feature保留，不能宣称完整SSAP服务。
+transport无生产消费者，仅实验crate。旧注册/连接callback仅专用测试/独立实验crate保留，不能宣称完整SSAP服务。
+旧daemon experimental-legacy-profiles入口已退休，实验crate仅dev-dependency。
 测试保留同一actor的阻塞/cancel/drain/panic回归，严格default/all-features
 检查不得以全局allow(dead_code)掩盖。见[实验边界](project/reference/architecture/experimental-code-boundary.md)。

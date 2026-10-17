@@ -3144,10 +3144,11 @@
       "report": "docs/evidence/ssap-facade-retirement-r4b-20261017.json"
     },
     "r4c": {
-      "status": "IMPLEMENTED_STRICT_CHECKS_RUNNING_NOT_QUALIFIED",
-      "production": "Remove public Native legacy Event and runtime construction;direct same advertisement consumer;typed Native records/snapshots unchanged",
+      "status": "STRICT_DEFAULT_ALLFEATURES_HEADERS_DEPENDENCIES_TOOLS_DOCS_PASS_NEW_ARTIFACT_REQUIRED",
+      "production": "Remove public mixed Event/old runtime construction and empty daemon profile feature;typed records/snapshots and same bounded advertisement consumer retained;models/actor only tests/dev-dependency",
       "exit_reference": "Canonical WP18 R4c",
-      "remaining": "New exact artifact VM gates;remaining Native APIs/raw ABI/selftests,R5/R6 and original full scope"
+      "remaining": "New exact artifact VM gates;remaining Native APIs/raw ABI/selftests,R5/R6 and original full scope",
+      "call_audit": ".dev/architecture-r4c-events-call-audit-v1.json"
     }
   },
   "owned_ssap_c6_historical_batch": {

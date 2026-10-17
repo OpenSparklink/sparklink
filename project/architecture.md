@@ -1094,3 +1094,13 @@ SDK的controller列表仅是注册成员观察；不能据此授予Ready或授�
 第二套SSAP对象。真正远端收发仍由完整generation/lifetime的Connection唯一actor承担。
 历史callback模型只保留在测试/明确实验构建，Native生产以typed事件/快照更新观察。
 删除门面不扩大当前资格；每批准确artifact单独回归，rawABI/部署剩余工作继续开放。
+
+R4c事件边界：Native公开事件只有带注册generation的ControllerEventReceiver记录与
+完整链接快照；删除混合旧Event导出。生产广告消费直接使用现有有界观察维护函数，
+不再构造旧事件模型。历史连接/配对codec和callback/慢存储/cancel/drain仅测试，
+实验feature也不能复活旧生产事件消费者。未改变唯一Session、底层RX顺序或Grant。
+
+R4c同时退休没有Native消费者的daemon experimental-legacy-profiles构建入口，
+独立实验crate与原actor测试保留为dev-dependency，不恢复旧profile0接线。
+生产依赖门禁对default与all-features均执行实际normal闭包及原负对照；
+这不是完整公开接口/生命周期/部署或协议证明，R5/R6剩余条件不变。

@@ -10,11 +10,8 @@ path = "src/main.rs"
 
 [features]
 default = []
-# Unqualified legacy kernel-SSAP profile registration; never native WS73.
-experimental-legacy-profiles = ["dep:slk-experimental"]
 
 [dependencies]
-slk-experimental = { path = "../slk-experimental", optional = true }
 anyhow = "1"
 slk-protocol = { workspace = true }
 slk-contract = { workspace = true }

@@ -1,10 +1,8 @@
 //! Each registration has its own fd, bootstrap and subscription. Workers are
 //! independent: a controller waiting for a USB timeout cannot hold the directory
 //! or prevent another controller from being enumerated or removed.
-#[cfg(any(test, feature = "experimental-legacy-profiles"))]
+#[cfg(test)]
 use crate::profile::ProfileRegistry;
-#[cfg(feature = "experimental-legacy-profiles")]
-use crate::profile::{BatteryProfile, DeviceInfoProfile};
 use crate::registration::RegistrationNode;
 use crate::{
     config::DaemonConfig,
@@ -278,13 +276,13 @@ impl Node {
         #[cfg(test)]
         let bonding =
             crate::bonding::BondingStore::new(&std::env::temp_dir(), "unused-registration-test");
-        #[cfg(any(test, feature = "experimental-legacy-profiles"))]
+        #[cfg(test)]
         let profiles = {
             let fd = adapter.clone();
             tokio::task::spawn_blocking(move || experimental_profiles(&fd, snapshot.profile))
                 .await?
         };
-        #[cfg(any(test, feature = "experimental-legacy-profiles"))]
+        #[cfg(test)]
         let mut state = AdapterState::new(
             adapter,
             config,
@@ -292,7 +290,7 @@ impl Node {
             bonding,
             profiles,
         );
-        #[cfg(not(any(test, feature = "experimental-legacy-profiles")))]
+        #[cfg(not(test))]
         let mut state = AdapterState::new(adapter, config);
         state.object_path = path.clone();
         state.controller = snapshot;
@@ -685,22 +683,7 @@ async fn invalidate_interface_properties(
     }
 }
 
-#[cfg(feature = "experimental-legacy-profiles")]
-fn experimental_profiles(adapter: &Adapter, profile: u32) -> ProfileRegistry {
-    let mut profiles = ProfileRegistry::new();
-    // Native discovery has no SSAP/Profile backend. No legacy registration.
-    if profile == 0 {
-        tracing::warn!("experimental legacy Profiles enabled: no service/security qualification");
-        profiles.add(Box::new(BatteryProfile::new(100)));
-        profiles.add(Box::new(DeviceInfoProfile::new()));
-        profiles.add(Box::new(crate::hid::HidProfile::boot_keyboard()));
-        if let Err(error) = profiles.init_all(adapter) {
-            tracing::warn!(%error, "legacy kernel Profile registration removed");
-        }
-    }
-    profiles
-}
-#[cfg(all(test, not(feature = "experimental-legacy-profiles")))]
+#[cfg(test)]
 fn experimental_profiles(_adapter: &Adapter, _profile: u32) -> ProfileRegistry {
     ProfileRegistry::new()
 }

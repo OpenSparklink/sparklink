@@ -10,23 +10,22 @@ HID 服务，不编入未消费的 transport codec 或 Profile actor。新增未
 `slk-experimental` crate 保存旧模型、codec、注册实现及原测试，没有默认 daemon
 运行时依赖；workspace 构建实验库不意味着该库被链接进默认 daemon。
 
-`experimental-legacy-profiles` 是显式构建 feature：
-
-```
-cargo build -p slkd --features experimental-legacy-profiles
-```
+旧 `experimental-legacy-profiles` daemon 构建入口已在R4c退休，没有兼容别名。
+独立 `slk-experimental` 开发crate保留；slkd仅dev-dependency使用其模型和原actor测试。
+default及all-features的生产依赖都不能重新引入实验crate。原feature只初始化没有
+Native调用者的profile0 registry，不能为保留空actor而恢复旧事件业务分支。
 
 86bfbc8起默认daemon在取得lease/发布对象前拒绝profile0，不再构造旧破坏性
 EventReceiver；Native只使用ControllerEventReceiver独立游标。旧事件actor的start入口
-仅cfg(test)或本显式feature编译；有效callback/取消/shutdown回归保留。
-内核旧ring、低层库/监控器调用者尚未全部迁移，不宣称WP12结束。
+现在仅cfg(test)编译；当前Native运行时没有历史Event类型或handle-only业务分支。
+Native纯旧codec/shape与daemon callback fixture均在专用测试边界内；有效取消/shutdown
+回归保留，不能升级成完整Runtime证明。内核历史ABI/selftests仍需后续迁移，不宣称WP12结束。
 
-此feature还恢复旧profile0的实验事件消费者及注册/连接生命周期，Native profile1仍不注册。此feature
-供受控开发，不是合格服务支持。旧 UUID/权限位（R07）、SSAP 请求路由/预算/credit、
-真实服务互通、安全要求仍未闭合。默认不宣称 Profile/HID/transport 可用。
+独立模型供受控开发，不是合格服务支持。旧UUID/权限语义回归保留，真实服务始终
+通过唯一用户态SSAP Engine和现有Channel；完整Profile功能及资格仍按原门禁推进。
 
 Profile actor 的串行回调、阻塞/cancel/drain/panic 及 D-Bus 响应回归保留，测试和
-实验 feature 编译同一 actor。没有复制第二套实现；迁往用户态 SSAP Engine 前
+测试构建使用原 actor。没有复制第二套实现；迁往用户态 SSAP Engine 前
 不得将这些实验接口作为生产能力。测试专用 Bond get/is_bonded 只在 cfg(test)。
 默认与全部 targets/features 均进入严格检查，不添加全局 dead_code allow/expect。
 ExtAdv Configure 的 named D-Bus 参数只有一处带理由的 too_many_arguments lint

@@ -372,7 +372,7 @@ Runtime Host仍是唯一调度/credit/物理义务来源。Diagnostic、发现�
 门禁在相应报告，DLI目录/全局掩盖及rawUAPI其余消费者仍待迁移，不宣称整架构完成。
 
 注册元数据不得维护第二套协议能力：Provider的注册视图仅承担已验证总线来源、
-地址和待迁移的legacy版本观察；完整wire version/features及ACB/ICB仍由现有Native
+地址；写入却无消费者的packed版本副本已退休，完整wire version/features及ACB/ICB仍由现有Native
 快照提供。未消费的MTU/MPS、安全位等投影已退休，不能从全零/默认字段推导能力。
 历史UART/SPI/USB元数据只属隔离selftests；实际标准DLI codec和Runtime/Session/
 Grant/credit/Ticket保持原责任。剩余事件模型/全局掩盖及rawABI按唯一计划逐条退休。
@@ -382,3 +382,8 @@ Grant/credit/Ticket保持原责任。剩余事件模型/全局掩盖及rawABI按
 作者ledger，原取消/期限/终态和在途引用遵循原契约。取走诊断观察不解除Fault，
 晚到credit不恢复Ready；其他controller不共享此状态。回调返回、控制器完成和
 对端交付仍是不同阶段，任何恢复Ready仍需已有生命周期与已验证控制器屏障。
+
+默认标准DLI只构造有实际消费者的命令结果/credit及关键故障；未接通业务事件在
+ingress拒绝并计数，不把解析成功当作连接或安全状态。WS73 Native的现有
+发现、连接、数据及安全仍经原lifetime-bound路径。未归属ring助手和旧业务
+decoder只在隔离selftests；生产DLI以deny死代码/可见性约束防回流。

@@ -74,19 +74,14 @@ jobs/CPU affinity/可用内存/命令/配置/工具链/来源；资源记录不�
 - 错误处理: `thiserror` 定义错误类型, 库使用 `Result<T, Error>`, 应用使用 `anyhow::Result`
 - nix v0.30 API: `open()` 返回 `OwnedFd`, ioctl 宏接受 `RawFd`
 
-### ioctl 使用模式
+### Native ioctl 边界
 
-```rust
-// 读取型 ioctl
-let mut info = unsafe { std::mem::zeroed::<SciDevInfo>() };
-unsafe { ioctl::sl_dev_info(self.raw_fd(), &mut info)? };
-
-// 写入型 ioctl
-unsafe { ioctl::sl_start_adv(self.raw_fd(), params)? };
-
-// 无参数 ioctl
-unsafe { ioctl::sl_stop_adv(self.raw_fd())? };
-```
+系统调用集中在slk-native内部；普通应用通过libsparklink申请授权fd，业务使用
+slk-channel。不要恢复旧sl_start_adv/sl_stop_adv裸命令包装。显式Native管理者
+使用现有typed入口，例如adapter.controller_snapshot(generation)和
+adapter.diagnostic_submit(&mut request)。请求携带原generation、lease、request id
+和期限；submit成功仅是软件准入，Complete及设备状态须按实际结果另行查询。
+ABI结构、errno和输出身份校验集中在当前封装中，避免调用者再复制一套。
 
 ### D-Bus 接口规范
 

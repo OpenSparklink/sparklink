@@ -1792,23 +1792,27 @@
       "kernel-critical-fault-r4f2b": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "kernel-event-registry-retirement-r4f2cd": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R4f2-DLI-events-raw-ABI-and-test-retirement",
-      "production_behavior": "Critical HardwareError path uses existing Host/worker/pending ledger;production34a,compiledU8a,hardwaretools997 and test/probea991. Eleven exact gates include optionalVirtual2rounds and4real preservationVMs,not natural fault recovery. Remaining architecture incomplete.",
-      "state": "CRITICAL_FAULT_SCOPED_GATES_PASS_REMAINING_ARCHITECTURE_INCOMPLETE",
+      "id": "WP18-R4f2e-raw-ABI-and-test-retirement",
+      "production_behavior": "K4b6 retires unconsumed standard event models/untaggedring APIs and write-only registry version. Seven consumed kinds with DLI deny guards;Native full snapshots and unique Session remain. Four real preservationVMs andVirtual2rounds exactly scoped;not fullarchitecture.",
+      "state": "EVENT_REGISTRY_SCOPED_GATES_PASS_RAW_ABI_SDK_DEPLOYMENT_INCOMPLETE",
       "exit": [
-        "First fault closes admission;critical slot cannot be lost to ordinary RX pressure;existing ledger preserves previous terminal/physical obligations;late credit cannot reopen",
-        "81Host+2cleanup,Managed58,Diagnostic54 and8offline subsets;full Rust/kernel/boot;49ABI and actual symbols;Virtual2rounds/12negativecontrols;4realVM32peerreplies24Owned96decisions120transactions68role denials,81+56negativecontrols",
-        "Finish remaining event/globalmask/registry duplicate and rawABI consumer migration,full AppSDK/CLI/C-Python contract then cleanVM deployment;old evidence retained"
+        "14exact offline subsets including current6/historical1event-ring groups,Native snapshot5/install19/pending9;prior full projection5/minimalversion5 and USB history explicitly separate;wholeRustWerror/fullKernel/boot",
+        "K4b6/U2bd/tools997:4realVM32peerreplies24Owned96decisions120transactions68roledenials,81+56negativecontrols;Virtual2rounds/12negatives;49newlibraryABI andactualELF",
+        "Fresh101rawstubs include8PHY missed by93snapshot;retire headers/types/authorization/dispatch/callers and preserve meaningful selftests,then fullAppSDK/CLI/C-Python/R5provenance/R6cleanVMdeployment"
       ],
-      "next": "Architecture-first;fullS0-S6/19WP/10FV/12DG and original scope;VM-only/UserHostP4 and owner WIP preserved. No new formal proof;naturalRCA/nonmanual recovery OPEN."
+      "next": "Architecture-first;fullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4 and owner WIP preserved. No new formalproof;naturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
-      "record": "kernel-critical-fault-r4f2b"
+      "record": "kernel-event-registry-retirement-r4f2cd"
     }
   },
   "agent_workstream": {
@@ -3095,7 +3099,7 @@
     "completed_scope_reference": "docs/evidence/architecture-retirement-r1-20261017.json"
   },
   "architecture_retirement_current_batch": {
-    "status": "R4F2B_CRITICAL_FAULT_SCOPED_GATES_PASS_REMAINING_ARCHITECTURE_INCOMPLETE",
+    "status": "R4F2CD_SCOPED_GATES_PASS_RAW_ABI_SDK_DEPLOYMENT_INCOMPLETE",
     "canonical_inventory": "project/implementation-plan.md / WP18 / 2026-10-17",
     "scope_preserved": "S0-S6 /19WP /10FV /12DG;VM-only;UserHost P4;original issues open",
     "batch": "R4f2 DLI event/global-mask/raw ABI and current/historical selftest migration",
@@ -3281,6 +3285,31 @@
       "report": "docs/evidence/kernel-critical-fault-r4f2b-20261017.json",
       "callback_scope": "Returned callback witnessed;not controller completion or peer receipt;two requests from ONE author File,not multi-author proof",
       "build_warning": "One localized objtool jobserver j1 warning retained;initial wrapper missed it;independent artifact/audit expose it"
+    },
+    "r4f2cd": {
+      "state": "SOURCE_BOUND_ELEVEN_GATES_PASS_NOT_FULL_ARCHITECTURE",
+      "implementation": [
+        "b32511bb9a6e",
+        "1e08ca19ded2",
+        "4b6dda28490d61864eacaa791e72cac1cfea2c0c"
+      ],
+      "exit_reference": "WP18 R4f2c andR4f2d in canonical implementation-plan",
+      "retired": "Unconsumed standard business events,unattributed ring helpers,write-only packed registry version;valuable history/test bodies isolated",
+      "production_authority": "Existing Host/Runtime/Native full snapshot;no new Engine. Seven consumed event kinds;DLI deny dead_code/unreachable_pub",
+      "qualification": "See generated qualification_view.selected_qualification only;no independent PASS authority",
+      "remaining": "Fresh101rawABI including8PHY missed by93snapshot;full callers/headers/private layouts/current selftests,R5AppSDK/CLI/C-Python thenR6cleanVM;originalscope andnaturalRCA/nonmanualrecoveryOPEN",
+      "report": "docs/evidence/kernel-event-registry-retirement-r4f2cd-20261017.json"
+    },
+    "r4f2e": {
+      "state": "FRESH_STATIC_NUMERIC_CALL_AUDIT_ONLY_NOT_RETIRED",
+      "source": "4b6dda28490d61864eacaa791e72cac1cfea2c0c",
+      "candidates": 101,
+      "previous_snapshot_candidates": 93,
+      "added_scope": "8unsupportedPHYrawstubs,no production wrapper or real implementation",
+      "retained_current_commands": 26,
+      "numeric_scope": "x86_64/i386 Cmacro values identical,no collisions;not runtime compat/retirement proof",
+      "exit_reference": "WP18 R4f2e canonical plan",
+      "remaining": "Full declaration/type/auth/dispatch/caller/test/CI migration and exact newVMqualification"
     }
   },
   "owned_ssap_c6_historical_batch": {

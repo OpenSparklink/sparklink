@@ -81,14 +81,14 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete**。
+选定保留产物（不是当前工作树整体资格）：**R4f2c/d event and registry retirement: K4b6/U2bd/tools997;architecture incomplete**。
 仅记录范围：`real_device` / `PASS`。
-kernel `34a6ade26dc9faa5fd348b8fc8043121175378a0`。
-compiled_userspace `8a648bff5a5cb8ef96ccb0d1ed510652ea3ee149`。
+kernel `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
+compiled_userspace `2bd9873a2cd99d40922a3f00c5ae1ebd19da8aaa`。
 executed_tools `997ea198dfc689c96053f6e460fdf1aecb067c70`。
-kernel_selftest_tools `a9915e820cccfaf9ce615b0b510ad7b814246986`。
+kernel_selftest_tools `4b6dda28490d61864eacaa791e72cac1cfea2c0c`。
 independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
-[准确范围与剩余条件](../docs/evidence/kernel-critical-fault-r4f2b-20261017.json)。
+[准确范围与剩余条件](../docs/evidence/kernel-event-registry-retirement-r4f2cd-20261017.json)。
 
 以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。
 
@@ -257,6 +257,7 @@ independent_symbol_tools `23f1da7ec923c336e7b785a9185bca83397805d0`。
 | R4e2命令接线退休：Kb35/UEf/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 | R4f1 DLI元数据退休：K7025/Uc032/工具997分层门禁，整架构未完 | `real_device` | `PASS` |
 | R4f2b critical fault: production34a/U8a/tools997,Virtual probea991;full architecture incomplete | `real_device` | `PASS` |
+| R4f2c/d event and registry retirement: K4b6/U2bd/tools997;architecture incomplete | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1215,6 +1216,60 @@ ccc266仅绝对→相对symlink；当前empty-registry消费者和搬迁树两�
 恢复原绝对链接的负对照确认为missing header。不是执行probe或新VM/RF资格；
 生产声明范围75文件与7025逐字节相同，选定编译产物仍是7025，不能升级整个ccc HEAD。
 初次ccache环境和raw header include路径失败原样保留，不降Werror。
+
+##### R4f2c限定退出：未消费标准事件与ring接口
+
+实际调用核对：生产worker消费命令结果、Native relay/installation及关键故障；
+WS73发现/物理连接/ACB/NOCP走既有Native生命周期路径。旧标准decoder的广播、
+连接、安全、测量、SLB、同步等事件仅构造后被worker丢弃，不能据此宣称已支持。
+
+| 分类 | 调用及去向 | 回归／剩余条件 |
+|---|---|---|
+| 立即删除 | 未消费标准业务事件生产枚举及decoder分支；ring new/push/pop/pending无生产调用 | 标准ingress拒绝并计decode，不制造状态或Complete；保留命令/credit/关键Fault和Native数据/安全7类实际事件 |
+| 移入测试 | 原事件模型、decoder/discovery/status及旧未归属ring方法，带a991基线与hash | 专用retired-standard-events；当前实际parser/decoder/tagged ring六组，历史一组；历史不是当前能力或标准裁判 |
+| 等待替代 | 标准profile连接业务需canonical lifetime/Session实际消费者；rawABI及完整SDK/部署仍待迁移 | 不恢复旧wire Engine，不给未支持能力伪成功；原K#6/K#17/K#19/U#3/U#8保持OPEN |
+
+候选已移除sle_dli全局dead_code/unreachable_pub豁免，生产改为deny；实际消费者
+同步crate可见性，原历史fixture保持原形。整Rust Werror及现有bus/install/注册/
+codec子集已离线运行；fixture首次namespace导入失败保留，非生产失败或证明。
+[准确K4b6／编译U2bd／工具997的11项门禁](../docs/evidence/kernel-event-registry-retirement-r4f2cd-20261017.json)
+已完成：14离线子集、严格组件/完整Kernel、Virtual两轮及四真实保留VM，另有实际
+49 ABI和ELF检查、独立抓包/负对照。原失败保留；只授所列范围，不升级整个当前树。
+
+##### R4f2d限定退出：注册版本副本退休
+
+SleDev的packed版本只有构造/安装时写入，无生产读取；Native.info的4字节投影
+仅用于再写入该副本。候选删除这条链，将安装输入改为明确的queried_address；
+注册表仅更新观察地址，版本/features/ACB/ICB仍由原Native full snapshot提供。
+私有更新方法同步改名update_address，不改变generation发布及两阶段partial init。
+
+立即删除上述写副本及搬运参数；原最小投影/五测试与registry/install/pending片段
+移入retired-registry-version，完整旧源码按准确基线保留。当前bus/snapshot五测试、
+Backend install19、pending9及既有历史五测试须重新执行；新历史最小投影另五项，
+不能把所有归档片段都说成已回放。RawABI/完整SDK/干净部署仍等待原R4/R5/R6。
+本批以同一K4b6／编译U2bd／工具997通过上述分层门禁；普通用户32次对端回复、
+24Owned/96决策/120事务、68角色拒绝、81+56+12负对照分别记录。
+完整Native快照5字节版本保留；注册表副本删除不等于芯片认证或恢复验收。
+
+##### R4f2e近期退出：旧raw ABI全链退休
+
+刷新实际源码后，旧清单93项之外还有8个PHY裸接口仅返回不支持；当前候选总数为
+101，不沿用93作为完整数量。127个C宏中其余26为真实当前控制/观察入口，保留
+registry/file-affinity、Typed Native、Diagnostic和标准profile真实MGMT_STATS。
+32/64位C宏求值一致且无新旧碰撞，只是静态/数值审计，不是运行内核ABI资格。
+
+- 立即删除：101项未发布旧声明、权限分类及仅拒绝的分派门面；旧编号保留不复用，
+  退休后统一ENOTTY。未支持的新模式仍明确拒绝，不通过旧接口恢复模型行为。
+- 移入测试：独立冻结旧数值/布局、旧monolithic模型和有价值的权限/取消/失败证据；
+  当前syscall负对照覆盖全部退休编号，独立保留有效Affinity/管理权限测试。
+- 等待替代：标准profile连接业务、完整共享SDK及部署按原scope继续；不因为
+  旧公开名字相似就合并管理staging与Owned应用注册，也不另造Engine。
+
+同步迁移Kernel头/Rust、C/Python及CLI剩余类型、VM runner/bundle/CI pin/帮助，
+保留原生命周期WIP。当前已有上层旧包装已退休，下一批按实际依赖逐条删底层
+声明和测试调用者；不得只加新入口让旧门面长期共存。门禁包含严格default/allfeatures、
+独立跨语言/真实D-Bus、实际VM权限/退休编号、准确新artifact双设备保留回归。
+历史83项EOPNOTSUPP快照不改成新ENOTTY资格；新工具建立独立身份。
 
 ##### R5a最小独立导出门禁
 

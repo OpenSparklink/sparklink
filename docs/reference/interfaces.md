@@ -693,3 +693,8 @@ raw声明比对及宽度/边界回归保留，不再出现在当前Python或C头
 ABI布局、指针契约、权限、生命周期、外部消费者或实机资格；现有C/Rust/Python布局、
 实际调用、原errno和VM门禁仍独立执行。CI在构建两库后运行实际导出检查；
 `make arch-check`只运行其负对照，未构建库时不伪称已检查ELF。
+
+标准profile的当前事件消费者限于命令结果、命令credit和控制器关键故障；其他
+未接通业务事件被拒绝并计数。WS73 Native发现/连接/ACB/安全使用原本的独立
+lifetime-bound入口，不能从历史标准事件名称推导当前能力。原始状态与限定资格见
+[能力记录](../../project/current-capabilities.md)。

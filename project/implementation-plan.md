@@ -1320,6 +1320,11 @@ R5d有限退出已取得：[编译2fc/0fe、工具8aa资格](../docs/evidence/ty
 代替。C/Python完整高级客户端、外部实际消费与R6干净VM安装仍明确缺失；只实现并
 验证当前生产入口，不先导出整个目标API树或永久NotSupported旧门面。
 
+R5e第一小批已接入共享Client scope与四个管理staging调用，
+[离线范围与原反例](../docs/evidence/client-scope-staging-foundation-20261018.json)
+记录335 workspace及严格Clippy通过；不是新artifact实机资格。原同owner释放/重取
+反例保留。Owned/Agent仍待迁移，向原owner撤销原资源不能因scope失效而被阻断。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

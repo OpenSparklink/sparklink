@@ -438,3 +438,10 @@ broker授权的请求，不持有/泄露Native lease。每次操作固定owner/g
 SDK只封装固定daemon owner和typed身份的观察，不拥有另一个缓存/Host；缺失或
 不一致返回错误。完整Peer接口、地址模式/隐私及后续RF资格逐项开放，源码迁移或
 公共地址样本不能推出任意地址类型均已实机验收。
+
+
+共享Client在解析owner前订阅名称变化，任意转换与stream终止永久结束旧scope；clone与
+派生view共享一个有限通知task，最后引用释放立即终止本地观察。该scope不是内核授权epoch，
+也不承担物理取消。迁移Agent时保留更强的既有失效契约。原owner定向撤销需携带原登记
+身份，不跟随替换owner、不开放新的准入。管理staging与应用Owned登记用途独立；
+本地登记不能表示远端发布，失败响应也不能隐含回滚或自动重试。

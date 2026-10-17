@@ -40,6 +40,21 @@ pub type DynamicRequest = (u16, u16, u16, u16, u16, u8, bool);
 
 /// Existing daemon SSAP wire contract, not a second protocol implementation.
 pub mod ssap {
+    /// Local manager staging and caller-owned registration are distinct roles.
+    pub mod local {
+        pub const MANAGER: &str = "org.sparklink.ServiceManager";
+        pub const LIST: &str = "ListLocalServices";
+        pub const REGISTER: &str = "RegisterLocalService";
+        pub const REMOVE: &str = "RemoveLocalService";
+        pub const READ: &str = "ReadLocalValue";
+        pub const REGISTER_OWNED: &str = "RegisterOwnedLocalService";
+        pub const UNREGISTER_OWNED: &str = "UnregisterOwnedLocalService";
+        pub const READ_OWNED: &str = "ReadOwnedLocalValue";
+        pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
+        pub type PropertyRecord = (u16, Vec<u8>, u32, u32);
+        pub type ServiceRecord = (u16, u16, Vec<u8>, Vec<PropertyRecord>);
+        pub type Registration = (u16, u16, Vec<u16>);
+    }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
     pub const OBSERVE: &str = "ObserveSsapIncoming";

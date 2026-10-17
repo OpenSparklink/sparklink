@@ -1,5 +1,4 @@
-type LocalProperty = (u16, Vec<u8>, u32, u32);
-type LocalService = (u16, u16, Vec<u8>, Vec<LocalProperty>);
+use slk_contract::ssap::local::ServiceRecord as LocalService;
 use zbus::Connection;
 
 use slk_contract::ConnectionInfo as NativeObjectInfo;
@@ -105,15 +104,8 @@ impl Context {
                 Ok(())
             }
             "ssap-list" if args.len() == 1 => {
-                let path = format!("{}/services", self.selected_path().await?);
-                let object = zbus::Proxy::new(
-                    &self.conn,
-                    "org.sparklink",
-                    path,
-                    "org.sparklink.ServiceManager",
-                )
-                .await?;
-                let services: Vec<LocalService> = object.call("ListLocalServices", &()).await?;
+                let services = self.controller().await?.management().local_services();
+                let services: Vec<LocalService> = services.list().await?;
                 println!("SsapLocalServices: {}", serde_json::to_string(&services)?);
                 Ok(())
             }
@@ -133,24 +125,14 @@ impl Context {
                 .await
             }
             "ssap-register" if args.len() == 6 => {
-                let path = format!("{}/services", self.selected_path().await?);
-                let object = zbus::Proxy::new(
-                    &self.conn,
-                    "org.sparklink",
-                    path,
-                    "org.sparklink.ServiceManager",
-                )
-                .await?;
+                let services = self.controller().await?.management().local_services();
                 let service = parse_hex_bytes(args[1])?;
                 let property = parse_hex_bytes(args[2])?;
                 let ops: u32 = args[3].parse()?;
                 let access: u32 = args[4].parse()?;
                 let value = parse_hex_bytes(args[5])?;
-                let registered: (u16, u16, Vec<u16>) = object
-                    .call(
-                        "RegisterLocalService",
-                        &(service, vec![(property, ops, access, value)]),
-                    )
+                let registered = services
+                    .register(service, vec![(property, ops, access, value)])
                     .await?;
                 println!(
                     "SsapLocalService: start={} end={} properties={}",
@@ -166,30 +148,16 @@ impl Context {
                 Ok(())
             }
             "ssap-remove" if args.len() == 2 => {
-                let path = format!("{}/services", self.selected_path().await?);
-                let object = zbus::Proxy::new(
-                    &self.conn,
-                    "org.sparklink",
-                    path,
-                    "org.sparklink.ServiceManager",
-                )
-                .await?;
+                let services = self.controller().await?.management().local_services();
                 let handle: u16 = args[1].parse()?;
-                let _: () = object.call("RemoveLocalService", &(handle,)).await?;
+                let _: () = services.remove(handle).await?;
                 println!("SsapLocalRemoved: start={handle}");
                 Ok(())
             }
             "ssap-local-read" if args.len() == 2 => {
-                let path = format!("{}/services", self.selected_path().await?);
-                let object = zbus::Proxy::new(
-                    &self.conn,
-                    "org.sparklink",
-                    path,
-                    "org.sparklink.ServiceManager",
-                )
-                .await?;
+                let services = self.controller().await?.management().local_services();
                 let handle: u16 = args[1].parse()?;
-                let value: Vec<u8> = object.call("ReadLocalValue", &(handle,)).await?;
+                let value: Vec<u8> = services.read_local(handle).await?;
                 println!(
                     "SsapLocalValue: handle={handle} value={}",
                     hex_bytes(&value)

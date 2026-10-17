@@ -2,6 +2,7 @@
 //! cache, retry or transaction state lives here. Broker errors are propagated.
 //! A local wait ending cannot undo a remotely committed operation; protocol
 //! response, queue admission and remote application processing remain distinct.
+pub mod local;
 use crate::{ApplicationConnection, ApplicationError};
 use slk_contract::{self as contract, ssap as wire};
 

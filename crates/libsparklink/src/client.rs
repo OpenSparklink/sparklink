@@ -1,6 +1,9 @@
 //! Application broker requests. Business datagrams never traverse D-Bus here.
 //! This slice exposes only existing controller/connection/channel operations.
 use slk_contract::{self as contract, ConnectionInfo, ControllerId, DynamicRequest};
+use std::sync::Arc;
+use tokio::sync::watch;
+use zbus::export::ordered_stream::OrderedStreamExt;
 use zbus::{Connection, Proxy};
 
 #[derive(Debug, thiserror::Error)]
@@ -21,7 +24,29 @@ type Result<T> = std::result::Result<T, ApplicationError>;
 #[derive(Clone)]
 pub struct Client {
     bus: Connection,
+    scope: Arc<DaemonScope>,
+}
+
+/// Local observation scope only. No controller lease, protocol state or debt.
+struct DaemonScope {
     owner: String,
+    lost: watch::Receiver<bool>,
+    terminal: watch::Sender<bool>,
+    task: tokio::task::JoinHandle<()>,
+}
+impl Drop for DaemonScope {
+    fn drop(&mut self) {
+        // Callback receivers must see terminal immediately, even if the task
+        // has not been polled or its asynchronous destruction is delayed.
+        self.terminal.send_replace(true);
+        self.task.abort();
+    }
+}
+struct LossOnExit(watch::Sender<bool>);
+impl Drop for LossOnExit {
+    fn drop(&mut self) {
+        self.0.send_replace(true);
+    }
 }
 impl Client {
     pub async fn open_system() -> Result<Self> {
@@ -31,27 +56,65 @@ impl Client {
     /// Resolves the real service owner; there is no local backend or fallback.
     pub async fn from_connection(bus: Connection) -> Result<Self> {
         let manager = zbus::fdo::DBusProxy::new(&bus).await?;
+        // Install the subscription before lookup. A release/reacquire by the
+        // same unique process is still a new ownership scope, never revival.
+        let mut changes = manager
+            .receive_name_owner_changed_with_args(&[(0, contract::SERVICE)])
+            .await?;
         let owner = manager
             .get_name_owner(contract::SERVICE.try_into().expect("constant service name"))
             .await
             .map_err(|e| ApplicationError::Bus(e.into()))?
             .to_string();
-        Ok(Self { bus, owner })
+        let (terminal, lost) = watch::channel(false);
+        let on_exit = LossOnExit(terminal.clone());
+        let task = tokio::spawn(async move {
+            let _ = changes.next().await;
+            // Includes a closed/error stream, abort and task panic. The task
+            // never captures the Scope Arc, so final caller release has no cycle.
+            drop(on_exit);
+        });
+        let client = Self {
+            bus,
+            scope: Arc::new(DaemonScope {
+                owner,
+                lost,
+                terminal,
+                task,
+            }),
+        };
+        client.check_owner().await?;
+        Ok(client)
     }
     pub fn daemon_owner(&self) -> &str {
-        &self.owner
+        &self.scope.owner
     }
-    pub(crate) async fn proxy(&self, path: &str, interface: &'static str) -> Result<Proxy<'_>> {
+    /// One bounded terminal notification shared by clones and derived views.
+    /// This is not a controller event stream or an authorization epoch.
+    pub fn owner_loss(&self) -> watch::Receiver<bool> {
+        self.scope.lost.clone()
+    }
+    pub fn daemon_lost(&self) -> bool {
+        *self.scope.lost.borrow()
+    }
+    async fn check_owner(&self) -> Result<()> {
+        if self.daemon_lost() {
+            return Err(ApplicationError::Identity("daemon owner replaced"));
+        }
         let bus = zbus::fdo::DBusProxy::new(&self.bus).await?;
         let current = bus
             .get_name_owner(contract::SERVICE.try_into().expect("constant service name"))
             .await
             .map_err(|e| ApplicationError::Bus(e.into()))?;
-        if current.as_str() != self.owner {
+        if current.as_str() != self.scope.owner || self.daemon_lost() {
             return Err(ApplicationError::Identity("daemon owner replaced"));
         }
+        Ok(())
+    }
+    pub(crate) async fn proxy(&self, path: &str, interface: &'static str) -> Result<Proxy<'_>> {
+        self.check_owner().await?;
         Ok(zbus::proxy::Builder::<Proxy<'_>>::new(&self.bus)
-            .destination(self.owner.clone())?
+            .destination(self.scope.owner.clone())?
             .path(path.to_owned())?
             .interface(interface)?
             .cache_properties(zbus::proxy::CacheProperties::No)
@@ -62,7 +125,9 @@ impl Client {
         let manager = self
             .proxy(contract::MANAGER_PATH, contract::MANAGER)
             .await?;
-        Ok(manager.call(contract::LIST_ADAPTERS, &()).await?)
+        let paths = manager.call(contract::LIST_ADAPTERS, &()).await?;
+        self.check_owner().await?;
+        Ok(paths)
     }
     pub(crate) async fn check_generation(&self, id: ControllerId) -> Result<()> {
         let current: u64 = self
@@ -106,6 +171,7 @@ impl Client {
             .await?;
         let bus = zbus::fdo::DBusProxy::new(&self.bus).await?;
         let owner: zbus::names::BusName<'_> = self
+            .scope
             .owner
             .as_str()
             .try_into()
@@ -121,7 +187,7 @@ impl Client {
         let _ = self
             .proxy(contract::MANAGER_PATH, contract::MANAGER)
             .await?;
-        Ok((self.owner.clone(), pid, uid))
+        Ok((self.scope.owner.clone(), pid, uid))
     }
     pub async fn peer(&self, path: &str) -> Result<crate::peer::Peer> {
         let id = contract::PeerId::from_path(path)

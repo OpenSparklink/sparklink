@@ -25,7 +25,12 @@ impl Controller {
             controller: self.clone(),
         }
     }
-    async fn call<B, R>(&self, interface: &'static str, method: &str, body: &B) -> Result<R>
+    pub(crate) async fn call<B, R>(
+        &self,
+        interface: &'static str,
+        method: &str,
+        body: &B,
+    ) -> Result<R>
     where
         B: serde::Serialize + zbus::zvariant::DynamicType,
         R: for<'d> zbus::zvariant::DynamicDeserialize<'d>,
@@ -33,6 +38,8 @@ impl Controller {
         self.client.check_generation(self.id).await?;
         let path = if interface == wire::CORE {
             format!("{}/controller", self.path())
+        } else if interface == contract::ssap::local::MANAGER {
+            format!("{}/services", self.path())
         } else {
             self.path()
         };
@@ -163,6 +170,11 @@ pub struct Management {
     controller: Controller,
 }
 impl Management {
+    /// Explicit manager-owned staging. Construction grants no permission;
+    /// the broker policy and Native management checks remain authoritative.
+    pub fn local_services(&self) -> crate::ssap::local::StagingServices {
+        crate::ssap::local::StagingServices::new(self.controller.clone())
+    }
     pub async fn advertise(&self, id: u64, marker: Vec<u8>) -> Result<Vec<u8>> {
         self.controller
             .call(contract::ADAPTER, wire::ADVERTISE, &(id, marker))

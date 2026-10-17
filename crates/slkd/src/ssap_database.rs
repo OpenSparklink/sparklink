@@ -7,8 +7,7 @@ use slk_protocol::{SsapOperations, ssap::value::ValuePdu};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-pub(crate) type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
-pub(crate) type LocalService = (u16, u16, Vec<u8>, Vec<(u16, Vec<u8>, u32, u32)>);
+pub(crate) use slk_contract::ssap::local::{PropertyDefinition, ServiceRecord as LocalService};
 struct Property {
     uuid: Vec<u8>,
     operations: SsapOperations,

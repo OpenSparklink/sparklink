@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "status": "TX_CONSTRAINT_SSAP_RESPONSE_SCOPE_AND_SEVEN_OPEN_ISSUES_SYNCHRONIZED",
+  "compiled_kernel": "1bcd766d07bba2b045f4b381d41b7af9e96c05ad",
+  "compiled_userspace": "b4ad7dcf6930a7e2382d8bd4fa4f31674deab02b",
+  "executed_tools": "b4ad7dcf6930a7e2382d8bd4fa4f31674deab02b",
+  "evidence_report_commit": "1865e58b35b012b0d3c569c2af8097c777707cf9",
+  "scope": [
+    "5source/artifact/gate-bound records/120materials,5actualprovenance/scope negatives;currentwhole tree NOT_REVALIDATED/fullscope INCOMPLETE,oldFAIL/UNPROVED nothidden.",
+    "7existingissuesOPEN exactcommentreadback/unchangedbody;no duplicateissue/goal;goalAPIactive/unbudgeted/fullS0-S6/19WP/10FV/12DG andUserHostP4unchanged.",
+    "115strictdocs/inventory/exampleschecks;onlyfourreaderquadrantsbuilt,source-onlyproject/ADR/evidence canonical. Notbrowser/fulldocumentcompleteness ornewfunctionalqualification.",
+    "330trackedcrates/data/tools/Pythoninputs matchcleanb4 exceptoriginaltwoWIP untouched/outsidephysicalVM;report/documentheadsnotcompiledidentities.",
+    "5exactb4onlineworkflowssuccess observed;not branchprotection/requiredchecks/hardware-runner or supplychainattestation.",
+    "Nextattributeaudit read-only:fixedHostkeepsoperations/permissions separate andNAPI6permissionbits;notautomaticstandardoracle ornewpolicyimplementation. ReusenewrealRX/finalTX andcanonicaloperations,notoldwireEngine.",
+    "Absolute deadline guards checked at admission andimmediatelybeforeatomicqueuecallback,not hard-real-time RFtermination orhardwarecomplete bound. Scheduling/USBdrain/Ownertruth remainoutsideboundedmodel."
+  ],
+  "references": {
+    "communication_nearlink_service": {
+      "head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+      "dirty": false
+    },
+    "libws73-usb": {
+      "head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+      "dirty": false
+    },
+    "ws73_SDK": {
+      "head": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+      "dirty": false
+    }
+  },
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 6,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6228568186",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 7,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6228568634",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6228569076",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6228569559",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6228570309",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 5,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6228570995",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6228571443",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/tx-constraint-issue-receipts-v1.json",
+      "bytes": 2602,
+      "sha256": "7ff6962610c6780c7294515fa8f413c0427a8f1126fac4b656f260736447cdce",
+      "access": "private"
+    },
+    {
+      "path": ".dev/tx-constraint-registry-local-v1.json",
+      "bytes": 1278,
+      "sha256": "9e75673e97b632a8b2579742a74319d57b6c542d918a5a76d5b498800c45d2c1",
+      "access": "private"
+    },
+    {
+      "path": ".dev/tx-constraint-source-mapping-v1.json",
+      "bytes": 454,
+      "sha256": "9aec023913926e130a1634078cc0e79c18b0c63d8a1dffde236e00d63e5e43ad",
+      "access": "private"
+    },
+    {
+      "path": ".dev/tx-constraint-next-attribute-audit-v1.json",
+      "bytes": 2536,
+      "sha256": "705b50cf7f96b7e43b2571dffa0b5c81c8c3764cbbf2862a1da1e5f7967529a9",
+      "access": "private"
+    },
+    {
+      "path": ".dev/tx-constraint-docs-v2.log",
+      "bytes": 340401,
+      "sha256": "bc15e1e06354c82a4c4da2ec24aaf247312ae6e5ec41e2f326697587af74bda0",
+      "access": "private"
+    },
+    {
+      "path": ".dev/tx-constraint-ci-user-v2.json",
+      "bytes": 67609,
+      "sha256": "2a6824d915bd86324f63cbad41cad795758149778adb6b96f201058cc3272121",
+      "access": "private"
+    }
+  ],
+  "remaining": [
+    "SoleEngine perattributeauth/encrypt/localauthorization/CPCD plusactiveinitiatedrequestgranularintent",
+    "Actualnewartifactqueuedoff/rekey/unknown/release/lastfd/dup/Down/deadline andstartedprefixphysicalobligations",
+    "Actualqueue/locks/refs/Ownertruth/USB/credit/revoke-lateNOCP-reuse proof",
+    "OriginalU331lateDownRCA,naturalstartup/re-enumeration/disappearance/nonmanualrecovery/fullS0-S6/Bond/multi/fourdevice/performance/PM/deployment/release"
+  ],
+  "wall_ns": 1792204695106286660
+}

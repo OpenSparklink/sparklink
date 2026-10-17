@@ -1,8 +1,19 @@
 # 当前能力与资格
 
-正在开发K1bcd766d07bb／Ub4ad7dc的TX约束与唯一SSAP响应接线，离线通过但
-**新artifact实机资格尚待获取**。后文K8c/U625接收上下文资格保持原身份，不转授新
-最终提交/SSAP消费者。当前仍未支持逐属性策略、本地授权、完整失效和主动请求细粒度intent。
+[最终TX约束与唯一SSAP响应限定资格](../docs/evidence/send-security-constraints-20261017.json)：
+准确K1bcd766d07bb／编译及执行Ub4ad7dc，VM-only、SDK111、Hi3873U2/3，Hi3873E1排除。
+六门禁各交换角色：48次真实CUTC业务往返/48次受约束响应、96接收上下文，144次旧
+scope/epoch/过期intent及24次未知control拒绝且无对应USB载荷；96组SSAP对端核对/
+discovery、16超限拒绝、8次完整2042往返保持。唯一SSAP响应/错误/ACK走原Grant与
+48字节限制，不增加Engine。主动请求仍为原通道Grant，属性/本地授权尚缺。
+
+生产constraint/Grant纯guard CBMC168+三负对照仅单候选快照限定通过，实际队列/
+Owner真值/锁/引用/USB/credit/撤权晚到复用组合未证明。707冻结工具、44封存跨语言
+（32位仅布局）、干净8路固定目录82protocol/91daemon/28slktest+2入口+5启动、严格
+clippy/115文档、六原件重放132复制实证负对照分别记录；保留原失败与make warning1。
+旧产物不转授新资格。新artifact排队后rekey/off/撤权/最后fd/dup/Down/原期限及前缀
+组合、原U331晚Down根因、自然RCA/非人工恢复、完整S0–S6继续OPEN。此限定退出后
+继续逐属性及主动请求意图，不等控制面竞争全集。
 
 [RX-only消息上下文限定资格](../docs/evidence/message-security-receipts-20261017.json)：
 准确K8c302d7cfc49／编译及执行U6251931，VM-only、SDK111、Hi3873U2/3；Hi3873E1排除。
@@ -375,6 +386,11 @@ K14d9f20/U42ecc6f、执行42ecc6f：U2/3 两角色80次动态＋8次固定通道
 | 生产receipt/dequeue纯转换CBMC65及三负对照：限定有界通过 | `formal_bounded` | `PASS` |
 | Owner真值/锁/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | SSAP属性策略/最终TX intent/实际失效矩阵与完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
+| K1bc/Ub4受约束响应：六实机门禁48回复/144旧意图拒绝 | `real_device` | `PASS` |
+| 受约束响应：707冻结工具/44封存绑定/91Engine/132实证负对照 | `offline` | `PASS` |
+| 生产constraint/Grant纯guard CBMC168及三负对照：限定有界通过 | `formal_bounded` | `PASS` |
+| Owner真值/锁/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
+| SSAP属性策略/主动请求intent/实际失效矩阵与完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

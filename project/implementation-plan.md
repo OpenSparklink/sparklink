@@ -11,8 +11,10 @@ intent继续缺失，不把本批当成完整安全SSAP。
 本批退出：strict build/44跨语言、生产Session/parser sanitizer、生产纯constraint+Grant
 168项CBMC及三负对照；新冻结产物两角色plain61/secure1/2/249/2042真实响应交付、
 逐条旧epoch/lifetime/过期intent拒绝且无USB载荷、既有SSAP/广播扫描/连接断链保持。
-全新artifact实机结果仍待获取；排队后真实换epoch/off及释放组合另列，不以离线模型
-冒充真实并发。通过本批后继续逐属性策略，控制面全集不是前置。
+全新artifact六实机门禁已过：48真实业务往返/受约束响应、144非法intent和24未知
+control拒绝无USB；96SSAP核对/16超限/8完整2042，[原件及范围](../docs/evidence/send-security-constraints-20261017.json)。
+排队后真实换epoch/off及释放组合另列，不以离线模型
+冒充真实并发。本批限定退出已达，现在继续逐属性策略，控制面全集不是前置。
 
 上一批 WP06/WP09 的唯一用户态 SSAP 首次安全 SMTC 切片，限定退出已在
 K619/U8bda 达成：六项真实门禁、48次 CUTC 往返、96组 SSAP 对端数据库核对、
@@ -192,6 +194,11 @@ callback/ref 排空、擦除密钥或复用。原五秒期限未刷新，不新�
 | 生产receipt/dequeue纯转换CBMC65及三负对照：限定有界通过 | `formal_bounded` | `PASS` |
 | Owner真值/锁/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
 | SSAP属性策略/最终TX intent/实际失效矩阵与完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
+| K1bc/Ub4受约束响应：六实机门禁48回复/144旧意图拒绝 | `real_device` | `PASS` |
+| 受约束响应：707冻结工具/44封存绑定/91Engine/132实证负对照 | `offline` | `PASS` |
+| 生产constraint/Grant纯guard CBMC168及三负对照：限定有界通过 | `formal_bounded` | `PASS` |
+| Owner真值/锁/引用/USB与撤权晚到复用组合：未证明 | `formal_bounded` | `UNPROVED` |
+| SSAP属性策略/主动请求intent/实际失效矩阵与完整S0–S6：仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9`；编译 U `9385c8a9124332bab09c889fccba4848cb31b19c`；执行工具 `e34c7b76b469c01f6afbdbe82e73a53f6a39e278`。
 

@@ -977,6 +977,14 @@ Backend及D-Bus代理不是它们。此次范围调整不表示U#7/K#1/#5或其�
 
 #### 2026-10-17：历史实现退休与架构一致性（进行中）
 
+R1已取得[准确新artifact的限定回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
+编译cd35/工具0568/K0cd，四门禁32真实业务回复、24 Owned案例/96审批/120远端事务、
+61/249+16超限/2042及机制2；guest service-only68拒绝，五重放81复制负对照。默认及
+实验各303、冻结工具750、严格clippy/HTML通过。首轮root-owned pipe实机FAIL保留，
+修监督器pipe属主后重跑，不改生产Input权限或放宽断言。无新增形式化证明。
+R6a卸载保留配置/状态仅staged Makefile通过，完整部署未验收。下一整改为R2，仍与
+正在开发的审批退出/原期限工具及数据/多通道/四设备并行，不追加控制面全集前置。
+
 审查重新核对用户态 `d795a3a6b1e98c24e984e2459b2cf1e7db46cff4`、Linux
 `0cd4731dd3e673d1309a2b570b38769f9a98681f`，没有将历史实机资格转授 dirty tree。
 保留现有生命周期 runner 的未提交工作及两份用户 WIP；既有 S0–S6、19 WP、10 FV、
@@ -1005,6 +1013,12 @@ R6a小切片：通用 `make uninstall` 移除递归删除配置目录的命令�
 嵌套文件、配置目录symlink和状态保留，实际Makefile临时DESTDIR正/负对照。
 这仅验证staging卸载，不是干净VM构建/安装/启动/外部SDK/升级回滚的完整部署资格；
 安装路径、共享库名称/SONAME/pkg-config及安装覆盖配置仍留R6。无自动purge入口。
+
+持续门禁R1a：实际默认Cargo normal闭包检查slkd→当前Native包装libsparklink→
+slk-protocol，拒绝默认test/experimental、slctl/slktest及逆向依赖；保留默认features，
+不能用--no-default-features隐藏误接线。CI复用实际cargo tree --locked，并测缺失输出/
+错误根/逆向依赖负对照。R3明确Native/Channel/app拆分后相应审查allowlist；这不证明
+完整SDK导出/权限分离，all-features实验构建独立，不将本门禁作用到实验配置。
 
 R2预算与发布修复优先于SDK大迁移；R3–R6分小批逐入口交付。安全Agent、SSAP的
 service-only/审批退出原期限门禁、数据/多通道/四设备/性能继续并行。先前尝试复用c6

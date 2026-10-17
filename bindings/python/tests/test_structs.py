@@ -6,14 +6,11 @@ Sizes must match Rust repr(C) structs verified in slk-protocol tests.
 import ctypes
 import unittest
 
+from retired_structs import SleScanParams, SleConnectParams, SleConnInfo, SleDliInfo, SlePhyInfo
+
 from sparklink.structs import (
     SciDevInfo,
     SleAddr,
-    SleConnInfo,
-    SleConnectParams,
-    SleDliInfo,
-    SlePhyInfo,
-    SleScanParams,
 )
 
 

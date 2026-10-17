@@ -340,3 +340,11 @@ R4c同时退休没有Native消费者的daemon experimental-legacy-profiles构建
 独立实验crate与原actor测试保留为dev-dependency，不恢复旧profile0接线。
 生产依赖门禁对default与all-features均执行实际normal闭包及原负对照；
 这不是完整公开接口/生命周期/部署或协议证明，R5/R6剩余条件不变。
+
+R4d选择删除未发布的旧Native/Controller/ExtAdv/地址控制门面，保留当前typed请求和
+完整身份快照；不为兼容保留NotSupported别名。Device仍是观察关系，不独立拥有物理
+连接。计数复用Core bitmap，避免scalar返回/未写buffer形成第二假状态；明确pending/
+fault分配不等于Ready。C整数错误统一负errno，open用NULL+线程errno，Python不丢失
+来源或截断路径。历史ABI五布局移test fixture，当前公开头/类必须缺失；rawKernel仍有
+自测消费者，下一批同迁后删，不复用编号。声明级退休清单门禁只能防已知回流，不能
+取代实际符号、D-Bus、权限、生命周期和准确新artifact回归。

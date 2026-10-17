@@ -27,6 +27,7 @@ static void observe(unsigned index, uint64_t generation, int ordinary)
 	uint64_t lease = UINT64_C(0xabcdef);
 	uint16_t mask = 0;
 	CHECK(slk_device_mask(a, &mask) == 0 && (mask & (1U << index)));
+	CHECK(slk_device_count(a) == __builtin_popcount((unsigned)mask));
 	CHECK(slk_controller_snapshot(a, generation, &info) == 0);
 	CHECK(info.generation == generation && info.dev_index == index && info.flags == 1 && info.profile == 1 && info.valid_fields == 1);
 	CHECK(slk_controller_snapshot(a, generation + 100, &info) == -ENODEV);
@@ -182,13 +183,30 @@ static void stale(unsigned index, uint64_t generation, int trace)
 	slk_adapter_free(fresh); slk_adapter_free(old);
 }
 
+/* Metadata only: no lease, radio command, protocol credit or test injection. */
+static void metadata(unsigned index, uint64_t generation)
+{
+    SlkAdapter *h=selected(index);
+    uint16_t mask=0;
+    SleControllerSnapshot snapshot;
+    CHECK(slk_controller_snapshot(h,generation,&snapshot)==0);
+    CHECK(snapshot.dev_index==index && snapshot.generation==generation && snapshot.flags==1);
+    CHECK(slk_device_mask(h,&mask)==0 && (mask & (1U<<index)));
+    int count=slk_device_count(h);
+    CHECK(count==__builtin_popcount((unsigned)mask));
+    printf("CoreRegistryMetadata: index=%u generation=%"PRIu64" mask=%u count=%d flags=%u\n",
+           index,generation,mask,count,snapshot.flags);
+    slk_adapter_free(h);
+}
+
 int main(int argc, char **argv)
 {
 	CHECK(argc == 4);
 	unsigned index = strtoul(argv[2], NULL, 10);
 	uint64_t generation = strtoull(argv[3], NULL, 10);
 	CHECK(index < 16 && generation != 0);
-	if (!strcmp(argv[1], "observe")) observe(index, generation, getuid() != 0);
+	if (!strcmp(argv[1], "metadata")) metadata(index,generation);
+	else if (!strcmp(argv[1], "observe")) observe(index, generation, getuid() != 0);
 	else if (!strcmp(argv[1], "stale-event") || !strcmp(argv[1], "stale-trace")) {
 		CHECK(getuid() == 0); stale(index,generation,!strcmp(argv[1],"stale-trace"));
 	}

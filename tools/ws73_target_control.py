@@ -63,6 +63,8 @@ class ConnectionControlRun(PassthroughControlRun):
         if label == 'initial':
             from ws73_connection_control import execute
             execute(self, a, b)
+            from ws73_registry_metadata import execute as registry_metadata
+            registry_metadata(self, a, b)
         return super().phase(a, b, count, label)
 
 
@@ -173,6 +175,8 @@ def main():
     if args.connection_advertising!='fixed-t' and not args.connection_verify:
         parser.error('connection advertising contrast requires explicit connection gate')
     args.ports=['1-1','1-2'];args.artifact=['qmp_control='+str(Path(__file__).resolve())]
+    if args.connection_verify:
+        args.artifact += ['registry_probe=/bin/native-bindings-probe','registry_cli=/bin/slkconfig','registry_tool='+str(Path(__file__).with_name('ws73_registry_metadata.py').resolve())]
     if args.daemon_cancel_remove:
         args.artifact.append('daemon_removal='+str(Path(__file__).with_name('ws73_daemon_removal.py').resolve()))
     if args.initializer_lifecycle:

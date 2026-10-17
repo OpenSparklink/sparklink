@@ -18,10 +18,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: Default production dependency direction (not experimental/all-features)
+      - name: Default/all-features production boundaries and retired entry guard
         run: |
           python3 -m unittest discover -s tools/tests -p test_production_dependencies.py -v
           python3 tools/check_production_dependencies.py
+          python3 -m unittest discover -s tools/tests -p test_retired_interfaces.py -v
+          python3 tools/check_retired_interfaces.py
       - run: cargo check --locked --workspace --all-targets --all-features
 
   test:

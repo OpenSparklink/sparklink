@@ -80,61 +80,9 @@ typedef uint8_t BusType;
 typedef struct SlkAdapter SlkAdapter;
 
 /**
- * Scan parameters (ioctl 0x12)
- */
-typedef struct SleScanParams {
-    uint16_t dev_index;
-    uint16_t window_ms;
-    uint16_t interval_ms;
-    uint8_t filter_discovery_level;
-    uint8_t _reserved[9];
-} SleScanParams;
-
-/**
  * MAC address (6 bytes)
  */
 typedef uint8_t SleAddr[6];
-
-/**
- * Connection parameters (ioctl 0x30)
- */
-typedef struct SleConnectParams {
-    SleAddr peer_addr;
-    uint8_t gt_role;
-    uint8_t bandwidth;
-    uint8_t mcs_index;
-    uint8_t _pad;
-    uint16_t timeout_10ms;
-    uint8_t _reserved[4];
-} SleConnectParams;
-
-/**
- * Connection info (ioctl 0x32)
- */
-typedef struct SleConnInfo {
-    uint64_t tx_bytes;
-    uint64_t rx_bytes;
-    uint16_t handle;
-    uint16_t event_group_period;
-    uint16_t supervision_timeout;
-    uint16_t tx_pending;
-    uint16_t rx_pending;
-    uint8_t state;
-    SleAddr peer_addr;
-    uint8_t local_role;
-    uint8_t bandwidth_mhz;
-    uint8_t mcs_index;
-    uint8_t tx_seq;
-    uint8_t rx_seq;
-    uint16_t data_mtu;
-    uint16_t data_mps;
-    uint16_t svc_mtu;
-    uint8_t data_mode;
-    uint16_t smtc_tx_credits;
-    uint16_t smtc_rx_credits;
-    uint16_t dudtc_tx_credits;
-    uint16_t dudtc_rx_credits;
-} SleConnInfo;
 
 /**
  * Device information (ioctl 0x04)
@@ -147,49 +95,6 @@ typedef struct SciDevInfo {
     uint8_t name[32];
     uint8_t _reserved[24];
 } SciDevInfo;
-
-/**
- * DLI controller info (ioctl 0x80)
- */
-typedef struct SleDliInfo {
-    uint8_t bus;
-    uint8_t _pad[3];
-    uint32_t firmware_version;
-    uint64_t features;
-    uint8_t max_connections;
-    uint8_t max_adv_sets;
-    uint8_t transport_modes;
-    uint8_t measurement_cap;
-    uint16_t max_mtu;
-    uint16_t max_mps;
-    uint16_t security_cap;
-    uint16_t features_ext;
-    uint8_t name[32];
-    uint8_t _reserved[4];
-} SleDliInfo;
-
-/**
- * PHY info (ioctl 0x90)
- */
-typedef struct SlePhyInfo {
-    uint8_t mcs_index;
-    uint8_t bandwidth_mhz;
-    uint8_t pilot_density;
-    int8_t tx_power_dbm;
-    uint8_t mimo_mode;
-    uint8_t num_tx_ant;
-    uint8_t num_rx_ant;
-    uint8_t ofdm;
-    uint32_t data_rate_kbps;
-    uint8_t hop_channel;
-    uint8_t hop_increment;
-    uint8_t hop_used_channels;
-    uint8_t _pad;
-    uint8_t modulation;
-    uint8_t code_rate_num;
-    uint8_t code_rate_den;
-    uint8_t _reserved[5];
-} SlePhyInfo;
 
 /**
  * Selected registration metadata and Host readiness, independent of RF state.
@@ -629,8 +534,8 @@ struct SlkAdapter *slk_adapter_open(const char *dev_path);
 void slk_adapter_free(struct SlkAdapter *adapter);
 
 /**
- * Get allocated Core registration count, not Ready count.
- * Returns count or negative errno.
+ * Get the device count.
+ * Returns allocated registration count or negative errno; not Ready count.
  *
  * # Safety
  * `adapter` must be a valid non-null pointer.
@@ -638,96 +543,13 @@ void slk_adapter_free(struct SlkAdapter *adapter);
 int slk_device_count(const struct SlkAdapter *adapter);
 
 /**
- * Start scanning.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- * `params` must point to a valid `SleScanParams` struct.
- */
-int slk_start_scan(const struct SlkAdapter *adapter, const struct SleScanParams *params);
-
-/**
- * Stop scanning.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- */
-int slk_stop_scan(const struct SlkAdapter *adapter);
-
-/**
- * Initiate a connection.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- * `params` must point to a valid `SleConnectParams` struct.
- */
-int slk_connect(const struct SlkAdapter *adapter, const struct SleConnectParams *params);
-
-/**
- * Disconnect a connection by handle.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- */
-int slk_disconnect(const struct SlkAdapter *adapter, uint16_t handle);
-
-/**
- * Get connection info.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` and `out` must be valid non-null pointers.
- */
-int slk_conn_info(const struct SlkAdapter *adapter, uint16_t handle, struct SleConnInfo *out);
-
-/**
- * Get device info; state 0xff is unknown, never Ready.
- * Returns 0 or negative errno.
+ * Get device info.
+ * Returns 0 or negative errno; unknown legacy state is 0xff, never Ready.
  *
  * # Safety
  * `adapter` and `out` must be valid non-null pointers.
  */
 int slk_device_info(const struct SlkAdapter *adapter, struct SciDevInfo *out);
-
-/**
- * Unavailable legacy DLI aggregate; use selected controller snapshot.
- * Returns -EOPNOTSUPP without changing output; -1 for invalid pointers.
- *
- * # Safety
- * `adapter` and `out` must be valid non-null pointers.
- */
-int slk_dli_info(const struct SlkAdapter *adapter, struct SleDliInfo *out);
-
-/**
- * Get PHY info.
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` and `out` must be valid non-null pointers.
- */
-int slk_phy_info(const struct SlkAdapter *adapter, struct SlePhyInfo *out);
-
-/**
- * Set device role (0 = G-node, 1 = T-node).
- * Returns 0 on success, -1 on error.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- */
-int slk_set_role(const struct SlkAdapter *adapter, uint8_t role);
-
-/**
- * Get device role.
- * Returns role (0 or 1) on success, -1 on error.
- *
- * # Safety
- * `adapter` must be a valid non-null pointer.
- */
-int slk_get_role(const struct SlkAdapter *adapter);
 
 /**
  * Bind this File to one registration. There is no implicit global selection.

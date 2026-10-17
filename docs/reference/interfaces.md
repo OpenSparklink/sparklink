@@ -53,7 +53,7 @@ fd操作用`libsparklink.so`。`LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定�
 
 ## 本批源码核对的状态（未发布 ABI）
 
-本批接口说明按WP18/R3源码及Linux `0cd4731dd3e6`核对；Native/API迁移未验收的部分不能继承17ed资格。仅描述可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。
+本批接口说明按WP18/R4源码及Linux `0cd4731dd3e6`核对；Native/API迁移未验收的部分不能继承17ed资格。仅描述可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。
 
 | 范围 | 当前状态与限制 | 源码定位 |
 |---|---|---|
@@ -661,3 +661,22 @@ EmitsChangedSignal=false；客户端须禁用对应属性缓存或直接调用Pr
 重新核对实际对象，诊断日志记录未确认结果，错误计数只计已记账失败。foreign
 对象不被收编或删除。数量/字节是资源上限，不承诺所有报告都进入观察列表。数据
 通道、Managed权限、扫描租约与实际业务交付资格不由这些观察计数决定。
+
+## 退休 Native 控制门面与元数据错误
+
+旧广播/扫描、bare-handle连接收发、ExtAdv、PHY/role/AFH、PM/sync、privacy/RAL、
+measurement和测试crypto ioctl包装已删除。旧C九函数、相应CLI、Controller旧方法及
+ExtAdv对象/白名单同步退休；不保留只返回不支持的门面。真正发现/连接/安全继续使用
+版本化Native请求/结果；Controller仅GetLinkSummary/GetControllerEventPosition/ConnCount。
+标准profile未接通的扫描/连接模式明确NotSupported，没有旧模型fallback。
+Device是观察对象，旧Connect/Disconnect/GetConnectionInfo删除；按完整身份使用Peer/Connection。
+`slctl show`读取ScanningState，不再消费旧Discovering布尔副本。
+
+Native `slk_device_count`读取与枚举同一Core注册bitmap，包含pending/fault分配，不是
+Ready或真实设备健康计数。原包装忽略scalar ioctl返回值的静态缺陷已修复；历史RF/ABI
+资格并未覆盖该正向计数。count/info整数失败统一负errno；open失败为NULL并设置线程局部
+errno，Python以OSError保留来源，拒绝内嵌NUL路径。C非空指针仍须合法、对齐和满足借用
+契约；这不承诺任意坏指针安全。五个退休Python布局移入明确历史测试fixture，与原C/Rust
+raw声明比对及宽度/边界回归保留，不再出现在当前Python或C头中。raw内核声明/selftests
+须下一批同迁，旧编号不复用。当前生产与实机范围仍按准确artifact的资格记录，不能由
+本节接口整理推导完整Native SDK、干净安装或C/Python真实业务资格。

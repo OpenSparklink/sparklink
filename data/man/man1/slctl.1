@@ -48,12 +48,10 @@ with
 or
 .BR "advertise on" .
 .SH SUPPORT BOUNDARY
-Controller-wide pair/security spellings are removed; actual Connection security
-uses security-request and Agent. This unreleased CLI still retains legacy
-PHY setters, RAL/RPA, sync, measurement,
-PM and extended-advertising commands are not qualified Native capabilities
-and may explicitly fail NotSupported. Their descriptions below name the
-historical operation, not an implementation promise. Current SSAP operations
+Unpublished controller-wide pair/security, legacy PHY/role/PM/AFH/ExtAdv,
+privacy, sync, measurement and bare-handle service spellings are removed.
+Current Connection security uses security-request and Agent.
+Current SSAP operations
 use the distinct ssap-* commands and canonical Connection objects. Consult
 project/current-capabilities.md for exact source/artifact qualifications.
 All experimental driver and real WS73 operations remain VM-only.
@@ -124,108 +122,13 @@ are removed. Use the distinct ssap-list/register/serve/remove/local-read
 operations for local state and ssap-discover/read/write with an exact
 Connection path for the implemented remote protocol. Local registration
 is not proof of remote delivery; Owned authorization is separate from pairing.
-.SS PHY and Radio Control
-.TP
-.BI role " [g|t]"
-Get or set role (GL or T).
-.TP
-.B phy
-Show current PHY parameters.
-.TP
-.BI mcs " index"
-Set MCS (modulation/coding scheme) index.
-.TP
-.BI txpower " dBm"
-Set transmit power in dBm.
-.TP
-.BI bandwidth " MHz"
-Show or set channel bandwidth.
-.SS Adaptive Frequency Hopping
-.TP
-.B afh get
-Get current AFH channel map.
-.TP
-.BI afh " set hex_map"
-Set AFH channel map.
-.TP
-.BI afh " hop handle"
-Trigger a frequency hop on a connection.
-.SS Resolving Address List
-.TP
-.B ral size
-Show RAL capacity and usage.
-.TP
-.B ral clear
-Clear the resolving address list.
-.TP
-.BI ral " add irk_hex addr_hex"
-Add an entry to the RAL.
-.TP
-.BI ral " remove addr_hex"
-Remove an entry from the RAL.
-.SS Resolvable Private Address
-.TP
-.B rpa on|off
-Enable or disable RPA generation.
-.TP
-.BI rpa " timeout seconds"
-Set RPA rotation timeout.
-.SS Sync Links
-.TP
-.BI sync " info id"
-Show sync link information.
-.TP
-.BI sync " ucast\-rm id"
-Remove a unicast sync link.
-.TP
-.BI sync " mcast\-rm id"
-Remove a multicast sync link.
-.SS Peer Information
-.TP
-.BI peer " features handle"
-Query supported features of a connected peer.
-.TP
-.BI peer " version handle"
-Query version information of a connected peer.
-.SS Measurement
-.TP
-.B meas cap
-Show measurement capabilities.
-.TP
-.B meas on
-Enable measurement reporting.
-.TP
-.B meas off
-Disable measurement reporting.
-.SS Extended Advertising
-.TP
-.BI extadv " enable handle"
-Enable an extended advertising instance.
-.TP
-.BI extadv " disable handle"
-Disable an extended advertising instance.
-.TP
-.BI extadv " remove handle"
-Remove an extended advertising instance.
-.TP
-.BI extadv " info handle"
-Get extended advertising instance information.
 .SS Statistics and Diagnostics
-.TP
-.B power
-Show power management status.
-.TP
-.B dli
-Show data\-link indicator information.
 .TP
 .B stats
 Show the native LinkSnapshot summary; not mixed legacy subsystem counters.
 .TP
 .B events
 Show the selected registration event position; not delivered/ACK/pending counts.
-.TP
-.B mgmt
-Show management statistics.
 .SS Interactive Shell
 .TP
 .B help

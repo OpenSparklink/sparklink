@@ -16,6 +16,12 @@ import tempfile
 import unittest
 
 from sparklink import structs
+import retired_structs
+
+# Historical fixtures check raw declarations, never public headers.
+RETIRED = {"SleScanParams", "SleConnectParams", "SleConnInfo", "SleDliInfo", "SlePhyInfo"}
+def abi_type(name):
+    return getattr(retired_structs if name in RETIRED else structs, name)
 
 
 WORKSPACE = Path(__file__).resolve().parents[3]
@@ -128,6 +134,8 @@ class TestAbiConformance(unittest.TestCase):
         cls.socket_header = KERNEL_HEADER.with_name("sparklink_socket.h")
         cls.kernel_source = KERNEL_HEADER.read_text() + cls.socket_header.read_text()
         cls.public_source = PUBLIC_HEADER.read_text() + NATIVE_HEADER.read_text()
+        cls.retired_header=Path(__file__).with_name("retired_native_layouts.h")
+        cls.retired_source=cls.retired_header.read_text()
         channel_source = (RUST_TYPES.parent / "channel.rs").read_text()
         channel_type = "\n".join(re.findall(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct (?:SleChannel(?:Info|TxStatus)|SleSessionTxStatus) \{[^}]+\}", channel_source))
         message_source = (RUST_TYPES.parent / "message_security.rs").read_text()
@@ -148,12 +156,13 @@ class TestAbiConformance(unittest.TestCase):
             f"#include {json.dumps(str(cls.socket_header))}",
             f"#include {json.dumps(str(PUBLIC_HEADER))}",
             f"#include {json.dumps(str(NATIVE_HEADER))}",
+            f"#include {json.dumps(str(cls.retired_header))}",
             "int main(void) {",
         ]
         for name in ['SECURITY_CAPABILITY_ONLY','SECURITY_KEY_AGREEMENT_ONLY','SECURITY_UNAUTHENTICATED_ENCRYPTION','SNOOP_REDACTED']:
             c_source.insert(-1,f'_Static_assert({name} == SLE_{name} && {name} == {getattr(structs,name)}, "security mode contract");')
         for name, kernel_name in STRUCT_NAMES.items():
-            for kind, c_type in (("kernel", "struct " + kernel_name), ("public", name)):
+            for kind, c_type in ([("kernel", "struct " + kernel_name),("historical",name)] if name in RETIRED else [("kernel", "struct " + kernel_name), ("public", name)]):
                 c_source.append(
                     f'printf("{kind} {name} STRUCT %zu %zu\\n", '
                     f"sizeof({c_type}), _Alignof({c_type}));"
@@ -205,7 +214,7 @@ class TestAbiConformance(unittest.TestCase):
                       f"#include {json.dumps(str(KERNEL_HEADER))}",
             f"#include {json.dumps(str(cls.socket_header))}",
                       f"#include {json.dumps(str(PUBLIC_HEADER))}",
-                      f"#include {json.dumps(str(NATIVE_HEADER))}"]
+                      f"#include {json.dumps(str(NATIVE_HEADER))}",f"#include {json.dumps(str(cls.retired_header))}"]
         for name, kernel_name in STRUCT_NAMES.items():
             kernel = "struct " + kernel_name
             assertions += [
@@ -245,9 +254,9 @@ class TestAbiConformance(unittest.TestCase):
         shared = path / "fill.so"
         run(compiler + ["-std=c11", "-Wall", "-Wextra", "-Werror", "-fPIC", "-shared", str(fill_source), "-o", str(shared)])
         cls.library = ctypes.CDLL(str(shared))
-        cls.library.fill_conn_info.argtypes = [ctypes.POINTER(structs.SleConnInfo)]
+        cls.library.fill_conn_info.argtypes = [ctypes.POINTER(retired_structs.SleConnInfo)]
         cls.library.fill_conn_info.restype = None
-        cls.library.fill_dli_info.argtypes = [ctypes.POINTER(structs.SleDliInfo)]
+        cls.library.fill_dli_info.argtypes = [ctypes.POINTER(retired_structs.SleDliInfo)]
         cls.library.fill_dli_info.restype = None
 
     def test_every_python_struct_has_a_canonical_mapping(self):
@@ -255,15 +264,18 @@ class TestAbiConformance(unittest.TestCase):
             name for name, value in vars(structs).items()
             if isinstance(value, type) and issubclass(value, ctypes.Structure)
         }
-        self.assertEqual(python_structs, set(STRUCT_NAMES))
+        self.assertEqual(python_structs, set(STRUCT_NAMES) - RETIRED)
+        for name in RETIRED:
+            self.assertFalse(hasattr(structs,name))
+            self.assertFalse(re.search(r"struct\s+"+name+r"\b",self.public_source))
 
     def test_all_fields_and_layouts_match_kernel(self):
         for name in STRUCT_NAMES:
             with self.subTest(struct=name):
-                python_type = getattr(structs, name)
+                python_type = abi_type(name)
                 canonical_fields = self.fields[name]
                 self.assertEqual([field for field, _ in python_type._fields_], canonical_fields)
-                self.assertEqual(c_fields(self.public_source, name), canonical_fields)
+                self.assertEqual(c_fields(self.retired_source if name in RETIRED else self.public_source, name), canonical_fields)
                 self.assertEqual(rust_fields(self.rust_source, name), canonical_fields)
                 canonical = self.layouts[("kernel", name)]
                 python_layout = {
@@ -275,12 +287,12 @@ class TestAbiConformance(unittest.TestCase):
                     },
                 }
                 self.assertEqual(python_layout, canonical, "Python vs kernel C UAPI")
-                self.assertEqual(self.layouts[("public", name)], canonical, "public C vs kernel C UAPI")
+                self.assertEqual(self.layouts[("historical" if name in RETIRED else "public", name)], canonical, "actual current/public or explicit historical C vs kernel")
                 self.assertEqual(self.layouts[("rust", name)], canonical, "userspace Rust vs kernel C UAPI")
 
-    def test_c_conn_info_write_preserves_bounds_and_credit_fields(self):
+    def test_historical_c_conn_info_write_preserves_bounds_and_credit_fields(self):
         class GuardedInfo(ctypes.Structure):
-            _fields_ = [("before", ctypes.c_uint64), ("info", structs.SleConnInfo), ("after", ctypes.c_uint64)]
+            _fields_ = [("before", ctypes.c_uint64), ("info", retired_structs.SleConnInfo), ("after", ctypes.c_uint64)]
 
         buffer = GuardedInfo()
         sentinel = 0xCAFEBABE01234567
@@ -296,8 +308,8 @@ class TestAbiConformance(unittest.TestCase):
         self.assertEqual(buffer.info.dudtc_tx_credits, 0x4567)
         self.assertEqual(buffer.info.dudtc_rx_credits, 0x5678)
 
-    def test_c_dli_info_write_preserves_capability_widths_and_name(self):
-        info = structs.SleDliInfo()
+    def test_historical_c_dli_info_write_preserves_capability_widths_and_name(self):
+        info = retired_structs.SleDliInfo()
         self.library.fill_dli_info(ctypes.byref(info))
         self.assertEqual(info.firmware_version, 0x12345678)
         self.assertEqual(info.security_cap, 0xBEEF)

@@ -10,7 +10,6 @@ mod connection_object;
 mod controller;
 mod dbus_iface;
 mod event_loop;
-mod extadv;
 #[cfg(test)]
 mod profile_runtime;
 mod radio;

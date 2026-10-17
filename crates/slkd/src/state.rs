@@ -4,7 +4,7 @@ use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
 
 use slk_native::Adapter;
-use slk_protocol::{SleAddr, SleConnectParams, SleScanParams};
+use slk_protocol::SleAddr;
 
 #[cfg(test)]
 use crate::bonding::{BondingService, BondingStore};
@@ -38,6 +38,7 @@ pub struct DeviceEntry {
     pub discovery_level: u8,
     pub connected: bool,
     pub connection_known: bool,
+    #[cfg(test)]
     pub conn_handle: Option<u16>,
     pub object_path: String,
     pub adv_data: Vec<u8>,
@@ -104,7 +105,6 @@ pub struct AdapterState {
         BTreeMap<(u8, SleAddr), crate::connection_object::PeerRegistration>,
     pub(crate) retiring_peer_objects: BTreeSet<String>,
     pub config: DaemonConfig,
-    pub discovering: bool,
     pub devices: HashMap<SleAddr, DeviceEntry>,
     pub(crate) observation_drops: u64,
     pub(crate) observation_publication_errors: u64,
@@ -152,7 +152,6 @@ impl AdapterState {
             native_peer_objects: BTreeMap::new(),
             retiring_peer_objects: BTreeSet::new(),
             config,
-            discovering: false,
             devices: HashMap::new(),
             observation_drops: 0,
             observation_publication_errors: 0,
@@ -164,58 +163,6 @@ impl AdapterState {
             #[cfg(test)]
             profiles: ProfileService::new(profiles),
         }
-    }
-
-    /// Start scanning with default parameters
-    pub fn start_scan(&mut self) -> slk_native::Result<()> {
-        if self.controller.profile != 0 {
-            return Err(slk_native::Error::InvalidParam(
-                "native scan requires an explicit WS73 policy; legacy scan is unsupported",
-            ));
-        }
-        let params = SleScanParams {
-            dev_index: self.controller.dev_index,
-            window_ms: 100,
-            interval_ms: 200,
-            filter_discovery_level: self.config.general.discovery_level,
-            _reserved: [0; 9],
-        };
-        self.adapter.start_scan(&params)?;
-        self.discovering = true;
-        Ok(())
-    }
-
-    /// Stop scanning
-    pub fn stop_scan(&mut self) -> slk_native::Result<()> {
-        if self.controller.profile != 0 {
-            return Err(slk_native::Error::InvalidParam(
-                "legacy stop scan is unsupported on native WS73",
-            ));
-        }
-        self.adapter.stop_scan()?;
-        self.discovering = false;
-        Ok(())
-    }
-
-    /// Initiate connection to a peer by address
-    pub fn connect_device(&mut self, addr: &SleAddr) -> slk_native::Result<()> {
-        let params = SleConnectParams {
-            peer_addr: *addr,
-            gt_role: 0,
-            bandwidth: 0,
-            mcs_index: 0,
-            _pad: 0,
-            timeout_10ms: 100,
-            _reserved: [0; 4],
-        };
-        self.adapter.connect(&params)?;
-        Ok(())
-    }
-
-    /// Disconnect a device by connection handle
-    pub fn disconnect_device(&mut self, handle: u16) -> slk_native::Result<()> {
-        self.adapter.disconnect(handle)?;
-        Ok(())
     }
 
     /// Record a discovered device from an advertisement report
@@ -259,6 +206,7 @@ impl AdapterState {
             discovery_level: 0,
             connected: false,
             connection_known: self.controller.profile == 0,
+            #[cfg(test)]
             conn_handle: None,
             object_path,
             adv_data: Vec::new(),
@@ -562,11 +510,6 @@ impl AdapterState {
                 .collect(),
             self.retiring_peer_objects.iter().cloned().collect(),
         )
-    }
-
-    /// Query connection info from the kernel for a given handle.
-    pub fn conn_info(&self, handle: u16) -> slk_native::Result<slk_protocol::SleConnInfo> {
-        self.adapter.conn_info(handle)
     }
 }
 

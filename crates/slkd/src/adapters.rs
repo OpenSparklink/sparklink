@@ -9,7 +9,6 @@ use crate::{
     controller::ControllerIface,
     dbus_iface::{AdapterIface, DeviceIface},
     event_loop::EventTask,
-    extadv::ExtAdvIface,
     security::SecurityIface,
     service::SsapManagerIface,
     state::{
@@ -384,7 +383,6 @@ impl Node {
                     "ControllerError",
                     "AdvertisingState",
                     "ScanningState",
-                    "Discovering",
                 ],
             )
             .await;
@@ -480,9 +478,6 @@ async fn publish(c: &zbus::Connection, path: &str, st: &SharedState) -> anyhow::
         )
         .await?;
     c.object_server()
-        .at(format!("{path}/extadv"), ExtAdvIface::new(st.clone()))
-        .await?;
-    c.object_server()
         .at(
             format!("{path}/controller"),
             ControllerIface::new(st.clone()),
@@ -499,10 +494,6 @@ async fn remove_interfaces(c: &zbus::Connection, path: &str) {
     let _ = c
         .object_server()
         .remove::<SsapManagerIface, _>(format!("{path}/services"))
-        .await;
-    let _ = c
-        .object_server()
-        .remove::<ExtAdvIface, _>(format!("{path}/extadv"))
         .await;
     let _ = c
         .object_server()
@@ -686,4 +677,73 @@ async fn invalidate_interface_properties(
 #[cfg(test)]
 fn experimental_profiles(_adapter: &Adapter, _profile: u32) -> ProfileRegistry {
     ProfileRegistry::new()
+}
+
+#[cfg(test)]
+mod retired_interface_tests {
+    use super::*;
+    #[tokio::test]
+    async fn actual_factory_publishes_only_current_interfaces() {
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let client = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let state = Arc::new(Mutex::new(AdapterState::new(
+            Adapter::open("/dev/null").unwrap(),
+            DaemonConfig::default(),
+            crate::bonding::BondingStore::new(&std::env::temp_dir(), "unused-retired-factory-test"),
+            ProfileRegistry::new(),
+        )));
+        let path = "/org/sparklink/slk2_g3";
+        publish(&server, path, &state).await.unwrap();
+        let name = server.unique_name().unwrap().as_str();
+        let adapter = zbus::Proxy::new(&client, name, path, "org.sparklink.Adapter")
+            .await
+            .unwrap();
+        let xml = adapter.introspect().await.unwrap();
+        for member in ["ConnectDevice", "DisconnectDevice", "Discovering"] {
+            assert!(!xml.contains(&format!("name=\"{member}\"")));
+        }
+        for member in [
+            "SubmitConnect",
+            "SubmitDisconnectReference",
+            "StartControllerScan",
+            "ScanningState",
+        ] {
+            assert!(xml.contains(&format!("name=\"{member}\"")));
+        }
+        let old = zbus::Proxy::new(
+            &client,
+            name,
+            format!("{path}/extadv"),
+            "org.sparklink.ExtAdv",
+        )
+        .await
+        .unwrap();
+        assert!(old.introspect().await.is_err());
+        let device_path = format!("{path}/dev_010203040506");
+        server
+            .object_server()
+            .at(
+                device_path.as_str(),
+                DeviceIface::new(state, [1, 2, 3, 4, 5, 6]),
+            )
+            .await
+            .unwrap();
+        let device = zbus::Proxy::new(&client, name, device_path.as_str(), "org.sparklink.Device")
+            .await
+            .unwrap();
+        let xml = device.introspect().await.unwrap();
+        for member in ["Connect", "Disconnect", "GetConnectionInfo"] {
+            assert!(!xml.contains(&format!("name=\"{member}\"")));
+        }
+        assert!(xml.contains("name=\"ObservationValid\""));
+    }
 }

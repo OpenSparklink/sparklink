@@ -1104,3 +1104,10 @@ R4c同时退休没有Native消费者的daemon experimental-legacy-profiles构建
 独立实验crate与原actor测试保留为dev-dependency，不恢复旧profile0接线。
 生产依赖门禁对default与all-features均执行实际normal闭包及原负对照；
 这不是完整公开接口/生命周期/部署或协议证明，R5/R6剩余条件不变。
+
+R4d职责边界：Native SDK不再公开旧广播/scan/连接收发/PHY/PM/AFH/privacy等拒绝包装，
+Controller只保留真实快照观察，ExtAdv和地址Device控制门面退休。版本化Native控制、
+唯一Session/Channel/Grant/credit/Ticket及用户态Engine不变。枚举和分配计数来自同一
+Core bitmap，计数不代表Ready；旧Discovering副本删除，UI读取已有ScanningState。
+错误从实际Kernel errno表达，指针open的线程errno与Python OSError一致。历史布局
+归测试，不在当前SDK；R4 raw声明/剩余全局掩盖及R5/R6尚未闭合。

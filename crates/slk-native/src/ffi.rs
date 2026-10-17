@@ -50,8 +50,8 @@ pub unsafe extern "C" fn slk_adapter_free(adapter: *mut SlkAdapter) {
     }
 }
 
-/// Get allocated Core registration count, not Ready count.
-/// Returns count or negative errno.
+/// Get the device count.
+/// Returns allocated registration count or negative errno; not Ready count.
 ///
 /// # Safety
 /// `adapter` must be a valid non-null pointer.
@@ -67,119 +67,8 @@ pub unsafe extern "C" fn slk_device_count(adapter: *const SlkAdapter) -> c_int {
     }
 }
 
-/// Start scanning.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-/// `params` must point to a valid `SleScanParams` struct.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_start_scan(
-    adapter: *const SlkAdapter,
-    params: *const slk_protocol::SleScanParams,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    let params = match unsafe { params.as_ref() } {
-        Some(p) => p,
-        None => return -1,
-    };
-    match adapter.inner.start_scan(params) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Stop scanning.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_stop_scan(adapter: *const SlkAdapter) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.stop_scan() {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Initiate a connection.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-/// `params` must point to a valid `SleConnectParams` struct.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_connect(
-    adapter: *const SlkAdapter,
-    params: *const slk_protocol::SleConnectParams,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    let params = match unsafe { params.as_ref() } {
-        Some(p) => p,
-        None => return -1,
-    };
-    match adapter.inner.connect(params) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Disconnect a connection by handle.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_disconnect(adapter: *const SlkAdapter, handle: u16) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.disconnect(handle) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Get connection info.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_conn_info(
-    adapter: *const SlkAdapter,
-    handle: u16,
-    out: *mut slk_protocol::SleConnInfo,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
-    }
-    match adapter.inner.conn_info(handle) {
-        Ok(info) => {
-            unsafe { *out = info };
-            0
-        }
-        Err(_) => -1,
-    }
-}
-
-/// Get device info; state 0xff is unknown, never Ready.
-/// Returns 0 or negative errno.
+/// Get device info.
+/// Returns 0 or negative errno; unknown legacy state is 0xff, never Ready.
 ///
 /// # Safety
 /// `adapter` and `out` must be valid non-null pointers.
@@ -201,92 +90,5 @@ pub unsafe extern "C" fn slk_device_info(
             0
         }
         Err(error) => native::errno(error),
-    }
-}
-
-/// Unavailable legacy DLI aggregate; use selected controller snapshot.
-/// Returns -EOPNOTSUPP without changing output; -1 for invalid pointers.
-///
-/// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_dli_info(
-    adapter: *const SlkAdapter,
-    out: *mut slk_protocol::SleDliInfo,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
-    }
-    match adapter.inner.dli_info() {
-        Ok(info) => {
-            unsafe { *out = info };
-            0
-        }
-        Err(crate::Error::NotSupported(_)) => -nix::libc::EOPNOTSUPP,
-        Err(_) => -1,
-    }
-}
-
-/// Get PHY info.
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` and `out` must be valid non-null pointers.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_phy_info(
-    adapter: *const SlkAdapter,
-    out: *mut slk_protocol::SlePhyInfo,
-) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    if out.is_null() {
-        return -1;
-    }
-    match adapter.inner.phy_info() {
-        Ok(info) => {
-            unsafe { *out = info };
-            0
-        }
-        Err(_) => -1,
-    }
-}
-
-/// Set device role (0 = G-node, 1 = T-node).
-/// Returns 0 on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_set_role(adapter: *const SlkAdapter, role: u8) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.set_role(role) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
-}
-
-/// Get device role.
-/// Returns role (0 or 1) on success, -1 on error.
-///
-/// # Safety
-/// `adapter` must be a valid non-null pointer.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_get_role(adapter: *const SlkAdapter) -> c_int {
-    let adapter = match unsafe { adapter.as_ref() } {
-        Some(a) => a,
-        None => return -1,
-    };
-    match adapter.inner.get_role() {
-        Ok(r) => r as c_int,
-        Err(_) => -1,
     }
 }

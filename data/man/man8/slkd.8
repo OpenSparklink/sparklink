@@ -158,9 +158,10 @@ protected values undisclosed or unchanged; timeout after admitted write does
 not imply rollback. Exact source/artifact qualification is separate.
 
 .SS Remaining interfaces
-Controller and ExtAdv names do not imply support for legacy PHY, RPA,
-measurement, PM or extended-advertising controls. Unsupported methods fail
-explicitly. See the website's interface reference and current qualification;
+Controller exposes actual GetLinkSummary, GetControllerEventPosition and
+ConnCount observations. Legacy PHY, RPA, measurement, PM and ExtAdv control
+facades are removed; new unimplemented modes still fail explicitly. Device
+objects are observations, not a second Connect/Disconnect control path. See the website's interface reference and current qualification;
 the complete field/error reference remains under documentation remediation.
 .SH PERMISSIONS AND FAILURES
 System-bus policy distinguishes ordinary applications (sparklink-apps),

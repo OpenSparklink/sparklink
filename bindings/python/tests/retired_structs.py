@@ -1,0 +1,96 @@
+"""Moved historical ABI fixtures from6841e4e; not public SDK or protocol support.
+
+Only until coupled kernel raw-declaration/selftest retirement. Tests compare
+actual C/Rust declarations and preserve bounded writes/width regressions.
+"""
+import ctypes
+from sparklink.structs import SleAddr
+
+class SleScanParams(ctypes.Structure):
+    _fields_ = [
+        ("dev_index", ctypes.c_uint16),
+        ("window_ms", ctypes.c_uint16),
+        ("interval_ms", ctypes.c_uint16),
+        ("filter_discovery_level", ctypes.c_uint8),
+        ("_reserved", ctypes.c_uint8 * 9),
+    ]
+
+
+class SleConnectParams(ctypes.Structure):
+    _fields_ = [
+        ("peer_addr", SleAddr),
+        ("gt_role", ctypes.c_uint8),
+        ("bandwidth", ctypes.c_uint8),
+        ("mcs_index", ctypes.c_uint8),
+        ("_pad", ctypes.c_uint8),
+        ("timeout_10ms", ctypes.c_uint16),
+        ("_reserved", ctypes.c_uint8 * 4),
+    ]
+
+
+class SleConnInfo(ctypes.Structure):
+    _fields_ = [
+        ("tx_bytes", ctypes.c_uint64),
+        ("rx_bytes", ctypes.c_uint64),
+        ("handle", ctypes.c_uint16),
+        ("event_group_period", ctypes.c_uint16),
+        ("supervision_timeout", ctypes.c_uint16),
+        ("tx_pending", ctypes.c_uint16),
+        ("rx_pending", ctypes.c_uint16),
+        ("state", ctypes.c_uint8),
+        ("peer_addr", SleAddr),
+        ("local_role", ctypes.c_uint8),
+        ("bandwidth_mhz", ctypes.c_uint8),
+        ("mcs_index", ctypes.c_uint8),
+        ("tx_seq", ctypes.c_uint8),
+        ("rx_seq", ctypes.c_uint8),
+        ("data_mtu", ctypes.c_uint16),
+        ("data_mps", ctypes.c_uint16),
+        ("svc_mtu", ctypes.c_uint16),
+        ("data_mode", ctypes.c_uint8),
+        ("smtc_tx_credits", ctypes.c_uint16),
+        ("smtc_rx_credits", ctypes.c_uint16),
+        ("dudtc_tx_credits", ctypes.c_uint16),
+        ("dudtc_rx_credits", ctypes.c_uint16),
+    ]
+
+
+class SleDliInfo(ctypes.Structure):
+    _fields_ = [
+        ("bus", ctypes.c_uint8),
+        ("_pad", ctypes.c_uint8 * 3),
+        ("firmware_version", ctypes.c_uint32),
+        ("features", ctypes.c_uint64),
+        ("max_connections", ctypes.c_uint8),
+        ("max_adv_sets", ctypes.c_uint8),
+        ("transport_modes", ctypes.c_uint8),
+        ("measurement_cap", ctypes.c_uint8),
+        ("max_mtu", ctypes.c_uint16),
+        ("max_mps", ctypes.c_uint16),
+        ("security_cap", ctypes.c_uint16),
+        ("features_ext", ctypes.c_uint16),
+        ("name", ctypes.c_uint8 * 32),
+        ("_reserved", ctypes.c_uint8 * 4),
+    ]
+
+
+class SlePhyInfo(ctypes.Structure):
+    _fields_ = [
+        ("mcs_index", ctypes.c_uint8),
+        ("bandwidth_mhz", ctypes.c_uint8),
+        ("pilot_density", ctypes.c_uint8),
+        ("tx_power_dbm", ctypes.c_int8),
+        ("mimo_mode", ctypes.c_uint8),
+        ("num_tx_ant", ctypes.c_uint8),
+        ("num_rx_ant", ctypes.c_uint8),
+        ("ofdm", ctypes.c_uint8),
+        ("data_rate_kbps", ctypes.c_uint32),
+        ("hop_channel", ctypes.c_uint8),
+        ("hop_increment", ctypes.c_uint8),
+        ("hop_used_channels", ctypes.c_uint8),
+        ("_pad", ctypes.c_uint8),
+        ("modulation", ctypes.c_uint8),
+        ("code_rate_num", ctypes.c_uint8),
+        ("code_rate_den", ctypes.c_uint8),
+        ("_reserved", ctypes.c_uint8 * 5),
+    ]

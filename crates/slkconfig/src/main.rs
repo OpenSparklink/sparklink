@@ -41,42 +41,10 @@ enum Command {
     /// Show DLI controller information
     Dli,
 
-    /// Show PHY parameters
-    Phy,
-
-    /// Get or set device role
-    Role {
-        /// Set role: 0=G-node, 1=T-node (omit to query)
-        value: Option<u8>,
-    },
-
-    /// Reset the controller
-    Reset,
-
-    /// Show subsystem statistics
+    /// Show confirmed physical-link summary from a generation-bound snapshot
     Stats,
-
-    /// List active connections
+    /// List physical connections using generation/lifetime references
     Connections,
-
-    /// Start scanning and print discovered devices
-    Scan {
-        /// Scan duration in seconds (default: 5)
-        #[arg(short, long, default_value_t = 5)]
-        duration: u64,
-    },
-
-    /// Connect to a peer by address
-    Connect {
-        /// Peer address in AA:BB:CC:DD:EE:FF format
-        address: String,
-    },
-
-    /// Disconnect a connection by handle
-    Disconnect {
-        /// Connection handle (hex, e.g. 0x0001)
-        handle: String,
-    },
 }
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
@@ -94,15 +62,6 @@ impl NativeQuery {
             Self::Version => (0x0404, 5),
             Self::Buffers => (0x0402, 6),
         }
-    }
-}
-
-impl Command {
-    fn native_observation(&self) -> bool {
-        matches!(
-            self,
-            Self::Info | Self::Dli | Self::Controller | Self::Management | Self::Stats
-        )
     }
 }
 
@@ -187,10 +146,6 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         }
         _ => {}
     }
-    anyhow::ensure!(
-        cli.command.native_observation(),
-        "legacy management command is unsupported on this native controller; use slctl for discovery or query for exclusive diagnostics"
-    );
     let result = match cli.command {
         Command::Adapters
         | Command::Registration
@@ -201,14 +156,8 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         }
         Command::Info => cmd_info(&adapter),
         Command::Dli => cmd_dli(&adapter),
-        Command::Phy => cmd_phy(&adapter),
-        Command::Role { value } => cmd_role(&adapter, value),
-        Command::Reset => cmd_reset(&adapter),
         Command::Stats => cmd_stats(&adapter),
         Command::Connections => cmd_connections(&adapter),
-        Command::Scan { duration } => cmd_scan(&adapter, duration),
-        Command::Connect { address } => cmd_connect(&adapter, &address),
-        Command::Disconnect { handle } => cmd_disconnect(&adapter, &handle),
     };
 
     result?;
@@ -393,54 +342,6 @@ fn cmd_dli(adapter: &Adapter) -> slk_native::Result<()> {
     Ok(())
 }
 
-fn cmd_phy(adapter: &Adapter) -> slk_native::Result<()> {
-    let info = adapter.phy_info()?;
-
-    println!("PHY Configuration:");
-    println!("  MCS index:     {}", info.mcs_index);
-    println!("  Bandwidth:     {} MHz", info.bandwidth_mhz);
-    println!("  TX power:      {} dBm", info.tx_power_dbm);
-    println!("  Data rate:     {} kbps", info.data_rate_kbps);
-    println!("  Modulation:    {}", info.modulation);
-    println!(
-        "  Code rate:     {}/{}",
-        info.code_rate_num, info.code_rate_den
-    );
-    println!("  MIMO mode:     {}", info.mimo_mode);
-    println!(
-        "  Antennas:      TX={} RX={}",
-        info.num_tx_ant, info.num_rx_ant
-    );
-    println!("  Hop channel:   {}", info.hop_channel);
-
-    Ok(())
-}
-
-fn cmd_role(adapter: &Adapter, value: Option<u8>) -> slk_native::Result<()> {
-    match value {
-        Some(v) => {
-            adapter.set_role(v)?;
-            let label = if v == 0 { "G-node" } else { "T-node" };
-            println!("Role set to {label}");
-        }
-        None => {
-            let role = adapter.get_role()?;
-            let label = if role == 0 { "G-node" } else { "T-node" };
-            println!("Current role: {label} ({role})");
-        }
-    }
-    Ok(())
-}
-
-fn cmd_reset(adapter: &Adapter) -> slk_native::Result<()> {
-    // DLI reset
-    use slk_native::ioctl;
-    use std::os::fd::AsRawFd;
-    unsafe { ioctl::sl_dli_reset(adapter.as_fd().as_raw_fd())? };
-    println!("Controller reset complete");
-    Ok(())
-}
-
 fn cmd_stats(adapter: &Adapter) -> slk_native::Result<()> {
     let identity = adapter.controller_snapshot(0)?;
     let links = adapter.native_link_snapshot(identity.generation)?;
@@ -457,86 +358,31 @@ fn cmd_stats(adapter: &Adapter) -> slk_native::Result<()> {
 }
 
 fn cmd_connections(adapter: &Adapter) -> slk_native::Result<()> {
-    let list = adapter.conn_list()?;
-
-    if list.count == 0 {
-        println!("No active connections");
-        return Ok(());
+    let identity = adapter.controller_snapshot(0)?;
+    let links = adapter.native_link_snapshot(identity.generation)?;
+    if links.flags != slk_protocol::LINK_SNAPSHOT_KNOWN || links.error != 0 {
+        return Err(slk_native::Error::InvalidParam(
+            "physical link state is unknown",
+        ));
     }
-
-    println!("{} active connection(s):", list.count);
-    for i in 0..list.count as usize {
-        let handle = list.handles[i];
-        match adapter.conn_info(handle) {
-            Ok(info) => {
-                let state = match info.state {
-                    0 => "IDLE",
-                    1 => "CONNECTING",
-                    2 => "CONNECTED",
-                    3 => "DISCONNECTING",
-                    _ => "UNKNOWN",
-                };
-                println!(
-                    "  [{:#06x}] {} peer={} role={} BW={}MHz MCS={} MTU={}",
-                    handle,
-                    state,
-                    fmt_addr(&info.peer_addr),
-                    info.local_role,
-                    info.bandwidth_mhz,
-                    info.mcs_index,
-                    info.data_mtu
-                );
-            }
-            Err(e) => {
-                println!("  [{:#06x}] error: {e}", handle);
-            }
-        }
+    println!(
+        "NativeLinks: index={} generation={} revision={} sequence={} count={}",
+        links.dev_index, links.generation, links.revision, links.event_seq, links.count
+    );
+    for link in &links.links[..links.count as usize] {
+        println!(
+            "NativeLink: lifetime={} handle={} role={} type={} address={}",
+            link.lifetime,
+            link.handle,
+            link.role,
+            link.address_type,
+            fmt_addr(&link.address)
+        );
     }
-
     Ok(())
 }
 
-fn cmd_scan(_adapter: &Adapter, _duration: u64) -> slk_native::Result<()> {
-    Err(slk_native::Error::InvalidParam(
-        "legacy scan is removed; use slctl Native discovery",
-    ))
-}
-
-fn cmd_connect(adapter: &Adapter, address: &str) -> slk_native::Result<()> {
-    use slk_protocol::SleConnectParams;
-
-    let addr = parse_addr(address)
-        .map_err(|_| slk_native::Error::InvalidParam("address must be AA:BB:CC:DD:EE:FF"))?;
-
-    let params = SleConnectParams {
-        peer_addr: addr,
-        gt_role: 0,
-        bandwidth: 0,
-        mcs_index: 0,
-        _pad: 0,
-        timeout_10ms: 100,
-        _reserved: [0; 4],
-    };
-    adapter.connect(&params)?;
-    println!("Connection initiated to {address}");
-    Ok(())
-}
-
-fn cmd_disconnect(adapter: &Adapter, handle_str: &str) -> slk_native::Result<()> {
-    let handle = if let Some(hex) = handle_str.strip_prefix("0x") {
-        u16::from_str_radix(hex, 16)
-            .map_err(|_| slk_native::Error::InvalidParam("invalid hex handle"))?
-    } else {
-        handle_str
-            .parse::<u16>()
-            .map_err(|_| slk_native::Error::InvalidParam("invalid handle number"))?
-    };
-
-    adapter.disconnect(handle)?;
-    println!("Disconnected handle {handle:#06x}");
-    Ok(())
-}
-
+#[cfg(test)]
 fn parse_addr(s: &str) -> Result<[u8; 6], &'static str> {
     let parts: Vec<&str> = s.split(':').collect();
     if parts.len() != 6 {
@@ -752,6 +598,12 @@ mod tests {
     fn retired_service_commands_are_absent_before_device_open() {
         for args in [
             vec!["services"],
+            vec!["phy"],
+            vec!["role"],
+            vec!["reset"],
+            vec!["scan"],
+            vec!["connect"],
+            vec!["disconnect"],
             vec!["list-services"],
             vec!["read-prop", "1"],
             vec!["write-prop", "1", "ab"],

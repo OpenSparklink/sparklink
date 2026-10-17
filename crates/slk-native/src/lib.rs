@@ -246,12 +246,6 @@ mod ffi_lifetime_tests {
 
         let count = unsafe { ffi::slk_device_count(ptr::null()) };
         assert_eq!(count, -nix::libc::EINVAL);
-
-        let ret = unsafe { ffi::slk_stop_scan(ptr::null()) };
-        assert_eq!(ret, -1);
-
-        let ret = unsafe { ffi::slk_get_role(ptr::null()) };
-        assert_eq!(ret, -1);
     }
 
     #[test]

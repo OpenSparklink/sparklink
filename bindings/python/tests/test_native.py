@@ -167,8 +167,8 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(self.lib.slk_adapter_select(self.handle, 0), -errno.ENOTTY)
         self.assertEqual(self.lib.slk_adapter_select(self.handle, 65535), -errno.EINVAL)
         self.assertEqual(self.lib.slk_adapter_fd(None), -errno.EINVAL)
-        # Count/info preserve exact errno; other retired controls await removal.
-        self.assertEqual(self.lib.slk_device_count(self.handle), -errno.ENOTTY)
+        # All integer Native operations now preserve negative errno; no generic -1 facade.
+        self.assertEqual(self.lib.slk_device_count(self.handle), -errno.ENOTTY)  # unified -errno, not retired generic -1
 
     def test_failed_queries_do_not_overwrite_caller_storage(self):
         for name, args, value in [
@@ -334,10 +334,10 @@ class ApplicationNativeBoundary(unittest.TestCase):
         for name in native_names:
             with self.subTest(name=name),self.assertRaises(AttributeError):getattr(app,name)
         native=_get_native_lib()
-        for name in ("slk_sec_info", "slk_pair", "slk_encrypt_on"):
+        for name in ("slk_sec_info", "slk_pair", "slk_encrypt_on", "slk_start_scan", "slk_stop_scan", "slk_connect", "slk_disconnect", "slk_conn_info", "slk_dli_info", "slk_phy_info", "slk_set_role", "slk_get_role"):
             with self.subTest(retired=name),self.assertRaises(AttributeError):getattr(native,name)
         import sparklink.structs as structs
-        for name in ("SleSecInfo","SlePairParams"):
+        for name in ("SleSecInfo","SlePairParams","SleScanParams","SleConnectParams","SleConnInfo","SleDliInfo","SlePhyInfo"):
             self.assertFalse(hasattr(structs,name))
         for name in app_names:
             with self.subTest(name=name),self.assertRaises(AttributeError):getattr(native,name)

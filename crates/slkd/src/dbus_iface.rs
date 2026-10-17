@@ -1,6 +1,4 @@
-use std::collections::HashMap;
 use zbus::interface;
-use zbus::zvariant::Value;
 
 use crate::state::{AdapterDirectory, RegistrationDirectory, SharedState};
 
@@ -102,9 +100,9 @@ impl AdapterIface {
             crate::radio::scan(&self.state, id).await?;
             return crate::radio::wait(&self.state, id).await;
         }
-        let mut st = self.state.lock().await;
-        st.start_scan()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("scan start failed: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "standard Native scanning is not connected".into(),
+        ))
     }
 
     /// Manager stop of the physical scanner; not a client session release.
@@ -114,9 +112,9 @@ impl AdapterIface {
             crate::radio::stop(&self.state, id, slk_protocol::DISCOVERY_SCAN_STOP).await?;
             return crate::radio::wait(&self.state, id).await;
         }
-        let mut st = self.state.lock().await;
-        st.stop_scan()
-            .map_err(|e| zbus::fdo::Error::Failed(format!("scan stop failed: {e}")))
+        Err(zbus::fdo::Error::NotSupported(
+            "standard Native scanning is not connected".into(),
+        ))
     }
 
     /// Typed nonconnectable policy; successful return is admission.
@@ -341,42 +339,11 @@ impl AdapterIface {
             let id = crate::connection::disconnect_address(&self.state, address).await?;
             return crate::connection::wait(&self.state, id).await;
         }
-        let mut s = self.state.lock().await;
-        let h = s
-            .devices
-            .get(&address)
-            .and_then(|d| d.conn_handle)
-            .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
-        s.disconnect_device(h)
-            .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))
+        Err(zbus::fdo::Error::NotSupported(
+            "standard Native connection control is not connected".into(),
+        ))
     }
 
-    /// Connect to a device by address string "AA:BB:CC:DD:EE:FF"
-    async fn connect_device(&self, address: &str) -> zbus::fdo::Result<()> {
-        let addr = parse_addr(address).map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
-        let mut st = self.state.lock().await;
-        if st.controller.profile == 1 {
-            return Err(zbus::fdo::Error::InvalidArgs(
-                "WS73 needs an explicit peer address type; use ConnectDeviceTyped".into(),
-            ));
-        }
-        st.connect_device(&addr)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("connect failed: {e}")))
-    }
-
-    /// Disconnect a device by connection handle
-    async fn disconnect_device(&self, handle: u16) -> zbus::fdo::Result<()> {
-        if self.state.lock().await.controller.profile == 1 {
-            return Err(zbus::fdo::Error::NotSupported(
-                "native disconnect requires a peer and physical lifetime, not a bare handle".into(),
-            ));
-        }
-        let mut st = self.state.lock().await;
-        st.disconnect_device(handle)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("disconnect failed: {e}")))
-    }
-
-    /// List discovered devices as (addr_hex, name, rssi, connected) tuples
     async fn get_devices(&self) -> Vec<(String, String, i16, bool)> {
         let st = self.state.lock().await;
         st.devices
@@ -537,17 +504,6 @@ impl AdapterIface {
         self.state.lock().await.observation_retirement_errors
     }
 
-    /// Whether discovery is active
-    #[zbus(property)]
-    async fn discovering(&self) -> bool {
-        let st = self.state.lock().await;
-        if st.controller.profile == 1 {
-            st.radio_scanning == slk_protocol::DISCOVERY_RADIO_ON
-        } else {
-            st.discovering
-        }
-    }
-
     /// Adapter name
     #[zbus(property)]
     async fn name(&self) -> String {
@@ -572,34 +528,6 @@ impl DeviceIface {
 
 #[interface(name = "org.sparklink.Device")]
 impl DeviceIface {
-    /// Connect to this device
-    async fn connect(&self) -> zbus::fdo::Result<()> {
-        let mut st = self.state.lock().await;
-        if st.controller.profile == 1 {
-            return Err(zbus::fdo::Error::InvalidArgs(
-                "use adapter ConnectDeviceTyped with explicit address type".into(),
-            ));
-        }
-        st.connect_device(&self.addr)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("connect failed: {e}")))
-    }
-
-    /// Disconnect from this device
-    async fn disconnect(&self) -> zbus::fdo::Result<()> {
-        if self.state.lock().await.controller.profile == 1 {
-            let id = crate::connection::disconnect_address(&self.state, self.addr).await?;
-            return crate::connection::wait(&self.state, id).await;
-        }
-        let mut st = self.state.lock().await;
-        let handle = st
-            .devices
-            .get(&self.addr)
-            .and_then(|d| d.conn_handle)
-            .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
-        st.disconnect_device(handle)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("disconnect failed: {e}")))
-    }
-
     /// Validity of advertisement observations only; never connection/security.
     #[zbus(property(emits_changed_signal = "false"))]
     async fn observation_valid(&self) -> bool {
@@ -696,53 +624,6 @@ impl DeviceIface {
             .and_then(|d| d.tx_power)
             .map(|p| p as i16)
             .unwrap_or(-128)
-    }
-
-    /// Query connection info as a property dict.
-    ///
-    /// Returns key-value pairs: handle, state, data_mtu, data_mps,
-    /// data_mode, smtc_tx_credits,
-    /// smtc_rx_credits, dudtc_tx_credits, dudtc_rx_credits,
-    /// tx_bytes, rx_bytes.
-    async fn get_connection_info(&self) -> zbus::fdo::Result<HashMap<String, Value<'static>>> {
-        let st = self.state.lock().await;
-        if st.controller.profile != 0 {
-            return Err(zbus::fdo::Error::NotSupported("native connection parameters require a typed current lifetime; legacy conn_info is unsupported".into()));
-        }
-        let handle = st
-            .devices
-            .get(&self.addr)
-            .and_then(|d| d.conn_handle)
-            .ok_or_else(|| zbus::fdo::Error::Failed("not connected".into()))?;
-        let info = st
-            .conn_info(handle)
-            .map_err(|e| zbus::fdo::Error::Failed(format!("conn_info failed: {e}")))?;
-        let mut m = HashMap::new();
-        m.insert("handle".into(), Value::from(info.handle));
-        m.insert("state".into(), Value::from(info.state));
-        m.insert("data_mtu".into(), Value::from(info.data_mtu));
-        m.insert("data_mps".into(), Value::from(info.data_mps));
-        m.insert("data_mode".into(), Value::from(info.data_mode));
-        m.insert("svc_mtu".into(), Value::from(info.svc_mtu));
-        m.insert("smtc_tx_credits".into(), Value::from(info.smtc_tx_credits));
-        m.insert("smtc_rx_credits".into(), Value::from(info.smtc_rx_credits));
-        m.insert(
-            "dudtc_tx_credits".into(),
-            Value::from(info.dudtc_tx_credits),
-        );
-        m.insert(
-            "dudtc_rx_credits".into(),
-            Value::from(info.dudtc_rx_credits),
-        );
-        m.insert("tx_bytes".into(), Value::from(info.tx_bytes));
-        m.insert("rx_bytes".into(), Value::from(info.rx_bytes));
-        m.insert("bandwidth_mhz".into(), Value::from(info.bandwidth_mhz));
-        m.insert("mcs_index".into(), Value::from(info.mcs_index));
-        m.insert(
-            "supervision_timeout".into(),
-            Value::from(info.supervision_timeout),
-        );
-        Ok(m)
     }
 }
 

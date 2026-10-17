@@ -1,5 +1,5 @@
 //! Native selected-registration C interface. Negative returns are -errno;
-//! legacy exports retain their existing 0/-1 convention. No implicit Runtime,
+//! pointer-returning open reports thread-local errno. No implicit Runtime,
 //! management acquisition, Tokio reactor or consuming legacy-stream fallback.
 use super::SlkAdapter;
 use crate::{ControllerEventCursor, Error, SnoopCursor};

@@ -215,7 +215,7 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
         let (info, scan, connect) = tokio::join!(
             timeout(
                 Duration::from_secs(2),
-                controller.call_method("GetDliInfo", &())
+                controller.call_method("GetLinkSummary", &())
             ),
             timeout(
                 Duration::from_secs(2),
@@ -233,8 +233,8 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
                 info.map(|r| r.map(|_| ())),
                 "org.freedesktop.DBus.Error.NotSupported",
             ),
-            (scan, "org.freedesktop.DBus.Error.Failed"),
-            (connect, "org.freedesktop.DBus.Error.Failed"),
+            (scan, "org.freedesktop.DBus.Error.NotSupported"),
+            (connect, "org.freedesktop.DBus.Error.UnknownMethod"),
         ] {
             match result.unwrap().unwrap_err() {
                 zbus::Error::MethodError(name, _, _) => {
@@ -960,7 +960,6 @@ async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
             other => panic!("unexpected D-Bus error: {other}"),
         }
     }
-    let unsupported = "org.freedesktop.DBus.Error.NotSupported";
     let retired_method = "org.freedesktop.DBus.Error.UnknownMethod";
     for method in ["Encrypt", "ConfirmPasskey", "RejectPasskey", "Reset"] {
         error_name(security.call::<_, _, ()>(method, &()).await, retired_method);
@@ -997,79 +996,56 @@ async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
             "org.freedesktop.DBus.Error.UnknownProperty",
         );
     }
-    error_name(
-        controller
-            .call::<_, _, crate::controller::DliInfo>("GetDliInfo", &())
-            .await,
-        unsupported,
-    );
-    error_name(
-        controller
-            .call::<_, _, crate::controller::MgmtStats>("GetMgmtStats", &())
-            .await,
-        unsupported,
-    );
-    error_name(
-        controller.call::<_, _, ()>("RalClear", &()).await,
-        unsupported,
-    );
-    error_name(
-        controller.call::<_, _, u8>("RalSize", &()).await,
-        unsupported,
-    );
-    error_name(
-        controller.call::<_, _, ()>("RpaEnable", &(true,)).await,
-        unsupported,
-    );
-    error_name(
-        controller
-            .call::<_, _, ()>("RpaSetTimeout", &(30u16,))
-            .await,
-        unsupported,
-    );
-    error_name(
-        controller
-            .call::<_, _, ()>("RalAdd", &(vec![1u8; 6], vec![2u8; 16], vec![3u8; 16]))
-            .await,
-        unsupported,
-    );
-    error_name(
-        controller
-            .call::<_, _, ()>("RalRemove", &(vec![1u8; 6],))
-            .await,
-        unsupported,
-    );
-    for method in ["RalReadPeerRpa", "RalReadLocalRpa"] {
+    let xml = controller.introspect().await.unwrap();
+    for name in ["GetLinkSummary", "GetControllerEventPosition", "ConnCount"] {
+        assert!(xml.contains(&format!("name=\"{name}\"")));
+    }
+    for method in [
+        "GetRole",
+        "SetRole",
+        "GetPhyInfo",
+        "SetMcs",
+        "SetTxPower",
+        "SetBandwidth",
+        "McsSelect",
+        "PhyHopNext",
+        "GetPmInfo",
+        "PmSetState",
+        "PmForceActive",
+        "AfhSetMap",
+        "AfhGetMap",
+        "AfhHopNext",
+        "AfhClassify",
+        "ConnReadPeerFeatures",
+        "ConnReadPeerVersion",
+        "ConnUpdateParams",
+        "ConnPhyUpdate",
+        "GetDliInfo",
+        "DliReset",
+        "GetMgmtStats",
+        "RalAdd",
+        "RalRemove",
+        "RalClear",
+        "RalSize",
+        "RpaEnable",
+        "RpaSetTimeout",
+        "RalReadPeerRpa",
+        "RalReadLocalRpa",
+        "MeasReadCap",
+        "MeasEnable",
+        "MeasSetLinkParam",
+        "MeasAction",
+        "SyncUcastRemove",
+        "SyncMcastRemove",
+        "SyncInfo",
+        "UsbDevCount",
+    ] {
+        assert!(!xml.contains(&format!("name=\"{method}\"")));
         error_name(
-            controller
-                .call::<_, _, Vec<u8>>(method, &(vec![1u8; 6],))
-                .await,
-            unsupported,
+            controller.call::<_, _, ()>(method, &()).await,
+            retired_method,
         );
     }
-    error_name(
-        controller
-            .call::<_, _, crate::controller::MeasCap>("MeasReadCap", &())
-            .await,
-        unsupported,
-    );
-    error_name(
-        controller.call::<_, _, ()>("MeasEnable", &(true,)).await,
-        unsupported,
-    );
-    error_name(
-        controller
-            .call::<_, _, ()>("MeasSetLinkParam", &(1u16, 0u8, 0u8, 10u16, 20u16))
-            .await,
-        unsupported,
-    );
-    error_name(
-        controller
-            .call::<_, _, ()>("MeasAction", &(1u16, 0u8, 0u8))
-            .await,
-        unsupported,
-    );
-    let invalid = "org.freedesktop.DBus.Error.InvalidArgs";
     error_name(
         security
             .call::<_, _, ()>("InputPasskey", &(1_000_000u32,))
@@ -1088,7 +1064,7 @@ async fn unconnected_security_and_privacy_report_not_supported_over_dbus() {
         controller
             .call::<_, _, ()>("RalRemove", &(vec![1u8; 5],))
             .await,
-        invalid,
+        retired_method,
     );
 }
 

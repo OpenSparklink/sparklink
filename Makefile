@@ -18,21 +18,27 @@ DOCS_RUN = $(UV) run --locked --only-group docs
 BUILD_RUN = python3 tools/build_resources.py --
 SPHINX_FLAGS = -n -W --keep-going
 
-.PHONY: all build check test install uninstall clean docs docs-live docs-linkcheck
+.PHONY: all build check test arch-check install uninstall clean docs docs-live docs-linkcheck
 
 all: build
 
 build:
-	$(BUILD_RUN) $(CARGO) build $(CARGO_FLAGS)
+	$(BUILD_RUN) $(CARGO) build --locked $(CARGO_FLAGS)
 
-check:
-	$(BUILD_RUN) $(CARGO) check --workspace
+arch-check:
+	python3 tools/check_production_dependencies.py
+	PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p test_production_dependencies.py
+	python3 tools/check_retired_interfaces.py
+	PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p test_retired_interfaces.py
 
-test:
-	$(BUILD_RUN) $(CARGO) test --workspace
+check: arch-check
+	$(BUILD_RUN) $(CARGO) check --locked --workspace
+
+test: arch-check
+	$(BUILD_RUN) $(CARGO) test --locked --workspace
 
 clippy:
-	$(BUILD_RUN) $(CARGO) clippy --workspace -- -W clippy::all
+	$(BUILD_RUN) $(CARGO) clippy --locked --workspace -- -W clippy::all
 
 fmt:
 	$(CARGO) fmt --all

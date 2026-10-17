@@ -15,10 +15,10 @@ pub mod message_security;
 pub use channel::{SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus};
 pub use message_security::{SleMessageSecurity, SleSendConstraint};
 mod genl;
-pub mod service_hash;
-pub mod ssap;
 #[cfg(test)]
 mod retired_types;
+pub mod service_hash;
+pub mod ssap;
 #[cfg(test)]
 mod tests;
 mod types;

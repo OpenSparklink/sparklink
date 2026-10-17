@@ -226,7 +226,7 @@ jobs:
           cc -std=c11 -Wall -Wextra -Werror -I include tools/testing/selftests/sparklink/sparklink_backend_test.c -o /tmp/sparklink-backend-test
           /tmp/sparklink-backend-test
       - name: Install compiler and sanitizer runtimes
-        run: sudo apt-get update && sudo apt-get install -y clang
+        run: sudo apt-get update && sudo apt-get install -y clang gcc-multilib
       - name: Check actual registration rejects before following ops
         run: python .registration-contract/tools/backend_registration_contract.py --kernel .kernel-containment
       - name: Check actual WS73 DLI and security envelopes (synthetic only)

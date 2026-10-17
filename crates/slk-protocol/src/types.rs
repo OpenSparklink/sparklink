@@ -110,42 +110,6 @@ pub struct SciDevInfo {
     pub _reserved: [u8; 24],
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /// Supported native controller event ABI version.
 pub const CONTROLLER_EVENT_VERSION: u32 = 1;
 pub const CONTROLLER_EVENT_PAYLOAD_MAX: usize = 288;
@@ -216,7 +180,6 @@ impl SleControllerEvent {
     }
 }
 
-
 /// Management stats (ioctl 0x85)
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
@@ -227,22 +190,6 @@ pub struct SleMgmtStats {
     pub total_resolved: u32,
     pub total_timeouts: u32,
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Version 1 typed discovery ABI. Select a registration before probing/submitting.
 // Explicit profile fields/units, opaque data; no implicit board/radio defaults.

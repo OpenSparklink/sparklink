@@ -1,5 +1,5 @@
-use crate::*;
 use crate::retired_types::*;
+use crate::*;
 
 #[test]
 fn snoop_abi_is_pointer_free_and_aligned() {

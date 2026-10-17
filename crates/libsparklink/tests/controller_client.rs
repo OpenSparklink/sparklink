@@ -223,3 +223,31 @@ async fn core_pending_registration_does_not_require_ready_adapter_properties() -
     assert!(client.controller(BASE).await.is_err());
     Ok(())
 }
+
+struct ForeignPeer(Arc<AtomicUsize>);
+#[zbus::interface(name = "org.sparklink.Peer")]
+impl ForeignPeer {
+    fn get_info(&self) -> (u64, u8, String, bool, bool, Vec<String>) {
+        self.0.fetch_add(1, Ordering::SeqCst);
+        (9, 1, "01:02:03:04:05:06".into(), true, false, vec![])
+    }
+}
+#[tokio::test]
+async fn foreign_peer_path_is_rejected_without_querying_the_other_controller() -> anyhow::Result<()>
+{
+    let bus = support::Bus::start();
+    let count = Arc::new(AtomicUsize::new(0));
+    let foreign = "/org/sparklink/slk3_g9/peer_t01_010203040506";
+    let server = server(&bus.address, State::new(false)).await?;
+    server
+        .object_server()
+        .at(foreign, ForeignPeer(count.clone()))
+        .await?;
+    let c = client(&bus.address).await?;
+    assert!(matches!(
+        c.peer_info(BASE, foreign).await,
+        Err(ApplicationError::Identity(_))
+    ));
+    assert_eq!(count.load(Ordering::SeqCst), 0);
+    Ok(())
+}

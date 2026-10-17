@@ -1,0 +1,12 @@
+{
+  "status": "FIVE_CURRENT_SDK_PRIVATE_BUS_TESTS_PASS_NOT_RF",
+  "parent": "81d33ea",
+  "scope": "Restore the original foreign-controller precheck when moving Peer logic intoSDK;rejectbeforequeryingothercontroller,notonlyafterreply. NoKernel/protocol/credit changes.81dcompiledbundle retainedunqualified,noVM executedwithit.",
+  "material": {
+    "path": ".dev/architecture-r5c-peer-guard-v1.log",
+    "sha256": "263790e034df23b42ed9c934db0f050b8a163abfc036ea37acea608242665839",
+    "bytes": 1226,
+    "access": "private ownerworkspace"
+  },
+  "remaining": "Fullstrict/finalnewartifactVM andremainingR5/R6/alloriginalscopeOPEN"
+}

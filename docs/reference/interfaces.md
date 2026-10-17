@@ -43,7 +43,7 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 `Client::controller(path)`返回固定daemon owner及index/generation的`Controller`观察对象，
 不是Ready或Native lease。属性不缓存；成员列举不读取同行属性作为本设备准入条件。
 `registrations()`／`registration(path)`直接读取Core生命周期，Pending/Fault观察不要求
-Ready Adapter存在。`peer_info()`及Connection采用共享的完整身份规则，不猜地址类型。
+Ready Adapter存在。`peer_info()`及Connection采用共享的完整身份规则，不猜地址类型；foreign Peer路径在查询其他controller之前拒绝。
 
 `controller.management()`只是显式请求管理的客户端视图。构造它不授予权限，每次仍经
 实际D-Bus策略及内核检查。广播/扫描控制、取消、连接分配/提交/结果、强制断链均使用

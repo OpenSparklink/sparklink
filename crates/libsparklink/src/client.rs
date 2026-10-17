@@ -125,6 +125,9 @@ impl Client {
     }
     pub async fn peer_info(&self, controller: &str, path: &str) -> Result<contract::PeerInfo> {
         let view = self.controller(controller).await?;
+        if !path.starts_with(&format!("{}/peer_t", view.path())) {
+            return Err(ApplicationError::Identity("foreign controller peer"));
+        }
         let value: contract::PeerInfo = self
             .proxy(path, contract::controller::PEER)
             .await?

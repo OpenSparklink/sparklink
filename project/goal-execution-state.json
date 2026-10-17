@@ -791,7 +791,7 @@
       "Preserve fullS0-S6/19WP/10FV/12DG/original issue scopes; UserHost planning-onlyP4 and independent Diataxis content migration remain nonblocking."
     ]
   },
-  "execution_phase": "ACTIVE_OWNED_SSAP_AUTHORIZATION_NEW_ARTIFACT_QUALIFICATION_PENDING",
+  "execution_phase": "ACTIVE_OWNED_SSAP_C6_SCOPED_REAL_PASS_FULL_LIFECYCLE_DEPLOYMENT_AND_CPCD_PENDING",
   "next_resume_tasks": [
     "ROMcandidate:resolveindependentaccessvalidityandtruecoldstartup,thenperdevicewholee/usimage-selectionandgenerationbinding;noautomaticUfallback. NotprerequisiteforSSAP/data.",
     "ContinueuniqueEngineboundedper-requestlocalattributeauthorizer withowner/epoch/attributeversion/originalRXlifetime/securityepoch/direction/deadline;thenCPCDandsecureupdates. NoBooleanapprovalorsecondEngine.",
@@ -799,10 +799,10 @@
     "Paralleldata/credit/multi/four/performance/RXgap/formalcomposition/oldcleanup/naturalRCAandnonmanualrecovery. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4/build12solo8VMunchanged.",
     "Historicaldoclogretentionincident:preserveoldmetadata/hash,requiredUNPROVEDdebtandoriginalfailure;newuniqueexclusive logs/content-addressedreadonlycopies. No historicalbundlePASSuntilappropriate evidencecoverageisreestablished."
   ],
-  "issue_sync_status": "Seven existing ROM/firmware/reference/USB/hardware/security/SSAP/plan issues OPEN with exact readback;retention incident followup also readback OPEN,original bodies unchanged",
+  "issue_sync_status": "Owned SSAP six existing U#3/#5/#8,K#6/#17/#19 OPEN with exact comment readback and unchanged scope;earlier ROM seven and retention followup preserved",
   "issue_sync_receipt": ".dev/rom-chip-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
-  "current_goal_turn_classification": "PROGRESS_110_PROTECTED_SSAP_AND_FOUR_REAL_ROM_CANDIDATE_COMPARISONS",
+  "current_goal_turn_classification": "PROGRESS_PRODUCTION_OWNED_SSAP_FOUR_REAL_VM_GATES_AND_SOURCE_BOUND_EVIDENCE",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": "docs/evidence/session-owner-issues-20261015.json",
@@ -1718,21 +1718,40 @@
       "hcc110-document-retention-incident": {
         "level": "implemented",
         "result": "UNPROVED"
+      },
+      "ssap-owner-c6-owned": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "ssap-owner-c6-length": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "ssap-owner-c6-offline": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "ssap-owner-c6-formal": {
+        "level": "formal_bounded",
+        "result": "UNPROVED"
+      },
+      "ssap-owner-c6-remaining": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP08-WP09-ROM-candidate-and-110-protected-SSAP",
-      "production_behavior": "ReadonlyVMROMcandidatecompares12actualREADMbeforeallwritesandexplicitE/Uuploads,HCCandruntimewords. No productionautoselection. Existing110protectedSSAPslice16RTremainsseparate.",
-      "state": "SOFT_ROM_COMPARISONS_PASS_COLD_ZERO_VALIDITY_AND_AUTO_SELECTION_UNPROVED",
+      "id": "WP08-WP09-WP16-owned-SSAP-original-RX",
+      "production_behavior": "Application-ownedlocalSSAPandper-requestpolicyonthesoleEngine;originalRXconstraint,deferredpolicy,explicitretirementdrain. ExistingCUTC/Session/credit/Grant/Ticketretained.",
+      "state": "C6_TWO_REAL_OWNED_SLICES_AND_LENGTH_REGRESSION_SCOPED_PASS_FULL_SCOPE_UNPROVED",
       "exit": [
-        "FourknownE/Usoftware-resetcomparisons/12ROMreads/4actual3imageuploads/HCC;741tools/fourreplays60negatives",
-        "E0a000000,U00000000ambiguous;automaticselectiondisabled,explicitmatchingE/Uinputsretained",
-        "TwofreshpostmaintenanceE/UanduntouchedU2/3gates16actualRT;notconcurrentbusinessisolation",
-        "OriginalUzeroFAIL/5509msdeadlineRCA/naturalrecoveryremainOPEN",
-        "HistoricalHCC110originaldocloglost;fiveoriginalrecordsretiredwithrequiredUNPROVEDincident,notrehashedorquietlyPASS."
+        "ExactK0cd/compiledC6/toolsC6,16actualownerrecords/64decisions/80remoteSSAPtransactions;basicandinstalledmechanism2two-roles",
+        "Fourrealgates32actualordinarypeerreplies;249/oversizerefusalsand2042fullmessage;fourreplays52negatives",
+        "300default+300allfeaturesRust;746frozentools;strictbuild/docs. Kani10properties93rawcheckshavedisalloweddiagnostics:UNPROVED",
+        "Service-onlydeployment/realownerretirement/revoke/Down/deadlineinterleavings/CPCDandfullgoalremainOPEN"
       ],
-      "next": "ResolveindependentROMaccessvalidityandtruecoldstartupbeforeanyautomaticselector;perdevicewholevariantpath/generationassociationstillneeded. UniqueEngineauthorizer/localownership/CPCDsecureupdates,data/multi/four/performancecontinueparallel. FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4unchanged."
+      "next": "Completeactualownercallback/deadline/retirementinterleavingsandservice-onlypolicy;thenCPCD/protectedupdatesonsoleEngine. Data/multi/four/performanceandROMvalidity/cold/RCAparallel,noallcontrolfront.FullS0-S6/19WP/10FV/12DG,VM-only/UserHostP4unchanged."
     }
   },
   "agent_workstream": {
@@ -2987,7 +3006,7 @@
   },
   "owned_ssap_current_batch": {
     "production": "Sole actor owner-bound local authorization; original receipt/deadline and fd recheck; no new Engine",
-    "status": "IMPLEMENTED_PRIVATE_DBUS_TESTED_REAL_NEW_ARTIFACT_PENDING",
+    "status": "C6_TWO_REAL_OWNED_SLICES_AND_LENGTH_REGRESSION_SCOPED_PASS_FULL_SCOPE_UNPROVED",
     "limits": {
       "owner_watches_per_adapter": 16,
       "combined_response_obligations_per_actor": 8
@@ -3004,6 +3023,19 @@
       "CPCD/protected updates",
       "full original S0-S6/19WP/10FV/12DG, natural RCA/nonmanual recovery unchanged"
     ],
-    "old_qualification_not_transferred": true
+    "old_qualification_not_transferred": true,
+    "report": "docs/evidence/ssap-owned-authorization-20261017.json",
+    "registry_prefix": "ssap-owner-c6",
+    "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+    "compiled_userspace": "c6f9d8b9634773dbae79a8417814857a8834e9e3",
+    "executed_tools": "c6f9d8b9634773dbae79a8417814857a8834e9e3",
+    "formal": "NOT_PROVEN_TOOL_DIAGNOSTICS_RETAINED",
+    "next": "Finite actual owner callback/deadline/retirement and service-only policy,thenCPCD/protectedupdates;data/multi/four/performanceparallel,noallcontrolfront",
+    "aggregate_integrity": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED;full goal INCOMPLETE;original retention incident not waived",
+    "issue_receipts": ".dev/ssap-owner-issue-receipts-v1.json"
+  },
+  "previous_goal_turn_audit": {
+    "classification": "NO_PROGRESS_REVALIDATED",
+    "reason": "ROM readonly replay restated the already-bounded conclusion;continued with pending production work rather than treating it as a blocker"
   }
 }

@@ -1,11 +1,14 @@
 # SparkLink / Linux 联合实施方案
 
-本批生产实现正在收尾：Owned本地服务/原unique-owner审批复用唯一SSAP actor；16登记
-watch及8响应义务上限，原RX期限不刷新、审批后重查原fd及登记，原响应沿用Grant/Ticket。
-退出门禁为实际允许/拒绝与原owner退出后的远端拒绝、对端本地值核对和双端USB证据；
-原短消息/发现/建链用于回归。缺审批者、原期限、删除重建及原生fd失败先以实际私有
-D-Bus/生产函数测试覆盖；真实撤权/Down/迟到交错和service-only部署仍独立未决。
-不扩张本批前置条件，不因该切片关闭U#3/#5/#8或K#6/#17/#19。
+[本批Owned SSAP纵向切片已实测](../docs/evidence/ssap-owned-authorization-20261017.json)：
+K0cd/编译与工具c6，基本与机制2两门禁16个owner案例、64次审批、80笔实际远端事务；
+owner退出旧handle拒绝，对端数据库核对与双端USB闭包。另249/超限、2042完整往返，
+四门禁32次普通业务回复。16 watch/8 actor义务上限与原RX约束继续保留；300默认+
+300 all-features/746工具/四重放52负对照通过。Kani诊断仍未证明，不以局部成功关闭整项。
+下一条有限链路为实际owner回调的期限/退出/退休交错与service-only权限部署，再接CPCD/
+受保护通知指示；数据/多通道/四设备/性能并行。缺审批者、删除重建、原生fd失败当前
+有生产函数/私有D-Bus门禁，尚非全部真实撤权/Down/迟到资格。保留完整S0–S6/19WP/
+10FV/12DG，不以全部控制面组合或ROM真冷识别为前置。
 
 ## 本批退出条件与近期执行顺序
 
@@ -219,6 +222,11 @@ QMP/受控RAM复位不授自然恢复。完整S0–S6、19WP、10FV、12DG和原
 | ROM候选：特殊指令/741工具/四重放60负对照 | `offline` | `PASS` |
 | 首次冷启动、零值有效性及每设备自动固件选择未验收 | `real_device` | `UNPROVED` |
 | 历史HCC110整包原文档日志丢失：原hash保留，整包重放未证明 | `implemented` | `UNPROVED` |
+| Owned SSAP：基本/机制2两角色真实审批与owner退出 | `real_device` | `PASS` |
+| 同c6产物：249/超限与2042完整往返回归 | `real_device` | `PASS` |
+| Owned SSAP：严格构建、生产函数/私有D-Bus及冻结工具 | `offline` | `PASS` |
+| 生产access审批性质：Kani诊断未消除，未证明 | `formal_bounded` | `UNPROVED` |
+| Owned SSAP完整交错/权限部署/CPCD等范围仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

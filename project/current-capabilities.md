@@ -1,8 +1,15 @@
 # 当前能力与资格
 
-正在开发的 Owned 服务/逐请求本地授权已接入唯一 Engine，严格构建及私有 D-Bus
-结果按本批日志记录；**新 artifact 实机资格尚未取得**。下面封存836镜像的资格不转授
-该新路径。service-only部署、原期限/撤权/Down实机交错、CPCD与完整多应用范围仍缺。
+[Owned SSAP 新产物切片](../docs/evidence/ssap-owned-authorization-20261017.json)：
+K`0cd4731dd3e6` / 编译用户态与执行工具 `c6f9d8b96347`。基本通道和实际机制2各交换
+连接角色：16个owner案例、64次真实审批、80笔远端SSAP事务及16次owner退出。允许/
+拒绝读写/UUID读取由对端实际数据库读回与双端USB核对，旧handle在owner退出后真实
+拒绝。同产物另验249/超限及2042完整往返，四门禁共32次随机普通业务回复。
+
+四精确重放/52复制负对照、300默认与300 all-features Rust测试、746冻结工具及严格
+HTML已通过。Kani十性质/93原始检查仍含unstable/unsupported诊断，**未证明**。
+service-only部署、原期限/撤权/Down及活跃watch退休实机交错、CPCD、E受保护及完整
+多应用范围仍缺。下面836镜像的其余历史资格保持原身份，不升级为c6整体资格。
 
 
 [历史文档日志保留事故](../docs/evidence/hcc110-document-retention-incident-20261017.json)：
@@ -29,7 +36,7 @@ Linux `0cd4731dd3e6`，编译用户态 `83625029e313`，执行/guest工具 `ee8c
 | f887生命周期（独立源范围） | 三机制×两来源×release/最后管理fd/dup/Down/原期限，共30门禁；72控制前实际回复、108晚到拒绝、30重放/892复制负对照。同行Ready/租约/扫描，非独立业务组 |
 | 0cd离线与证据 | 1116生产codec/query fixture+ASan/UBSan、730冻结工具、48准确封存ABI；四精确数据重放/128复制负对照 |
 | 历史形式化范围 | chip reply decoder的8语义断言/439原始检查与原件保留；原HCC110整包因文档日志损失暂停资格，非当前全量证明。USB/锁/引用/时钟/排空/整个内核不在证明内 |
-| 当前仍缺 | 逐属性本地授权/CPCD及完整110安全/Agent矩阵、0cd完整生命周期重验、首次冷ROM可靠识别/每设备自动选镜像、S硬件、混合四设备及完整S0–S6 |
+| 当前仍缺 | 完整逐属性授权/交错、CPCD及完整110安全/Agent矩阵、0cd完整生命周期重验、首次冷ROM可靠识别/每设备自动选镜像、S硬件、混合四设备及完整S0–S6 |
 
 新增[110受保护SSAP限定资格](../docs/evidence/ssap-110-protected-access-20261017.json)：
 同K0cd/编译836/工具ee8，U2/3的机制1与2各交换角色，16次实际业务回复、24属性案例
@@ -212,6 +219,11 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | ROM候选：特殊指令/741工具/四重放60负对照 | `offline` | `PASS` |
 | 首次冷启动、零值有效性及每设备自动固件选择未验收 | `real_device` | `UNPROVED` |
 | 历史HCC110整包原文档日志丢失：原hash保留，整包重放未证明 | `implemented` | `UNPROVED` |
+| Owned SSAP：基本/机制2两角色真实审批与owner退出 | `real_device` | `PASS` |
+| 同c6产物：249/超限与2042完整往返回归 | `real_device` | `PASS` |
+| Owned SSAP：严格构建、生产函数/私有D-Bus及冻结工具 | `offline` | `PASS` |
+| 生产access审批性质：Kani诊断未消除，未证明 | `formal_bounded` | `UNPROVED` |
+| Owned SSAP完整交错/权限部署/CPCD等范围仍缺 | `real_device` | `UNPROVED` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -10,17 +10,19 @@
 |---|---|---|
 | 普通用户业务、长度、实际CLI、Peer观察 | 本页选定记录及其全部必需门禁/双端证据 | 功能回归不等于吞吐、可靠模式、全部地址/隐私或整个当前树资格 |
 | Rust管理/应用、Owned与Agent | [实际接口](../docs/reference/interfaces.md)、选定记录的准确新入口范围 | 本地登记、策略批准、原生准入、机制安装、对端应用处理分别表达 |
-| C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、所选共享库ABI检查 | 完整broker/SSAP便利客户端及外部实际消费仍缺；导出符号不等于部署资格 |
+| C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、所选共享库ABI检查及R6a限定VM记录 | 基础绑定已在干净VM实际安装消费；完整broker/SSAP便利客户端仍缺，负向fd调用不等于设备业务资格 |
 | 内核Runtime、Session、Grant、credit/Ticket | [唯一架构](architecture.md)、下面各自源码映射的限定记录 | 旧代际、在途义务、有限队列、撤权及未知完成不能由缓存/关闭抹去 |
 | Codec、事件、故障与形式化 | 下方全部限定/历史记录及证明假设 | 旧codec/fixture、工具安装或模型通过不推导当前完整实现通过 |
-| 部署、恢复与发布 | [唯一计划](implementation-plan.md)的R5/R6及原工作包 | 干净VM部署、自然根因和非人工恢复未闭合；人工/QMP/注入不能替代 |
+| 部署、恢复与发布 | [唯一计划](implementation-plan.md)的R5/R6及原工作包 | 通用安装有限VM门禁与软件包/升级回滚、原生权限/新WS73产物分开；自然根因和非人工恢复未闭合 |
 
 选定保留产物的编译／执行／校验来源只按下方生成记录读取。R4新raw退休产物已取得
 四真实WS73路径保持及单列的模拟controller初始化、usercopy、权限交接资格；
 101旧raw入口删除，53旧布局私有测试，26当前数值不变。
 [14门禁范围报告](../docs/evidence/raw-uapi-retirement-qualification-20261018.json)保留
 原失败、原WIP及准确产物，先前[离线进度快照](../docs/evidence/raw-uapi-retirement-progress-20261018.json)
-仍保留其“待验”历史状态。高阶SDK/C-Python便利接口、外部实际消费与干净VM部署仍缺。
+仍保留其“待验”历史状态。高阶SDK/C-Python便利接口与R6剩余范围仍缺；当前基础部署
+的[独立限定VM资格](../docs/evidence/deployment-clean-vm-qualification-20261018.json)不改变旧实机产物身份，
+也不表示软件包、跨版本升级回滚、实际内核授权或新WS73产物通过。
 自然启动/重枚举/设备消失根因、非人工恢复继续开放；模拟及QMP不能替代。
 
 历史R5d Typed Peer资格以[原准确记录](../docs/evidence/typed-peer-retirement-qualification-20261018.json)
@@ -242,6 +244,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | K2fc/U4736管理应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
+| U668：干净Debian VM通用安装、四角色system bus与外部基础SDK限定通过；软件包/实机另验 | `virtual_integration` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -122,6 +122,13 @@ fd操作用`libsparklink.so.0`。Python使用运行库major，不要求开发包
 远端SSAP或回调客户端**；不得从新库名称推导已实现所有目标API。Native旧不支持入口
 仍按R4全链清单退休，不以移动文件表示整改全部完成。
 
+基础绑定在准确668的干净Debian VM中已通过安装后的外部C/Native及Python wheel
+消费，包括移除开发链接后加载两库major；这里只验证已实现纯导出和错误路径。
+system bus角色分离也已在该VM实际核对，但无controller的允许调用到达UnknownObject
+只证明总线准入，不证明OpenChannel、Kernel Grant或实际设备操作。
+完整范围见[独立部署记录](../evidence/deployment-clean-vm-qualification-20261018.json)；
+软件包升级回滚、当前新artifact实机及高阶语言客户端仍分别待验。
+
 
 ## 本批源码核对的状态（未发布 ABI）
 

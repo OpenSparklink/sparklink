@@ -214,6 +214,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | K2fc/U4736管理应用客户端：四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U0fe、工具8aa：Typed Peer四真实VM限定通过，完整R5/R6开放 | `real_device` | `PASS` |
 | K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
+| U668：干净Debian VM通用安装、四角色system bus与外部基础SDK限定通过；软件包/实机另验 | `virtual_integration` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1398,7 +1399,7 @@ SONAME/权限/配置保留一致；先严格构建/独立导出/实际staged布�
 部分staging/ABI通过不使R6或完整架构完成，不阻断未关联的原纵向功能与自然RCA工作。
 原S0–S6、19WP/10FV/12DG、UserHost P4、VM-only与所有原验收范围保留。
 
-R6a当前源码批：统一Make install-files及Debian分包文件表，固定构建目录/工具链，
+R6a最初开发快照：统一Make install-files及Debian分包文件表，固定构建目录/工具链，
 渲染实际Exec/pc，增加两库SONAME、现有三角色sysusers、仅Native字符设备udev；
 配置/状态/权限/symlink和非本版本库保留。已完成开发ELF的两个PREFIX实际暂存、
 外部C/Native链接/errno、配置解析、重装与卸载；这不是新artifact实机或干净VM资格。
@@ -1414,6 +1415,20 @@ R6a运行包复核另发现Python依赖开发`.so`链接：准确dd72源码在�
 新轮仍核对四角色实际system bus、无开发链接Python与原配置保留断言，不据局部成功封项。
 第二轮执行器提取后的内嵌缩进错误也保留为[独立失败](../docs/evidence/deployment-probe-extraction-failure-20261018.json)；
 加入实际两段内嵌源码语法预检，仍未宣称实际权限或Python安装通过。
+
+R6a当前有限退出：[准确668干净Debian VM](../docs/evidence/deployment-clean-vm-qualification-20261018.json)
+完成真实构建/安装、四角色system bus与当前基础C/Python外部消费、无开发链接运行库
+加载、服务重启/停止及重装/卸载配置保留；独立原件/源码/产物、最终文件与负对照另验。
+计数只从结构化记录生成。原两轮FAIL保留，vendor内核且无USB，不是实际Kernel Grant、
+新WS73、Debian包管理或跨版本升级回滚资格。R5f高阶客户端/共享API及R6剩余门禁
+继续整改，当前架构尚未完整退出；不得靠别名、空门面或第二Engine填充目标API树。
+
+R6b下一有限批：在独立无USB VM实际构建/安装Debian分包，验证服务/组/配置及
+外部消费者，再测升级、回滚、remove与配置保留。沿用真实版本依赖、固定工具链和
+共享Make清单；不得用跳过依赖检查、空toolchain包或修改预期伪装支持。发行版缺少
+所需编译器时必须记录；实验工具链包若采用，须实际包含准确编译器/库/许可证并单列
+来源及限定范围。generic VM通过不替代此批。包管理通过后仍需准确新artifact的WS73
+与实际内核授权门禁；R5f现有API闭包同步收敛，不为整洁另造框架。
 
 ##### R5a最小独立导出门禁
 

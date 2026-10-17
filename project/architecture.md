@@ -1114,6 +1114,18 @@ default与all-features生产闭包均禁止通过实验feature复活旧Engine/�
 其他controller不共享状态。Runtime open不由应用fd触发；作者取消不抹去物理义务。
 重新Ready必须经过生命周期和已验证的控制器状态屏障。
 
+### 构建、安装与运行权限的同一契约
+
+通用安装和软件包复用一份文件清单与路径渲染；PREFIX只控制程序/SDK位置，系统
+bus、udev与sysusers位置单独指定，DESTDIR不进入运行Exec或pc。构建工具链与锁定
+依赖必须可核对，release安装不能误取旧debug产物。应用与显式Native库各有独立
+SONAME、头及pc；Python按运行库major加载，不依赖开发链接或回退到旧库。
+
+安装角色定义不自动给用户授权；观察、普通通道、服务发布、controller管理与服务
+所有权分开。服务运行或安装成功不生成controller/Ready，更不生成Grant或安全状态。
+通用卸载保留管理员配置、权限、状态及其他库版本，清除配置属于另一个明确操作。
+状态目录不是可信Bond库；包管理、实际内核授权、设备和恢复资格分别验收。
+
 这里保留目标和持久契约，逐批进度只进入唯一计划、ADR及资格记录。
 先前R3/R4进度原文封存于[历史记录](../history/architecture-retirement-progress-before-r4f2e-20261018.txt)，
 其中“仍待迁移”描述其原始时间，不是当前能力；资格只从[能力入口](current-capabilities.md)取得。

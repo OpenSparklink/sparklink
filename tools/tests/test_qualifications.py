@@ -131,6 +131,32 @@ class QualificationTests(unittest.TestCase):
         (project / 'goal-execution-state.json').write_text(json.dumps(state))
         self.assertTrue(q.sync_views(self.data, self.repo))
 
+    def test_architecture_reference_cannot_maintain_independent_source_ids(self):
+        self.data['baseline'] = {'kernel': 'a', 'compiled_userspace': 'b', 'executed_tools': 'c'}
+        self.data['batch'] = {'id': 'fixture'}
+        self.data['records'][0]['title'] = 'fixture'
+        project = self.repo / 'project'
+        project.mkdir()
+        for name in ['current-capabilities.md', 'implementation-plan.md']:
+            (project / name).write_text('<!-- qualification-summary:start -->old<!-- qualification-summary:end -->')
+        path = project / 'goal-execution-state.json'
+        path.write_text('{}')
+        self.assertFalse(q.sync_views(self.data, self.repo, write=True))
+        state = json.loads(path.read_text())
+        state['architecture_retirement_current_batch'] = {
+            'qualification_reference': {
+                'source': 'qualification_view.selected_qualification',
+                'scope': 'Selected retained artifact only;whole current tree not revalidated'}}
+        path.write_text(json.dumps(state))
+        self.assertFalse(q.sync_views(self.data, self.repo))
+        for invalid in [None, {'record': 'older', 'compiled_kernel': 'old'},
+                        dict(state['architecture_retirement_current_batch']['qualification_reference'], result='PASS')]:
+            state['architecture_retirement_current_batch']['qualification_reference'] = invalid
+            path.write_text(json.dumps(state))
+            self.assertIn('goal: independent architecture qualification_reference', q.sync_views(self.data, self.repo))
+            self.assertIn('goal: independent architecture qualification_reference', q.sync_views(self.data, self.repo, write=True))
+            self.assertEqual(json.loads(path.read_text())['architecture_retirement_current_batch']['qualification_reference'], invalid)
+
     def test_selected_record_is_versioned_and_cannot_reference_retired_or_unknown(self):
         self.data['selected_qualification'] = {'version': 1, 'record': 'one'}
         self.assertFalse(self.run_check()['errors'])

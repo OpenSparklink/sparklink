@@ -798,8 +798,8 @@
     "R6:cleanVM deployment/externalSDK/upgrade/rollback/uninstall/config retention",
     "Only then refine next real vertical behavior under fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanual recovery stayOPEN"
   ],
-  "issue_sync_status": "R4F1_READY_TO_POST_AFTER_CANONICAL_PUSH",
-  "issue_sync_receipt": ".dev/rom-chip-issue-receipts-v1.json",
+  "issue_sync_status": "R4F1_SIX_EXISTING_ISSUES_UPDATED_ALL_REMAIN_OPEN",
+  "issue_sync_receipt": ".dev/architecture-r4f1-issue-receipts-v1.json",
   "previous_goal_turn_classification": "progress:K8c/U6256realVM/96RXcontexts;qualifiedrecords/7issues/signedpush",
   "current_goal_turn_classification": "PROGRESS_PRODUCTION_OWNED_SSAP_FOUR_REAL_VM_GATES_AND_SOURCE_BOUND_EVIDENCE",
   "goal_api_status_observed": "active",
@@ -1994,7 +1994,20 @@
     "docs/evidence/security-grant-maintenance-20261017.json",
     "docs/evidence/protected-channel-maintenance-20261017.json",
     "docs/evidence/security-live-state-maintenance-20261017.json",
-    ".dev/message-context-issue-receipts-v1.json"
+    ".dev/message-context-issue-receipts-v1.json",
+    {
+      "batch": "R4f1 DLI metadata and R4f2a test links",
+      "source_documentation": "55e0874",
+      "receipt": ".dev/architecture-r4f1-issue-receipts-v1.json",
+      "urls": [
+        "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6234559855",
+        "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6234560351",
+        "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6234560810",
+        "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6234561428",
+        "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6234561921",
+        "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6234562274"
+      ]
+    }
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -3089,14 +3102,10 @@
       "R6:cleanVM deployment/externalSDK/upgrade/rollback/uninstall/config retention",
       "Only then refine next real vertical behavior under fullS0-S6/19WP/10FV/12DG;naturalRCA/nonmanual recovery stayOPEN"
     ],
-    "exit_reference": "Canonical WP18 R4e then R5/R6;not all-control-combination prerequisite",
+    "exit_reference": "Canonical WP18 R4f2 then complete R5/R6;not all-control-combination prerequisite",
     "qualification_reference": {
-      "record": "kernel-command-retirement-r4e2",
-      "report": "docs/evidence/kernel-command-retirement-r4e2-20261017.json",
-      "compiled_kernel": "b35d0313d29f5797aefdef045b8d559a50a82c09",
-      "compiled_userspace": "ef746cba1cdf967063c78437dffe6d4a9ecf6749",
-      "executed_tools": "997ea198dfc689c96053f6e460fdf1aecb067c70",
-      "whole_current_tree": "NOT_REVALIDATED;exact recorded slice only"
+      "source": "qualification_view.selected_qualification",
+      "scope": "Selected retained artifact only;whole current tree not revalidated"
     },
     "uninstall": "e28 staged-only configuration/state retention;clean-VM deployment remains",
     "user_steering": "2026-10-17:finish architecture arrangement and remediation first;adopt three API views;preserve verified paths and current lifecycle WIP",

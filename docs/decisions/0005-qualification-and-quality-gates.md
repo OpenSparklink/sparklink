@@ -127,3 +127,8 @@ lifetime 身份，独立验收须核对原请求/作者/gen/lifetime/期限/实�
 全部历史PASS、FAIL、UNPROVED和required范围继续可见，整体结果不因选择局部PASS改变。
 旧能力入口原文以提交/hash保留在history，仅当前canonical页表达当前边界；历史基线
 标为历史。文档/goal视图仍由同一记录生成/校验，公开CI元数据不等本机重放或硬件资格。
+
+架构执行状态中的qualification_reference也只指向生成的selected_qualification，
+不再独立复制compiled source IDs。嵌套旧source/record或额外PASS字段必须拒绝；
+write-views不能悄悄覆盖这类独立资格声明。此守卫仅检查明确结构字段，不声称能
+理解所有手写叙述或历史证据；原失败与限定范围仍保留。

@@ -316,6 +316,16 @@ def sync_views(data, repo, write=False):
     for legacy in ['current_heads', 'current_qualification', 'current_batch', 'current_batch_exit', 'qualified_source_heads', 'current_qualified_subsets']:
         if legacy in state:
             errors.append(f'goal: independently maintained {legacy}')
+    architecture = state.get('architecture_retirement_current_batch', {})
+    if not isinstance(architecture, dict):
+        errors.append('goal: invalid architecture execution state')
+    elif 'qualification_reference' in architecture:
+        # Execution history is not a second place to maintain compiled IDs.
+        # Never silently rewrite a stale independent claim, even in write mode.
+        reference = {'source': 'qualification_view.selected_qualification',
+                     'scope': 'Selected retained artifact only;whole current tree not revalidated'}
+        if architecture['qualification_reference'] != reference:
+            errors.append('goal: independent architecture qualification_reference')
     return errors
 
 

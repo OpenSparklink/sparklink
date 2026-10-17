@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "status": "K619_U390_PROTECTED249_AND_FULL2042_SCOPED_REAL_PASS",
+  "real_result": "PASS",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "390a634b60320706e5fb619d3c0b1df661378261",
+  "executed_tools": "390a634b60320706e5fb619d3c0b1df661378261",
+  "scope": [
+    "VM-only U2/3,E1excluded;exact K619/U390/tools390 preparednormal05aQEMU/SDK111;existingphysicalSession/Runtime/Grant/credit/Ticket only.",
+    "Ordinary controlgroup applications through original slkd broker/slktest:security1 noMITM249boundary andsecurity2 numeric full2042,eachbothexchangedconnectionroles,16actualrandom peer-validated roundtrips. No plainfd fallback.",
+    "Long2042 is complete applicationdelivery/reply after realPB fragmentation/resumption,distinct from20lifecycle incompleteprefixes. Sixteen249-boundary refusals preserveexactEMSGSIZE. Selectedpoints doNOT qualifyfull7length/credit/fairness/performance/multichannel/fourdevice matrix.",
+    "Eachselectedmode has8liveSession snapshots and12or8nativegrade refusals. Explicit disposable automatedAgent witness isnot human/namedidentity/Bond/RF independentcipherattestation orfulldeploymentpolicy. BackgroundSMTCEngine staysplain;thisisprotectedCUTC,not protectedSSAPqualification.",
+    "Samefrozenverifier exactreplay,not independentdecoder/newhardwareinjection/formalproof. NOCPhardwaretruth/late/reuse/drain,naturalRCA/nonmanualrecovery andfullS0-S6/19WP/10FV/12DG remainOPEN;partialresultsdonotclosewholeissues."
+  ],
+  "real_gates": [
+    {
+      "name": "sec1-boundary249",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "message_bytes": 249,
+      "round_trips": 8,
+      "current_security_snapshots": 8,
+      "grade_refusals": 12,
+      "boundary_refusals": 16,
+      "manifest": ".dev/protected-lifecycle-sec1-boundary249-v1/manifest.json"
+    },
+    {
+      "name": "sec2-long2042",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "message_bytes": 2042,
+      "round_trips": 8,
+      "current_security_snapshots": 8,
+      "grade_refusals": 8,
+      "boundary_refusals": 0,
+      "manifest": ".dev/protected-lifecycle-sec2-long2042-v1/manifest.json"
+    }
+  ],
+  "bounds": {
+    "real_gates": 2,
+    "connection_role_phases": 4,
+    "peer_validated_round_trips": 16,
+    "full_2042_round_trips": 8,
+    "boundary_refusals": 16,
+    "current_security_snapshots": 16,
+    "grade_refusals": 20
+  },
+  "remaining": [
+    "Fullprotectedlengths/multichannel/fourdevice/fairness/performance/resources",
+    "FirstprotectedSMTC/soleSSAPsecurityandlocalpermissions/CPCD consumers",
+    "Actual lock/refinement/firmwareNOCP/reuse/drain andnaturalRCA/nonmanualrecovery/fulloriginalgoalscope"
+  ],
+  "materials": [
+    {
+      "path": ".dev/protected-lifecycle-sec1-boundary249-v1/manifest.json",
+      "sha256": "48c835f55e39dc2eecc9b871b6769aae2905a35e39a9781bccc70344218c6b0c",
+      "bytes": 1320910,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-boundary249-v1/console.log",
+      "sha256": "4b099a280b98a5cc69ef04a34ab2c961605c283a5e0179de8d05e79d7fec1b34",
+      "bytes": 16456,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-boundary249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-boundary249-v1/guest-output/ws73.pcap",
+      "sha256": "de2831bdc39123e51e1b71af24e61fbf057314dd931c390daddab9d0ff6df7da",
+      "bytes": 580932,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-boundary249-v1/guest-output/capture-stats.txt",
+      "sha256": "3f2257298d396254aa16077bc0f2e2bd5fe5dd1cd487bab7ddf4581ed5c781b9",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-boundary249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "f34ab1c1d846877aaef94ecee4ddb2eee8ec8bdcfda0bed10ada239235b91870",
+      "bytes": 795613,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-long2042-v1/manifest.json",
+      "sha256": "d06d179afb1c1504b3d58c9172ac6d68c93ac5a7111400d613eeda1ee22fa645",
+      "bytes": 2364651,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-long2042-v1/console.log",
+      "sha256": "077fbea635d30ed517d73d1a0360d5a72e0c6f32ec64ae1cf72f89e70f2b0f58",
+      "bytes": 16249,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-long2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-long2042-v1/guest-output/ws73.pcap",
+      "sha256": "2cc3f25e9e833e2728770d0d47a5acc101bde25edc353b47660b53bf11066a76",
+      "bytes": 1103244,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-long2042-v1/guest-output/capture-stats.txt",
+      "sha256": "09ce221bbed8823798488ad0fa32e8606777c54cdf9cc341371397a5b7c35f59",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-long2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "15d5756115815f128da72755e5bd17c0c808cbeb286651d9ef95555425cd91ff",
+      "bytes": 848414,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-selected-lengths-v1.json",
+      "sha256": "374e4844b6fa38e1f50a7de252e8c884e88eff1c56330a807d6a889e921e10fb",
+      "bytes": 3100,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-selected-lengths-v1.py",
+      "sha256": "693f7d5e5aff75323c07d9553a0fbf368d422cb88bd9495f79351dfd7e3ae81c",
+      "bytes": 2876,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-build-prepare-v2.json",
+      "sha256": "83d35f03b2170b1c92952f9243e54a3ade7abedb2b11b5379809d9c45437e616",
+      "bytes": 4803,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/manifest.json",
+      "sha256": "6ef7b4d1937047cf8d9180231a053869a47b8c032c136485717172497bec7ed0",
+      "bytes": 26523,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-normal-prepared-v2/manifest.json",
+      "sha256": "89c8dcfe523ec214ef7c24bd4ed0fa399fad8b3af0626aa3422e76448d30fb91",
+      "bytes": 277576,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-replay-selected-v1.json",
+      "sha256": "87c5bfefb5fdb686a9e22c3a495cb81d968d7ad2a33c69b061d83270532b547c",
+      "bytes": 485,
+      "access": "private",
+      "retention": "Owner workspace originals;rawUSB firmware/installkeys private,no verifiedoffsitearchive. Missing/hashmismatch cannotverifyPASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-lengths-publish-v1.py",
+      "sha256": "8982c2a2e39a0817463e9a3c5769f924e66249123f54acc542dda4c35b333958",
+      "bytes": 4254,
+      "access": "private",
+      "retention": "Owner workspace retained original;missing/hash mismatch cannot verify claimed result"
+    }
+  ],
+  "wall_ns": 1792196772623607770
+}

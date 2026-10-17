@@ -2,6 +2,7 @@
 //! traffic uses already-authorized Channel fds. No Native management dependency.
 mod client;
 pub mod ffi;
+pub mod ssap;
 pub use client::{ApplicationConnection, ApplicationError, Client};
 pub use slk_channel::Channel;
 /// Local SSAP API access requirements, separate from operation indicators.

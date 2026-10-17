@@ -19,6 +19,51 @@ pub type ConnectionObjects = (u64, u64, u64, bool, Vec<(String, u64, u16, u8, u8
 pub type SecurityState = (u64, u64, u16, u64, u32, u32, u32, u8, u8);
 pub type DynamicRequest = (u16, u16, u16, u16, u16, u8, bool);
 
+/// Existing daemon SSAP wire contract, not a second protocol implementation.
+pub mod ssap {
+    pub const DISCOVER: &str = "DiscoverSsap";
+    pub const CACHED: &str = "GetCachedSsap";
+    pub const OBSERVE: &str = "ObserveSsapIncoming";
+    pub const READ_UUID: &str = "ReadSsapByUuid";
+    pub const READ: &str = "ReadSsapValue";
+    pub const WRITE: &str = "WriteSsapValue";
+    pub const EXCHANGE_INFO: &str = "GetSsapInfo";
+    pub type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
+    pub type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);
+    pub type Incoming = (bool, Vec<u8>);
+    pub type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
+    pub type ExchangeInfo = (
+        u16,
+        u64,
+        u64,
+        u16,
+        u16,
+        u16,
+        Vec<u8>,
+        Vec<u8>,
+        Vec<u8>,
+        Vec<u8>,
+    );
+}
+pub const TRANSPORT_STATUS: &str = "GetTransportStatus";
+pub type TransportInfo = (
+    u16,
+    u64,
+    u64,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u16,
+    u32,
+);
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ControllerId {
     pub index: u16,

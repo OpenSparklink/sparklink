@@ -1236,7 +1236,7 @@ SSAP Engine；迁移slctl中自行拼接连接身份、SSAP方法字符串和长
 共享wire值/签名归slk-contract，应用封装不导出Native lease；daemon不依赖应用SDK。
 现有staging、Owned注册与安全Agent分别保留，不因名字相近合并。
 
-1. 先迁移实际远端SSAP/连接观察入口，保留CLI输出及真实调用者；检查daemon owner、
+1. R5b源码已迁移实际远端SSAP/连接观察入口，复用现有Client，CLI输出保留；新artifact VM待验。检查daemon owner、
    controller generation、physical lifetime，旧对象不自动跟随新daemon/连接。
 2. 原方法仍由唯一daemon Engine执行；SDK不维护事务、远端缓存或生成协议成功。
    超限/不支持明确拒绝，错误不降级；回调授权与安全Agent仍是不同职责。

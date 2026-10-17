@@ -3353,7 +3353,13 @@
       "R5:existing AppSDK/CLI/SSAP/C-Python shared typedcontract;no second Engine",
       "R6:cleanVM installation/externalSDK/systembuspermissions/upgrade/rollback/uninstall/configretention",
       "Then originalfeaturedevelopment;keepfullscope andallprioracceptance"
-    ]
+    ],
+    "r5_remote_client_slice": {
+      "state": "SOURCE_IMPLEMENTED_LOCAL_BROKER_CLI_TESTS_NEW_ARTIFACT_VM_PENDING",
+      "production": "Existingowner-pinned Client/uniqueSSAPEngine;CLIremote methods andsharedwirealiases migrated,noNativelease ornewengine",
+      "exit_reference": "CanonicalWP18/R5limitedclient slice",
+      "remaining": "ExactnewartifactVM/RFpreservation;fullmanagement/localOwned/Agent/C-Python clients andR6cleanVMdeploy;alloriginalscopeOPEN"
+    }
   },
   "owned_ssap_c6_historical_batch": {
     "production": "Sole actor owner-bound local authorization; original receipt/deadline and fd recheck; no new Engine",

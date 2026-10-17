@@ -21,24 +21,13 @@ use tokio::{
     time::Instant,
 };
 
-pub(crate) type Incoming = (bool, Vec<u8>);
-pub(crate) type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
+pub(crate) use slk_contract::ssap::Incoming;
+pub(crate) use slk_contract::ssap::UuidValues;
 pub(crate) type Discovery = (
     Vec<slk_protocol::ssap::discovery::Entry>,
     Vec<(Vec<u8>, Vec<u8>)>,
 );
-pub(crate) type Info = (
-    u16,
-    u64,
-    u64,
-    u16,
-    u16,
-    u16,
-    Vec<u8>,
-    Vec<u8>,
-    Vec<u8>,
-    Vec<u8>,
-);
+pub(crate) use slk_contract::ssap::ExchangeInfo as Info;
 #[derive(Clone, Debug)]
 enum Status {
     Starting,

@@ -19,7 +19,7 @@ ALLOWED={
     'slk-native':{'slk-native','slk-protocol'},
     'slk-contract':{'slk-contract','slk-protocol'},
     'slktest':{'slktest','libsparklink','slk-channel','slk-contract','slk-protocol'},
-    'slctl':{'slctl','slk-contract','slk-protocol'},
+    'slctl':{'slctl','libsparklink','slk-channel','slk-contract','slk-protocol'},
 }
 
 

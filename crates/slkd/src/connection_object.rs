@@ -1,9 +1,9 @@
 //! One immutable registration/type/address/lifetime identity per physical link.
 //! Properties are canonical observation, never an author operation result.
-type SsapEntry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
-use slk_contract::DynamicRequest;
-type SsapDiscovery = (Vec<SsapEntry>, Vec<(Vec<u8>, Vec<u8>)>);
 use crate::state::SharedState;
+use slk_contract::DynamicRequest;
+use slk_contract::ssap::Discovery as SsapDiscovery;
+use slk_contract::ssap::Entry as SsapEntry;
 use slk_protocol::SleLinkInfo;
 use zbus::interface;
 
@@ -870,6 +870,65 @@ mod grant_tests {
     use super::*;
     use std::sync::Arc;
     use tokio::sync::Mutex;
+
+    #[tokio::test]
+    async fn actual_ssap_interface_keeps_independent_wire_signatures() {
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(std::path::Path::new("/tmp"), "signature-only"),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let iface = ConnectionIface::new(state, 7, SleLinkInfo::default(), 0);
+        let mut xml = String::new();
+        zbus::object_server::Interface::introspect_to_writer(&iface, &mut xml, 0);
+        // Literal ABI expectations independent of shared client aliases/constants.
+        // No backend success fixture or protocol operation is used here.
+        for (method, inputs, outputs) in [
+            ("ReadSsapValue", vec!["q", "u"], vec!["ay"]),
+            ("WriteSsapValue", vec!["q", "ay", "u"], vec!["ay"]),
+            (
+                "DiscoverSsap",
+                vec!["ay", "y"],
+                vec!["(a(yqqayuayy)a(ayay))"],
+            ),
+            ("GetCachedSsap", vec![], vec!["a(yqqayuayy)"]),
+            ("ObserveSsapIncoming", vec!["aq", "y", "u"], vec!["(bay)"]),
+            (
+                "ReadSsapByUuid",
+                vec!["q", "q", "y", "ay", "u"],
+                vec!["(a(qbqay)ayay)"],
+            ),
+            ("GetSsapInfo", vec![], vec!["(qttqqqayayayay)"]),
+        ] {
+            let start = format!("<method name=\"{method}\">");
+            let body = xml
+                .split_once(&start)
+                .unwrap()
+                .1
+                .split_once("</method>")
+                .unwrap()
+                .0;
+            let arguments = |direction| {
+                body.lines()
+                    .filter(|line| {
+                        line.contains("<arg ")
+                            && line.contains(&format!("direction=\"{direction}\""))
+                    })
+                    .map(|line| {
+                        line.split_once("type=\"")
+                            .unwrap()
+                            .1
+                            .split_once('"')
+                            .unwrap()
+                            .0
+                    })
+                    .collect::<Vec<_>>()
+            };
+            assert_eq!(arguments("in"), inputs, "{method}: {body}");
+            assert_eq!(arguments("out"), outputs, "{method}: {body}");
+        }
+    }
 
     #[tokio::test]
     async fn security_snapshot_never_uses_cached_policy_or_creates_an_engine() {

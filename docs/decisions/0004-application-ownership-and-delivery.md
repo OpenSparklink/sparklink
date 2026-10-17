@@ -408,3 +408,12 @@ Python见证私有化，保留来源与原断言。Codec/权限语义和有效SS
 操作并表达限定结果，不另维护wire Engine/远端事务状态。slctl与语言绑定逐条迁移，
 迁移后删除重复身份规则、tuple与方法字符串；不为赶进度公开万能Proxy或Native逃生口。
 局部迁移必须以实际新入口验收；普通应用业务fd仍直达socket，逐包不经D-Bus。
+
+
+R5首批应用迁移只覆盖现有远端SSAP及Session观察：SDK借用固定Connection，
+调用前后核对owner/generation/lifetime/handle/role/地址，不拥有wire事务或缓存；
+slctl移除该部分重复proxy/身份规则，参数显示仍留在CLI。共享wire元组在独立契约，
+实际daemon introspection保留独立字面签名门禁，避免两端共享同一错误。
+现有方法及错误不改，通知观察不是远端订阅；其他管理/Owned/Agent/C-Python便利
+接口继续迁移，不能据此宣布完整R5。参考固定NearLink Host客户端/IPC职责分离，
+不复制其缓存权威、等待时长或按地址识别策略。

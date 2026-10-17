@@ -41,7 +41,7 @@ impl Client {
     pub fn daemon_owner(&self) -> &str {
         &self.owner
     }
-    async fn proxy(&self, path: &str, interface: &'static str) -> Result<Proxy<'_>> {
+    pub(crate) async fn proxy(&self, path: &str, interface: &'static str) -> Result<Proxy<'_>> {
         let bus = zbus::fdo::DBusProxy::new(&self.bus).await?;
         let current = bus
             .get_name_owner(contract::SERVICE.try_into().expect("constant service name"))
@@ -124,12 +124,36 @@ impl Client {
 /// Pinned physical lifetime observation, not ownership of the physical link.
 /// Dropping this object does not disconnect or revoke another application's fd.
 pub struct ApplicationConnection {
-    client: Client,
-    controller: ControllerId,
-    path: String,
+    pub(crate) client: Client,
+    pub(crate) controller: ControllerId,
+    pub(crate) path: String,
     identity: ConnectionInfo,
 }
 impl ApplicationConnection {
+    /// A client view of the daemon's existing lifetime-scoped SSAP actor.
+    /// Dropping this view does not disconnect the physical connection.
+    pub fn ssap(&self) -> crate::ssap::RemoteSsap<'_> {
+        crate::ssap::RemoteSsap::new(self)
+    }
+    /// Existing read-only Session mechanism observation; never drains debt.
+    pub async fn transport_status(&self) -> Result<contract::TransportInfo> {
+        self.live().await?;
+        let value: contract::TransportInfo = self
+            .client
+            .proxy(&self.path, contract::CONNECTION)
+            .await?
+            .call(contract::TRANSPORT_STATUS, &())
+            .await?;
+        let current = self.info().await?;
+        if value.0 != self.controller.index
+            || (value.1, value.2, value.3) != (current.0, current.1, current.2)
+            || !current.6
+            || !current.7
+        {
+            return Err(ApplicationError::Identity("transport observation lifetime"));
+        }
+        Ok(value)
+    }
     pub fn path(&self) -> &str {
         &self.path
     }
@@ -142,11 +166,12 @@ impl ApplicationConnection {
             .call(contract::GET_INFO, &())
             .await?;
         if !contract::matches_connection(self.controller, &self.path, &info)
-            || (info.0, info.1, info.2, info.4, &info.5)
+            || (info.0, info.1, info.2, info.3, info.4, &info.5)
                 != (
                     self.identity.0,
                     self.identity.1,
                     self.identity.2,
+                    self.identity.3,
                     self.identity.4,
                     &self.identity.5,
                 )
@@ -155,7 +180,7 @@ impl ApplicationConnection {
         }
         Ok(info)
     }
-    async fn live(&self) -> Result<()> {
+    pub(crate) async fn live(&self) -> Result<()> {
         let info = self.info().await?;
         if !info.6 || !info.7 {
             return Err(ApplicationError::Identity("connection unknown/down"));

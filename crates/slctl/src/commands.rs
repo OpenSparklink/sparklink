@@ -1,6 +1,5 @@
 type LocalProperty = (u16, Vec<u8>, u32, u32);
 type LocalService = (u16, u16, Vec<u8>, Vec<LocalProperty>);
-type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
 use zbus::Connection;
 
 type NativeReportRecord = (u64, u64, u64, String, i16, Vec<u8>, Vec<u8>, u64);
@@ -11,6 +10,7 @@ use slk_contract::PeerInfo as NativePeerInfo;
 
 pub struct Context {
     conn: Connection,
+    client: tokio::sync::OnceCell<libsparklink::Client>,
     selected: Option<String>,
 }
 
@@ -18,6 +18,7 @@ impl Context {
     pub fn new(conn: Connection) -> Self {
         Self {
             conn,
+            client: tokio::sync::OnceCell::new(),
             selected: None,
         }
     }
@@ -70,11 +71,9 @@ impl Context {
                 } else {
                     Vec::new()
                 };
-                let object = self.connection_proxy(args[1]).await?;
-                type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
-                type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);
-                let (entries, trace): Discovery =
-                    object.call("DiscoverSsap", &(uuid, kind)).await?;
+                let link = self.application_connection(args[1]).await?;
+                let object = link.ssap();
+                let (entries, trace) = object.discover(uuid, kind).await?;
                 for (category, handle, end, uuid, operations, descriptors, members) in &entries {
                     println!(
                         "SsapRemoteEntry: category={category} handle={handle} end={end} uuid={} operations={operations} descriptors={} members={members}",
@@ -83,7 +82,7 @@ impl Context {
                     );
                 }
                 if args.len() == 2 {
-                    let cached: Vec<Entry> = object.call("GetCachedSsap", &()).await?;
+                    let cached = object.cached().await?;
                     if cached != entries {
                         anyhow::bail!("lifetime remote cache differs from actual discovery");
                     }
@@ -204,7 +203,8 @@ impl Context {
                         "ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
                     );
                 }
-                let object = self.connection_proxy(args[1]).await?;
+                let link = self.application_connection(args[1]).await?;
+                let object = link.ssap();
                 let handle: u16 = args[2].parse()?;
                 let modes: u8 = match args.get(3).copied().unwrap_or("both") {
                     "notify" => 1,
@@ -213,9 +213,7 @@ impl Context {
                     _ => anyhow::bail!("invalid local receive mode"),
                 };
                 let wait: u32 = args.get(4).copied().unwrap_or("5000").parse()?;
-                let (indication, raw): (bool, Vec<u8>) = object
-                    .call("ObserveSsapIncoming", &(vec![handle], modes, wait))
-                    .await?;
+                let (indication, raw) = object.observe(vec![handle], modes, wait).await?;
                 let packet = slk_protocol::ssap::updates::Update::decode(65535, &raw)
                     .map_err(|e| anyhow::anyhow!("incoming codec: {e:?}"))?;
                 if packet.indication != indication {
@@ -237,19 +235,17 @@ impl Context {
                 if !(5..=6).contains(&args.len()) {
                     anyhow::bail!("ssap-read-uuid CONNECTION START END UUID_HEX [MINIMUM]");
                 }
-                let object = self.connection_proxy(args[1]).await?;
+                let link = self.application_connection(args[1]).await?;
+                let object = link.ssap();
                 let start: u16 = args[2].parse()?;
                 let end: u16 = args[3].parse()?;
-                let (entries, request, response): UuidValues = object
-                    .call(
-                        "ReadSsapByUuid",
-                        &(
-                            start,
-                            end,
-                            0u8,
-                            parse_hex_bytes(args[4])?,
-                            args.get(5).map_or(Ok(0u32), |v| v.parse())?,
-                        ),
+                let (entries, request, response) = object
+                    .read_by_uuid(
+                        start,
+                        end,
+                        0,
+                        parse_hex_bytes(args[4])?,
+                        args.get(5).map_or(Ok(0u32), |v| v.parse())?,
                     )
                     .await?;
                 for (handle, success, error, value) in entries {
@@ -274,24 +270,19 @@ impl Context {
                         "SSAP value requires connection path, handle and write hex value"
                     );
                 }
-                let object = self.connection_proxy(args[1]).await?;
+                let link = self.application_connection(args[1]).await?;
+                let object = link.ssap();
                 let handle: u16 = args[2].parse()?;
-                let value: Vec<u8> = if args[0] == "ssap-read" {
+                let value = if args[0] == "ssap-read" {
                     object
-                        .call(
-                            "ReadSsapValue",
-                            &(handle, args.get(3).map_or(Ok(0u32), |v| v.parse())?),
-                        )
+                        .read(handle, args.get(3).map_or(Ok(0u32), |v| v.parse())?)
                         .await?
                 } else {
                     object
-                        .call(
-                            "WriteSsapValue",
-                            &(
-                                handle,
-                                parse_hex_bytes(args[3])?,
-                                args.get(4).map_or(Ok(0u32), |v| v.parse())?,
-                            ),
+                        .write(
+                            handle,
+                            parse_hex_bytes(args[3])?,
+                            args.get(4).map_or(Ok(0u32), |v| v.parse())?,
                         )
                         .await?
                 };
@@ -1027,56 +1018,24 @@ impl Context {
         }
         Ok(())
     }
-    async fn connection_proxy(&self, path: &str) -> anyhow::Result<zbus::Proxy<'_>> {
-        let selected = self.selected_path().await?;
-        if !path.starts_with(&format!("{selected}/peer_t")) {
-            anyhow::bail!("connection belongs to another adapter");
-        }
-        let object = zbus::Proxy::new(
-            &self.conn,
-            "org.sparklink",
-            path.to_owned(),
-            "org.sparklink.Connection",
-        )
-        .await?;
-        let identity: NativeObjectInfo = object.call("GetInfo", &()).await?;
-        let expected = format!(
-            "{selected}/peer_t{:02x}_{}/link_{:016x}",
-            identity.4,
-            identity.5.replace(':', "").to_lowercase(),
-            identity.1
-        );
-        let adapter = self.adapter_proxy().await?;
-        let generation: u64 = adapter.get_property("Generation").await?;
-        if path != expected || generation != identity.0 || !identity.6 || !identity.7 {
-            anyhow::bail!("connection lifetime unknown/retired");
-        }
-        Ok(object)
+    async fn application_connection(
+        &self,
+        path: &str,
+    ) -> anyhow::Result<libsparklink::ApplicationConnection> {
+        let client = self
+            .client
+            .get_or_try_init(|| libsparklink::Client::from_connection(self.conn.clone()))
+            .await?;
+        Ok(client
+            .connection(&self.selected_path().await?, path)
+            .await?)
     }
     async fn cmd_transport_status(&self, path: &str) -> anyhow::Result<()> {
-        let object = self.connection_proxy(path).await?;
-        let identity: NativeObjectInfo = object.call("GetInfo", &()).await?;
-        type View = (
-            u16,
-            u64,
-            u64,
-            u16,
-            u16,
-            u16,
-            u16,
-            u16,
-            u16,
-            u16,
-            u16,
-            u16,
-            u16,
-            u16,
-            u32,
-        );
-        let v: View = object.call("GetTransportStatus", &()).await?;
-        if (v.1, v.2, v.3) != (identity.0, identity.1, identity.2) {
-            anyhow::bail!("transport observation lifetime mismatch");
-        }
+        let v = self
+            .application_connection(path)
+            .await?
+            .transport_status()
+            .await?;
         println!(
             "SessionTxStatus: index={} generation={} lifetime={} handle={} capacity={} outstanding={} debt={} queued={} active={} open={} pending={} retired={} failed={} allocated={} flags={}",
             v.0, v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14
@@ -1084,24 +1043,8 @@ impl Context {
         Ok(())
     }
     async fn cmd_ssap_info(&self, path: &str) -> anyhow::Result<()> {
-        let object = self.connection_proxy(path).await?;
-        let identity: NativeObjectInfo = object.call("GetInfo", &()).await?;
-        type SsapInfo = (
-            u16,
-            u64,
-            u64,
-            u16,
-            u16,
-            u16,
-            Vec<u8>,
-            Vec<u8>,
-            Vec<u8>,
-            Vec<u8>,
-        );
-        let info: SsapInfo = object.call("GetSsapInfo", &()).await?;
-        if info.1 != identity.0 || info.2 != identity.1 || info.3 != identity.2 {
-            anyhow::bail!("SSAP reply lifetime mismatch");
-        }
+        let link = self.application_connection(path).await?;
+        let info = link.ssap().exchange_info().await?;
         let hex = |v: &[u8]| v.iter().map(|b| format!("{b:02x}")).collect::<String>();
         println!(
             "SsapExchangeInfo: index={} generation={} lifetime={} handle={} local_mtu={} negotiated_mtu={} request={} peer_reply={} peer_request={} response={}",

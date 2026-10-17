@@ -18,6 +18,10 @@ class DependencyBoundary(unittest.TestCase):
             with self.subTest(root=root,dependency=dependency),self.assertRaises(ValueError):
                 check_tree(root,f'{root} v0.1.0\n{dependency} v0.1.0\n',self.internal)
 
+    def test_cli_uses_same_application_sdk_without_native_authority(self):
+        output='slctl v0.1.0\nlibsparklink v0.1.0\nslk-channel v0.1.0\nslk-contract v0.1.0\nslk-protocol v0.1.0\n'
+        self.assertEqual(check_tree('slctl',output,self.internal),['libsparklink','slctl','slk-channel','slk-contract','slk-protocol'])
+
     def test_channel_has_only_protocol_not_management_authority(self):
         output='slk-channel v0.1.0\nslk-protocol v0.1.0\nnix v0.30.1\n'
         self.assertEqual(check_tree('slk-channel',output,self.internal),['slk-channel','slk-protocol'])

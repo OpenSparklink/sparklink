@@ -34,9 +34,36 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 选择连接及每次准入只重新核对自己的Generation，不查询同行属性作为前置条件。`open_channel`与动态staging
 复用已有方法，接收fd检查实际AF_SPARKLINK；失败不降级，不暴露管理lease。
 `slk-contract`是独立的值类型/路径/方法名契约；slkd直接依赖Native、Channel和契约，
-不依赖SDK。当前Rust Client仅提供现有成员/连接观察及fd申请；通用Operation/原始Deadline/
-EventStream和SSAP客户端尚未开放，future取消不承诺撤销已开始的物理义务。
+不依赖SDK。Rust Client提供成员/连接观察、fd申请与下述已有远端SSAP方法的类型化封装；
+通用Operation/跨进程原始Deadline/EventStream尚未开放，future取消不承诺撤销已开始的物理义务。
 内核/daemon/工具既有原期限、最后关闭和Grant规则继续执行。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
+
+### Rust远端SSAP客户端与slctl
+
+`Client::connection(controller_path, connection_path)`固定daemon unique owner、controller
+index/generation和物理lifetime/handle/role/地址类型/地址。`connection.ssap()`借用该对象，
+每次实际调用前后重新核对当前身份；旧对象不会追随替换daemon、重连或复用的handle。
+这里只做观察检查，最终授权和发送仍由内核执行，不是跨D-Bus/内核原子事务证明。
+
+| Rust客户端方法 | 现有daemon方法／结果 | 限制 |
+|---|---|---|
+| `discover(uuid, kind)` | `DiscoverSsap`，条目及实际事务trace | 仅daemon当前支持的种类；不创建客户端缓存 |
+| `cached()` | `GetCachedSsap` | 该lifetime的建议性缓存，不能授予可用性/安全 |
+| `read(handle, minimum)` | `ReadSsapValue` | 原机制要求；错误原样传播，无弱化fallback |
+| `write(handle, value, minimum)` | `WriteSsapValue` | 原短写协议；不截断、不echo、不实现新长写 |
+| `read_by_uuid(start, end, data_type, uuid, minimum)` | `ReadSsapByUuid` | 返回每项结果及原trace；不是本地构造成功 |
+| `observe(handles, modes, wait_ms)` | `ObserveSsapIncoming` | 只观察实际入站；不是向对端订阅，也不表示应用已经处理 |
+| `exchange_info()` | `GetSsapInfo` | 真实协商观察，核对返回完整身份；不是服务发现或安全资格 |
+| `connection.transport_status()` | `GetTransportStatus` | 只读现有Session，不能排空credit或证明复用屏障 |
+
+相应slctl远端命令通过这一客户端调用，CLI仅解析参数和显示结果；唯一wire Engine、
+事务/分片及服务数据库仍在slkd。共享wire元组由slk-contract提供，daemon直接消费契约，
+不反向依赖应用SDK。Native管理、其他CLI控制入口、本地Owned/Agent及C/Python便利
+客户端的完整收敛仍按唯一计划R5推进，不能据本表认定整架构完成。
+
+本表描述源码入口。私有D-Bus/参数/错误/旧身份/独立签名检查不是WS73实机资格；
+新artifact必须另外VM回归。服务端仍执行既有有限队列和原期限，SDK不重试或刷新期限；
+当前客户端future结束不发送物理撤销，已经发生的远端写入可能不能回滚。
 
 `slk-channel::Channel`持有一个fd引用，构造只检查实际domain，**不是Ready或交付**。
 `try_clone`共享同一内核binding，`into_owned_fd`明确转移所有权；关闭仍服从内核最后

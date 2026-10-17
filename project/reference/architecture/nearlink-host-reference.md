@@ -246,3 +246,15 @@ K0d 的 core 将该事件从命令事件260预算中分开，严格长度/handle
 不支持。尚无生产安全 actor/真实 relay；Host 和 driver TX 参数仍255上限，
 不把接收预算扩大当发送能力或 Native 信任。
 [源码 hash、未证明与准确原路径回归](../../../docs/evidence/controller-data-boundary-20261014.json)。
+
+
+## 应用SSAP客户端边界复核（2026-10-18）
+
+再次核对用户指定Host固定版本`f0872dfaac33ffa99b80b352f6c05fba2df6414e`：
+`frameworks/native/nearlink_ssap_client.cpp`及
+`frameworks/ipc/src/nearlink_ssap_client_proxy.cpp`区分应用客户端、IPC和服务端职责，
+使用实际IPC错误而非本地method echo。这里作为职责与调用链参考，不移植另一套Engine。
+其应用缓存、地址/应用ID、10秒等待和255字节常量不能直接转作SparkLink契约；
+本项目继续固定controller generation/物理lifetime/daemon owner，远端事务与缓存归
+唯一slkd Engine，原期限和具体封装预算按实际生产实现。未把参考实现当作标准裁判、
+身份认证或互通资格，也没有从这些源码复制生产函数。

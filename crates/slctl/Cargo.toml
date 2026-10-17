@@ -9,6 +9,7 @@ name = "slctl"
 path = "src/main.rs"
 
 [dependencies]
+libsparklink = { workspace = true }
 slk-protocol = { workspace = true }
 slk-contract = { workspace = true }
 zbus = { workspace = true }

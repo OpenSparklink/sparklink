@@ -1746,20 +1746,24 @@
       "observation-retirement-r2": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "channel-operation-boundary-r3a": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R3-architecture-boundaries",
-      "production_behavior": "R2 bounded observation/publication source6aad sealed. R3 move existing authorized Channel operations from ABI crate without changing syscall semantics;next Native/sharedcontract/application caller migration.",
-      "state": "R2_FOUR_REAL_GATES_SCOPED_PASS_R3_IMPLEMENTING_NOT_QUALIFIED",
+      "id": "WP18-R3-native-client-boundaries",
+      "production_behavior": "R3a Channel operations/callers17ed sealed real preservation. R3b Native Rust operations/callers82109 committed,not yet real-qualified;protocol pure. Next R3c independent sharedcontract/application Client/C-Python caller migration,delete temporary facade.",
+      "state": "R3A_FOUR_REAL_GATES_SCOPED_PASS_R3B_OFFLINE_NOT_REAL_QUALIFIED",
       "exit": [
-        "R2:309default+309allfeatures/strict,754frozenPython/HTML115",
-        "K0cd/U6aad:four real gates32peerreplies24Ownedcases96decisions120transactions68roledenials;81copiednegatives",
-        "R2 budget/TTL/fault cases private-bus fixtures;not128addressRFstress. R3 source/artifact not yet qualified.",
-        "Fullscope incomplete;formalunsupported UNPROVED,naturalRCA/nonmanualrecovery OPEN"
+        "R3a309default+309allfeatures+2compilefail,strictclippy,755frozenPython,48crosslanguage checks,HTML115",
+        "K0cd/U17ed:fourrealgates32peerreplies24Ownedcases96decisions120transactions68roledenials;81copiednegatives",
+        "R3b Native source82109 default/allfeatures/strict,755tools/48ABI/header exact;new artifact real not qualified",
+        "Fullarchitecture incomplete;formalunsupported UNPROVED,naturalRCA/nonmanualrecovery OPEN"
       ],
-      "next": "Architecture-first R3 Native/Channel/sharedcontract/applicationSDK,thenR4fullchainAPI/eventretirement,R5gates,R6VMdeploy/docs. Preserve lifecycle WIP and existing verified paths. FullS0-S6/19WP/10FV/12DG,VM-only,UserHostP4. No full-control prerequisite."
+      "next": "Architecture-first R3c Native C/Python facade retirement and real app Client/sharedcontract migration;R4fullchainAPI/event;R5gates;R6cleanVMdeploy/docs. Preserve lifecycle WIP/verified paths;S0-S6/19WP/10FV/12DG,VM-only/UserHostP4. No all-control prerequisite."
     }
   },
   "agent_workstream": {

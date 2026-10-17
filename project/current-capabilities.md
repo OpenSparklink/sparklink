@@ -1,5 +1,12 @@
 # 当前能力与资格
 
+[R3a Channel操作层准确回归](../docs/evidence/channel-operation-boundary-r3a-20261017.json)：
+K`0cd4731dd3e6` / 编译及工具 **`17ed95f9f55e`**，SDK110 U2/3；四门禁保持
+61/249+16超限/2042/机制2、32真实对端回复、24 Owned案例/96审批/120事务、
+service-only68拒绝，5重放81复制负对照。309默认+309实验、2删除入口compile-fail、
+严格clippy、755冻结工具、48跨语言检查和严格HTML通过。**不是新Native产物、完整
+生命周期/多通道/SDK或自然恢复资格**。失败环境调用和旧证据均保留。
+
 [R2准确产物的保持回归](../docs/evidence/observation-retirement-r2-20261017.json)：
 K`0cd4731dd3e6` / 编译及工具 **`6aadcb48d235`**，SDK110 U2/3。四VM门禁含
 61/249+16超限/2042/机制2，32真实业务回复、24 Owned案例/96审批/120远端事务，
@@ -8,8 +15,8 @@ service-only68拒绝、5重放81复制负对照。309默认+309all-features、�
 fixture；**不是128地址RF压力、实机TTL故障或完整生命周期证明**。原Proxy缓存失败
 保留，过期false断言不变，客户端必须显式无缓存查询或Properties.Get。
 
-当前R3开发树已将Channel系统调用迁入操作层，尚未取得新artifact资格；R2不转授
-迁移后的产物。完整Native/Channel/共享契约/应用SDK三视图迁移仍未完成，按唯一WP18推进。
+R3b `82109ac`已迁移Native Rust生产调用者并删除protocol ioctl；此提交尚无新artifact
+实机资格，17ed不转授。C/Python混合门面仍待R3c完整迁移、删除Native默认导出。完整Native/Channel/共享契约/应用SDK三视图迁移仍未完成，按唯一WP18推进。
 
 [退休R1的准确新产物回归](../docs/evidence/architecture-retirement-r1-20261017.json)：
 K`0cd4731dd3e6` / **编译 `cd35db3fd4e4` / 工具 `0568a3d1db1b`**，SDK110 U2/3。
@@ -250,6 +257,7 @@ UserHost保持P4；VM-only不变。以下历史记录均按准确源码及范围
 | Owned SSAP完整交错/权限部署/CPCD等范围仍缺 | `real_device` | `UNPROVED` |
 | 退休R1：去虚假状态/元数据Bond；cd35四实机保持+服务组权限 | `real_device` | `PASS` |
 | R2观察预算/发布生命周期；6aad四实机保持，非128地址压力资格 | `real_device` | `PASS` |
+| R3a Channel操作层迁移；17ed四实机保持，SDK整体仍缺失 | `real_device` | `PASS` |
 
 保留镜像：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

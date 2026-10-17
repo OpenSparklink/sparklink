@@ -29,6 +29,25 @@ def fixture(rounds=4,message_bytes=61,boundaries=False):
 
 
 class ApplicationProof(unittest.TestCase):
+    def test_relative_artifact_root_keeps_exact_sealed_file_and_hash_checks(self):
+        import os
+        import tempfile
+        from ws73_channel_socket import validate_application_binary
+        from ws73_north_star import file_record
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)/'root';binary=root/'bin/slktest'
+            binary.parent.mkdir(parents=True);binary.write_bytes(b'explicit-fixture')
+            record=file_record(binary);observed=dict(path='/bin/slktest',sha256=record['sha256'])
+            relative=Path(os.path.relpath(root))
+            validate_application_binary(observed,relative,[record])
+            validate_application_binary(observed,root,[record])
+            for wrong in [dict(record,sha256='0'*64),dict(record,path=str(root/'wrong/slktest'))]:
+                with self.subTest(wrong=wrong),self.assertRaises(CaptureError):
+                    validate_application_binary(observed,relative,[wrong])
+            binary.write_bytes(b'changed')
+            with self.assertRaises(CaptureError):
+                validate_application_binary(observed,relative,[record])
+
     def test_twenty_bounded_rounds_and_invalid_record_counts(self):
         self.assertEqual(len(application_frames(fixture(20))[0]),20)
         for count in [0,21,-1,True,'20',None]:

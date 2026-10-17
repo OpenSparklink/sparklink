@@ -40,7 +40,7 @@ def validate_application_binary(binary, root=None, guest_files=None):
     if not isinstance(binary,dict) or not re.fullmatch(r'(?:/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}|/bin)/slktest',binary.get('path','')) or not re.fullmatch(r'[0-9a-f]{64}',binary.get('sha256','')):
         raise CaptureError('exact versioned slktest artifact identity required')
     if root is not None:
-        expected=Path(root)/binary['path'].lstrip('/')
+        expected=Path(root).resolve(strict=True)/binary['path'].lstrip('/')
         matches=[v for v in guest_files if Path(v['path'])==expected]
         if len(matches)!=1 or matches[0]['sha256']!=binary['sha256'] or hashlib.sha256(expected.read_bytes()).hexdigest()!=binary['sha256']:
             raise CaptureError('slktest differs from sealed VM artifact')

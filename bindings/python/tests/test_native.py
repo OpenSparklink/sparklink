@@ -64,6 +64,23 @@ class NativeBindingTests(unittest.TestCase):
         self.assertEqual(self.lib.slk_security_numeric_confirm(None, ctypes.byref(request)), -errno.EINVAL)
         self.assertEqual(self.lib.slk_security_numeric_confirm(self.handle, None), -errno.EINVAL)
 
+    def test_message_context_requires_real_domain_and_preserves_failed_outputs(self):
+        from sparklink.structs import SleMessageSecurity
+        from sparklink.native import channel_recv_security
+        import socket
+        out=SleMessageSecurity(generation=99,security_epoch=123)
+        actual=ctypes.c_int(77);buffer=(ctypes.c_uint8 * 8)();before=bytes(out)
+        fn=self.lib.slk_channel_recv_security
+        self.assertEqual(fn(-1,buffer,8,0,ctypes.byref(out),ctypes.byref(actual)),-errno.EBADF)
+        self.assertEqual(bytes(out),before);self.assertEqual(actual.value,77)
+        self.assertEqual(fn(-1,None,8,0,ctypes.byref(out),ctypes.byref(actual)),-errno.EINVAL)
+        self.assertEqual(fn(-1,buffer,8,0,None,ctypes.byref(actual)),-errno.EINVAL)
+        with socket.socket(socket.AF_UNIX,socket.SOCK_DGRAM) as unix:
+            with self.assertRaises(OSError) as caught:channel_recv_security(unix.fileno(),8,socket.MSG_DONTWAIT)
+            self.assertEqual(caught.exception.errno,errno.EAFNOSUPPORT)
+        for args in [(True,8,0),(0,True,0),(0,2048,0),(0,8,socket.MSG_WAITALL)]:
+            with self.assertRaises(ValueError):channel_recv_security(*args)
+
     def test_channel_info_errors_preserve_output_and_errno(self):
         out = SleChannelInfo(generation=99, reserved=123)
         before = bytes(out)

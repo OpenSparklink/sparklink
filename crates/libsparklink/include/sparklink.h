@@ -678,6 +678,21 @@ typedef struct SPARKLINK_ALIGN(8) SleConnectionSecurity {
     int32_t error;
 } SleConnectionSecurity;
 
+typedef struct SPARKLINK_ALIGN(8) SleMessageSecurity {
+    uint16_t version;
+    uint16_t size;
+    uint32_t security;
+    uint64_t generation;
+    uint64_t lifetime;
+    uint64_t security_epoch;
+    uint16_t controller;
+    uint16_t handle;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t flags;
+} SleMessageSecurity;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -1081,6 +1096,22 @@ int slk_connection_security(const struct SlkAdapter *adapter,
                             uint64_t lifetime,
                             uint16_t handle,
                             struct SleConnectionSecurity *out);
+
+/**
+ * Receive actual kernel receipt context alongside a datagram. Returns count
+ * or -errno. Output objects unchanged on error; payload may already be copied
+ * or consumed. With MSG_TRUNC count may exceed length. No future TX authority.
+ * # Safety
+ * Caller retains fd and valid exclusive writable buffers/output objects for
+ * the full call. buffer may be null only for zero length; other outputs cannot
+ * be null. No concurrent close/reuse of fd or aliasing these writable regions.
+ */
+intptr_t slk_channel_recv_security(int fd,
+                                   uint8_t *buffer,
+                                   uintptr_t length,
+                                   int flags,
+                                   struct SleMessageSecurity *output,
+                                   int *received_flags);
 
 #ifdef __cplusplus
 }  // extern "C"

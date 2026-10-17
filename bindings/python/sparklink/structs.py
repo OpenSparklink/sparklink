@@ -468,3 +468,14 @@ class SleConnectionSecurity(ctypes.Structure):
         ("profile",ctypes.c_uint32),("level",ctypes.c_uint32),("flags",ctypes.c_uint32),
         ("handle",ctypes.c_uint16),("method",ctypes.c_uint8),("key_size",ctypes.c_uint8),
         ("error",ctypes.c_int32)]
+
+
+class SleMessageSecurity(ctypes.Structure):
+    """40-byte kernel receipt facts; not identity, Bond or future send consent."""
+    _align_ = 8
+    _fields_ = [("version", ctypes.c_uint16), ("size", ctypes.c_uint16),
+        ("security", ctypes.c_uint32), ("generation", ctypes.c_uint64),
+        ("lifetime", ctypes.c_uint64), ("security_epoch", ctypes.c_uint64),
+        ("controller", ctypes.c_uint16), ("handle", ctypes.c_uint16),
+        ("local_tcid", ctypes.c_uint8), ("remote_tcid", ctypes.c_uint8),
+        ("pi", ctypes.c_uint8), ("flags", ctypes.c_uint8)]

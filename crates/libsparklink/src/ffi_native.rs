@@ -593,3 +593,44 @@ pub unsafe extern "C" fn slk_connection_security(
         Err(error) => errno(error),
     }
 }
+
+/// Receive actual kernel receipt context alongside a datagram. Returns count
+/// or -errno. Output objects unchanged on error; payload may already be copied
+/// or consumed. With MSG_TRUNC count may exceed length. No future TX authority.
+/// # Safety
+/// Caller retains fd and valid exclusive writable buffers/output objects for
+/// the full call. buffer may be null only for zero length; other outputs cannot
+/// be null. No concurrent close/reuse of fd or aliasing these writable regions.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_channel_recv_security(
+    fd: c_int,
+    buffer: *mut u8,
+    length: usize,
+    flags: c_int,
+    output: *mut SleMessageSecurity,
+    received_flags: *mut c_int,
+) -> isize {
+    if output.is_null()
+        || received_flags.is_null()
+        || length > isize::MAX as usize
+        || (buffer.is_null() && length != 0)
+    {
+        return -(nix::libc::EINVAL as isize);
+    }
+    let bytes = if length == 0 {
+        &mut []
+    } else {
+        // SAFETY: caller provides the exclusive live region described above.
+        unsafe { std::slice::from_raw_parts_mut(buffer, length) }
+    };
+    match slk_protocol::message_security::recv(fd, bytes, flags) {
+        Ok((count, context, actual_flags)) => {
+            unsafe {
+                output.write(context);
+                received_flags.write(actual_flags);
+            }
+            count as isize
+        }
+        Err(error) => -(error.raw_os_error().unwrap_or(nix::libc::EPROTO) as isize),
+    }
+}

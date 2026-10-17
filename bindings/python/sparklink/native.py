@@ -14,7 +14,7 @@ from .structs import (
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
-    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity,
+    SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity, SleMessageSecurity,
 )
 
 _native_library = None
@@ -35,6 +35,7 @@ def _get_native_lib():
     handle = ctypes.c_void_p
     u64, u32 = ctypes.c_uint64, ctypes.c_uint32
     signatures = {
+        "slk_channel_recv_security": [ctypes.c_int, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int, ctypes.POINTER(SleMessageSecurity), ctypes.POINTER(ctypes.c_int)],
         "slk_channel_info": [ctypes.c_int, ctypes.POINTER(SleChannelInfo)],
         "slk_channel_tx_status": [ctypes.c_int, ctypes.POINTER(SleChannelTxStatus)],
         "slk_session_tx_status": [ctypes.c_int, ctypes.POINTER(SleSessionTxStatus)],
@@ -68,7 +69,7 @@ def _get_native_lib():
         except AttributeError as error:
             raise OSError("matching native libsparklink symbols required") from error
         function.argtypes = arguments
-        function.restype = ctypes.c_int
+        function.restype = ctypes.c_ssize_t if name == "slk_channel_recv_security" else ctypes.c_int
     _native_library = lib
     return lib
 
@@ -366,3 +367,26 @@ def session_tx_status(fd):
     if result < 0:
         raise OSError(-result,"Session TX observation")
     return value
+
+
+def channel_recv_security(fd, size, flags=0):
+    """Return (copied bytes, receipt facts, msg_flags, syscall count).
+
+    With MSG_TRUNC count may exceed size. Missing/CTRUNC context is an error
+    after possible dequeue; no rollback or future send permission is promised.
+    fd must stay owned/stable for this synchronous call. Only a real SparkLink
+    fd is accepted, never a Unix socket containing fabricated context.
+    """
+    import socket
+    if type(fd) is not int or fd < 0 or fd > 2147483647:
+        raise ValueError("fd must be a nonnegative int")
+    if type(size) is not int or not 0 <= size <= 2047:
+        raise ValueError("bounded receive size 0..2047 required")
+    if not isinstance(flags, int) or isinstance(flags, bool) or flags & ~(socket.MSG_DONTWAIT | socket.MSG_PEEK | socket.MSG_TRUNC):
+        raise ValueError("unsupported receive flags")
+    buffer=(ctypes.c_uint8 * size)()
+    context=SleMessageSecurity();actual=ctypes.c_int()
+    result=_get_native_lib().slk_channel_recv_security(fd,buffer,size,flags,ctypes.byref(context),ctypes.byref(actual))
+    if result < 0:
+        raise OSError(-result,os.strerror(-result))
+    return bytes(buffer[:min(result,size)]),context,actual.value,result

@@ -188,6 +188,35 @@ EMSGSIZE，接收完整 PDU 超限丢弃；ACB254字节分片/控制器 credit �
 C `slk_channel_info`错误不改输出；Python `native.channel_info(fd)`用于delegated
 socket，不是NativeAdapter的控制fd。32位仅C布局已验，真实compat调用仍待验收。
 
+### 每条接收消息的机制观察
+
+未发布 UAPI 在 K8c302d7cfc49 起增加 `recvmsg` ancillary：`SOL_SPARKLINK=288`、
+`SPARKLINK_SCM_RX_SECURITY=1`，结构 `sparklink_message_security` 固定40字节、
+8对齐，native/compat布局一致（真实compat调用仍待验收）。version1/size40，包含
+本地 controller、generation、connection lifetime、handle、local/remote TCID、PI、
+原 ACB 接收关联的 security_epoch 和 Runtime Owner 观察等级0/1/2。没有lease、
+命名身份、Bond或属性授权；也不是对实际RF加密的独立证明。
+
+`KNOWN`(1) 表示路由时可将原接收epoch与唯一Owner机制观察关联；不能关联时
+security=0、flags=0。`CURRENT`(2) 在已授权 dequeue/PEEK 的线性化点重新核对
+同epoch和足够机制；排队后的换钥不会提升旧消息等级。返回后可能再次失效，
+因此这些事实不能授予后续TX权限；属性策略仍需要响应最终提交约束。
+
+每个成功完整数据报（含零长及PEEK）带一条记录，原有无control的 `recv()` 可忽略。
+control缓冲不足产生 `MSG_CTRUNC`；缺失/截断不是安全事实。Rust
+`message_security::recv`、C `slk_channel_recv_security`、Python
+`native.channel_recv_security` 拒绝缺失/畸形/截断上下文，不降级成假元数据。
+Rust返回 `(syscall_count, context, msg_flags)`；C返回字节数或负errno，通过两个
+输出参数返回上下文和flags；Python返回 `(copied_bytes, context, flags, count)`。
+输入支持DONTWAIT/PEEK/TRUNC，TRUNC完整计数可能大于缓冲，不能据此越界索引。
+fd必须在同步调用期间稳定持有；FFI指针须有效、独占且不别名。失败不更新C输出
+对象，但payload可能已经复制/消费，不能声称回滚。非SparkLink fd明确拒绝。
+
+目前**不支持发送ancillary**：任何sendmsg control均EOPNOTSUPP，不排队或提交，
+不能拿RX记录作为发送授权。唯一SSAP Engine尚未消费这项新上下文，也未接通
+逐属性安全、最终TX intent或本地授权；全通道最低机制仍按原契约工作。准确构建、
+离线和实机范围以[当前资格](../../project/current-capabilities.md)为准。
+
 ServiceManager新增明确本地 RegisterLocalService/ListLocalServices/ReadLocalValue/RemoveLocalService；
 Connection新增ReadSsapValue/WriteSsapValue经真实SMTC，写要求peer校验回复。
 Connection 只读属性 `SsapSecurityRequirement`（D-Bus `u`）返回首次 SMTC 绑定前

@@ -121,7 +121,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 61905139ff8c3ed2937ccdba697d880880582234
+          ref: 8c302d7cfc49ec05959dcb97bb60aeefd0134ebd
           path: .kernel-uapi
           sparse-checkout: |
             include/uapi/linux/sparklink_ioctl.h
@@ -160,7 +160,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 61905139ff8c3ed2937ccdba697d880880582234
+          ref: 8c302d7cfc49ec05959dcb97bb60aeefd0134ebd
           path: .kernel-tools
           # Raw worker ioctls also compile against the canonical pinned UAPI.
           sparse-checkout: |
@@ -184,7 +184,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 61905139ff8c3ed2937ccdba697d880880582234
+          ref: 8c302d7cfc49ec05959dcb97bb60aeefd0134ebd
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink

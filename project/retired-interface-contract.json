@@ -271,5 +271,11 @@
     "crates/slkd/src/extadv.rs",
     "bindings/python/sparklink/adapter.py",
     "bindings/python/sparklink/errors.py"
-  ]
+  ],
+  "retired_tool_commands": {
+    "tools/ws73_connection_control.py": [
+      "info",
+      "devices"
+    ]
+  }
 }

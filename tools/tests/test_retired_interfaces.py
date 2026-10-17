@@ -15,7 +15,7 @@ class RetiredEntryGuard(unittest.TestCase):
         paths=['crates/slk-native/src/adapter.rs','crates/slk-native/src/ioctl.rs',
                'crates/slk-native/include/sparklink_native.h','crates/slkd/src/controller.rs',
                'crates/slkd/src/dbus_iface.rs','bindings/python/sparklink/structs.py',
-               'crates/slctl/src/commands.rs','crates/slkconfig/src/main.rs']
+               'crates/slctl/src/commands.rs','crates/slkconfig/src/main.rs',*self.policy.get('retired_tool_commands',{})]
         self.files={p:(ROOT/p).read_text() for p in paths}
 
     def test_actual_current_sources_and_test_fixtures_do_not_restore_entries(self):
@@ -31,6 +31,8 @@ class RetiredEntryGuard(unittest.TestCase):
             ('crates/slkd/src/dbus_iface.rs','\nasync fn connect() {}'),
             ('crates/slkd/src/dbus_iface.rs','\nasync fn get_devices() {}'),
             ('crates/slkd/src/dbus_iface.rs','\npub struct DeviceIface;'),
+            ('tools/ws73_connection_control.py',"\ndef restored(run,owner,address):return run.ctl(owner,'info',address)\n"),
+            ('tools/ws73_connection_control.py',"\ndef restored(run,owner,address):return run.command(['slctl','info',address])\n"),
             ('bindings/python/sparklink/structs.py','\nclass SleConnInfo(ctypes.Structure): pass'),
             ('crates/slctl/src/commands.rs','\n"role" => facade(),'),
             ('crates/slctl/src/commands.rs','\n"devices" if true => facade(),'),

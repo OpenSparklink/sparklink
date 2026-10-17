@@ -5,6 +5,7 @@ Checks declared production source surfaces, not macro expansion, runtime behavio
 all exported APIs, memory safety, authority or a proof of architectural refinement.
 """
 from pathlib import Path
+import ast
 import json
 import re
 
@@ -45,6 +46,21 @@ def check(policy, files):
         command = text.split('enum Command {',1)[1].split('\n}',1)[0]
         if re.search(r'^\s*'+re.escape(name)+r'\b',command,re.M):
             errors.append('retired slkconfig variant: '+name)
+    for path,commands in policy.get('retired_tool_commands',{}).items():
+        text=files.get(path)
+        if text is None:
+            errors.append('missing current tool source: '+path);continue
+        try:tree=ast.parse(text)
+        except SyntaxError:
+            errors.append('invalid current tool source: '+path);continue
+        for call in ast.walk(tree):
+            if not isinstance(call,ast.Call) or not isinstance(call.func,ast.Attribute):continue
+            words=[]
+            if call.func.attr=='ctl' and len(call.args)>=2:words=[call.args[1]]
+            elif call.func.attr=='command' and call.args and isinstance(call.args[0],(ast.List,ast.Tuple)):words=call.args[0].elts
+            for word in words:
+                if isinstance(word,ast.Constant) and word.value in commands:
+                    errors.append(f'retired live tool command: {path}:{word.value}')
     for path in policy['absent_files']:
         if path in files:
             errors.append('retired production module: '+path)
@@ -56,7 +72,7 @@ def main():
     paths=['crates/slk-native/src/adapter.rs','crates/slk-native/src/ioctl.rs',
            'crates/slk-native/include/sparklink_native.h','crates/slkd/src/controller.rs',
            'crates/slkd/src/dbus_iface.rs','bindings/python/sparklink/structs.py',
-           'crates/slctl/src/commands.rs','crates/slkconfig/src/main.rs',*policy['absent_files']]
+           'crates/slctl/src/commands.rs','crates/slkconfig/src/main.rs',*policy.get('retired_tool_commands',{}),*policy['absent_files']]
     files={path:(ROOT/path).read_text() for path in paths if (ROOT/path).is_file()}
     errors=check(policy,files)
     if errors:raise SystemExit('\n'.join(errors))

@@ -3379,9 +3379,10 @@
     "next_limited_batch": {
       "id": "R5d-typed-observation-and-caller-retirement",
       "scope": "One bounded typedPeer observation/publication source replacing address-onlyDevice;existing native link authority remains. No additional Engine/worker.",
-      "state": "SOURCE_MIGRATED_OFFLINE_IN_PROGRESS_NEW_ARTIFACT_VM_PENDING",
+      "state": "SOURCE_MIGRATED_OFFLINE_PASS_FIRST_VM_TOOL_FAIL_CORRECTED_TOOLS_PENDING",
       "exit_reference": "CanonicalimplementationplanR5d",
-      "remaining": "Strict finalchecks/newartifact positive Peer SDK evidence andfourWS73 preservation;thenlocalstaging/Owned/Agent/C-Python,R6/fullscope"
+      "remaining": "Corrected-tool freshVM/Peerpositive andoriginal4gates;productioncompiled0feunchanged. Thenlocalstaging/Owned/Agent/C-Python,R6/fullscope",
+      "first_vm_failure": "docs/evidence/typed-peer-tool-retirement-failure-20261018.json"
     }
   },
   "owned_ssap_c6_historical_batch": {

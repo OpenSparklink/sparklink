@@ -1,5 +1,8 @@
 # 证据入口与取得限制
 
+[Typed Peer首轮工具迁移失败](typed-peer-tool-retirement-failure-20261018.json)：0fe编译/工具，
+真实发现/建链后漏迁runner仍调用旧info；整轮FAIL和原件保留，新资格须用修正工具另取。
+
 [Controller 管理调用者迁移限定资格](controller-management-client-qualification-20261018.json)：
 准确 K2fc／编译与工具4736，四新VM共32次对端业务回复，保留发现、连接、长度和
 Owned／限定安全路径；管理CLI复用固定owner的现有Client。324最终workspace、50

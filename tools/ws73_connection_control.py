@@ -24,18 +24,43 @@ def result(text, owner, operation):
     return dict(zip(['generation','request','operation','state','error','fault','command_status','outcome_status','handle','flags'], values))
 
 
-def link_reference(text, owner, peer, handle):
+def canonical_links(text,owner):
     headers=re.findall(r'^NativeLinksSnapshot: generation=(\d+) event_seq=(\d+) revision=(\d+) flags=(\d+) errno=(-?\d+)$',text,re.M)
     rows=re.findall(r'^NativeLink: lifetime=(\d+) handle=(\d+) role=(\d+) type=(\d+) address=([0-9A-F:]{17})$',text,re.M)
     if len(headers)!=1 or text.count('NativeLinksSnapshot:')!=1 or len(rows)!=text.count('NativeLink:'):
         raise CaptureError('one original canonical link snapshot required')
     generation,seq,revision,flags,error=map(int,headers[0])
-    if generation!=owner['generation'] or flags!=1 or error or not revision or not seq or len(rows)!=1:
+    if generation!=owner['generation'] or flags not in [0,1] or error or len(rows)>16:
+        raise CaptureError('exact canonical registration/status required')
+    values=[]
+    for row in rows:
+        lifetime,handle,role,kind=map(int,row[:4]);address=row[4]
+        if not 0<lifetime<=revision or handle>65535 or role>1 or kind>1:
+            raise CaptureError('valid typed connection lifetime required')
+        values.append(dict(lifetime=lifetime,handle=handle,role=role,address_type=kind,address=address))
+    if len({v['lifetime'] for v in values})!=len(values) or len({v['handle'] for v in values})!=len(values):
+        raise CaptureError('distinct current physical identities required')
+    return dict(generation=generation,event_seq=seq,revision=revision,flags=flags),values
+
+
+def link_reference(text,owner,peer,handle):
+    header,rows=canonical_links(text,owner)
+    if header['flags']!=1 or not header['event_seq'] or not header['revision'] or len(rows)!=1:
         raise CaptureError('one known current physical link required')
-    lifetime,current,role,kind=map(int,rows[0][:4]);address=rows[0][4]
-    if not lifetime or lifetime>revision or current!=handle or role>1 or kind!=0 or address!=peer['address']:
+    value=rows[0]
+    if value['handle']!=handle or value['address_type']!=0 or value['address']!=peer['address']:
         raise CaptureError('canonical reference must match actual connected peer')
-    return dict(lifetime=lifetime,handle=current,role=role,address_type=kind,address=address)
+    return value
+
+
+def canonical_link_state(text,owner,remote):
+    header,rows=canonical_links(text,owner)
+    if header['flags']!=1 or not header['event_seq'] or not header['revision']:
+        return None # Unknown/initial observation cannot confirm either Up or Down.
+    if not rows:return False
+    if len(rows)!=1 or rows[0]['address_type']!=0 or rows[0]['address']!=remote:
+        raise CaptureError('single-peer gate must not accept a different physical connection')
+    return True
 
 
 DOWN_OBSERVATION_BUDGET_SECONDS = 5
@@ -49,16 +74,16 @@ def await_down_properties(run, phase, caller, peer):
     """
     started = time.time_ns()
     deadline = time.monotonic() + DOWN_OBSERVATION_BUDGET_SECONDS
-    observation = dict(version=1, budget_seconds=DOWN_OBSERVATION_BUDGET_SECONDS,
+    observation = dict(version=2, source='canonical-links', budget_seconds=DOWN_OBSERVATION_BUDGET_SECONDS,
                        start_wall_ns=started, receipts=[])
     phase['down_property_observation'] = observation
     run.save()
     for owner, remote in [(caller, peer), (peer, caller)]:
         while True:
             if time.monotonic() >= deadline:
-                raise CaptureError('both real Down events must reach Device properties within shared budget')
-            row = run.ctl(owner, 'info', remote['address'])
-            if '  Connected: false\n' in row['stdout']:
+                raise CaptureError('both real Down events must reach known canonical snapshots within shared budget')
+            row = run.ctl(owner, 'connections')
+            if canonical_link_state(row['stdout'],owner,remote['address']) is False:
                 if time.monotonic() >= deadline:
                     raise CaptureError('Down property receipt exceeded original shared budget')
                 observation['receipts'].append(dict(owner=owner, remote_address=remote['address'],
@@ -74,7 +99,7 @@ def corroborate_down_property(run, phase, owner, event):
     observation = phase.get('down_property_observation')
     if observation is None:
         return None  # historical format, not the new bounded sub-gate
-    if (observation.get('version') != 1 or observation.get('budget_seconds') != 5
+    if (observation.get('version') not in [1,2] or observation.get('budget_seconds') != 5
             or len(observation.get('receipts', [])) != 2):
         raise CaptureError('complete shared Down observation receipt required')
     start = observation['start_wall_ns']
@@ -89,12 +114,17 @@ def corroborate_down_property(run, phase, owner, event):
     if type(index) is not int or not 0 <= index < len(run['commands']):
         raise CaptureError('Down property command index invalid')
     row = run['commands'][index]
-    if (row['exit'] or row['args'][-2:] != ['info', receipt['remote_address']]
-            or row['args'][-3] != owner['path']
-            or '  Connected: false\n' not in row['stdout']
-            or not start <= row['start_wall_ns'] <= row['end_wall_ns'] <= limit
-            or event['wall_ns'] > row['end_wall_ns']):
-        raise CaptureError('actual physical Down must precede bounded false-property receipt')
+    if observation['version']==1:
+        # Historical evidence decoder only. Never executes the retired command.
+        valid=(row['args'][-2:]==['info',receipt['remote_address']]
+               and row['args'][-3]==owner['path'] and '  Connected: false\n' in row['stdout'])
+    else:
+        valid=(observation.get('source')=='canonical-links' and row['args'][-1:]==['connections']
+               and row['args'][-2]==owner['path']
+               and canonical_link_state(row['stdout'],owner,receipt['remote_address']) is False)
+    if (row['exit'] or not valid or not start<=row['start_wall_ns']<=row['end_wall_ns']<=limit
+            or event['wall_ns']>row['end_wall_ns']):
+        raise CaptureError('actual physical Down must precede bounded known canonical receipt')
     return dict(command=index, physical_down_wall_ns=event['wall_ns'],
                 property_end_wall_ns=row['end_wall_ns'], deadline_wall_ns=limit)
 
@@ -153,10 +183,12 @@ def execute(run, a, b):
             for owner, remote in [(caller,peer), (peer,caller)]:
                 deadline = time.monotonic()+1
                 while True:
-                    row = run.ctl(owner, 'info', remote['address'])
-                    if '  Connected: true\n' in row['stdout']: break
+                    row = run.ctl(owner, 'connections')
+                    if canonical_link_state(row['stdout'],owner,remote['address']) is True:
+                        if time.monotonic()>=deadline:raise CaptureError('Up observation exceeded original budget')
+                        break
                     if time.monotonic() >= deadline:
-                        raise CaptureError('both real physical connections must reach Device properties')
+                        raise CaptureError('both real physical connections must reach known canonical snapshots')
                     time.sleep(.01)
             row=run.ctl(caller,'connections')
             phase['links_command']=len(run.data['commands'])-1

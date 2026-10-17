@@ -5,7 +5,7 @@ No connection result, physical event, or object absence is synthesized here.
 """
 import re
 import time
-from ws73_capture import CaptureError
+from ws73_capture import CaptureError, marker_data
 
 
 def objects(text,owner):
@@ -50,10 +50,10 @@ def observe(run,owner,remote):
     row=run.ctl(owner,'connection-info',value['path']);info(row['stdout'],value);connection_command=len(run.data['commands'])-1
     path=value['path'].rsplit('/link_',1)[0]
     row=run.ctl(owner,'peer-info',path);peer_info(row['stdout'],value);peer_command=len(run.data['commands'])-1
-    row=run.ctl(owner,'peer-observation',path);peer_observation(row['stdout'],value)
+    row=run.ctl(owner,'peer-observation',path);observed=peer_observation(row['stdout'],value)
     observation_command=len(run.data['commands'])-1
     row=run.ctl(owner,'peers')
-    if f"Peer: path={path} address={value['address']} address_type={value['address_type']} observation_valid=true " not in row['stdout']:
+    if f"Peer: path={path} address={value['address']} address_type={value['address_type']} observation_valid=" not in row['stdout']:
         raise CaptureError('typed SDK Peer listing must contain actual fresh peer identity')
     return dict(owner=owner,remote=remote,object=value,enumeration_commands=polls,info_command=connection_command,
                 peer_command=peer_command,observation_command=observation_command,peer_list_command=len(run.data['commands'])-1)
@@ -138,15 +138,19 @@ def peer_observation(text,value):
     """Independent current CLI contract. No producer parser used as oracle."""
     path=value['path'].rsplit('/link_',1)[0];base=value['path'].split('/peer_t',1)[0]
     if text.startswith(f'Selected {base}\n'):text=text[len(f'Selected {base}\n'):]
-    match=re.fullmatch(r'PeerObservation: path=(\S+) generation=(\d+) address_type=(\d+) valid=true rssi=(-?\d+) sequence=(\d+) kernel_boottime_ns=(\d+) lost=0 header=([0-9a-f]+) data=([0-9a-f]*)\n',text)
-    if match is None:raise CaptureError('one fresh typed observation with known RSSI and no loss required')
-    p,g,k,r,seq,boot,header,data=match.groups();g,k,r,seq,boot=map(int,[g,k,r,seq,boot]);header=bytes.fromhex(header);data=bytes.fromhex(data)
-    if (p!=path or g!=value['generation'] or k!=value['address_type'] or k not in [0,1]
-            or not seq or not boot or not -128<=r<=126 or len(header)!=23 or header[1]!=k
-            or header[2:8]!=bytes.fromhex(value['address'].replace(':','')) or header[22]!=len(data)
-            or int.from_bytes(header[21:22],signed=True)!=r):
-        raise CaptureError('full typed identity, vendor header, RSSI, length and original position required')
-    return dict(path=p,generation=g,address_type=k,rssi=r,sequence=seq,kernel_boottime_ns=boot,params=(header+data).hex())
+    match=re.fullmatch(r'PeerObservation: path=(\S+) generation=(\d+) address_type=(\d+) valid=(true|false) rssi=(-?\d+|unknown) sequence=(\d+) kernel_boottime_ns=(\d+) lost=0 header=([0-9a-f]*) data=([0-9a-f]*)\n',text)
+    if match is None:raise CaptureError('one explicit typed observation and no loss required')
+    p,g,k,valid,r,seq,boot,header,data=match.groups();g,k,seq,boot=map(int,[g,k,seq,boot]);valid=valid=='true';r=None if r=='unknown' else int(r);header=bytes.fromhex(header);data=bytes.fromhex(data)
+    if p!=path or g!=value['generation'] or k!=value['address_type'] or k not in [0,1]:
+        raise CaptureError('full immutable typed observation identity required')
+    if not header:
+        if valid or r is not None or seq or boot or data:raise CaptureError('unobserved Peer must not invent advertisement fields')
+    elif (not seq or not boot or len(header)!=23 or header[1]!=k
+          or header[2:8]!=bytes.fromhex(value['address'].replace(':','')) or header[22]!=len(data)
+          or (r is not None and (not valid or not -128<=r<=126 or int.from_bytes(header[21:22],signed=True)!=r))
+          or (valid and r is None and header[21]!=127)):
+        raise CaptureError('exact vendor header/RSSI/length/position required')
+    return dict(path=p,generation=g,address_type=k,valid=valid,rssi=r,sequence=seq,kernel_boottime_ns=boot,params=(header+data).hex())
 
 
 def corroborate_peer_observations(run,capture):
@@ -160,7 +164,7 @@ def corroborate_peer_observations(run,capture):
         raise CaptureError('actual ordinary-user identity required')
     phases=run['connection_control']['phases']
     if len(phases)!=2:raise CaptureError('both connection roles required')
-    proofs=[]
+    proofs=[];positive=set()
     for phase in phases:
         if len(phase['typed_objects'])!=2:raise CaptureError('both original receivers required')
         expected={(e['bus'],e['device']) for e in [phase['caller'],phase['peer']]}
@@ -175,13 +179,20 @@ def corroborate_peer_observations(run,capture):
             observed=peer_observation(row['stdout'],value)
             listing=run['commands'][entry['peer_list_command']]
             if (listing['exit'] or listing['args'][-1]!='peers' or owner['path'] not in listing['args']
-                    or f"Peer: path={path} address={value['address']} address_type={value['address_type']} observation_valid=true " not in listing['stdout']
+                    or f"Peer: path={path} address={value['address']} address_type={value['address_type']} observation_valid=" not in listing['stdout']
                     or not row['start_boottime_ns']<=row['end_boottime_ns']
                     or observed['kernel_boottime_ns']>row['end_boottime_ns']
                     or row['end_wall_ns']>run['commands'][phase['disconnect_command']]['start_wall_ns']):
                 raise CaptureError('actual typed listing and original lifetime/time window required')
             matches=[e for e in capture['native_events'] if e['event']==0x180b and (e['bus'],e['device'])==(owner['bus'],owner['device'])
                      and e['params']==observed['params'] and e['wall_ns']<=row['end_wall_ns']]
-            if not matches:raise CaptureError('exact original typed advertisement must exist in receiver USB')
-            proofs.append(dict(owner=owner,path=path,observation=observed,usb=max(matches,key=lambda e:e['wall_ns'])))
+            caller=(owner['bus'],owner['device'])==(phase['caller']['bus'],phase['caller']['device'])
+            if caller and (not observed['valid'] or observed['rssi'] is None or bytes.fromhex(observed['params'])[23:]!=marker_data(phase['marker'])):
+                raise CaptureError('each connection caller must have an actual fresh advertisement and RSSI')
+            if observed['valid']:
+                if not matches:raise CaptureError('exact original typed advertisement must exist in receiver USB')
+                positive.add((owner['bus'],owner['device']))
+            elif observed['rssi'] is not None:raise CaptureError('invalid observation cannot claim RSSI')
+            proofs.append(dict(owner=owner,path=path,observation=observed,usb=max(matches,key=lambda e:e['wall_ns']) if observed['valid'] else None))
+    if len(positive)!=2:raise CaptureError('both physical controllers must use the positive SDK observation path')
     return proofs

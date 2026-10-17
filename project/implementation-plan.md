@@ -1293,6 +1293,12 @@ R5c保留的临时例外：`devices/info`是地址索引的旧只读观察，暂
 SDK110/固定NearLink Host/libws73封装差异须注明，不把公共地址样本授予完整地址模式。
 本地staging、Owned和Agent随后按不同角色迁移；完整C/Python客户端与R6部署仍缺。
 
+首轮0fe VM因漏迁runner的info调用失败，原件见证据入口，不记作新资格。Up/Down
+改查当前canonical links而非地址Device，保留原1秒/共享5秒预算；Down子记录v2与
+历史v1解码分开。连接侧没有广告时明确unknown；每种连接角色仅要求真实扫描caller
+取得新SDK广告/RSSI/USB证据，跨两角色覆盖两controller，不能要求被动端伪造接收。
+修正工具必须另封来源和新VM，不改写0fe失败或把源码相同当新artifact资格。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

@@ -121,7 +121,10 @@ def prepare_locked(args, build_fd):
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/genl_registry_test.c',
-                  LINUX/'tools/testing/selftests/sparklink/protocol_state_unsupported_test.c',
+                  LINUX/'tools/testing/selftests/sparklink/retired_uapi_test.c',
+                  LINUX/'tools/testing/selftests/sparklink/retired_ioctl_cases.h',
+                  LINUX/'tools/testing/selftests/sparklink/retired_ioctl_numbers.h',
+                  LINUX/'tools/testing/selftests/sparklink/file_affinity_probe.h',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_setup_release_test.c',
                   LINUX/'tools/testing/selftests/sparklink/ssap_removed_uapi_test.c',
@@ -187,12 +190,12 @@ def prepare_locked(args, build_fd):
         subprocess.run(registry_compile, check=True)
         manifest['genl_registry_compile'] = registry_compile
         programs['genl-registry-probe'] = registry_probe
-        legacy_probe = output/'protocol-state-probe'
-        legacy_compile = [os.environ.get('CC','cc'),'-std=gnu11','-O2','-Wall','-Wextra','-Werror',
-                          str(LINUX/'tools/testing/selftests/sparklink/protocol_state_unsupported_test.c'),'-o',str(legacy_probe)]
-        subprocess.run(legacy_compile,check=True)
-        manifest['protocol_state_compile'] = legacy_compile
-        programs['protocol-state-probe'] = legacy_probe
+        retired_probe = output/'retired-uapi-probe'
+        retired_compile = [os.environ.get('CC','cc'),'-std=gnu11','-O2','-Wall','-Wextra','-Werror',
+                          str(LINUX/'tools/testing/selftests/sparklink/retired_uapi_test.c'),'-o',str(retired_probe)]
+        subprocess.run(retired_compile,check=True)
+        manifest['retired_uapi_compile'] = retired_compile
+        programs['retired-uapi-probe'] = retired_probe
         diagnostic_probe = output/'diagnostic-result-probe'
         compile_diagnostic = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
                               str(LINUX/'tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c'),

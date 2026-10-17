@@ -1,9 +1,10 @@
-"""Actual canonical C helpers, Rust library semantics and Python operations.
+"""Historical exact C permission helpers, current Rust semantics and Python operations.
 
 The expected bits come from T/XS 20001-2025 table32; compiled languages are not
 allowed to agree on an incorrect permission table. No kernel or RF claim.
 """
 import json
+import hashlib
 import os
 from pathlib import Path
 import shlex
@@ -17,7 +18,7 @@ from sparklink.native import NativeAdapter
 from sparklink import SsapOperations as Ops
 
 ROOT = Path(__file__).resolve().parents[3]
-HEADER = Path(os.environ.get('SPARKLINK_KERNEL_UAPI', ROOT.parent / 'linux/include/uapi/linux/sparklink_ioctl.h')).resolve()
+HEADER = Path(__file__).with_name('retired_ssap_permissions.h')
 NAMES = ['READ', 'WRITE_NO_RSP', 'WRITE_WITH_RSP', 'NOTIFY', 'INDICATE', 'BROADCAST', 'DESC_WRITABLE', 'CLIENT_CFG_WR', 'SERVER_CFG_WR']
 STANDARD = [1, 2, 4, 8, 16, 32, 256, 512, 1024]
 VALUES = [*range(2048), 65535, 65536, 0x80000000, 0xFFFFFFFF]
@@ -30,8 +31,15 @@ def run(command):
 class OperationsConformance(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        provenance_path = Path(__file__).with_name("retired_fixture_provenance.json")
+        provenance = json.loads(provenance_path.read_text())
+        if provenance["schema"] != 1:
+            raise AssertionError("unknown retired fixture provenance schema")
+        for name, digest in provenance["fixtures"].items():
+            if hashlib.sha256(provenance_path.with_name(name).read_bytes()).hexdigest() != digest:
+                raise AssertionError("historical fixture provenance mismatch: " + name)
         if not HEADER.is_file():
-            raise AssertionError('matching kernel UAPI required; no fixture fallback')
+            raise AssertionError('frozen historical C permission witness required; no fixture fallback')
         temporary = tempfile.TemporaryDirectory(prefix='sparklink-ssap-ops-')
         cls.addClassCleanup(temporary.cleanup)
         root = Path(temporary.name)
@@ -47,7 +55,7 @@ class OperationsConformance(unittest.TestCase):
         (root/'test.c').write_text('\n'.join(c))
         subprocess.run(shlex.split(os.environ.get('CC', 'cc')) + ['-std=c11', '-Wall', '-Wextra', '-Werror', str(root/'test.c'), '-o', str(root/'c-test')], check=True)
         cls.c_lines = run([str(root/'c-test')]).splitlines()
-        rust = [f'#[expect(dead_code, reason="independent actual ABI declarations for permission tests")] #[path={json.dumps(str(ROOT / "crates/slk-protocol/src/types.rs"))}] mod types;',
+        rust = [f'#[expect(dead_code, reason="current pure shared value dependencies for permission tests")] #[path={json.dumps(str(ROOT / "crates/slk-protocol/src/types.rs"))}] mod types;',
                 '',
                 f'#[path={json.dumps(str(ROOT / "crates/slk-protocol/src/ssap.rs"))}] pub mod ssap;',
                 'use ssap::*; fn main() {',

@@ -1,4 +1,4 @@
-"""Compare live C/Rust declarations with ctypes, without copying ABI constants.
+"""Compare current C/Rust ABI with ctypes; retired layouts are separate historical witnesses.
 
 Requires a C compiler, rustc and the matching kernel UAPI header. The kernel
 checkout beside this repository is used by default; SPARKLINK_KERNEL_UAPI can
@@ -7,6 +7,7 @@ select a header from a different checkout. Missing inputs fail the suite.
 
 import ctypes
 import json
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -32,6 +33,8 @@ KERNEL_HEADER = Path(os.environ.get(
 PUBLIC_HEADER = WORKSPACE / "crates/libsparklink/include/sparklink.h"
 NATIVE_HEADER = WORKSPACE / "crates/slk-native/include/sparklink_native.h"
 RUST_TYPES = WORKSPACE / "crates/slk-protocol/src/types.rs"
+RETIRED_RUST_TYPES = RUST_TYPES.with_name("retired_types.rs")
+RETIRED_KERNEL_HEADER = Path(__file__).with_name("retired_kernel_layouts.h")
 
 # These are name mappings only. Fields, sizes, alignments and offsets come from
 # the actual declarations/compiler output, never from a second ABI definition.
@@ -126,6 +129,13 @@ def parse_layout(output):
 class TestAbiConformance(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        provenance_path = Path(__file__).with_name("retired_fixture_provenance.json")
+        provenance = json.loads(provenance_path.read_text())
+        if provenance["schema"] != 1:
+            raise AssertionError("unknown retired fixture provenance schema")
+        for name, digest in provenance["fixtures"].items():
+            if hashlib.sha256(provenance_path.with_name(name).read_bytes()).hexdigest() != digest:
+                raise AssertionError("historical fixture provenance mismatch: " + name)
         if not KERNEL_HEADER.is_file():
             raise AssertionError(
                 f"canonical kernel UAPI not found: {KERNEL_HEADER}; set "
@@ -142,8 +152,11 @@ class TestAbiConformance(unittest.TestCase):
         channel_type += "\n" + re.search(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct SleMessageSecurity \{[^}]+\}", message_source)[0]
         channel_type += "\n" + re.search(r"#\[repr\(C, align\(8\)\)\]\n#\[derive\([^\]]+\)\]\npub struct SleSendConstraint \{[^}]+\}", message_source)[0]
         cls.rust_source = RUST_TYPES.read_text() + channel_source + message_source
+        cls.retired_rust_source = RETIRED_RUST_TYPES.read_text()
+        cls.retired_kernel_source = RETIRED_KERNEL_HEADER.read_text()
         cls.fields = {
-            name: c_fields(cls.kernel_source, kernel_name)
+            name: c_fields(cls.retired_kernel_source if name in RETIRED else cls.kernel_source,
+                           "sl_test_retired_"+kernel_name if name in RETIRED else kernel_name)
             for name, kernel_name in STRUCT_NAMES.items()
         }
 
@@ -157,12 +170,13 @@ class TestAbiConformance(unittest.TestCase):
             f"#include {json.dumps(str(PUBLIC_HEADER))}",
             f"#include {json.dumps(str(NATIVE_HEADER))}",
             f"#include {json.dumps(str(cls.retired_header))}",
+            f"#include {json.dumps(str(RETIRED_KERNEL_HEADER))}",
             "int main(void) {",
         ]
         for name in ['SECURITY_CAPABILITY_ONLY','SECURITY_KEY_AGREEMENT_ONLY','SECURITY_UNAUTHENTICATED_ENCRYPTION','SNOOP_REDACTED']:
             c_source.insert(-1,f'_Static_assert({name} == SLE_{name} && {name} == {getattr(structs,name)}, "security mode contract");')
         for name, kernel_name in STRUCT_NAMES.items():
-            for kind, c_type in ([("kernel", "struct " + kernel_name),("historical",name)] if name in RETIRED else [("kernel", "struct " + kernel_name), ("public", name)]):
+            for kind, c_type in ([("historical_kernel", "struct sl_test_retired_" + kernel_name),("historical",name)] if name in RETIRED else [("kernel", "struct " + kernel_name), ("public", name)]):
                 c_source.append(
                     f'printf("{kind} {name} STRUCT %zu %zu\\n", '
                     f"sizeof({c_type}), _Alignof({c_type}));"
@@ -184,6 +198,8 @@ class TestAbiConformance(unittest.TestCase):
             f"#[path = {json.dumps(str(RUST_TYPES))}] mod types;",
             channel_type,
             "use types::*;",
+            f'#[path={json.dumps(str(RETIRED_RUST_TYPES))}] mod historical;',
+            "use historical::{" + ",".join(sorted(RETIRED)) + "};",
             "use std::mem::{align_of, offset_of, size_of, size_of_val};",
             "fn main() {",
         ]
@@ -214,9 +230,10 @@ class TestAbiConformance(unittest.TestCase):
                       f"#include {json.dumps(str(KERNEL_HEADER))}",
             f"#include {json.dumps(str(cls.socket_header))}",
                       f"#include {json.dumps(str(PUBLIC_HEADER))}",
-                      f"#include {json.dumps(str(NATIVE_HEADER))}",f"#include {json.dumps(str(cls.retired_header))}"]
+                      f"#include {json.dumps(str(NATIVE_HEADER))}",f"#include {json.dumps(str(cls.retired_header))}",
+                      f"#include {json.dumps(str(RETIRED_KERNEL_HEADER))}"]
         for name, kernel_name in STRUCT_NAMES.items():
-            kernel = "struct " + kernel_name
+            kernel = "struct " + ("sl_test_retired_" if name in RETIRED else "") + kernel_name
             assertions += [
                 f'_Static_assert(sizeof({name}) == sizeof({kernel}), "{name} size");',
                 f'_Static_assert(_Alignof({name}) == _Alignof({kernel}), "{name} alignment");',
@@ -233,9 +250,9 @@ class TestAbiConformance(unittest.TestCase):
 
         fill_source = path / "fill.c"
         fill_source.write_text(
-            f"#include {json.dumps(str(KERNEL_HEADER))}\n"
-            "void fill_conn_info(struct sle_conn_info *value) {\n"
-            "    *value = (struct sle_conn_info) {\n"
+            f"#include {json.dumps(str(RETIRED_KERNEL_HEADER))}\n"
+            "void fill_conn_info(struct sl_test_retired_sle_conn_info *value) {\n"
+            "    *value = (struct sl_test_retired_sle_conn_info) {\n"
             "        .tx_bytes = 0x1122334455667788ULL,\n"
             "        .rx_bytes = 0x8877665544332211ULL,\n"
             "        .handle = 0x1234, .peer_addr = {1, 2, 3, 4, 5, 6},\n"
@@ -243,8 +260,8 @@ class TestAbiConformance(unittest.TestCase):
             "        .dudtc_tx_credits = 0x4567, .dudtc_rx_credits = 0x5678,\n"
             "    };\n"
             "}\n"
-            "void fill_dli_info(struct sle_dli_info *value) {\n"
-            "    *value = (struct sle_dli_info) {\n"
+            "void fill_dli_info(struct sl_test_retired_sle_dli_info *value) {\n"
+            "    *value = (struct sl_test_retired_sle_dli_info) {\n"
             "        .firmware_version = 0x12345678,\n"
             "        .security_cap = 0xbeef, .features_ext = 0xabcd,\n"
             '        .name = "abi-controller",\n'
@@ -269,15 +286,15 @@ class TestAbiConformance(unittest.TestCase):
             self.assertFalse(hasattr(structs,name))
             self.assertFalse(re.search(r"struct\s+"+name+r"\b",self.public_source))
 
-    def test_all_fields_and_layouts_match_kernel(self):
+    def test_current_abi_and_separate_historical_layouts(self):
         for name in STRUCT_NAMES:
             with self.subTest(struct=name):
                 python_type = abi_type(name)
                 canonical_fields = self.fields[name]
                 self.assertEqual([field for field, _ in python_type._fields_], canonical_fields)
                 self.assertEqual(c_fields(self.retired_source if name in RETIRED else self.public_source, name), canonical_fields)
-                self.assertEqual(rust_fields(self.rust_source, name), canonical_fields)
-                canonical = self.layouts[("kernel", name)]
+                self.assertEqual(rust_fields(self.retired_rust_source if name in RETIRED else self.rust_source, name), canonical_fields)
+                canonical = self.layouts[("historical_kernel" if name in RETIRED else "kernel", name)]
                 python_layout = {
                     "size": ctypes.sizeof(python_type),
                     "alignment": ctypes.alignment(python_type),
@@ -286,9 +303,15 @@ class TestAbiConformance(unittest.TestCase):
                         for field, field_type in python_type._fields_
                     },
                 }
-                self.assertEqual(python_layout, canonical, "Python vs kernel C UAPI")
-                self.assertEqual(self.layouts[("historical" if name in RETIRED else "public", name)], canonical, "actual current/public or explicit historical C vs kernel")
-                self.assertEqual(self.layouts[("rust", name)], canonical, "userspace Rust vs kernel C UAPI")
+                self.assertEqual(python_layout, canonical, "Python vs current UAPI or explicit historical witness")
+                self.assertEqual(self.layouts[("historical" if name in RETIRED else "public", name)], canonical, "current public ABI or frozen historical layout")
+                self.assertEqual(self.layouts[("rust", name)], canonical, "current Rust ABI or explicit historical Rust witness")
+
+    def test_retired_layouts_are_not_current_abi(self):
+        for name in RETIRED:
+            self.assertNotIn(("kernel", name), self.layouts)
+            self.assertFalse(re.search(r"pub struct\s+"+name+r"\b", RUST_TYPES.read_text()))
+            self.assertFalse(re.search(r"struct\s+"+STRUCT_NAMES[name]+r"\b", self.kernel_source))
 
     def test_historical_c_conn_info_write_preserves_bounds_and_credit_fields(self):
         class GuardedInfo(ctypes.Structure):

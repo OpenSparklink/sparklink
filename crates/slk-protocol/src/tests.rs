@@ -1,4 +1,5 @@
 use crate::*;
+use crate::retired_types::*;
 
 #[test]
 fn snoop_abi_is_pointer_free_and_aligned() {
@@ -27,8 +28,25 @@ macro_rules! check_size {
 #[test]
 fn uapi_struct_sizes_match_kernel() {
     let mut errors = Vec::new();
-    // Sizes obtained from compiling kernel UAPI header with gcc (x86_64, no packed)
+    // Current declarations only; historical layouts are checked separately.
     check_size!(errors, SciDevInfo, 66);
+    check_size!(errors, SleControllerEvent, 336);
+    check_size!(errors, SleControllerEventQuery, 360);
+    check_size!(errors, SleMgmtStats, 16);
+
+    if !errors.is_empty() {
+        panic!(
+            "{} struct size mismatch(es):\n  {}",
+            errors.len(),
+            errors.join("\n  ")
+        );
+    }
+}
+
+#[test]
+fn historical_unpublished_layout_sizes_remain_reproducible() {
+    // Frozen type definitions; not current Kernel or public SDK conformance.
+    let mut errors = Vec::new();
     check_size!(errors, SleAdvParams, 16);
     check_size!(errors, SleScanParams, 16);
     check_size!(errors, SleScanFilter, 12);
@@ -66,9 +84,6 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleSyncLinkInfo, 24);
     check_size!(errors, SleDliInfo, 64);
     check_size!(errors, SleDliCmd, 248);
-    check_size!(errors, SleControllerEvent, 336);
-    check_size!(errors, SleControllerEventQuery, 360);
-    check_size!(errors, SleMgmtStats, 16);
     check_size!(errors, SlePhyInfo, 24);
     check_size!(errors, SlePhyMcsCmd, 4);
     check_size!(errors, SlePhyTxPowerCmd, 4);
@@ -85,14 +100,7 @@ fn uapi_struct_sizes_match_kernel() {
     check_size!(errors, SleMeasCap, 4);
     check_size!(errors, SleMeasLinkParam, 8);
     check_size!(errors, SleMeasAction, 4);
-
-    if !errors.is_empty() {
-        panic!(
-            "{} struct size mismatch(es):\n  {}",
-            errors.len(),
-            errors.join("\n  ")
-        );
-    }
+    assert!(errors.is_empty(), "historical layout mismatch: {errors:?}");
 }
 
 #[test]

@@ -133,7 +133,7 @@ jobs:
         with:
           repository: OpenSparklink/linux
           # Update this pin together with intentional kernel UAPI changes.
-          ref: 1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f
+          ref: 2fc210af68ee3bce0eed3553117d8be635dfdd15
           path: .kernel-uapi
           sparse-checkout: |
             include/uapi/linux/sparklink_ioctl.h
@@ -177,7 +177,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f
+          ref: 2fc210af68ee3bce0eed3553117d8be635dfdd15
           path: .kernel-tools
           # Raw worker ioctls also compile against the canonical pinned UAPI.
           sparse-checkout: |
@@ -201,7 +201,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: OpenSparklink/linux
-          ref: 1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f
+          ref: 2fc210af68ee3bce0eed3553117d8be635dfdd15
           path: .kernel-containment
           sparse-checkout: |
             net/sparklink
@@ -264,6 +264,7 @@ jobs:
           python tools/testing/selftests/sparklink/run_ssap_containment.py
           python tools/testing/selftests/sparklink/run_event_copy.py
           python tools/testing/selftests/sparklink/run_phy_model.py
+          CC=clang python tools/testing/selftests/sparklink/run_raw_uapi_retirement.py
           python tools/testing/selftests/sparklink/run_power_retirement.py --output /tmp/power-retirement
           python tools/testing/selftests/sparklink/run_diagnostic_result.py
           python tools/testing/selftests/sparklink/run_management_release.py

@@ -387,3 +387,12 @@ Grant/credit/Ticket保持原责任。剩余事件模型/全局掩盖及rawABI按
 ingress拒绝并计数，不把解析成功当作连接或安全状态。WS73 Native的现有
 发现、连接、数据及安全仍经原lifetime-bound路径。未归属ring助手和旧业务
 decoder只在隔离selftests；生产DLI以deny死代码/可见性约束防回流。
+
+
+## 未发布入口与历史见证的边界
+
+迁移调用者后删除旧controller/raw ioctl和跨语言门面，不保留永久拒绝别名；
+历史编码保持保留、不可复用。当前Typed Native管理和授权Channel是唯一生产入口，
+未知旧编码须在权限、对象选择和usercopy前ENOTTY。新模式的不支持错误仍属其
+实际接口契约。无生产消费者的旧布局不得仅为ABI测试留在公开SDK；历史C/Rust/
+Python见证私有化，保留来源与原断言。Codec/权限语义和有效SSAP actor不机械删除。

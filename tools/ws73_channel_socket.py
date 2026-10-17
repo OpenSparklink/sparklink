@@ -73,6 +73,15 @@ def credentials(pid):
     return value
 
 
+def verify_retired_uapi_receipt(receipt):
+    expected = ('RETIRED_UAPI_ENOTTY_PASS: uid=1000 cases=101 unchanged=101 '
+                'checks=303 invalid_user_address=1 mixed_stats=ENOTTY')
+    if (type(receipt.get('exit')) is not int or receipt['exit'] != 0
+            or receipt.get('stdout', '').strip() != expected
+            or receipt.get('stderr', '').strip()):
+        raise CaptureError('actual retired raw UAPI rejection failed')
+
+
 def execute(run, phase):
     row = dict(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
@@ -143,14 +152,12 @@ def execute(run, phase):
                 expected = rf'^ControllerEventPosition: index={owner["index"]} generation={owner["generation"]} sequence=(\d+)$'
                 if position['exit'] or len(re.findall(expected,position['stdout'],re.M)) != 1:
                     raise CaptureError('actual canonical event-position interface failed')
-                legacy_probe = Path(run.args.slctl).parent/'protocol-state-probe'
-                if not legacy_probe.is_file() and Path('/scratch-root-uuid').is_file():
-                    legacy_probe = Path('/bin/protocol-state-probe')
-                if legacy_probe.is_file():
-                    refused = run.command([str(legacy_probe),str(owner['index'])],10,collection='protocol_state_refusals')
-                    expected_refusal = 'PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=83 unchanged=83 mixed_stats=ENOTTY'
-                    if refused['exit'] or refused['stdout'].strip()!=expected_refusal:
-                        raise CaptureError('actual retired protocol-state rejection failed')
+                retired_probe = Path(run.args.slctl).parent/'retired-uapi-probe'
+                if not retired_probe.is_file() and Path('/scratch-root-uuid').is_file():
+                    retired_probe = Path('/bin/retired-uapi-probe')
+                if retired_probe.is_file():
+                    refused = run.command([str(retired_probe),str(owner['index'])],10,collection='retired_uapi_refusals')
+                    verify_retired_uapi_receipt(refused)
                 summary = run.command([str(run.args.slctl),'--adapter',owner['path'],'stats'],
                                       10,collection='controller_link_summaries')
                 pattern = rf'^ControllerLinkSummary: index={owner["index"]} generation={owner["generation"]} revision=([1-9]\d*) event_sequence=([1-9]\d*) connections=1$'

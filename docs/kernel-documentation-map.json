@@ -340,6 +340,32 @@
       "disposition": "仅source-link，不构建四象限站点；不得恢复默认业务模型/Backend或额外Host",
       "source_sha256": "40b47299ca528089f0b676b12ade64f18c737e48dda946a7282f1a272797fb94",
       "original_url": "https://github.com/OpenSparklink/linux/blob/4b6dda28490d61864eacaa791e72cac1cfea2c0c/tools/testing/selftests/sparklink/retired-registry-version/README"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "path": "tools/testing/selftests/sparklink/retired-raw-uapi/README",
+      "reader": "内核贡献者／资格审查者",
+      "purpose": "旧raw ABI/生命周期suite的三类清单、实际新探针与尚待迁移条件",
+      "section": "history",
+      "validity": "仅历史来源与迁移范围，不授当前内核/实机资格",
+      "applicable_version": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+      "authority": "匹配源码及唯一project/implementation-plan.md和current-capabilities.md",
+      "disposition": "source-link only；不构建四象限站点，不执行历史raw命令",
+      "source_sha256": "c0a5934dbd2880b0abe2d39a183a8fd516df53d383df35606ce70db36be561c7",
+      "original_url": "https://github.com/OpenSparklink/linux/blob/2fc210af68ee3bce0eed3553117d8be635dfdd15/tools/testing/selftests/sparklink/retired-raw-uapi/README"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "path": "tools/testing/selftests/sparklink/retired-raw-uapi/qemu-sle-dli-README.md",
+      "reader": "内核贡献者／资格审查者",
+      "purpose": "原QEMU raw工具使用说明精确历史快照；不是当前操作指南",
+      "section": "history",
+      "validity": "仅历史来源与迁移范围，不授当前内核/实机资格",
+      "applicable_version": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+      "authority": "匹配源码及唯一project/implementation-plan.md和current-capabilities.md",
+      "disposition": "source-link only；不构建四象限站点，不执行历史raw命令",
+      "source_sha256": "fe0f08274842b404c7bf63a019203c8cebf9d9f6d6c0567d16642f6a4f551ac4",
+      "original_url": "https://github.com/OpenSparklink/linux/blob/2fc210af68ee3bce0eed3553117d8be635dfdd15/tools/testing/selftests/sparklink/retired-raw-uapi/qemu-sle-dli-README.md"
     }
   ],
   "scope": "Tracked SparkLink/WS73 kernel documentation and selftest READMEs, not all upstream Linux documentation. No source copies in Sphinx site.",

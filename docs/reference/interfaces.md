@@ -53,7 +53,7 @@ fd操作用`libsparklink.so`。`LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定�
 
 ## 本批源码核对的状态（未发布 ABI）
 
-本批接口说明按WP18/R4源码及Linux `0cd4731dd3e6`核对；Native/API迁移未验收的部分不能继承17ed资格。仅描述可达性和拒绝契约。实机范围按当前资格的准确提交逐项核对。
+本页描述WP18/R4当前入口与拒绝契约；新源码尚未取得的资格不继承任何历史镜像。实际实机范围只按能力入口的编译产物与门禁核对。
 
 | 范围 | 当前状态与限制 | 源码定位 |
 |---|---|---|
@@ -78,19 +78,21 @@ Netlink v2 核对 K `7c6d530ffe2e`／U `ffc0945dfdac`：仅注册数量和软件
 无 controller 控制或事件 multicast，请求多余属性返回 EINVAL。旧命令 EOPNOTSUPP。
 它不报告 Ready、连接或固件能力；详见[实际迁移证据](../evidence/genl-retirement-progress-20261014.json)。
 
-PM与统计核对K `43e55d59fe95`／U `1dedbad3d41e`：默认软件PM与全局模式删除；
-PM ioctl／configfs不支持，D-Bus PM明确NotSupported。`slctl stats`改为实际
-GetLinkSummary，Unknown失败；旧混合内核统计尚待迁移，不能当Native状态权威。
-[准确子门禁与未决](../evidence/power-retirement-progress-20261014.json)。
+未发布 raw controller ABI 的101个旧连接、广播扫描、角色、PHY/AFH、PM、
+安全/RPA、同步及注入入口已从生产声明、分类和分派退休，旧编码统一 `ENOTTY`，
+在权限、选择和用户内存访问之前拒绝。旧编号不复用，也不保留兼容别名。
+保留26个真实Typed Native、注册/每fd选择、观察和Diagnostic入口；不支持的**新模式**
+仍按各自契约明确拒绝。`MGMT_STATS` 仅原有诊断账本，不是Native Ready或链路权威；
+CLI统计使用实际LinkSnapshot。旧可写configfs参数不存在。
 
-K `5582a10c5ec8`／U `cd77ed935740`：旧连接／发现／角色／AFH/sync模型不编入默认内核，
-53旧入口明确拒绝，混合SubsysStats删除。角色按实际connection查询；两CLI统计使用已知LinkSnapshot。
-[准确消费者迁移、失败与范围](../evidence/protocol-state-retirement-progress-20261014.json)。
-
-K6f2f71298029 的默认Runtime不再包含旧安全/RPA模型。新版SDK拒绝旧安全/隐私
-facade已删除（Rust/C/CLI/SDK旧类型同步），D-Bus Security只保留Agent登记/撤销；旧方法UnknownMethod、Encrypted/Paired为UnknownProperty。合法RAL/RPA
-输入亦NotSupported，非法输入可InvalidArgs。C旧安全入口返回-EOPNOTSUPP且不改
-输出，Python映射OSError(EOPNOTSUPP)。旧 facade 的拒绝不代表新 per-Connection 安全流程缺失；现行流程如下，Bond 重连仍缺失。
+53个没有生产消费者的Rust raw布局只在私有 `cfg(test)` 模块保留；旧C/Rust/Python
+布局、权限helper及回归均明确标为历史。它们不再要求从当前内核公开头获取退休类型。
+跨语言检查分别验证当前ABI和历史见证，不能将两者合并为当前能力。
+旧安全/隐私Rust/C/Python/CLI门面已删除，C不再提供这些导出函数；不是永久返回
+`EOPNOTSUPP` 的兼容API。D-Bus Security只保留实际Agent登记/撤销；旧方法为
+UnknownMethod，旧Encrypted/Paired属性为UnknownProperty。现行per-Connection机制
+和内核安全事实保持原路径，持久Bond仍缺。新raw退休artifact的VM/真实WS73资格
+须单独取得，不改变已封存历史记录。
 
 ### 显式 Agent 与 SDK111 限定流程
 

@@ -23,8 +23,9 @@
 
 ## 当前源码与拒绝规则
 
-C `include/uapi/linux/sparklink_ioctl.h` 的 `SL_SSAP_OP_*`、valid/allows/fits_legacy
-和 Rust `slk_protocol::SsapOperations` 使用同一 mask。
+实际生产语义由 Rust `slk_protocol::SsapOperations` 与唯一用户态Engine消费。
+旧内核 `SL_SSAP_OP_*` 和valid/allows/fits_legacy helper已退出公开头，只保留在
+有来源hash的私有C测试见证中；它不是内核SSAP服务接口。
 Python `bindings/python/sparklink/ssap.py` 拒绝 bool、负数、超32位和保留位；
 `to_legacy_bits` 显式拒绝 descriptor 权向8位缩窄。
 legacy narrowing 仅保留历史 ABI/权限回归，不再有生产 facade 消费者；不恢复已删除的数据库/业务 ioctl。
@@ -42,7 +43,8 @@ NotSupported，保留位返回 InvalidArgs。注册成功只表示本地 staging
 
 ## 测试和证明边界
 
-保留实际 C/Rust/Python 同源权限回归、保留位、缩窄和超长拒绝；离线一致性
+保留历史精确C helper、当前Rust/Python权限回归、独立表32预期、保留位、缩窄
+和超长拒绝；历史C见证不升级为当前内核能力，离线一致性
 不等于 SSAP 双端操作或安全证明。旧数据库调用和当时测试范围见
 [权限整改原始记录](../../project/reference/ssap/ssap-operations.md)，已删路径见
 [生产剥离审计](../../history/ssap/ssap-production-separation-20261013.md)。

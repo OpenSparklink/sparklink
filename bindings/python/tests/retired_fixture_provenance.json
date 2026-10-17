@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "kernel_source_commit": "4b6dda28490d61864eacaa791e72cac1cfea2c0c",
+  "kernel_header_sha256": "e4a60ceadf753407891a0c365b5ab758cdcdcd66126df8d7a496a6c45881f69d",
+  "rust_source_commit": "5692a788f04e52ae8055e4001b456eb18d9e9cb5",
+  "fixtures": {
+    "retired_kernel_layouts.h": "60dd1fb9a912ce5ddaa11536e8863187b7d306ef042353b08e7a4f7b9a1ac336",
+    "retired_ssap_permissions.h": "bd8cb10b2ba0d22297925da4743da79de9f5fcc9047c326885cb4386e13b51ef"
+  },
+  "scope": "Test-only exact historical definitions, private names; no current Kernel ABI/SSAP capability. Current Rust/Python permission semantics and table32 expectations remain independent."
+}

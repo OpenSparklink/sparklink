@@ -1089,6 +1089,13 @@ Client固定daemon unique owner。controller列表只表达注册成员观察，
 无缓存读取。旧对象不跟随daemon更换、重连或handle复用；内核最终强制Grant和身份，
 SDK检查不宣称跨D-Bus／内核原子证明。C/Python必须表达同一错误、身份及关闭语义。
 
+同一个Client scope覆盖本地staging、Owned和安全Agent调用。owner lookup前订阅变化，
+同unique owner的释放/重取也使旧scope终止；clone/派生view共用有限通知task。应用
+callback只持有弱Client引用，避免对象server与自己的bus形成强引用环。Agent清理核对
+实际登记epoch，旧path清理不能撤销后来登记。定向原owner的撤销与新准入分开：scope
+丢失禁止新工作，但原回执仍可撤销；未知回复结果不重试、不推导回滚，按原caller退出
+清理。客户端不拥有wire/credit状态，不因本地取消制造物理成功或Free。
+
 ### 唯一生产状态与历史隔离
 
 Core注册表拥有index/generation、setup/retirement、总线来源和观察元数据。

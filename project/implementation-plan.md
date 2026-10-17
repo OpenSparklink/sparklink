@@ -1325,6 +1325,21 @@ R5e第一小批已接入共享Client scope与四个管理staging调用，
 记录335 workspace及严格Clippy通过；不是新artifact实机资格。原同owner释放/重取
 反例保留。Owned/Agent仍待迁移，向原owner撤销原资源不能因scope失效而被阻断。
 
+本批三类清单（只收敛现有生产调用，不复制Engine）：
+
+| 类别 | 入口/调用者与所有者 | 实际功能/替代及删除条件 | 门禁/issue |
+|---|---|---|---|
+| 立即删除 | slctl security_agent::Daemon、手写controller/connection身份、Owned/Agent直接RPC；CLI持有caller，不持有物理Session | 迁入现有Client/Controller、Owned回执和SecurityRequest；共享Prompt/Observation，删除重复生产类型 | 实际新SDK/CLI、原期限、owner更换和原owner清理；U#3/#8、K#17/#19 |
+| 保留于测试/探针 | independent literal wire/signature fixture、native_security_agent_probe、历史callback/取消反例 | 是独立oracle或受控VM执行器，不加入默认daemon/SDK Engine依赖；登记新签名同步，不改历史报告 | 私有bus、独立introspection和准确新artifact双端证据；U#6/#8、K#6/#19 |
+| 等待替代/验收 | C/Python完整broker/SSAP客户端、通用Operation/Deadline/EventStream、普通应用发现会话、R6部署 | 当前仅公开已实现入口；共享Channel和daemon唯一Engine，不恢复旧门面，不把管理扫描写成每应用发现租约 | 原WP03/06/08/16/17/18、实际消费者与干净VM门禁；整项继续开放 |
+
+R5e第二小批迁移当前Owned登记、Agent与原作者安全请求：SDK只封装现有方法；
+CLI保留人工决策/输入/原期限，删除重复Daemon scope、身份拼接与通用RPC。共享契约
+迁移真实Prompt/Observation，serde/zvariant仅纯值，不增加操作依赖。Agent登记返回
+已有epoch，注销核对caller/path/epoch；未发布旧参数签名删除，独立探针与测试同步。
+退出仍需实际SDK/CLI、独立签名/陈旧epoch/owner退出清理及准确新artifact正向实机；
+不改变R5d历史资格，不以本地登记或批准替代RF/认证/Bond，C/Python与R6仍缺。
+
 ##### R5a最小独立导出门禁
 
 复用现有ABI workflow和arch-check，增加实际应用/Native cdylib与各自公开头的独立

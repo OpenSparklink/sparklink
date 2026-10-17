@@ -10,8 +10,7 @@ use std::{collections::BTreeMap, sync::Arc, time::Duration};
 use tokio::sync::{Mutex, watch};
 use zbus::{export::ordered_stream::OrderedStreamExt, zvariant::OwnedObjectPath};
 
-pub(crate) const METHOD: &str = "sdk111-no-mitm";
-pub(crate) const NUMERIC_METHOD: &str = "sdk111-numeric-comparison";
+pub(crate) use slk_contract::security::{METHOD, NUMERIC_METHOD};
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Method {
     NoMitm,
@@ -48,31 +47,12 @@ impl Method {
             }
     }
 }
-type Prompt = (String, u64, u64, u64, u16, u8, u8, String, String, u64);
+use slk_contract::security::Prompt;
 
 const MAX_RECORDS: usize = 64;
 const MAX_AUTHOR_PENDING: usize = 4;
 pub(crate) type Shared = Arc<Mutex<Registry>>;
-/// Frozen operation observations, not a live security property or a Bond.
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, zbus::zvariant::Type)]
-pub(crate) struct Observation {
-    pub request_id: u64,
-    pub generation: u64,
-    pub lifetime: u64,
-    /// 1 allocated,2 Agent,3 native admission/observation,4 completed,
-    /// 5 rejected,6 cancelled,7 expired,8 failed,9 caller lost,10 Agent lost.
-    pub phase: u32,
-    pub error: i32,
-    pub deadline_monotonic_ns: u64,
-    pub agent_approved: bool,
-    /// ioctl acceptance only, neither USB submission nor hardware completion.
-    pub native_admitted: bool,
-    pub kernel_state: u32,
-    pub kernel_error: i32,
-    pub kernel_flags: u32,
-    pub kernel_status: u8,
-    pub cleanup_error: i32,
-}
+pub(crate) use slk_contract::security::Observation;
 #[derive(Clone)]
 struct Agent {
     method: Method,
@@ -187,7 +167,7 @@ pub(crate) async fn register(
     owner: String,
     path: OwnedObjectPath,
     method: &str,
-) -> zbus::fdo::Result<()> {
+) -> zbus::fdo::Result<u64> {
     {
         let st = state.lock().await;
         if !st.present || st.controller.profile != 1 {
@@ -234,6 +214,7 @@ pub(crate) async fn register(
         guard.agent = Some(agent.clone());
         agent
     };
+    let epoch = agent.epoch;
     let mut revoked = agent.revoked.subscribe();
     tokio::spawn(async move {
         tokio::select! {biased; _=lost.next()=>{}, _=revoked.changed()=>{}}
@@ -243,12 +224,13 @@ pub(crate) async fn register(
             agent.revoked.send_replace(true);
         }
     });
-    Ok(())
+    Ok(epoch)
 }
 pub(crate) async fn unregister(
     state: &SharedState,
     owner: &str,
     path: OwnedObjectPath,
+    epoch: u64,
 ) -> zbus::fdo::Result<()> {
     let registry = registry(state).await;
     let mut guard = registry.lock().await;
@@ -256,7 +238,7 @@ pub(crate) async fn unregister(
         .agent
         .as_ref()
         .ok_or_else(|| failed("no Agent registered"))?;
-    if agent.owner != owner || agent.path != path {
+    if agent.owner != owner || agent.path != path || agent.epoch != epoch {
         return Err(zbus::fdo::Error::AccessDenied(
             "only original Agent may unregister".into(),
         ));

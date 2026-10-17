@@ -38,7 +38,7 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 通用Operation/跨进程原始Deadline/EventStream尚未开放，future取消不承诺撤销已开始的物理义务。
 内核/daemon/工具既有原期限、最后关闭和Grant规则继续执行。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
 
-### 控制器观察与显式管理（R5c源码；新产物实机待验）
+### 控制器观察与显式管理
 
 `Client::controller(path)`返回固定daemon owner及index/generation的`Controller`观察对象，
 不是Ready或Native lease。属性不缓存；成员列举不读取同行属性作为本设备准入条件。
@@ -55,9 +55,32 @@ SDK在实际调用前后检查owner/generation，并校验结果中原请求身�
 撤销或退款，原请求结果可能仍有物理义务；失败不是“确定未提交”。观察仅在检查点
 有效，不承诺下一刻硬件状态。原协议期限不重置，CLI连接结果等待也覆盖身份RPC。
 
-`slctl`管理/注册/Peer/Connection观察已迁移这些方法。旧地址Device的只读观察和本地
-服务/Agent调用仍按唯一计划逐条迁移；当前不提供generic Proxy或Native逃生口。
+`slctl`管理/注册/Peer/Connection观察已迁移这些方法。旧地址Device/dev路径及devices/info已退休；本地
+服务/Agent调用使用同一个Client scope；当前不提供generic Proxy或Native逃生口。
 新方法源码和私有D-Bus检查不是完整新实机资格，范围以能力入口的准确artifact为准。
+
+### 本地登记与安全回调客户端
+
+`Controller.management().local_services()`是管理staging；`Controller.local_services()`
+是应用Owned登记，分别保留原broker权限。`register_service()`返回不可Clone的
+`ServiceRegistration`，`receipt()`是本地登记回执，`read_local()`只查询该登记的属性，
+`unregister()`显式撤销。它不表示远端服务发布，Drop不启动脱离调用者的异步RPC。
+应用authorizer对象必须在创建Client的同一bus connection上导出；属性权限沿用既有类型。
+
+`Controller.register_agent(path,method)`返回带daemon实际epoch的`AgentRegistration`。
+旧epoch不能撤销同caller/path的新登记。`ApplicationConnection.allocate_reference_security()`
+返回原作者的`SecurityRequest`；begin/observation/cancel仅封装现有broker流程，不另建安全
+Engine或轮询器。批准、native准入、机制安装和对端业务收到分别表达，不能由注册推导。
+
+Client在owner lookup前订阅名称变化；即使同一unique owner释放/重新取得服务名，旧scope
+也永久失效。clone/派生对象共享一个有界终态通知。新准入和观察拒绝失效scope；已知回执的
+unregister/cancel仍只定向原unique owner和原generation/请求身份，不跟随替换daemon。
+这是本地观察契约，不替代内核Grant epoch或证明bus到USB提交原子化。
+
+取消登记future或丢失回复可能使结果不确定；不得自动重试或假设回滚。已知回执可显式
+撤销；未知回执需结束原caller bus owner，由broker原有owner退出清理收敛。Drop一个
+view不等于退出该bus连接。CLI继续在前台处理原期限、人工输入与有限callback队列，
+不隐式断开物理连接或退还credit。源码迁移、私有bus测试和真实artifact资格分别记录。
 
 ### Rust远端SSAP客户端与slctl
 
@@ -145,8 +168,8 @@ UnknownMethod，旧Encrypted/Paired属性为UnknownProperty。现行per-Connecti
 ### 显式 Agent 与 SDK111 限定流程
 
 `org.sparklink.Security` 位于 `/org/sparklink/slk{index}_g{generation}/security`。
-`RegisterAgent(o path, s method)` 绑定该 controller 的一个 Agent 唯一总线所有者；
-明确接受 `sdk111-no-mitm` 或 `sdk111-numeric-comparison`；未知方法不降级。`UnregisterAgent(o path)` 撤销原注册，普通通道权限
+`RegisterAgent(o path, s method) → t epoch` 绑定该 controller 的一个 Agent 唯一总线所有者；
+明确接受 `sdk111-no-mitm` 或 `sdk111-numeric-comparison`；未知方法不降级。`UnregisterAgent(o path, t epoch)` 核对原 caller/path/epoch 后撤销原注册，普通通道权限
 不授予 controller 管理或 Agent 注册权。默认不自动批准。
 
 `org.sparklink.Connection` 的原生命周期对象提供：

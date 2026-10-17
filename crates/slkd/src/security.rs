@@ -23,7 +23,7 @@ impl SecurityIface {
         method: &str,
         #[zbus(connection)] connection: &zbus::Connection,
         #[zbus(header)] header: zbus::message::Header<'_>,
-    ) -> zbus::fdo::Result<()> {
+    ) -> zbus::fdo::Result<u64> {
         crate::security_policy::register(
             &self.state,
             connection,
@@ -37,12 +37,14 @@ impl SecurityIface {
     async fn unregister_agent(
         &self,
         path: zbus::zvariant::OwnedObjectPath,
+        epoch: u64,
         #[zbus(header)] header: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<()> {
         crate::security_policy::unregister(
             &self.state,
             &crate::security_policy::sender(&header)?,
             path,
+            epoch,
         )
         .await
     }

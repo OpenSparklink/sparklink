@@ -97,7 +97,7 @@ impl Client {
     pub fn daemon_lost(&self) -> bool {
         *self.scope.lost.borrow()
     }
-    async fn check_owner(&self) -> Result<()> {
+    pub(crate) async fn check_owner(&self) -> Result<()> {
         if self.daemon_lost() {
             return Err(ApplicationError::Identity("daemon owner replaced"));
         }
@@ -113,6 +113,15 @@ impl Client {
     }
     pub(crate) async fn proxy(&self, path: &str, interface: &'static str) -> Result<Proxy<'_>> {
         self.check_owner().await?;
+        self.original_proxy(path, interface).await
+    }
+    // Only typed withdrawal operations may use this after scope loss. Never
+    // follow the well-known name or admit new work through this private helper.
+    pub(crate) async fn original_proxy(
+        &self,
+        path: &str,
+        interface: &'static str,
+    ) -> Result<Proxy<'_>> {
         Ok(zbus::proxy::Builder::<Proxy<'_>>::new(&self.bus)
             .destination(self.scope.owner.clone())?
             .path(path.to_owned())?
@@ -295,7 +304,7 @@ pub struct ApplicationConnection {
     pub(crate) client: Client,
     pub(crate) controller: ControllerId,
     pub(crate) path: String,
-    identity: ConnectionInfo,
+    pub(crate) identity: ConnectionInfo,
 }
 impl ApplicationConnection {
     /// A client view of the daemon's existing lifetime-scoped SSAP actor.

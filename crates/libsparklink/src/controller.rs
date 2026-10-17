@@ -5,7 +5,7 @@ use slk_contract::{self as contract, ControllerId, controller as wire};
 type Result<T> = std::result::Result<T, ApplicationError>;
 #[derive(Clone)]
 pub struct Controller {
-    client: Client,
+    pub(crate) client: Client,
     id: ControllerId,
 }
 impl Controller {
@@ -17,6 +17,11 @@ impl Controller {
     }
     pub fn path(&self) -> String {
         self.id.path()
+    }
+    /// Application-owned registration, distinct from manager staging. The
+    /// broker still enforces caller and callback permissions.
+    pub fn local_services(&self) -> crate::ssap::local::LocalServices {
+        crate::ssap::local::LocalServices::new(self.clone())
     }
     /// This view grants no privilege. Every request still crosses the broker
     /// and its real policy/kernel authorization; no Native lease is returned.

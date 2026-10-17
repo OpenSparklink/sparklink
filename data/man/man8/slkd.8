@@ -78,7 +78,9 @@ native identity, grant, scope and mode checks. Closing one's channel does not
 mean stopping the controller. Old fd, handle or address cannot select a new lifetime.
 .SS Explicit limited security
 org.sparklink.Security is at the adapter's /security child.
-RegisterAgent(o path, s method) and UnregisterAgent(o path) manage one explicit
+RegisterAgent(o path, s method) returns the registration epoch.
+UnregisterAgent(o path, t epoch) withdraws only that original registration.
+These manage one explicit
 Agent unique bus owner for that controller. Methods are sdk111-no-mitm and
 sdk111-numeric-comparison; no fallback or automatic approval. The original
 Agent epoch and method are frozen at allocation. Numeric mode first requests

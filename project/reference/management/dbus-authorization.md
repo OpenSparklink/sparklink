@@ -119,8 +119,8 @@ system-bus/udev/组/内核部署资格。已有 Pair/GetInfo 等未实现的通�
 
 | 接口/方法 | 参数与结果 | 契约 |
 |---|---|---|
-| Security.RegisterAgent | object path、`sdk111-no-mitm` | 每controller一个唯一bus owner/epoch；其他方法拒绝，无降级 |
-| Security.UnregisterAgent | 原object path | 仅原owner；撤销其epoch，不能由其他管理客户端替换 |
+| Security.RegisterAgent | object path、明确method → epoch | 每controller一个唯一bus owner/epoch；未知方法拒绝，无降级 |
+| Security.UnregisterAgent | 原object path、原epoch | 仅原owner/path/epoch；不能撤销后来同path登记，不能由其他管理客户端替换 |
 | Connection.AllocateReferenceSecurity | timeout_ms 1..5000 → request_id | 原作者/完整connection reference，原CLOCK_MONOTONIC期限含选择、锁等待及批准；未Begin也主动过期/处理作者与Agent退出 |
 | Connection.BeginReferenceSecurity | 原request_id、明确method | 只表示监督任务准入；单次Begin；调用者丢失不遗失已开始native提交 |
 | Connection.GetReferenceSecurityResult | 原request_id → Observation | 同作者、generation及完整lifetime/handle/role/type/address；不是全局安全属性 |

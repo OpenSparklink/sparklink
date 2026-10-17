@@ -27,6 +27,7 @@ impl Context {
                 let controller = self.selected_path().await?;
                 crate::security_agent::run_agent(
                     &self.conn,
+                    self.application().await?,
                     &controller,
                     args.get(1)
                         .copied()
@@ -38,7 +39,7 @@ impl Context {
                 let controller = self.selected_path().await?;
                 let timeout_ms = args.get(2).map(|v| v.parse()).transpose()?.unwrap_or(5000);
                 crate::security_agent::request(
-                    &self.conn,
+                    self.application().await?,
                     &controller,
                     args[1],
                     timeout_ms,
@@ -112,6 +113,7 @@ impl Context {
             "ssap-serve" if matches!(args.len(), 6 | 7) => {
                 crate::ssap_server::serve(
                     &self.conn,
+                    self.application().await?,
                     &self.selected_path().await?,
                     parse_hex_bytes(args[1])?,
                     (

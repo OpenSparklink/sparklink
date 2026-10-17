@@ -7,3 +7,5 @@ publish = false
 
 [dependencies]
 slk-protocol = { workspace = true }
+serde = { workspace = true }
+zvariant = { workspace = true }

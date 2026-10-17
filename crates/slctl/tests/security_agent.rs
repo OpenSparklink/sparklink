@@ -49,15 +49,18 @@ impl Registration {
         path: OwnedObjectPath,
         method: &str,
         #[zbus(header)] h: zbus::message::Header<'_>,
-    ) {
+    ) -> u64 {
         assert_eq!(method, "sdk111-no-mitm");
         *self.0.lock().await = Some((h.sender().unwrap().to_string(), path));
+        41
     }
     async fn unregister_agent(
         &self,
         path: OwnedObjectPath,
+        epoch: u64,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) {
+        assert_eq!(epoch, 41);
         let mut held = self.0.lock().await;
         let original = held.as_ref().unwrap();
         assert_eq!(original.0, h.sender().unwrap().as_str());
@@ -70,6 +73,14 @@ struct Manager;
 impl Manager {
     fn list_adapters(&self) -> Vec<String> {
         vec![CONTROLLER.into()]
+    }
+}
+struct Adapter;
+#[zbus::interface(name = "org.sparklink.Adapter")]
+impl Adapter {
+    #[zbus(property(emits_changed_signal = "false"))]
+    fn generation(&self) -> u64 {
+        7
     }
 }
 struct Link;
@@ -142,6 +153,8 @@ async fn bus_fixture() -> (Bus, Connection, Registration) {
         .name("org.sparklink")
         .unwrap()
         .serve_at("/org/sparklink", Manager)
+        .unwrap()
+        .serve_at(CONTROLLER, Adapter)
         .unwrap()
         .serve_at(LINK, Link)
         .unwrap()
@@ -324,6 +337,8 @@ async fn client_watchdog_withdraws_only_original_request_after_slow_begin() {
         .unwrap()
         .serve_at("/org/sparklink", Manager)
         .unwrap()
+        .serve_at(CONTROLLER, Adapter)
+        .unwrap()
         .serve_at(LINK, fixture.clone())
         .unwrap()
         .build()
@@ -351,7 +366,11 @@ async fn client_watchdog_withdraws_only_original_request_after_slow_begin() {
     .unwrap()
     .unwrap();
     assert!(!output.status.success());
-    assert!(String::from_utf8_lossy(&output.stderr).contains("client watchdog expired"));
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("client watchdog expired"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
     assert!(started.elapsed() < Duration::from_secs(2));
     let state = fixture.state.lock().await;
     assert!(

@@ -1,6 +1,7 @@
 //! Shared transport contract, independent of application SDK and daemon.
 //! Values describe observations, not authority or proof of physical completion.
 use slk_protocol::SleAddr;
+pub mod security;
 
 pub const SERVICE: &str = "org.sparklink";
 pub const MANAGER_PATH: &str = "/org/sparklink";

@@ -1,40 +1,23 @@
 // SPDX-License-Identifier: GPL-2.0-only
 //! Explicit human consent client. No wire/crypto engine or automatic approval.
 use anyhow::{Context, bail, ensure};
+use slk_contract::{
+    ConnectionInfo as Info,
+    security::{Observation, Prompt},
+};
 use std::{io::Read, os::unix::fs::OpenOptionsExt, sync::Arc, time::Duration};
 use tokio::{
     io::unix::AsyncFd,
     sync::{Semaphore, mpsc, oneshot, watch},
 };
-use zbus::{Connection, export::ordered_stream::OrderedStreamExt, zvariant::OwnedObjectPath};
+use zbus::{Connection, zvariant::OwnedObjectPath};
 
-const SERVICE: &str = "org.sparklink";
-pub(crate) const METHOD: &str = "sdk111-no-mitm";
-const NUMERIC_METHOD: &str = "sdk111-numeric-comparison";
+pub(crate) use slk_contract::security::METHOD;
+use slk_contract::security::NUMERIC_METHOD;
 fn supported(method: &str) -> bool {
     matches!(method, METHOD | NUMERIC_METHOD)
 }
 const AGENT_PATH: &str = "/org/sparklink/slctl/agent";
-type Info = (u64, u64, u16, u8, u8, String, bool, bool);
-type Prompt = (String, u64, u64, u64, u16, u8, u8, String, String, u64);
-
-/// D-Bus observation, not an authenticated identity or a live security property.
-#[derive(Debug, serde::Deserialize, serde::Serialize, zbus::zvariant::Type)]
-struct Observation {
-    request_id: u64,
-    generation: u64,
-    lifetime: u64,
-    phase: u32,
-    error: i32,
-    deadline_monotonic_ns: u64,
-    agent_approved: bool,
-    native_admitted: bool,
-    kernel_state: u32,
-    kernel_error: i32,
-    kernel_flags: u32,
-    kernel_status: u8,
-    cleanup_error: i32,
-}
 
 fn monotonic_ns() -> anyhow::Result<u64> {
     let mut time = nix::libc::timespec {
@@ -57,94 +40,16 @@ pub(crate) fn remaining(deadline: u64) -> anyhow::Result<Duration> {
     Ok(Duration::from_nanos(ns))
 }
 
-/// Original unique owner, with subscription established before lookup. Never
-/// follow a replacement daemon, even if it reuses paths and request numbers.
-pub(crate) struct Daemon {
-    owner: String,
-    lost: watch::Receiver<bool>,
-    task: tokio::task::JoinHandle<()>,
-}
-impl Drop for Daemon {
-    fn drop(&mut self) {
-        self.task.abort();
-    }
-}
-impl Daemon {
-    pub(crate) async fn pin(conn: &Connection) -> anyhow::Result<Self> {
-        let bus = zbus::fdo::DBusProxy::new(conn).await?;
-        let mut changes = bus
-            .receive_name_owner_changed_with_args(&[(0, SERVICE)])
-            .await?;
-        let owner = bus.get_name_owner(SERVICE.try_into()?).await?.to_string();
-        let (tx, lost) = watch::channel(false);
-        let task = tokio::spawn(async move {
-            // Any transition (including release/reacquire by the same owner)
-            // invalidates this client's scope. A closed stream also fails closed.
-            let _ = changes.next().await;
-            tx.send_replace(true);
-        });
-        Ok(Self { owner, lost, task })
-    }
-    pub(crate) fn owner(&self) -> &str {
-        &self.owner
-    }
-    pub(crate) fn loss(&self) -> watch::Receiver<bool> {
-        self.lost.clone()
-    }
-    pub(crate) async fn proxy(
-        &self,
-        conn: &Connection,
-        path: &str,
-        interface: &str,
-    ) -> anyhow::Result<zbus::Proxy<'static>> {
-        ensure!(!*self.lost.borrow(), "original daemon ownership lost");
-        Ok(zbus::Proxy::new(
-            conn,
-            self.owner.clone(),
-            path.to_owned(),
-            interface.to_owned(),
-        )
-        .await?)
-    }
-}
-
-pub(crate) fn controller_generation(controller: &str) -> anyhow::Result<u64> {
-    let (index, generation) = controller
-        .strip_prefix("/org/sparklink/slk")
-        .and_then(|v| v.split_once("_g"))
-        .context("canonical controller required")?;
-    let parsed_index: u32 = index.parse()?;
-    let parsed_generation: u64 = generation.parse()?;
-    ensure!(
-        controller == format!("/org/sparklink/slk{parsed_index}_g{parsed_generation}")
-            && parsed_generation > 0,
-        "canonical controller required"
-    );
-    Ok(parsed_generation)
-}
 fn validate_identity(controller: &str, path: &str, info: &Info) -> anyhow::Result<()> {
-    let generation = controller_generation(controller)?;
+    let id = slk_contract::ControllerId::from_path(controller)
+        .context("canonical controller required")?;
     ensure!(
-        info.0 == generation && info.1 > 0 && info.3 <= 1 && info.4 <= 1 && info.6 && info.7,
+        slk_contract::matches_connection(id, path, info)
+            && info.3 <= 1
+            && info.4 <= 1
+            && info.6
+            && info.7,
         "known connected original generation/lifetime required"
-    );
-    let parts: Vec<_> = info.5.split(':').collect();
-    ensure!(
-        parts.len() == 6
-            && parts
-                .iter()
-                .all(|p| p.len() == 2 && p.bytes().all(|c| c.is_ascii_hexdigit())),
-        "invalid peer address"
-    );
-    let expected = format!(
-        "{controller}/peer_t{:02x}_{}/link_{:016x}",
-        info.4,
-        parts.join("").to_ascii_lowercase(),
-        info.1
-    );
-    ensure!(
-        path == expected,
-        "canonical full connection identity required"
     );
     Ok(())
 }
@@ -183,6 +88,7 @@ struct Pending {
 struct Agent {
     method: String,
     controller: String,
+    client: std::sync::Weak<libsparklink::Client>,
     owner: String,
     lost: watch::Receiver<bool>,
     pending: mpsc::Sender<Pending>,
@@ -193,7 +99,7 @@ impl Agent {
         &self,
         prompt: Prompt,
         kind: DecisionKind,
-        conn: &Connection,
+        _conn: &Connection,
         header: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<bool> {
         if let DecisionKind::Numeric(code) = kind
@@ -212,14 +118,9 @@ impl Agent {
             return Ok(false);
         };
         let verify = async {
-            let proxy = zbus::Proxy::new(
-                conn,
-                self.owner.as_str(),
-                prompt.0.as_str(),
-                "org.sparklink.Connection",
-            )
-            .await?;
-            let info: Info = proxy.call("GetInfo", &()).await?;
+            let client = self.client.upgrade().context("Agent caller scope ended")?;
+            let link = client.connection(&self.controller, &prompt.0).await?;
+            let info = link.info().await?;
             validate_prompt(&self.controller, &prompt, &info, &self.method)?;
             anyhow::Ok(())
         };
@@ -372,44 +273,50 @@ fn decision(line: &str, id: u64, kind: DecisionKind) -> Option<bool> {
 /// Foreground explicit human Agent for one controller, never a daemon default.
 pub(crate) async fn run_agent(
     conn: &Connection,
+    client: &libsparklink::Client,
     controller: &str,
     method: &str,
 ) -> anyhow::Result<()> {
     ensure!(supported(method), "unsupported Agent method; no fallback");
-    controller_generation(controller)?;
+    let view = client.controller(controller).await?;
     let mut input = Input::stdin()?;
-    let mut daemon = Daemon::pin(conn).await?;
+    let mut lost = client.owner_loss();
     let (pending, mut prompts) = mpsc::channel(1);
-    let path = format!("{controller}/security");
-    let proxy = daemon.proxy(conn, &path, "org.sparklink.Security").await?;
+
+    // Callback object must not retain its own bus through a strong Client cycle.
+    let callback_client = Arc::new(client.clone());
     let object_path = OwnedObjectPath::try_from(AGENT_PATH)?;
-    conn.object_server()
-        .at(
-            AGENT_PATH,
-            Agent {
-                method: method.to_owned(),
-                controller: controller.to_owned(),
-                owner: daemon.owner.clone(),
-                lost: daemon.lost.clone(),
-                pending,
-                slot: Arc::new(Semaphore::new(1)),
-            },
-        )
-        .await?;
-    let register_args = (object_path.clone(), method);
-    let register = proxy.call::<_, _, ()>("RegisterAgent", &register_args);
+    ensure!(
+        conn.object_server()
+            .at(
+                AGENT_PATH,
+                Agent {
+                    method: method.to_owned(),
+                    controller: controller.to_owned(),
+                    client: Arc::downgrade(&callback_client),
+                    owner: client.daemon_owner().to_owned(),
+                    lost: lost.clone(),
+                    pending,
+                    slot: Arc::new(Semaphore::new(1)),
+                },
+            )
+            .await?,
+        "Agent path already registered"
+    );
+    let mut registration = None;
+    let register = view.register_agent(object_path, method);
     let result = async {
-        tokio::time::timeout(Duration::from_secs(5), register).await??;
+        registration = Some(tokio::time::timeout(Duration::from_secs(5), register).await??);
         if method==METHOD {
-            println!("AgentReady: controller={controller} daemon={} method={method}; explicit per-request consent only; unauthenticated, no Bond",daemon.owner);
+            println!("AgentReady: controller={controller} daemon={} method={method}; explicit per-request consent only; unauthenticated, no Bond",client.daemon_owner());
         } else {
-            println!("AgentReady: controller={controller} daemon={} method={method}; explicit initial consent AND six-digit confirmation; no trusted Grant or Bond",daemon.owner);
+            println!("AgentReady: controller={controller} daemon={} method={method}; explicit initial consent AND six-digit confirmation; no trusted Grant or Bond",client.daemon_owner());
         }
         let mut current: Option<Pending> = None;
         loop {
             let budget = current.as_ref().map(|p| remaining(p.prompt.9).unwrap_or_default()).unwrap_or(Duration::from_secs(3600));
             tokio::select! {biased;
-                _ = daemon.lost.changed() => bail!("original daemon ownership lost"),
+                _ = lost.changed() => bail!("original daemon ownership lost"),
                 signal = tokio::signal::ctrl_c() => { signal?; break; },
                 _ = tokio::time::sleep(budget), if current.is_some() => {
                     println!("AgentExpired: request={}", current.as_ref().unwrap().prompt.1);
@@ -449,19 +356,23 @@ pub(crate) async fn run_agent(
     }.await;
     // No controller release/reset/connection close. Original broker owns any
     // physical obligations; unregister and object removal are independently tried.
-    let unregister_args = (object_path,);
-    let unregister = proxy.call::<_, _, ()>("UnregisterAgent", &unregister_args);
-    let cleanup = tokio::time::timeout(Duration::from_secs(1), unregister).await;
+    let cleanup = async {
+        if let Some(registration) = registration.as_mut() {
+            tokio::time::timeout(Duration::from_secs(1), registration.unregister()).await??;
+        }
+        anyhow::Ok(())
+    }
+    .await;
     conn.object_server().remove::<Agent, _>(AGENT_PATH).await?;
     result?;
-    cleanup??;
+    cleanup?;
     Ok(())
 }
 
 /// Retain one bus connection for Allocate/Begin/Result/Cancel: requests are
 /// author-owned and cannot be resumed from a later slctl process.
 pub(crate) async fn request(
-    conn: &Connection,
+    client: &libsparklink::Client,
     controller: &str,
     path: &str,
     timeout_ms: u32,
@@ -472,20 +383,16 @@ pub(crate) async fn request(
         "timeout must be 1..5000 ms"
     );
     ensure!(supported(method), "unsupported method; no fallback");
-    let mut daemon = Daemon::pin(conn).await?;
-    let proxy = daemon.proxy(conn, path, "org.sparklink.Connection").await?;
-    let info: Info =
-        tokio::time::timeout(Duration::from_secs(5), proxy.call("GetInfo", &())).await??;
+    let mut lost = client.owner_loss();
+    let link = client.connection(controller, path).await?;
+    let info = tokio::time::timeout(Duration::from_secs(5), link.info()).await??;
     validate_identity(controller, path, &info)?;
-    let mut id = None;
+    let mut request = None;
     let operation = async {
-        let allocated: u64 = proxy
-            .call("AllocateReferenceSecurity", &(timeout_ms,))
-            .await?;
-        id = Some(allocated);
-        let allocated_observation: Observation = proxy
-            .call("GetReferenceSecurityResult", &(allocated,))
-            .await?;
+        request = Some(link.allocate_reference_security(timeout_ms).await?);
+        let request = request.as_ref().expect("just allocated");
+        let allocated = request.id();
+        let allocated_observation = request.observation().await?;
         let deadline = allocated_observation.deadline_monotonic_ns;
         ensure!(
             allocated_observation.request_id == allocated
@@ -497,13 +404,9 @@ pub(crate) async fn request(
         println!(
             "ReferenceSecurityAllocated: request={allocated} path={path} deadline_monotonic_ns={deadline}"
         );
-        proxy
-            .call::<_, _, ()>("BeginReferenceSecurity", &(allocated, method))
-            .await?;
+        request.begin(method).await?;
         loop {
-            let observation: Observation = proxy
-                .call("GetReferenceSecurityResult", &(allocated,))
-                .await?;
+            let observation: Observation = request.observation().await?;
             ensure!(
                 observation.request_id == allocated
                     && observation.generation == info.0
@@ -548,7 +451,7 @@ pub(crate) async fn request(
     };
     // Local watchdog bounds failed IPC, not a replacement protocol deadline.
     let result = tokio::select! {biased;
-        _ = daemon.lost.changed() => Err(anyhow::anyhow!("original daemon ownership lost")),
+        _ = lost.changed() => Err(anyhow::anyhow!("original daemon ownership lost")),
         signal = tokio::signal::ctrl_c() => match signal {
             Ok(()) => Err(anyhow::anyhow!("request interrupted")),
             Err(error) => Err(error.into()),
@@ -559,14 +462,10 @@ pub(crate) async fn request(
         },
     };
     if result.is_err()
-        && let Some(id) = id
+        && let Some(request) = request
     {
         // Only withdraw this request. Never release the controller or erase debt.
-        let _ = tokio::time::timeout(
-            Duration::from_millis(250),
-            proxy.call::<_, _, bool>("CancelReferenceSecurity", &(id,)),
-        )
-        .await;
+        let _ = tokio::time::timeout(Duration::from_millis(250), request.cancel()).await;
     }
     result
 }

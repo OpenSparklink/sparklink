@@ -1,5 +1,5 @@
 //! Foreground application-owned SSAP service, not a second protocol Engine.
-use crate::security_agent::{Daemon, Input, controller_generation, remaining};
+use crate::security_agent::{Input, remaining};
 use anyhow::{bail, ensure};
 use slk_protocol::{
     SsapOperations,
@@ -133,6 +133,7 @@ fn input_decision(line: &str, token: u64) -> Option<bool> {
 
 pub(crate) async fn serve(
     conn: &Connection,
+    client: &libsparklink::Client,
     controller: &str,
     service: Vec<u8>,
     definition: (Vec<u8>, u32, u32, Vec<u8>),
@@ -151,19 +152,14 @@ pub(crate) async fn serve(
         operations.bits() & !5 == 0 && value.len() <= 2042,
         "only bounded READ/WRITE_WITH_RSP values supported"
     );
-    let generation = controller_generation(controller)?;
-    let index: u16 = controller
-        .strip_prefix("/org/sparklink/slk")
-        .and_then(|s| s.split_once("_g"))
-        .unwrap()
-        .0
-        .parse()?;
-    let daemon = Daemon::pin(conn).await?;
-    let mut lost = daemon.loss();
+    let view = client.controller(controller).await?;
+    let generation = view.id().generation;
+    let index = view.id().index;
+    let mut lost = client.owner_loss();
     let handle = Arc::new(Mutex::new(None));
     let (prompts, mut requests) = mpsc::channel(1);
     let authorizer = Authorizer {
-        daemon: daemon.owner().to_owned(),
+        daemon: client.daemon_owner().to_owned(),
         lost: lost.clone(),
         generation,
         index,
@@ -174,34 +170,26 @@ pub(crate) async fn serve(
         prompts,
         slot: Arc::new(Semaphore::new(1)),
     };
-    let manager = daemon
-        .proxy(
-            conn,
-            &format!("{controller}/services"),
-            "org.sparklink.ServiceManager",
-        )
-        .await?;
     ensure!(
         conn.object_server().at(PATH, authorizer).await?,
         "authorizer path already registered"
     );
-    let result = manager
-        .call::<_, _, (u16, u16, Vec<u16>)>(
-            "RegisterOwnedLocalService",
-            &(
-                service,
-                vec![(property, ops, access, value)],
-                zbus::zvariant::OwnedObjectPath::try_from(PATH)?,
-            ),
+    let result = view
+        .local_services()
+        .register_service(
+            service,
+            vec![(property, ops, access, value)],
+            zbus::zvariant::OwnedObjectPath::try_from(PATH)?,
         )
         .await;
-    let registered = match result {
+    let mut registration = match result {
         Ok(v) => v,
         Err(e) => {
             let _ = conn.object_server().remove::<Authorizer, _>(PATH).await;
             return Err(e.into());
         }
     };
+    let registered = registration.receipt().clone();
     let result=async {
         ensure!(registered.2.len()==1,"one property required");
         *handle.lock().map_err(|_|anyhow::anyhow!("owner state poisoned"))?=Some(registered.2[0]);
@@ -231,7 +219,7 @@ pub(crate) async fn serve(
                     let Some(line)=line? else {return Ok(());};
                     if line=="quit" {return Ok(());}
                     if line=="value" {
-                        let value:Vec<u8>=manager.call("ReadOwnedLocalValue",&(registered.2[0],)).await?;
+                        let value:Vec<u8>=registration.read_local(registered.2[0]).await?;
                         println!("SsapOwnedValue: handle={} value={}",registered.2[0],crate::commands::hex_bytes(&value));
                         continue;
                     }
@@ -242,12 +230,11 @@ pub(crate) async fn serve(
             }
         }
     }.await;
-    let removed = manager
-        .call::<_, _, ()>("UnregisterOwnedLocalService", &(registered.0,))
-        .await;
+    let removed =
+        tokio::time::timeout(std::time::Duration::from_secs(1), registration.unregister()).await;
     let _ = conn.object_server().remove::<Authorizer, _>(PATH).await;
     result?;
-    removed?;
+    removed??;
     Ok(())
 }
 

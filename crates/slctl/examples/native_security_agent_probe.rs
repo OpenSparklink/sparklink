@@ -688,7 +688,7 @@ async fn execute(args: Args) -> anyhow::Result<()> {
     for path in &security_paths {
         security(&agent, path)
             .await?
-            .call::<_, _, ()>(
+            .call::<_, _, u64>(
                 "RegisterAgent",
                 &(OwnedObjectPath::try_from(AGENT)?, method),
             )

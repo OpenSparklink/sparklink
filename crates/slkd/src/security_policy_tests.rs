@@ -107,7 +107,7 @@ async fn agent(
     bus: &PrivateBus,
     yes: bool,
     delay_ms: u64,
-) -> (zbus::Connection, mpsc::UnboundedReceiver<Args>) {
+) -> (zbus::Connection, mpsc::UnboundedReceiver<Args>, u64) {
     let (seen, rx) = mpsc::unbounded_channel();
     let c = zbus::connection::Builder::address(bus.address.as_str())
         .unwrap()
@@ -123,15 +123,15 @@ async fn agent(
         .build()
         .await
         .unwrap();
-    security(&c)
+    let epoch = security(&c)
         .await
-        .call::<_, _, ()>(
+        .call::<_, _, u64>(
             "RegisterAgent",
             &(OwnedObjectPath::try_from(AGENT).unwrap(), METHOD),
         )
         .await
         .unwrap();
-    (c, rx)
+    (c, rx, epoch)
 }
 async fn allocate_rpc(c: &zbus::Connection, timeout: u32) -> u64 {
     link(c)
@@ -202,14 +202,14 @@ async fn missing_agent_unknown_method_and_other_owner_are_rejected() {
     assert!(
         security(&c)
             .await
-            .call::<_, _, ()>(
+            .call::<_, _, u64>(
                 "RegisterAgent",
                 &(OwnedObjectPath::try_from(AGENT).unwrap(), "unknown")
             )
             .await
             .is_err()
     );
-    let (_a, _rx) = agent(&bus, false, 0).await;
+    let (_a, _rx, _epoch) = agent(&bus, false, 0).await;
     let id = allocate_rpc(&c, 500).await;
     assert!(
         link(&c)
@@ -234,7 +234,7 @@ async fn missing_agent_unknown_method_and_other_owner_are_rejected() {
             .await
             .call::<_, _, ()>(
                 "UnregisterAgent",
-                &(OwnedObjectPath::try_from(AGENT).unwrap(),)
+                &(OwnedObjectPath::try_from(AGENT).unwrap(), 1u64)
             )
             .await
             .is_err()
@@ -246,7 +246,7 @@ async fn reject_has_no_native_admission_and_duplicate_begin_is_rejected() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, mut rx) = agent(&bus, false, 0).await;
+    let (_a, mut rx, _epoch) = agent(&bus, false, 0).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 500).await;
     let deadline = read_rpc(&c, id).await.deadline_monotonic_ns;
@@ -279,7 +279,7 @@ async fn approval_reaches_real_ioctl_failure_never_fake_install_success() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, mut rx) = agent(&bus, true, 0).await;
+    let (_a, mut rx, _epoch) = agent(&bus, true, 0).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 500).await;
     begin_rpc(&c, id).await;
@@ -308,7 +308,7 @@ async fn allocated_expiry_is_active_without_query_or_begin() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, _rx) = agent(&bus, false, 0).await;
+    let (_a, _rx, _epoch) = agent(&bus, false, 0).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 40).await;
     let out = wait_phase(&st, id, 7).await;
@@ -320,7 +320,7 @@ async fn allocated_caller_death_is_active_without_query() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, _rx) = agent(&bus, false, 0).await;
+    let (_a, _rx, _epoch) = agent(&bus, false, 0).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 1000).await;
     drop(c);
@@ -332,7 +332,7 @@ async fn approval_after_original_deadline_does_not_submit_or_rewrite() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, mut rx) = agent(&bus, true, 150).await;
+    let (_a, mut rx, _epoch) = agent(&bus, true, 150).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 70).await;
     begin_rpc(&c, id).await;
@@ -348,7 +348,7 @@ async fn cancel_before_late_approval_is_terminal_without_controller_release() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, mut rx) = agent(&bus, true, 150).await;
+    let (_a, mut rx, _epoch) = agent(&bus, true, 150).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 500).await;
     begin_rpc(&c, id).await;
@@ -382,7 +382,7 @@ async fn caller_death_during_callback_never_submits() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, mut rx) = agent(&bus, true, 150).await;
+    let (_a, mut rx, _epoch) = agent(&bus, true, 150).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 500).await;
     begin_rpc(&c, id).await;
@@ -396,7 +396,7 @@ async fn agent_death_then_replacement_cannot_revive_old_request() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (a, mut rx) = agent(&bus, true, 150).await;
+    let (a, mut rx, _epoch) = agent(&bus, true, 150).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 500).await;
     begin_rpc(&c, id).await;
@@ -414,7 +414,7 @@ async fn agent_death_then_replacement_cannot_revive_old_request() {
     })
     .await
     .unwrap();
-    let (_replacement, _rx) = agent(&bus, false, 0).await;
+    let (_replacement, _rx, _epoch) = agent(&bus, false, 0).await;
     let new_id = allocate_rpc(&c, 500).await;
     assert_ne!(new_id, id);
     assert_eq!(read_rpc(&c, id).await.phase, 10);
@@ -424,7 +424,7 @@ async fn stale_identity_and_removed_connection_cannot_admit() {
     let bus = PrivateBus::start();
     let st = state();
     let server = server(&bus, &st).await;
-    let (_a, mut rx) = agent(&bus, true, 100).await;
+    let (_a, mut rx, _epoch) = agent(&bus, true, 100).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 500).await;
     assert!(
@@ -463,7 +463,7 @@ async fn allocation_wait_does_not_renew_original_deadline() {
     let bus = PrivateBus::start();
     let st = state();
     let server = server(&bus, &st).await;
-    let (_a, _rx) = agent(&bus, false, 0).await;
+    let (_a, _rx, _epoch) = agent(&bus, false, 0).await;
     let c = client(&bus).await;
     let locked = st.lock().await;
     let call = allocate(
@@ -488,7 +488,7 @@ async fn retire_does_not_touch_peer_registry_and_prevents_resurrection() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, _rx) = agent(&bus, false, 0).await;
+    let (_a, _rx, _epoch) = agent(&bus, false, 0).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 500).await;
     let peer = state();
@@ -505,7 +505,7 @@ async fn retire_does_not_touch_peer_registry_and_prevents_resurrection() {
     assert!(
         security(&c)
             .await
-            .call::<_, _, ()>(
+            .call::<_, _, u64>(
                 "RegisterAgent",
                 &(OwnedObjectPath::try_from(AGENT).unwrap(), METHOD)
             )
@@ -519,19 +519,19 @@ async fn allocated_agent_unregistration_is_active_and_old_epoch_cannot_follow_re
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (a, _rx) = agent(&bus, false, 0).await;
+    let (a, _rx, epoch) = agent(&bus, false, 0).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 1000).await;
     security(&a)
         .await
         .call::<_, _, ()>(
             "UnregisterAgent",
-            &(OwnedObjectPath::try_from(AGENT).unwrap(),),
+            &(OwnedObjectPath::try_from(AGENT).unwrap(), epoch),
         )
         .await
         .unwrap();
     wait_phase(&st, id, 10).await;
-    let (_replacement, _rx) = agent(&bus, false, 0).await;
+    let (_replacement, _rx, _epoch) = agent(&bus, false, 0).await;
     let new_id = allocate_rpc(&c, 1000).await;
     assert_ne!(id, new_id);
     assert_eq!(read_rpc(&c, id).await.phase, 10);
@@ -547,7 +547,7 @@ async fn pending_author_and_retained_record_budgets_are_enforced_by_production_a
     let bus = PrivateBus::start();
     let st = state();
     let server = server(&bus, &st).await;
-    let (_a, _rx) = agent(&bus, false, 0).await;
+    let (_a, _rx, _epoch) = agent(&bus, false, 0).await;
     let c = client(&bus).await;
     let owner = c.unique_name().unwrap().as_str();
     let refs: Vec<_> = (1..=5)
@@ -604,7 +604,7 @@ async fn duplicate_begin_while_agent_pending_invokes_only_one_callback() {
     let bus = PrivateBus::start();
     let st = state();
     let _server = server(&bus, &st).await;
-    let (_a, mut rx) = agent(&bus, false, 70).await;
+    let (_a, mut rx, _epoch) = agent(&bus, false, 70).await;
     let c = client(&bus).await;
     let id = allocate_rpc(&c, 500).await;
     begin_rpc(&c, id).await;
@@ -671,7 +671,7 @@ async fn numeric_method_is_frozen_and_native_failure_never_requests_confirmation
         .unwrap();
     security(&a)
         .await
-        .call::<_, _, ()>(
+        .call::<_, _, u64>(
             "RegisterAgent",
             &(OwnedObjectPath::try_from(AGENT).unwrap(), NUMERIC_METHOD),
         )
@@ -725,4 +725,85 @@ async fn numeric_method_is_frozen_and_native_failure_never_requests_confirmation
             .is_err()
     );
     assert!(rx.try_recv().is_err());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn same_caller_same_agent_path_rejects_old_cleanup_epoch_and_retired_signature() {
+    let bus = PrivateBus::start();
+    let st = state();
+    let _server = server(&bus, &st).await;
+    let (caller, _rx, first) = agent(&bus, false, 0).await;
+    let path = OwnedObjectPath::try_from(AGENT).unwrap();
+    let proxy = security(&caller).await;
+    proxy
+        .call::<_, _, ()>("UnregisterAgent", &(path.clone(), first))
+        .await
+        .unwrap();
+    let xml = proxy.introspect().await.unwrap();
+    let register = xml
+        .split("<method name=\"RegisterAgent\">")
+        .nth(1)
+        .unwrap()
+        .split("</method>")
+        .next()
+        .unwrap();
+    assert!(
+        register.contains("type=\"o\" direction=\"in\"")
+            && register.contains("type=\"s\" direction=\"in\"")
+            && register.contains("type=\"t\" direction=\"out\""),
+        "{register}"
+    );
+    let unregister = xml
+        .split("<method name=\"UnregisterAgent\">")
+        .nth(1)
+        .unwrap()
+        .split("</method>")
+        .next()
+        .unwrap();
+    assert!(
+        unregister.contains("type=\"t\" direction=\"in\""),
+        "{unregister}"
+    );
+    let second: u64 = proxy
+        .call("RegisterAgent", &(path.clone(), METHOD))
+        .await
+        .unwrap();
+    assert!(second > first);
+    assert!(
+        proxy
+            .call::<_, _, ()>("UnregisterAgent", &(path.clone(), first))
+            .await
+            .is_err()
+    );
+    // Unpublished old ABI is gone: missing epoch must not withdraw anything.
+    assert!(
+        proxy
+            .call::<_, _, ()>("UnregisterAgent", &(path.clone(),))
+            .await
+            .is_err()
+    );
+    let foreign = client(&bus).await;
+    assert!(
+        security(&foreign)
+            .await
+            .call::<_, _, ()>("UnregisterAgent", &(path.clone(), second))
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        registry(&st)
+            .await
+            .lock()
+            .await
+            .agent
+            .as_ref()
+            .unwrap()
+            .epoch,
+        second
+    );
+    proxy
+        .call::<_, _, ()>("UnregisterAgent", &(path, second))
+        .await
+        .unwrap();
+    assert!(registry(&st).await.lock().await.agent.is_none());
 }

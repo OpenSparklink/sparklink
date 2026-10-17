@@ -3401,6 +3401,13 @@
       "status": "OFFLINE_ONLY_NEW_REAL_ARTIFACT_PENDING",
       "report": "docs/evidence/client-scope-staging-foundation-20261018.json",
       "remaining": "Owned/Agent shared typed clients,original-owner targeted cleanup,actual new-artifact real gates,remaining R5/R6;full scope unchanged"
+    },
+    "r5e_owned_agent": {
+      "status": "IMPLEMENTED_OFFLINE_NEW_REAL_ARTIFACT_PENDING",
+      "production": "Typed existing Owned/Agent/security-request clients;shared original owner scope;unpublished Agent unregister checks actual caller/path/epoch;CLI policy/UI only",
+      "exit_reference": "project/implementation-plan.md / R5e current batch",
+      "remaining": "Actual new artifact CLI approval/rejection,Owned and previous path VM gates;C/Python advanced client and R6 deployment;original full scope remains",
+      "offline_report": "docs/evidence/owned-agent-client-source-audit-20261018.json"
     }
   },
   "owned_ssap_c6_historical_batch": {

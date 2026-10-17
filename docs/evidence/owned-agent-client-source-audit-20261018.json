@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "status": "IMPLEMENTED_OFFLINE_PASS_REAL_PENDING",
+  "baseline_userspace": "bcd7cd0cb3f877ec34d1be0238bbc8420ab98a9e",
+  "compiled_artifact": "NO_NEW_REAL_QUALIFICATION_YET",
+  "source_sha256": {
+    "Cargo.lock": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+    "Cargo.toml": "ba661b151644a188a7d3f96565de0cd749b2cdfda7618de2278794de8c38499c",
+    "crates/libsparklink/src/client.rs": "d08132b8daaa050df18f0d8e44f19b39c107424680ebb62a9ef08ad3d500046f",
+    "crates/libsparklink/src/controller.rs": "b2e118baa9e291499927f77ad499d61c82c9154b03c9ffb006ed69086d7e1c2b",
+    "crates/libsparklink/src/lib.rs": "0215e50e37377fc5ed0b939c753694da2166d42c1a2e937c871ed1173249b550",
+    "crates/libsparklink/src/ssap/local.rs": "90513938236cdadf3303f0c1651711a89d771652bddb84c27bbfbb1b057c9842",
+    "crates/slctl/examples/native_security_agent_probe.rs": "58d191fc9163d30a24c31fbf136ea8f2eb035158109284431d0d191f9b29de5f",
+    "crates/slctl/src/commands.rs": "c01a09ef217fe77b7009fd9c7cae11b2dc445d8a8a721279e25ae1ae5b0625d2",
+    "crates/slctl/src/security_agent.rs": "76dd1972113be126bf51ab607eb437aa54014604f21b8082195fe786d1ce6123",
+    "crates/slctl/src/ssap_server.rs": "d63113241dad6198c3186bc12800df9ee579a3e32c152867d5f4686a1c4e8948",
+    "crates/slctl/tests/security_agent.rs": "5711568f02d3c1c864657b1b30ce4e7693d3c23387df21dfbb76feecc3ecb608",
+    "crates/slk-contract/Cargo.toml": "a6c5fdf4de6e5a90cfc51c9bb91f8c6e9bff0c912bee47d0b7061a3453e0abb0",
+    "crates/slk-contract/src/lib.rs": "8fe91afd5eafec92e72428ca9b31f1cd6ed946ba7bfe558ee0244378e0076faa",
+    "crates/slkd/src/security.rs": "0310a37899df07ab594b61cf3e2317a510e66d70474b704695ff7c15720fb467",
+    "crates/slkd/src/security_policy.rs": "d90ea650bb6ada178ffbc756fedf064c5e79968b8aa6c9c1bf19f656dcb7482c",
+    "crates/slkd/src/security_policy_tests.rs": "65f6ea3ecbadfc80e970b5459cd13d2deb0bb20517eab85b2172f5f594f0da5e",
+    "data/man/man8/slkd.8": "55fac65b7c3093df366e6e3c7502e50f4cc84963882bba8288e0f8bbfd2c2b17",
+    "crates/libsparklink/src/agent.rs": "228eda84396aa941c602d6d68c0a46df919464ee3228e41dc4f1acbb541c606c",
+    "crates/libsparklink/src/security.rs": "e9f1b28e3126f737850caa8ee6c471b00cae73c1a4807d656a0aeb37abead0b6",
+    "crates/libsparklink/tests/owned_client.rs": "36438c7eaf26280d14cb49c24c41875f6aabc8832fb06c725b40703b2eb2d6a3",
+    "crates/slctl/tests/owned_local.rs": "5352abd93f1f9e4c2cdb00184b3d4da4d689c49ec68227e5d5f30c585f229b1c",
+    "crates/slk-contract/src/security.rs": "4a63aa6821844b784e061b73d59151c51c56cac18e8fdf2ef44eb3ddcb8f1054"
+  },
+  "production": [
+    "Owned service staging stays separate from manager staging; actual CLI uses shared Client",
+    "Agent callback uses weak Client reference; no self-owned bus cycle",
+    "Original-author security receipts use existing daemon/kernel state; no new Engine",
+    "Unpublished Agent registration returns existing epoch; unregister checks caller/path/epoch; all current callers and probes migrated",
+    "Only typed unregister/cancel may address original unique owner after scope loss; replacement owner never receives cleanup"
+  ],
+  "offline": {
+    "workspace": 338,
+    "strict_all_features_clippy": "PASS",
+    "production_dependencies_default_all_features": "PASS",
+    "strict_html": "PASS 116 inventory",
+    "actual_private_bus": "existing CLI decisions/original watchdog, new SDK/Owned CLI, original-owner cleanup, stale epoch and independent producer signature"
+  },
+  "failure_history": [
+    "v1 check: missing explicit unit return type; corrected without suppressions",
+    "v1 tests: old watchdog fixture lacked real Adapter generation required by the migrated SDK; assertion retained",
+    "v2 tests: new Owned CLI fixture used incomplete arguments; real parser rejected; full existing arguments fixed",
+    "v4 owned CLI and v1 final clippy attempts refused shared build lock; no parallel pool was started",
+    "v2 final clippy rejected complex literal test return; independent alias retained, no allow attribute"
+  ],
+  "remaining": [
+    "Accurate new artifact VM real CLI approve/reject and both-end application reply evidence",
+    "Prior discovered/connected/short/length/Owned/protected paths must be replayed on new artifact",
+    "No new formal proof or system-bus deployment qualification",
+    "Cancelled register future or lost reply remains uncertain; no retry/rollback claim; original bus owner exit cleans unknown receipts",
+    "C/Python advanced broker clients, R6 clean VM deployment and original architecture scope remain",
+    "Natural fault RCA/nonmanual automatic recovery remain open"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5e-workspace-final-v2.log",
+      "sha256": "9bac26f03f5e3cae4d802ef667d6a990bb9bdc87cae0866f183eb0a6e4f5d6ba",
+      "bytes": 35697,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-workspace-final-budget-v2.json",
+      "sha256": "9073e9aaf08aeeb128660f4f992f56bf4a6e2f83a463bc8f2665a8ddb8db6743",
+      "bytes": 869,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-clippy-final-v3.log",
+      "sha256": "e034dd0fbe0a1f1f3b8575afa36d68d39b72d5fdb1dedd88d54e7829d3d38b77",
+      "bytes": 805,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-clippy-final-budget-v3.json",
+      "sha256": "f60f21aa745b98133c1b01f33e65312a6b99cc199feb8c28684aae61718847ab",
+      "bytes": 950,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-dependencies-v1.log",
+      "sha256": "aaa57004ae775b4baa0f563dffa39d6ecf250b372df3a99f6e2581d7a7cfb9cd",
+      "bytes": 1628,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-owned-agent-docs-v1.log",
+      "sha256": "61ff14b6bfb494537334c589aa5d2bbbdac6c8be6d0ebdfe66dc006d8dff53de",
+      "bytes": 968785,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-owned-agent-test-v1.log",
+      "sha256": "b15d11c2652bbdfb59aa399aac703d65c89ac1cf6c0ddaffeacca2b39280ec12",
+      "bytes": 8563,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-owned-agent-test-v2.log",
+      "sha256": "c31528a92750ca57c96b23124861ce3d49e339fcf25c97d0412d70b3c62bee7a",
+      "bytes": 7213,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-owned-agent-check-v1.log",
+      "sha256": "b684449c9e11c955b69f49d50f6256c5fefadbc096dfc58ae0f0907dc565aabd",
+      "bytes": 5137,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-owned-cli-test-v4.log",
+      "sha256": "e1a6423f52d13bbd153d9504a2ce5e40e3c731b60d0a398e60514c0de4d28ea4",
+      "bytes": 1270,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-clippy-final-v2.log",
+      "sha256": "1d07656ecb1b8133e5feca4aa1d38030470e12a7079d8a3c05bde9f43dd8970f",
+      "bytes": 2679,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    },
+    {
+      "path": ".dev/architecture-r5e-online-audit-v1.json",
+      "sha256": "31f86741a2ed20188eff35a942870620faeb56376e8e38215f1ed373999ca0a2",
+      "bytes": 708842,
+      "access": "private development logs; replay with source tests, Rust1.96.1, pinned private dbus and build_resources.py; no hardware implied"
+    }
+  ]
+}

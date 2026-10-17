@@ -993,7 +993,9 @@ dependencies = [
 name = "slk-contract"
 version = "0.1.0"
 dependencies = [
+ "serde",
  "slk-protocol",
+ "zvariant",
 ]
 
 [[package]]

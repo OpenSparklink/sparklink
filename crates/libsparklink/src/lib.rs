@@ -1,9 +1,11 @@
 //! Application SDK. Control requests use the pinned daemon broker; business
 //! traffic uses already-authorized Channel fds. No Native management dependency.
+pub mod agent;
 mod client;
 pub mod controller;
 pub mod ffi;
 pub mod peer;
+pub mod security;
 pub mod ssap;
 pub use client::{ApplicationConnection, ApplicationError, Client};
 pub use slk_channel::Channel;

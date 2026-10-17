@@ -3173,7 +3173,7 @@
       "report": "docs/evidence/native-interface-retirement-r4d-20261017.json"
     },
     "r4e": {
-      "status": "CRYPTO_TEST_ONLY_PASS_REGISTRY_CLEANUP_64A_BUILDING_NOT_DEVICE_QUALIFIED",
+      "status": "REGISTRY_KERNEL_64_BUILD_PASSED_EXACT_FOUR_VM_RUNNING",
       "exit_reference": "Canonical WP18 R4e",
       "invariants": [
         "One production authority and protocol path",
@@ -3187,8 +3187,14 @@
         "7f406664141c647b41be22a3db85caa47b6b4707"
       ],
       "test_report": "docs/evidence/kernel-crypto-retirement-r4e-20261017.json",
-      "registry_commit": "64a324844bfc",
-      "remaining": "Exact new kernel build/VM WS73 preservation;DLI/command masks and raw ABI/selftests,R5/R6 and full scope remain"
+      "registry_commit": "64a324844bfc66bc46de2c894bc78598c1cde515",
+      "remaining": "Exact new kernel VM/replay evidence pending;isolated raw-command draft requires component/kernel+VM gates before merge. DLI masks/rawABI/selftests,R5/R6/fullscope remain"
+    },
+    "r5a": {
+      "status": "IMPLEMENTED_OFFLINE_CANDIDATE_NOT_DEVICE_QUALIFICATION",
+      "production_behavior": "Independent actual ELF function exports against application and explicit Native public headers;no protocol/runtime/caller changes",
+      "exit_reference": "Canonical WP18 R5a;fullR5 remains",
+      "limits": "No ABI/call/lifetime/permission/RF proof. Five tool tests plus actual sealed997 library comparison only;new checker artifact identity must be recorded separately."
     }
   },
   "owned_ssap_c6_historical_batch": {

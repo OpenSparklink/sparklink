@@ -680,3 +680,16 @@ errno，Python以OSError保留来源，拒绝内嵌NUL路径。C非空指针仍�
 raw声明比对及宽度/边界回归保留，不再出现在当前Python或C头中。raw内核声明/selftests
 须下一批同迁，旧编号不复用。当前生产与实机范围仍按准确artifact的资格记录，不能由
 本节接口整理推导完整Native SDK、干净安装或C/Python真实业务资格。
+
+## C 导出符号检查的范围
+
+应用库与显式 Native 库分别由各自生成头描述；两者不互相补齐缺失导出。
+`tools/check_public_symbols.py` 接受 `--application-library`、`--native-library` 和
+可选 `--output`，调用真实 `nm -D --defined-only --format=posix` 与当前头独立对照。
+当前仅支持无版本的函数导出；缺失、未声明或非函数符号、重复、空/截断输出、工具
+诊断/失败、检查中材料变更均拒绝。报告路径已存在也拒绝覆盖。
+
+此检查记录实际库、头、检查器hash及nm版本，不执行库函数。符号名称一致不等于
+ABI布局、指针契约、权限、生命周期、外部消费者或实机资格；现有C/Rust/Python布局、
+实际调用、原errno和VM门禁仍独立执行。CI在构建两库后运行实际导出检查；
+`make arch-check`只运行其负对照，未构建库时不伪称已检查ELF。

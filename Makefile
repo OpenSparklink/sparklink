@@ -30,6 +30,7 @@ arch-check:
 	PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p test_production_dependencies.py
 	python3 tools/check_retired_interfaces.py
 	PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p test_retired_interfaces.py
+	PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p test_public_symbols.py
 
 check: arch-check
 	$(BUILD_RUN) $(CARGO) check --locked --workspace

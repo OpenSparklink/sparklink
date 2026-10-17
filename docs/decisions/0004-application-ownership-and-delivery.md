@@ -360,3 +360,7 @@ generation复用、候选分配、退休及partial init状态不变。该变更�
 专用VM probe继续消费这一份代码；实际生产P256/CMAC保留唯一来源，并由probe明确
 include。历史fixture的module属性不是生产豁免，测试通过不成为认证/Bond或WS73
 当前资格。旧报告原路径/commit/hash保留，新报告明确测试路径及boot/probe不同身份。
+
+R5a选择实际ELF导出与两份公开头独立对照，防止只有声明或隐藏额外入口。该门禁不
+替代ABI布局、真实D-Bus、权限或应用调用；测试工具的错误/截断/材料变更均必须拒绝。
+测试dependency fixtures和生产字节检查分别标识，不能以检查数量宣称架构完整。

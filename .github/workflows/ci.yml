@@ -149,6 +149,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-multilib
           cargo build --locked -p libsparklink -p slk-native --lib
+      - name: Compare both actual cdylib exports with their independent public headers
+        run: |
+          PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p test_public_symbols.py -v
+          python3 tools/check_public_symbols.py --application-library target/debug/liblibsparklink.so --native-library target/debug/libslk_native.so
       - name: Compare actual C and broker socket v2/v3 layout
         run: CC=cc python tools/channel_socket_contract.py --kernel .kernel-uapi
       - run: python -m py_compile bindings/python/sparklink/__init__.py

@@ -1828,7 +1828,7 @@ async fn typed_peer_replay_and_capacity_never_replace_unretired_or_pinned_slots(
 /// Real registry/reconcile/ObjectServer and Tokio cancellation. The table and
 /// blocked Native dependency are fixtures; no successful kernel/USB operation.
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn unpublished_initializer_survives_parent_and_retirement_wait_cancellation() {
+async fn r5f9f_physical_projection_survives_initializer_and_retirement_cancellation() {
     use std::sync::atomic::{AtomicUsize, Ordering};
     let bus = PrivateBus::start();
     let state = state();
@@ -1866,18 +1866,15 @@ async fn unpublished_initializer_survives_parent_and_retirement_wait_cancellatio
     started.await.unwrap();
     first.abort();
     assert!(first.await.unwrap_err().is_cancelled());
-    let mut publication = tokio::spawn({
+    let publication = tokio::spawn({
         let state = state.clone();
         let server = server.clone();
         async move { reconcile_native(&state, &server, expected, 0, Ok(table)).await }
     });
-    assert!(
-        timeout(Duration::from_millis(100), &mut publication)
-            .await
-            .is_err()
-    );
-    publication.abort();
-    assert!(publication.await.unwrap_err().is_cancelled());
+    timeout(Duration::from_millis(100), publication)
+        .await
+        .expect("physical Connection publication must not wait for SSAP initialization")
+        .unwrap();
     assert!(
         !release.is_closed(),
         "parent cancel cannot drop the actual dependency task"
@@ -1887,7 +1884,20 @@ async fn unpublished_initializer_survives_parent_and_retirement_wait_cancellatio
             .object_server()
             .interface::<_, crate::connection_object::ConnectionIface>(registration.path.as_str())
             .await
-            .is_err()
+            .is_ok()
+    );
+    let proxy = zbus::Proxy::new(
+        &server,
+        "org.sparklink",
+        registration.path.as_str(),
+        "org.sparklink.Connection",
+    )
+    .await
+    .unwrap();
+    let physical: crate::connection_object::Info = proxy.call("GetInfo", &()).await.unwrap();
+    assert_eq!(
+        (physical.0, physical.1, physical.6, physical.7),
+        (7, 1, true, true)
     );
     assert!(Arc::ptr_eq(
         &state.lock().await.native_connection_objects[&1].owner,

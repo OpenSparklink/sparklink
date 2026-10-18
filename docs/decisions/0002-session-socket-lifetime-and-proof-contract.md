@@ -47,6 +47,26 @@ ConnectionOwner；以 Weak context 避免新增永久 State/owner 环。未完�
 物理状态来源、不授予 Ready，也不证明内核引用或 USB callback 已排空。离线受控
 依赖、实际私有 D-Bus／OS fd 回归及新 artifact 实机范围在资格入口分别表达。
 
+### Connection 投影与 Native 创建排空
+
+物理 Connection 由当前 Kernel 快照投影，不等待 SSAP 初始化结果；服务可用性仍
+由同一 Engine 的实际状态表达。发布只 prime 原有初始化 slot，不能创建第二任务。
+仅 NotStarted 调用惰性 factory；普通 Service initializer 在投影前预留同一 owner
+的创建 gate。Running／Completed 访问不构造额外预留，protected 服务仍按真实机制
+延后。Service 等待 Native lease 及创建资源受首次五秒期限约束；应用保持明确 busy。
+
+Service、普通和 dynamic 创建共享原身份/管理 lease 校验与 Native 阻塞提交 helper。
+实际管理 guard 覆盖 Native 调用；连接级创建 guard 还覆盖已返回但尚未消费的 fd。
+丢弃返回结果时先关闭 fd，再释放创建 guard。退休关闭新准入，join 原初始化任务，
+等待创建结果排空，再停止并 join 原 Engine；取消等待保留同一 owner 和清理预算。
+阻塞池晚启动和原期限后接收 fd 均拒绝；已经开始的内核/物理义务仍需实际完成清理。
+
+生产函数、有限 Native/table fixture、OS fd、私有 D-Bus 和原期限测试分别记范围。
+fd 关闭判据的用例在 exec 后的独立进程创建 socket，避免其他并行测试 fork 到 exec
+之间临时继承 CLOEXEC fd。保留原 join/关闭断言；受控 fork 反例不自动解释历史失败。
+实际 Native 返回/parent 退休屏障、Kernel 引用、callback/UAF/drain 及完整 fd/Grant/
+credit 组合仍需 VM 门禁与各自证明，不能从宿主 fixture 或 inode 消失推出完成。
+
 ### 安全能力交换沿用同一物理 Session
 
 受限capability-only入口不是另一Engine，也不授予可信安全状态。管理批准必须由

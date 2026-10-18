@@ -90,7 +90,7 @@ pub(crate) async fn retire_registration(
     connection: &zbus::Connection,
     entry: &Registration,
 ) -> zbus::Result<()> {
-    entry.owner.stop_ssap().await;
+    entry.owner.shutdown().await;
     match connection
         .object_server()
         .interface::<_, ConnectionIface>(entry.path.as_str())
@@ -237,6 +237,15 @@ enum Initialization {
     Completed(Result<(), String>),
 }
 impl Initialization {
+    fn begin<F>(&mut self, initialize: impl FnOnce() -> F)
+    where
+        F: std::future::Future<Output = Result<(), String>> + Send + 'static,
+    {
+        if matches!(self, Self::NotStarted) {
+            *self = Self::Running(tokio::spawn(initialize()));
+        }
+    }
+
     async fn finish(&mut self) -> Result<(), String> {
         let result = match self {
             Self::NotStarted => return Ok(()),
@@ -251,11 +260,14 @@ impl Initialization {
 }
 /// The handle stays in the owner slot while awaited. Cancelling a request
 /// drops only its wait/lock, never the connection-owned initializer.
-async fn initialize_once(
+async fn initialize_once<F>(
     slot: &tokio::sync::Mutex<Initialization>,
     retiring: &std::sync::atomic::AtomicBool,
-    initialize: impl std::future::Future<Output = Result<(), String>> + Send + 'static,
-) -> Result<(), String> {
+    initialize: impl FnOnce() -> F + Send + 'static,
+) -> Result<(), String>
+where
+    F: std::future::Future<Output = Result<(), String>> + Send + 'static,
+{
     use std::sync::atomic::Ordering;
     if retiring.load(Ordering::Acquire) {
         return Err("SSAP owner retiring".into());
@@ -264,9 +276,7 @@ async fn initialize_once(
     if retiring.load(Ordering::Acquire) {
         return Err("SSAP owner retiring".into());
     }
-    if matches!(*slot, Initialization::NotStarted) {
-        *slot = Initialization::Running(tokio::spawn(initialize));
-    }
+    slot.begin(initialize);
     let result = slot.finish().await;
     if retiring.load(Ordering::Acquire) {
         return Err("SSAP owner retiring".into());
@@ -279,13 +289,24 @@ async fn initialize_once(
 /// same owner retirement flag, not a second authorization/state source.
 async fn bind_off_worker(
     retiring: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    creation: tokio::sync::OwnedMutexGuard<()>,
     admission: tokio::sync::OwnedMutexGuard<crate::state::NativeManagement>,
+    original: Option<tokio::time::Instant>,
     bind: impl FnOnce() -> std::io::Result<std::os::fd::OwnedFd> + Send + 'static,
 ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
-    tokio::task::spawn_blocking(move || {
+    let in_worker = retiring.clone();
+    let completed = tokio::task::spawn_blocking(move || {
         let _admission = admission;
-        if retiring.load(std::sync::atomic::Ordering::Acquire) {
+        // Keep this guard until the returned fd is consumed or discarded,
+        // including the interval where the completed task is not polled.
+        let held_creation = creation;
+        if in_worker.load(std::sync::atomic::Ordering::Acquire) {
             return Err(zbus::fdo::Error::Failed("connection owner retiring".into()));
+        }
+        if original.is_some_and(|deadline| tokio::time::Instant::now() >= deadline) {
+            return Err(zbus::fdo::Error::Timeout(
+                "Native creation original deadline".into(),
+            ));
         }
         let fd = bind().map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
@@ -296,17 +317,30 @@ async fn bind_off_worker(
                 zbus::fdo::Error::Failed(format!("native channel bind: {error}"))
             }
         })?;
-        if retiring.load(std::sync::atomic::Ordering::Acquire) {
+        if in_worker.load(std::sync::atomic::Ordering::Acquire) {
             // fd is still uniquely owned here; rejection closes the real
             // returned descriptor instead of publishing it after retirement.
             return Err(zbus::fdo::Error::Failed(
                 "connection owner retired during native bind".into(),
             ));
         }
-        Ok(fd)
+        // Field order is deliberate: discarding a queued result closes the
+        // fd before releasing its creation/drain guard.
+        Ok((fd, held_creation))
     })
     .await
-    .map_err(|error| zbus::fdo::Error::Failed(format!("native bind task: {error}")))?
+    .map_err(|error| zbus::fdo::Error::Failed(format!("native bind task: {error}")))??;
+    if retiring.load(std::sync::atomic::Ordering::Acquire) {
+        return Err(zbus::fdo::Error::Failed(
+            "connection owner retired before native bind receipt".into(),
+        ));
+    }
+    if original.is_some_and(|deadline| tokio::time::Instant::now() >= deadline) {
+        return Err(zbus::fdo::Error::Timeout(
+            "Native creation original deadline".into(),
+        ));
+    }
+    Ok(completed.0)
 }
 
 /// Resource owner retained by the controller before any Native creation.
@@ -320,6 +354,7 @@ pub(crate) struct ConnectionOwner {
     ssap: tokio::sync::Mutex<Option<crate::ssap_engine::Engine>>,
     ssap_initialization: tokio::sync::Mutex<Initialization>,
     ssap_retiring: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    native_creations: std::sync::Arc<tokio::sync::Mutex<()>>,
     remote_services: tokio::sync::Mutex<Option<Vec<slk_protocol::ssap::discovery::Entry>>>,
 }
 
@@ -336,10 +371,25 @@ impl std::ops::Deref for ConnectionIface {
 }
 enum ChannelKind {
     User,
-    Service,
     Dynamic(slk_native::channel::DynamicConfig),
 }
 impl ConnectionOwner {
+    async fn bind_native(
+        &self,
+        admission: tokio::sync::OwnedMutexGuard<crate::state::NativeManagement>,
+        bind: impl FnOnce() -> std::io::Result<std::os::fd::OwnedFd> + Send + 'static,
+    ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
+        if self.is_retiring() {
+            return Err(zbus::fdo::Error::Failed("connection owner retiring".into()));
+        }
+        let creation = self
+            .native_creations
+            .clone()
+            .try_lock_owned()
+            .map_err(|_| zbus::fdo::Error::Failed("connection Native creation busy".into()))?;
+        bind_off_worker(self.ssap_retiring.clone(), creation, admission, None, bind).await
+    }
+
     pub(crate) fn new(
         state: &SharedState,
         generation: u64,
@@ -354,6 +404,7 @@ impl ConnectionOwner {
             ssap: tokio::sync::Mutex::new(None),
             ssap_initialization: tokio::sync::Mutex::new(Initialization::NotStarted),
             ssap_retiring: std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),
+            native_creations: std::sync::Arc::new(tokio::sync::Mutex::new(())),
             remote_services: tokio::sync::Mutex::new(None),
         })
     }
@@ -383,12 +434,11 @@ impl ConnectionOwner {
                 .is_some_and(|table| table.links[..table.count as usize].contains(&self.reference));
         (known, current)
     }
-    async fn authorized_fd(
+    async fn binding_context(
         &self,
         directions: u32,
         security: u32,
-        kind: ChannelKind,
-    ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
+    ) -> zbus::fdo::Result<(u16, crate::state::NativeLease)> {
         if self.is_retiring() {
             return Err(zbus::fdo::Error::Failed("connection owner retiring".into()));
         }
@@ -400,44 +450,51 @@ impl ConnectionOwner {
                 zbus::fdo::Error::InvalidArgs("invalid channel authorization directions".into())
             }
         })?;
-        let (index, lease) = {
-            let st = context.lock().await;
-            if !st.present
-                || st.controller.generation != self.generation
-                || !st.native_links_known()
-                || !st.native_links.as_ref().is_some_and(|table| {
-                    table.links[..table.count as usize].contains(&self.reference)
-                })
-            {
-                return Err(zbus::fdo::Error::Failed(
-                    "connection lifetime is not current".into(),
-                ));
-            }
-            (
-                st.controller.dev_index,
-                st.native_lease
-                    .clone()
-                    .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?,
-            )
-        };
+        let st = context.lock().await;
+        if !st.present
+            || st.controller.generation != self.generation
+            || !st.native_links_known()
+            || !st
+                .native_links
+                .as_ref()
+                .is_some_and(|table| table.links[..table.count as usize].contains(&self.reference))
+        {
+            return Err(zbus::fdo::Error::Failed(
+                "connection lifetime is not current".into(),
+            ));
+        }
+        Ok((
+            st.controller.dev_index,
+            st.native_lease
+                .clone()
+                .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?,
+        ))
+    }
+    fn admission_token(admission: &crate::state::NativeManagement) -> zbus::fdo::Result<u64> {
+        if !admission.accepting {
+            return Err(zbus::fdo::Error::Failed("management unavailable".into()));
+        }
+        admission
+            .token
+            .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))
+    }
+    async fn authorized_fd(
+        &self,
+        directions: u32,
+        security: u32,
+        kind: ChannelKind,
+    ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
+        let (index, lease) = self.binding_context(directions, security).await?;
         let admission = lease
             .try_lock_owned()
             .map_err(|_| zbus::fdo::Error::Failed("management handoff busy".into()))?;
-        if !admission.accepting || admission.token.is_none() {
-            return Err(zbus::fdo::Error::Failed("management unavailable".into()));
-        }
-        let token = admission
-            .token
-            .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?;
+        let token = Self::admission_token(&admission)?;
         let (generation, lifetime, handle) = (
             self.generation,
             self.reference.lifetime,
             self.reference.handle,
         );
-        let fd = bind_off_worker(self.ssap_retiring.clone(), admission, move || match kind {
-            ChannelKind::Service => slk_native::channel::open_service(
-                index, generation, lifetime, handle, token, security,
-            ),
+        self.bind_native(admission, move || match kind {
             ChannelKind::User => slk_native::channel::open(
                 index, generation, lifetime, handle, token, directions, security,
             ),
@@ -445,13 +502,38 @@ impl ConnectionOwner {
                 index, generation, lifetime, handle, token, config,
             ),
         })
-        .await?;
-        if self.is_retiring() {
-            return Err(zbus::fdo::Error::Failed(
-                "connection owner retired during native bind".into(),
-            ));
-        }
-        Ok(fd)
+        .await
+    }
+    async fn authorized_service_fd(
+        &self,
+        original: tokio::time::Instant,
+        creation: tokio::sync::OwnedMutexGuard<()>,
+    ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
+        let security = self.ssap_security;
+        let (index, lease) = self.binding_context(3, security).await?;
+        // One registered initializer per connection bounds these waiters.
+        // The original whole-initialization deadline includes this wait.
+        let admission = tokio::time::timeout_at(original, lease.lock_owned())
+            .await
+            .map_err(|_| zbus::fdo::Error::Timeout("Native admission original deadline".into()))?;
+        let token = Self::admission_token(&admission)?;
+        let (generation, lifetime, handle) = (
+            self.generation,
+            self.reference.lifetime,
+            self.reference.handle,
+        );
+        bind_off_worker(
+            self.ssap_retiring.clone(),
+            creation,
+            admission,
+            Some(original),
+            move || {
+                slk_native::channel::open_service(
+                    index, generation, lifetime, handle, token, security,
+                )
+            },
+        )
+        .await
     }
 }
 
@@ -484,12 +566,12 @@ impl ConnectionIface {
         self.owner.start_ssap().await
     }
     #[cfg(test)]
-    async fn start_ssap_on_publication(&self) -> zbus::fdo::Result<()> {
-        self.owner.start_ssap_on_publication().await
+    async fn prime_ssap_on_publication(&self) -> zbus::fdo::Result<()> {
+        self.owner.prime_ssap_on_publication()
     }
     #[cfg(test)]
-    async fn stop_ssap(&self) {
-        self.owner.stop_ssap().await;
+    async fn shutdown(&self) {
+        self.owner.shutdown().await;
     }
     async fn open_authorized_channel(
         &self,
@@ -585,7 +667,10 @@ impl ConnectionOwner {
     ) -> Result<(), String> {
         // Same production owned slot and transition; only the Native
         // dependency is controlled. No socket/protocol success is simulated.
-        initialize_once(&self.ssap_initialization, &self.ssap_retiring, dependency).await
+        initialize_once(&self.ssap_initialization, &self.ssap_retiring, move || {
+            dependency
+        })
+        .await
     }
 
     async fn ssap_context(
@@ -598,31 +683,71 @@ impl ConnectionOwner {
         let state = context.lock().await;
         Ok((state.controller.dev_index, state.ssap_database.clone()))
     }
-    /// Ordinary SMTC keeps the qualified eager start. Protected SMTC is not
+    /// Ordinary SMTC requests the same eager start. Protected SMTC is not
     /// bound before a real mechanism exists; requests and actual security
     /// completion use start_ssap, which always asks the kernel for the frozen
     /// requirement. No timer, Agent approval or cached request grants access.
-    pub(crate) async fn start_ssap_on_publication(
-        self: &std::sync::Arc<Self>,
-    ) -> zbus::fdo::Result<()> {
+    pub(crate) fn prime_ssap_on_publication(self: &std::sync::Arc<Self>) -> zbus::fdo::Result<()> {
         if self.ssap_security != 0 {
             return Ok(());
         }
-        self.start_ssap().await
+        if self.is_retiring() {
+            return Err(zbus::fdo::Error::Failed("SSAP owner retiring".into()));
+        }
+        // A busy slot belongs to the existing initializer/stop waiter. Do not
+        // join it from physical observation, or create an additional task.
+        let Ok(mut slot) = self.ssap_initialization.try_lock() else {
+            return Ok(());
+        };
+        if self.is_retiring() {
+            return Err(zbus::fdo::Error::Failed("SSAP owner retiring".into()));
+        }
+        let owner = self.clone();
+        let original = tokio::time::Instant::now() + std::time::Duration::from_secs(5);
+        slot.begin(move || owner.ssap_initializer(original));
+        Ok(()) // scheduling only; never SSAP readiness or negotiation success
+    }
+    fn ssap_initializer(
+        self: std::sync::Arc<Self>,
+        original: tokio::time::Instant,
+    ) -> impl std::future::Future<Output = Result<(), String>> + Send + 'static {
+        // Executed only by the first admitted slot, before physical publication.
+        // Reserving this gate cannot start wire work or confer a kernel grant.
+        let reserved = self.native_creations.clone().try_lock_owned().ok();
+        let owner = self;
+        async move {
+            let result = match tokio::time::timeout_at(original, async {
+                let creation = match reserved {
+                    Some(guard) => guard,
+                    None => owner.native_creations.clone().lock_owned().await,
+                };
+                owner.initialize_ssap(original, creation).await
+            })
+            .await
+            {
+                Ok(result) => result.map_err(|error| error.to_string()),
+                Err(_) => Err("SSAP initialization original deadline".into()),
+            };
+            if let Err(error) = &result {
+                tracing::warn!(%error,lifetime=owner.reference.lifetime,"SSAP initializer ended with error");
+            }
+            result
+        }
     }
     pub(crate) async fn start_ssap(self: &std::sync::Arc<Self>) -> zbus::fdo::Result<()> {
         let owner = self.clone();
         let original = tokio::time::Instant::now() + std::time::Duration::from_secs(5);
-        initialize_once(&self.ssap_initialization, &self.ssap_retiring, async move {
-            owner
-                .initialize_ssap(original)
-                .await
-                .map_err(|error| error.to_string())
+        initialize_once(&self.ssap_initialization, &self.ssap_retiring, move || {
+            owner.ssap_initializer(original)
         })
         .await
         .map_err(zbus::fdo::Error::Failed)
     }
-    async fn initialize_ssap(&self, original: tokio::time::Instant) -> zbus::fdo::Result<()> {
+    async fn initialize_ssap(
+        &self,
+        original: tokio::time::Instant,
+        creation: tokio::sync::OwnedMutexGuard<()>,
+    ) -> zbus::fdo::Result<()> {
         use std::sync::atomic::Ordering;
         let mut actor = self.ssap.lock().await;
         if tokio::time::Instant::now() >= original {
@@ -636,9 +761,7 @@ impl ConnectionOwner {
         if actor.is_some() {
             return Ok(());
         }
-        let fd = self
-            .authorized_fd(3, self.ssap_security, ChannelKind::Service)
-            .await?;
+        let fd = self.authorized_service_fd(original, creation).await?;
         let (index, database) = self.ssap_context().await?;
         if tokio::time::Instant::now() >= original {
             return Err(zbus::fdo::Error::Timeout(
@@ -666,7 +789,7 @@ impl ConnectionOwner {
         );
         Ok(())
     }
-    pub(crate) async fn stop_ssap(&self) {
+    pub(crate) async fn shutdown(&self) {
         // Fence new starters before taking the same slot. A Native bind already
         // begun retains its actual guard/fd until the initializer returns; do
         // not detach it and declare cleanup complete on an author's timeout.
@@ -674,6 +797,9 @@ impl ConnectionOwner {
         if let Err(error) = self.ssap_initialization.lock().await.finish().await {
             tracing::debug!(%error, "SSAP initializer finished without a published owner");
         }
+        // User/dynamic creation is not a service initializer. Join its actual
+        // work and any queued fd receipt too, before retiring this owner.
+        let _creations = self.native_creations.lock().await;
         // The Engine and its JoinHandle stay in the owner while awaiting.
         // Cancelling this wait must not detach the task or let a second stop
         // observe an empty slot before the first actual join has completed.
@@ -1212,6 +1338,36 @@ mod grant_tests {
     use std::sync::Arc;
     use tokio::sync::Mutex;
 
+    fn run_fd_case_isolated(name: &str) -> bool {
+        const CHILD: &str = "SPARKLINK_FD_CASE_CHILD";
+        if std::env::var(CHILD).as_deref() == Ok(name) {
+            return false;
+        }
+        // CLOEXEC does not prevent another test's fork from temporarily
+        // retaining this socket before exec. Create the tested fd only in an
+        // exec'd child running this exact case, with no private-bus spawns.
+        // Keep the actual production call, joins and close assertions intact.
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                &format!("connection_object::grant_tests::{name}"),
+                "--test-threads=1",
+            ])
+            .env(CHILD, name)
+            .output()
+            .unwrap();
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        assert!(
+            output.status.success()
+                && stdout.contains("running 1 test")
+                && stdout.contains("test result: ok. 1 passed; 0 failed; 0 ignored;"),
+            "isolated fd regression {name}: {}\n{stdout}\n{}",
+            output.status,
+            String::from_utf8_lossy(&output.stderr)
+        );
+        true
+    }
+
     fn bind_lease() -> crate::state::NativeLease {
         Arc::new(Mutex::new(crate::state::NativeManagement {
             token: Some(19),
@@ -1221,10 +1377,242 @@ mod grant_tests {
         }))
     }
 
+    #[tokio::test]
+    async fn r5f9f_first_initializer_reserves_native_creation_before_publication() {
+        // Unknown Native/table dependency prevents any AF_SPARKLINK call.
+        // Test actual task admission/reservation, not a successful backend.
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(
+                std::path::Path::new("/tmp"),
+                "initial-native-reservation",
+            ),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let owner = ConnectionOwner::new(
+            &state,
+            7,
+            SleLinkInfo {
+                lifetime: 1,
+                handle: 7,
+                ..Default::default()
+            },
+            0,
+        );
+        owner.prime_ssap_on_publication().unwrap();
+        assert!(
+            owner.native_creations.try_lock().is_err(),
+            "first service Native claim must precede exposing the physical view to app creators"
+        );
+        let id = match &*owner.ssap_initialization.try_lock().unwrap() {
+            Initialization::Running(task) => task.id(),
+            _ => panic!("one original task required"),
+        };
+        owner.prime_ssap_on_publication().unwrap();
+        assert!(
+            matches!(&*owner.ssap_initialization.try_lock().unwrap(),Initialization::Running(task) if task.id()==id)
+        );
+        owner.shutdown().await;
+        assert!(owner.native_creations.try_lock().is_ok());
+    }
+
+    /// Actual owner retirement and blocking Native helper. Only the Native
+    /// syscall is a bounded Unix-fd dependency; no real kernel/USB acceptance.
+    #[tokio::test]
+    async fn r5f9f_connection_retirement_waits_cancelled_native_creation() {
+        if run_fd_case_isolated("r5f9f_connection_retirement_waits_cancelled_native_creation") {
+            return;
+        }
+        use std::time::Duration;
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(std::path::Path::new("/tmp"), "native-retirement"),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let owner = ConnectionOwner::new(
+            &state,
+            7,
+            SleLinkInfo {
+                lifetime: 1,
+                handle: 7,
+                ..Default::default()
+            },
+            0,
+        );
+        let lease = bind_lease();
+        let admission = lease.clone().lock_owned().await;
+        let (fd, peer) = std::os::unix::net::UnixDatagram::pair().unwrap();
+        let (entered, started) = tokio::sync::oneshot::channel();
+        let (release, released) = std::sync::mpsc::sync_channel(0);
+        let waiter = tokio::spawn({
+            let owner = owner.clone();
+            async move {
+                owner
+                    .bind_native(admission, move || {
+                        entered.send(()).unwrap();
+                        released
+                            .recv_timeout(Duration::from_secs(3))
+                            .map_err(std::io::Error::other)?;
+                        Ok(fd.into())
+                    })
+                    .await
+            }
+        });
+        tokio::time::timeout(Duration::from_secs(1), started)
+            .await
+            .unwrap()
+            .unwrap();
+        waiter.abort();
+        assert!(waiter.await.unwrap_err().is_cancelled());
+        assert!(lease.try_lock().is_err(), "Native call is still in flight");
+        let mut retirement = tokio::spawn({
+            let owner = owner.clone();
+            async move { owner.shutdown().await }
+        });
+        assert!(
+            tokio::time::timeout(Duration::from_millis(100), &mut retirement)
+                .await
+                .is_err(),
+            "Connection cleanup must not finish before actual Native creation returns"
+        );
+        assert!(owner.is_retiring());
+        release.send(()).unwrap();
+        tokio::time::timeout(Duration::from_secs(1), retirement)
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(lease.try_lock().is_ok());
+        assert_eq!(
+            peer.send(&[1]).unwrap_err().kind(),
+            std::io::ErrorKind::ConnectionRefused
+        );
+    }
+
+    #[tokio::test]
+    async fn r5f9f_retirement_waits_for_completed_but_unpolled_native_fd() {
+        if run_fd_case_isolated("r5f9f_retirement_waits_for_completed_but_unpolled_native_fd") {
+            return;
+        }
+        use std::time::Duration;
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(
+                std::path::Path::new("/tmp"),
+                "native-return-receipt",
+            ),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let owner = ConnectionOwner::new(
+            &state,
+            7,
+            SleLinkInfo {
+                lifetime: 1,
+                handle: 7,
+                ..Default::default()
+            },
+            0,
+        );
+        let lease = bind_lease();
+        let admission = lease.clone().lock_owned().await;
+        let (fd, peer) = std::os::unix::net::UnixDatagram::pair().unwrap();
+        let (entered, started) = tokio::sync::oneshot::channel();
+        let (release, released) = std::sync::mpsc::sync_channel(0);
+        let creating = owner.bind_native(admission, move || {
+            entered.send(()).unwrap();
+            released
+                .recv_timeout(Duration::from_secs(3))
+                .map_err(std::io::Error::other)?;
+            Ok(fd.into())
+        });
+        tokio::pin!(creating);
+        tokio::select! {
+            value = &mut creating => panic!("Native creation returned before its dependency: {value:?}"),
+            _ = started => {},
+        }
+        release.send(()).unwrap();
+        // Acquiring this actual guard witnesses the Native work has returned.
+        // Do not poll its async fd receipt yet.
+        drop(
+            tokio::time::timeout(Duration::from_secs(1), lease.clone().lock_owned())
+                .await
+                .unwrap(),
+        );
+        let mut retirement = tokio::spawn({
+            let owner = owner.clone();
+            async move { owner.shutdown().await }
+        });
+        assert!(
+            tokio::time::timeout(Duration::from_millis(100), &mut retirement)
+                .await
+                .is_err(),
+            "a queued Native fd result is still owned work"
+        );
+        assert!(
+            creating
+                .await
+                .unwrap_err()
+                .to_string()
+                .contains("native bind receipt")
+        );
+        tokio::time::timeout(Duration::from_secs(1), retirement)
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            peer.send(&[1]).unwrap_err().kind(),
+            std::io::ErrorKind::ConnectionRefused
+        );
+    }
+
+    #[test]
+    fn r5f9f_expired_service_work_cannot_begin_after_blocking_pool_queue() {
+        use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+        use std::time::Duration;
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .max_blocking_threads(1)
+            .build()
+            .unwrap();
+        runtime.block_on(async {
+            let (entered,started)=tokio::sync::oneshot::channel();
+            let (release,released)=std::sync::mpsc::sync_channel(0);
+            let blocker=tokio::task::spawn_blocking(move || {
+                entered.send(()).unwrap();
+                released.recv_timeout(Duration::from_secs(3)).unwrap();
+            });
+            started.await.unwrap();
+            let lease=bind_lease();
+            let admission=lease.lock_owned().await;
+            let creation=Arc::new(Mutex::new(())).lock_owned().await;
+            let calls=Arc::new(AtomicUsize::new(0));let counted=calls.clone();
+            let original=tokio::time::Instant::now()+Duration::from_millis(20);
+            let work=bind_off_worker(Arc::new(AtomicBool::new(false)),creation,admission,Some(original),move||{
+                counted.fetch_add(1,Ordering::SeqCst);
+                std::fs::File::open("/dev/null").map(Into::into)
+            });
+            tokio::pin!(work);
+            tokio::select! {
+                value=&mut work=>panic!("queued work ran while the only blocking thread is held: {value:?}"),
+                _=tokio::time::sleep_until(original)=>{},
+            }
+            release.send(()).unwrap();blocker.await.unwrap();
+            assert!(matches!(work.await,Err(zbus::fdo::Error::Timeout(_))));
+            assert_eq!(calls.load(Ordering::SeqCst),0);
+        });
+    }
+
     /// Actual production offload/guard and OS socket ownership. The blocked
     /// Native syscall is a finite dependency fixture, not a kernel/USB proof.
     #[tokio::test]
     async fn blocking_native_bind_keeps_runtime_live_and_closes_return_after_retirement() {
+        if run_fd_case_isolated(
+            "blocking_native_bind_keeps_runtime_live_and_closes_return_after_retirement",
+        ) {
+            return;
+        }
         use std::sync::atomic::{AtomicBool, Ordering};
         use std::time::Duration;
         let lease = bind_lease();
@@ -1234,13 +1622,19 @@ mod grant_tests {
         let (entered, started) = tokio::sync::oneshot::channel();
         let (release, released) = std::sync::mpsc::sync_channel(0);
         let runtime_thread = std::thread::current().id();
-        let task = tokio::spawn(bind_off_worker(retiring.clone(), admission, move || {
-            entered.send(std::thread::current().id()).unwrap();
-            released
-                .recv_timeout(Duration::from_secs(3))
-                .map_err(std::io::Error::other)?;
-            Ok(fd.into())
-        }));
+        let task = tokio::spawn(bind_off_worker(
+            retiring.clone(),
+            Arc::new(Mutex::new(())).lock_owned().await,
+            admission,
+            None,
+            move || {
+                entered.send(std::thread::current().id()).unwrap();
+                released
+                    .recv_timeout(Duration::from_secs(3))
+                    .map_err(std::io::Error::other)?;
+                Ok(fd.into())
+            },
+        ));
         // Default Tokio test is single-threaded: reaching this receipt while
         // the dependency waits establishes that the async worker is available.
         assert_ne!(
@@ -1270,6 +1664,10 @@ mod grant_tests {
 
     #[tokio::test]
     async fn cancelled_native_bind_wait_retains_actual_admission_until_return() {
+        if run_fd_case_isolated("cancelled_native_bind_wait_retains_actual_admission_until_return")
+        {
+            return;
+        }
         use std::sync::atomic::AtomicBool;
         use std::time::Duration;
         let lease = bind_lease();
@@ -1280,7 +1678,9 @@ mod grant_tests {
         let (release, released) = std::sync::mpsc::sync_channel(0);
         let task = tokio::spawn(bind_off_worker(
             Arc::new(AtomicBool::new(false)),
+            Arc::new(Mutex::new(())).lock_owned().await,
             admission,
+            None,
             move || {
                 entered.send(()).unwrap();
                 released
@@ -1314,9 +1714,13 @@ mod grant_tests {
         use std::sync::atomic::AtomicBool;
         let lease = bind_lease();
         let admission = lease.clone().lock_owned().await;
-        let denied = bind_off_worker(Arc::new(AtomicBool::new(true)), admission, || {
-            panic!("a queued retired owner must not start Native work")
-        })
+        let denied = bind_off_worker(
+            Arc::new(AtomicBool::new(true)),
+            Arc::new(Mutex::new(())).lock_owned().await,
+            admission,
+            None,
+            || panic!("a queued retired owner must not start Native work"),
+        )
         .await
         .unwrap_err();
         assert!(denied.to_string().contains("owner retiring"));
@@ -1327,9 +1731,13 @@ mod grant_tests {
             nix::libc::ETIMEDOUT,
         ] {
             let admission = lease.clone().lock_owned().await;
-            let error = bind_off_worker(Arc::new(AtomicBool::new(false)), admission, move || {
-                Err(std::io::Error::from_raw_os_error(errno))
-            })
+            let error = bind_off_worker(
+                Arc::new(AtomicBool::new(false)),
+                Arc::new(Mutex::new(())).lock_owned().await,
+                admission,
+                None,
+                move || Err(std::io::Error::from_raw_os_error(errno)),
+            )
             .await
             .unwrap_err();
             assert_eq!(
@@ -1489,6 +1897,11 @@ mod grant_tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn cancelled_engine_stop_wait_keeps_original_task_and_real_fd_for_the_next_join() {
+        if run_fd_case_isolated(
+            "cancelled_engine_stop_wait_keeps_original_task_and_real_fd_for_the_next_join",
+        ) {
+            return;
+        }
         use std::os::fd::OwnedFd;
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
             slk_native::Adapter::open("/dev/null").unwrap(),
@@ -1512,7 +1925,7 @@ mod grant_tests {
         *owner.ssap.lock().await = Some(crate::ssap_engine::Engine::task_fixture(task));
         let mut first = tokio::spawn({
             let owner = owner.clone();
-            async move { owner.stop_ssap().await }
+            async move { owner.shutdown().await }
         });
         assert!(
             tokio::time::timeout(std::time::Duration::from_millis(100), &mut first)
@@ -1529,7 +1942,7 @@ mod grant_tests {
         assert_eq!(peer.send(&[1]).unwrap(), 1);
         let mut second = tokio::spawn({
             let owner = owner.clone();
-            async move { owner.stop_ssap().await }
+            async move { owner.shutdown().await }
         });
         assert!(
             tokio::time::timeout(std::time::Duration::from_millis(100), &mut second)
@@ -1546,12 +1959,9 @@ mod grant_tests {
             },
             0,
         );
-        tokio::time::timeout(
-            std::time::Duration::from_millis(100),
-            peer_owner.stop_ssap(),
-        )
-        .await
-        .unwrap();
+        tokio::time::timeout(std::time::Duration::from_millis(100), peer_owner.shutdown())
+            .await
+            .unwrap();
         release.send(()).unwrap();
         second.await.unwrap();
         closed_rx.await.unwrap();
@@ -1576,7 +1986,7 @@ mod grant_tests {
             let slot = slot.clone();
             let retiring = retiring.clone();
             async move {
-                initialize_once(&slot, &retiring, async move {
+                initialize_once(&slot, &retiring, move || async move {
                     called.fetch_add(1, Ordering::SeqCst);
                     entered.send(()).unwrap();
                     released.await.unwrap();
@@ -1590,8 +2000,11 @@ mod grant_tests {
         assert!(first.await.unwrap_err().is_cancelled());
         assert!(matches!(*slot.lock().await, Initialization::Running(_)));
         release.send(()).unwrap();
-        let result = initialize_once(&slot, &retiring, async {
-            panic!("must not retry/duplicate a cancelled wait's owned initializer")
+        let constructed = Arc::new(AtomicUsize::new(0));
+        let factory_calls = constructed.clone();
+        let result = initialize_once(&slot, &retiring, move || {
+            factory_calls.fetch_add(1, Ordering::SeqCst);
+            async { panic!("must not retry/duplicate a cancelled wait's owned initializer") }
         })
         .await;
         assert_eq!(
@@ -1599,6 +2012,7 @@ mod grant_tests {
             "finite dependency failure before publication"
         );
         assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(constructed.load(Ordering::SeqCst), 0);
         assert!(matches!(
             *slot.lock().await,
             Initialization::Completed(Err(_))
@@ -1630,7 +2044,7 @@ mod grant_tests {
             initialize_once(
                 &starter.ssap_initialization,
                 &starter.ssap_retiring,
-                async move {
+                move || async move {
                     entered.send(()).unwrap();
                     released.await.unwrap();
                     Err("failure after held dependency returned".into())
@@ -1641,7 +2055,7 @@ mod grant_tests {
         started.await.unwrap();
         let stop = tokio::spawn({
             let owner = iface.clone();
-            async move { owner.stop_ssap().await }
+            async move { owner.shutdown().await }
         });
         tokio::time::timeout(std::time::Duration::from_secs(1), async {
             while !iface.ssap_retiring.load(Ordering::Acquire) {
@@ -1808,7 +2222,7 @@ mod grant_tests {
                 held.config.ssap.channel_security = 0;
                 tokio::time::timeout(
                     std::time::Duration::from_millis(100),
-                    iface.start_ssap_on_publication(),
+                    iface.prime_ssap_on_publication(),
                 )
                 .await
                 .unwrap()

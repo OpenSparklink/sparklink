@@ -1,5 +1,24 @@
 # SparkLink / Linux 联合实施方案
 
+### R5f9f：连接级Native创建排空与独立物理投影（实施中）
+
+两项生产函数/私有bus反例已保留：取消等待后Connection提前清理，及挂起Native
+初始化挡住物理Connection发布；Native/table依赖是明确fixture，不是实机UAF。
+本批以同一owner的创建guard覆盖实际work和未消费的fd结果；shutdown先撤销新
+准入，再join原initializer、创建结果和Engine，重试/取消不抹去原任务或提前释放预算。
+物理发布只prime同一初始化slot，不等待服务结果、不制造SSAP Ready；protected
+仍按真实机制延后。唯一Service initializer可在原五秒期限内等待原资源，应用保留
+明确busy；阻塞池晚启动及晚到fd不能越过原期限。
+第三项有限反例也保留：异步prime后应用可能先争得Native创建gate。仅NotStarted
+调用惰性factory，唯一普通Service initializer在发布前预留同一gate；已有任务或
+终态不再构造额外预留。它只约束本地资源顺序，不授予Kernel权限或服务Ready。
+限定离线：定向5、default/all-features各367及Clippy通过；Native/table为有限
+fixture。原all-features fd关闭失败及受控CLOEXEC/fork反例保留，未归因；相关
+用例在exec隔离后保持原join/关闭断言通过，不据此宣布旧失败根因修复。
+退出：原三反例、新排队结果/期限回归、严格default/all-features/Clippy、准确新
+artifact的VM原发现/连接/业务/长度/SSAP/适用撤权保持。真正Native返回/parent退休
+屏障、内核ref/callback/UAF与完整fd/Grant/credit组合仍单列，不将fixture升级资格。
+
 ### R5f9e：Native bind 离开异步worker（有限实机保持完成，完整退休排空仍缺）
 
 本批只将现有Native socket/bind/connect移动到阻塞线程，原owner退休标志和实际

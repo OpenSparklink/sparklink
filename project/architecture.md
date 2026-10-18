@@ -78,6 +78,12 @@ Native管理系统调用和特权通道fd创建集中在`slk-native`；`slkd`决
 Native调用、状态缓存或协议Engine。创建fd只表示本地资源准入/暂存，实际协商、
 授权和业务交付分别由原Kernel/Session/Grant机制及真实对端结果决定。
 
+Connection 的物理观察不等待用户态服务初始化。唯一资源 owner 在发布前登记并
+启动同一有界初始化任务；普通服务先预留连接级创建资源，protected 服务仍等待
+真实机制。应用创建保持明确 busy，不引入无界等待。owner 退休先关闭准入，再等待
+实际 Native 工作及未消费 fd 结果、原初始化器和 Engine；任务等待取消不等于排空。
+这些顺序约束不制造服务 Ready，不代替 Kernel Grant、引用或 USB callback 的验证。
+
 ### 唯一职责
 
 | 层 | 唯一所有者 | 禁止跨越 |

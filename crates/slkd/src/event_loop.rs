@@ -424,9 +424,10 @@ async fn reconcile_native(
     }
     for entry in registrations.pending {
         // The registration already holds the sole owner. Cancelling this
-        // dispatch drops only its wait, not the initializer or cleanup handle.
-        if let Err(error) = entry.owner.start_ssap_on_publication().await {
-            error!(%error,path=%entry.path,"SMTC actor binding failed; no SSAP qualification");
+        // dispatch cannot drop the owned task. Physical publication does not
+        // join service initialization or announce SSAP readiness.
+        if let Err(error) = entry.owner.prime_ssap_on_publication() {
+            error!(%error,path=%entry.path,"SMTC initialization scheduling refused");
         }
         let current = {
             let st = state.lock().await;

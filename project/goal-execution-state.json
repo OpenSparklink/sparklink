@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9E_FINITE_OFFLOAD_REAL_PASS_TERMINAL_GUARD_FIXED_FULL_NATIVE_DRAIN_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9F_TWO_COUNTEREXAMPLES_NATIVE_CREATION_DRAIN_AND_PHYSICAL_PROJECTION_IMPLEMENTING",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -4116,6 +4116,35 @@
             "prefix_sha256": "0c92100ee3f1bcf8bde3556dad0df6f347bbcb844687f3d2d933bb114c20a957",
             "scope": "Historicalpreambleretainedinimmutablegit;canonicalcurrentpageusesstructuredrecords/reportlinks,noduplicatecurrentcountertable."
           }
+        },
+        "creation_drain_and_projection": {
+          "id": "R5f9f",
+          "status": "V5_SCOPED_OFFLINE_PASS_THREE_COUNTEREXAMPLES_RETAINED_SEAL_AND_NEW_VM_PENDING",
+          "counterexamples": ".dev/main-thread-01a120fe/native-drain-counterexamples-v1-result.json",
+          "scope": "Actualowner/helper/reconcile/privatebuswithfiniteNative/tablefixtures;ownercreationguardcoversinflightandqueuedfdreceipt;physicalprojectionprimesoleinitializerwithoutjoin. Serviceoriginal5deadline,applicationbusy,protecteddeferunchanged;NoEngine/Host/ABI/Kernelchange.",
+          "remaining": "NewsealedartifactVMdiscovery/connect/short/length/OwnedSSAP/dynamic/CMTC-ExchangebaselineandactualNative-return/parentretirebarrier. Originalv4fdclosefailureactualholder/causeunattributed;controlledCLOEXECcounterexampleonlyestablishesfixtureisolationrequirement. Fulltask/ref/callback/UAF/release/finalfd/dup/SCM/Down/deadline/reuse/creditcombinationsremain. Original253FAIL,naturalRCA/nonmanualrecovery/E/mixed/coldROM/alloriginalscopeOPEN.",
+          "full_scope_unchanged": "S0-S6/19WP/10FV/12DG,VM-only,allocatedleaves,SDK110,shared12or8budget,UserHostP4. Data/SSAP/security/multichannel/fourdeviceparallel.",
+          "priority_counterexample": ".dev/main-thread-01a120fe/native-drain-priority-counterexample-v1-result.json",
+          "reservation_contract": "Only NotStarted invokes the lazy initializer factory; the sole ordinary Service initializer reserves the same per-owner creation gate before physical projection. Repeated Running/Completed access cannot construct a second reservation. Service admission waits only within original5s; application admission remains explicit busy.",
+          "fd_oracle_followup": {
+            "original_failure": ".dev/main-thread-01a120fe/native-drain-offline-v4.json",
+            "controlled_fork_counterexample": ".dev/main-thread-01a120fe/fd-cloexec-fork-counterexample-v1.json",
+            "scope": "CLOEXEC fork inheritance demonstrated;originalv4actualholder/causeunattributed. Fivefdclosecasesexec-isolatedwithoriginalproductioncalls/joins/refusalassertions. Notrealdevice/formal/kernelproof."
+          },
+          "offline_report": {
+            "path": ".dev/main-thread-01a120fe/native-drain-offline-v5.json",
+            "sha256": "81229268c28b7a539fb438624ed7d1bfb09c25cf3a96f9c8a8590a4caf817910",
+            "actual_compile_base": "0ccfaaca1b6217a24cb61c9954931bb37069bb31",
+            "dirty_diff_sha256": "d1c2d5445890bcd7b2ff02b1fbea5c65026daf689fb79a013160408b809d2a3d",
+            "gates": {
+              "targeted": 5,
+              "default": 367,
+              "all-features": 367,
+              "clippy": 0
+            },
+            "new_real_device_runs": 0,
+            "new_formal_proofs": 0
+          }
         }
       }
     }
@@ -4231,12 +4260,17 @@
         "path": ".dev/main-thread-01a120fe/down-passive-postflight-v1.json",
         "sha256": "2ed6236e84bb191686cd2e5578cf46e77e078534397da1e8a79d09ddf871ebfb",
         "scope": "Allfourallocatedpins/hub/PCIavailableafter4U-onlyVMs;EonlyROMdescriptor,noE/forbidden/hub/controlleroperations. Original10WIPunchanged. NototherthreadbusinessorE/HCCqualification."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/native-bind-postflight-v1.json",
+        "sha256": "fa2046e235d83ec2b630c13df3ff97dd7167fc6670c46a64f46a70d2ca913dda",
+        "scope": "Fourallocatedpins/hubs/PCIavailableafter10U-onlyVMs;EonlyROM/noHCC,original10WIPunchanged. Nootherthread/hub/controlleroperations;nototherthreadbusinessproof."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/native-bind-postflight-v1.json",
-      "sha256": "fa2046e235d83ec2b630c13df3ff97dd7167fc6670c46a64f46a70d2ca913dda",
-      "scope": "Fourallocatedpins/hubs/PCIavailableafter10U-onlyVMs;EonlyROM/noHCC,original10WIPunchanged. Nootherthread/hub/controlleroperations;nototherthreadbusinessproof."
+      "path": ".dev/main-thread-01a120fe/allocation-native-drain-readonly-v1.json",
+      "sha256": "7c8b3e5fb056e3e1ae3c597a1fe053ce5a07aaeb2d0e8bf42bbee3058040ab92",
+      "scope": "Fourserialpins/parenthubs/PCI/USBdescriptors/liveVMhostdev/visiblefds/leases/buildlockreadonlychecked;U5EP,E2EP. Rootfdvisibilitylimited;noUSBoperation,nonewE/mixed/coldROMqualification."
     },
     "current_finite_gate_ref": "native-bind-offload-real-r5f9e"
   }

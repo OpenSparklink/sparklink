@@ -881,6 +881,11 @@ SDK入口，不决定D-Bus策略，也不返回Ready或业务完成。固定通�
 MPS不超过2047且至少MTU+5的暂存限制。内核仍作最终准入和协商；active connect
 接受EINPROGRESS返回的fd继续暂存，必须用现有poll/info检查实际结果。
 这些Rust构造函数不新增C/Python管理导出。普通C/Python应用仍只通过broker取得fd。
+同一 Connection 的 Native 创建资源有界；应用遇到进行中的创建返回明确 busy，
+不排无界队列。唯一服务初始化器可以在首次五秒期限内等待资源。物理 Connection
+对象发布不代表服务初始化、CMTC 或 ExchangeInfo 已完成；仍查询各自实际状态。
+退休后的新创建及迟到 fd 接收被拒绝，清理等待实际创建及未消费结果，不由请求者
+取消提前宣布完成。完整 Kernel/USB drain、fd 传递和撤权组合资格见当前能力入口。
 本批只是职责迁移；迁移后新artifact的实机资格另取，不继承fa310资格。
 
 三个既有角色组sparklink、sparklink-apps、sparklink-services用同一sysusers来源；

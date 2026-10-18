@@ -330,3 +330,20 @@ root guest监督器只切换测试进程凭据，不实现业务或安全回复�
 负向用例程序退出0只表示预期错误已被核对，`operation_success`必须为false；
 提前出现的Timeout、错误errno或意外成功都不能通过。普通通道随后实际回复另验，
 不能据此宣称挂起期间的并发隔离、部分初始化或完整取消清理已通过。
+
+## Requester 退出与旧回复排空的独立门禁
+
+`run --qmp-hotplug --connection-verify --connection-advertising negotiable-t
+--channel-socket-verify --ssap-requester-lifecycle-verify` 选择独立用例。它要求新
+prepared guest，不能与 owner 生命周期、Owned、安全、尺寸、burst、动态通道或
+四设备选择器组合。本段说明输入与断言，当前资格仍按准确报告读取。
+
+实际对端提示确认请求已到达后，终止 C/Python requester。旧回复未释放时，新
+SSAP 读应软件忙且不得上 USB；既有唯一 slktest CUTC pair 在提示仍挂起期间
+完成正常随机校验回复。批准原提示后，对端实际写入、旧回复实际返回并排空，再
+完成另一 owner 的独立新读。客户端死亡不承诺撤回或回滚已到达对端的写入。
+
+原五秒不延长，业务等待另受同一保守剩余预算限制；supervisor 失败必须保留输出
+并回收自己的子进程。完整 dual-end USB、真实应用快照、所有 busy 尝试及捕获
+统计缺一不能通过。本门禁不证明内部取消任务已在某个未观测微观时点完成，也
+不证明 NOCP 真值、全复用屏障、完整退出/初始化组合或自然恢复。

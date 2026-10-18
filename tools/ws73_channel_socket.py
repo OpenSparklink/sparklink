@@ -94,6 +94,42 @@ def channel_security_for_agent(mode):
     return {'approve':1,'cli-approve':1,'numeric-approve':2}.get(mode,0)
 
 
+def run_applications(run,row,processes,files,original_deadline=None):
+    """The sole existing ordinary slktest pair, once per physical lifetime."""
+    if row['applications']:raise CaptureError('applications must not rebind after final close')
+    # Both binds must occur during the same live connection. Never synthesize RX.
+    for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
+        exercise='boundaries' if row['boundary_check'] else 'prefix-close' if row['close_prefix'] and role=='initiator' else 'burst' if row['burst'] and role=='initiator' else 'regular'
+        args=check_arguments(row['application_tool']['path'],entry,role=='peer',row['rounds'],row['message_bytes'],exercise,security=row['security_requirement'],message_security=row['message_security_required'])
+        app=dict(role=role,args=args,start_wall_ns=time.time_ns())
+        row['applications'].append(app);run.save()
+        stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
+        stderr=run.output/f'channel-{row["phase"]}-{role}.stderr'
+        app['output_files']=[str(stdout),str(stderr)]
+        proc=subprocess.Popen(args,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
+        processes.append((proc,app));app['pid']=proc.pid
+        app['credentials']=credentials(proc.pid);run.save()
+    deadline=time.monotonic()+row['rounds']*10+5
+    if original_deadline is not None:
+        deadline=min(deadline,original_deadline)
+    waiting=sorted(processes,key=lambda item:item[1]['role']!='initiator') if row['close_prefix'] else processes
+    for proc,app in waiting:
+        proc.wait(timeout=max(.001,deadline-time.monotonic()))
+        app['stdout'],app['stderr']=[Path(p).read_text() for p in app['output_files']]
+        app.update(exit=proc.returncode,end_wall_ns=time.time_ns());run.save()
+        if proc.returncode:raise CaptureError('actual socket application failed: '+app['stderr'])
+    for app in row['applications']:
+        if app['stdout'].count('NativeChannelDup: original_closed=1 duplicate_live=1') != 1 or app['stdout'].count('NativeChannelLastClose: same_lifetime_reopen=NotSupported') != 1:
+            raise CaptureError('actual duplicate/last-close/reopen rejection receipts required')
+    row['session_binding_lifecycle'] = 'DUP_ALIVE_LAST_CLOSE_REBIND_UNSUPPORTED'
+    if row['close_prefix']:
+        row['end_wall_ns']=time.time_ns()
+        prefix_application_frames(row)
+        row['after_close_ssap_start_wall_ns']=time.time_ns()
+        ssap_value_execute(run,row) # actual other Channel traffic after fd release
+    else:application_frames(row)
+
+
 def execute(run, phase):
     row = dict(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
@@ -122,37 +158,13 @@ def execute(run, phase):
         if getattr(run.args,'ssap_owner_lifecycle_verify',False):
             from ws73_ssap_owner_lifecycle import execute as owner_lifecycle_execute
             owner_lifecycle_execute(run,row)
+        if getattr(run.args,'ssap_requester_lifecycle_verify',False):
+            from ws73_ssap_requester_lifecycle import execute as requester_execute
+            requester_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
         if hasattr(run, 'channel_barrier'):
             run.channel_barrier(row)
-        # Both binds must occur during the same live connection. Never synthesize RX.
-        for role, entry in [('peer', row['owners'][1]), ('initiator', row['owners'][0])]:
-            exercise='boundaries' if row['boundary_check'] else 'prefix-close' if row['close_prefix'] and role=='initiator' else 'burst' if row['burst'] and role=='initiator' else 'regular'
-            args=check_arguments(row['application_tool']['path'],entry,role=='peer',row['rounds'],row['message_bytes'],exercise,security=row['security_requirement'],message_security=row['message_security_required'])
-            app=dict(role=role,args=args,start_wall_ns=time.time_ns())
-            row['applications'].append(app);run.save()
-            stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
-            stderr=run.output/f'channel-{row["phase"]}-{role}.stderr'
-            app['output_files']=[str(stdout),str(stderr)]
-            proc=subprocess.Popen(args,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
-            processes.append((proc,app));app['pid']=proc.pid
-            app['credentials']=credentials(proc.pid);run.save()
-        deadline=time.monotonic()+row['rounds']*10+5
-        waiting=sorted(processes,key=lambda item:item[1]['role']!='initiator') if row['close_prefix'] else processes
-        for proc,app in waiting:
-            proc.wait(timeout=max(.001,deadline-time.monotonic()))
-            app['stdout'],app['stderr']=[Path(p).read_text() for p in app['output_files']]
-            app.update(exit=proc.returncode,end_wall_ns=time.time_ns());run.save()
-            if proc.returncode:raise CaptureError('actual socket application failed: '+app['stderr'])
-        for app in row['applications']:
-            if app['stdout'].count('NativeChannelDup: original_closed=1 duplicate_live=1') != 1 or app['stdout'].count('NativeChannelLastClose: same_lifetime_reopen=NotSupported') != 1:
-                raise CaptureError('actual duplicate/last-close/reopen rejection receipts required')
-        row['session_binding_lifecycle'] = 'DUP_ALIVE_LAST_CLOSE_REBIND_UNSUPPORTED'
-        if row['close_prefix']:
-            row['end_wall_ns']=time.time_ns()
-            prefix_application_frames(row)
-            row['after_close_ssap_start_wall_ns']=time.time_ns()
-            ssap_value_execute(run,row) # actual other Channel traffic after fd release
-        else:application_frames(row)
+        if not getattr(run.args,'ssap_requester_lifecycle_verify',False):
+            run_applications(run,row,processes,files)
         # Passive VFS checks use current full records; old read/stats never
         # re-enter the producer. Older packages have no such test artifact and
         # retain their original qualification, not a new copy-gate receipt.
@@ -555,6 +567,11 @@ def corroborate(run,capture):
                 from ws73_ssap_owner_lifecycle import corroborate as owner_lifecycle_corroborate
                 ssap_owner_lifecycle,lifecycle_credit=owner_lifecycle_corroborate(row,value_matched,sdus)
                 for key in ssap_credit:ssap_credit[key]+=lifecycle_credit[key]
+            ssap_requester_lifecycle=[]
+            if row.get('ssap_requester_lifecycle_required',False):
+                from ws73_ssap_requester_lifecycle import corroborate as requester_corroborate
+                ssap_requester_lifecycle,requester_credit=requester_corroborate(row,value_matched,sdus)
+                for key in ssap_credit:ssap_credit[key]+=requester_credit[key]
             if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in ((1,4,5,6,7,8,9,10,11,13,14) if row.get('ssap_access_required',False) else (1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False) else (8,9,13,14)) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
         legs=[]
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
@@ -630,6 +647,7 @@ def corroborate(run,capture):
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
         if row.get('ssap_owner_lifecycle_required',False):entry['ssap_owner_lifecycle']=ssap_owner_lifecycle
+        if row.get('ssap_requester_lifecycle_required',False):entry['ssap_requester_lifecycle']=ssap_requester_lifecycle
         if protected is not None:entry['protected_ssap']=protected
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows if not row.get('close_prefix',False)),proofs=proofs,

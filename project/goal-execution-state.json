@@ -799,7 +799,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F7_ALLOCATED_U_HCC_AND_OWNER_DEADLINE_FINITE_PASS_REMAINING_LIFECYCLE_ACTIVE",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F8_REQUESTER_EXIT_AND_HELD_BUSINESS_GATE_IMPLEMENTED_REAL_PENDING",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1929,16 +1929,16 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP18-R5f7-owner-exit-typed-deadline-gate-active",
-      "production_behavior": "Exact DA service/newcd7 guest-Host/2fc kernel on allocated U1-1.1.1/.2:three actual HCC U/USB query-replies,service publisher exit/C-Python original5s/stale-late refusal,8normal peerreplies;27evidence negativecontrols. Resource config only,no production Runtime/Engine change. E/mixed notqualified.",
-      "state": "R5F7_NEW_ALLOCATED_U_HCC_OWNER_DEADLINE_FINITE_PASS_FULL_LIFECYCLE_OPEN",
+      "id": "WP03-WP06-WP08-WP18-R5f8-requester-exit-held-business",
+      "production_behavior": "Tools reuse actual caller_scoped/ClientRequest andshared single CUTC helper;one killed publicC/Python writer,observed busy/no-wire beforeoldresponse,actual peerwrite/oldreplydrain/newread andheldprompt business. No production Engine/Runtime/ABI change;not precise internal cancel-linearization orfullreuse proof.",
+      "state": "R5F8_EXISTING_REQUESTER_DEBT_PATH_GATE_OFFLINE_LIMITED_PASS_REAL_PENDING",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Continue actual requester exit/late physical reply anddrain,concurrent peerbusiness duringheldcallback andpartialNativeinit using existing SDK/Engine/Session andcontrolledVM facilities on this allocated U pair. E-only artifact/HCC andmixed perdevice firmware remain separate,not a new mainline prerequisite. OriginalS0-S6/19WP/10FV/12DG,allissue scopes,VM-only,UserHostP4,naturalRCA/nonmanualrecovery OPEN."
+      "next": "Seal new guest/Host,explicitSDK110US on allocated1-1.1.1/.2 andVM realbothroles;independentlyreplay originalbothendcapture andnegativecontrols. Fix soleproductionimplementation onlyif actualdefect. Then partialNativeinit/remainingarchitecture. Alloriginalscope,naturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3698,6 +3698,13 @@
         "docs/evidence/shared-allocation-u-gate-20261018.json"
       ],
       "qualification": "Historical offline/real andnewUreal are separatelyregistered;newU DAservice/cd7guestHost/2fckernel only,not currentfulltree orE/mixed."
+    },
+    "r5f8": {
+      "state": "R5F8_EXISTING_REQUESTER_DEBT_PATH_GATE_OFFLINE_LIMITED_PASS_REAL_PENDING",
+      "scope": "tools/callers only unless actual existing production defect is reproduced",
+      "exit_reference": "project/implementation-plan.md#r5f8真实-requester-退出旧回复排空与挂起期间同行业务本批",
+      "constraints": "strictallocatedU/SDK110/VM-only;original5s;soleEngine/Session;oldcd7qualification historical only",
+      "remaining": "actualkilledC/Pythonrequester,busy/no-wire,newpeerwriteandoldresponse drain,CUTCactualbusiness insideheldprompt;partialinit next"
     }
   },
   "owned_ssap_c6_historical_batch": {

@@ -13,16 +13,16 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP03-WP06-WP08-WP18-R5f7-owner-exit-typed-deadline-gate-active",
-    "production_behavior": "Exact DA service/newcd7 guest-Host/2fc kernel on allocated U1-1.1.1/.2:three actual HCC U/USB query-replies,service publisher exit/C-Python original5s/stale-late refusal,8normal peerreplies;27evidence negativecontrols. Resource config only,no production Runtime/Engine change. E/mixed notqualified.",
-    "state": "R5F7_NEW_ALLOCATED_U_HCC_OWNER_DEADLINE_FINITE_PASS_FULL_LIFECYCLE_OPEN",
+    "id": "WP03-WP06-WP08-WP18-R5f8-requester-exit-held-business",
+    "production_behavior": "Tools reuse actual caller_scoped/ClientRequest andshared single CUTC helper;one killed publicC/Python writer,observed busy/no-wire beforeoldresponse,actual peerwrite/oldreplydrain/newread andheldprompt business. No production Engine/Runtime/ABI change;not precise internal cancel-linearization orfullreuse proof.",
+    "state": "R5F8_EXISTING_REQUESTER_DEBT_PATH_GATE_OFFLINE_LIMITED_PASS_REAL_PENDING",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "Continue actual requester exit/late physical reply anddrain,concurrent peerbusiness duringheldcallback andpartialNativeinit using existing SDK/Engine/Session andcontrolledVM facilities on this allocated U pair. E-only artifact/HCC andmixed perdevice firmware remain separate,not a new mainline prerequisite. OriginalS0-S6/19WP/10FV/12DG,allissue scopes,VM-only,UserHostP4,naturalRCA/nonmanualrecovery OPEN."
+    "next": "Seal new guest/Host,explicitSDK110US on allocated1-1.1.1/.2 andVM realbothroles;independentlyreplay originalbothendcapture andnegativecontrols. Fix soleproductionimplementation onlyif actualdefect. Then partialNativeinit/remainingarchitecture. Alloriginalscope,naturalRCA/nonmanualrecovery OPEN."
   },
   "overall_required_records": [
     "deadline-real21",

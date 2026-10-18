@@ -184,6 +184,15 @@ class InitializationGate(unittest.TestCase):
             with patch.object(init.os,'geteuid',return_value=0),self.assertRaises(ValueError):init.observe_fds(root,os.getpid())
         with patch.object(init.os,'geteuid',return_value=1000),self.assertRaises(ValueError):init.observe_fds('/does-not-exist',os.getpid())
 
+    def test_host_and_guest_explicit_physical_modes_share_one_validator(self):
+        host=SimpleNamespace(ssap_initialization_verify=True,qmp_hotplug=True,connection_verify=True,channel_socket_verify=True)
+        self.assertTrue(init.requested(host,passthrough=host.qmp_hotplug))
+        with self.assertRaises(ValueError):init.requested(host,passthrough=False)
+        # The shared validator does not infer another entry point's CLI name.
+        with self.assertRaises(ValueError):init.requested(host)
+        guest=SimpleNamespace(ssap_initialization_verify=True,passthrough=True,connection_verify=True,channel_socket_verify=True)
+        self.assertTrue(init.requested(guest))
+
     def test_actual_init_shell_line_forwards_only_explicit_mode(self):
         import os
         source=(Path(__file__).resolve().parents[1]/'ws73_target_init.sh').read_text()

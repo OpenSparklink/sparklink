@@ -538,7 +538,7 @@ def _run(args):
     owner_lifecycle=bool(getattr(args,'ssap_owner_lifecycle_verify',False))
     requester_lifecycle=bool(getattr(args,'ssap_requester_lifecycle_verify',False))
     from ws73_ssap_initialization import requested as initialization_requested
-    ssap_initialization=initialization_requested(args)
+    ssap_initialization=initialization_requested(args,passthrough=passthrough)
     if requester_lifecycle and (not channel_socket or not passthrough or owner_lifecycle or ssap_owned or agent_mode or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness or parallel):raise ValueError('requester lifecycle requires separate ordinary basic socket baseline')
     if owner_lifecycle and (not channel_socket or not passthrough or agent_mode or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owner lifecycle requires separate ordinary basic socket baseline')
     if ssap_owned and (not channel_socket or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owned SSAP requires separate ordinary socket baseline')

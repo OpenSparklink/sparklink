@@ -22,9 +22,10 @@ SELECTOR = 'test-runtime-cmtc-capability'
 RESPONSE = '0200100002000c00e20000000000fa07ff070101'
 
 
-def requested(args):
+def requested(args, *, passthrough=None):
     enabled = bool(getattr(args, 'ssap_initialization_verify', False))
-    if enabled and (not getattr(args, 'passthrough', False) or not getattr(args, 'connection_verify', False)
+    physical = getattr(args, 'passthrough', False) if passthrough is None else passthrough
+    if enabled and (physical is not True or not getattr(args, 'connection_verify', False)
             or not getattr(args, 'channel_socket_verify', False)
             or getattr(args, 'channel_socket_bytes', 61) != 61 or getattr(args, 'channel_socket_rounds', 4) != 4
             or any(getattr(args, key, False) for key in ['ssap_owner_lifecycle_verify', 'ssap_requester_lifecycle_verify',

@@ -12,6 +12,9 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import subprocess
+import time
+import xml.etree.ElementTree as ET
 
 from build_resources import workspace
 
@@ -171,6 +174,106 @@ def check_available(row, proc=Path('/proc')):
                     pass
         except (FileNotFoundError, PermissionError):
             pass
+
+
+def assigned_usb_port(address, sysfs=Path('/sys/bus/usb/devices')):
+    """Resolve a live assignment to topology, never use its number as identity."""
+    bus = int(address['bus'], 10)
+    if 'port' in address:
+        return f"{bus}-{address['port']}"
+    device = int(address['device'], 10)
+    matches = []
+    for root in sysfs.iterdir():
+        if ':' in root.name or not (root / 'devnum').exists():
+            continue
+        try:
+            if (int((root / 'busnum').read_text()), int((root / 'devnum').read_text())) == (bus, device):
+                matches.append(root.name)
+        except FileNotFoundError:
+            continue  # Removal cannot turn an unresolved assignment into free.
+    return matches[0] if len(matches) == 1 else None
+
+
+def check_vm_xml(raw, ports, allocation=None, sysfs=Path('/sys/bus/usb/devices')):
+    """Only live host assignments. Explicit other-thread leaves are allowed.
+
+    An unresolved/matching WS73 vendor filter could claim our next enumeration;
+    it requires coordination. A shared hub/controller assignment also conflicts.
+    No inactive configuration, management intent, or cached device number proves
+    that the current device is free. This supplements drivers/fds/port leases.
+    """
+    data = allocation if allocation is not None else policy()
+    selected(ports, data)
+    root = ET.fromstring(raw)
+    if root.tag != 'domain' or root.find('devices') is None:
+        raise ValueError('invalid live domain XML; coordinate')
+    assignments = []
+    for dev in root.findall('./devices/hostdev'):
+        kind = dev.get('type')
+        source = dev.find('source')
+        if source is None:
+            raise ValueError('live VM hostdev without source; coordinate')
+        address = source.find('address')
+        if kind == 'pci':
+            if address is None:
+                raise ValueError('unresolved live PCI assignment; coordinate')
+            bdf = '{:04x}:{:02x}:{:02x}.{:x}'.format(
+                *[int(address.get(k), 0) for k in ['domain', 'bus', 'slot', 'function']])
+            assignments.append(dict(type=kind, controller=bdf))
+            if bdf == data['controller']:
+                raise ValueError('shared USB controller assigned to a live VM; coordinate')
+        elif kind == 'usb':
+            vendor, product = source.find('vendor'), source.find('product')
+            vid = int(vendor.get('id'), 0) if vendor is not None else None
+            pid = int(product.get('id'), 0) if product is not None else None
+            port = assigned_usb_port(address.attrib, sysfs) if address is not None else None
+            assignments.append(dict(type=kind, port=port, vid=vid, pid=pid))
+            if port is not None:
+                if any(p == port or p.startswith(port + '.') for p in ports):
+                    raise ValueError(port + ': allocated leaf or ancestor assigned to a live VM; coordinate')
+            elif vid in (None, 0xffff) and pid in (None, 0x3733):
+                raise ValueError('unresolved live WS73 USB selector; coordinate, no enumeration fallback')
+    return assignments
+
+
+def check_live_vms(ports, allocation=None):
+    """Read-only libvirt inventory before our QEMU launch; failure stops launch.
+
+    Only current assignments are relevant. Privileged fd visibility and later
+    uncoordinated QMP changes remain outside this observation, not a proof that
+    every process is harmless. Never stop/detach or acquire another VM's device.
+    """
+    data = allocation if allocation is not None else policy()
+    selected(ports, data)
+    deadline = time.monotonic() + 5
+    def query(*args):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise ValueError('live VM inventory deadline; coordinate')
+        try:
+            result = subprocess.run(['virsh', '-c', 'qemu:///system', *args],
+                                    capture_output=True, text=True, timeout=remaining, check=True)
+        except (OSError, subprocess.SubprocessError) as error:
+            raise ValueError('live VM inventory unavailable; coordinate, no hardware launch') from error
+        if len(result.stdout.encode()) > 1024 * 1024:
+            raise ValueError('live VM inventory exceeds bounded report')
+        return result.stdout
+    names = query('list', '--name').splitlines()
+    names = [name for name in names if name]
+    if len(names) > 64 or len(set(names)) != len(names):
+        raise ValueError('live VM inventory invalid or over budget')
+    observations = []
+    for name in names:
+        raw = query('dumpxml', '--', name)
+        try:
+            assignments = check_vm_xml(raw, ports, data)
+        except (ValueError, TypeError, ET.ParseError) as error:
+            raise ValueError(name + ': ' + str(error)) from error
+        observations.append(dict(name=name, xml_sha256=hashlib.sha256(raw.encode()).hexdigest(),
+                                 assignments=assignments))
+    return dict(status='NO_CONFLICT_OBSERVED_NOT_HARDWARE_QUALIFICATION', checked_ports=list(ports), live_vms=observations,
+                limits='Read-only live libvirt assignments; drivers/visible fds/leases are checked separately. '
+                       'Privileged fd visibility and uncoordinated later changes are not proven absent.')
 
 
 @contextmanager

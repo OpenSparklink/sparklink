@@ -980,6 +980,7 @@ def _run(args):
             physical_boundary=resources.PhysicalBoundary(args.ports, package, args.prepared.resolve())
             m['physical_resource_allocation']={'policy':file_record(resources.POLICY),
                 'guard':file_record(HERE/'ws73_lab_resources.py'),
+                'live_vm_inventory':args._resource_vm_inventory,
                 'firmware':physical_boundary.firmware,'observations':physical_boundary.observations,
                 'model_basis':'USER_PLACEMENT_UNTIL_GUEST_HCC_CHECK', 'vm_only':True}
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
@@ -2050,10 +2051,14 @@ def run(args):
     root=build_workspace()/allocation['run_root'];root.mkdir(parents=True,exist_ok=True)
     # Per-thread VM/run inode; the shared per-port leases still exclude races.
     from build_resources import real_device_vm
-    with resources.port_leases(args.ports, allocation) as port_fds, real_device_vm() as vm_fd:
-        args._resource_fds=(*port_fds,vm_fd)
-        with lab.lab_lock(SimpleNamespace(action='target-run',build_dir=args.prepared),path=root/'lab.lock'):
-            return _run(args)
+    with resources.port_leases(args.ports, allocation) as port_fds:
+        # Recheck live assignments after our leaf leases and before launching
+        # QEMU. A paused VM's vendor filter can be unsafe without an open fd.
+        args._resource_vm_inventory=resources.check_live_vms(list(allocation['ports']), allocation)
+        with real_device_vm() as vm_fd:
+            args._resource_fds=(*port_fds,vm_fd)
+            with lab.lab_lock(SimpleNamespace(action='target-run',build_dir=args.prepared),path=root/'lab.lock'):
+                return _run(args)
 
 
 def main():

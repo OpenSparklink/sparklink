@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Actual host guard with filesystem/fd/QMP fixtures; no real USB operation."""
 import copy
+from contextlib import nullcontext
 import hashlib
 import json
 from pathlib import Path
@@ -9,6 +10,7 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import ws73_lab_resources as resource
@@ -131,6 +133,91 @@ class AllocatedResources(unittest.TestCase):
             (fd/'7').unlink()
             row['interfaces'][0]['driver']='usbfs'
             with self.assertRaises(ValueError):resource.check_available(row,proc)
+
+    def test_live_vm_assignment_uses_topology_and_allows_other_thread(self):
+        def xml(source):
+            return '<domain><devices><hostdev type="usb"><source>'+source+'</source></hostdev></devices></domain>'
+        leaf = '<vendor id="0xffff"/><product id="0x3733"/><address bus="1" device="16"/>'
+        with tempfile.TemporaryDirectory() as tmp:
+            sysfs = Path(tmp)
+            for port, number in [('1-1.1.1',16),('1-1.1.3',17)]:
+                d=sysfs/port;d.mkdir()
+                (d/'busnum').write_text('1');(d/'devnum').write_text(str(number))
+            with self.assertRaisesRegex(ValueError,'allocated leaf'):
+                resource.check_vm_xml(xml(leaf),['1-1.1.1'],sysfs=sysfs)
+            other=xml(leaf.replace('device="16"','device="17"'))
+            self.assertEqual(resource.check_vm_xml(other,['1-1.1.1'],sysfs=sysfs)[0]['port'],'1-1.1.3')
+            # The former number no longer proves identity after reenumeration.
+            (sysfs/'1-1.1.1/devnum').write_text('99')
+            with self.assertRaisesRegex(ValueError,'unresolved live WS73'):
+                resource.check_vm_xml(xml(leaf),['1-1.1.1'],sysfs=sysfs)
+            with self.assertRaisesRegex(ValueError,'allocated leaf'):
+                resource.check_vm_xml(xml(leaf.replace('device="16"','device="99"')),['1-1.1.1'],sysfs=sysfs)
+
+    def test_vm_hub_controller_and_ambiguous_selector_require_coordination(self):
+        def xml(kind,source):
+            return '<domain><devices><hostdev type="'+kind+'"><source>'+source+'</source></hostdev></devices></domain>'
+        for source in ['<address bus="1" port="1.1"/>',
+                       '<address bus="1" port="1.1.1"/>',
+                       '<vendor id="0xffff"/><product id="0x3733"/>', '']:
+            with self.subTest(source=source),self.assertRaises(ValueError):
+                resource.check_vm_xml(xml('usb',source),['1-1.1.1'])
+        pci='<address domain="0x0000" bus="0xc5" slot="0x00" function="0x3"/>'
+        with self.assertRaisesRegex(ValueError,'shared USB controller'):
+            resource.check_vm_xml(xml('pci',pci),['1-2.1.1'])
+        # Other PCI and explicitly other-thread ports do not stop our task.
+        self.assertEqual(resource.check_vm_xml(xml('pci',pci.replace('0xc5','0xc6')),['1-2.1.1'])[0]['controller'],'0000:c6:00.3')
+        self.assertEqual(resource.check_vm_xml(xml('usb','<address bus="1" port="2.1.4"/>'),['1-2.1.1'])[0]['port'],'1-2.1.4')
+        with self.assertRaises(ValueError):resource.check_vm_xml('<domain/>',['1-2.1.4'])
+
+    def test_live_inventory_only_reads_and_preserves_xml_identity(self):
+        raw='<domain><devices><hostdev type="usb"><source><vendor id="0x1234"/><product id="0x0001"/></source></hostdev></devices></domain>'
+        with patch.object(resource.subprocess,'run',side_effect=[
+            subprocess.CompletedProcess([],0,'peer-vm\n\n',''),subprocess.CompletedProcess([],0,raw,'')]) as query:
+            report=resource.check_live_vms(['1-1.1.1'])
+        self.assertEqual(query.call_count,2)
+        self.assertEqual(query.call_args_list[0].args[0],['virsh','-c','qemu:///system','list','--name'])
+        self.assertEqual(query.call_args_list[1].args[0][-3:],['dumpxml','--','peer-vm'])
+        self.assertEqual(report['live_vms'][0]['xml_sha256'],hashlib.sha256(raw.encode()).hexdigest())
+        self.assertIn('NOT_HARDWARE_QUALIFICATION',report['status'])
+        for call in query.call_args_list:
+            self.assertGreater(call.kwargs['timeout'],0);self.assertLessEqual(call.kwargs['timeout'],5)
+
+    def test_unobservable_corrupt_overbudget_or_timed_out_vm_inventory_refuses(self):
+        for failure in [FileNotFoundError('virsh'),subprocess.CalledProcessError(1,['virsh']),
+                        subprocess.TimeoutExpired(['virsh'],5)]:
+            with patch.object(resource.subprocess,'run',side_effect=failure),self.assertRaisesRegex(ValueError,'unavailable'):
+                resource.check_live_vms(['1-1.1.1'])
+        for names in ['\n'.join(str(i) for i in range(65)),'duplicate\nduplicate','x'*(1024*1024+1)]:
+            with patch.object(resource.subprocess,'run',return_value=subprocess.CompletedProcess([],0,names,'')),self.assertRaises(ValueError):
+                resource.check_live_vms(['1-1.1.1'])
+        for raw in ['<domain', '<unrelated/>', '<domain/>', '<domain><devices><hostdev type="pci"/></devices></domain>',
+                    '<domain><devices><hostdev type="usb"><source><address bus="x" device="y"/></source></hostdev></devices></domain>']:
+            with patch.object(resource.subprocess,'run',side_effect=[subprocess.CompletedProcess([],0,'test-vm',''),subprocess.CompletedProcess([],0,raw,'')]),self.assertRaises(ValueError):
+                resource.check_live_vms(['1-1.1.1'])
+        with patch.object(resource.subprocess,'run') as query,self.assertRaises(ValueError):
+            resource.check_live_vms(['1-1.1.4'])
+        query.assert_not_called()
+
+    def test_actual_runner_checks_all_owned_leaves_before_qemu_and_releases_lease(self):
+        import ws73_target as target
+        with tempfile.TemporaryDirectory() as tmp,patch.object(resource,'workspace',return_value=Path(tmp)),\
+             patch.object(target,'build_workspace',return_value=Path(tmp)),\
+             patch.object(resource,'check_paths'),patch.object(target,'lab_module'),\
+             patch.object(target,'_run',return_value=17) as run,\
+             patch.object(build,'real_device_vm',return_value=nullcontext(42)) as marker,\
+             patch.object(resource,'check_live_vms',side_effect=ValueError('peer VM conflict')) as inventory:
+            args=SimpleNamespace(command='run',ports=['1-1.1.1'],output=Path(tmp)/'run',prepared=Path(tmp)/'prepared')
+            with self.assertRaisesRegex(ValueError,'peer VM conflict'):target.run(args)
+            inventory.assert_called_once_with(list(resource.policy()['ports']),resource.policy())
+            run.assert_not_called();marker.assert_not_called()
+            # A failed preflight cannot retain the real file lease or budget.
+            with resource.port_leases(args.ports):pass
+            inventory.side_effect=None;inventory.return_value={'status':'fixture-only'}
+            self.assertEqual(target.run(args),17)
+            self.assertEqual(args._resource_vm_inventory,{'status':'fixture-only'})
+            self.assertIn(42,args._resource_fds)
+            run.assert_called_once_with(args)
 
     def test_every_monitor_attach_including_reenumeration_is_rechecked(self):
         with patch.object(resource,'check_firmware',return_value={}),patch.object(resource.PhysicalBoundary,'check') as check:

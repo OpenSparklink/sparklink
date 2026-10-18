@@ -31,6 +31,14 @@ VM-only，主机不安装实验内核、驱动或服务。普通应用业务权�
 每端口共享 lease、独立 VM 运行锁和目录用于协调，不防御不合作的特权操作者；
 root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 
+启动入口还要求可只读访问本机 libvirt system URI（`virsh`）。它在自己的 QEMU
+启动前、取得端口 lease 后，在共同五秒预算内读取当前运行域 XML；不读取 inactive
+配置来断言占用。当前 bus/device 只用于将分配反查为拓扑，不能取代序列号 pin。
+本线程任一叶子、其上级 hub 或共享 PCI 被分配，或 WS73 选择器无法解析时，必须
+停止协调。明确其他线程的叶子允许并行；查询缺失、失败、超时、损坏或超限也停止，
+不会自动解绑或停止已有 VM。新 run manifest 的 `physical_resource_allocation`
+保存此次观察与 XML hash，仍不是型号、业务、恢复或绝对独占资格。
+
 `prepare --board-model U|E` 要求对应 SDK110 的主固件与两份校准全部 hash 一致；
 新物理执行要求此 provenance 和新 guest 的 HCC 检查。纯 support 模拟入口不需
 物理配置。新 prepared/run 必须位于该配置的线程独立运行根；旧封存根保持原样。

@@ -75,6 +75,9 @@ impl Client {
     }
 }
 impl DiscoverySession {
+    pub(crate) fn is_closed(&self) -> bool {
+        self.closed
+    }
     pub fn id(&self) -> u64 {
         self.id
     }

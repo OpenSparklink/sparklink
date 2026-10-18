@@ -23,6 +23,7 @@ def wait(fd, event, deadline):
 
 
 def main():
+    if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
     if len(sys.argv)!=7:raise ValueError("index generation connection role request reply required")
     index,generation=int(sys.argv[1]),int(sys.argv[2]);path=sys.argv[3];role=int(sys.argv[4])
@@ -98,6 +99,29 @@ def ssap_mode():
         if error_mode:raise AssertionError('negative scenario unexpectedly completed the operation')
         if actual!=expected:raise ValueError('actual peer SSAP result differs from expected random value')
         print(f'SsapPeerValue: operation={operation} path={path} handle={handle} value={actual.hex()}',flush=True)
+
+
+def discovery_mode():
+    if len(sys.argv)!=7:raise ValueError('discovery index generation prefix count address-hex')
+    index,generation=int(sys.argv[2]),int(sys.argv[3]);prefix=bytes.fromhex(sys.argv[4]);wanted=int(sys.argv[5]);address=bytes.fromhex(sys.argv[6])
+    if not 1<=len(prefix)<=64 or not 1<=wanted<=1024 or len(address)!=6:raise ValueError('bounded discovery test inputs')
+    deadline=time.monotonic_ns()+20_000_000_000;identity=ControllerId(index,generation)
+    with Client(deadline_ns=deadline) as client:lease=client.discover(identity,prefix=prefix,deadline_ns=deadline)
+    with lease:
+        path=f'/org/sparklink/slk{index}_g{generation}'
+        print('Selected '+path,flush=True)
+        print(f'DiscoverySession: id={lease.session_id} path={path} state=active source=broker',flush=True)
+        received=0
+        while received<wanted:
+            batch=lease.read(deadline_ns=deadline)
+            for r in batch.reports:
+                if r.address!=address:continue
+                if r.rssi is None:raise ValueError('known RSSI needed by this physical gate')
+                print(f'DiscoveryReport: session={lease.session_id} generation={generation} sequence={r.sequence} address_type={r.address_type} address={r.address.hex()} rssi={r.rssi} data={r.data.hex()}',flush=True)
+                received+=1
+                if received==wanted:break
+        stopped=lease.release(deadline_ns=deadline)
+        print(f'DiscoveryReleased: session={lease.session_id} last_physical_stop_confirmed={str(stopped).lower()}',flush=True)
 
 
 if __name__=="__main__":main()

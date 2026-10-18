@@ -510,3 +510,15 @@ bus/udev目录；DESTDIR不得进入运行Exec。模板变化、无SONAME或不�
 Python运行时按明确ABI major加载两库，不依赖开发包的无版本链接；显式覆盖路径
 无效时失败，不搜索旧版fallback。实际运行库加载反例和修正分别保留，不能因完整
 SDK安装恰好带有开发链接而掩盖运行包缺口。
+
+### C/Python 发现租约的交付视图
+
+C/Python 复用唯一 Rust `DiscoverySession` 与原 Client executor/owner。额外状态仅为
+语言交付所需的一个有界 pending batch，不重新维护扫描租约、权限或 Native 状态。
+短缓冲/peek/本地交付超时保留该批；原远端 destructive read 仍可能在超时前消费，
+不承诺无丢失。显式 release 只撤回本应用租约，只有实际最后 STOP 确认才返回 true；
+free/析构只释放本地引用，不隐式承诺远端清理。原租期与 owner-loss 清理义务不变。
+Client 可先关闭，派生对象保留同 caller；旧 owner、原期限与错误沿用生产实现验证。
+真实门禁继续复用现有 runner、原 USB/随机报告/同行保持断言；该集成须单独核对与验收。
+Rust release、TTL、caller-loss 和历史资格各自保留。局部 fixture/ABI/实机资格不升级
+完整发现、管理撤销、部署权限或自然恢复范围。

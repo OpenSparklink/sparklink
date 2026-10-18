@@ -121,3 +121,36 @@ STOP还须早于两名caller原20秒租期可能到期的最早时刻，排除TT
 **验收器离线检查不构成实机通过**；已执行轮次含整轮失败，显式release的正向切片
 不替代其他退出条件。准确新镜像、完整system bus角色和原路径保持回归均以
 [当前能力](../../project/current-capabilities.md)记录为准。
+
+## C 与 Python 应用发现入口
+
+这些入口复用同一 Rust `DiscoverySession`、Client caller 和 daemon 协调器，不创建
+Native fd、扫描 Engine 或权限缓存。准确 artifact 的实机范围仍由当前能力入口维护。
+
+| C 入口 | Python 对应 | 契约 |
+| --- | --- | --- |
+| `slk_client_discover` | `Client.discover` | 显式 controller identity，prefix 0–64 字节、RSSI −128…20、租期 250–60000 ms |
+| `slk_discovery_identity` | `controller`、`session_id` | 不可变准入身份；不是扫描仍活跃、Ready 或清理证明 |
+| `slk_discovery_read` | `read` | 每批至多32报告，单报告至多255数据字节；整批复制，不静默截断 |
+| `slk_discovery_release` | `release` | 只释放自己的租约；返回 true 才表示 broker 确认最后租约的物理 STOP |
+| `slk_discovery_free` | `close`／context exit | 仅释放本地引用，不返回或保证远端 STOP；未显式 release 时由 caller 消失或原租期清理 |
+
+C 的 `flags` bit0 表示等待，bit1 表示 peek；其他位返回 EINVAL。
+容量0–32，非零容量必须有有效输出区域。ENOBUFS 只写必需 count，保留整批；
+其他错误不改输出。成功复制并消费，peek 保留。一个本地已收到的批次也在调用者
+回复超时竞争中保留；尚未收到的远端 destructive read 则可能已消费，不能承诺无丢失。
+`dropped` 与 `kernel_lost` 是已知丢弃观察，不是可靠交付保证。
+
+Python 返回不可变 `DiscoveryBatch`／`DiscoveryReport` 值，未知 RSSI 为 `None`。
+`read(wait=True, peek=False, deadline_ns=...)` 不另开后台 reader；同一 Client
+有界执行器上的阻塞等待可能延迟其他调用。C 同一 view 的并行 read/release 返回
+EAGAIN；Python 串行化调用。Client 可以先关闭，派生租约保留原 caller；跨 fork 使用拒绝。
+
+所有调用沿用绝对 CLOCK_MONOTONIC 原期限（最多30秒，与 daemon 同 boot/time namespace），
+包括本地排队。release 的超时或错误不能解释为已经 Off；底层 close 可能已经终结，
+不得以重开或换 ID 重试来掩盖不确定结果。旧 owner、错 generation、过期 session 和非法
+报告继续由原 Rust/broker 验证。C 任意坏地址或别名区域仍属于调用者违反指针契约，
+与内核 syscall 的 EFAULT 测试不同。
+
+新 C/Python artifact 的真实设备门禁须由独立 VM runner 与证据记录取得。
+本源码切片只开放 SDK 与离线调用契约，不转授其他分支、历史 Rust 或本地 VM 的资格。

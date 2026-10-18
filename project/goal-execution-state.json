@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9D_PASSIVE_DOWN_FAILURE_CAPTURE_IMPLEMENTING_ORIGINAL253FAIL_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9D_BOUNDED_NONREPRODUCTION_RCA_UNPROVED_ORIGINAL253FAIL_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1954,20 +1954,24 @@
       "native-service-owner-preservation-r5f9c": {
         "level": "real_device",
         "result": "FAIL"
+      },
+      "down-passive-diagnostic-r5f9d": {
+        "level": "real_device",
+        "result": "UNPROVED"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP18-R5f9c-stable-service-owner",
-      "production_behavior": "Signed ccef310 registers sole service owner beforeNative creation,independent ofD-Buspublication;originalinitializer/EngineJoinHandle retainedacrosscancellation;bounded16active+retiring registrations andforeign-owner-safe retry. Source-mapped default/allfeatures360each/Clippy,threeactualUVMCMTC/Exchange/SSAP gates finitePASS;originalsevenlengthmatrixFAILat253lateDown,sixscopedPASSrowsdonotoverridefailure. No newformalproof,E/mixed/naturalrecovery orwholearchitecture qualification.",
-      "state": "R5F9C_STABLE_OWNER_SCOPED_PASSES_ORIGINAL_LENGTH253_DOWN_FAILURE_OPEN",
+      "id": "WP03-WP06-WP08-WP18-R5f9d-passive-down-diagnostic",
+      "production_behavior": "No productionprotocol/runtimechange;8f51 existingrunneroptin6/12s quietcapture onlyafteroriginal5sFAIL,FAILsavedbeforewaitandneverupgraded;guestinputhashesrequired. Tools863/strictdocs116offline;4exactccefservice/2fckernel,U-onlySDK110USVMs finitePASS32actualreplies88radio,24evidencenegatives;0realfailurewindows,RCAUNPROVED,original253FAILunchanged.",
+      "state": "R5F9D_FOUR_FINITE_PASSES_NO_FAILURE_WINDOW_RCA_UNPROVED_ORIGINAL253FAIL_RETAINED",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Investigateunchanged5s-peerDownfailureat253withoutdeadlineextension/retryoverwrite;preservecontinuousguestRXpendingand14/15usresubmitwitness,causeunproved. ActualNative-return/parentretirement barrier andtask/reference/callbackdrain,originalrelease/finalfd/dup/SCM/Down/deadline/reuse compositions remain;keepdata/credit/SSAP/security/multichannel/fourdevices parallel,noallcontrol prerequisite. FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,E/mixed/coldROMandarchitecture/deployment/releaseOPEN;VM-only/allocatedports/SDK110/UserHostP4unchanged."
+      "next": "R5f9d bounded4new8f51toolVMs finitePASS32actualreplies/88discoveries,0originalDownfailure reproduction and0realpassivewindow;RCA/observerremainUNPROVED,originalsevenmatrix253FAILrequiredunchanged. Stop declaredrepeatbound;nextactualNative-return/parentretirement barrier,task/reference/callbackdrain andoriginalrelease/finalfd/dup/SCM/Down/deadline/reuse;data/credit/SSAP/security/multichannel/fourdeviceparallel,noallcontrolprerequisite. FullS0-S6/19WP/10FV/12DG,VM-only/SDK110/allocatedports/shared12or8budget,UserHostP4,naturalRCA/nonmanualrecovery,E/mixed/coldROM/releaseallOPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3795,7 +3799,7 @@
         "patch_application": "Historical helper-only replay before QEMU build. Actual builtfixture andfiniteVM results referenced separately;no transfer fromoffline test."
       },
       "build": "First two attempts refused shared lock before compile;v3 acquired same global lock,8job budget/oneactualcompileunit,compile/link0,baseline binary and930linkobjects unchanged. Not device qualification.",
-      "next": "Investigateunchanged5s-peerDownfailureat253withoutdeadlineextension/retryoverwrite;preservecontinuousguestRXpendingand14/15usresubmitwitness,causeunproved. ActualNative-return/parentretirement barrier andtask/reference/callbackdrain,originalrelease/finalfd/dup/SCM/Down/deadline/reuse compositions remain;keepdata/credit/SSAP/security/multichannel/fourdevices parallel,noallcontrol prerequisite. FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,E/mixed/coldROMandarchitecture/deployment/releaseOPEN;VM-only/allocatedports/SDK110/UserHostP4unchanged.",
+      "next": "R5f9d bounded4new8f51toolVMs finitePASS32actualreplies/88discoveries,0originalDownfailure reproduction and0realpassivewindow;RCA/observerremainUNPROVED,originalsevenmatrix253FAILrequiredunchanged. Stop declaredrepeatbound;nextactualNative-return/parentretirement barrier,task/reference/callbackdrain andoriginalrelease/finalfd/dup/SCM/Down/deadline/reuse;data/credit/SSAP/security/multichannel/fourdeviceparallel,noallcontrolprerequisite. FullS0-S6/19WP/10FV/12DG,VM-only/SDK110/allocatedports/shared12or8budget,UserHostP4,naturalRCA/nonmanualrecovery,E/mixed/coldROM/releaseallOPEN.",
       "remaining": [
         "Actual SSAPExchangeInfo-pending owner retirement,Native synchronous bind-inflight andrealinitializer taskjoin/objectremoval/refworkerdrain/UAF;full2x2 FD/revoke/lifetime interleavings remain.",
         "Fullrelease/finalfd/dup/SCM_RIGHTS/Down/originaldeadline andnecessarycontrolrace matrix not completedbythis CMTClease slice;oldsource-boundreportsretaintheirscope.",
@@ -4044,11 +4048,18 @@
         },
         "passive_down_followup": {
           "id": "R5f9d",
-          "status": "IMPLEMENTED_TOOLS863_AND_STRICT_DOCS_OFFLINE_PASS_REAL_VM_PENDING",
+          "status": "TOOLS863_DOCS116_OFFLINE_PASS_FOUR_FINITE_VM_PASS_NO_FAILURE_WINDOW_RCA_UNPROVED",
           "scope": "Original5s Down failure unchanged;optin6/12s quiet capture beforecleanup,no testcontrol commands;recordactualtiming/interruption. No newHost/Engine orRuntime change.",
           "original_failure": "docs/evidence/native-service-owner-preservation-20261018.json",
           "exit": "Accurate newtools/guest VM bounded diagnosis,independenttwo-endUSB window/cleanup/Down mapping. Noreproduction/activewindow remainsUNPROVED;oldFAILneveroverwritten.",
-          "full_scope_preserved": "S0-S6/19WP/10FV/12DG,VM-only,portpolicy,SDK110,shared12/8budget,UserHostP4,naturalRCA/nonmanualrecoveryallunchanged."
+          "full_scope_preserved": "S0-S6/19WP/10FV/12DG,VM-only,portpolicy,SDK110,shared12/8budget,UserHostP4,naturalRCA/nonmanualrecoveryallunchanged.",
+          "tools_commit": "8f51d592f1d28234fc5fe4e02d39b4abea01545f",
+          "compiled_service": "ccef31048111a87d721057cb28a058cde543b245",
+          "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+          "report_ref": "docs/evidence/down-passive-diagnostic-20261018.json",
+          "qualification_record_ref": "down-passive-diagnostic-r5f9d",
+          "observed_real_failure_windows": 0,
+          "next": "R5f9d bounded4new8f51toolVMs finitePASS32actualreplies/88discoveries,0originalDownfailure reproduction and0realpassivewindow;RCA/observerremainUNPROVED,originalsevenmatrix253FAILrequiredunchanged. Stop declaredrepeatbound;nextactualNative-return/parentretirement barrier,task/reference/callbackdrain andoriginalrelease/finalfd/dup/SCM/Down/deadline/reuse;data/credit/SSAP/security/multichannel/fourdeviceparallel,noallcontrolprerequisite. FullS0-S6/19WP/10FV/12DG,VM-only/SDK110/allocatedports/shared12or8budget,UserHostP4,naturalRCA/nonmanualrecovery,E/mixed/coldROM/releaseallOPEN."
         }
       }
     }
@@ -4154,12 +4165,17 @@
           "methods": 15,
           "scope": "Existinghostguard/sharedbuildwrapper filesystem/fd/QMPfixtures only"
         }
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/native-owner-postflight-v1.json",
+        "sha256": "644e3c3108ab9e6797b1a63313a75e807ffd1fc5991f7088ead8eb58aa196a92",
+        "scope": "Fourallocatedserialpins/hubs/PCI stillmatchafterU-onlyVMs;noE/forbidden/hub/controlleroperations ornewE/mixed/coldROMqualification. Nototherthreadbusinessproof."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/native-owner-postflight-v1.json",
-      "sha256": "644e3c3108ab9e6797b1a63313a75e807ffd1fc5991f7088ead8eb58aa196a92",
-      "scope": "Fourallocatedserialpins/hubs/PCI stillmatchafterU-onlyVMs;noE/forbidden/hub/controlleroperations ornewE/mixed/coldROMqualification. Nototherthreadbusinessproof."
+      "path": ".dev/main-thread-01a120fe/down-passive-postflight-v1.json",
+      "sha256": "2ed6236e84bb191686cd2e5578cf46e77e078534397da1e8a79d09ddf871ebfb",
+      "scope": "Allfourallocatedpins/hub/PCIavailableafter4U-onlyVMs;EonlyROMdescriptor,noE/forbidden/hub/controlleroperations. Original10WIPunchanged. NototherthreadbusinessorE/HCCqualification."
     },
     "current_finite_gate_ref": "native-service-owner-real-r5f9c"
   }

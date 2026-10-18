@@ -1,12 +1,18 @@
 # 当前能力与资格
 
+R5f9d的[四轮有界诊断](../docs/evidence/down-passive-diagnostic-20261018.json)使用
+8f51 Host/guest、原ccef服务／2fc内核，仅分配U两口及SDK110US。各轮253字节两角色
+门禁通过，共32次应用校验回复／88次发现、24项证据负对照；未复现原超时，实机
+被动失败窗口执行数为0。863项工具离线与严格HTML通过不补足该分支的实机验收。
+**诊断及根因整体UNPROVED，下面原七尺寸FAIL继续有效**，不是整个HEAD或长度稳定性资格。
+
 R5f9c 生产资源所有权整改在 `ccef310` 接通：controller registration 在 Native 创建前
 持有唯一 SSAP owner；取消等待不移出原 initializer／Engine task，发布重试复用原
 owner，未完成退休仍占有限预算。
 
 - [限定离线记录](../docs/evidence/native-service-owner-offline-20261018.json)：default/all-features 各360项、严格Clippy、实际私有D-Bus／OS fd与显式Native/table fixture。实际测试编译是旧base加dirty源码，已按字节映射到ccef；31个测试执行文件封存，不伪称干净提交编译。原环境／fixture／风格失败保留。
 - [三轮限定实机记录](../docs/evidence/native-service-owner-real-20261018.json)：ccef服务／guest／Host、2fc内核，本线程U两口、SDK110US；CMTC、ExchangeInfo撤权及SSAP owner／原期限分别通过，每轮后续8次应用校验回复／22次发现；75项证据负对照。不是完整2×2、Native bind内部、task/ref/USB drain或自然恢复证明。
-- [原七尺寸记录](../docs/evidence/native-service-owner-preservation-20261018.json)：**整体FAIL**。61／249／250／254／255／2042六轮各8次业务回复及22次发现通过，61含Owned SSAP，249含16次超限拒绝；253轮因对端Down未进入原5秒共同期限而整体失败，不计作该尺寸资格。后续只运行未执行尺寸，没有重跑或覆盖253失败。
+- [原七尺寸记录](../docs/evidence/native-service-owner-preservation-20261018.json)：**整体FAIL**。61／249／250／254／255／2042六轮各8次业务回复及22次发现通过，61含Owned SSAP，249含16次超限拒绝；253轮因对端Down未进入原5秒共同期限而整体失败，不计作该次尺寸资格。原矩阵后续只运行未执行尺寸；上方新工具的独立诊断不覆盖这次失败。
 
 失败轮的对端Down在实际断链OUT后约5.08秒到达。完整USBmon配对显示其间RX请求
 在途，随后重提交空窗14／15µs；首个会话窗口532个成功完成／重提交样本P50=6µs、
@@ -356,6 +362,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 稳定服务owner及取消清理：生产函数/私有D-Bus/OSfd限定离线通过 | `offline` | `PASS` |
 | 稳定服务owner：CMTC/ExchangeInfo撤权及SSAP原期限有限实机保持 | `real_device` | `PASS` |
 | 稳定服务owner：原七尺寸整体FAIL，253迟到Down保留；六轮限定通过 | `real_device` | `FAIL` |
+| 被动Down诊断：四轮原门禁有限通过、未复现；真实失败观察与根因未证明 | `real_device` | `UNPROVED` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

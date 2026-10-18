@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+- [原Down失败后的被动诊断工具及四轮未复现](down-passive-diagnostic-20261018.json)：
+  8f51 Host/guest、ccef服务／2fc内核、SDK110US，仅U两口。32次应用回复／88次发现、
+  24项证据负对照；0次原超时、0个实机失败观察窗口，整体UNPROVED。
+  原七尺寸253 FAIL不替换；工具863项与严格HTML离线通过不授故障根因或恢复资格。
+
 - 稳定服务owner整改按层级和失败分别查看：
   [生产函数／私有D-Bus／OS fd限定离线](native-service-owner-offline-20261018.json)、
   [ccef三轮CMTC／ExchangeInfo／SSAP有限实机](native-service-owner-real-20261018.json)、

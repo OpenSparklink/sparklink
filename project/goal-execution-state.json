@@ -799,7 +799,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F7_REAL_OWNER_EXIT_AND_ORIGINAL_DEADLINE_GATE_ACTIVE",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F7_SERVICE_OWNER_AND_DEADLINE_FINITE_PASS_REMAINING_LIFECYCLE_ACTIVE",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1903,20 +1903,28 @@
       "ssap-value-deadline-factory-real-r5f6": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "ssap-owner-deadline-offline-r5f7": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "ssap-owner-deadline-real-r5f7": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP03-WP06-WP08-WP18-R5f7-owner-exit-typed-deadline-gate-active",
-      "production_behavior": "Reuse preserved owner/prompt/wire regression and sole existing SDK/recorder;typed C/Python errno plus originalfive-second guard,not diagnostic string. No production Engine/Runtime or publicABI change;old e776 records retain their ownscope.",
-      "state": "R5F7_EXISTING_DRAFT_AND_ACTUAL_SDK_ERROR_GATE_IMPLEMENTED_NEW_ARTIFACT_REAL_PENDING",
+      "production_behavior": "Existing owner/callback/SDK/recorder gates directly exercised. Actualda201 guest and9a1Host two-role ServiceOwner exit/stale-late refusal/C-Python5second timeout,unchangedDB andCUTCafterwards finitePASS. Originalv1FAIL preserved;no newEngine/Runtime orfullarchitecture qualification.",
+      "state": "R5F7_SERVICE_OWNER_AND_SDK_ORIGINAL_DEADLINE_FINITE_PASS_FULL_LIFECYCLE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Seal accurate newsource,strict locked/offline tests andbuild/prepared artifacts;VM verify ordinary ownerexit/stale/late approvals/actual SDK originaldeadline in both connectionroles andbothUSBends. Then request-caller exit/latephysicalreply,concurrent realpeerbusiness andpartialNativeinit;all fullarchitecture/common/higherAPI/perappDiscovery/R6c andnaturalRCA/nonmanualrecovery remain OPEN."
+      "next": "New hardware allocation is strict:U1-1.1.1/.2,E1-2.1.1/.2,other .3/.4 forbidden;old topology is historical only. New explicitSDK110 same-model guest/HCC/artifact gates first;mixed download refused. Advance actual requester-caller exit with late response/drain,concurrent peer business while callback held,andpartialNativeinit using existing SDK/Engine/Session andcontrolledVM facilities. Current owner/stale-late policy/originaldeadline slice does not cover them. Then remaining public lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c. FullS0-S6/19WP/10FV/12DG/UserHostP4/VM-only,naturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3665,11 +3673,16 @@
       }
     },
     "r5f7": {
-      "state": "R5F7_EXISTING_DRAFT_AND_ACTUAL_SDK_ERROR_GATE_IMPLEMENTED_NEW_ARTIFACT_REAL_PENDING",
+      "state": "R5F7_SERVICE_OWNER_AND_SDK_ORIGINAL_DEADLINE_FINITE_PASS_FULL_LIFECYCLE_OPEN",
       "audit": "docs/evidence/ssap-owner-deadline-gate-audit-20261018.json",
       "source_parent": "0fdeed5c9abcd5fb0d5e9824c5b40c9cf005ee78",
       "scope": "Test tools/fixtures only;reuse existing production implementations",
-      "remaining": "Seal accurate newsource,strict locked/offline tests andbuild/prepared artifacts;VM verify ordinary ownerexit/stale/late approvals/actual SDK originaldeadline in both connectionroles andbothUSBends. Then request-caller exit/latephysicalreply,concurrent realpeerbusiness andpartialNativeinit;all fullarchitecture/common/higherAPI/perappDiscovery/R6c andnaturalRCA/nonmanualrecovery remain OPEN."
+      "remaining": "New hardware allocation is strict:U1-1.1.1/.2,E1-2.1.1/.2,other .3/.4 forbidden;old topology is historical only. New explicitSDK110 same-model guest/HCC/artifact gates first;mixed download refused. Advance actual requester-caller exit with late response/drain,concurrent peer business while callback held,andpartialNativeinit using existing SDK/Engine/Session andcontrolledVM facilities. Current owner/stale-late policy/originaldeadline slice does not cover them. Then remaining public lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c. FullS0-S6/19WP/10FV/12DG/UserHostP4/VM-only,naturalRCA/nonmanualrecovery OPEN.",
+      "reports": [
+        "docs/evidence/ssap-owner-deadline-offline-20261018.json",
+        "docs/evidence/ssap-owner-deadline-real-20261018.json"
+      ],
+      "qualification": "Two finite records only;firstv1 overallFAIL neverrewritten. Compiled/guestda201,Host9a1,debug483 andtool-source roles separatelymapped."
     }
   },
   "owned_ssap_c6_historical_batch": {

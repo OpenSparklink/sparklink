@@ -33,8 +33,13 @@ R5f6值原期限／共享初始化的[源码审计与原反例](../docs/evidence
 覆盖受控原期限、调用者退出、部分初始化、晚到义务或同行业务全集；完整架构仍缺。
 未知C诊断及clock/取消/物理drain假设保持开放。保留中的屏障草稿单列接入；其
 本地异常回归不授予最新工具的实机资格，当前工作树整体仍NOT_REVALIDATED。
-R5f7的[owner/原期限门禁候选](../docs/evidence/ssap-owner-deadline-gate-audit-20261018.json)
-复用现有草稿与SDK；新执行工具尚未取得实机资格，e776分项不转授。
+R5f7的[原审计与失败](../docs/evidence/ssap-owner-deadline-gate-audit-20261018.json)、
+[离线记录](../docs/evidence/ssap-owner-deadline-offline-20261018.json)及
+[旧拓扑实机限定记录](../docs/evidence/ssap-owner-deadline-real-20261018.json)现已分别登记。
+旧拓扑 v1 整体 FAIL 保留；独立 v2 为 DA 编译/guest、9a1 Host、2fc 内核，
+两连接角色真实服务 publisher 退出、C/Python errno110 约五秒及8次正常CUTC回复；
+没有观察到晚到 denial 物理回复，不覆盖 requester 退出、挂起期间同行业务或部分初始化。
+本次新端口、HCC、固件与 guest/Host 工具保持单列待验，不能沿用这份旧拓扑 PASS。
 离线记录仅描述原源码的离线范围，不用“实机仍缺”等相对时间标题覆盖后来的独立实机记录。
 
 选定保留产物的编译／执行／校验来源只按下方生成记录读取。R4新raw退休产物已取得
@@ -287,6 +292,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | e776 SSAP值期限/共享初始化：apps-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | e776 SSAP值期限/共享初始化：preservation-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | e776 SSAP值期限/共享初始化：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
+| 服务owner/SDK原期限：offline限定通过；完整架构开放 | `offline` | `PASS` |
+| 服务owner/SDK原期限：real限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

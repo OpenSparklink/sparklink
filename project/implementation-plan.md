@@ -246,6 +246,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | e776 SSAP值期限/共享初始化：apps-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | e776 SSAP值期限/共享初始化：preservation-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | e776 SSAP值期限/共享初始化：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
+| 服务owner/SDK原期限：offline限定通过；完整架构开放 | `offline` | `PASS` |
+| 服务owner/SDK原期限：real限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1547,11 +1549,15 @@ starter再join实际初始化。初始化与ExchangeInfo共用独立原期限，
 完整输出和原监督预算。原finally本已回收子进程，未误报进程泄漏；新的受控VM门禁
 仍未完成。管理show可达不能充当同行业务交付。
 
-R5f7开始接入保留的owner/原期限草稿，三类去向及退出条件见
-[本批审计](../docs/evidence/ssap-owner-deadline-gate-audit-20261018.json)。默认Runtime/Engine
-不变；超时改为实际公共C/Python errno与同一五秒门槛，不能因新输出文字而放宽
-时间、token、数据库或双端USB断言。现有普通CUTC在失败请求后的交付仍另验；
-尚不声明挂起期间的并发业务。签名新工具、原发布artifact与报告提交分别标识。
+R5f7已复用保留的owner/原期限草稿，三类去向及退出条件见
+[本批审计](../docs/evidence/ssap-owner-deadline-gate-audit-20261018.json)。
+[两份有限记录](../docs/evidence/ssap-owner-deadline-real-20261018.json)保留第一次整体FAIL，
+第二次旧拓扑独立 PASS：实际服务 publisher 退出、两角色公共C/Python errno110原五秒、
+stale/late策略拒绝、另一owner远端读取及之后8次普通CUTC。默认Runtime/Engine不变，
+不能放宽时间、token、数据库或双端USB断言；23项证据负对照通过。
+仍缺 requester 退出／晚到真实成功回复及drain、挂起期间并发同行业务和部分Native初始化。
+新资源配置先生成准确 guest、核对新U双端HCC并复验，E与混合另记；旧拓扑不转授。
+签名新工具、编译artifact与报告提交分别标识，不因有限PASS关闭整项issue。
 
 未知C诊断、proc/signature首轮失败与全部历史证据保留；后续PASS不推导其根因已
 修复。随后收敛其他方法的公共期限、lifecycle/Grant/fd传递、higher/common API、

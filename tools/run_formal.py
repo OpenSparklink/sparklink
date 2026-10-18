@@ -54,6 +54,53 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
+def kani_export_verdict(data, harness, required=(), negative_marker=None):
+    """Kani0.68 structured results, including actual expected properties.
+
+    This checks tool output, not source mapping/refinement. Callers must also
+    bind the exact source, command, raw log, export hash and environment scope.
+    Missing/unknown/unsupported/incomplete output cannot become PASS.
+    """
+    try:
+        if data['metadata']['version'] != '1.0' or data['metadata']['kani_version'] != '0.68.0':
+            return 'NOT_PROVEN_EXPORT_VERSION'
+        result = data['verification_results']
+        summary = result['summary']
+        if (summary['total_harnesses'], summary['executed'], summary['status']) != (1, 1, 'completed'):
+            return 'NOT_PROVEN_INCOMPLETE_EXPORT'
+        if len(result['results']) != 1 or result['results'][0]['harness_id'] != harness:
+            return 'NOT_PROVEN_HARNESS_MISMATCH'
+        checks = result['results'][0]['checks']
+        details = data['error_details']
+        if len(details) != 1 or details[0]['harness_id'] != harness:
+            return 'NOT_PROVEN_INCONSISTENT_ERRORS'
+        if not checks or any(c['status'] not in ('Success', 'Failure') for c in checks):
+            return 'NOT_PROVEN_PROPERTY_STATUS'
+        if any(c['category'] == 'unsupported_construct' for c in checks):
+            return 'NOT_PROVEN_UNSUPPORTED'
+        if any(c['category'] not in {'assertion', 'arithmetic_overflow', 'pointer_dereference', 'unreachable', 'unwinding_assertion'} for c in checks):
+            return 'NOT_PROVEN_UNKNOWN_PROPERTY'
+        descriptions = [c['description'] for c in checks]
+        if negative_marker is None and not required:
+            return 'NOT_PROVEN_MISSING_PROPERTY_SPEC'
+        if any(not any(fragment in d for d in descriptions) for fragment in required):
+            return 'NOT_PROVEN_MISSING_PROPERTY'
+        failures = [c for c in checks if c['status'] == 'Failure']
+        if negative_marker is not None:
+            if details[0]['has_errors'] is not True or details[0]['error_type'] != 'assertion_failure':
+                return 'NOT_PROVEN_WRONG_COUNTEREXAMPLE'
+            if (summary['successful'], summary['failed'], result['results'][0]['status']) != (0, 1, 'Failure'):
+                return 'NOT_PROVEN_NEGATIVE_CONTROL'
+            if len(failures) == 1 and failures[0]['category'] == 'assertion' and negative_marker in failures[0]['description']:
+                return 'EXPECTED_REJECTION_NEGATIVE_CONTROL'
+            return 'NOT_PROVEN_WRONG_COUNTEREXAMPLE'
+        if details[0]['has_errors'] is not False or (summary['successful'], summary['failed'], result['results'][0]['status']) != (1, 0, 'Success') or failures:
+            return 'NOT_PROVEN_FAILED_OR_INCOMPLETE'
+        return 'PROVED_SCOPED'
+    except (KeyError, TypeError, IndexError):
+        return 'NOT_PROVEN_INVALID_EXPORT'
+
+
 def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False, ingress_only=False, usb_registry_only=False, backend_install_only=False):
     repo = Path(__file__).resolve().parents[1]
     root = repo.parent

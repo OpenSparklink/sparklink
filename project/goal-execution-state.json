@@ -1929,20 +1929,24 @@
       "ssap-requester-drain-held-business-r5f8": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "ssap-requester-owner-preservation-r5f8": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP03-WP06-WP08-WP18-R5f8-requester-exit-held-business",
       "production_behavior": "Existing production caller/physicalslot invariants exercised byactual killedC/Python requesters,old verifiedwrite reply,new independentread and8CUTC peerreplies whilepromptheld. B847guestHost/DAservice/2fckernel;32evidence negativecontrols;original e68overallFAIL retained. No newEngine/Runtime/ABI orformal proof.",
-      "state": "R5F8_B847_REAL_REQUESTER_WRITE_DRAIN_AND_HELD_BUSINESS_FINITE_PASS_FULL_ARCHITECTURE_OPEN",
+      "state": "R5F8_REQUESTER_DRAIN_HELD_BUSINESS_AND_OLD_OWNER_PRESERVATION_FINITE_PASS_PARTIAL_INIT_NEXT",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Next actual partialNativeinitialization/owner retirement gate with existing native factory andcallback barriers;then remaining lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c architecture work. New finite verifiedwrite requester/drain/heldbusiness doesnot close late-read/new-read,duplicate/reuse/NOCP orfullmatrix. Keep originalS0-S6/19WP/10FV/12DG/allissues,strictallocatedU/SDK110/VM-only,UserHostP4,naturalRCA/nonmanualrecovery OPEN."
+      "next": "Next actual partialinitialization cleanup audit/gate must distinguish Nativefd creation,synchronousnonblockingbind,kernelCMTC,SSAPExchange andowner retirement;current source doesnot route authorized_fd through genericNativeWork. Reuse actualownedinitializer/creator andexistingtestfacilities;do notclaim old Managedadv/scan initializer tests coverSSAP. Then remainingoriginalarchitecture/fullS0-S6/19WP/10FV/12DG. StrictallocatedU/SDK110/VM-only/UserHostP4,naturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3704,15 +3708,49 @@
       "qualification": "Historical offline/real andnewUreal are separatelyregistered;newU DAservice/cd7guestHost/2fckernel only,not currentfulltree orE/mixed."
     },
     "r5f8": {
-      "state": "R5F8_B847_REAL_REQUESTER_WRITE_DRAIN_AND_HELD_BUSINESS_FINITE_PASS_FULL_ARCHITECTURE_OPEN",
+      "state": "R5F8_REQUESTER_DRAIN_HELD_BUSINESS_AND_OLD_OWNER_PRESERVATION_FINITE_PASS_PARTIAL_INIT_NEXT",
       "scope": "tools/callers only unless actual existing production defect is reproduced",
       "exit_reference": "project/implementation-plan.md#r5f8真实-requester-退出旧回复排空与挂起期间同行业务本批",
       "constraints": "strictallocatedU/SDK110/VM-only;original5s;soleEngine/Session;oldcd7qualification historical only",
-      "remaining": "Next actual partialNativeinitialization/owner retirement gate with existing native factory andcallback barriers;then remaining lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c architecture work. New finite verifiedwrite requester/drain/heldbusiness doesnot close late-read/new-read,duplicate/reuse/NOCP orfullmatrix. Keep originalS0-S6/19WP/10FV/12DG/allissues,strictallocatedU/SDK110/VM-only,UserHostP4,naturalRCA/nonmanualrecovery OPEN.",
+      "remaining": "Next actual partialinitialization cleanup audit/gate must distinguish Nativefd creation,synchronousnonblockingbind,kernelCMTC,SSAPExchange andowner retirement;current source doesnot route authorized_fd through genericNativeWork. Reuse actualownedinitializer/creator andexistingtestfacilities;do notclaim old Managedadv/scan initializer tests coverSSAP. Then remainingoriginalarchitecture/fullS0-S6/19WP/10FV/12DG. StrictallocatedU/SDK110/VM-only/UserHostP4,naturalRCA/nonmanualrecovery OPEN.",
       "retained_failure": ".dev/main-thread-01a120fe/requester-exit-us-v1/manifest.json",
       "failure_scope": "wholeFAIL;existingCLISelectedline omitted innewfixture oracle;no retrospective promotion;actual firstcase CUTCwhileheld andnewreadobservations remain incomplete scope only",
       "report": "docs/evidence/ssap-requester-drain-held-business-20261018.json",
-      "qualification": "Only accurate B847guestHost/DAservice/2fckernel,2roles,2killedC-Pythonwriters,8actualpeerreplies duringheldprompt;firste68wholeFAIL retained. Not fullcancel/reuse/partialinit/recovery."
+      "qualification": "Only accurate B847guestHost/DAservice/2fckernel,2roles,2killedC-Pythonwriters,8actualpeerreplies duringheldprompt;firste68wholeFAIL retained. Not fullcancel/reuse/partialinit/recovery.",
+      "preservation_report": "docs/evidence/ssap-requester-owner-preservation-20261018.json"
+    },
+    "r5f9_source_audit": {
+      "status": "READ_ONLY_CALL_GRAPH_AUDIT_NOT_NEW_PROOF_OR_REAL_QUALIFICATION",
+      "sources": [
+        {
+          "repo": "sparklink",
+          "commit": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+          "path": "crates/slkd/src/connection_object.rs",
+          "sha256": "82a33c109d1e34cb07caf2e38e859f97f6bdf88d4a07a7bce9d672d4beb33228"
+        },
+        {
+          "repo": "sparklink",
+          "commit": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+          "path": "crates/slk-native/src/channel.rs",
+          "sha256": "ca3906dc575d0b633af3f8fcc65591ce68e67a897ea81f1373e7aca8fbc7169c"
+        },
+        {
+          "repo": "sparklink",
+          "commit": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+          "path": "crates/slkd/src/ssap_engine.rs",
+          "sha256": "eff207dc703c2cc13f302903f64b4b9e5734e1dbe1c07b5b3b690074fd1ebc6c"
+        },
+        {
+          "repo": "linux",
+          "commit": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+          "path": "net/sparklink/sle_channel_socket.c",
+          "sha256": "57ad8003210a8c347dcab6d2b50a326a2f8eb1446238067cfe9b6a74718418cf"
+        }
+      ],
+      "actual_path": "ConnectionIface.initialize_once ownedTask -> initialize_ssap actorlock -> authorized_fd NativeLease ownedguard -> slk_native.channel.open_service synchronous SOCK_NONBLOCK socket/bind -> Engine.start AsyncFd/task -> async kernelCMTC thenSSAP ExchangeInfo",
+      "correction": "This current creator doesnotuse genericNativeWork. Existing ws73_initialization_lifecycle.py validates Managedadvertising/scanning provenance,not this SSAP initializer. Do not reuse its PASS asSSAP partialinit evidence.",
+      "boundaries": "FDcreated / kernelCMTCready / SSAPExchangeInfo negotiated / applicationvalue ready are separate. InitializationCompletedOk only means actorpublished,not protocolnegotiated. DefaultSMTC fd hasnoSO_LINGER;sl_release purgesownbinding/queues andkicksSession,while connection_session_stop joinsworker separately. SOCK_NONBLOCK isnot a proof of boundedallocation/lock wait.",
+      "next": "Choose actual per-stage controlledVM barrier beforeimplementing/refactoring. Requireoriginaldeadline,no secondinitializer,retiring prevents latepublish,real fd/guard/work references converge,peercontroller stays independentlyReady. Distinguish physicalDown effects onthe sharedlink fromothercontroller retirement. Preservefullscope andnotallcontrolcombinations asprerequisite."
     }
   },
   "owned_ssap_c6_historical_batch": {

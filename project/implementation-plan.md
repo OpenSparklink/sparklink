@@ -2,6 +2,18 @@
 
 ### R5f8：真实 requester 退出、旧回复排空与挂起期间同行业务（本批）
 
+同一新guest的[原owner/原期限保持](../docs/evidence/ssap-requester-owner-preservation-20261018.json)
+另以1f15 Host重跑：C/Python实际errno110约5.010/5.057秒，8次后续真实回复、27负对照。
+它是旧调用者保持；本批合计3次VM尝试，首轮FAIL及两个独立成功均保留，不称稳定性统计。
+
+下一批调用审计已按实际DA/2fc源码重核：`authorized_fd` 当前在持有 NativeLease guard
+时直接调用 `slk-native::channel::open_service` 的同步 `SOCK_NONBLOCK` socket/bind，
+并非通用 NativeWork。FD创建后，Engine任务再异步等待内核CMTC和SSAP ExchangeInfo；
+初始化任务CompletedOk不等于协议Ready。默认SMTC无linger；fd释放与连接级worker stop/drain
+也不同。旧 `ws73_initialization_lifecycle.py` 是Managed广告/扫描配方测试，不能冒充
+SSAP部分初始化实测。源码hash与阶段边界记入goal关联状态；下一批先确定实际屏障，
+再验证/整改；不先假定bind等待USB或新建factory框架。此审计不授予任何新证明或实机资格。
+
 首个 e68 实机整体 FAIL 原样保留：新测试漏掉既有 CLI 的 `Selected` 行，虽收到
 正确值仍错误拒绝。已改为精确校验选择身份及值的两行，额外/重复/错身份/错载荷
 继续拒绝；第二份B847 artifact两角色独立通过，首轮失败不变。
@@ -277,6 +289,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 服务owner/SDK原期限：real限定通过；完整架构开放 | `real_device` | `PASS` |
 | 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
 | Requester进程退出／旧写回复排空／提示挂起期间业务：限定通过；完整架构开放 | `real_device` | `PASS` |
+| 同一新guest的原服务owner／五秒期限保持：限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

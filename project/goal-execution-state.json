@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9F_TWO_COUNTEREXAMPLES_NATIVE_CREATION_DRAIN_AND_PHYSICAL_PROJECTION_IMPLEMENTING",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9F_OFFLINE_AND_FINITE_VM_PRESERVATION_NATIVE_RETURN_BARRIER_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1966,20 +1966,28 @@
       "native-bind-offload-real-r5f9e": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "native-creation-drain-offline-r5f9f": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "native-creation-drain-real-r5f9f": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP17-WP18-R5f9e-native-bind-offload",
-      "production_behavior": "6dcNative socket/bind/connectoffTokio worker;originaladmissionguardheldthroughactualreturn/cancel,sharedownerretiringflagpre/postcheck,returnedfdreject/close. Productionhelper3/default363/allfeatures363/Clippy;33executablessealed. Exact6dcservice/guest/Host,2fckernel,SDK110US allocatedUpair10VMfinitePASS80ordinary+48dynamicreplies/220discoveries,113evidencenegatives. Old6dcsupervisorexit1mutantaccepted;d538globaltypedzeroexitguard/866tools/offlinereplayfix,notnewHostVMqualification. FullNativeallwork/parent/connectiontask/refdrainandold253RCAremainOPEN.",
-      "state": "R5F9E_6DC_RUNTIME_TEN_FINITE_VM_PASS_D538_VERDICT_OFFLINE_PASS_FULL_NATIVE_DRAIN_OPEN",
+      "id": "WP03-WP06-WP08-WP17-WP18-R5f9f-native-creation-drain",
+      "production_behavior": "26bper-ownercreationguardcoveractualworkandunconsumedfdresult;shutdownfencesadmissionandretainsoriginalinitializer/Enginejoin;physicalConnectionprojectionprimessolelazyinitializerwithoutjoin,firstServiceclaimreservedbeforepublication. Original5sresourceswait,applicationbusy,protecteddefer. Targeted5/default367/allfeatures367/Clippy;threecounterexamplesandunattributedv4fdclosefailurepreserved. Tenexact26bU-onlySDK110VMs80ordinary+48dynamicactualappreplies/220radio,partial2slicesperCMTC/Exchange;notactualNative-return/parentbarrierorwholearchitecture.",
+      "state": "R5F9F_SCOPED_OFFLINE_AND_TEN_VM_PRESERVATION_PASS_ACTUAL_NATIVE_RETURN_BARRIER_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Validateactualproductioncounterexamplesforall-kindNativecreationdrainatConnectionretirementandphysicalConnectionpublicationblockedbySSAPNativeinitialization;fixwithsoleboundedowner/originaltasks,nosecondEngine. AddcontrolledVMactualNative-return/parentretirebarrier;retainfullrelease/finalfd/dup/SCM/Down/originaldeadline/reuseandtask/ref/callback/UAFdrain. Dataplane/SSAP/security/multichannel/fourdeviceparallel,noallcontrolprerequisite. Originalccef253FAIL/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/UserHostP4/deployment/releaseOPEN;VM-only/allocatedports/shared12or8unchanged. d538verdictisoffline-only,actual10VMtools6dc."
+      "next": "AddVM-onlycontrolledactualNative-return/parentretirementbarrierthroughsameNativecall/owner/Engine,thenrelease/finalfd/dup/SCM/Down/originaldeadline/reuseandGrant-credit-Ticket/lateComplete-NOCPcompositions. V5offline367and26btenfiniteVMpreservationarenotKernelNativeinternal/ref/callback/UAFdrainproof. Originalv4fdclosefailurecauseunattributed;originalccef253FAIL/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/UserHostP4/deployment/releaseOPEN. Data/SSAP/security/multichannel/fourdeviceparallel,nocontrol全集prerequisite. Strictallocatedleaves/SDK110/shared12or8unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -4119,17 +4127,18 @@
         },
         "creation_drain_and_projection": {
           "id": "R5f9f",
-          "status": "V5_SCOPED_OFFLINE_PASS_THREE_COUNTEREXAMPLES_RETAINED_SEAL_AND_NEW_VM_PENDING",
+          "status": "IMPLEMENTED_SCOPED_OFFLINE_AND_TEN_FINITE_VM_PRESERVATION_PASS_FULL_NATIVE_DRAIN_OPEN",
           "counterexamples": ".dev/main-thread-01a120fe/native-drain-counterexamples-v1-result.json",
           "scope": "Actualowner/helper/reconcile/privatebuswithfiniteNative/tablefixtures;ownercreationguardcoversinflightandqueuedfdreceipt;physicalprojectionprimesoleinitializerwithoutjoin. Serviceoriginal5deadline,applicationbusy,protecteddeferunchanged;NoEngine/Host/ABI/Kernelchange.",
-          "remaining": "NewsealedartifactVMdiscovery/connect/short/length/OwnedSSAP/dynamic/CMTC-ExchangebaselineandactualNative-return/parentretirebarrier. Originalv4fdclosefailureactualholder/causeunattributed;controlledCLOEXECcounterexampleonlyestablishesfixtureisolationrequirement. Fulltask/ref/callback/UAF/release/finalfd/dup/SCM/Down/deadline/reuse/creditcombinationsremain. Original253FAIL,naturalRCA/nonmanualrecovery/E/mixed/coldROM/alloriginalscopeOPEN.",
+          "remaining": "AddVM-onlycontrolledactualNative-return/parentretirementbarrierthroughsameNativecall/owner/Engine,thenrelease/finalfd/dup/SCM/Down/originaldeadline/reuseandGrant-credit-Ticket/lateComplete-NOCPcompositions. V5offline367and26btenfiniteVMpreservationarenotKernelNativeinternal/ref/callback/UAFdrainproof. Originalv4fdclosefailurecauseunattributed;originalccef253FAIL/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/UserHostP4/deployment/releaseOPEN. Data/SSAP/security/multichannel/fourdeviceparallel,nocontrol全集prerequisite. Strictallocatedleaves/SDK110/shared12or8unchanged.",
           "full_scope_unchanged": "S0-S6/19WP/10FV/12DG,VM-only,allocatedleaves,SDK110,shared12or8budget,UserHostP4. Data/SSAP/security/multichannel/fourdeviceparallel.",
           "priority_counterexample": ".dev/main-thread-01a120fe/native-drain-priority-counterexample-v1-result.json",
           "reservation_contract": "Only NotStarted invokes the lazy initializer factory; the sole ordinary Service initializer reserves the same per-owner creation gate before physical projection. Repeated Running/Completed access cannot construct a second reservation. Service admission waits only within original5s; application admission remains explicit busy.",
           "fd_oracle_followup": {
             "original_failure": ".dev/main-thread-01a120fe/native-drain-offline-v4.json",
             "controlled_fork_counterexample": ".dev/main-thread-01a120fe/fd-cloexec-fork-counterexample-v1.json",
-            "scope": "CLOEXEC fork inheritance demonstrated;originalv4actualholder/causeunattributed. Fivefdclosecasesexec-isolatedwithoriginalproductioncalls/joins/refusalassertions. Notrealdevice/formal/kernelproof."
+            "scope": "CLOEXEC fork inheritance demonstrated;originalv4actualholder/causeunattributed. Fivefdclosecasesexec-isolatedwithoriginalproductioncalls/joins/refusalassertions. Notrealdevice/formal/kernelproof.",
+            "next": "Replay exactv4patch withfork/exec/close/socketinode ownership tracing;identifyactualholder beforeattributingoriginalfailure. ExeccasePASSandcontrolledforkcounterexamplearenotRCA. Doesnotgateallfurtherdata/security/SSAP."
           },
           "offline_report": {
             "path": ".dev/main-thread-01a120fe/native-drain-offline-v5.json",
@@ -4144,7 +4153,19 @@
             },
             "new_real_device_runs": 0,
             "new_formal_proofs": 0
-          }
+          },
+          "implementation_commit": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
+          "report_refs": [
+            "docs/evidence/native-creation-drain-offline-20261018.json",
+            "docs/evidence/native-creation-drain-real-20261018.json"
+          ],
+          "qualification_record_refs": [
+            "native-creation-drain-offline-r5f9f",
+            "native-creation-drain-real-r5f9f"
+          ],
+          "new_formal_proofs": 0,
+          "full_architecture_complete": false,
+          "next": "AddVM-onlycontrolledactualNative-return/parentretirementbarrierthroughsameNativecall/owner/Engine,thenrelease/finalfd/dup/SCM/Down/originaldeadline/reuseandGrant-credit-Ticket/lateComplete-NOCPcompositions. V5offline367and26btenfiniteVMpreservationarenotKernelNativeinternal/ref/callback/UAFdrainproof. Originalv4fdclosefailurecauseunattributed;originalccef253FAIL/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/UserHostP4/deployment/releaseOPEN. Data/SSAP/security/multichannel/fourdeviceparallel,nocontrol全集prerequisite. Strictallocatedleaves/SDK110/shared12or8unchanged."
         }
       }
     }
@@ -4201,7 +4222,7 @@
       "1-2.1.3",
       "1-2.1.4"
     ],
-    "model_basis": "U1-1.1.1/.2 confirmed by actual HCC U/USB in newcd7 guest;E1-2.1.1/.2 remains userplacement only",
+    "model_basis": "Actual26bVM HCC U/USB on1-1.1.1/.2;E1-2.1.1/.2 stilluserplacement/serialpinonly,nonewHCC.",
     "runtime_directory": ".dev/main-thread-01a120fe",
     "source_worktree": ".dev/architecture-r4f2e-userspace-worktree",
     "usb_actions": "VM-only individual leaf passthrough;nohub/controller reset,power,detach or takeover;conflict/missing/identitychange stops for coordination",
@@ -4265,13 +4286,18 @@
         "path": ".dev/main-thread-01a120fe/native-bind-postflight-v1.json",
         "sha256": "fa2046e235d83ec2b630c13df3ff97dd7167fc6670c46a64f46a70d2ca913dda",
         "scope": "Fourallocatedpins/hubs/PCIavailableafter10U-onlyVMs;EonlyROM/noHCC,original10WIPunchanged. Nootherthread/hub/controlleroperations;nototherthreadbusinessproof."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/allocation-native-drain-readonly-v1.json",
+        "sha256": "7c8b3e5fb056e3e1ae3c597a1fe053ce5a07aaeb2d0e8bf42bbee3058040ab92",
+        "scope": "Fourserialpins/parenthubs/PCI/USBdescriptors/liveVMhostdev/visiblefds/leases/buildlockreadonlychecked;U5EP,E2EP. Rootfdvisibilitylimited;noUSBoperation,nonewE/mixed/coldROMqualification."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-native-drain-readonly-v1.json",
-      "sha256": "7c8b3e5fb056e3e1ae3c597a1fe053ce5a07aaeb2d0e8bf42bbee3058040ab92",
-      "scope": "Fourserialpins/parenthubs/PCI/USBdescriptors/liveVMhostdev/visiblefds/leases/buildlockreadonlychecked;U5EP,E2EP. Rootfdvisibilitylimited;noUSBoperation,nonewE/mixed/coldROMqualification."
+      "path": ".dev/main-thread-01a120fe/allocation-native-drain-readonly-v4.json",
+      "sha256": "6e8009dec5f8f3201b81ed88377aae427b57183f16743bdb3e8a047879b218a7",
+      "scope": "Allfourpins/parents/PCI/visiblefds/liveVMhostdevsafter10U-onlyVMs;U5EP/E2EP. NoE/forbidden/hub/controlleroperation;rootfdvisibilitylimited,noproofofotherthreadbusiness."
     },
-    "current_finite_gate_ref": "native-bind-offload-real-r5f9e"
+    "current_finite_gate_ref": "native-creation-drain-real-r5f9f"
   }
 }

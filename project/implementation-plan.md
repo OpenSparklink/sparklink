@@ -1,6 +1,6 @@
 # SparkLink / Linux 联合实施方案
 
-### R5f9f：连接级Native创建排空与独立物理投影（实施中）
+### R5f9f：连接级Native创建排空与独立物理投影（限定保持通过，真实Native屏障仍缺）
 
 两项生产函数/私有bus反例已保留：取消等待后Connection提前清理，及挂起Native
 初始化挡住物理Connection发布；Native/table依赖是明确fixture，不是实机UAF。
@@ -15,9 +15,14 @@
 限定离线：定向5、default/all-features各367及Clippy通过；Native/table为有限
 fixture。原all-features fd关闭失败及受控CLOEXEC/fork反例保留，未归因；相关
 用例在exec隔离后保持原join/关闭断言通过，不据此宣布旧失败根因修复。
-退出：原三反例、新排队结果/期限回归、严格default/all-features/Clippy、准确新
-artifact的VM原发现/连接/业务/长度/SSAP/适用撤权保持。真正Native返回/parent退休
-屏障、内核ref/callback/UAF与完整fd/Grant/credit组合仍单列，不将fixture升级资格。
+签名26b服务/Host/guest、原2fc内核及SDK110US，在本线程U两口完成十个有限VM：
+CMTC/Exchange两切片、七尺寸/OwnedSSAP及basic动态通道原路径保持。准确来源、
+两端实际应用回复、捕获及负对照见[离线](../docs/evidence/native-creation-drain-offline-20261018.json)
+与[实机](../docs/evidence/native-creation-drain-real-20261018.json)，不转授整个HEAD。
+本批剩余退出条件是真正Native返回/parent退休受控屏障；内核ref/callback/UAF与
+完整fd/Grant/credit组合仍按原范围推进，不将fixture或保持回归升级资格。
+原v4 fd判据失败需按准确旧patch追踪fork/exec/close及实际socket引用持有者；隔离
+通过不作归因证据。该诊断不重新成为数据/安全/SSAP全部控制面前置条件。
 
 ### R5f9e：Native bind 离开异步worker（有限实机保持完成，完整退休排空仍缺）
 
@@ -511,6 +516,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 被动Down诊断：四轮原门禁有限通过、未复现；真实失败观察与根因未证明 | `real_device` | `UNPROVED` |
 | Native创建离开异步worker：生产guard/OSfd与通用终态有限离线通过 | `offline` | `PASS` |
 | 6dc服务十轮有限实机保持；d538仅离线校验，不授Native完整排空资格 | `real_device` | `PASS` |
+| 连接级Native创建排空与独立物理投影：限定离线通过 | `offline` | `PASS` |
+| 26b十轮原路径实机保持：真实Native返回/parent屏障仍缺 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

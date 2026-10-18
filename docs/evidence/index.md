@@ -1,5 +1,11 @@
 # 证据入口与取得限制
 
+- Connection创建排空与物理投影整改按[限定离线](native-creation-drain-offline-20261018.json)
+  和[26b原路径实机保持](native-creation-drain-real-20261018.json)分别读取。原三项
+  fixture反例、未归因fd失败、原253 Down失败保留；十个有限VM不证明真正Native
+  返回/parent退休、Kernel引用/callback/UAF/drain、E/混合或自然恢复。原件私有，
+  来源、hash、访问条件及具体范围由报告记录，不以计数代替验收。
+
 - Native创建离开异步worker按[限定离线](native-bind-offload-offline-20261018.json)与
   [原路径实机保持](native-bind-offload-real-20261018.json)分别读取。编译服务与VM
   执行源为6dc，终态校验修复为d538、仅离线；旧解析器接受失败退出篡改的反例保留。

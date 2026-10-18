@@ -1,0 +1,1520 @@
+{
+  "schema_version": 1,
+  "level": "real_device",
+  "result": "PASS",
+  "implementation_commit": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+  "compiled_userspace": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "executed_host_tools": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+  "executed_guest_tools": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+  "native_fixture_source": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+  "tested_tools": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+  "architecture_complete": false,
+  "new_formal_proofs": 0,
+  "bounds": {
+    "positive_real_vms": 1,
+    "negative_control_real_vms": 1,
+    "actual_native_return_slices": 4,
+    "service_slices": 2,
+    "user_slices": 2,
+    "ordinary_round_trips": 8,
+    "radio_matches": 22,
+    "positive_capture_packets": 4411,
+    "negative_capture_packets": 479,
+    "capture_dropped": 0,
+    "evidence_negative_controls": 21,
+    "offline_tools_methods": 871,
+    "targeted_tool_methods": 5,
+    "new_formal_proofs": 0
+  },
+  "scope": [
+    "真实 SYS_bind 先成功；原26b服务、2fc内核、SDK110US，准确ae40 Host/guest及测试库。Service/User各发起/接受切片，暂停返回期间对端实际断链，物理对象保持可观察Down；在途User晚到fd拒绝、OS fd/旧对象收敛、另一controller原Ready及后续8次普通用户随机业务回复分别核对。",
+    "只在显式VM加载test-only库，默认生产daemon无此依赖。Syscall结果、errno、fd和wire均不替换；C选择器与转发经实际host Unix syscall测试，捕获与C原始结构、Root收据及原库hash绑定。Root/tmpfs/时钟/libc/内核/固件/硬件仍为受信任基础。",
+    "普通SDK在live检查拒绝Down，不把该拒绝称为直接broker/Kernel新准入探针。实际pending User的迟到返回错误属于生产owner路径；inode收敛/对象移除不证明全部Kernel引用、callback/UAF或实现refinement。",
+    "旧6dc反向对照保留原VM FAIL：真实两端Up及Kernel bind成功，返回仍保留时已知物理对象枚举为空。它只验证旧发布耦合被检出，没有到达旧User排空切片，也不授旧runtime资格。最初准备阶段源码/bundle不匹配FAIL保留，改用旧生产+新tools-only overlay，未削弱guard。"
+  ],
+  "remaining": [
+    "动态creator、controller拔除、完整release/finalfd/dup/fork/SCM/作者取消/原期限/复用及Grant-credit-Ticket/晚到Complete-NOCP组合仍开放。",
+    "新四片只覆盖Connection parent物理Down；完整父controller/任务/引用/USBcallback/drain、长期资源收敛及故障域仍需各自门禁。",
+    "原ccef253五秒Down FAIL、未归因v4 fd判据失败、自然启动/重枚举/设备消失根因及非人工恢复仍保留；QMP/拔插/切电/fixture不替代自然恢复。",
+    "E/HCC及混合逐设备固件和真正冷ROM自动选择未验收；本批仅分配U两口，SDK110US三文件，不改变其他线程端口、hub/PCI权限。",
+    "完整S0-S6/19WP/10FV/12DG与原issue范围保持，安全/Bond、多通道/四设备、数据/SSAP、性能、部署/发布继续；UserHost仅P4规划。"
+  ],
+  "gates": [
+    {
+      "name": "production-C-Unix-syscall-and-selector",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "five-targeted-tool-methods",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "871-offline-tool-methods",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "four-actual-Native-return-Connection-retirement-slices",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "preserved-eight-ordinary-application-roundtrips",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "known-old-publication-coupling-negative-control",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "library_sha256": "dcd480a2e1d967cf71b7c3142fbe6d0e51e6814c5a787113370fcbbdb51af879",
+  "positive_proof": {
+    "status": "ACTUAL_NATIVE_RETURN_CONNECTION_RETIREMENT_CORROBORATED",
+    "slices": 4,
+    "service_slices": 2,
+    "user_slices": 2,
+    "proofs": [
+      {
+        "phase": 0,
+        "kind": 0,
+        "role": 0,
+        "create": {
+          "command": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323240536145000,
+            "urb": 18446616319875728704,
+            "record": 428,
+            "file_offset": 47218,
+            "usb_sha256": "c4d518d78d370a9991e7ab5d247d313ebb8024ee24618f14222496f66d05f0d0",
+            "opcode": 5121,
+            "params": "0000000001093254f90101200020000c000c000000fc0100000000",
+            "sequence": 23,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323240536280000,
+              "urb": 18446616319875728704,
+              "record": 429,
+              "file_offset": 47426
+            }
+          },
+          "status": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323240536609000,
+            "urb": 18446616319875426944,
+            "record": 430,
+            "file_offset": 47506,
+            "hcc_offset": 92,
+            "usb_sha256": "15efdbc7aabbf00b28994f40dbaa84faab7574805f99adf69f27f0038f1010e6",
+            "usb_length": 178,
+            "event": 1,
+            "params": "01140100"
+          },
+          "outcomes": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323240673453000,
+              "urb": 18446616319875426944,
+              "record": 434,
+              "file_offset": 48182,
+              "hcc_offset": 92,
+              "usb_sha256": "e8306d073e831a80758088ba37c3b8b1c775d68a5c6d1d0ab998b3a98269d87f",
+              "usb_length": 178,
+              "event": 5121,
+              "params": "00000000000001093254f90000000000000000000000000c000000fc0100"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323240673061000,
+              "urb": 18446616319187739008,
+              "record": 432,
+              "file_offset": 47844,
+              "hcc_offset": 92,
+              "usb_sha256": "62b0a4a4daa14ce3ac6913323fd090b04644777fc2eddd95c0090b6b8d3b2f3b",
+              "usb_length": 178,
+              "event": 5121,
+              "params": "00000001000001093254cd0000000000000000000000000c000000fc0101"
+            }
+          ]
+        },
+        "disconnect": {
+          "command": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792323240783469000,
+            "urb": 18446616319336731008,
+            "record": 468,
+            "file_offset": 53678,
+            "usb_sha256": "dc6b4398bbf9a72f58c644b767f4fdb2a204b1f0c7723073c472ecfa53aefd4a",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 27,
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323240783664000,
+              "urb": 18446616319336731008,
+              "record": 469,
+              "file_offset": 53886
+            }
+          },
+          "status": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792323240783809000,
+            "urb": 18446616319187739008,
+            "record": 470,
+            "file_offset": 53966,
+            "hcc_offset": 92,
+            "usb_sha256": "b5812ac3c0ab4255fd464837d72900c59c7998070bc182e032984eb038f94730",
+            "usb_length": 178,
+            "event": 1,
+            "params": "03140100"
+          },
+          "outcomes": [
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323240786977000,
+              "urb": 18446616319187739008,
+              "record": 472,
+              "file_offset": 54304,
+              "hcc_offset": 92,
+              "usb_sha256": "7366c50614c4ee22ad4801c3ca65b402c94955b047815701126ea2e165d5a105",
+              "usb_length": 178,
+              "event": 5,
+              "params": "00000011"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323240788460000,
+              "urb": 18446616319875426944,
+              "record": 474,
+              "file_offset": 54642,
+              "hcc_offset": 92,
+              "usb_sha256": "44e2b18dbc051a7e98d2d77e391d5f099ceb018a40d87e854c7b8e15eb1b40ba",
+              "usb_length": 178,
+              "event": 5,
+              "params": "00000010"
+            }
+          ]
+        },
+        "held": {
+          "phase": 0,
+          "pid": 560,
+          "tid": 572,
+          "fd": 18,
+          "controller": 0,
+          "handle": 0,
+          "generation": 1,
+          "lifetime": 1,
+          "start_mono_ns": 28400458892,
+          "start_wall_ns": 1792323240674021534,
+          "end_mono_ns": 0,
+          "end_wall_ns": 0,
+          "outcome": 0,
+          "kind": 0
+        },
+        "returned": {
+          "phase": 0,
+          "pid": 560,
+          "tid": 572,
+          "fd": 18,
+          "controller": 0,
+          "handle": 0,
+          "generation": 1,
+          "lifetime": 1,
+          "start_mono_ns": 28400458892,
+          "start_wall_ns": 1792323240674021534,
+          "end_mono_ns": 28586896448,
+          "end_wall_ns": 1792323240860459030,
+          "outcome": 1,
+          "kind": 0
+        }
+      },
+      {
+        "phase": 1,
+        "kind": 0,
+        "role": 1,
+        "create": {
+          "command": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323241355810000,
+            "urb": 18446616319336733888,
+            "record": 546,
+            "file_offset": 65960,
+            "usb_sha256": "13e977a6949c321bfab3758b47cce54b39fefb51ea272ab1cf5ce0d2ef50a448",
+            "opcode": 5121,
+            "params": "0000000001093254f90101200020000c000c000000fc0100000000",
+            "sequence": 33,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323241355929000,
+              "urb": 18446616319336733888,
+              "record": 547,
+              "file_offset": 66168
+            }
+          },
+          "status": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323241356233000,
+            "urb": 18446616319875426944,
+            "record": 548,
+            "file_offset": 66248,
+            "hcc_offset": 92,
+            "usb_sha256": "15efdbc7aabbf00b28994f40dbaa84faab7574805f99adf69f27f0038f1010e6",
+            "usb_length": 178,
+            "event": 1,
+            "params": "01140100"
+          },
+          "outcomes": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323241639988000,
+              "urb": 18446616319875426944,
+              "record": 552,
+              "file_offset": 66924,
+              "hcc_offset": 92,
+              "usb_sha256": "e8306d073e831a80758088ba37c3b8b1c775d68a5c6d1d0ab998b3a98269d87f",
+              "usb_length": 178,
+              "event": 5121,
+              "params": "00000000000001093254f90000000000000000000000000c000000fc0100"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323241639653000,
+              "urb": 18446616319187739008,
+              "record": 550,
+              "file_offset": 66586,
+              "hcc_offset": 92,
+              "usb_sha256": "1b2548b115ccd2484fdc25c248c4276750b11b960a2b60d4dafa7e1b34d69be7",
+              "usb_length": 178,
+              "event": 5121,
+              "params": "00000001000001093254cd0000000000000000000000000c000000fc0101"
+            }
+          ]
+        },
+        "disconnect": {
+          "command": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323241813578000,
+            "urb": 18446616319336733504,
+            "record": 586,
+            "file_offset": 72420,
+            "usb_sha256": "4cd3b1193054518b0cc4bf377af70c197d015ecd5acf6078353bc7273b3a4754",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 37,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323241813798000,
+              "urb": 18446616319336733504,
+              "record": 587,
+              "file_offset": 72628
+            }
+          },
+          "status": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323241813983000,
+            "urb": 18446616319875426944,
+            "record": 588,
+            "file_offset": 72708,
+            "hcc_offset": 92,
+            "usb_sha256": "8f011e69074ecb808fda2bff5713b07f45122fbe8b417128dd7a44f0ade6a007",
+            "usb_length": 178,
+            "event": 1,
+            "params": "03140100"
+          },
+          "outcomes": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323241816071000,
+              "urb": 18446616319875426944,
+              "record": 592,
+              "file_offset": 73384,
+              "hcc_offset": 92,
+              "usb_sha256": "2b856c8ac810569dd382e1b05dd818ce5b726f690dc5b0e7566dcbacb4ded81b",
+              "usb_length": 178,
+              "event": 5,
+              "params": "00000011"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323241816016000,
+              "urb": 18446616319187739008,
+              "record": 590,
+              "file_offset": 73046,
+              "hcc_offset": 92,
+              "usb_sha256": "8146bed3de20ecec90c72d8b2f3c1905d3326135646b903fa0ac77c57f9a5a0c",
+              "usb_length": 178,
+              "event": 5,
+              "params": "00000010"
+            }
+          ]
+        },
+        "held": {
+          "phase": 1,
+          "pid": 560,
+          "tid": 569,
+          "fd": 17,
+          "controller": 1,
+          "handle": 0,
+          "generation": 2,
+          "lifetime": 3,
+          "start_mono_ns": 29367093503,
+          "start_wall_ns": 1792323241640656085,
+          "end_mono_ns": 0,
+          "end_wall_ns": 0,
+          "outcome": 0,
+          "kind": 0
+        },
+        "returned": {
+          "phase": 1,
+          "pid": 560,
+          "tid": 569,
+          "fd": 17,
+          "controller": 1,
+          "handle": 0,
+          "generation": 2,
+          "lifetime": 3,
+          "start_mono_ns": 29367093503,
+          "start_wall_ns": 1792323241640656085,
+          "end_mono_ns": 29619203645,
+          "end_wall_ns": 1792323241892766227,
+          "outcome": 1,
+          "kind": 0
+        }
+      },
+      {
+        "phase": 2,
+        "kind": 1,
+        "role": 0,
+        "create": {
+          "command": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323242424864000,
+            "urb": 18446616319336733888,
+            "record": 664,
+            "file_offset": 84702,
+            "usb_sha256": "169cf21e44bb7fac674e9286de172b6631cb0a616a17cb824f176861b5577f7f",
+            "opcode": 5121,
+            "params": "0000000001093254f90101200020000c000c000000fc0100000000",
+            "sequence": 45,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323242425008000,
+              "urb": 18446616319336733888,
+              "record": 665,
+              "file_offset": 84910
+            }
+          },
+          "status": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323242425279000,
+            "urb": 18446616319875426944,
+            "record": 666,
+            "file_offset": 84990,
+            "hcc_offset": 92,
+            "usb_sha256": "15efdbc7aabbf00b28994f40dbaa84faab7574805f99adf69f27f0038f1010e6",
+            "usb_length": 178,
+            "event": 1,
+            "params": "01140100"
+          },
+          "outcomes": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323242545373000,
+              "urb": 18446616319875426944,
+              "record": 670,
+              "file_offset": 85666,
+              "hcc_offset": 92,
+              "usb_sha256": "e8306d073e831a80758088ba37c3b8b1c775d68a5c6d1d0ab998b3a98269d87f",
+              "usb_length": 178,
+              "event": 5121,
+              "params": "00000000000001093254f90000000000000000000000000c000000fc0100"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323242545268000,
+              "urb": 18446616319187739008,
+              "record": 668,
+              "file_offset": 85328,
+              "hcc_offset": 92,
+              "usb_sha256": "25da342316fbb71984bc480dcf198ce7a22590a8a7b914e1a255fe1efccc9a9e",
+              "usb_length": 178,
+              "event": 5121,
+              "params": "00000001000001093254cd0000000000000000000000000c000000fc0101"
+            }
+          ]
+        },
+        "disconnect": {
+          "command": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792323242818137000,
+            "urb": 18446616319875760512,
+            "record": 722,
+            "file_offset": 94054,
+            "usb_sha256": "0ce3b7aa16e22e84c4e693f327105669310c97ccc2dd2523ded1522a23e5a7d7",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 54,
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323242818337000,
+              "urb": 18446616319875760512,
+              "record": 723,
+              "file_offset": 94262
+            }
+          },
+          "status": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792323242818488000,
+            "urb": 18446616319187739008,
+            "record": 724,
+            "file_offset": 94342,
+            "hcc_offset": 92,
+            "usb_sha256": "b5812ac3c0ab4255fd464837d72900c59c7998070bc182e032984eb038f94730",
+            "usb_length": 178,
+            "event": 1,
+            "params": "03140100"
+          },
+          "outcomes": [
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323242820787000,
+              "urb": 18446616319187739008,
+              "record": 726,
+              "file_offset": 94680,
+              "hcc_offset": 92,
+              "usb_sha256": "5955ebfbf7166f88e71c192e3d19cd0a65c8b82097b14c871591fef845b90b51",
+              "usb_length": 178,
+              "event": 5,
+              "params": "0000000d"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323242822464000,
+              "urb": 18446616319875426944,
+              "record": 728,
+              "file_offset": 95018,
+              "hcc_offset": 92,
+              "usb_sha256": "44e2b18dbc051a7e98d2d77e391d5f099ceb018a40d87e854c7b8e15eb1b40ba",
+              "usb_length": 178,
+              "event": 5,
+              "params": "00000010"
+            }
+          ]
+        },
+        "held": {
+          "phase": 2,
+          "pid": 560,
+          "tid": 569,
+          "fd": 19,
+          "controller": 0,
+          "handle": 0,
+          "generation": 1,
+          "lifetime": 5,
+          "start_mono_ns": 30513696979,
+          "start_wall_ns": 1792323242787259561,
+          "end_mono_ns": 0,
+          "end_wall_ns": 0,
+          "outcome": 0,
+          "kind": 1
+        },
+        "returned": {
+          "phase": 2,
+          "pid": 560,
+          "tid": 569,
+          "fd": 19,
+          "controller": 0,
+          "handle": 0,
+          "generation": 1,
+          "lifetime": 5,
+          "start_mono_ns": 30513696979,
+          "start_wall_ns": 1792323242787259561,
+          "end_mono_ns": 30640892589,
+          "end_wall_ns": 1792323242914455171,
+          "outcome": 1,
+          "kind": 1
+        }
+      },
+      {
+        "phase": 3,
+        "kind": 1,
+        "role": 1,
+        "create": {
+          "command": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323243486027000,
+            "urb": 18446616319187741120,
+            "record": 800,
+            "file_offset": 106336,
+            "usb_sha256": "9243667e89a93a3e45887fee6afdada388b7427d9b374094108dfe29779684bd",
+            "opcode": 5121,
+            "params": "0000000001093254f90101200020000c000c000000fc0100000000",
+            "sequence": 57,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323243486189000,
+              "urb": 18446616319187741120,
+              "record": 801,
+              "file_offset": 106544
+            }
+          },
+          "status": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323243486475000,
+            "urb": 18446616319875426944,
+            "record": 802,
+            "file_offset": 106624,
+            "hcc_offset": 92,
+            "usb_sha256": "15efdbc7aabbf00b28994f40dbaa84faab7574805f99adf69f27f0038f1010e6",
+            "usb_length": 178,
+            "event": 1,
+            "params": "01140100"
+          },
+          "outcomes": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323243748909000,
+              "urb": 18446616319875426944,
+              "record": 806,
+              "file_offset": 107300,
+              "hcc_offset": 92,
+              "usb_sha256": "e8306d073e831a80758088ba37c3b8b1c775d68a5c6d1d0ab998b3a98269d87f",
+              "usb_length": 178,
+              "event": 5121,
+              "params": "00000000000001093254f90000000000000000000000000c000000fc0100"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323243748598000,
+              "urb": 18446616319187739008,
+              "record": 804,
+              "file_offset": 106962,
+              "hcc_offset": 92,
+              "usb_sha256": "31ed8f63422cc50a1938fa853cc06ddd50dee8e86940e0ee3050bfcf66eaa4d1",
+              "usb_length": 178,
+              "event": 5121,
+              "params": "00000001000001093254cd0000000000000000000000000c000000fc0101"
+            }
+          ]
+        },
+        "disconnect": {
+          "command": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323244063899000,
+            "urb": 18446616319875731200,
+            "record": 858,
+            "file_offset": 115688,
+            "usb_sha256": "cfdee630569f4b8fcf96af2b5ef1a1e2560d32554d9d8381111d0e943294c8ae",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 62,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323244064055000,
+              "urb": 18446616319875731200,
+              "record": 859,
+              "file_offset": 115896
+            }
+          },
+          "status": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792323244064202000,
+            "urb": 18446616319875426944,
+            "record": 860,
+            "file_offset": 115976,
+            "hcc_offset": 92,
+            "usb_sha256": "8f011e69074ecb808fda2bff5713b07f45122fbe8b417128dd7a44f0ade6a007",
+            "usb_length": 178,
+            "event": 1,
+            "params": "03140100"
+          },
+          "outcomes": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792323244066102000,
+              "urb": 18446616319875426944,
+              "record": 862,
+              "file_offset": 116314,
+              "hcc_offset": 92,
+              "usb_sha256": "437bebd51816a6f057b7f7c646b190a74345dc606834b56fbd0db6416f07c516",
+              "usb_length": 178,
+              "event": 5,
+              "params": "0000000d"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792323244067162000,
+              "urb": 18446616319187739008,
+              "record": 864,
+              "file_offset": 116652,
+              "hcc_offset": 92,
+              "usb_sha256": "bd83b8b24960eafe949065bc941be66baa964fca7c34a23a0abe9c3d457124fd",
+              "usb_length": 178,
+              "event": 5,
+              "params": "00000010"
+            }
+          ]
+        },
+        "held": {
+          "phase": 3,
+          "pid": 560,
+          "tid": 572,
+          "fd": 19,
+          "controller": 1,
+          "handle": 0,
+          "generation": 2,
+          "lifetime": 7,
+          "start_mono_ns": 31755572867,
+          "start_wall_ns": 1792323244029135460,
+          "end_mono_ns": 0,
+          "end_wall_ns": 0,
+          "outcome": 0,
+          "kind": 1
+        },
+        "returned": {
+          "phase": 3,
+          "pid": 560,
+          "tid": 572,
+          "fd": 19,
+          "controller": 1,
+          "handle": 0,
+          "generation": 2,
+          "lifetime": 7,
+          "start_mono_ns": 31755572867,
+          "start_wall_ns": 1792323244029135460,
+          "end_mono_ns": 31900021705,
+          "end_wall_ns": 1792323244173584288,
+          "outcome": 1,
+          "kind": 1
+        }
+      }
+    ],
+    "fixture_sha256": "dcd480a2e1d967cf71b7c3142fbe6d0e51e6814c5a787113370fcbbdb51af879",
+    "kernel_reference_or_uaf_proof": false,
+    "dynamic_creator": false,
+    "actual_controller_removal": false,
+    "broker_new_admission_probe": false,
+    "physical_acceptance": false,
+    "automatic_recovery": false
+  },
+  "negative_control": {
+    "original_status": "FAIL",
+    "compiled_service": "6dc4c4b946e12e0d2519f293f469626b65da8bae",
+    "actual_guest_prepare_base": "6dc4c4b946e12e0d2519f293f469626b65da8bae",
+    "guest_tools_dirty_scope": "tools-onlyoverlay,notclean6dccompilationoroldguesttools",
+    "guest_tools_byte_mapping": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+    "original_error": "one actual published physical object required",
+    "held": {
+      "phase": 0,
+      "pid": 559,
+      "tid": 570,
+      "fd": 17,
+      "controller": 0,
+      "handle": 0,
+      "generation": 1,
+      "lifetime": 1,
+      "start_mono_ns": 28618903823,
+      "start_wall_ns": 1792323901884851643,
+      "end_mono_ns": 0,
+      "end_wall_ns": 0,
+      "outcome": 0,
+      "kind": 0
+    },
+    "returned": {
+      "phase": 0,
+      "pid": 559,
+      "tid": 570,
+      "fd": 17,
+      "controller": 0,
+      "handle": 0,
+      "generation": 1,
+      "lifetime": 1,
+      "start_mono_ns": 28618903823,
+      "start_wall_ns": 1792323901884851643,
+      "end_mono_ns": 30619269385,
+      "end_wall_ns": 1792323903885217175,
+      "outcome": 2,
+      "kind": 0
+    },
+    "source_guard_unchanged": true,
+    "old_user_drain_reached": false
+  },
+  "offline_identity": {
+    "actual_test_base": "18ffca1611e45516ee946f6a435c187596603fde",
+    "source_mapping_commit": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+    "scope": "ExactproductiontestfixtureC includedwithbindsymbolrenamed,actualhostUnixsyscalls;onlytemporaryfilesystemfixturelocationretained. NoAF46/USB/KernelSparklinkstub.",
+    "retained_actual_C_executable": true
+  },
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/audit-native-return-v1.py",
+      "sha256": "b4c665381faafd45689f6116d037f11cb5027d79d28f82088a700b3d192a0d68",
+      "bytes": 7416
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-preservation-audit-v2.py",
+      "sha256": "b9635ce21acf198f4be23c0effa30fa1b60b1374e64823977d04c403d6e5770e",
+      "bytes": 10389
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-exchange-us-prepared-v1/manifest.json",
+      "sha256": "53dde9657f98d83f08fa82ce3a4bf69cce68e4fbc7d0895334ca7d911818b031",
+      "bytes": 324519
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/manifest.json",
+      "sha256": "9c00b3e03f5b40a8e23a8e87a7c8729ac05137f5ed6d8731a6be85f9b0d03844",
+      "bytes": 31663
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/manifest.json",
+      "sha256": "0094cb3298e4631d5cbb76b2df5834440393037ec360c271635b56a5b1e2cfd4",
+      "bytes": 1556516
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/qmp.jsonl",
+      "sha256": "2b5a60bec0ae201600815e22e606753b3e7851178392033b492840aabfeff843",
+      "bytes": 1757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/console.log",
+      "sha256": "242a32277ad669dffa17b3393ea404bd172dced31e5ea2c43060fa2a478b6dae",
+      "bytes": 16448
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "03cf08e5cb6858e79f2adc2c3fb7808e64d5322acd4faead1fea952ca88a2783",
+      "bytes": 1199809
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/ws73.pcap",
+      "sha256": "271ed170f94a589e2c6c8e4a2ccdbbe22e77bffe47978d6cdbb9714c6f79ec8b",
+      "bytes": 676048
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/capture-stats.txt",
+      "sha256": "74e8af6fe511e91ebda4e8dab1efb55706c39b52367dfc46fe886e2b7548f093",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-exchange-us-prepared-v1/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-exchange-us-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-exchange-us-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-exchange-us-prepared-v1/root.btrfs",
+      "sha256": "0055dce5f500babc91e2230ac27ecedd912ffa1521e7ed8fb289029ac5566d42",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "fdbec6499bf3ed51d7d27cae481dcd79d1c2bd402ec76d94e2b2fce17ff80bb7",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "c1b945f14bb0870ed2ebfd0bc986bc62ba3d480aab25bfe4743c27cf76680885",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "5be073d52b6a131b9b23873dffdb95b6a4abce7e3e0edd56c7c316961e43a72c",
+      "bytes": 2585
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "0c84da90bd56c4a927a4d1319dc342998fba727e508a8b277dace2f7dc556eeb",
+      "bytes": 5092
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/0.json",
+      "sha256": "5c73bb28d8f289740ce2e8809028a080e91dee056d766b26eaf44de0c172fd16",
+      "bytes": 148
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/1.json",
+      "sha256": "dc00a699ce522e0533deab441c19a229572b4424f67b0163461b9e248057a1df",
+      "bytes": 150
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/10.json",
+      "sha256": "91493cc9a4b7ee3be23e25d8ff4af05b5f99d170a675dc29bf71b9e022b74d75",
+      "bytes": 153
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/11.json",
+      "sha256": "e04166a52271562bbb0b247daff43f37b07dc5bfa72f81b1f8aa246db98b0623",
+      "bytes": 153
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/12.json",
+      "sha256": "8071661702bc0f2ef5a83b466f4ff0413b256ee04a665a1968ca9992abc8cd2f",
+      "bytes": 149
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/13.json",
+      "sha256": "1bc48a02709f8f7688b83653b63a25f8d87645d4d32083f46f6cfbfa22112d49",
+      "bytes": 151
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/14.json",
+      "sha256": "44d9c5208a92bbd971ba63db760241ee915456ba74aea16e9c0aea61d90046da",
+      "bytes": 153
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/15.json",
+      "sha256": "05a37be864f10a0b6896ea9e5f17d5490508b5545580f95653a30551c46dd2d5",
+      "bytes": 153
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/2.json",
+      "sha256": "38e853505b66e1d6409cce2b0cfe5bb1edc24ff5a35b632f10c9b75bc6026449",
+      "bytes": 152
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/3.json",
+      "sha256": "bbc0705509cc5261e3239463779f1c606274da3cbea764f5bfee814c977c3d0f",
+      "bytes": 152
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/4.json",
+      "sha256": "b8df3c023b43ef59e23f9025e1f0a37a93e7f188cb948b9090f472d278ee8bf5",
+      "bytes": 148
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/5.json",
+      "sha256": "b774010c9e86c4e77e4f9e4908bdbbd9bdec188cdddbf47f1e73a2c92a8766fd",
+      "bytes": 150
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/6.json",
+      "sha256": "0b76249095ae5266913357b6e83fe23a10d4f6a5288b3b9359efe5eba2a3f06c",
+      "bytes": 152
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/7.json",
+      "sha256": "715a1acaded3b73946f8528aa348e65c7c6706d8dded4b6ebcc5fcb17051687e",
+      "bytes": 152
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/8.json",
+      "sha256": "55b73d74aeed2bffeb8e1a7a7443727b231636578c49bda2ee89742d929dc488",
+      "bytes": 148
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/passthrough-control/native-return-requests/9.json",
+      "sha256": "f76d34bfc01e95e068797467c22658c01cc4508c338b1134f39635307c5b683d",
+      "bytes": 150
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/capture-process-status.txt",
+      "sha256": "31de0b2b8591fbada4f7365c68a9b0420e279a0a48da0e8f11e51bac4d5fc87a",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/kernel.log",
+      "sha256": "43d0de81d66c9d1721bfc8c026845507f125de4683e7763959c8469c23a9c876",
+      "bytes": 50109
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/0-held.bin",
+      "sha256": "55e5c96e222fe0063401ed23926d611aac3446b2297eb8f2ff71ccac1a621e2b",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/0-returned.bin",
+      "sha256": "b12c1f676ea6db22b7cb99d14dd211de479b4f80d9efab34265d517408fd6c3c",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/0-selection.bin",
+      "sha256": "1546db7c1b950a14336baf8f531e3ac51f5aaf278bb27737e3a38eaf38448241",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/0.json",
+      "sha256": "b6dcaca36d63a8d12aee7740cd9590bfbbbf4019e2365c7d79750b7320363dd4",
+      "bytes": 639
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/1-held.bin",
+      "sha256": "05315d737c0fa9e869f161dc43d1b2d5109bd40416fcb89a2d15b8d82e8a7c43",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/1-returned.bin",
+      "sha256": "60ca3f91f02365d8e6599f713aa2ec636237db92cccd671387558383b00bdc82",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/1-selection.bin",
+      "sha256": "b8bd2865edeb9f67393e05b6df71c89599f2296f421d4c3fd0f559155fb9e30b",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/1.json",
+      "sha256": "3e849a7a2adbf9053f8cf3728ccc57320dd1012cc4e2fa662c68e7d339c1810e",
+      "bytes": 995
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/10.json",
+      "sha256": "ffeea1ea4bf4ad0c4bb884e7f0632418f35ea2f52e600c40aa63a55347bb0a02",
+      "bytes": 963
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/11.json",
+      "sha256": "8ab5acaaa71413ef736ad02c86beaa65b131a8be12f6477ce78d94c38105ad6a",
+      "bytes": 644
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/12.json",
+      "sha256": "60bc59226894c6cee9bbcc4224d23c0ffb22912f0c032ca71cbc6dc0822537fd",
+      "bytes": 640
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/13.json",
+      "sha256": "3c9800503467874f454b858b916873a23a08abf0867abc33761eef7242f96c60",
+      "bytes": 1034
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/14.json",
+      "sha256": "e45091c8751a96121e50b4ae44909f1ccc9930e05a0d4c8e53f314171bcff580",
+      "bytes": 963
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/15.json",
+      "sha256": "4bcc307d15132fd71758a0b503578432597757807b7be39a4e86e887d0926696",
+      "bytes": 644
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/2-held.bin",
+      "sha256": "cc7bf5fbe5c6de57560b71979421441c7539668a60c7458192da06e644676b2b",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/2-returned.bin",
+      "sha256": "4d69ec044935a2cfb3c83349a4a0114adde3ce6054fb17aa71125ff0b02fcf37",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/2-selection.bin",
+      "sha256": "7432ec1361fa883ee90e87d9b5ead2c070c5267560db35fc752fa80a1cba0d83",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/2.json",
+      "sha256": "f3104a33717314096a8dd63ec8ae3bfc7579ed31da326aed6fe0cb4e8b33848b",
+      "bytes": 962
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/3-held.bin",
+      "sha256": "19f5374cf7cd92f8cfa145057107262d621a06996f2dfe01a14de782451640e5",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/3-returned.bin",
+      "sha256": "03e17e9909a90cefdd48c0b9a0b60280cccbac8455e955b58639b23e4236a8c1",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/3-selection.bin",
+      "sha256": "350e3b0b73c9205060329315f4b0c01e035d2b39e874c003a638fc68b8e8a268",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/3.json",
+      "sha256": "9fe2a2b797d13e476c3074101329dae7f14ab8b24fbf9319c105688ad12fbe27",
+      "bytes": 643
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/4.json",
+      "sha256": "1e5b09f91c4bc8ada97b42ee914403f0c444598e38a318a9463fef2eaaa9d9d4",
+      "bytes": 639
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/5.json",
+      "sha256": "86e6e14a17850f75be54f017de3e247dd2e41126e6ca60d258f14ffe18b68d86",
+      "bytes": 995
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/6.json",
+      "sha256": "bf559a04e066629538a7204381039e969a86e6a13e9bd6f45bc28b27e83120e8",
+      "bytes": 962
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/7.json",
+      "sha256": "b7ea36cba9f6bc47999594564bd08f97a6df98faae53cdff9a44dde440651413",
+      "bytes": 643
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/8.json",
+      "sha256": "a08b4e21e6aac8e3917fc3e55b2b878e5b8875097cc8cfa9a36180c31fcd0657",
+      "bytes": 639
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-root/9.json",
+      "sha256": "82d88e71d2cf32db6b0a304a22a0326ef92101a8543ef6137525e3dc55f4ac16",
+      "bytes": 1033
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/native-return-supervisor.log",
+      "sha256": "102c3b52dc6ff6407e65630050cca87516ffcabdf9ea17b2db76ab78e17d1332",
+      "bytes": 39
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "f69682b6c779a60fa40f0e6a3e6a5acdaaa5aceab6f5697cb4449e4eb9bc04f6",
+      "bytes": 501504
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/pending-observations-0.json",
+      "sha256": "6d1cf112af1186aa7adea4273252439e58a8f743ce58ec7b56750e783e02993a",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/pending-observations-1.json",
+      "sha256": "f7156edf6880bdb2d72eeb01690907a766d90b61ab483e3bacdb29cc3e789def",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/ready-progress-0.json",
+      "sha256": "c0f5bf124a711921a1fbbab438c18d6513b9cec060100784653fb54b40c95ea4",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/ready-progress-1.json",
+      "sha256": "23483a3f4fc5cb6946740f2ee40ca0fcee213e95d2c16fd33daa3fcd7387d9fc",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/slkd-process-status.txt",
+      "sha256": "01f202bdcbcadcfeab448070f84824e6afafc6392745e0b58fc8820aee1989f3",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/slkd.log",
+      "sha256": "36972f4728b85ae9f26f57a46da1f62b359f35ab9ffbb4490c196c05822378ab",
+      "bytes": 8918
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "c76d98055d87c35155bc95d67873cbf30486fa0380f2b2e7e56b792b79019af1",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-return-us-v1/guest-output/xhci-trace.log",
+      "sha256": "9163ed31991436b37b5bc2a03fa3f944dc60657c934a81f42851dab49d35c9ad",
+      "bytes": 2408396
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/26b654bf525c/slkd",
+      "sha256": "ef821be81cf233d94f49536c6f2e086eb5c8f126e636eddf238f9f41843ef0d0",
+      "bytes": 10139536
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/26b654bf525c/slkconfig",
+      "sha256": "3f58a6739f8dbc9315153114be7020eb7fe9fc04890416530dfe2dc8e807b8b3",
+      "bytes": 1338168
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/26b654bf525c/slctl",
+      "sha256": "fd24f53ce5372fc4229a8e88a0c374ea8508121aec8ba025b17c186969bb9690",
+      "bytes": 8431560
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/26b654bf525c/slktest",
+      "sha256": "d138d3efcc92c53dffb4c2f04cbe6ef121cbf5fefeee87a999f39735ec01fbe0",
+      "bytes": 5764672
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/26b654bf525c/slkmon",
+      "sha256": "d259c65a4c5fdee07b6ef8e82ae56e20833df2f85d36a88ad2c91ce51f0c64a9",
+      "bytes": 1660792
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/26b654bf525c/slkdump",
+      "sha256": "484d9ee6a6826c1da14464c2c8b6c8f60faaa81e3580d90af67485a878eab34a",
+      "bytes": 1660584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/26b654bf525c/liblibsparklink.so",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/26b654bf525c/libslk_native.so",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "d1f722c763a5b42d5a861a4188b2ff7391539bac3ba0d0ba0d0e063bddb7c958",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "4fcd8d04cf08e292f75943b39264287197871d5cd115f5c78ed42d011f44ed09",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/audit-native-return-legacy-v1.py",
+      "sha256": "03802e0a6787f1614e741568c52b7f7ce4ede0f4c866b0cabc0a69b9b1dd0a42",
+      "bytes": 4373
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-exchange-us-prepared-v2/manifest.json",
+      "sha256": "608baa17efe4cf5abb018fe00375bfbc92cc0671715a028d1d636a20a3874f12",
+      "bytes": 334561
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/manifest.json",
+      "sha256": "7a9cce3a779a45ed93d0ac773cc14d5164b28ae465df4312d8e52bf45f05d1d7",
+      "bytes": 60164
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/console.log",
+      "sha256": "6a8ca8494563f0f28ef83c584a93bf83b5781eb312f7e70379ede47216891890",
+      "bytes": 59587
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/qmp.jsonl",
+      "sha256": "a45c597ce2eec7cad2664b43fc3786edc9b05398c3385788c45cdc63b5b3de62",
+      "bytes": 1032
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/guest-output/ws73.pcap",
+      "sha256": "40a258e5ffd210026870c4c3c921c42f335597f0b05ac6d2fed643e83638473c",
+      "bytes": 55606
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/guest-output/capture-stats.txt",
+      "sha256": "a9ce6a9844fc4f04b82dc0de8dc75e843368e8d4c259402bc2b0f02d1f44ca56",
+      "bytes": 225
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "2c95be7eced68a6bac2afd5dff3af49b72d2f6d2284163db1c07d4b96df7e88d",
+      "bytes": 80288
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-exchange-us-prepared-v1/manifest.json",
+      "sha256": "63b069ce75b9b817722a77ed3ed23b09449ca46654c0e7f638b20cb26b4b2f11",
+      "bytes": 71053
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-native-return-legacy-exchange-command-v1.json",
+      "sha256": "26cd7c995bce196c3c8144ff533ca8aab69e5a6c8d5b3202e0052e5441044281",
+      "bytes": 2188
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-native-return-legacy-exchange-command-v2.json",
+      "sha256": "7494fbc7c25726b264cc3d8102b62fa0c386ce683fc7af7b6f05ddb251227556",
+      "bytes": 2229
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/guest-output/native-return-root/0-selection.bin",
+      "sha256": "1546db7c1b950a14336baf8f531e3ac51f5aaf278bb27737e3a38eaf38448241",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/guest-output/native-return-root/0.json",
+      "sha256": "9fba8bc6ed8ff259b435caa9ad9fb04935ffb46b5cd254c6f8d6b33276220e65",
+      "bytes": 639
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/guest-output/native-return-root/0-held.bin",
+      "sha256": "d2536b241172467148d385a83c9f5a025571c3c4bc2942b8c3c963f1564417b6",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-return-us-v2/guest-output/native-return-root/0-returned.bin",
+      "sha256": "5080ca9dbb53981e4d02f7a2d37b83b709a797bd490706591f75f99a8b88cf28",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/actual-c-probe.log",
+      "sha256": "b45c55123df29c8c3b02a7f5f6ecb05ab60bee671cb8994a10dcf57e558431c5",
+      "bytes": 243
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/native-return-tools-offline-v2.json",
+      "sha256": "ca46310fb3a7be3da19019815286e8540f380c079594fc5067ea427efee4ae06",
+      "bytes": 32703
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/native-return-targeted-v4.log",
+      "sha256": "68e17586f883f9b46d5340d5b966f4d5d5ad98d06d387e79be11183e5c626c9a",
+      "bytes": 1008
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/native-return-all-tools-v4.log",
+      "sha256": "fbde8ffb64a58e144d9ece366a2cf1db10cca4af2a615bec4cf9ebd7b84c2af7",
+      "bytes": 1047
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/native-return-tools-targeted-v1.log",
+      "sha256": "e543aac4cbc7ab897367e02c5fc1ca92d8da07d16959d2ba65e4d1c42199d174",
+      "bytes": 1630
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/native-return-tools-targeted-v2.log",
+      "sha256": "620a9c404ce524e15235c91093a595bc1b5a5eb68cc5ededa5f4fecd72a2e68e",
+      "bytes": 826
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/native-return-docs-v1.log",
+      "sha256": "4b80cd9b736ea3206902e3f56d406a850b762f25f79101a1fda07537c3193c25",
+      "bytes": 1378474
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/actual-c-probe/probe",
+      "sha256": "ff43a2ddcef20e57b70e1bb19522c9caba534bbc1a21fa7bc01c5aa081ec4786",
+      "bytes": 17832
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/actual-c-probe/fixture.c",
+      "sha256": "b9bee5454d5edbd47ca374a7deea0ddd0d404bca4a82a20e5ba4af54a57a9284",
+      "bytes": 1942
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-audit-v1.json",
+      "sha256": "4c3e436f4ae494b323b47d95838d8fc04984c8af1ff17593794e08f8b840c52f",
+      "bytes": 48911
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-audit-v1.json",
+      "sha256": "6bb41aa80127ff011eadd8d60916ec0d7c9a2b7e596acb9df0f0fd83b856c670",
+      "bytes": 7127
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-offline-sealed-v1/report.json",
+      "sha256": "753dc4a17fe86d173fa9e1635fb6cdacb9889cf3a042be86cb788579ac33b946",
+      "bytes": 34374
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-real-attempts-v1.json",
+      "sha256": "200e08f0dc1a512631104d3ed353af5fcb99187cf6d9833ee884c36616a4047c",
+      "bytes": 1870
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-real-attempts-v2.json",
+      "sha256": "9f69aa46aa08d4299bd0c76f9fc9e8f0b7b7f607d370f0109810a999ef33b4fc",
+      "bytes": 1899
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-native-return-exchange-command-v1.json",
+      "sha256": "f732082a0a8c372764463ec769921e7124147c33a176454dba2a203ec3c11391",
+      "bytes": 2209
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-return-readonly-v1.json",
+      "sha256": "c0c96c517eace7ca65977589e5f057a36cd1c4b2393b2eb6ae4e775ef0d92504",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-return-readonly-v2.json",
+      "sha256": "31f36db0bf93904751c05b5d0aa01c03a59eef948f7861e771edfcfaa226ba72",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-return-readonly-v3.json",
+      "sha256": "52b7b62a2be91f9c240d49da6fc1d7e5f9bbb7f9016418cf8a58dad2b0e5efa1",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-final-wip-v1.json",
+      "sha256": "12536fc5c3ae51228961d43a38a3fa9d8c4cb2cfff8ccfcfb559aef58a441673",
+      "bytes": 1643
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-real-v1.py",
+      "sha256": "717de6f550c0f7539f5afb5ff02adbcdfa07c06b732714a9008eeff37edfda3a",
+      "bytes": 2691
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-return-legacy-real-v2.py",
+      "sha256": "d2d57acf4af876a12744e2e938220d5daaefe202c32b62549d7381a66ad98729",
+      "bytes": 2719
+    }
+  ],
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
+  },
+  "access_policy": "仅公开来源、限定结果与hash。原C结构/捕获/VM镜像/执行文件/SDK/固件及日志保留私有工作区，需所有者授权；exact artifact和fresh output重放。无宿主实验驱动安装。",
+  "replay": "Positive: native-return-real-v1.py;exact26bservice/2fckernel/SDK110US,ae40frozenHost/guest/compiledfixture. Negative: native-return-legacy-real-v2.py;exact6dcproductionwithtools-onlyoverlaymappedtoae40. Bothrawresultsimmutable;oldFAILneverupgraded. Offlineaudit scriptsandsealedactualCprobeincluded;metadata/hashchecksarenotreplay."
+}

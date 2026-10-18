@@ -379,3 +379,17 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 只维护凭据，不增加性能/协议/形式化资格。完整goal继续active，原范围和未决条件保留。
 
 [历史实现退休R1与准确新产物回归（2026-10-17）](architecture-retirement-r1-20261017.json)：cd35/0568，保留失败及尚未覆盖范围；不转授文档HEAD。
+
+## SSAP值原期限与共享初始化（2026-10-18，限定分项）
+
+准确编译与执行源码为 `e776f3623830c31909a879cdddf8d90f8e1e0d21`，
+报告提交不替代该身份。候选6b的本地等待反例、未知C诊断及其他原失败继续保留。
+
+- [源码审计、三类清单与原反例](ssap-value-deadline-audit-20261018.json)
+- [实际源码、C/Python与执行器离线范围](ssap-value-deadline-offline-20261018.json)
+- [新artifact普通应用通道与独立管理SSAP正向](ssap-value-deadline-apps-real-20261018.json)
+- [同一artifact七尺寸及原Owned路径保持](ssap-value-deadline-preservation-real-20261018.json)
+- [既有动态与参考受保护路径保持](ssap-value-deadline-factory-real-20261018.json)
+
+正向保持不证明受控期限、调用者退出、部分初始化、晚到义务或同行业务全集。
+私有原件访问、hash、冻结校验工具和限定范围见各报告；整项架构与自然恢复继续开放。

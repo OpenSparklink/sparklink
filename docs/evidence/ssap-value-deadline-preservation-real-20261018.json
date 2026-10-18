@@ -1,0 +1,1719 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "compiled_service": "e776f3623830c31909a879cdddf8d90f8e1e0d21",
+  "guest_tools": "e776f3623830c31909a879cdddf8d90f8e1e0d21",
+  "host_tools": "e776f3623830c31909a879cdddf8d90f8e1e0d21",
+  "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "scope": [
+    "Seven original short/length/Owned VM gates on exact e776f36 SSAP deadline/connection-owned-initialization artifact;not a whole HEAD or complete architecture qualification.",
+    "Ordinary applications independently validate random peer replies;both-end USB,real discovery/connection roles and unchanged daemon identity verified.",
+    "Short61 and app249/250/253/254/255/2042 are application byte counts;not all layerPDU boundaries or full supported maximum. Existing app249 explicit oversize/refusal checks and originalOwned allow/deny/ownerexit scope retained.",
+    "QMP remove/readd is controlled passthrough validation,not physical unplug,natural recovery or proof of hardware state clearing. No new originaldeadline/partialinit/callerdeath/drain qualification inferred."
+  ],
+  "bounds": {
+    "real_runs": 7,
+    "peer_round_trips": 56,
+    "application_bytes": [
+      61,
+      249,
+      250,
+      253,
+      254,
+      255,
+      2042
+    ],
+    "usb_packets": 32361,
+    "radio_matches": 154,
+    "evidence_negative_controls": 42,
+    "new_formal_proofs": 0
+  },
+  "gates": [
+    {
+      "name": "Seven actual normal-user original socket/Owned and length gates",
+      "status": "PASS"
+    },
+    {
+      "name": "Frozen original production verifier replay of both capture ends and actual application originals",
+      "status": "PASS"
+    },
+    {
+      "name": "42 changed size,count,failed process,missing phase or capture negative controls",
+      "status": "PASS"
+    }
+  ],
+  "runs": [
+    {
+      "name": "short",
+      "application_bytes": 61,
+      "dtap_pdu_bytes": 66,
+      "status": "FINITE_ORIGINAL_GATE_RECOMPUTED",
+      "round_trips": 8,
+      "capture_packets": 4431,
+      "radio_matches": 22,
+      "physical_unplug": false,
+      "automatic_recovery": false,
+      "negative_controls": [
+        {
+          "name": "missing-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-original-application-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-peer-capture",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-real-controller-completions",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-radio-round",
+          "result": "REJECTED"
+        }
+      ],
+      "original_manifest": ".dev/architecture-r5f6-preservation-short-v2/manifest.json",
+      "original_control": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/run.json"
+    },
+    {
+      "name": "length249",
+      "application_bytes": 249,
+      "dtap_pdu_bytes": 254,
+      "status": "FINITE_ORIGINAL_GATE_RECOMPUTED",
+      "round_trips": 8,
+      "capture_packets": 4127,
+      "radio_matches": 22,
+      "physical_unplug": false,
+      "automatic_recovery": false,
+      "negative_controls": [
+        {
+          "name": "missing-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-original-application-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-peer-capture",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-real-controller-completions",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-radio-round",
+          "result": "REJECTED"
+        }
+      ],
+      "original_manifest": ".dev/architecture-r5f6-preservation-length249-v2/manifest.json",
+      "original_control": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/run.json"
+    },
+    {
+      "name": "length250",
+      "application_bytes": 250,
+      "dtap_pdu_bytes": 255,
+      "status": "FINITE_ORIGINAL_GATE_RECOMPUTED",
+      "round_trips": 8,
+      "capture_packets": 4223,
+      "radio_matches": 22,
+      "physical_unplug": false,
+      "automatic_recovery": false,
+      "negative_controls": [
+        {
+          "name": "missing-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-original-application-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-peer-capture",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-real-controller-completions",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-radio-round",
+          "result": "REJECTED"
+        }
+      ],
+      "original_manifest": ".dev/architecture-r5f6-preservation-length250-v2/manifest.json",
+      "original_control": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/run.json"
+    },
+    {
+      "name": "length253",
+      "application_bytes": 253,
+      "dtap_pdu_bytes": 258,
+      "status": "FINITE_ORIGINAL_GATE_RECOMPUTED",
+      "round_trips": 8,
+      "capture_packets": 4223,
+      "radio_matches": 22,
+      "physical_unplug": false,
+      "automatic_recovery": false,
+      "negative_controls": [
+        {
+          "name": "missing-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-original-application-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-peer-capture",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-real-controller-completions",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-radio-round",
+          "result": "REJECTED"
+        }
+      ],
+      "original_manifest": ".dev/architecture-r5f6-preservation-length253-v2/manifest.json",
+      "original_control": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/run.json"
+    },
+    {
+      "name": "length254",
+      "application_bytes": 254,
+      "dtap_pdu_bytes": 259,
+      "status": "FINITE_ORIGINAL_GATE_RECOMPUTED",
+      "round_trips": 8,
+      "capture_packets": 4223,
+      "radio_matches": 22,
+      "physical_unplug": false,
+      "automatic_recovery": false,
+      "negative_controls": [
+        {
+          "name": "missing-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-original-application-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-peer-capture",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-real-controller-completions",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-radio-round",
+          "result": "REJECTED"
+        }
+      ],
+      "original_manifest": ".dev/architecture-r5f6-preservation-length254-v2/manifest.json",
+      "original_control": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/run.json"
+    },
+    {
+      "name": "length255",
+      "application_bytes": 255,
+      "dtap_pdu_bytes": 260,
+      "status": "FINITE_ORIGINAL_GATE_RECOMPUTED",
+      "round_trips": 8,
+      "capture_packets": 4223,
+      "radio_matches": 22,
+      "physical_unplug": false,
+      "automatic_recovery": false,
+      "negative_controls": [
+        {
+          "name": "missing-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-original-application-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-peer-capture",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-real-controller-completions",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-radio-round",
+          "result": "REJECTED"
+        }
+      ],
+      "original_manifest": ".dev/architecture-r5f6-preservation-length255-v2/manifest.json",
+      "original_control": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/run.json"
+    },
+    {
+      "name": "length2042",
+      "application_bytes": 2042,
+      "dtap_pdu_bytes": 2047,
+      "status": "FINITE_ORIGINAL_GATE_RECOMPUTED",
+      "round_trips": 8,
+      "capture_packets": 6911,
+      "radio_matches": 22,
+      "physical_unplug": false,
+      "automatic_recovery": false,
+      "negative_controls": [
+        {
+          "name": "missing-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-original-application-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-peer-capture",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-real-controller-completions",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-radio-round",
+          "result": "REJECTED"
+        }
+      ],
+      "original_manifest": ".dev/architecture-r5f6-preservation-length2042-v2/manifest.json",
+      "original_control": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/run.json"
+    }
+  ],
+  "remaining": [
+    "Controlled new publicdeadline/callerexit/partialNativeinitialization/latephysicalreply/peer-business and full lifecycle/Grant/fd-transfer gates remain required.",
+    "Other methods/common higher SDK/per-application discovery/R6c and full S0-S6/19WP/10FV/12DG remain OPEN.",
+    "ENODATA/unexplainedC/naturalfailureRCA/nonmanualrecovery and unproved hardwareNOCP/reuse/drain assumptions remain OPEN."
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f6-preservation-audit-v2.py",
+      "sha256": "9bf91ad86ba46bf614e71e7c544fabac6ca2b99e74f9b4b6d79ccbe02e065ec4",
+      "bytes": 7842
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/manifest.json",
+      "sha256": "c6a0bf1b6ae91f4291334a01200b8a980487f1af725126d782a4bbafc9d57dad",
+      "bytes": 297991
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/manifest.json",
+      "sha256": "b7f178524c2ce7ee81a4009c8cca9ab273ec2efd9272dbc11090d93205d36612",
+      "bytes": 31624
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/root.btrfs",
+      "sha256": "91ab8ee68cf3a2d5b03c933f00cd07103f8fb4b0e22d9cbe43ba495ec8919efd",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slkd",
+      "sha256": "15228e55d7002e91a4cee5e463c4e87d4efb2263ae2994cfd7f1947ff16a2af0",
+      "bytes": 10033584
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slkconfig",
+      "sha256": "3f58a6739f8dbc9315153114be7020eb7fe9fc04890416530dfe2dc8e807b8b3",
+      "bytes": 1338168
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slctl",
+      "sha256": "fd24f53ce5372fc4229a8e88a0c374ea8508121aec8ba025b17c186969bb9690",
+      "bytes": 8431560
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slktest",
+      "sha256": "d138d3efcc92c53dffb4c2f04cbe6ef121cbf5fefeee87a999f39735ec01fbe0",
+      "bytes": 5764672
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slkmon",
+      "sha256": "d259c65a4c5fdee07b6ef8e82ae56e20833df2f85d36a88ad2c91ce51f0c64a9",
+      "bytes": 1660792
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slkdump",
+      "sha256": "484d9ee6a6826c1da14464c2c8b6c8f60faaa81e3580d90af67485a878eab34a",
+      "bytes": 1660584
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/liblibsparklink.so",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/libslk_native.so",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "0d98e49349060c19be393a95a2544f16e86f17e9722b3d8db258205224ba9055",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "4abd946753cacebc389aaf0293a2c21600ec0e5f3bfb6948a6250eaed33bc16a",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/architecture-r5f6-original-matrix-v2.json",
+      "sha256": "86cef07e110f7cb2fde5e72bd71bf2e5046ee13a03a6c7fc757bf9bd607618d8",
+      "bytes": 7653
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "33cdce1ad382f0588994daecb6dd5d0b2a802a2a840ddd725a997a9fcdfdb35c",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "b4b1fb82b28ec628c9a5042f972e6230526dcd441c39ce0c701700291718ed30",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "9f2872865a8bb7ab0d60526a25f7f01a6898b2bccd805a5a02d3a0b0cfbb811e",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "0ce42fb10fddb3001136dd0afaab0d8b1886df4d4c60bd05f907422581c53f00",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "d2dc7f31aa37673f8a9e3627307da0d97c13e92f021ff7afbc22af0470be8303",
+      "bytes": 992461
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "7db1e02b926cb8a22d2f510e89344ea186535193d11e4adb2db7812738d64068",
+      "bytes": 623
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "1e23b2559f9839851ded4f003a8116838bffd207769511a961b51469129e2e90",
+      "bytes": 627
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "61638ac6ba851eec73aef2ce462bef71b046b49618c73ceb8270aae52e1de598",
+      "bytes": 623
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "9f140f9bf9cbcba11e5fa80323ffeafcb6b3e4ef3a1ea1529fb6c5e7cff6c577",
+      "bytes": 627
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "9053477cf9b5f0f7689b9a8bb4a26a9bf963953668f37528e87793dc3c248a69",
+      "bytes": 623
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "4a30f20561d4d0bda1f93a14a092b3ed315b5ccd96c57d402d4f96837a830982",
+      "bytes": 627
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "ee7f8ba438bc9e2386bfca6f014a28163cb89c1a4efb5cbe486bee06c99a4cf2",
+      "bytes": 623
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "5b096623979a12d25ff4e26f93d4a85dcd076a0660245187d47ed0912e751df7",
+      "bytes": 627
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/capture-process-status.txt",
+      "sha256": "7c062d9ec007f3ac6cb2c146204af666894d58fcd9217f77437001c860da908d",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/capture-stats.txt",
+      "sha256": "72bf840aa129132035ea7e994f6ece7aa53902f46e0d0a4c58342370ead8f489",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/kernel.log",
+      "sha256": "75248345274ee22ead12c94bd57f98b34cc491cc4bbb2f031701e2be2a87c853",
+      "bytes": 49971
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "8c66b306d5baad88d9a217d34c41a3f88411b1924a42888143032dd3ebe488c1",
+      "bytes": 477381
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/pending-observations-0.json",
+      "sha256": "76cff539db88948142dedb212e09f3dcbc79e8e70b3a98e82f517363aff6c312",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/pending-observations-1.json",
+      "sha256": "954d65a90ce74649b1efbec9b105ad07fb1f92363a5021ead97bef2bf5bc1b70",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/ready-progress-0.json",
+      "sha256": "13e40cb06363c413285f3e27cd7d60c697355fd9062b8e4f973228622122a132",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/ready-progress-1.json",
+      "sha256": "645c7055d4a0906d7a4a59e12a890ffd523a5a2e78c913d934aa16208ea173d2",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/slkd-process-status.txt",
+      "sha256": "cc032a16e01d3fe99c7b0ba80da17a98836ca82069fdf12bf55473e2d9a6b953",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/slkd.log",
+      "sha256": "bd3a078cfc2f519d6e7e93ea4d3ed99b6776fa7939bfdc08bf0b404512948376",
+      "bytes": 5536
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/ws73.pcap",
+      "sha256": "9f76be30d682a42342eb4f90ff42cd7a1c9433da52cc521632ad579f51b27f4c",
+      "bytes": 680528
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "98e4d95d59e1bb6c07aabd4c09ebac0b256aa798a918a3b208ba6944c192d037",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/guest-output/xhci-trace.log",
+      "sha256": "c89e9e821e2de0922fb185e99c4e35cbacac30e2b522014681ba55d26df1b1ed",
+      "bytes": 2419091
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-short-v2/manifest.json",
+      "sha256": "bd41d4b3c0adfe0dfca2ae0202df784933bdbed9dd43ac645e7cd2cb94d5dcf8",
+      "bytes": 1788522
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "63761712e2d9460bf178f632829bdde47c974aa11becbcbc5da243cee46d16d2",
+      "bytes": 22160
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "faf6e239aae108eb10af4ce70f0e6db24e3849c9e09f734fad12bdde26f99954",
+      "bytes": 24667
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "74eceb508bb5d8053a8a9f99dd401e73003c1c25b7d47c98172e573679f33743",
+      "bytes": 22160
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "344baff0d66de5cb98a5a3f1350c0a27763d3063896c4819b7bda7c7fb568732",
+      "bytes": 24667
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "c6ef9533b60d391c11f45e1cf11d7f3dfce63356429702db498bf612e31c16a8",
+      "bytes": 970878
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/capture-process-status.txt",
+      "sha256": "51b06df05b4a613d684f634c242cf2bd9711ba8ca6ae11c378b8cde80ef5dc7b",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/capture-stats.txt",
+      "sha256": "e88fff78fe5bcfae43e0b37299cf355cd0584fcfc0d64ea5322846f13720f7f1",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/kernel.log",
+      "sha256": "f48fa2a7cab654019493989548744d99a01da0bfb7cbdc6f768ac8fc040fa930",
+      "bytes": 49940
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "fc7c9a324888934942ba274f3b3241bca82ef60635b52aa66d86bd77cd6f49f6",
+      "bytes": 477384
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/pending-observations-0.json",
+      "sha256": "dc7fb3082474d6b333f83c9835c78ced65d09f812c06d9743c31e38e723d4a8a",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/pending-observations-1.json",
+      "sha256": "070be5b4440243c6d021e69fe43274abfb0b461bdd11b8e65ed92c224ab046dd",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/ready-progress-0.json",
+      "sha256": "4fc8c3b150addca5a67db57cadaaf7fa8cef31fee5dd1a3ec7de3cc8c5aff995",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/ready-progress-1.json",
+      "sha256": "f2a43162e1badeddb2f7908dade7b14b7cc097a4ff6329da7ab85529a215781e",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/slkd-process-status.txt",
+      "sha256": "0fe7e06956af46a7847e585bc0b4d926b47c4e60f90317f3f65dbc57289ff764",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/slkd.log",
+      "sha256": "fbe970ad783623d793c892af4c505501980c22f6cb23ecce26d3f1141d96d0b8",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/ws73.pcap",
+      "sha256": "fc36be2ba1207bf0e54c4fb9a1731d4a958855eec5a208d4d64ee047ecac80c3",
+      "bytes": 636160
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "2a85d0026a51e00e4260490ef62e6f8cbb23be19f3edc419392bf9b72442c823",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/guest-output/xhci-trace.log",
+      "sha256": "8a9084dce495dbc29eaf24fe4a7d7af326a1e051253c542a67604906f06f1b72",
+      "bytes": 2264994
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length249-v2/manifest.json",
+      "sha256": "2f032cd2247e13513995853aaa6466355d635c1aec72873825146c76abe292bc",
+      "bytes": 1600025
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "d5a0bfdabb56bccf730ca5c51da584298639000b663ce808d51c30697c40ce3e",
+      "bytes": 5604
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "dd0a999267fc82f571baa3bddbc7f74114aa6b56f92cbf1681d3c4127784d3eb",
+      "bytes": 8111
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "1f3c3f7d56d745040ba5241a477295df391fdb0474c0adcad6cd546188de60ab",
+      "bytes": 5604
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "26b85eddc317242aeb73e1ef164f9785292ef107851dbfb96226e8edf9b6be2e",
+      "bytes": 8111
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "f5ab40d5e23ed79d14706808d567fbcbc3c45a95f0b6b4ab5bb440bc549fe21b",
+      "bytes": 904414
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/capture-process-status.txt",
+      "sha256": "c9181df3f9d213234b4663a7f04c8633f2e34c9337939d0e2f68572eefe127a0",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/kernel.log",
+      "sha256": "6c313865ff12f7073b168165efbcae7bc016237b12c42a2cb0e13fa40687d93c",
+      "bytes": 49893
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "ac340ca1c9caa78ddfb9ba881f12a2a71ebbc1163f3c692cd08dc706caf04f63",
+      "bytes": 477383
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/pending-observations-0.json",
+      "sha256": "fc93b72c142e631b8e36f90510dc022335b631bc839a39a7d440324c04ff65b0",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/pending-observations-1.json",
+      "sha256": "208226d1c24fc638d48809d7514aae3d92e035fb8ed757c5addb9a10878cb2ae",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/ready-progress-0.json",
+      "sha256": "0a0effccc41d0a5e5ed1358a6d75d0d1d3886075259ff000988c3cf6b58161a7",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/ready-progress-1.json",
+      "sha256": "0ddab2a2b5e0d42c57cccc0704eefed61ae25e87f4e3310c84fe327397d0406d",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/slkd-process-status.txt",
+      "sha256": "2eeca9de30333270016d8856ba445af5278febf246d5e08834ef44da728124db",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/slkd.log",
+      "sha256": "66e00eb677620d257a16596e9457b58474b4a49aec51f9f51252eac4efdcbb7d",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/ws73.pcap",
+      "sha256": "4137b40a63ebc05a243b24f7cb120e62d449960848046a0ebdd353461c64fd32",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "3926a47bc444f4f5bfaa41fd8f80870d2281c41dd5a36e8ea45f4f26c5ae6ce2",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/guest-output/xhci-trace.log",
+      "sha256": "d7eff0812a9c0573c136b2ebc7ca2c753940799cb38c16e6f62332c38f6a7265",
+      "bytes": 2314073
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length250-v2/manifest.json",
+      "sha256": "5c4f5ad22a102413d7b6d1fdfffbd3d5f52f76ca6a4f51407c34dbb93bd4ef86",
+      "bytes": 1621891
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "b832316a80bb2ed7d440472de7090a688501a8697afa9ce2cf040bc3b4a84c02",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "1c2cf56d396e252381e2c348e0bb9e272db13b45130ce3485f490e34e819f685",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "fc2260403eead090cef512d9a359dd663d48abeb139b94e44811d0a1969c758f",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "0b9d55373ff8bbe56b934ff063e182607734b954bfd7339987e43c9f5c5df213",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "dd72a5daf83849420a5fc1ba97909497eb1a32fc10ce7e856ad85e7b444cab36",
+      "bytes": 904645
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/capture-process-status.txt",
+      "sha256": "80ed6da113c14477c05605265188ef0b1b5ad7a871d7460c142bd29f361b212e",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/kernel.log",
+      "sha256": "8d399867304ec3c77cb9becb92f6590398172e6815bdeea67a11458360d5d953",
+      "bytes": 49806
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "35c721cff2e12ed66b4e076a9f41f9a3d0ca8b124d45a9145f1e69c17a34e919",
+      "bytes": 477382
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/pending-observations-0.json",
+      "sha256": "c028218eb3f8c5b2b1550e1dc2107422af80e3259f6b8cb0c58f12fd61b94768",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/pending-observations-1.json",
+      "sha256": "11aaa37ec338b869fa619fd964e56ae5ed9615a3927a3c54850dd92007b24cbd",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/ready-progress-0.json",
+      "sha256": "f1946d86a5c3b2016d6a7d02ac63de657d0543d99815eccb6b4a15ae74508ae6",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/ready-progress-1.json",
+      "sha256": "85939c66fd38eb3ee51f5c321d61ad050243100a90e2319ce33245dd3e2a78b5",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/slkd-process-status.txt",
+      "sha256": "7c1350db4d77fea3bdaeacaf4dee7e246f55ed00b2ed0879f0e4085c34ae91a1",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/slkd.log",
+      "sha256": "a7b120805c0f41704d2fc0aff6fef5ef2fe4d53c9d1260cbfb63f482a8c17e89",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/ws73.pcap",
+      "sha256": "7c5da5242d843f36ddc3321d4e6285dc0ab77ec7e11fac07c6b4d69b8dbbc29c",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "ba6aa5d3202583b7cdad590b1502a94793d9846faf80a1f05b6e7b801f99ee26",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/guest-output/xhci-trace.log",
+      "sha256": "a33d5053ab571b3b1d037bf47520676663bdd597035cffa901dfcac57cb13758",
+      "bytes": 2312967
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length253-v2/manifest.json",
+      "sha256": "26705455c9dac06ad288e253caf583753ef01ec32408dd0e19fd631f0a9df8f3",
+      "bytes": 1622273
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "6895f4de1bfed56b16b88f4861d27c41e470f12d845af2b947b4bdf9f2236438",
+      "bytes": 5668
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "cc50a8ae7518f1b563708138a95cd7e0cc3d6215063e5f70d018ba79f3bca6e9",
+      "bytes": 8175
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "6cbd18f4d75c3fdd2c7670ac3a8d6d5932134641a412d588ad316f6a3061fdf7",
+      "bytes": 5668
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "31bc5bd6e8172abdd940420f9760ac996f36278249401e7c1d75a7e1094b25b3",
+      "bytes": 8175
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "7b12e87814c35edea6c82ecbe1263c9c42e1c2f7a2877767e58df8ed04cbc221",
+      "bytes": 905220
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/capture-process-status.txt",
+      "sha256": "1f46229cf5eea5383a922866bf965d78e0c8663fa0ff27f8448c45b22b23d016",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/kernel.log",
+      "sha256": "378d082fab0f47139f4cf55a8a40ae0445e0ea1e2dc00da0b3ee05f1e531db78",
+      "bytes": 49806
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "420bf14a292f7683d235470669d2e752ea63d924bff68e1179280f6cb9a9d9d1",
+      "bytes": 477383
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/pending-observations-0.json",
+      "sha256": "25da722055834da3a4e94d0319cfc4384fc7bf0e3e63d10bbb4ea5decd61c0e6",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/pending-observations-1.json",
+      "sha256": "b5eb20649058fd33a4f113831b2e0e942643214ebc0c3e38914e3fb80b4bba83",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/ready-progress-0.json",
+      "sha256": "e6e0cafe1e7051a4ccb071c848e4bb0a851fa334a4db2a7e3077008a4ca04989",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/ready-progress-1.json",
+      "sha256": "7bc8323033e43ffc35796208f0f1b1561e2ab3b5538c37fe4ba1a9ec72fe0efe",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/slkd-process-status.txt",
+      "sha256": "f78ddbe3e03f999cb19c0ed1be0c2e4770bf6bae1c833e4d6da5df5bf307bdf2",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/slkd.log",
+      "sha256": "ae26ca040f5f8d78c17c0a734358b9bbf63e8a4834e5c0f96a8f8e989f6b358a",
+      "bytes": 5536
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/ws73.pcap",
+      "sha256": "69c99dd4d1e71567cf56f399586e957ddb979002b29f10f4b96974928a579d62",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "20b50259fdf58a5eb49971a08f95b47d65fd6920c632fb457657da4317871937",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/guest-output/xhci-trace.log",
+      "sha256": "24b7d75c8faee20ea0a59a16036e93ec77ab90ff989ab75f2579ea92a268bf8a",
+      "bytes": 2313972
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length254-v2/manifest.json",
+      "sha256": "03018de147288d91d0223538f89bcb09c4cdc4bf74173e12f6952acd298284cd",
+      "bytes": 1622402
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "341378b2565f282868aa85d24b9ea02ed91f4ba83493a19d993fd609652497b2",
+      "bytes": 5684
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "5c4dcadb0b6747033aa058a1117492bb448d57f2976e0eaae43d3d21ced90568",
+      "bytes": 8191
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "b97e25612e969042588b5159101bb5af1c319ea39fc47907f4498bdd47baf477",
+      "bytes": 5684
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "36586235a45f7b5b476299713e93a6f85046764232356809baffd9d295105323",
+      "bytes": 8191
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "55e25d53295a16aa0c2a565e5aa431675aba01ab4de00c6a81e99c2d008ef8e5",
+      "bytes": 904713
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/capture-process-status.txt",
+      "sha256": "8e138b1709d638bbc100c334de4a046c4a986f09c0a1ebcc217d61f0ddf01b98",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/kernel.log",
+      "sha256": "62ebeac50cb09492065421a4c4bc609ca77593107d686ce2bfa1e93d488652d1",
+      "bytes": 49806
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "5f40297aa938a12eea10ac7e9d458c9effc81b6dc1368df31adc05fc6b8c2340",
+      "bytes": 477383
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/pending-observations-0.json",
+      "sha256": "b9b6285f106713cddfb6b5ca3bbf8cd11552421f2994c0c428e46c2379ef4fb7",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/pending-observations-1.json",
+      "sha256": "3fbf326891059331e529f536635c980f476cdb923e74bc4d1756c1635fb112bf",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/ready-progress-0.json",
+      "sha256": "80413f337c04075f04a3cc138c14544f5e1aca5af3de5fdfe135cdebb9d8241c",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/ready-progress-1.json",
+      "sha256": "5647f031614e5850728bcc140b0c971525592cadb6bb8064c23f09449c202f70",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/slkd-process-status.txt",
+      "sha256": "f8ecf4f69e9b8c9c9818f40ef76f09863049593b41932c515553684ffc4f2cdc",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/slkd.log",
+      "sha256": "1d33c6300dae395aaa314458debec0dd7e489c672aa6f222dc5471bd6f831450",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/ws73.pcap",
+      "sha256": "a79aaf1c38f579e69f9db9f133dc6efbafc0fc0b8014411172dfbee480aebfbf",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "98c85641d01034f96dcf8af467d6164faaa13bf833b0219d24931d99e28b5291",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/guest-output/xhci-trace.log",
+      "sha256": "79b25bceb2b97782b146a8b1a0fffdcf332a8886550544aa16f4c2256cc07607",
+      "bytes": 2312969
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length255-v2/manifest.json",
+      "sha256": "c9017bcdce1766158d1e66861358391ef05498860a69b963c73a1a7a98d537dd",
+      "bytes": 1622528
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "eebcfb7604b00dd22051c68467361f7791e880a3d5363a464d907ff4ee6275b4",
+      "bytes": 34281
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "322c75adcbaece4c1ec85f32ed6d039ce7ba65df1c9ac3eff580b5aec4fbc692",
+      "bytes": 36784
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "f9c5e07a79885648a809cbe968e1a0016839984ef68faa74321bc3bcebd547c9",
+      "bytes": 34282
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "58e528e88c925e19ce7a223276e367aac3c15b1d0138f4de05e0f3cf4505126d",
+      "bytes": 36785
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "2d5822a87849fa275db29e91dbb7d88872192e99c41f546e66109afd87830c0f",
+      "bytes": 1019144
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/capture-process-status.txt",
+      "sha256": "675da9119bc0307b722ec798cf6b92b4f529be72857a44aa0c9063eb26e8d9df",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/capture-stats.txt",
+      "sha256": "9ae3d7de6f23bbb1cd7609e27b6ae076e7f3192a4c6fc995506edf25cac426b7",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/kernel.log",
+      "sha256": "001f3d2cdac2bebcaf3f1ad855ba4f66fd77130bcc4b73ce8c4f241398c0eb25",
+      "bytes": 49895
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "db1001b89cf5c63c377497c1eece33963c0903d505fd60fb7b1d8bc7c0452a89",
+      "bytes": 477870
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/pending-observations-0.json",
+      "sha256": "ad18e1861da858606aa0e0d51c7414020d47c1d8dbe709777fbde5d7a870f8e4",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/pending-observations-1.json",
+      "sha256": "70c306c4a73d031f77e09fa3dca117999bcf61250bda2a247dd451af90d5c707",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/ready-progress-0.json",
+      "sha256": "91ab2ed7327d96909c81315c1b5cff274de71c0982343d0e8fe998a5d4da2516",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/ready-progress-1.json",
+      "sha256": "f66bc2428c97d60379eedd0a3b4f86394f128c4eb2654ee6a520455af7119837",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/slkd-process-status.txt",
+      "sha256": "ef51f2942a7f9d11569b788e5b72043d7e9cdcbf8b802edaec96a10ab983df11",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/slkd.log",
+      "sha256": "da1fe4039785f88c90ba741830acc036abb978f71d95cd39cdd68e5df2c186df",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/ws73.pcap",
+      "sha256": "c9506afb2d4c9101c30388f1798d78ee1d827bfacb6d22e9a0ef14bab1ffda10",
+      "bytes": 1122544
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "e4102a19b0b29dba8da9836cf5510367589b007e03f88ef5b3caf56b25b45d81",
+      "bytes": 285
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/guest-output/xhci-trace.log",
+      "sha256": "66daced3d9c1110e643138a4a9e45b0b052c222e2c045e9cf2dab8599d9a37a3",
+      "bytes": 3585623
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-length2042-v2/manifest.json",
+      "sha256": "5b1067103537efb7dff82e2f6fb6cc3c36c728dc290ed2af81c57c704d869c2a",
+      "bytes": 2579980
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-audit-v2.json",
+      "sha256": "fac377279f30eb0db3f9e7891f38267e1b2ad824c35382c0229e439f6b9eced4",
+      "bytes": 12917503
+    },
+    {
+      "path": ".dev/architecture-r5f6-preservation-audit-v2.log",
+      "sha256": "cf346ed154a86c814c697016ec02ae5063930e933fe8aac36501439d71ac6d9e",
+      "bytes": 125
+    },
+    {
+      "path": ".dev/architecture-r5f6-original-matrix-v2.py",
+      "sha256": "0a66cf22667b42fd49baf44c5aed93155be34ed810b4fee4190fae8775a9ca35",
+      "bytes": 2524
+    },
+    {
+      "path": ".dev/architecture-r5f6-write-preservation-fragments-v2.py",
+      "sha256": "cfc20d7ae5b74e5148cfbbae7f3401bdf09455ba05771a7e5bb15f202cc0d98c",
+      "bytes": 6335
+    }
+  ],
+  "private_material_access": "Exact private .dev originals require authorized workspace access;public source IDs,hases,bounds only. Firmware/SDK/restricted material and fullpacket proofs stay private.",
+  "replay": "Use exact e776f36 frozen guest verifier and original process/capture files. Each attempt immutable;no old passes transferred to changed artifact."
+}

@@ -1,0 +1,925 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "compiled_userspace": "e776f3623830c31909a879cdddf8d90f8e1e0d21",
+  "executed_guest_tools": "e776f3623830c31909a879cdddf8d90f8e1e0d21",
+  "executed_host_tools": "e776f3623830c31909a879cdddf8d90f8e1e0d21",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "scope": [
+    "Exact e776f36 new artifact andSDK110 explicit-US on knownU ports2/3 in dedicatedVM. Apps-only UID/GID1004/no extra groups/caps0 uses public C/Python SDK Channel and actual peer random replies.",
+    "SSAP48 actual C/Python calls remain manager-enrolled UID1000/caps0 through one existing Engine and local staging database. Finite32byte reads/shortwrites/opposite local-value checks,not apps-only SSAP rights or new Owned/Agent/lifecycle qualification.",
+    "Actual guest system bus,app role probes/root supervision and both USB ends rechecked with frozen e776f36 tools;not distro installation,full per-application authorization,physical unplug or natural recovery.",
+    "This proves finite positive preservation of current deadline/initializer implementation only;no injected deadline/callerdeath/partialinit/late-drain claim from a successful run."
+  ],
+  "bounds": {
+    "real_runs": 1,
+    "apps_only_channel_processes": 4,
+    "apps_only_policy_probes": 2,
+    "manager_ssap_processes": 48,
+    "channel_round_trips": 2,
+    "ssap_read_write_read_groups": 16,
+    "sdk_value_calls": 48,
+    "ssap_value_bytes": 32,
+    "capture_packets": 3151,
+    "evidence_negative_controls": 24,
+    "new_formal_proofs": 0
+  },
+  "firmware": {
+    "profile": "explicit SDK110 US per selected device",
+    "combined_sha256": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+    "cold_rom_auto_selection": "NOT_QUALIFIED"
+  },
+  "environment": {
+    "vm_only": true,
+    "host_ports": [
+      "1-2.1.2",
+      "1-2.1.3"
+    ],
+    "other_ports": "E port1 andU port4 untouched",
+    "advertising": "negotiable-t",
+    "build": "12solo beforeVM;no heavybuild duringVM",
+    "detectors": "Normal retained UBSAN configuration;not KASAN/KCSAN/lockdep"
+  },
+  "gates": [
+    {
+      "name": "Actual public C/Python application-only Channel pair and policy refusals",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual retained-caller C/Python SSAP read/write and opposite application local verification",
+      "status": "PASS"
+    },
+    {
+      "name": "Frozen production verifiers recompute both-end USB and actual root/process originals",
+      "status": "PASS"
+    },
+    {
+      "name": "24 evidence negative controls reject changed identity,payload,missing peer RX/role/process output",
+      "status": "PASS"
+    }
+  ],
+  "remaining": [
+    "New artifact real positive and original preservation are separate finite records;complete controlleddeadline/callerexit/partialinit/latephysicalreply/peer-business matrix remains required.",
+    "Native operation not returning may remain Retiring;no wall-clock cleanup bound,NOCP duplicate/reuse correctness or full mutex/callback refinement proof.",
+    "Other public-method deadlines/full lifecycle/Grant/fd-transfer,common/higher APIs,per-appDiscovery,R6c,ENODATA/naturalRCA/nonmanual recovery and full S0-S6/19WP/10FV/12DG remain OPEN."
+  ],
+  "private_material_access": "Authorized local workspace .dev originals and exact frozen production verifiers;hashes and scope public. No current proof from unavailable raw material.",
+  "replay": "Replay retained audit against exact e776f36 guest/host tools and immutable original manifests,actual application outputs,root supervision and full both-end capture. Never replace with current-main WIP.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/manifest.json",
+      "sha256": "fc1594f87cf1c8f690ce6217989ad8121451ab359f21a8580654b4070c7ba96d",
+      "bytes": 1206624
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "e72fe022f52186aab0b938f6221e7b86bed84afc1d9c474906cc769c3079feae",
+      "bytes": 1137073
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/ws73.pcap",
+      "sha256": "ace109416719f6b56bdb6dda2fa2cca7ceed227bea936297306e14668226f157",
+      "bytes": 473476
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/capture-stats.txt",
+      "sha256": "c90c59ee9b58f544baccf9b438467ad1eee3fb4caf8cb806550835a365b8d82a",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/manifest.json",
+      "sha256": "c6a0bf1b6ae91f4291334a01200b8a980487f1af725126d782a4bbafc9d57dad",
+      "bytes": 297991
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/manifest.json",
+      "sha256": "b7f178524c2ce7ee81a4009c8cca9ab273ec2efd9272dbc11090d93205d36612",
+      "bytes": 31624
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-audit-v2.py",
+      "sha256": "ee6ed829f5a16365d84c2e1e7c82f310353ff12ddf0f2e933ea0108144adbc0b",
+      "bytes": 9068
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/root.btrfs",
+      "sha256": "91ab8ee68cf3a2d5b03c933f00cd07103f8fb4b0e22d9cbe43ba495ec8919efd",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-channel-role-0.request.json",
+      "sha256": "a8b9e2c23a313405cd4fc1d00ee7e3c307d443745bc95e29b1deb181c1558de3",
+      "bytes": 4921
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-channel-role-1.request.json",
+      "sha256": "0088ecdd7afa17fb15d80bb35152d6636695b97040375e1cf0347c78240851ef",
+      "bytes": 4921
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-0-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-0-c.stdout",
+      "sha256": "ad66455cace7c90262c21d1810c53fe9cdba6691c87b0c98da5a0ecc011a336a",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-1-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-1-c.stdout",
+      "sha256": "2926ccb7267acc9f4cb5510ccd7f7cc58957f5bd1d087bfcf85d8e0c88d9c0c8",
+      "bytes": 251
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-10-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-10-python.stdout",
+      "sha256": "95f424a7a233ec10d3ed0f27908919ae1c0e410228092bc512d153e194975548",
+      "bytes": 261
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-11-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-11-python.stdout",
+      "sha256": "047959fd4d83fb8aad55456ce335c291bbf8e21201e6d3f9e56fd82b79bab98d",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-12-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-12-c.stdout",
+      "sha256": "aed5c48a673ff34341686f739f70197e48c453f213ea9ac74c1fa9568037aa22",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-13-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-13-c.stdout",
+      "sha256": "f4d0ea01b5bec21d9f24c9ba985da13d3253b688d8eb68f2ef71c20320535ea1",
+      "bytes": 251
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-14-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-14-c.stdout",
+      "sha256": "e63d0cf6b487b2ce6e411f200dd1d924b5a90a20b2a1e19c2019f5b15c7eaaff",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-15-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-15-python.stdout",
+      "sha256": "047959fd4d83fb8aad55456ce335c291bbf8e21201e6d3f9e56fd82b79bab98d",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-16-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-16-python.stdout",
+      "sha256": "1792ae18f4c80a17a174937a335d2af3ef88bf4c9f02d89fcc33e784590c1330",
+      "bytes": 261
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-17-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-17-python.stdout",
+      "sha256": "35caa326f2c617f7c7e636a7958e8f8c1f9c4de9ffcd186c40e12bba3c240558",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-18-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-18-c.stdout",
+      "sha256": "e63d0cf6b487b2ce6e411f200dd1d924b5a90a20b2a1e19c2019f5b15c7eaaff",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-19-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-19-c.stdout",
+      "sha256": "d2e9d3cfe343c10a9b225644e955fd76fa3afe85862e19d6eb60375294fe934e",
+      "bytes": 251
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-2-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-2-c.stdout",
+      "sha256": "21a41a76698482578fc9a89ff6924f7ba2ba76897907488ae91f1f32f62b37e8",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-20-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-20-c.stdout",
+      "sha256": "368f23a9a2bdee3b705a6fbce413fc669bc62b46f29bcee62a0f4dab8ed693be",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-21-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-21-python.stdout",
+      "sha256": "35caa326f2c617f7c7e636a7958e8f8c1f9c4de9ffcd186c40e12bba3c240558",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-22-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-22-python.stdout",
+      "sha256": "b29f74c0eb6e17803b113edb06ebde00ec22f2f58de3a98dbc04cb12827991a2",
+      "bytes": 261
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-23-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-23-python.stdout",
+      "sha256": "f6057edd55f8ad60767056b6372998c1798c7bb066cde1dae1274d5555a07c8f",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-3-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-3-python.stdout",
+      "sha256": "b5d281fe225ede75b99d93f95f8a25f5824b9d8f6f7ebc29388b7f13b35fa4a6",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-4-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-4-python.stdout",
+      "sha256": "b37391cbdde17de3ffe9d40786cb50853a63ecca841fe221cb16a07eee12f6ab",
+      "bytes": 261
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-5-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-5-python.stdout",
+      "sha256": "d4e7df2274b8c9a69f61ad05325f30deb7a5bdafc5cf9a2dfa248652a46cf622",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-6-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-6-c.stdout",
+      "sha256": "21a41a76698482578fc9a89ff6924f7ba2ba76897907488ae91f1f32f62b37e8",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-7-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-7-c.stdout",
+      "sha256": "f6f1f57ecd212e395255e871bed6f735a9a7b332b64c37c2aae9076114c9a156",
+      "bytes": 251
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-8-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-8-c.stdout",
+      "sha256": "aed5c48a673ff34341686f739f70197e48c453f213ea9ac74c1fa9568037aa22",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-9-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-0-9-python.stdout",
+      "sha256": "d4e7df2274b8c9a69f61ad05325f30deb7a5bdafc5cf9a2dfa248652a46cf622",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-0-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-0-python.stdout",
+      "sha256": "fdb7706d8490f22891c7c195dcdc792b82dd04e19522c060ef3a4bf198e402d9",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-1-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-1-python.stdout",
+      "sha256": "6b7fcb65e92c78dc40aa4f648db3be0aea032f79250841caad84ced06d1de0e7",
+      "bytes": 261
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-10-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-10-c.stdout",
+      "sha256": "a255fb043b70539b743619adda286612ec51a95521f865bfd889ddfbc4eebfe4",
+      "bytes": 251
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-11-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-11-c.stdout",
+      "sha256": "0ecef73b26b779a1e363e2d53ea8b3bf7475d7c1c67d7a490d56396ae547c0dc",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-12-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-12-python.stdout",
+      "sha256": "ca47043dac497e297bd2c132b43f1704f7d8a10a7737bca3db8be41be379fdd2",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-13-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-13-python.stdout",
+      "sha256": "e5dd59dc5a253a379bae493701c2ac15979b7fec03e3f22b2c49d9d75536405c",
+      "bytes": 261
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-14-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-14-python.stdout",
+      "sha256": "8f003684e34fb452a4203caecee3c3673028b0c32506f14474da326b097b51e6",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-15-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-15-c.stdout",
+      "sha256": "0ecef73b26b779a1e363e2d53ea8b3bf7475d7c1c67d7a490d56396ae547c0dc",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-16-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-16-c.stdout",
+      "sha256": "23cdef77fe5fc629b6b950a91d6146748ab2bc7abb656c61b719732efad5b9f7",
+      "bytes": 251
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-17-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-17-c.stdout",
+      "sha256": "4228d8e0142f67744c4498c7a73e1336bcb87a469174964b76fb35f0660b08ac",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-18-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-18-python.stdout",
+      "sha256": "8f003684e34fb452a4203caecee3c3673028b0c32506f14474da326b097b51e6",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-19-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-19-python.stdout",
+      "sha256": "9f092007ad5fde5402cb2ccda5e83a5d25654a7387d47acb8f237addabbedbac",
+      "bytes": 261
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-2-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-2-python.stdout",
+      "sha256": "2c4ba00af3271e8421a232a63a5f23d2000e92344c30c8d06e2260bf0a749da5",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-20-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-20-python.stdout",
+      "sha256": "10fe1b0777f38160c2fe4e1ef2dd85ce0a32c5bbbaa78f5a3cf98c7d179a51b0",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-21-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-21-c.stdout",
+      "sha256": "4228d8e0142f67744c4498c7a73e1336bcb87a469174964b76fb35f0660b08ac",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-22-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-22-c.stdout",
+      "sha256": "4391999105d2adb9aae32ef3b3b76c799d03d81f75612070f1e2401ea3447f67",
+      "bytes": 251
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-23-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-23-c.stdout",
+      "sha256": "f87ccc7dbaba02fca6fb0589e12d7c6ebc7b1572d08f8c0211afff7385abca62",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-3-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-3-c.stdout",
+      "sha256": "1bc816ad0c18d50c774305957b05bd05924006ccb44ba5b99bf4319bad4617db",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-4-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-4-c.stdout",
+      "sha256": "edb456490116753f876713946c176bc0de8e9510babf35800698af8d2047abfe",
+      "bytes": 251
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-5-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-5-c.stdout",
+      "sha256": "7ac8abe7d9bd47abe7b31c5598f0b471bffccb6f07adfbe68539f9c696f4828d",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-6-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-6-python.stdout",
+      "sha256": "2c4ba00af3271e8421a232a63a5f23d2000e92344c30c8d06e2260bf0a749da5",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-7-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-7-python.stdout",
+      "sha256": "5af866b26db250eb1e9a7639a173d281cdf5873d0c64f98af5f69450fca61442",
+      "bytes": 261
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-8-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-8-python.stdout",
+      "sha256": "ca47043dac497e297bd2c132b43f1704f7d8a10a7737bca3db8be41be379fdd2",
+      "bytes": 260
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-9-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/passthrough-control/app-ssap-1-9-c.stdout",
+      "sha256": "7ac8abe7d9bd47abe7b31c5598f0b471bffccb6f07adfbe68539f9c696f4828d",
+      "bytes": 250
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/finished.json",
+      "sha256": "357d62714ccbb3f2496cd3807df09a5e7a0556cac42ab42d7366e5b0f9e1fe22",
+      "bytes": 139
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-0/app-client-0-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-0/app-client-0-c.stdout",
+      "sha256": "eccea1bccdfbe356c49571fa4b6231772a5f84795c9fdb4e755e8c04ee5046fb",
+      "bytes": 449
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-0/app-client-0-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-0/app-client-0-python.stdout",
+      "sha256": "c0beaac2d8d37bd4b6bff6891d312dd72268cfda55d4f2c68e198ba0a5a3c7b9",
+      "bytes": 483
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-0/probe.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-0/probe.stdout",
+      "sha256": "b9c89f7135cfc3a28adc878068e6884762c6d38eaf348ba66dff67ab472238dd",
+      "bytes": 641
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-0/run.json",
+      "sha256": "7ac3ebc63e50a70888fa2c3b8b4cf2a96a9ec3374465dbc0d0929f303b8b2ca7",
+      "bytes": 17009
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-1/app-client-1-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-1/app-client-1-c.stdout",
+      "sha256": "b3a3243079fde9b54287c33797edbd94fc5355a5179de783de45e5f9b9c0981f",
+      "bytes": 449
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-1/app-client-1-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-1/app-client-1-python.stdout",
+      "sha256": "f6ccb9f88fe0049fd2a509c7ce1a4474a32605b903b332584c9768cafd3b6d79",
+      "bytes": 483
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-1/probe.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-1/probe.stdout",
+      "sha256": "b9c89f7135cfc3a28adc878068e6884762c6d38eaf348ba66dff67ab472238dd",
+      "bytes": 641
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role/phase-1/run.json",
+      "sha256": "e67b81b6f3d05ecf3b3a5d65f2e9728c98095ae52510077b5c38a176a1347734",
+      "bytes": 17009
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/application-role-supervisor.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/capture-process-status.txt",
+      "sha256": "d18056c33ff35f2cfa9fc4e46f50e13d311ee739130c61c1c8d0bdd1599d48b4",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/dbus.log",
+      "sha256": "c3103cd11668041adf15470645f57e999cb050a1d9ddbe24dc0016e5b58f53c7",
+      "bytes": 11264
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/kernel.log",
+      "sha256": "7e45594ebdd5d8039a4d4a25b8929ae0a15c0ce3d0317da9e02a85ca736738b5",
+      "bytes": 47454
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "6bf13fab64f5596c6811a63147a0e9b6f12656a2cf0fa4a654687102a0cb1c3a",
+      "bytes": 1638879
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/pending-observations-0.json",
+      "sha256": "ee4aeb647d7a21b4c66e80f2afbe44875caab7145de7722a56369a8737d7cce3",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/pending-observations-1.json",
+      "sha256": "9d507a96e3cb7fcb979f10a24e9e233e13f44c5958fb8f421f963708f23245d6",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/ready-progress-0.json",
+      "sha256": "379467134b759f10d702c1d6401c153d7dafc0783c67bdb6840a4b807706bbfb",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/ready-progress-1.json",
+      "sha256": "1ed20a8f9b5b96c1e4151370133503d087d45031aabf0811214c7ae108f4fb83",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/slkd-process-status.txt",
+      "sha256": "a1b9853d24882e7f79c35c9109efb4b5f7230f3594bf74caf7695a6c0437425b",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/slkd.log",
+      "sha256": "8a49d6962b01307f9adf77d64809e11f1cdfca23bec740f42c2f1a19735a3f7c",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "7faea0042e5c8fb4ab087904590e00298a45bd383078c056a7619011a2281b72",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-real-v2/guest-output/xhci-trace.log",
+      "sha256": "5475ed073e7848c88802dea9f1ac87eb99916d7945f8b52f3012145b7e6325eb",
+      "bytes": 1762025
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slkd",
+      "sha256": "15228e55d7002e91a4cee5e463c4e87d4efb2263ae2994cfd7f1947ff16a2af0",
+      "bytes": 10033584
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slkconfig",
+      "sha256": "3f58a6739f8dbc9315153114be7020eb7fe9fc04890416530dfe2dc8e807b8b3",
+      "bytes": 1338168
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slctl",
+      "sha256": "fd24f53ce5372fc4229a8e88a0c374ea8508121aec8ba025b17c186969bb9690",
+      "bytes": 8431560
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slktest",
+      "sha256": "d138d3efcc92c53dffb4c2f04cbe6ef121cbf5fefeee87a999f39735ec01fbe0",
+      "bytes": 5764672
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slkmon",
+      "sha256": "d259c65a4c5fdee07b6ef8e82ae56e20833df2f85d36a88ad2c91ce51f0c64a9",
+      "bytes": 1660792
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/slkdump",
+      "sha256": "484d9ee6a6826c1da14464c2c8b6c8f60faaa81e3580d90af67485a878eab34a",
+      "bytes": 1660584
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/liblibsparklink.so",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/e776f3623830/libslk_native.so",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "0d98e49349060c19be393a95a2544f16e86f17e9722b3d8db258205224ba9055",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "4abd946753cacebc389aaf0293a2c21600ec0e5f3bfb6948a6250eaed33bc16a",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-us-bundle-v2/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/root/bin/ws73-application-client-c",
+      "sha256": "8823238260fee96e5e791fc81d9ab7a9367facc59f7524ff66afe658bc042376",
+      "bytes": 18192
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/root/usr/share/sparklink/tools/ws73-application-client.py",
+      "sha256": "406df1be428089de517c7100e61b8f9640e7fe12f3d0e2a260c6992b4fb1fd81",
+      "bytes": 5756
+    },
+    {
+      "path": ".dev/architecture-r5f6-native-prepared-v2/root/usr/lib/libsparklink.so.0",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-audit-v2.json",
+      "sha256": "66558b7a256251df6c21c37c47f9b8a4b6b9040f644a9f22c954b21b2844d112",
+      "bytes": 1116771
+    },
+    {
+      "path": ".dev/architecture-r5f6-apps-audit-v2.log",
+      "sha256": "dfd3d2262a9c95d5cc26eaee45b52724e13765788c534e4dce32322426c15b8a",
+      "bytes": 182
+    },
+    {
+      "path": ".dev/architecture-r5f6-write-qualified-fragments-v2.py",
+      "sha256": "0e25cbc9dfee437c12e7cf509fd7438e496004e124706ce8939cc7ca2412e390",
+      "bytes": 10320
+    }
+  ]
+}

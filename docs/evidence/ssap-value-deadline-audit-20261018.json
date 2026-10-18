@@ -96,6 +96,15 @@
       "crates/libsparklink/src/sync_client.rs": "815a7f930bc135644763fe349f8336cca2c3ae5e572aa3718960553bd06ebfad",
       "crates/libsparklink/src/ffi_connection.rs": "eaf1c49974cbf3601c1f785e34766f88567eed639f58e7a35658559d434c7bc6",
       "crates/libsparklink/src/sync_client/tests.rs": "c5500ffa87de5e455067c196a79b9092cbeab11b8490d8bc02d6c9c6bd386d2c"
-    }
-  }
+    },
+    "implementation": "e776f3623830c31909a879cdddf8d90f8e1e0d21"
+  },
+  "snapshot_boundary": "Original development audit before separate source-bound qualification fragments;new_real_device_runs=0 describes that snapshot only. Do not infer current qualification from this audit.",
+  "subsequent_finite_records": [
+    "docs/evidence/ssap-value-deadline-offline-20261018.json",
+    "docs/evidence/ssap-value-deadline-apps-real-20261018.json",
+    "docs/evidence/ssap-value-deadline-preservation-real-20261018.json",
+    "docs/evidence/ssap-value-deadline-factory-real-20261018.json"
+  ],
+  "subsequent_scope": "Separate exact-e776 finite records only;controlleddeadline/callerexit/partialinit/lateobligation/peerisolation and full original architecture remain OPEN. Original6b counterexample and audit result unchanged."
 }

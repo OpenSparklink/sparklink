@@ -799,9 +799,9 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F4_APPS_ONLY_PRESERVATION_FINITE_PASS_NATIVE_FACTORY_AUDIT_NEXT",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F5_NATIVE_FACTORY_FINITE_PASS_R5F6_ORIGINAL_DEADLINE_NEXT",
   "next_resume_tasks": [
-    "Audit/move actual privileged channel socket creation out of slkd into existing Native layer;keep D-Bus tuple conversion in contract and remove duplicate creator. Then originaldeadline/publiclifecycle/sharedAPI/higherSDK/perappDiscovery/R6c. ENODATA/naturalRCA/nonmanualrecovery and all original scopes OPEN.",
+    "R5f6 propagate actual SSAP value originaldeadline through existing SDK/contract/Connection/Query with explicit clockdomain and refusal;then fullpubliclifecycle/Grant/peerisolation,higher/commonAPI,perappDiscovery,R6c. ENODATA/naturalRCA/nonmanualrecovery and fullS0-S6/19WP/10FV/12DG/UserHostP4 unchanged.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
@@ -1871,20 +1871,36 @@
       "application-apps-preservation-real-r5f4": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "native-channel-creation-offline-r5f5": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "native-channel-creation-apps-real-r5f5": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "native-channel-creation-preservation-real-r5f5": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "native-channel-creation-factory-real-r5f5": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R5f4-apps-only-and-original-preservation-finite-pass",
-      "production_behavior": "fa310/kernel2fc/SDK110 explicitUS:onlyapps-group readonlyGetInfo added. ActualUID/GID1004/noextragroups channelC/Python/peer replies;management/SSAP/security/raw-device/nameownership denied. ManagerSSAP48calls separatelyretained. SevenoriginalVMs/56peerreplies/Owned/lengths independentlyreplayed. No fullpubliclifecycle/deadline/architecture/recovery promotion.",
-      "state": "R5F4_ACTUAL_APPS_ONLY_AND_PRESERVATION_LIMITED_PASS_FULL_ARCHITECTURE_OPEN",
+      "id": "WP18-R5f5-native-privileged-channel-factory-finite-pass",
+      "production_behavior": "81bd existing creator movedtoNative,allcallers switched,daemonoldmoduledeleted;puretransportmapping incontract. Scopedoffline andtenrealVMs/appsroles/originallengthOwned/dynamic/protected paths independentlyrecomputed. No newHost/Engine/ABI or wholearchitecture qualification.",
+      "state": "R5F5_NATIVE_CREATOR_AND_PURE_CONTRACT_CONVERGED_FINITE_PASS_FULL_ARCHITECTURE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Audit/move actual privileged channel socket creation out of slkd into existing Native layer;keep D-Bus tuple conversion in contract and remove duplicate creator. Then originaldeadline/publiclifecycle/sharedAPI/higherSDK/perappDiscovery/R6c. ENODATA/naturalRCA/nonmanualrecovery and all original scopes OPEN."
+      "next": "R5f6 propagate actual SSAP value originaldeadline through existing SDK/contract/Connection/Query with explicit clockdomain and refusal;then fullpubliclifecycle/Grant/peerisolation,higher/commonAPI,perappDiscovery,R6c. ENODATA/naturalRCA/nonmanualrecovery and fullS0-S6/19WP/10FV/12DG/UserHostP4 unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -3594,6 +3610,20 @@
       "role_report": "docs/evidence/application-apps-role-real-20261018.json",
       "preservation_report": "docs/evidence/application-apps-preservation-real-20261018.json",
       "remaining": "Full public lifecycle/originaldeadline, higher/common APIs, perappDiscovery, R6c, ENODATA/naturalRCA/recovery remain."
+    },
+    "r5f5": {
+      "state": "SOURCE_BOUND_OFFLINE_AND_TEN_REAL_VM_FINITE_PASS_FULL_SCOPE_OPEN",
+      "implementation": "81bd754073ae9cc3b3bb6b66bb0987cd24193cc9",
+      "audit": "docs/evidence/native-channel-creation-audit-20261018.json",
+      "scope": "Native privilegedfdcreation and pure sharedcontract observation mapping;no ordinarySDK Native dependency or secondHost/Engine",
+      "qualification": "Four finite records;no newformal/fullconcurrency/wholearchitecture/NOCPtruth/naturalrecovery promotion",
+      "remaining": "R5f6 propagate actual SSAP value originaldeadline through existing SDK/contract/Connection/Query with explicit clockdomain and refusal;then fullpubliclifecycle/Grant/peerisolation,higher/commonAPI,perappDiscovery,R6c. ENODATA/naturalRCA/nonmanualrecovery and fullS0-S6/19WP/10FV/12DG/UserHostP4 unchanged.",
+      "reports": [
+        "docs/evidence/native-channel-creation-offline-20261018.json",
+        "docs/evidence/native-channel-creation-apps-real-20261018.json",
+        "docs/evidence/native-channel-creation-preservation-real-20261018.json",
+        "docs/evidence/native-channel-creation-factory-real-20261018.json"
+      ]
     }
   },
   "owned_ssap_c6_historical_batch": {

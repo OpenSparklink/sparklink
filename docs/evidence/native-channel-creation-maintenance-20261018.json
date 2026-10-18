@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "result": "FINITE_NATIVE_CREATOR_RECORDS_AND_CANONICAL_PLAN_SYNCHRONIZED_FULL_ARCHITECTURE_OPEN",
+  "production_source": "81bd754073ae9cc3b3bb6b66bb0987cd24193cc9",
+  "compiled_and_executed_userspace": "81bd754073ae9cc3b3bb6b66bb0987cd24193cc9",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "report_publication": "81d031b27c8bbac01672a1edcf5c8e17a2a5a347",
+  "records": [
+    "native-channel-creation-offline-r5f5",
+    "native-channel-creation-apps-real-r5f5",
+    "native-channel-creation-preservation-real-r5f5",
+    "native-channel-creation-factory-real-r5f5"
+  ],
+  "qualification_strength": "One finiteoffline andthree finite realdevice records;not newformal/currentwhole tree/concurrency/NOCPtruth/naturalrecovery qualification.",
+  "registry_negative_controls": 24,
+  "docs": "StrictHTML/inventory116/staticexamples/integrity15 passed;onlyfourDiataxisquadrantspublished;source-onlyevidenceindex updated. No new browser/external-link or reader-command replay claim.",
+  "issues": [
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6244344793",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "0059d521ef16877b0e70238d8279c9a214cb15c55c5812c244390f41bbe2088d"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6244345327",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "0059d521ef16877b0e70238d8279c9a214cb15c55c5812c244390f41bbe2088d"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6244345908",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "0059d521ef16877b0e70238d8279c9a214cb15c55c5812c244390f41bbe2088d"
+    },
+    {
+      "repo": "linux",
+      "number": 6,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6244346563",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "0059d521ef16877b0e70238d8279c9a214cb15c55c5812c244390f41bbe2088d"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6244347111",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "0059d521ef16877b0e70238d8279c9a214cb15c55c5812c244390f41bbe2088d"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6244347653",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "0059d521ef16877b0e70238d8279c9a214cb15c55c5812c244390f41bbe2088d"
+    }
+  ],
+  "goal": "Existing fullgoal staysactive;S0-S6/19WP/10FV/12DG/originalscope/UserHostP4/VM-only unchanged. Tool objective not rewritten or completed;canonical execution state updated.",
+  "failed_collector": "One-shotaggregate wrongly expected genericterminal and nonexistentAgentflag. Originalexit1/log/RUNNING_NOT_QUALIFIED retained;both VMrunexit0 originals rechecked using exact81bd productionrun_exit_code and frozenverifiers,12negativecontrols;no retry or rawstatus rewrite.",
+  "source_draft_handling": "Unpushed packet-expanded public draft retained locally at e135ff8;published summary uses raw private audit hashes. No restrictedfirmware/SDK/fullcapture published.",
+  "ci": "Observed81bd documentationCI passed. Currentdevelopmentbranches reportedunprotected;rulesets/requiredchecks/fullreleasecoverage not fully verified. Snapshotisnotqualification forlatercommits.",
+  "wip": "Allten currentmain WIP files bytechecked against priorpreservation receipt before fastforward. Migrationdoesnot touchthese files;postfastforward check still required.",
+  "next": "R5f6 actualSSAPvalue originaldeadline through existingSDK/contract/Connection/Query and clockdomain;thenpubliclifecycle/Grant/peerisolation,higher/commonAPI,perappDiscovery,R6c. No newEngine.",
+  "remaining": "Fullarchitecture/currentwhole tree INCOMPLETE;ENODATA/naturalRCA/nonmanualrecovery OPEN;no wholeissue closed.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f5-registry-preflight-v1.json",
+      "sha256": "6d54aa00f8ff2ed04e03f5aefe2488bfbebfe1d233670922910520e57570947b",
+      "bytes": 5975
+    },
+    {
+      "path": ".dev/architecture-r5f5-registry-preflight-v1.log",
+      "sha256": "c3b94140ba9f534e4546e0b88c5079a5bc931f3ef82b81120fc3b34618313580",
+      "bytes": 216
+    },
+    {
+      "path": ".dev/architecture-r5f5-final-metadata-v1.json",
+      "sha256": "5f4cc5a1c19ba5827a79a36c07b4650ef399ac222b981b1759991752d188eb93",
+      "bytes": 1161752
+    },
+    {
+      "path": ".dev/architecture-r5f5-final-html-v1.log",
+      "sha256": "e5a8eaadb1d456f7017fbff6758df8b5e898b2b32ce564973a280311e41f7c3d",
+      "bytes": 1169497
+    },
+    {
+      "path": ".dev/architecture-r5f5-evidence-index-check-v1.log",
+      "sha256": "2974cb770f5d002339765b8e6a78fe2a0c66273e2481bf43c00eed71b0a12286",
+      "bytes": 125
+    },
+    {
+      "path": ".dev/architecture-r5f5-issue-receipts-v1.json",
+      "sha256": "3bb1731a34afba01aaecdf4319c15afb3e6a131a5d455be73fe6b6aa59de1ecd",
+      "bytes": 1946
+    },
+    {
+      "path": ".dev/architecture-r5f5-issue-update-v1.log",
+      "sha256": "a84f7e93a6c3fabc88f04bcb78b03a028d08a395bb4d259770b408f10f9f44b3",
+      "bytes": 1529
+    },
+    {
+      "path": ".dev/architecture-r5f5-online-state-v1.json",
+      "sha256": "2e60fa7a1e7b9642e93d87ee1d2b47e305c856179b0128b6da3e9b49ab32597d",
+      "bytes": 706961
+    },
+    {
+      "path": ".dev/architecture-r5f5-main-wip-before-v1.json",
+      "sha256": "aba7b4457ff5b4808315841a9d8c883d94be1b2ceb5f5897349fc143bb4904ac",
+      "bytes": 1561
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-specific-matrix-v1.log",
+      "sha256": "3135514640c2139cec14d0921dcdad877216faa125d6a9bf02b45831323edafe",
+      "bytes": 615
+    }
+  ]
+}

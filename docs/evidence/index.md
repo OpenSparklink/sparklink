@@ -1,5 +1,16 @@
 # 证据入口与取得限制
 
+Native通道创建边界迁移按证据层级分别查看：
+[离线与ABI/依赖](native-channel-creation-offline-20261018.json)、
+[实际应用组SDK](native-channel-creation-apps-real-20261018.json)、
+[原路径保持](native-channel-creation-preservation-real-20261018.json)、
+[动态/受保护创建器](native-channel-creation-factory-real-20261018.json)。
+原件与完整逐包证明保留在私有材料中；公开摘要提供准确来源、hash、边界和剩余条件。
+汇总脚本终态识别失败单独保留，后续独立重算不重写原状态，也不授整个HEAD资格。
+当前能力仍只由[唯一资格入口](../../project/current-capabilities.md)和结构化记录维护。
+[维护回执](native-channel-creation-maintenance-20261018.json)单列资格检查、原失败、issues与goal同步，
+不增加实机或形式化资格。
+
 [R6b实际分包基础限定资格](debian-package-base-qualification-20261018.json)：准确247的
 构建与全新运行环境，真实组/普通用户bus、安装后的C/Python、许可原文、同版本重装
 和remove配置保留分别核对。原缺组FAIL保留；不是跨版本升级回滚、发布、内核授权

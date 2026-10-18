@@ -634,8 +634,8 @@ lifetime、socket Binding和在途物理义务不受缓存淘汰支配。没有�
 明确没有广告/RSSI，不能生成虚构字段。同地址不同类型不合并，未知wire类型保留
 原始报告而不进入默认公共地址路径。复用原EventTask维护，不增加观察Engine。
 
-应用DiscoverySession、稳定公共Client、完整远端Subscription和真实持久Bond仍属待接通
-目标；当前管理扫描不能被包装成已拥有应用发现租约。对象API结束不能隐式清理别人的
+应用DiscoverySession、公共Client的完整高阶/共享契约、完整远端Subscription和真实持久Bond仍有待接通
+目标；已接通Client/Connection及C/Python限定入口不代表整棵API树完成。当前管理扫描不能被包装成已拥有应用发现租约。对象API结束不能隐式清理别人的
 controller、物理连接或已提交credit义务。未经实现/验收不得由缓存或命名推导资格。
 
 

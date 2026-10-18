@@ -225,6 +225,10 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 17b4:八真实VM长度与独立Owned有限保持；ENODATA根因及完整架构开放 | `real_device` | `PASS` |
 | fa310:真实apps-only公共SDK通道与管理SSAP限定通过；完整架构开放 | `real_device` | `PASS` |
 | fa310:七真实VM原短包/Owned/七尺寸有限保持；完整生命周期开放 | `real_device` | `PASS` |
+| 81bd Native创建器迁移：offline限定通过；完整架构开放 | `offline` | `PASS` |
+| 81bd Native创建器迁移：apps-real限定通过；完整架构开放 | `real_device` | `PASS` |
+| 81bd Native创建器迁移：preservation-real限定通过；完整架构开放 | `real_device` | `PASS` |
+| 81bd Native创建器迁移：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -976,8 +980,8 @@ Grant/credit/Ticket、VM-only保留；UserHost为P4。保留在途生命周期�
 不把控制面竞争全集重新设为前置条件。自然RCA/非人工恢复及未完成整项继续OPEN。
 
 顺序：R1真实状态/历史Bond → R2观察预算/发布 → R3 Native/Channel/契约/应用边界 →
-**当前R4逐入口/绑定/CLI/权限/事件/raw ABI退休** → R5持续架构门禁 → R6干净VM部署/
-外部SDK/文档闭合。每批生产代码、消费者、绑定、测试、文档同步，小签名提交；迁移
+R4逐入口/绑定/CLI/权限/事件/raw ABI退休（下文按准确历史批次保留） →
+**当前R5共享契约/公共SDK/原期限与生命周期整改** → R6干净VM部署/外部SDK/文档闭合。每批生产代码、消费者、绑定、测试、文档同步，小签名提交；迁移
 接通后删旧路，不用永久alias/NotSupported门面、测试成功或全局dead_code掩盖未实现。
 
 ##### R4阶段历史资格与迁移边界（不替代当前资格）
@@ -1468,25 +1472,17 @@ C/Python Connection。两连接角色共16组、48次SDK调用；UUID发现与�
 只准入不修改状态的连接身份观察，其余管理与SSAP权限不扩大。公共入口的实际角色、
 原期限与撤权仍须单列VM验收。
 
-R5f4角色切片（实现中，未授新权限实机资格）：原C/Python单次通道循环仅抽出供
-专用VM监督器复用，实际业务子进程降为UID/GID1004、无附加组/capabilities；管理
-UID1000继续现有SSAP测试。监督器仅在QEMU和显式门禁下接收两个有界固定phase，
-无任意命令或生产提权API；结果、进程身份及原始stdout/stderr与普通控制记录独立
-核对。原5秒子进程期限和断言保留，监督等待与协议期限分开。
-本批已封存[旧策略实际拒绝GetInfo](../docs/evidence/application-apps-role-negative-20261018.json)
-的负对照，原VM保持FAIL；当前仅补apps组必要的只读GetInfo规则，正向实机仍待验。
-正向必须经过实际system bus、新SDK授权fd和两端真实业务/USB，且管理操作、SSAP
-RPC、interface-less调用、未知方法、own-service和裸设备打开仍拒绝。完成新artifact
-相关原路径回归后方登记有限资格；完整release/revoke/Down/原期限与R5/R6scope仍开放。
-[fa310限定角色实机报告](../docs/evidence/application-apps-role-real-20261018.json)现已独立重算：
-apps-only C/Python普通进程完成真实随机回复，管理/SSAP/安全/裸设备/service所有权
-仍拒绝；管理UID的原SSAP组另验。24项原件/角色负对照拒绝，两个原IPC请求与
-root监督输出对应。它是专用VM实际type=system bus/实验账户门禁，不是发行版
-systemd/udev安装或完整逐应用策略资格。[同源七VM保持](../docs/evidence/application-apps-preservation-real-20261018.json)
-已保留Owned、七尺寸、56次业务回复和42个证据负对照，旧资格未转授新镜像。
-完整release/revoke/Down/原期限、fd传递/独立同行业务等仍需单列；本有限批不闭合架构。
+R5f4角色切片已在准确fa310取得[有限实机资格](../docs/evidence/application-apps-role-real-20261018.json)：
+专用VM监督器复用原C/Python单次循环，实际UID/GID1004、无附加组/capabilities；
+只读GetInfo使既有授权fd预检可用，管理/SSAP/安全/裸设备/service所有权继续拒绝。
+管理UID1000的SSAP48调用与应用组通道分开。监督器仅QEMU显式门禁下两个有界
+phase，未安装生产提权接口；原5秒子进程期限与断言保留。
+[旧策略原FAIL](../docs/evidence/application-apps-role-negative-20261018.json)与首轮请求权限
+失败均保留；新PASS不覆盖旧失败。[同源七VM保持](../docs/evidence/application-apps-preservation-real-20261018.json)
+独立重算原Owned/长度/56次业务回复。不是完整逐应用策略、原期限/撤权、发行版
+systemd/udev部署或整个HEAD资格；后续artifact另验，不自动继承。
 
-下一整改切片（R5f5）：调用审计发现`slkd/src/channel.rs`同时承载特权socket
+R5f5已完成有限迁移与相关回归：调用审计发现`slkd/src/channel.rs`同时承载特权socket
 创建/Native地址ABI和D-Bus TransportInfo转换。前者应归现有`slk-native`，后者归
 纯`slk-contract`；普通`slk-channel`仍只操作已授权fd，`libsparklink`不依赖Native。
 三类去向：**立即删除**迁移接通后的daemon特权创建及重复ABI；**移入适当测试**
@@ -1498,11 +1494,23 @@ private sockaddr与两项原生产函数测试已迁到Native，全部Connection
 旧daemon模块删除。TransportInfo纯映射迁到既有contract，不让Native依赖contract。
 现有C/Rust地址契约工具同步读取新生产文件并比较真实C UAPI的48/64字节编码；
 依赖门禁补Native→contract反向依赖及daemon/contract显式Native syscall回归负对照。
-此源检查只覆盖命名模式，不能冒充Rust别名/宏分析或运行时证明。迁移代码已接通，
-严格构建与新artifact门禁继续执行；原fa310仅保留自己的实机资格。
-退出须严格default/all-features、依赖方向、跨语言契约及准确新artifact的实际SDK角色、
-发现/连接/业务/长度/适用Owned保持门禁通过。Kernel Session/Grant/credit/Ticket与
-唯一SSAP Engine不变，不新增Host或协议状态机；部分通过不关闭原issue。
+此源检查只覆盖命名模式，不能冒充Rust别名/宏分析或运行时证明。
+[准确81bd离线检查](../docs/evidence/native-channel-creation-offline-20261018.json)保留原sandbox失败、
+实际default/all-features、外部C/Python/private bus、Native地址/C头/ELF与依赖方向。
+[新SDK角色实机](../docs/evidence/native-channel-creation-apps-real-20261018.json)、
+[七原路径保持](../docs/evidence/native-channel-creation-preservation-real-20261018.json)和
+[动态/受保护创建器](../docs/evidence/native-channel-creation-factory-real-20261018.json)分别绑定
+同一81bd编译/guest/host工具、Kernel2fc与显式SDK110-US；冻结工具和双端原件重算。
+原fa310只保留自己的资格。该有限批退出，不授完整架构或整个HEAD资格；Kernel
+Session/Grant/credit/Ticket与唯一SSAP Engine不变，不新增Host或协议状态机。
+
+下一批R5f6修正**正在使用的SSAP值操作端到端原期限**：SDK本地队列/等待已有绝对
+期限，但当前D-Bus值方法未携带该期限，daemon/observer另起5秒。沿既有Client、
+共享契约、Connection与Query传播同一预算，明确同本机clock domain和不匹配拒绝；
+不新增Engine或借取消抹去已提交物理义务。生产函数、真实private bus与原始期限负向
+先验，再用准确新artifact取得两语言/对端/两端USB门禁和适用原路径保持；不先要求
+全部控制面竞争组合。随后继续公共lifecycle/Grant撤权与同行业务、higher/common API、
+每应用DiscoverySession及R6c；既有未支持能力继续明确，不用空门面宣称完整。
 
 C同步入口继续保持每客户端独立执行器、有界8请求队列及一个在途请求，不持有
 controller管理lease。绝对CLOCK_MONOTONIC原期限覆盖本地排队和等待；超时不

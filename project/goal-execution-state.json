@@ -2005,21 +2005,21 @@
       },
       "application-discovery-real-r5f12": {
         "level": "real_device",
-        "result": "MISSING"
+        "result": "FAIL"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP03-WP18-R5f12-application-discovery",
       "production_behavior": "Per-controller caller-owned bounded scanner leases through existing Native management guard/recipes/results. Rust Client and slctl own filtering/read/release,not management credentials. Last lease requests actual STOP; manager handoff/retirement fences late work; unknown cleanup staysFault,notOff/Free.",
-      "state": "IMPLEMENTED_OFFLINE_AND_FENCE_SCOPED_PASS_REAL_GATES_MISSING",
+      "state": "SCOPED_REAL_EXPLICIT_RELEASE_POSITIVE_FULL_VM_FAIL_REMAINING_GATES_MISSING",
       "records": [
         "application-discovery-offline-r5f12",
         "application-discovery-fence-r5f12",
         "application-discovery-real-r5f12"
       ],
       "exit_ref": "application-discovery-real-r5f12.required_gates; see canonical implementation-plan R5f12 for steps",
-      "next": "Freeze accurate clean release bundle/Host/guest in existing VM-only U1-1.1.1/.2 runner. Verify two ordinary apps-only callers sharing one scanner with actual random peer data/address/RSSI;release/caller-loss/TTL/manager revoke,role swap and matching USB commands. Regress original business/length/SSAP on same artifact. New positive CLI and actual systembus permissions remain required,not substituted by privatebus tests.",
+      "next": "Locate actual Status0 -> missing connection Outcome/handle timeout and failed cleanup on source-bound U artifacts;no inference of lostStatus,firmware/RF cause or automatic recovery. Preserve positive two-role explicit-release slice without upgrading full result. Complete same-artifact business/length/SSAP,caller-loss/TTL/manager-stop/deadline/partial-init and permission gates in bounded slices;parallel data/security/SSAP/multichannel/fourdevice work continues,no control census prerequisite.",
       "scope": "Complete originalS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged. Data/security/SSAP/multichannel/fourdevice/lifecycle/cleanup/recovery/deployment remainOPEN in parallel;not all control permutations as prerequisites. UserHostP4;E/mixed/coldROM/naturalRCA/nonmanualrecovery not qualified."
     },
     "selected_qualification": {
@@ -4443,12 +4443,17 @@
         "bytes": 6228,
         "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed",
         "scope": "Fresh four serial pins/hubs/shared PCI match;U5EP/E2EP;no conflict observed in drivers/visiblefds/liveLibvirtXML/leases/buildlock. NoUSBoperation;rootFDvisibilitylimited;noE/mixed/coldROM/naturalrecoveryqualification."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/resource-readonly-20261019-v3.json",
+        "sha256": "56739c5508b1d0735371d675614f7a6722542e6d9e3c2eeeaeec4a43befb192c",
+        "scope": "Four allowed serial pins/hubs/PCI present;U5EP/E2EP,unbound,visible fds/live libvirt assignments/leases/build lock show no conflict at observation. Root fd visibility incomplete;repeat before launch. Read-only,noUSB I/O or model/firmware/newRF qualification."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/resource-readonly-20261019-v3.json",
-      "sha256": "56739c5508b1d0735371d675614f7a6722542e6d9e3c2eeeaeec4a43befb192c",
-      "scope": "Four allowed serial pins/hubs/PCI present;U5EP/E2EP,unbound,visible fds/live libvirt assignments/leases/build lock show no conflict at observation. Root fd visibility incomplete;repeat before launch. Read-only,noUSB I/O or model/firmware/newRF qualification."
+      "path": ".dev/main-thread-01a120fe/discovery-real-postflight-v1.json",
+      "sha256": "efe58242ec8c53a6ab9947a82b5835bd775af26a34fed73743d70cbb7d8c3e1a",
+      "scope": "Allfourpins/parents/PCI/visiblefds/liveVM assignments remainavailable after3U-onlyVMs;original10WIP unchanged,kernelclean. OnlyUgotHCC;E2EP/notHCC,forbidden/hubs/controller notoperated;notpeerbusiness orautomaticrecoveryproof."
     },
     "current_finite_gate_ref": "controller-directory-language-r5f11",
     "live_vm_launch_guard": {
@@ -4586,23 +4591,7 @@
       "next": "Continue bounded per-application DiscoverySession coordinator/ownership and full state/EventStream plus remaining SDK/SSAP/Agent interfaces. Do not wrap manager scanner commands as application leases. Complete related lifecycle/initialization/Grant-credit-Ticket/deadline work alongside actual data/security/SSAP/multichannel/four-device delivery;not all control permutations as prerequisites. Journal/pending-delivery/executor/NOCP/callback/reuse assumptions remain NOT_PROVEN. NaturalRCA/nonmanualrecovery OPEN;UserHostP4;fullS0-S6/19WP/10FV/12DG/VM-only/SDK110/strict4leaves/shared12or8 unchanged."
     },
     "scope_changed": false,
-    "new_real_device_runs": 0,
-    "local_revalidation": {
-      "path": ".dev/main-thread-01a120fe/discovery-current-qualification-audit-v1.json",
-      "sha256": "5ec62867ac89e01879837ad615cfa5781085cdb1dce2a5c64ca476266987454d",
-      "required_materials": 17,
-      "negative_mutations_rejected": 8,
-      "overall": "INCOMPLETE;realMISSING",
-      "scope": "Onlythree new records/source/runtime scopes locally reverified;historical records not upgraded"
-    },
-    "documentation": {
-      "strict_html": "PASS",
-      "inventory_documents": 117,
-      "receipt": ".dev/main-thread-01a120fe/discovery-docs-v1.log",
-      "browser_new_page": "NOT_RUN",
-      "report_commit": "a05c74ac45614015cfbf6149394bfc699ec4dc65"
-    },
-    "source_ref": "project/qualification-records.json:application-discovery-offline-r5f12.sources",
+    "source_ref": "project/qualification-records.json:application-discovery-real-r5f12.sources",
     "execution_ref": "qualification_view.current_batch",
     "remaining_ref": "project/qualification-records.json:application-discovery-real-r5f12.required_gates",
     "state_sync_maintenance": {
@@ -4617,12 +4606,36 @@
       "qualification_ref": "project/qualification-records.json:application-discovery-real-r5f12",
       "production_runtime_changed": false,
       "architecture_goal_scope_changed": false,
-      "offline_record": {
+      "initial_gate_wiring_record": {
         "path": ".dev/main-thread-01a120fe/discovery-vm-gate-offline-v1.json",
         "sha256": "09909d89fce4d89cd3091159077715be5b1ebe85bb9f8b881cef5cbc27aa74d6",
         "source_commit": "4cfd30febfadef03977e2c753aed5f6ff2ff409d",
         "status": "OFFLINE_GATE_FIXTURE_CHECKS_PASS_NOT_RF_QUALIFICATION"
-      }
+      },
+      "actual_execution_ref": "project/qualification-records.json:application-discovery-real-r5f12",
+      "execution_scope": "Explicit-release two-role positive independently decoded;fullVM FAIL,connection Status0 missing Outcome/handle;business/length not reached. Original assertions and all failures retained."
+    },
+    "attempts_ref": "project/qualification-records.json:application-discovery-real-r5f12.bounds",
+    "real_report": "docs/evidence/application-discovery-real-attempts-20261019.json",
+    "historical_initial_revalidation": {
+      "path": ".dev/main-thread-01a120fe/discovery-current-qualification-audit-v1.json",
+      "sha256": "5ec62867ac89e01879837ad615cfa5781085cdb1dce2a5c64ca476266987454d",
+      "required_materials": 17,
+      "negative_mutations_rejected": 8,
+      "overall": "INCOMPLETE;realMISSING",
+      "scope": "Onlythree new records/source/runtime scopes locally reverified;historical records not upgraded"
+    },
+    "historical_initial_documentation": {
+      "strict_html": "PASS",
+      "inventory_documents": 117,
+      "receipt": ".dev/main-thread-01a120fe/discovery-docs-v1.log",
+      "browser_new_page": "NOT_RUN",
+      "report_commit": "a05c74ac45614015cfbf6149394bfc699ec4dc65"
+    },
+    "local_revalidation": {
+      "path": ".dev/main-thread-01a120fe/discovery-real-qualification-audit-v1.json",
+      "sha256": "30766462eef8b2ecd514ca19bd0e4fa700af3aa3e2fd0a978025f020ec76a0ea",
+      "scope": "New real record/source+70 public/private materials locally match;9negativecontrols rejected;fullrun FAIL retained,overallINCOMPLETE. Not wholehistorical material verification or wholeLinux/firmwareproof."
     }
   }
 }

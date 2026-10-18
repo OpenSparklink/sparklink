@@ -5,7 +5,7 @@
 
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
-| 应用发现租约／共享 scanner | [2babea5／7547751／a8bf6a9限定离线与生产Fence](../docs/evidence/application-discovery-offline-20261019.json)、[接口边界](../docs/reference/application-discovery.md) | 已接daemon/Rust/CLI，397+397及封存14项、898工具；Fence3项限定性质。新双应用／真实WS73、system bus、完整清理与C/Python发现API仍MISSING；不继承旧扫描或业务PASS |
+| 应用发现租约／共享 scanner | [C5实际SDK与USB限定正向、整轮FAIL](../docs/evidence/application-discovery-real-attempts-20261019.json)、[原限定离线与生产Fence](../docs/evidence/application-discovery-offline-20261019.json)、[接口边界](../docs/reference/application-discovery.md) | 两U／两个scanner方向的apps-only显式release与新标识有真实证据；整轮连接Status0后无Outcome/handle，清理失败，业务/长度/SSAP保持未执行。caller-loss/TTL/管理STOP/期限/部分初始化、同行业务及完整部署权限仍缺；原失败保留，不升级完整资格 |
 | C／Python目录观察视图 | [3bdSDK／80e运行／d912离线核对的限定实机](../docs/evidence/controller-language-observer-20261019.json)、[原限定离线](../docs/evidence/controller-language-offline-20261018.json) | 同一Rust stream/executor，实际普通进程与映射库、新generation及原业务保持。缺失proof异常与原失败保留；修复校验器未作为新运行工具。非完整SDK/状态流/扫描租约或形式化资格 |
 | 普通观察者 Runtime 目录流 | [fd0服务／4d9工具的目录观察与原路径保持](../docs/evidence/controller-directory-observer-20261018.json) | 实际 Rust/slctl、同daemon与两角色新generation；不是Native Ready、Down或drain。该记录不涵盖新增C/Python或发现租约；pre-Runtime完整状态及发现租约的实机资格仍缺；该记录未取得新形式化证明 |
 | User Native 返回跨 controller 退休 | [77服务／143工具两角色与原两FAIL](../docs/evidence/native-controller-return-20261018.json) | 固定target slot0、User CUTC；精确owner屏障、迟到fd拒绝、真实peer结清、同daemon新generation后16次回复。不是Service/dynamic、完整fd组合、Kernel ref/callback/UAF或自然恢复资格 |
@@ -287,7 +287,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 3bdSDK/80e运行/d912离线校验：真实C/Python目录观察及七尺寸保持，反例保留 | `real_device` | `PASS` |
 | Scoped discovery daemon/Rust SDK/CLI：397+397及封存14项限定离线 | `offline` | `PASS` |
 | 实际生产scanner epoch：初始/任意u64单步/八步及错误性质负对照 | `formal_bounded` | `PASS` |
-| 新artifact双应用共享真实scanner、权限及原路径保持尚未执行 | `real_device` | `MISSING` |
+| 真实共享发现显式release限定正向；整轮建链保持失败及其他门禁仍缺失 | `real_device` | `FAIL` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -616,7 +616,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 3bdSDK/80e运行/d912离线校验：真实C/Python目录观察及七尺寸保持，反例保留 | `real_device` | `PASS` |
 | Scoped discovery daemon/Rust SDK/CLI：397+397及封存14项限定离线 | `offline` | `PASS` |
 | 实际生产scanner epoch：初始/任意u64单步/八步及错误性质负对照 | `formal_bounded` | `PASS` |
-| 新artifact双应用共享真实scanner、权限及原路径保持尚未执行 | `real_device` | `MISSING` |
+| 真实共享发现显式release限定正向；整轮建链保持失败及其他门禁仍缺失 | `real_device` | `FAIL` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -3091,7 +3091,11 @@ credit 和真实结果查询推进；Rust Client 与 slctl 提供 caller-scoped 
 Clippy、工具与证明输出负对照已执行；Fence直接Kani限定性质单列，不是整个
 Coordinator/引用/Notify/Kernel/USB证明。C/Python发现会话及实际系统总线权限仍缺。
 
-下一实机批先冻结准确clean源码与SDK110US新bundle，在本线程U1-1.1.1/.2验证：
+准确clean bundle／SDK110US及本线程U1-1.1.1/.2的三轮尝试，见
+[限定正向与整轮失败](../docs/evidence/application-discovery-real-attempts-20261019.json)。
+显式release已有真实输出／USB切片；整轮因Status0之后缺少连接Outcome/handle而失败，
+业务/长度/SSAP保持未执行。近期先定位该失败及未确认清理，不凭人工复位掩盖；
+随后按准确新artifact继续以下完整条件：
 两名仅apps组普通caller共享一只scanner，随机marker在另一只真实广播；两者独立
 校验地址/RSSI/data。一名显式release/caller退出后另一名继续收到新随机marker；
 USB核对一次共享START、仅最后释放STOP，再交换controller角色。管理STOP撤销旧id、
@@ -3111,4 +3115,5 @@ STOP Complete，交换scanner角色及同artifact原连接／业务／长度保�
 每marker10秒、应用原20秒租期不放宽；工具环境预算不冒充协议期限。
 离线仅验证真实格式解析、角色/身份/范围/捕获/报告负对照；不调用USB、不模拟生产成功。
 caller-loss／TTL／管理STOP／部分初始化／原期限组合分别保留缺口，不将显式release
-切片通过写成完整生命周期验收。VM门禁尚未执行，不新增实机资格。
+切片通过写成完整生命周期验收。已执行的整轮FAIL必须保留；正向切片不升级完整VM
+资格或同行业务／部署权限，原失败与剩余门禁绑定准确artifact分别重验。

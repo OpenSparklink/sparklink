@@ -24,7 +24,7 @@ import time
 from types import SimpleNamespace
 
 from ws73_north_star import file_record, ordinary_identity
-from ws73_capture import check_capture_stats, read_capture
+from ws73_capture import CaptureError, check_capture_stats, read_capture
 import ws73_vm_native_root as native_vm
 import ws73_lab_resources as resources
 from build_resources import build_lock, configuration as build_configuration, workspace as build_workspace, environment as build_environment
@@ -787,6 +787,7 @@ def _run(args):
     m['performance_qualified']=False
     m['channel_socket_verification_requested']=channel_socket
     m['application_discovery_requested']=application_discovery
+    if application_discovery:m['application_discovery_case']=getattr(args,'application_discovery_case','release')
     m['application_discovery_acceptance']=False
     if application_discovery:m['application_discovery_verifier']=file_record(HERE/'ws73_application_discovery.py')
     m['application_client_verification_requested']=application_clients
@@ -1035,6 +1036,7 @@ def _run(args):
                      (' ws73.ssap_owned=1' if ssap_owned else '')+
                      (' ws73.application_clients=1' if application_clients else '')+
                      (' ws73.application_discovery=1' if application_discovery else '')+
+                     (' ws73.application_discovery_case=owner-loss' if application_discovery and getattr(args,'application_discovery_case','release')=='owner-loss' else '')+
                      (' ws73.ssap_owner_lifecycle=1' if owner_lifecycle else '')+
                      (' ws73.ssap_requester_lifecycle=1' if requester_lifecycle else '')+
                      (' ws73.native_return=1' if native_return else '')+
@@ -1466,6 +1468,9 @@ def _run(args):
                     expected=dict(path='/usr/share/sparklink/tools/ws73_application_discovery.py',sha256=verifier['sha256'])
                     m['application_discovery_supervision']=verify_supervisor_artifacts(control,share,expected)
                     m['application_discovery_corroboration']=discovery_corroborate(control,capture)
+                    from ws73_application_discovery import case as discovery_case
+                    if discovery_case(m['application_discovery_corroboration'])!=m['application_discovery_case']:
+                        raise ValueError('original explicit discovery termination differs from actual evidence')
                     m['application_discovery_acceptance']=True
                 if application_clients != ('application_clients' in control):raise ValueError('explicit application client request/evidence mismatch')
                 if application_clients:
@@ -1817,17 +1822,22 @@ def run_exit_code(record, *, supervisor_pending=False):
         return 1
     if type(record.get('qemu_exit')) is not int or record['qemu_exit'] != 0:
         return 1
-    from ws73_application_discovery import valid_summary as valid_discovery
+    from ws73_application_discovery import valid_summary as valid_discovery, boot_case, case as discovery_case, supervision_summary
     discovery=record.get('application_discovery_requested',False)
     if type(discovery) is not bool:return 1
     discovery_tokens=sum(arg.split().count('ws73.application_discovery=1') for arg in record.get('qemu_args',[]) if isinstance(arg,str))
     if discovery_tokens!=int(discovery):return 1
+    try:
+        variant=boot_case([token for arg in record.get('qemu_args',[]) if isinstance(arg,str) for token in arg.split()])
+        if record.get('application_discovery_case','release')!=variant:return 1
+    except CaptureError:return 1
     if discovery:
         postures=[token for arg in record.get('qemu_args',[]) if isinstance(arg,str)
                   for token in arg.split() if token.startswith('ws73.connection_advertising=')]
         if postures!=['ws73.connection_advertising=negotiable-t']:return 1
         if (record.get('application_discovery_acceptance')is not True or not valid_discovery(record.get('application_discovery_corroboration',{})) or
-                record.get('application_discovery_supervision')!=dict(status='ORIGINAL_DISCOVERY_ROLE_FILES_CHECKED',uid=1004,phases=2)):
+                discovery_case(record.get('application_discovery_corroboration',{}))!=variant or
+                record.get('application_discovery_supervision')!=supervision_summary(variant)):
             return 1
     elif record.get('application_discovery_acceptance') or record.get('application_discovery_corroboration'):
         return 1
@@ -2199,7 +2209,8 @@ def main():
             cmd.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester death/old reply drain and ordinary CUTC while real owner prompt held')
             cmd.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
-            cmd.add_argument('--application-discovery-verify',action='store_true',help='actual apps-only shared discovery and explicit release, two scanner roles; optional ordinary connection/socket preservation')
+            cmd.add_argument('--application-discovery-verify',action='store_true',help='actual apps-only shared discovery, two scanner roles; optional ordinary connection/socket preservation')
+            cmd.add_argument('--application-discovery-case',choices=['release','owner-loss'],default='release',help='explicit release or SIGKILL of only owned VM callers;not natural recovery or complete lifecycle qualification')
             cmd.add_argument('--application-client-verify',action='store_true',help='dedicated real public C/Python SDK one-shot/dup/final-close gate;not fullSDK orpermission qualification')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')

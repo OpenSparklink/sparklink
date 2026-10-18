@@ -4668,6 +4668,26 @@
         "sha256": "4cc3b1705883e67bf6ca02c7383eed0c850bd89aac0887a2533fbc64c22d60a0",
         "scope": "Locked uv strict HTML and inventory117 PASS;source-only project/evidence not rendered. Browser/external checks NOT_RUN;not functional qualification."
       }
+    },
+    "owner_loss_gate": {
+      "state": "OFFLINE_TOOL_PASS_REAL_NOT_RUN",
+      "plan": "project/implementation-plan.md:R5f12 next finite caller-loss slice",
+      "selector": "--application-discovery-verify --application-discovery-case owner-loss",
+      "production_behavior": "Existing per-controller caller owner watch and automatic last-loss STOP only;noRuntime/Host/protocol changes",
+      "bounds": "Two apps-only owned child processes,two scanner roles,original20s lease/10s marker/5s cleanup. Supervisor only kills own child;never issues managerSTOP. Actual capture and original files required.",
+      "qualification_reference": "qualification_view.selected_qualification remains previous retained D9 explicit-release slice;not owner-loss/current tree qualification",
+      "remaining": "TTL/managerSTOP/partialinit/deadlineinterleavings/peer business isolation/deployment permissions;fullS0-S6/19WP/10FV/12DG unchanged,VM-only,strict allocation,SDK110,shared12or8;parallel data/security/SSAP/multichannel/fourdevice,recovery/RCA remainOPEN",
+      "offline_checks": {
+        "tools": {
+          "path": ".dev/main-thread-01a120fe/discovery-owner-loss-tools-v2.log",
+          "sha256": "c5ef73a3fe9bfd6c011980dd03794c00481a6e7691ca70ad66bb1ae78944e17d"
+        },
+        "strict_docs": {
+          "path": ".dev/main-thread-01a120fe/discovery-owner-loss-docs-v1.log",
+          "sha256": "76162ed2b2785b01d1182ef5cd9eb0df2476a9c81e767bf03e59f5bd78b70cfa"
+        }
+      },
+      "offline_scope": "915 test methods including literal output/USB/death/TTL-confusion negatives and strict117 HTML PASS. No new production Rust/kernel change,realdevice orformalqualification. Original v1 offline log retained."
     }
   }
 }

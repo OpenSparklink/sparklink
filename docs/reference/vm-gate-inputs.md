@@ -97,6 +97,10 @@ Agent 或其他生命周期选择器组合。QMP 拔插仅是 guest 控制对照
 共享 discovery 的 `--application-discovery-verify` 同样要求显式
 `--connection-advertising negotiable-t` 才能执行其连接／业务保持门禁。早期 Fixed-T
 尝试的失败仍是原条件下的真实失败；不能说成相同 Negotiable-T 条件的回归退化。
+`--application-discovery-case release|owner-loss` 只选择该门禁内的退出方式。
+后者仅SIGKILL本VM监督器启动的固定普通reader，不发管理STOP；需同一物理START、
+首名消失后同行新标识、最后消失后的真实STOP/Complete及五秒清理期限证据。
+该选项不表示TTL、管理撤销、完整生命周期或自然恢复已经验收。
 `NativeConnectionResult` 的 `flags` 位1／2／4分别表示 Status／Outcome／handle
 存在；Status0不代表连接完成。成功还要求真正的终态和对应 Outcome／handle，
 USB提交、OUT完成及控制器Status不是这些字段的替代。

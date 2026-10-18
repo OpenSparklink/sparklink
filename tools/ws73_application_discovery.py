@@ -4,7 +4,9 @@
 The existing ordinary controller runner drives the advertiser. This root-only
 test supervisor can launch only two fixed UID1004 slctl readers, never a Host,
 arbitrary command, Native operation or installed privilege service. A positive
-run covers explicit release only, not TTL/owner-loss/management cancellation.
+run selects explicit release or caller process loss. TTL/management cancellation
+remain separate gates. Killing a reader is a controlled owner-loss test, never
+natural device recovery or evidence that all process/fd lifetimes are qualified.
 """
 from contextlib import ExitStack
 import hashlib
@@ -27,10 +29,48 @@ INPUT = Path('/evidence/application/passthrough-control')
 SESSION = re.compile(r'DiscoverySession: id=([1-9][0-9]*) path=(/org/sparklink/slk[0-9]+_g[1-9][0-9]*) state=active source=broker')
 REPORT = re.compile(r'DiscoveryReport: session=([1-9][0-9]*) generation=([1-9][0-9]*) sequence=([1-9][0-9]*) address_type=([0-9]+) address=([0-9a-f]{12}) rssi=(-?[0-9]+) data=([0-9a-f]+)')
 RELEASE = re.compile(r'DiscoveryReleased: session=([1-9][0-9]*) last_physical_stop_confirmed=(false|true)')
+CASES = ('release', 'owner-loss')
+
+
+def case(row):
+    value = row.get('termination', 'release')
+    if value not in CASES:raise CaptureError('explicit supported discovery termination required')
+    return value
+
+
+def departure_key(row):
+    return 'first_lost' if case(row) == 'owner-loss' else 'first_released'
+
+
+def output_status(row):
+    return 'OWNER_LOSS_OUTPUTS_CHECKED_EVIDENCE_PENDING' if case(row) == 'owner-loss' else 'EXPLICIT_RELEASE_OUTPUTS_CHECKED'
+
+
+def finished_status(row):
+    return 'TWO_OWNER_LOSS_PHASES_COMPLETED' if case(row) == 'owner-loss' else 'TWO_EXPLICIT_RELEASE_PHASES_COMPLETED'
+
+
+def boot_case(tokens):
+    values=[t for t in tokens if t.startswith('ws73.application_discovery_case=')]
+    if not values:return 'release'
+    if values!=['ws73.application_discovery_case=owner-loss'] or 'ws73.application_discovery=1' not in tokens:
+        raise CaptureError('one explicit owner-loss boot selection requires discovery gate')
+    return 'owner-loss'
+
+
+def supervision_summary(variant):
+    if variant not in CASES:raise CaptureError('unknown discovery supervision case')
+    result=dict(status='ORIGINAL_DISCOVERY_ROLE_FILES_CHECKED',uid=1004,phases=2)
+    if variant=='owner-loss':result['termination']=variant
+    return result
 
 
 def requested(args):
-    if not getattr(args,'application_discovery_verify',False):return False
+    variant=getattr(args,'application_discovery_case','release')
+    if variant not in CASES:raise CaptureError('unknown discovery termination')
+    if not getattr(args,'application_discovery_verify',False):
+        if variant != 'release':raise CaptureError('owner-loss requires explicit application discovery gate')
+        return False
     allowed = {'passthrough','qmp_hotplug','connection_verify','application_discovery_verify',
                'channel_socket_verify','channel_socket_boundaries'}
     if (not (getattr(args,'passthrough',False) or getattr(args,'qmp_hotplug',False)) or
@@ -65,7 +105,10 @@ def validate_tool(tool,root=None,guest_files=None):
 
 
 def validate_request(row, phase):
-    if (set(row) != {'phase', 'scanner', 'advertiser', 'markers', 'tool', 'status'} or
+    expected = {'phase', 'scanner', 'advertiser', 'markers', 'tool', 'status'}
+    if 'termination' in row:expected.add('termination')
+    case(row)
+    if (set(row) != expected or
             type(phase) is not int or phase not in (0, 1) or row['phase'] != phase or
             type(row['phase']) is not int or row['status'] != 'REQUESTED'):
         raise CaptureError('two ordered fixed discovery requests only')
@@ -89,7 +132,7 @@ def validate_request(row, phase):
 def reader_args(row, number):
     prefix = marker_data(row['markers'][0])[:-16].hex()
     return ['/bin/slctl', '--adapter', row['scanner']['path'], 'discover', prefix,
-            str(1 if number == 0 else 8), '20000', '-128']
+            str(1024 if case(row) == 'owner-loss' else (1 if number == 0 else 8)), '20000', '-128']
 
 
 def active_session(text,path):
@@ -108,7 +151,8 @@ def receipt(row, number):
     """Parse actual output independently of SDK codec and shared D-Bus types."""
     app = row['readers'][number]
     identity = app['credentials']
-    if (app['args'] != reader_args(row, number) or app['exit'] != 0 or app['stderr'] or not app['stdout'].endswith('\n') or
+    lost = case(row) == 'owner-loss'
+    if (app['args'] != reader_args(row, number) or app['exit'] != (-signal.SIGKILL if lost else 0) or app['stderr'] or not app['stdout'].endswith('\n') or
             identity['uids'] != [1004]*4 or identity['gids'] != [1004]*4 or identity['groups'] or
             set(identity['capabilities']) != {'CapEff','CapPrm','CapAmb','CapInh'} or
             any(int(v,16) for v in identity['capabilities'].values()) or app['native_fds']):
@@ -117,12 +161,21 @@ def receipt(row, number):
     session = active_session(app['stdout'],row['scanner']['path'])
     release = RELEASE.fullmatch(lines[-1]) if lines else None
     count = 1 if number == 0 else 8
-    if (not session or not release or session[2] != row['scanner']['path'] or
-            session[1] != release[1] or release[2] != ('false' if number == 0 else 'true') or
-            len(lines) != count + 3):
+    if lost:
+        termination=app.get('termination',{})
+        if (not session or release or not count <= len(lines)-2 <= 1024 or
+                termination.get('signal') != signal.SIGKILL or termination.get('pid') != app['pid'] or
+                termination.get('reason') != 'TEST_OWNED_CALLER_LOSS' or
+                not app['active_wall_ns'] < termination.get('sent_wall_ns',0) <= app['end_wall_ns'] or
+                not app['start_monotonic_ns'] < termination.get('sent_monotonic_ns',0) < app['start_monotonic_ns']+20_000_000_000):
+            raise CaptureError('actual owned caller SIGKILL and observed peer data required; no explicit release')
+        report_lines=lines[2:]
+    elif (not session or not release or session[2] != row['scanner']['path'] or
+            session[1] != release[1] or release[2] != ('false' if number == 0 else 'true') or len(lines) != count + 3):
         raise CaptureError('original active identity/count and explicit release receipt required')
+    else:report_lines=lines[2:-1]
     reports = []
-    for line in lines[2:-1]:
+    for line in report_lines:
         match = REPORT.fullmatch(line)
         if (not match or match[1] != session[1] or int(match[2]) != row['scanner']['generation'] or
                 int(match[4]) != 0 or match[5] != row['advertiser']['address'].replace(':','').lower() or
@@ -166,6 +219,8 @@ def execute(run, a, b):
         markers = [prefix+os.urandom(8).hex() for _ in range(2)]
         request = dict(phase=phase,scanner=scanner,advertiser=advertiser,markers=markers,
                        tool=file_record(run.args.slctl),status='REQUESTED')
+        if getattr(run.args,'application_discovery_case','release') != 'release':
+            request['termination']=run.args.application_discovery_case
         validate_request(request,phase)
         row = dict(request=request,status='RUNNING',start_wall_ns=time.time_ns(),advertisements=[])
         run.data.setdefault('application_discovery',[]).append(row);run.save()
@@ -183,10 +238,11 @@ def execute(run, a, b):
                     raise CaptureError('original explicit random advertisement admission required')
                 row['advertisements'].append(len(run.data['commands'])-1);run.save()
                 if index == 0:
-                    row['first_released'] = wait_for(folder/'first-released.json',run,12);run.save()
+                    key=departure_key(request)
+                    row[key] = wait_for(folder/(key.replace('_','-')+'.json'),run,12);run.save()
                 else:
                     row['supervision'] = wait_for(folder/'run.json',run,20)
-                    if row['supervision']['status'] != 'EXPLICIT_RELEASE_OUTPUTS_CHECKED':
+                    if row['supervision']['status'] != output_status(request):
                         raise CaptureError('actual discovery readers failed')
                 run.stop(advertiser,'advertise')
             run.check(scanner);run.check(advertiser)
@@ -197,11 +253,13 @@ def execute(run, a, b):
 
 def supervise(daemon_pid):
     require_vm('ws73.application_discovery=1')
+    boot=boot_case(Path('/proc/cmdline').read_text().split())
     daemon = daemon_identity(daemon_pid)
     ROOT.mkdir(mode=0o755,exist_ok=False)
     def interrupted(*_): raise InterruptedError('discovery supervisor stopped')
     signal.signal(signal.SIGTERM,interrupted)
     request_deadline = time.monotonic()+180  # Test environment budget, not a protocol deadline.
+    original_case = None
     for phase in (0,1):
         request = INPUT/f'discovery-role-{phase}.request.json'
         while not request.is_file():
@@ -209,6 +267,8 @@ def supervise(daemon_pid):
                 raise CaptureError('original daemon/request supervision deadline')
             time.sleep(.01)
         source = read_json(request,1000);validate_request(source,phase)
+        if original_case is None:original_case=case(source)
+        if case(source)!=original_case or case(source)!=boot:raise CaptureError('one explicit boot termination case for both scanner roles')
         if source['tool'] != file_record('/bin/slctl'): raise CaptureError('original actual SDK binary changed')
         folder = ROOT/f'phase-{phase}';folder.mkdir(mode=0o755)
         row = dict(source,daemon=daemon,readers=[None,None],status='RUNNING',start_wall_ns=time.time_ns(),
@@ -218,7 +278,8 @@ def supervise(daemon_pid):
             try:
                 for number in (1,0):
                     out,err = folder/f'{number}.stdout',folder/f'{number}.stderr'
-                    app = dict(args=reader_args(source,number),start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
+                    app = dict(args=reader_args(source,number),start_wall_ns=time.time_ns(),
+                               start_monotonic_ns=time.monotonic_ns(),output_files=[str(out),str(err)])
                     row['readers'][number] = app
                     process = subprocess.Popen(app['args'],user=1004,group=1004,extra_groups=[],stdin=subprocess.DEVNULL,
                                                stdout=files.enter_context(out.open('xb')),stderr=files.enter_context(err.open('xb')))
@@ -241,16 +302,48 @@ def supervise(daemon_pid):
                 row['ready'] = ready;write_record(folder/'ready.json',ready)
                 for number in (0,1):
                     _,process,app,out,err = next(c for c in children if c[0] == number)
-                    process.wait(timeout=27)
+                    if case(source) == 'owner-loss':
+                        # Only wait for actual complete CLI report lines. This
+                        # is a scheduling barrier, never the acceptance oracle:
+                        # receipt + independent raw capture check every report.
+                        deadline=time.monotonic()+12
+                        while True:
+                            if out.stat().st_size>4*1024*1024:raise CaptureError('bounded caller output exceeded')
+                            text=out.read_text();lines=text.splitlines()
+                            if not text.endswith('\n'):lines=lines[:-1]
+                            seen=[m for line in lines[2:] if (m:=REPORT.fullmatch(line))]
+                            if (len(seen)>=(1 if number==0 else 8) and
+                                    (number==0 or any(m[7]==marker_data(source['markers'][1]).hex() for m in seen))):break
+                            if process.poll() is not None or time.monotonic()>=deadline:
+                                raise CaptureError('original owner-loss report barrier expired or caller ended')
+                            if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed')
+                            time.sleep(.01)
+                        if process.poll() is not None:raise CaptureError('owned caller ended before deliberate loss')
+                        app['termination']=dict(reason='TEST_OWNED_CALLER_LOSS',signal=signal.SIGKILL,pid=process.pid,
+                                                sent_wall_ns=time.time_ns(),sent_monotonic_ns=time.monotonic_ns())
+                        process.kill()  # Popen child only; no externally supplied pid.
+                    process.wait(timeout=3 if case(source)=='owner-loss' else 27)
                     app.update(exit=process.returncode,stdout=out.read_text(),stderr=err.read_text(),end_wall_ns=time.time_ns())
                     receipt(row,number)
                     if number == 0:
                         survivor = next(c[1] for c in children if c[0] == 1)
                         if survivor.poll() is not None:raise CaptureError('survivor ended before isolated release barrier')
-                        row['first_released'] = dict(phase=phase,first_end_wall_ns=app['end_wall_ns'],survivor_alive=True,observed_wall_ns=time.time_ns())
-                        write_record(folder/'first-released.json',row['first_released'])
+                        key=departure_key(source)
+                        row[key] = dict(phase=phase,first_end_wall_ns=app['end_wall_ns'],survivor_alive=True,observed_wall_ns=time.time_ns())
+                        write_record(folder/(key.replace('_','-')+'.json'),row[key])
+                if case(source) == 'owner-loss':
+                    last=row['readers'][1]['termination']
+                    until=last['sent_monotonic_ns']+5_000_000_000
+                    # Collection window only: no manager STOP, ioctl or fake
+                    # cleanup receipt. Missing/late physical STOP fails capture.
+                    while (remaining:=until-time.monotonic_ns())>0:
+                        if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed')
+                        time.sleep(min(.01,remaining/1e9))
+                    row['cleanup_window']=dict(start_wall_ns=last['sent_wall_ns'],
+                        deadline_wall_ns=last['sent_wall_ns']+5_000_000_000,end_wall_ns=time.time_ns(),
+                        end_monotonic_ns=time.monotonic_ns(),budget_ns=5_000_000_000)
                 if daemon_identity(daemon_pid) != daemon:raise CaptureError('original daemon changed')
-                row.update(status='EXPLICIT_RELEASE_OUTPUTS_CHECKED',end_wall_ns=time.time_ns())
+                row.update(status=output_status(source),end_wall_ns=time.time_ns())
             except BaseException as error:
                 row.update(status='FAIL',error=str(error),error_traceback=traceback.format_exc());raise
             finally:
@@ -259,7 +352,7 @@ def supervise(daemon_pid):
                     process.wait()
                     if 'exit' not in app:app.update(exit=process.returncode,stdout=out.read_text(),stderr=err.read_text(),end_wall_ns=time.time_ns())
                 write_record(folder/'run.json',row)
-    write_record(ROOT/'finished.json',dict(status='TWO_EXPLICIT_RELEASE_PHASES_COMPLETED',daemon=daemon))
+    write_record(ROOT/'finished.json',dict(status=finished_status(source),daemon=daemon))
 
 
 def corroborate(run,capture):
@@ -267,14 +360,16 @@ def corroborate(run,capture):
     if len(rows) != 2:raise CaptureError('both ordered scanner roles required')
     if len({m for item in rows for m in item['request']['markers']}) != 4:
         raise CaptureError('original random markers must not repeat across phases')
+    if len({case(item['request']) for item in rows}) != 1:raise CaptureError('both scanner roles require the same original termination case')
     proofs = []
     for phase,item in enumerate(rows):
         row = item['supervision'];validate_request(item['request'],phase)
         if (item['status'] != 'APPLICATION_DISCOVERY_EVIDENCE_PENDING' or
-                row['status'] != 'EXPLICIT_RELEASE_OUTPUTS_CHECKED' or
+                row['status'] != output_status(row) or
+                case(row) != case(item['request']) or
                 any(row[k] != item['request'][k] for k in item['request'] if k != 'status') or
                 row['tool'] != run['slctl'] or
-                row['ready'] != item['barrier'] or row['first_released'] != item['first_released']):
+                row['ready'] != item['barrier'] or row[departure_key(row)] != item[departure_key(row)]):
             raise CaptureError('exact original discovery request/barriers and actual tool required')
         parsed = [receipt(row,n) for n in (0,1)]
         if parsed[0]['session'] == parsed[1]['session']:raise CaptureError('caller ids collided')
@@ -290,13 +385,26 @@ def corroborate(run,capture):
             parse_result(command['stdout'],advertiser,1,allow_recreate=True)
             command_reply(capture,advertiser,0x0c03,command['start_wall_ns'],command['end_wall_ns'],
                           bytes([0,3,len(marker_data(marker))])+marker_data(marker),'')
+        first_departure=row[departure_key(row)]
+        if (first_departure.get('phase')!=phase or first_departure.get('survivor_alive') is not True or
+                first_departure.get('first_end_wall_ns')!=row['readers'][0]['end_wall_ns'] or
+                not first_departure['observed_wall_ns']<row['readers'][1]['end_wall_ns']):
+            raise CaptureError('actual first-caller departure and live survivor barrier required')
         start = min(a['start_wall_ns'] for a in row['readers']);end = max(a['end_wall_ns'] for a in row['readers'])
         if (not start <= row['ready']['active_wall_ns'] <= first['start_wall_ns'] <= first['end_wall_ns'] <= second['start_wall_ns'] < second['end_wall_ns'] <= end or
-                not first['start_wall_ns'] <= row['first_released']['first_end_wall_ns'] <= row['first_released']['observed_wall_ns'] <= second['start_wall_ns']):
+                not first['start_wall_ns'] <= first_departure['first_end_wall_ns'] <= first_departure['observed_wall_ns'] <= second['start_wall_ns']):
             raise CaptureError('original active/release/new-marker ordering required')
         if (row['readers'][0]['end_wall_ns'] - first['start_wall_ns'] >= 10_000_000_000 or
                 row['readers'][1]['end_wall_ns'] - second['start_wall_ns'] >= 10_000_000_000):
             raise CaptureError('selected marker must be observed/released within original ten seconds')
+        if case(row)=='owner-loss':
+            window=row.get('cleanup_window',{});last=row['readers'][1]['termination']
+            if (window.get('budget_ns')!=5_000_000_000 or window.get('start_wall_ns')!=last['sent_wall_ns'] or
+                    window.get('deadline_wall_ns')!=last['sent_wall_ns']+5_000_000_000 or
+                    window.get('end_wall_ns',0)<max(end,window['deadline_wall_ns']) or
+                    window.get('end_monotonic_ns',0)<last['sent_monotonic_ns']+5_000_000_000):
+                raise CaptureError('original five-second last-owner cleanup collection window required')
+            end=window['end_wall_ns']
         commands = [c for c in capture['commands'] if (c['bus'],c['device']) == (scanner['bus'],scanner['device']) and start <= c['wall_ns'] <= end and c['opcode'] in (0x1001,0x1002)]
         if [(c['opcode'],c['params'] if c['opcode']==0x1002 else None) for c in commands] != [(0x1001,None),(0x1002,'0100'),(0x1002,'0000')]:
             raise CaptureError('one actual START recipe and only last-caller STOP required')
@@ -304,10 +412,16 @@ def corroborate(run,capture):
         for i,command in enumerate(commands):
             if command['opcode']==0x1001 and (len(bytes.fromhex(command['params']))!=8 or bytes.fromhex(command['params'])[2]!=1):
                 raise CaptureError('actual validated WS73 frame-1 scan parameters required')
-            bound = commands[i+1]['wall_ns']-1 if i+1<len(commands) else end
+            bound = commands[i+1]['wall_ns']-1 if i+1<len(commands) else (window['deadline_wall_ns'] if case(row)=='owner-loss' else end)
             radio.append(command_reply(capture,scanner,command['opcode'],command['wall_ns'],bound,bytes.fromhex(command['params']),''))
-        if not radio[1]['reply']['wall_ns'] <= row['ready']['active_wall_ns'] or radio[-1]['command']['wall_ns'] <= row['first_released']['observed_wall_ns']:
+        if not radio[1]['reply']['wall_ns'] <= row['ready']['active_wall_ns'] or radio[-1]['command']['wall_ns'] <= first_departure['observed_wall_ns']:
             raise CaptureError('START before active and STOP after isolated first release required')
+        if case(row)=='owner-loss' and radio[-1]['command']['wall_ns']<last['sent_wall_ns']:
+            raise CaptureError('automatic STOP must follow last caller loss; no premature or manager STOP')
+        if case(row)=='owner-loss' and radio[-1]['reply']['wall_ns']>=min(a['start_wall_ns'] for a in row['readers'])+20_000_000_000:
+            # Acquire admission is after child creation. Completing STOP before
+            # this lower bound rules out either original lease expiring first.
+            raise CaptureError('TTL-ambiguous STOP cannot qualify caller-loss cleanup')
         raw = []
         for number,app in enumerate(parsed):
             used = set()  # Shared fanout across callers, distinct RX within each caller.
@@ -323,6 +437,9 @@ def corroborate(run,capture):
         if any(start<=f['wall_ns']<=end and (f['bus'],f['device']) in [(o['bus'],o['device']) for o in [scanner,advertiser]] for f in capture['failures']):
             raise CaptureError('failed target USB transfer within accepted discovery interval')
         proofs.append(dict(phase=phase,scanner=scanner,advertiser=advertiser,radio=radio,reports=raw))
+    if case(rows[0]['request'])=='owner-loss':
+        return dict(status='OWNER_LOSS_TWO_ROLE_USB_CORROBORATED',termination='owner-loss',phases=proofs,
+                    limits='Deliberate SIGKILL of two owned apps-only readers;survivor new-marker and last-loss actualSTOP within original5s only. NoTTL/manager-stop/partial-init/system-wide privilege/peer business isolation or natural recovery qualification.')
     return dict(status='EXPLICIT_RELEASE_TWO_ROLE_USB_CORROBORATED',phases=proofs,
                 limits='Explicit release positive slice only; no TTL/owner-loss/manager-stop/partial-init/system-wide privilege or natural recovery qualification.')
 
@@ -331,7 +448,7 @@ def verify_supervisor_artifacts(run,evidence,expected_tool):
     """Reopen the original root-side files, not merely their copied JSON values."""
     evidence = Path(evidence)
     finished = json.loads((evidence/'discovery-role/finished.json').read_text())
-    if finished != dict(status='TWO_EXPLICIT_RELEASE_PHASES_COMPLETED',daemon=run['daemon_before']):
+    if finished != dict(status=finished_status(run['application_discovery'][0]['request']),daemon=run['daemon_before']):
         raise CaptureError('original supervisor completion/daemon identity required')
     for phase,item in enumerate(run['application_discovery']):
         folder = evidence/'discovery-role'/f'phase-{phase}'
@@ -342,24 +459,26 @@ def verify_supervisor_artifacts(run,evidence,expected_tool):
                 hashlib.sha256(request.read_bytes()).hexdigest() != row['request_sha256'] or
                 row['verifier'] != expected_tool):
             raise CaptureError('original source-bound discovery request/supervision files required')
-        for name,key in [('ready','barrier'),('first-released','first_released')]:
+        departure=departure_key(row)
+        for name,key in [('ready','barrier'),(departure.replace('_','-'),departure)]:
             if json.loads((folder/(name+'.json')).read_text()) != item[key]:
                 raise CaptureError('original supervisor barrier changed')
         for number,app in enumerate(row['readers']):
             for suffix in ['stdout','stderr']:
                 if app[suffix] != (folder/f'{number}.{suffix}').read_text():
                     raise CaptureError('actual original SDK stdout/stderr required')
-    return dict(status='ORIGINAL_DISCOVERY_ROLE_FILES_CHECKED',uid=1004,phases=2)
+    return supervision_summary(case(run['application_discovery'][0]['request']))
 
 
 def valid_summary(proof):
     try:
-        return (proof['status']=='EXPLICIT_RELEASE_TWO_ROLE_USB_CORROBORATED' and
+        lost=case(proof)=='owner-loss'
+        return (proof['status']==('OWNER_LOSS_TWO_ROLE_USB_CORROBORATED' if lost else 'EXPLICIT_RELEASE_TWO_ROLE_USB_CORROBORATED') and
                 len(proof['phases'])==2 and [p['phase'] for p in proof['phases']]==[0,1] and
-                all(len(p['radio'])==3 and len(p['reports'])==9 for p in proof['phases']) and
+                all(len(p['radio'])==3 and (9<=len(p['reports'])<=2048 if lost else len(p['reports'])==9) for p in proof['phases']) and
                 proof['phases'][0]['scanner']==proof['phases'][1]['advertiser'] and
                 proof['phases'][0]['advertiser']==proof['phases'][1]['scanner'])
-    except (KeyError,TypeError):return False
+    except (KeyError,TypeError,CaptureError):return False
 
 
 if __name__ == '__main__':

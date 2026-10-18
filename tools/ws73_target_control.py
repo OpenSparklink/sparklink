@@ -160,6 +160,7 @@ def main():
     parser.add_argument('--slkd-pid',type=int,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--application-discovery-verify',action='store_true')
+    parser.add_argument('--application-discovery-case',choices=['release','owner-loss'],default='release')
     parser.add_argument('--application-client-verify',action='store_true',help='dedicated actual public C/Python fixed-channel one-shot/dup/final-close gate')
     parser.add_argument('--passthrough',action='store_true',help='real RF, QMP guest-only disconnect; excludes physical unplug acceptance')
     parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')

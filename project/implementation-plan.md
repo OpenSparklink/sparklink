@@ -3130,3 +3130,16 @@ caller-loss／TTL／管理STOP／部分初始化／原期限组合分别保留�
 切片通过写成完整生命周期验收。原Fixed-T整轮FAIL和后续Negotiable-T限定成功分别
 绑定配置与artifact；不把后者当成同条件复现、Fixed-T修复、同行业务／部署权限或
 自然恢复资格。材料版本绑定与资格校验改动亦不能重命名实际执行镜像。
+
+R5f12 下一有限切片：真实caller-loss（仍属本工作包，不另设总跟踪）。复用同一
+Coordinator/Owner监听/worker、Rust SDK、runner和USB oracle，增加维护者选择器
+`--application-discovery-case owner-loss`，不改Runtime/协议或另造清理实现。
+退出要求：VM中两名apps-only caller共享scanner，实际首marker后仅终止本监督器
+启动的首名child，同行继续实际校验新marker；再终止最后child，禁止任何代发STOP。
+两种scanner角色均须捕获一次START和最后owner消失后原五秒内的STOP/匹配Complete，
+原daemon/controller generation不变，普通连接/短消息/长度拒绝保持通过。
+应用20秒租期和marker10秒不放宽。原始请求/child身份/信号/输出/barrier/捕获与失败
+均保留；缺少任意一端、正常close冒充SIGKILL、期限延长、旧case或缺原始文件均拒绝。
+离线验证真实工具格式/参数/负对照，不称内核并发或完整owner生命周期证明。
+同一源码映射封存产物后才运行U-only双设备VM；E/混合无资格转授。TTL/manager STOP/
+部分初始化/期限交错/同行连接业务/完整权限仍开放，其他纵向主线保持并行。

@@ -106,9 +106,18 @@ VM 监督器按固定命令启动两个 UID/GID1004、无附加组和 capabiliti
 接收均由原 USB/HCC/DLI 校验器核对；同一 RX 可由两个会话观察，同一读者的不同
 Native 序号不能反复借用一条捕获记录。缺失原始文件或失败不能由日志摘要补齐。
 
+默认 `--application-discovery-case release` 保留上述显式释放流程。
+`--application-discovery-case owner-loss` 则让两个reader保持等待，由VM内监督器
+在实际收到报告后仅SIGKILL自己启动的child：先结束首名，确认同行收到新标识，
+再结束同行。禁止用正常close、SIGTERM或管理STOP冒充caller消失。
+最后一次SIGKILL后的五秒只是原清理期限的捕获窗口，不制造Off或成功收据；
+必须独立捕获唯一START以及最后caller消失后的STOP和匹配Complete。
+STOP还须早于两名caller原20秒租期可能到期的最早时刻，排除TTL清理混淆。
+监督器退出、原始stdout或捕获缺失、晚STOP均不能通过。本选项尚待准确artifact实机验收。
+
 监督器有环境预算，应用保留实际20秒租期；选中标识的交付另受原10秒门禁约束。
-测试监督器退出不撤销已开始的物理义务。caller-loss、TTL、管理STOP、部分初始化、
-取消及原期限交错是后续独立门禁，本入口仅覆盖显式release的正向切片。
+测试监督器退出不撤销已开始的物理义务。TTL、管理STOP、部分初始化、取消及
+原期限交错是其他独立门禁，不能由显式release或受控SIGKILL切片替代。
 **验收器离线检查不构成实机通过**；已执行轮次含整轮失败，显式release的正向切片
 不替代其他退出条件。准确新镜像、完整system bus角色和原路径保持回归均以
 [当前能力](../../project/current-capabilities.md)记录为准。

@@ -16,12 +16,13 @@ from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 
 from ws73_application_discovery import (corroborate, reader_args, receipt, requested,
-    active_session, supervise, validate_request, validate_tool, valid_summary, verify_supervisor_artifacts)
+    active_session, supervise, validate_request, validate_tool, valid_summary, verify_supervisor_artifacts,
+    case, departure_key, output_status, finished_status, boot_case, supervision_summary)
 from ws73_capture import CaptureError, marker_data
 from ws73_target import run_exit_code
 
 
-def fixture():
+def fixture(termination='release'):
     owners=[dict(index=i,generation=i+11,path=f'/org/sparklink/slk{i}_g{i+11}',
                  bus=1,device=i+3,address=f'00:01:02:03:04:0{i}') for i in (0,1)]
     tool=dict(path='/bin/slctl',sha256='a'*64)
@@ -33,24 +34,33 @@ def fixture():
                                        record=record,completion=dict(wall_ns=t+1)))
         capture['complete'].append(dict(bus=1,device=owner['device'],opcode=opcode,status=0,value='',wall_ns=t+2,record=record+1))
     for phase,(scanner,advertiser) in enumerate([owners,list(reversed(owners))]):
-        offset=phase*1000
+        offset=phase*(10_000_000_000 if termination=='owner-loss' else 1000)
         markers=[f'{phase+1:02x}'*8+'22'*8,f'{phase+1:02x}'*8+'33'*8]
         source=dict(phase=phase,scanner=scanner,advertiser=advertiser,markers=markers,tool=tool,status='REQUESTED')
-        row=copy.deepcopy(source);row['status']='EXPLICIT_RELEASE_OUTPUTS_CHECKED'
+        if termination!='release':source['termination']=termination
+        row=copy.deepcopy(source);row['status']=output_status(row)
         row['verifier']=dict(path='/usr/share/sparklink/tools/ws73_application_discovery.py',sha256='b'*64)
         row['ready']=dict(phase=phase,scanner=scanner['path'],active_wall_ns=offset+50,sessions=['1','2'])
-        row['first_released']=dict(phase=phase,first_end_wall_ns=offset+100,survivor_alive=True,observed_wall_ns=offset+110)
+        key=departure_key(source)
+        row[key]=dict(phase=phase,first_end_wall_ns=offset+100,survivor_alive=True,observed_wall_ns=offset+110)
         row['readers']=[]
         for n in (0,1):
             lines=['Selected '+scanner['path'],f"DiscoverySession: id={n+1} path={scanner['path']} state=active source=broker"]
             for j in range(1 if n==0 else 8):
                 marker=markers[0] if j<4 or n==0 else markers[1]
                 lines.append(f"DiscoveryReport: session={n+1} generation={scanner['generation']} sequence={j+1} address_type=0 address={advertiser['address'].replace(':','')} rssi=-40 data={marker_data(marker).hex()}")
-            lines.append(f"DiscoveryReleased: session={n+1} last_physical_stop_confirmed={'false' if n==0 else 'true'}")
+            if termination=='release':lines.append(f"DiscoveryReleased: session={n+1} last_physical_stop_confirmed={'false' if n==0 else 'true'}")
             row['readers'].append(dict(args=reader_args(source,n),exit=0,stderr='',stdout='\n'.join(lines)+'\n',native_fds=[],
                 credentials=dict(uids=[1004]*4,gids=[1004]*4,groups=[],capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']}),
                 start_wall_ns=offset+10+n,end_wall_ns=offset+(100 if n==0 else 190)))
-        item=dict(request=source,supervision=row,status='APPLICATION_DISCOVERY_EVIDENCE_PENDING',barrier=row['ready'],first_released=row['first_released'],advertisements=[])
+            if termination=='owner-loss':
+                a=row['readers'][-1];a.update(exit=-9,pid=100+n,active_wall_ns=offset+45,start_monotonic_ns=a['start_wall_ns'])
+                a['termination']=dict(reason='TEST_OWNED_CALLER_LOSS',signal=9,pid=a['pid'],sent_wall_ns=a['end_wall_ns']-1,sent_monotonic_ns=a['end_wall_ns']-1)
+        if termination=='owner-loss':
+            sent=row['readers'][1]['termination']['sent_wall_ns']
+            row['cleanup_window']=dict(start_wall_ns=sent,deadline_wall_ns=sent+5_000_000_000,end_wall_ns=sent+5_000_000_001,end_monotonic_ns=sent+5_000_000_001,budget_ns=5_000_000_000)
+        item=dict(request=source,supervision=row,status='APPLICATION_DISCOVERY_EVIDENCE_PENDING',barrier=row['ready'],advertisements=[])
+        item[key]=row[key]
         for i,marker in enumerate(markers):
             t=offset+(60 if i==0 else 130);request=phase*10+i+1
             out=f"NativeOperationResult: generation={advertiser['generation']} request={request} operation=1 state=3 errno=0 status=0x00 opcode=0x0c05 step=2/3 power=0 power_valid=1 adv=2 scan=1 profile=1\n"
@@ -60,7 +70,7 @@ def fixture():
             wire(advertiser,0x0c03,bytes([0,3,len(marker_data(marker))])+marker_data(marker),t+2)
         wire(scanner,0x1001,b'\0\0\1\0\x40\x06\x20\x03',offset+20)
         wire(scanner,0x1002,b'\1\0',offset+30)
-        wire(scanner,0x1002,b'\0\0',offset+175)
+        wire(scanner,0x1002,b'\0\0',offset+(195 if termination=='owner-loss' else 175))
         # Fanout can legitimately expose the same physical report to both
         # clients; the survivor's second marker has a separate raw RX record.
         for j in range(8):
@@ -71,7 +81,71 @@ def fixture():
     return run,capture
 
 
+def write_fixture_files(run, root):
+    requests=root/'application/passthrough-control';requests.mkdir(parents=True)
+    for phase,item in enumerate(run['application_discovery']):
+        folder=root/'discovery-role'/f'phase-{phase}';folder.mkdir(parents=True)
+        request=requests/f'discovery-role-{phase}.request.json';request.write_text(json.dumps(item['request']))
+        row=item['supervision'];row['request_sha256']=hashlib.sha256(request.read_bytes()).hexdigest()
+        (folder/'run.json').write_text(json.dumps(row))
+        (folder/'ready.json').write_text(json.dumps(item['barrier']))
+        key=departure_key(row);(folder/(key.replace('_','-')+'.json')).write_text(json.dumps(item[key]))
+        for n,app in enumerate(row['readers']):
+            for suffix in ['stdout','stderr']:(folder/f'{n}.{suffix}').write_text(app[suffix])
+    (root/'discovery-role/finished.json').write_text(json.dumps(dict(status=finished_status(run['application_discovery'][0]['request']),daemon=run['daemon_before'])))
+    return requests
+
+
 class DiscoveryGate(unittest.TestCase):
+    def test_owner_loss_needs_actual_survivor_new_data_and_last_stop(self):
+        run,capture=fixture('owner-loss');proof=corroborate(run,capture)
+        self.assertTrue(valid_summary(proof));self.assertEqual(case(proof),'owner-loss')
+        self.assertEqual([len(p['reports']) for p in proof['phases']],[9,9])
+        for kind in ['exit','signal','pid','latekill','expiredkill','ttl','explicitrelease','window','budget','deadline','clock','earlystop','latestop','reply','rx','survivor','request','mixed','truncate']:
+            run,capture=fixture('owner-loss');item=run['application_discovery'][0];row=item['supervision'];app=row['readers'][0]
+            if kind=='exit':app['exit']=0
+            elif kind=='signal':app['termination']['signal']=15
+            elif kind=='pid':app['termination']['pid']+=1
+            elif kind=='latekill':app['termination']['sent_wall_ns']=app['end_wall_ns']+1
+            elif kind=='expiredkill':app['termination']['sent_monotonic_ns']=app['start_monotonic_ns']+20_000_000_000
+            elif kind=='ttl':app['start_wall_ns']-=20_000_000_000
+            elif kind=='explicitrelease':app['stdout']+='DiscoveryReleased: session=1 last_physical_stop_confirmed=false\n'
+            elif kind=='window':row.pop('cleanup_window')
+            elif kind=='budget':row['cleanup_window']['budget_ns']+=1
+            elif kind=='deadline':row['cleanup_window']['deadline_wall_ns']+=1
+            elif kind=='clock':row['cleanup_window']['end_monotonic_ns']-=100
+            elif kind in ['earlystop','latestop']:
+                c=next(c for c in capture['commands'] if c['device']==3 and c['opcode']==0x1002 and c['params']=='0000')
+                c['wall_ns']=170 if kind=='earlystop' else row['cleanup_window']['deadline_wall_ns']+1
+                c['completion']['wall_ns']=c['wall_ns']+1
+                e=next(e for e in capture['complete'] if e['record']==c['record']+1);e['wall_ns']=c['wall_ns']+2
+                if kind=='latestop':row['cleanup_window']['end_wall_ns']+=100
+            elif kind=='reply':capture['complete']=[]
+            elif kind=='rx':capture['reports']=[]
+            elif kind=='survivor':row['first_lost']['survivor_alive']=False
+            elif kind=='request':item['request'].pop('termination')
+            elif kind=='mixed':run['application_discovery'][1]['request']['termination']='release'
+            elif kind=='truncate':app['stdout']=app['stdout'].rstrip('\n')
+            with self.subTest(kind=kind),self.assertRaises((CaptureError,ValueError)):corroborate(run,capture)
+
+    def test_owner_loss_boot_request_and_verdict_cannot_change_to_release(self):
+        run,capture=fixture('owner-loss');proof=corroborate(run,capture)
+        tokens=['ws73.application_discovery=1','ws73.application_discovery_case=owner-loss','ws73.connection_advertising=negotiable-t']
+        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,application_discovery_requested=True,
+                    application_discovery_case='owner-loss',qemu_args=[' '.join(tokens)],application_discovery_acceptance=True,
+                    application_discovery_corroboration=proof,application_discovery_supervision=supervision_summary('owner-loss'))
+        self.assertEqual(run_exit_code(record),0)
+        for changes in [dict(application_discovery_case='release'),dict(application_discovery_requested=False),dict(application_discovery_supervision=supervision_summary('release')),
+                        dict(qemu_args=[' '.join(tokens[:1]+tokens[2:])]),dict(qemu_args=[' '.join(tokens+[tokens[1]])]),
+                        dict(application_discovery_corroboration=corroborate(*fixture()))]:
+            with self.subTest(changes=changes):self.assertEqual(run_exit_code(record|changes),1)
+        for bad in [tokens[1:2],tokens+[tokens[1]],['ws73.application_discovery=1','ws73.application_discovery_case=arbitrary']]:
+            with self.assertRaises(CaptureError):boot_case(bad)
+        self.assertEqual(boot_case([]),'release')
+        opts=SimpleNamespace(application_discovery_verify=True,qmp_hotplug=True,connection_verify=True,connection_advertising='negotiable-t',ports=['1-1.1.1','1-1.1.2'],application_discovery_case='owner-loss')
+        self.assertTrue(requested(opts))
+        for changes in [dict(application_discovery_verify=False),dict(application_discovery_case='unknown')]:
+            with self.assertRaises(CaptureError):requested(SimpleNamespace(**(vars(opts)|changes)))
     def test_fixed_request_boundary_and_marker_prefix(self):
         run,_=fixture();row=run['application_discovery'][0]['request'];validate_request(row,0)
         self.assertEqual(bytes.fromhex(reader_args(row,1)[4]),marker_data(row['markers'][0])[:-16])
@@ -160,24 +234,15 @@ class DiscoveryGate(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises((CaptureError,ValueError)):corroborate(run,capture)
 
     def test_original_supervisor_files_not_copied_summary_alone(self):
-        run,_=fixture();expected=run['application_discovery'][0]['supervision']['verifier']
-        with tempfile.TemporaryDirectory()as temp:
-            root=Path(temp);requests=root/'application/passthrough-control';requests.mkdir(parents=True)
-            for phase,item in enumerate(run['application_discovery']):
-                folder=root/'discovery-role'/f'phase-{phase}';folder.mkdir(parents=True)
-                request=requests/f'discovery-role-{phase}.request.json';request.write_text(json.dumps(item['request']))
-                row=item['supervision'];row['request_sha256']=hashlib.sha256(request.read_bytes()).hexdigest()
-                (folder/'run.json').write_text(json.dumps(row))
-                (folder/'ready.json').write_text(json.dumps(item['barrier']))
-                (folder/'first-released.json').write_text(json.dumps(item['first_released']))
-                for n,app in enumerate(row['readers']):
-                    for suffix in ['stdout','stderr']:(folder/f'{n}.{suffix}').write_text(app[suffix])
-            (root/'discovery-role/finished.json').write_text(json.dumps(dict(status='TWO_EXPLICIT_RELEASE_PHASES_COMPLETED',daemon=run['daemon_before'])))
-            verify_supervisor_artifacts(run,root,expected)
-            target=root/'discovery-role/phase-0/0.stdout';text=target.read_text();target.write_text(text+'fake\n')
-            with self.assertRaises(CaptureError):verify_supervisor_artifacts(run,root,expected)
-            target.write_text(text);requests.joinpath('discovery-role-0.request.json').unlink()
-            with self.assertRaises(FileNotFoundError):verify_supervisor_artifacts(run,root,expected)
+        for termination in ['release','owner-loss']:
+            run,_=fixture(termination);expected=run['application_discovery'][0]['supervision']['verifier']
+            with self.subTest(termination=termination),tempfile.TemporaryDirectory()as temp:
+                root=Path(temp);requests=write_fixture_files(run,root)
+                self.assertEqual(verify_supervisor_artifacts(run,root,expected),supervision_summary(termination))
+                target=root/'discovery-role/phase-0/0.stdout';text=target.read_text();target.write_text(text+'fake\n')
+                with self.assertRaises(CaptureError):verify_supervisor_artifacts(run,root,expected)
+                target.write_text(text);requests.joinpath('discovery-role-0.request.json').unlink()
+                with self.assertRaises(FileNotFoundError):verify_supervisor_artifacts(run,root,expected)
 
     def test_fail_closed_exit_and_finite_mode_boundary(self):
         opts=SimpleNamespace(application_discovery_verify=True,qmp_hotplug=True,connection_verify=True,connection_advertising='negotiable-t',ports=['1-1.1.1','1-1.1.2'])
@@ -208,8 +273,9 @@ class DiscoveryGate(unittest.TestCase):
             self.assertEqual(instance.args.ports,['1-1','1-2'])
             self.assertTrue(requested(instance.args))
             return 73
-        with patch.object(sys,'argv',arguments),patch.object(control.ConnectionControlRun,'__init__',lambda instance,args:setattr(instance,'args',args)),patch.object(control.ConnectionControlRun,'execute',inspect):
-            self.assertEqual(control.main(),73)
+        for termination in ['release','owner-loss']:
+            with patch.object(sys,'argv',arguments+['--application-discovery-case',termination]),patch.object(control.ConnectionControlRun,'__init__',lambda instance,args:setattr(instance,'args',args)),patch.object(control.ConnectionControlRun,'execute',inspect):
+                self.assertEqual(control.main(),73)
 
     def test_actual_guest_cli_rejects_implicit_or_fixed_t_before_run_construction(self):
         # Parser/preflight only, explicit no-run negative control. The default

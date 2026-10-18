@@ -359,7 +359,10 @@ def verify_passthrough():
     requested_discovery = 'ws73.application_discovery=1' in Path('/proc/cmdline').read_text().split()
     if requested_discovery != ('application_discovery' in run):raise ValueError('explicit application discovery request/evidence mismatch')
     if requested_discovery:
-        from ws73_application_discovery import corroborate as discovery_corroborate,verify_supervisor_artifacts
+        from ws73_application_discovery import corroborate as discovery_corroborate,verify_supervisor_artifacts,boot_case,case as discovery_case
+        variant=boot_case(Path('/proc/cmdline').read_text().split())
+        if any(discovery_case(row['request'])!=variant for row in run['application_discovery']):
+            raise ValueError('original boot discovery termination differs from actual request')
         proofs.append({'discovery_supervision':verify_supervisor_artifacts(run,EVIDENCE,file_record(TOOLS/'ws73_application_discovery.py'))})
         proofs.append({'application_discovery':discovery_corroborate(run,capture)})
     requested_clients = 'ws73.application_clients=1' in Path('/proc/cmdline').read_text().split()

@@ -1,0 +1,917 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "compiled_userspace": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+  "executed_guest_tools": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+  "executed_host_tools": "9a1e0500c7d4a5b20ff023d8d156429631a69d20",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "scope": [
+    "One successful VM v2 after one retained overallFAIL v1;not a general success-rate,stability or wholearchitecture qualification. Both attempts retained,not rewritten.",
+    "Actual manager-enrolledUID1000/caps0 foreground ServiceAuthorizer owner exit,peer error4/9,same-controller registration removal andanother owner actual remote read;not apps-only service registration permission.",
+    "Both connection roles:actual C/Python public SDK errno110 near originalfive-second deadline;current-token denial,stale-before/late-after-peer-deadline decisions rejected,opposite application DB unchanged. This specific refusal does not make timeout a rollback guarantee.",
+    "Ordinary fixedCUTC actual random payload validation/reply afterwards8roundtrips;bothUSB ends and22radio matches rechecked. Not business while the callback remains held.",
+    "No late denial physical response observed in these two expiry cases. Late successful response/drain,request-caller exit,partialNativeinit,full cancel/revoke/fd-transfer,security/Bond,NOCPtruth/reuse,natural recovery andperformance remain unqualified."
+  ],
+  "bounds": {
+    "real_attempts": 2,
+    "successful_runs": 1,
+    "retained_failed_runs": 1,
+    "connection_roles": 2,
+    "foreground_owners": 6,
+    "owner_exit_cases": 2,
+    "deadline_cases": 2,
+    "stale_token_cases": 2,
+    "late_token_cases": 2,
+    "actual_sdk_errno": 110,
+    "elapsed_ns": [
+      5009513112,
+      5058294502
+    ],
+    "ordinary_peer_round_trips": 8,
+    "capture_packets": 4027,
+    "capture_dropped": 0,
+    "radio_matches": 22,
+    "evidence_negative_controls": 23,
+    "globally_distinct_case_values": 24,
+    "observed_late_denial_responses": 0,
+    "new_formal_proofs": 0
+  },
+  "firmware": {
+    "profile": "explicitSDK110US on knownU ports2/3",
+    "combined_sha256": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+    "cold_rom_auto_selection": "NOT_QUALIFIED"
+  },
+  "environment": {
+    "vm_only": true,
+    "host_ports": [
+      "1-2.1.2",
+      "1-2.1.3"
+    ],
+    "other_ports": "Eport1 andUport4 untouched",
+    "advertising": "negotiable-t",
+    "kernel_taint": 0,
+    "no_host_driver_or_service_install": true
+  },
+  "gates": [
+    {
+      "name": "Actual two-role ServiceOwner exit and same-controller removal/readback",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual public C/Python originaldeadline/stale-late decisions and unchanged oppositeDB",
+      "status": "PASS"
+    },
+    {
+      "name": "Original normal-user CUTC replies/discovery/connection after controlled cases",
+      "status": "PASS"
+    },
+    {
+      "name": "Frozen DAguest/9aHost production verifier replay and23 negative controls",
+      "status": "PASS"
+    }
+  ],
+  "phases": [
+    {
+      "sender": 0,
+      "target": 1,
+      "owner_exit_peer_error": 4,
+      "deadline_elapsed_ns": 5009513112,
+      "timeout": {
+        "api": "c",
+        "errno": 110,
+        "deadline_ns": 37014790404,
+        "call_ns": 32016227993,
+        "returned_ns": 37014876338,
+        "operation_success": false
+      },
+      "late_denial_physical_obligation": false,
+      "stale_token_rejected": true,
+      "late_token_rejected": true,
+      "scope": "Actual callbacks and unchanged opposite DB;CUTC corroborated separately. Not concurrent peer-business,cross-lifetime human replay,controller retirement,full cancellation or security/Bond proof"
+    },
+    {
+      "sender": 1,
+      "target": 0,
+      "owner_exit_peer_error": 4,
+      "deadline_elapsed_ns": 5058294502,
+      "timeout": {
+        "api": "python",
+        "errno": 110,
+        "deadline_ns": 49054157818,
+        "call_ns": 44056468714,
+        "returned_ns": 49054395037,
+        "operation_success": false
+      },
+      "late_denial_physical_obligation": false,
+      "stale_token_rejected": true,
+      "late_token_rejected": true,
+      "scope": "Actual callbacks and unchanged opposite DB;CUTC corroborated separately. Not concurrent peer-business,cross-lifetime human replay,controller retirement,full cancellation or security/Bond proof"
+    }
+  ],
+  "failures": [
+    {
+      "attempt": "v1",
+      "overall": "FAIL",
+      "qemu_exit": 0,
+      "supervisor_exit": 1,
+      "reason": "Host verdict required its own not-yet-published supervisor_exit. Original actual pre-finalizer regression fails beforefix andpasses after;explicit nonzero results still rejected.",
+      "raw_manifest": ".dev/architecture-r5f7-owner-deadline-real-v1/manifest.json",
+      "raw_manifest_sha256": "5e8021cbfe1389491fe8bba09ea3dc84868fd44d8c3e4ff60005c43218443d88",
+      "promotion": "None;successfulv2 has separate output andHost identity."
+    }
+  ],
+  "remaining": [
+    "Request-caller exit,late successful response/drain,concurrent actualpeerbusiness,partialNativeinitialization,full lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c remain required.",
+    "Original full S0-S6/19WP/10FV/12DG/VM-only/UserHostP4,ENODATA/unexplainedC/naturalRCA/nonmanualrecovery andunproved assumptions remain OPEN."
+  ],
+  "replay": "Use frozen DAguest verifiers andpinned9aHost verdict tree plus exact original v2 applications/capture/stats. Original v1FAIL never rewritten;private packet-expanded proof retained. Different compiled/guest/host identities intentional;not current-WIP tool replay.",
+  "private_material_access": "Authorized local .dev originals,hashes andlimited scope public. No restricted material orfull large capture copied.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-audit-v2.py",
+      "sha256": "18e09b043481ce1ba6d3718737e324b3399077ebec3386afb36bcb97f79e8bc9",
+      "bytes": 8662
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/manifest.json",
+      "sha256": "5a2300387542264744f3006cca3fc80919e0e9bf68f1488dc0b67898bef3f6bf",
+      "bytes": 1579820
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "39a70d55a565e329029df40414706b21edcc2473c7b6e4ad424fd7399229611f",
+      "bytes": 958492
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/ws73.pcap",
+      "sha256": "de40c88af0ef9d3506dbc92bc485437d26a97ecc8be4e3b083b4994214a08798",
+      "bytes": 615352
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/capture-stats.txt",
+      "sha256": "3c36aa494504aec596c4b585d3dc418eec49515340598ba75bd64c46552ae554",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v1/manifest.json",
+      "sha256": "5e8021cbfe1389491fe8bba09ea3dc84868fd44d8c3e4ff60005c43218443d88",
+      "bytes": 1579878
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/manifest.json",
+      "sha256": "d24c3c4fc8ab3fa2748315ca3969ee2c55a46db3f19133a65cfe22884f20accc",
+      "bytes": 298483
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/manifest.json",
+      "sha256": "d6026380969498e86a42d16461b85adb0bc2106b5a7aacb412bff51c9d1b8dcf",
+      "bytes": 31624
+    },
+    {
+      "path": ".dev/architecture-r5f7-frozen-host-source-v1/tools/ws73_target.py",
+      "sha256": "80345f17d0e230abc77f0e973e1fc795d78417472beb2497bde723f760773b9e",
+      "bytes": 172945
+    },
+    {
+      "path": ".dev/architecture-r5f7-pinned-identities-v1.json",
+      "sha256": "1cd169c640395a5e01bb94f1f143be1f976591aae1e2bcbd5950748f25f850a8",
+      "bytes": 469
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root.btrfs",
+      "sha256": "77ff1c9c6ff50e272f7ccd20dc5a4e5ecc44aebcde5acd04521cf3adbdc407af",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "ade11738c72a1a4b8950dd54d3e5d1b070bdb066e746c62b9796879709df004a",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "d3081ac64385ce3c4ddf7d9f6933b43453e76b536970faff446624c2ea360208",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "a224665cd8f2b2fd52701ab066784ddb6c3d91b109689ca075c38b75b8186b26",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "7d0318c729ef1cee7cfc197d7df507d2fecdd1f86b2368b11a921c62ac889253",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-exit-pending.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-exit-pending.stdout",
+      "sha256": "07a8b843dfcd325750745e9c7e3f068c794520a764f98980f2eec4c5328e40a9",
+      "bytes": 289
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-guard.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-guard.stdout",
+      "sha256": "679e4ea174efd767e99cba9bf787de971acc4e36ebf9490bc8f18e17528bc7f0",
+      "bytes": 306
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-original-deadline.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-0-0-original-deadline.stdout",
+      "sha256": "3599a40a1b08def04c9819ae1b74fc09b1ad5d84829ae3b99a0543e03ab7ff39",
+      "bytes": 978
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-exit-pending.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-exit-pending.stdout",
+      "sha256": "0a406a67d2512852f5d93fc0185aa440786741c1edb164a2e868414878bdb87f",
+      "bytes": 289
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-guard.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-guard.stdout",
+      "sha256": "b7e1b819b607d43511862f5ea05cd8aa62ff04033cae8ff951d68cc9e16fee6b",
+      "bytes": 306
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-original-deadline.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/passthrough-control/ssap-owned-1-1-original-deadline.stdout",
+      "sha256": "63f85def30e14ec7f97bc63fc0e3cd8e3294c9417deab74a338c985efd4b4221",
+      "bytes": 978
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/capture-process-status.txt",
+      "sha256": "18393a013b7e95dff8eaf8e52fba5dd915bfd98b6907a500e7658c6368d4cdeb",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/kernel.log",
+      "sha256": "3f588e8eb10456209cd4c82ffeea801f8bf5c7b052ea4c2f36f1164e0c782174",
+      "bytes": 49905
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "3ca566a0a667b87f375c130a38f5f2579623d906c1e99fca65fa64430d403528",
+      "bytes": 477385
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/pending-observations-0.json",
+      "sha256": "cb9ca55420e1f5ab4f317756edb29bc0ddc2769e6ade5476d89f93c7b7f1f943",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/pending-observations-1.json",
+      "sha256": "164b6f177e2a3cf853e74be1f2ed505871f4359299f512cfb6c9dad7689fb0ac",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/ready-progress-0.json",
+      "sha256": "779819058d39625d355fb2eaeb1cd7d0fd4f2d956e0166144a60cb3cd9ccc7b8",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/ready-progress-1.json",
+      "sha256": "f445343e565621dfbfb281cbf9a3ec09e2522f3d5e253106109da575ae66e3ba",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/slkd-process-status.txt",
+      "sha256": "6be19771f29c88b19f9c0951e4b5cc905fba093ff8f448575b6c8b3599869d82",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/slkd.log",
+      "sha256": "fb884f5818ed4de57c39c93f31e8d523a93d46adf2eb691951598ed9ac8beeff",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "b0319a583f565b5fb8a865867d30c5c362462f07357b8c0cb5b8a53350faf21a",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2/guest-output/xhci-trace.log",
+      "sha256": "cb901494fec6d6ec0323c4a0ff688fe41ca65ebb5ff0e59eabdbb2720c2290bb",
+      "bytes": 2213407
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slkd",
+      "sha256": "15228e55d7002e91a4cee5e463c4e87d4efb2263ae2994cfd7f1947ff16a2af0",
+      "bytes": 10033584
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slkconfig",
+      "sha256": "3f58a6739f8dbc9315153114be7020eb7fe9fc04890416530dfe2dc8e807b8b3",
+      "bytes": 1338168
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slctl",
+      "sha256": "fd24f53ce5372fc4229a8e88a0c374ea8508121aec8ba025b17c186969bb9690",
+      "bytes": 8431560
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slktest",
+      "sha256": "d138d3efcc92c53dffb4c2f04cbe6ef121cbf5fefeee87a999f39735ec01fbe0",
+      "bytes": 5764672
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slkmon",
+      "sha256": "d259c65a4c5fdee07b6ef8e82ae56e20833df2f85d36a88ad2c91ce51f0c64a9",
+      "bytes": 1660792
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slkdump",
+      "sha256": "484d9ee6a6826c1da14464c2c8b6c8f60faaa81e3580d90af67485a878eab34a",
+      "bytes": 1660584
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/liblibsparklink.so",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/libslk_native.so",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "d4ec09893d07586e83c95ce4f42fb6a42e89e92b3c49451e14a45c017b3e7a17",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "05dd3f7ccf68824dddc9fbe780a62e6306cc0842668ce222a5c09a5a9331773c",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_security_install_hold.py",
+      "sha256": "4db016caf335641e6c58f4567058cd89971b1513d7f84381ccb7ef6389b14728",
+      "bytes": 10079
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_security_agent.py",
+      "sha256": "fc028f4b01dfe177c9c7a331b4d05392d52d3021f3f2dab6a128ba4293c90133",
+      "bytes": 28603
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_security_cli.py",
+      "sha256": "99bda3dfde564693382723cd00366f7e906a89647ef29edb3b06f9b0295316ce",
+      "bytes": 13439
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_north_star.py",
+      "sha256": "56535bba8e7a4462cfa76d0f0b2624739494fa6ee9439e03f8461459b90d00d8",
+      "bytes": 33434
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_capture.py",
+      "sha256": "58f057f4927cbb7cd428375b04ad284c630efe7438c46d08294e824c530d2677",
+      "bytes": 43066
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_rf_rounds.py",
+      "sha256": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+      "bytes": 14088
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_parallel.py",
+      "sha256": "635565aca4b179de641ffee2a70503e447e272f2eb6dc8a34e8bbe60c2b76894",
+      "bytes": 25768
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_parallel_data.py",
+      "sha256": "47f105065fdc82c6189fe51a158a33de22cc1304d615efa282beaf753b9af7c4",
+      "bytes": 27301
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_credit_observation.py",
+      "sha256": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+      "bytes": 7067
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_discovery_policy_capture.py",
+      "sha256": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+      "bytes": 5586
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_target_guest.py",
+      "sha256": "cdbac8c4c42b3462904543b1f3a54228ee6e6a6b12db32ebb1352709cd71664d",
+      "bytes": 33945
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_target_control.py",
+      "sha256": "f738dd99324a597e09e00497c6379c8689fd0844fa5eaccab7fcfb683513178a",
+      "bytes": 13317
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_connection_control.py",
+      "sha256": "14743a4df2dea9134c678aa02305a861e907125bb1c7216da5523403c2f538b3",
+      "bytes": 26324
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_connection_objects.py",
+      "sha256": "747577a215c5f12c2ea86fc98f02f03582728fd8b0aa331a924154c45bad1ea7",
+      "bytes": 16200
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_link_resync.py",
+      "sha256": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+      "bytes": 11109
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_acb_transport_probe.py",
+      "sha256": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+      "bytes": 14227
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_socket.py",
+      "sha256": "ebec9ed0a66fd78bff32a0cd2b85a3e9ef5a09a058628c6468c8042c4e12bed8",
+      "bytes": 57489
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_benchmark.py",
+      "sha256": "8c06a3a038c199700d407c694c79cc541628bf59775e9cc63b1da31181cd5823",
+      "bytes": 20522
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_socket_benchmark.py",
+      "sha256": "27b2093a8af18ddfb081c89c35a7b60e72b773351ddb309eda4ebe83b35cdc14",
+      "bytes": 18736
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_benchmark_timeline.py",
+      "sha256": "92043a0b33bc498551636428a77a8ae63b5dadaea210921da60f9c26a880896b",
+      "bytes": 10302
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_dynamic_channels.py",
+      "sha256": "47f21b92b41d9e4212dd813c67e979c117df89a0c933b308f3df5c0120641bb9",
+      "bytes": 29628
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_session_drain.py",
+      "sha256": "e459a71ad26b50d41b260ff6dd758ccb740c6874d5adbdb38148ecbcefa0ffc9",
+      "bytes": 8381
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_fairness.py",
+      "sha256": "240383395f03e3482e6381b41fc526e5e9a831e033e5e66b643dd04ddbb9cc4f",
+      "bytes": 14445
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_ssap_value.py",
+      "sha256": "0904e943fb943041dc3f53f2a33edc6c57d46bb15cd37b4e045b28fcd2e7a67c",
+      "bytes": 10137
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_ssap_discovery.py",
+      "sha256": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+      "bytes": 4981
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_ssap_access.py",
+      "sha256": "fad9c28a2ebbec70867cd9bdc14b10376f456010bf7e38850e8b5ebcff1d7ca6",
+      "bytes": 10636
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_ssap_owned.py",
+      "sha256": "fbc5a68854b91ac02a1311b5c20001fee4b117db3ce756be7c630345585e9998",
+      "bytes": 10963
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_ssap_owner_lifecycle.py",
+      "sha256": "d62b37841a7f465bcbe8c1e4c8de0f3fcc33e4e4647fe1da534b80df84694ee8",
+      "bytes": 23071
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_ssap_service_policy.py",
+      "sha256": "a8a051355cd0db0eef77f8932aa4bbab2267c7551fa1fe02bd928e93310e223c",
+      "bytes": 10937
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_initialization_lifecycle.py",
+      "sha256": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+      "bytes": 18450
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_observer_policy.py",
+      "sha256": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+      "bytes": 11020
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_daemon_crash.py",
+      "sha256": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+      "bytes": 16497
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_target_recovery.py",
+      "sha256": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+      "bytes": 9737
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_early_fault.py",
+      "sha256": "00372b7486cb3829c704eccac412ddcc51221808c8292398d28af1475f719c64",
+      "bytes": 20591
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_bindings_probe.py",
+      "sha256": "71c1cdc5fbe9182cc68fb461b0ea0ae49c2d9bd12170436dc7b182180dceedcb",
+      "bytes": 6271
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_registry_metadata.py",
+      "sha256": "ea18a1b207291bd401ff7a60f011312dfa78178fcd3e3c1ef75abf66ee02656b",
+      "bytes": 4829
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_event_copy_probe.py",
+      "sha256": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+      "bytes": 3060
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_diagnostic_probe.py",
+      "sha256": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+      "bytes": 18546
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_diagnostic_cancel.py",
+      "sha256": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+      "bytes": 6214
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_diagnostic_hold.py",
+      "sha256": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+      "bytes": 7715
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_diagnostic_deadline.py",
+      "sha256": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+      "bytes": 3240
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_diagnostic_autonomous.py",
+      "sha256": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+      "bytes": 2596
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_active_deadline.py",
+      "sha256": "32282a67ef88ac48656027614176bc11623182967d46669034ae26b0ebfa988d",
+      "bytes": 30105
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_management_setup.py",
+      "sha256": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+      "bytes": 9310
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_management_queued.py",
+      "sha256": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+      "bytes": 22997
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_management_queue_ready_peer.py",
+      "sha256": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+      "bytes": 5048
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_connection_queued.py",
+      "sha256": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+      "bytes": 7951
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_management_partial.py",
+      "sha256": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+      "bytes": 38405
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_resource_file_gate.py",
+      "sha256": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+      "bytes": 15752
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_connected_file_gate.py",
+      "sha256": "b2ce9f0f44a8700558566c55f519b97f61728ac4217ff53d638475cc266a927f",
+      "bytes": 46641
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_session_idle.py",
+      "sha256": "0e3ba7c5848a974872280c0e2e257c79c12c8ff4a7b33a3da44e46473f37c776",
+      "bytes": 9109
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_session_service.py",
+      "sha256": "db7d79925dc36d80141beadc76ed06e3924de55b85523dff0332be8776983694",
+      "bytes": 24624
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_trace_layout.py",
+      "sha256": "1220dd5d01e5f748585bfc0dd5646196fd0f10365d2ec791d0a065eada74633d",
+      "bytes": 929
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_grant.py",
+      "sha256": "dd6c9d6be2592cb2e80f916c33cc48568bc6e9f86e441c5841642dfc94db074e",
+      "bytes": 39420
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_revoke_prefix.py",
+      "sha256": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+      "bytes": 2552
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_prefix_hold.py",
+      "sha256": "2a6b8720777f098a6d5d7270af772b25bc46fee4dd4591cabec55459e97052a3",
+      "bytes": 10754
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_link_down.py",
+      "sha256": "cd135c9a675e9ca58bd4516d7a02fb1ebf62c123731f6cb94adc902cd66cf523",
+      "bytes": 12846
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_deadline.py",
+      "sha256": "0f749ba7b88408fc3b6133d0302932c4bbe1d81d39f5d1fd5aa48ac7fbe91dea",
+      "bytes": 17473
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_security_capabilities.py",
+      "sha256": "b874b264f963f3c54e3052e4298c61106934f257cd85d85a3dce6dc9ff02e82e",
+      "bytes": 22580
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_security_numeric.py",
+      "sha256": "309c694fd94af3a013b8c90454017eb243278090180abf80a3614ce2bd9c2a03",
+      "bytes": 12073
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_security_cancel.py",
+      "sha256": "ce4323947002157e98b35b9b15032195a6f04fac6dcf15bc5b0edc8239a71c49",
+      "bytes": 7687
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_key_agreement.py",
+      "sha256": "5c96e2d98efd78d9a7bef7b9cc325a23c9dc00b6b5ea19f081d191ca266bced3",
+      "bytes": 12003
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_protected_grant.py",
+      "sha256": "5b81ad146009ce8d31b882f54c78df25483fd6fd1fbf959266ba80c49cd3058d",
+      "bytes": 9429
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_daemon_crash.py",
+      "sha256": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+      "bytes": 17077
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_daemon_channel_fd.py",
+      "sha256": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+      "bytes": 3430
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_management_ready_peer.py",
+      "sha256": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+      "bytes": 9186
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_host_later_hold.py",
+      "sha256": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+      "bytes": 6555
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_management_eviction.py",
+      "sha256": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+      "bytes": 16000
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_daemon_hold.py",
+      "sha256": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+      "bytes": 28764
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_daemon_removal.py",
+      "sha256": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+      "bytes": 21965
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_model_hold.py",
+      "sha256": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+      "bytes": 7325
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_vm_register_reset.py",
+      "sha256": "1307cf000600913038cd6b96feec56439f8fc0494593c775524d15607bf4aae7",
+      "bytes": 27775
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_rom_chip.py",
+      "sha256": "4fe972ec0d9c2d00451b8086a6173f31c54f1214cb46e4f69a4ab6f021837d43",
+      "bytes": 4325
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_application_client.py",
+      "sha256": "f6f30121a2880fc6ef19d9606f218ce11ae9568006b3aa966b707c276ff6f407",
+      "bytes": 19591
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-prepared-v1/root/usr/share/sparklink/tools/ws73_application_role.py",
+      "sha256": "8fd9ba7bf6c9a168e449fb90389376fadc63878278d0a000833de11540b420e9",
+      "bytes": 12169
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-audit-v2.json",
+      "sha256": "0dcec5641ae34b3ca9ecaac126cf4af969f1c2831251ced75a1e15f034f32713",
+      "bytes": 1511378
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-audit-v2.log",
+      "sha256": "ff743bc2415bc5f4bb26cc2aa255345043f625498564830c997c4bee011f6f71",
+      "bytes": 1224
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v1.log",
+      "sha256": "69395a5b54ceeb6dd6cd478d57783cbdb3136da989f91a5bc7c929bce29ce551",
+      "bytes": 16537
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v2.log",
+      "sha256": "96913184f7b6ddff72bcdc160b2476c05963085fca6645ce418f07c6fb62237f",
+      "bytes": 16368
+    },
+    {
+      "path": ".dev/architecture-r5f7-prepare-v1.log",
+      "sha256": "e234165a8e02aca61ea06e2ee5934d136468fd59e564c2ea9e0816f2c7d6e574",
+      "bytes": 546
+    },
+    {
+      "path": ".dev/architecture-r5f7-bundle-v1.log",
+      "sha256": "d84d66818a050b3d20736271da8f778a17db29a73b48a69d9367c98c38ca5664",
+      "bytes": 245
+    },
+    {
+      "path": ".dev/architecture-r5f7-write-reports-v1.py",
+      "sha256": "1b86d3082c3690c0a3ef6b2c5e5bfcec51d042d3b2601aeee793b64667ca16df",
+      "bytes": 10105
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800
+    }
+  ],
+  "trusted_base": "Fixed qemu binary hash,compiled kernel/config/root,userspace/guest/host tools andexplicit firmware recorded. No claim of complete Linux/runtime/firmware/hardware proof;capture and production verifier limitations remain."
+}

@@ -61,5 +61,10 @@
     "cause": "Host finalizer calculates run_exit_code before publishing supervisor_exit;new oracle incorrectly required that future output. Actual lifecycle shape/guest checks completed but raw overall remainsFAIL.",
     "fix": "Support actual pre-finalizer missing output while still rejecting explicit invalid/nonzero supervisor results. Seven-method receipt/wire tests pass;new real attempt required.",
     "scope": "No Runtime,credit,Engine,firmware or protocol fix claimed;naturalRCA/nonmanual recovery stillOPEN."
-  }
+  },
+  "snapshot_boundary": "Development/source review and first failed attempt only;not the currentqualification authority. Original candidate/firstFAIL kept;subsequent finite reports separate.",
+  "subsequent_reports": [
+    "docs/evidence/ssap-owner-deadline-offline-20261018.json",
+    "docs/evidence/ssap-owner-deadline-real-20261018.json"
+  ]
 }

@@ -396,3 +396,13 @@ DLI/HAL、厂商入口、callback/关闭映射；只读参考，不新增实现�
 
 受控屏障[本地子进程反例与修复](ws73-barrier-output-regression-20261018.json)单列：
 原输出丢失/中断分类失败保留，新工具的本地通过不转授e776旧执行工具或新的实机资格。
+
+## 服务owner退出与SDK原期限（2026-10-18，有限场景）
+
+- [草稿迁移、三类去向及首轮聚合失败](ssap-owner-deadline-gate-audit-20261018.json)
+- [准确离线源码／C与Python消费者及工具范围](ssap-owner-deadline-offline-20261018.json)
+- [da201 guest／9a1 Host的双角色真实期限和owner退出](ssap-owner-deadline-real-20261018.json)
+
+原v1整体FAIL保留；v2独立目录和Host身份另验。通道业务发生于这些受控场景之后，
+不构成挂起期间并发业务；本批也没有观察到晚到物理拒绝回复。请求调用者退出后的
+晚到成功回复、部分Native初始化、完整取消／撤权和自然恢复仍开放。

@@ -1,0 +1,588 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "compiled_userspace": "48326fb8058b4210a918740b31117c7f69dc6cc8",
+  "executed_tools": "9a1e0500c7d4a5b20ff023d8d156429631a69d20",
+  "kernel_abi": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+  "scope": [
+    "Actual source-bound test/debug workspace andprivate-bus C/Python on483 only;current817 local tool methods on9a1. Distinct sources/artifacts/fixtures explicitly recorded. No kernel/firmware/RF or formal proof.",
+    "Original18 consumer RPC checks retained,eight actual value calls added for negative mode;immediateFDO Timeout is an explicit error fixture and cannot pass RF elapsed-time gate.",
+    "Rust/policy buildscope byte-identical from483 toda201/9a1;C/Python external consumer source identical. Changed receipt/host verdict has separate direct regressions. Source equality does not transfer binary qualification.",
+    "Conservative clock sampling oracle and pre-finalizer missing-output defects retain original failures. Existing4500..5500ms guard andactual errno/identity/DB/two-end requirements retained."
+  ],
+  "bounds": {
+    "default_workspace_methods": 354,
+    "allfeatures_workspace_methods": 354,
+    "latest_tool_methods": 817,
+    "existing_consumer_rpc_assertion": 18,
+    "added_actual_value_rpcs": 8,
+    "consumer_new_process_scenarios": 10,
+    "new_formal_proofs": 0,
+    "new_real_device_runs": 0
+  },
+  "gates": [
+    {
+      "name": "Exact source-bound default/all-features andactual C/Python private bus",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual817 tool regressions including original recorder andnew lifecycle wire/terminal oracles",
+      "status": "PASS"
+    },
+    {
+      "name": "Unchanged Rust build/consumer source scopes mapped across declared identities",
+      "status": "PASS"
+    },
+    {
+      "name": "Strict Clippy,locked four-quadrant HTML and original-input staging checks",
+      "status": "PASS"
+    }
+  ],
+  "remaining": [
+    "New artifact actual owner/deadline verification is separate;no hardware qualification in this offline record.",
+    "Request-caller exit,late successful response/drain,concurrent actualpeerbusiness,partialNativeinitialization,full lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c remain required.",
+    "Original full S0-S6/19WP/10FV/12DG/VM-only/UserHostP4,ENODATA/unexplainedC/naturalRCA/nonmanualrecovery andunproved assumptions remain OPEN."
+  ],
+  "limitations": [
+    "Fixture parsers/Unix processes do not prove kernel lock/refcount/USB/clock scheduling behavior.",
+    "Stage warnings from ldd about non-executable0644 shared libraries retained;not suppressed or called warning-free.",
+    "Current normal UBSAN kernel only;no new KASAN/KCSAN/lockdep/formal qualification."
+  ],
+  "provenance": {
+    "build": "Rust1.96.1 --locked--offline,shared fixed incremental target,12solo jobs/testthreads8;no simultaneous heavy12 builds.",
+    "access": "Private .dev originals require authorized workspace. Reports contain source/hash/scope;no SDK,firmware,standards or complete captures published. Exact source-bound script andlogs retained."
+  },
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f7-source-bound-offline-v1.py",
+      "sha256": "f7e0f6770346fb4d4770c0491963b560264ab781f8c02c8796f3af0631506d10",
+      "bytes": 2997
+    },
+    {
+      "path": ".dev/architecture-r5f7-source-bound-offline-v1.json",
+      "sha256": "0c7af4f6e9b411b41696cdbbd94cf23c9cfcc2d5ad49c6244dac16b9afc55a32",
+      "bytes": 56745
+    },
+    {
+      "path": ".dev/architecture-r5f7-source-bound-offline-v1.log",
+      "sha256": "f7298aa2c3dcde2410d52d5bc0922f47faf71160470e758fa7d85956131de064",
+      "bytes": 153
+    },
+    {
+      "path": ".dev/architecture-r5f7-workspace-default-v1.log",
+      "sha256": "a38aa7fa397f506e3215a94342063f9ebf8503b803d2f662b997eda300621991",
+      "bytes": 38483
+    },
+    {
+      "path": ".dev/architecture-r5f7-workspace-all-features-v1.log",
+      "sha256": "c141be86e6cfca34ef46f02c468ad6f8dc841610d2ff78708aa27cfc1ac02d34",
+      "bytes": 37415
+    },
+    {
+      "path": ".dev/architecture-r5f7-tool-suite-v1.log",
+      "sha256": "a98a7e17e00225da2188236113e7cfa467c22eb95613ae052987031003b9928a",
+      "bytes": 133680
+    },
+    {
+      "path": ".dev/architecture-r5f7-tool-suite-v2.log",
+      "sha256": "ced171deb2f822724fd329f2433be69594fa74f1dbadfa237b826a3b0c3ca33e",
+      "bytes": 133680
+    },
+    {
+      "path": ".dev/architecture-r5f7-tool-suite-v3.log",
+      "sha256": "aea28c195aabd8ffaf47c8cb90020d77a478ac241d7f4f8571f60e65ea810b85",
+      "bytes": 133862
+    },
+    {
+      "path": ".dev/architecture-r5f7-tool-suite-v4.log",
+      "sha256": "b0d4b602254b3c3daab2ec28f8ee2dc44c03c865857cf1429d687d52db64e241",
+      "bytes": 134050
+    },
+    {
+      "path": ".dev/architecture-r5f7-clippy-v1.log",
+      "sha256": "ec2e40316bd4ce102f0129c572c307c6ac269151749e1e8949306d71f1662f64",
+      "bytes": 547
+    },
+    {
+      "path": ".dev/architecture-r5f7-html-v1.log",
+      "sha256": "fe82f59fdbef409a2ecea8d04070cc0da4a04c9fe5d8db8dfc161b4e3e8fb6cb",
+      "bytes": 1201817
+    },
+    {
+      "path": ".dev/architecture-r5f7-lifecycle-shape-v1.log",
+      "sha256": "14a657e5eff1346bce8090612f25800306e29f97ccf0c6fba41197ffea84d55a",
+      "bytes": 650
+    },
+    {
+      "path": ".dev/architecture-r5f7-lifecycle-wire-v1.log",
+      "sha256": "d2742fd308affd07a52792d68139cb760d057886f784d09ea7f0f2cc2cd49c47",
+      "bytes": 980
+    },
+    {
+      "path": ".dev/architecture-r5f7-recorder-v1.log",
+      "sha256": "f26dd0788b2466de188a02af38df25584ce0517be3ac8e3a9b4c965fbbd6af16",
+      "bytes": 2987
+    },
+    {
+      "path": ".dev/architecture-r5f7-owned-v1.log",
+      "sha256": "9e4b048eef2ab54e05a8cc7ef715ee048a210c4563f87a73986cfbe7cb43ae8d",
+      "bytes": 604
+    },
+    {
+      "path": ".dev/architecture-r5f7-clock-oracle-before-v1.log",
+      "sha256": "08b2ec021d5342ef2151abac4943dd24ebf712a686f7e047b31ca232a3ffbb6e",
+      "bytes": 2248
+    },
+    {
+      "path": ".dev/architecture-r5f7-clock-oracle-after-v1.log",
+      "sha256": "00092802a86fc1222de5c9429c8ecbe6d4748161ad96a719cb1c9419d76940a2",
+      "bytes": 1162
+    },
+    {
+      "path": ".dev/architecture-r5f7-supervisor-before-v1.log",
+      "sha256": "64238693a333de42bed7833460ae6215fcf370931e0727ef12dacb8a2bacf69b",
+      "bytes": 2058
+    },
+    {
+      "path": ".dev/architecture-r5f7-supervisor-after-v1.log",
+      "sha256": "7d987fe42d34cefa66afb10146ba6491dc5573a30a11d42bb2b79e53b1f0bb35",
+      "bytes": 1350
+    },
+    {
+      "path": ".dev/architecture-r5f7-lifecycle-draft-adoption-v1.json",
+      "sha256": "5a9e05567635c55da12f3631d0458978b7b0338e17c06de96461cf43589ba515",
+      "bytes": 1508
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-focused-v1.log",
+      "sha256": "e81a385472a67698196094159d5dc66810c06c095fc85faf2afb0c652537a6b4",
+      "bytes": 891
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-focused-v2.log",
+      "sha256": "e67e127e4fac3ac09dc7855adb1477c6d419213275d8ba33ea4e19936c40f266",
+      "bytes": 750
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/libsparklink.so.0",
+      "sha256": "6183efd4add2a28897aa5d1578ce9928e9d7d51252219de6e24b276a491ab700",
+      "bytes": 58871000
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/build-environment.txt",
+      "sha256": "55c93fd68cb6027359e8f90ba7e76f1ead933657869102dd5d992ec59f9c0f2b",
+      "bytes": 595
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-ssap-probe",
+      "sha256": "319718c351044208c690c8a218266001740a268d6dfc2586a8718cf72f3e7a89",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/materials.sha256",
+      "sha256": "b4828761b2c92c9b585101fe9109338276ffe9056b716e3847f934edda91c1c8",
+      "bytes": 1673
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/python.stderr",
+      "sha256": "6f584d68bf08d54bff11c004fac43f792d64f916a44e29b986ef60433e68f90d",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-timeout-read.stdout",
+      "sha256": "b2b0aa2a8a47c153ce448701dd6829f5954f432d5b148a7c1cdfe249461110ac",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-timeout-write.stdout",
+      "sha256": "48a6da4b91de61bb85e0cb1ce18efa5d989f01b52021935584804a2bcda76abd",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-wrong-errno.stdout",
+      "sha256": "26b9ab6cb9119ef4cd8f4bc80fbccba9e54bd489bc20e00e7ea02fcb9f38dad1",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-unexpected-success.stdout",
+      "sha256": "fbd7c424ffb8d523397c592410e8abc71c8efe344553d4960cf1f24f7ab2b5bd",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-timeout-read.stdout",
+      "sha256": "e427d28b4e63a3447032ab97b733481497e7487e39f5b198e8efb16d41097826",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-timeout-write.stdout",
+      "sha256": "14d49f5d389476fedc04fda02be9f4f33988a05f39c7493f272a8ef19fd9fe76",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-wrong-errno.stdout",
+      "sha256": "64631eefb723ca2b944808614f4d1a917e1f0ced4caed060df2cbd07d955ebc6",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-wrong-errno.stderr",
+      "sha256": "2ac7b9c33f93ceb564e2cfe190a20d55bc43b77a63fd921ca351bbd369466674",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-unexpected-success.stdout",
+      "sha256": "754a50d52aa561a2e722d1d487e2b5d10a7d8812e943a73670f701930aa82da1",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-default-v1/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/libsparklink.so.0",
+      "sha256": "6183efd4add2a28897aa5d1578ce9928e9d7d51252219de6e24b276a491ab700",
+      "bytes": 58871000
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/build-environment.txt",
+      "sha256": "8a9f63fdb4de30f059c68915f309128a7610db99b84317d96b33ed604aea188f",
+      "bytes": 600
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-ssap-probe",
+      "sha256": "319718c351044208c690c8a218266001740a268d6dfc2586a8718cf72f3e7a89",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/materials.sha256",
+      "sha256": "4ad1ece560972b3f24eb6458404e655b2b9d9e490dde0812cdf3b5ff2cb358a2",
+      "bytes": 1688
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/python.stderr",
+      "sha256": "325bec014c87d26adf8d77872a94980b7783b1f38aaefb278078cde87145f8bf",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-timeout-read.stdout",
+      "sha256": "15d224323b09fab442e950d5c49e29f753636e7a6529ad0e76e4650a44398131",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-timeout-write.stdout",
+      "sha256": "70748e0779f1d04c134a28b74e33076bdb3fa42cee8f9a82db172d3b02f67387",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-wrong-errno.stdout",
+      "sha256": "aa48c6bcde914ebccd95b8ded6258a5a0a32fa8b650cfb748b95cea59bb314e2",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-unexpected-success.stdout",
+      "sha256": "50eb424f29f979228580192b86c25261c0947f08ac09d0cc0ba5ca10bda3e3cd",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-timeout-read.stdout",
+      "sha256": "c4642c5bb7032d2946846163b072870a1aa6f24e03881b47225395b93c30bde2",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-timeout-write.stdout",
+      "sha256": "5127a782906efca150e53b1d7572e5b3a6d5d82af044799771d2639f6f85f193",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-wrong-errno.stdout",
+      "sha256": "3e30651809c3a857fb88fb04d7465dec527d7912e41d48fb641e265b8d0898ab",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-wrong-errno.stderr",
+      "sha256": "2ac7b9c33f93ceb564e2cfe190a20d55bc43b77a63fd921ca351bbd369466674",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-unexpected-success.stdout",
+      "sha256": "b1a85af5808d40cb769f03e1730025de91946f65aa8c2d3e57173877643f290f",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/architecture-r5f7-cross-language-all-features-v1/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/architecture-r5f7-clock-oracle-before-v1/ws73_ssap_owner_lifecycle.py",
+      "sha256": "e2e6511383eef9b9e6e1b933de67ae7c85b6d7a9754f154ff88beecad77fd6f1",
+      "bytes": 22780
+    },
+    {
+      "path": ".dev/architecture-r5f7-clock-oracle-before-v1/test_ws73_ssap_owner_lifecycle.py",
+      "sha256": "37677d7363ce324d9b399e873de365987c009ac68ddc11221345e5e914be4f47",
+      "bytes": 14503
+    },
+    {
+      "path": ".dev/architecture-r5f7-clock-oracle-before-v1/deadline.rs",
+      "sha256": "6ec52823f48fcc2f2f7e64dd892b7a36f776e7b39be42cf21dd6c68da74e0102",
+      "bytes": 11843
+    },
+    {
+      "path": ".dev/architecture-r5f7-clock-oracle-before-v1/report.json",
+      "sha256": "190042b6b880dabeb61cbdba5cd0fba29c3d99a453004a5df77aa1c02f062e90",
+      "bytes": 821
+    },
+    {
+      "path": ".dev/architecture-r5f7-supervisor-before-v1/ws73_target.py",
+      "sha256": "ed50a325227368cdb02813adc86070d087b0750440ae729d43411e3ccc21f282",
+      "bytes": 172695
+    },
+    {
+      "path": ".dev/architecture-r5f7-supervisor-before-v1/test_ws73_ssap_owner_lifecycle.py",
+      "sha256": "c4f28cff5c6b3e99d850a7ae8d0e33d3cec1e30564dcd2c9d8d5c2ea7a75e52e",
+      "bytes": 15233
+    },
+    {
+      "path": ".dev/architecture-r5f7-supervisor-before-v1/report.json",
+      "sha256": "f3ec34acf7df47492ed808adce0d8376578190a0549b7c7e455d706cc1ace1d8",
+      "bytes": 832
+    },
+    {
+      "path": ".dev/architecture-r5f7-write-reports-v1.py",
+      "sha256": "1b86d3082c3690c0a3ef6b2c5e5bfcec51d042d3b2601aeee793b64667ca16df",
+      "bytes": 10105
+    }
+  ],
+  "compiled_consumer": "48326fb8058b4210a918740b31117c7f69dc6cc8"
+}

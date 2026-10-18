@@ -799,9 +799,9 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F5_NATIVE_FACTORY_FINITE_PASS_R5F6_ORIGINAL_DEADLINE_NEXT",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F6_VALUE_ORIGINAL_DEADLINE_AND_CONNECTION_OWNED_INIT_ACTIVE",
   "next_resume_tasks": [
-    "R5f6 propagate actual SSAP value originaldeadline through existing SDK/contract/Connection/Query with explicit clockdomain and refusal;then fullpubliclifecycle/Grant/peerisolation,higher/commonAPI,perappDiscovery,R6c. ENODATA/naturalRCA/nonmanualrecovery and fullS0-S6/19WP/10FV/12DG/UserHostP4 unchanged.",
+    "Finishstrictdefault/allfeatures,actualC/Python/header/bindings andsourceboundoffline gates;thenexactnewartifact SDKpositive and controlleddeadline/callerexit/partialinit/latephysicalreply/peerisolation with originalradio/connection/length/Owned/dynamic/protected gates inVM. PreserveunexplainedCfailure. Fullpubliclifecycle/commonAPI/perappDiscovery/R6c,naturalRCA/recovery OPEN.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
@@ -1891,16 +1891,16 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R5f5-native-privileged-channel-factory-finite-pass",
-      "production_behavior": "81bd existing creator movedtoNative,allcallers switched,daemonoldmoduledeleted;puretransportmapping incontract. Scopedoffline andtenrealVMs/appsroles/originallengthOwned/dynamic/protected paths independentlyrecomputed. No newHost/Engine/ABI or wholearchitecture qualification.",
-      "state": "R5F5_NATIVE_CREATOR_AND_PURE_CONTRACT_CONVERGED_FINITE_PASS_FULL_ARCHITECTURE_OPEN",
+      "id": "WP03-WP06-WP08-WP18-R5f6-ssap-value-original-deadline-active",
+      "production_behavior": "Currentdevelopmentcandidate forwards immutable value deadlines through existingSDK/contract/Connection/Query, separatesauthor/physicaldrain and owns onecancel-safe initializer. No newEngine/Host/ABIqualification. Existing81bd records retain only their own scope.",
+      "state": "R5F6_VALUE_DEADLINE_AND_OWNER_CLEANUP_IMPLEMENTED_CANDIDATE_OFFLINE_AND_REAL_PENDING",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "R5f6 propagate actual SSAP value originaldeadline through existing SDK/contract/Connection/Query with explicit clockdomain and refusal;then fullpubliclifecycle/Grant/peerisolation,higher/commonAPI,perappDiscovery,R6c. ENODATA/naturalRCA/nonmanualrecovery and fullS0-S6/19WP/10FV/12DG/UserHostP4 unchanged."
+      "next": "Finishstrictdefault/allfeatures,actualC/Python/header/bindings andsourceboundoffline gates;thenexactnewartifact SDKpositive and controlleddeadline/callerexit/partialinit/latephysicalreply/peerisolation with originalradio/connection/length/Owned/dynamic/protected gates inVM. PreserveunexplainedCfailure. Fullpubliclifecycle/commonAPI/perappDiscovery/R6c,naturalRCA/recovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3624,6 +3624,14 @@
         "docs/evidence/native-channel-creation-preservation-real-20261018.json",
         "docs/evidence/native-channel-creation-factory-real-20261018.json"
       ]
+    },
+    "r5f6": {
+      "state": "IMPLEMENTED_CANDIDATE_NOT_QUALIFIED",
+      "source_parent": "aa46ae400bcabd2d107d11ad4d3e9a1198853e41",
+      "audit": "docs/evidence/ssap-value-deadline-audit-20261018.json",
+      "scope": "Existing value operation and connection-owned initialization/drain;no newEngine orairprotocol",
+      "exit": "Sourceboundstrict/offline/actualbindings plusnewartifact VMpositive+controlleddeadline/lifetime/cleanup andoriginalpreservation;old81bd qualifiesonlyitself",
+      "remaining": "Finishstrictdefault/allfeatures,actualC/Python/header/bindings andsourceboundoffline gates;thenexactnewartifact SDKpositive and controlleddeadline/callerexit/partialinit/latephysicalreply/peerisolation with originalradio/connection/length/Owned/dynamic/protected gates inVM. PreserveunexplainedCfailure. Fullpubliclifecycle/commonAPI/perappDiscovery/R6c,naturalRCA/recovery OPEN."
     }
   },
   "owned_ssap_c6_historical_batch": {

@@ -7,25 +7,7 @@ use std::{io, mem, os::fd::RawFd};
 /// domain. Sampling before computing remaining time avoids extending the budget.
 /// The first TX constraint slice accepts at most five seconds remaining.
 pub fn deadline_at(deadline: std::time::Instant) -> io::Result<u64> {
-    let mut now: nix::libc::timespec = unsafe { mem::zeroed() };
-    if unsafe { nix::libc::clock_gettime(nix::libc::CLOCK_MONOTONIC, &mut now) } != 0 {
-        return Err(io::Error::last_os_error());
-    }
-    let left = deadline.saturating_duration_since(std::time::Instant::now());
-    if left.is_zero() {
-        return Err(io::Error::from_raw_os_error(nix::libc::ETIMEDOUT));
-    }
-    if left > std::time::Duration::from_secs(5)
-        || now.tv_sec < 0
-        || !(0..1_000_000_000).contains(&now.tv_nsec)
-    {
-        return Err(io::Error::from_raw_os_error(nix::libc::EINVAL));
-    }
-    (now.tv_sec as u64)
-        .checked_mul(1_000_000_000)
-        .and_then(|v| v.checked_add(now.tv_nsec as u64))
-        .and_then(|v| v.checked_add(left.as_nanos().try_into().ok()?))
-        .ok_or_else(|| io::Error::from_raw_os_error(nix::libc::EOVERFLOW))
+    crate::deadline::kernel_deadline_at(deadline)
 }
 
 nix::ioctl_readwrite!(sl_channel_prepare_tx, b'S', 0xe3, SleSendConstraint);

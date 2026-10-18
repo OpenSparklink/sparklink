@@ -2,6 +2,9 @@
 //! explicit finite argument/result fixture, never SSAP, firmware or RF.
 mod support;
 use libsparklink::{ApplicationError, Client};
+fn deadline() -> libsparklink::Deadline {
+    libsparklink::Deadline::after(std::time::Duration::from_secs(5)).unwrap()
+}
 use std::sync::{
     Arc,
     atomic::{AtomicU8, AtomicU64, AtomicUsize, Ordering},
@@ -47,7 +50,14 @@ impl Link {
             true,
         )
     }
-    async fn read_ssap_value(&self, handle: u16, minimum: u32) -> zbus::fdo::Result<Vec<u8>> {
+    async fn read_ssap_value(
+        &self,
+        handle: u16,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
         self.0.calls.fetch_add(1, Ordering::SeqCst);
         if handle == 99 {
             self.0.entered.notify_one();
@@ -64,7 +74,10 @@ impl Link {
         handle: u16,
         value: Vec<u8>,
         minimum: u32,
+        deadline: slk_contract::Deadline,
     ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
         self.0.calls.fetch_add(1, Ordering::SeqCst);
         if (handle, minimum, value) != (17, 1, vec![0x56, 0x12]) {
             return Err(zbus::fdo::Error::InvalidArgs(
@@ -155,11 +168,14 @@ async fn actual_ssap_client_serializes_all_existing_methods_without_echo_or_fall
     let client = Client::from_connection(caller).await?;
     let link = client.connection(BASE, PATH).await?;
     let remote = link.ssap();
-    assert_eq!(remote.read(17, 2).await?, [0x34, 0x78]);
+    assert_eq!(remote.read(17, 2, deadline()).await?, [0x34, 0x78]);
     assert!(
-        matches!(remote.read(18,2).await,Err(ApplicationError::Bus(zbus::Error::MethodError(name,_,_))) if name.as_str()=="org.freedesktop.DBus.Error.NotSupported")
+        matches!(remote.read(18,2,deadline()).await,Err(ApplicationError::Bus(zbus::Error::MethodError(name,_,_))) if name.as_str()=="org.freedesktop.DBus.Error.NotSupported")
     );
-    assert_eq!(remote.write(17, vec![0x56, 0x12], 1).await?, [0x90]);
+    assert_eq!(
+        remote.write(17, vec![0x56, 0x12], 1, deadline()).await?,
+        [0x90]
+    );
     let (entries, trace) = remote.discover(vec![1, 2], 3).await?;
     assert_eq!(entries, remote.cached().await?);
     assert_eq!(trace, [(vec![0x11], vec![0x22])]);
@@ -176,7 +192,7 @@ async fn actual_ssap_client_serializes_all_existing_methods_without_echo_or_fall
     assert_eq!(state.calls.load(Ordering::SeqCst), 9); // No hidden retry, fallback or engine calls.
     state.role.store(1, Ordering::SeqCst);
     assert!(matches!(
-        remote.read(17, 2).await,
+        remote.read(17, 2, deadline()).await,
         Err(ApplicationError::Identity(_))
     ));
     assert_eq!(state.calls.load(Ordering::SeqCst), 9);
@@ -188,7 +204,7 @@ async fn late_reply_cannot_complete_under_changed_generation_and_old_owner() -> 
     let (server, caller, state) = fixture(&bus.address).await?;
     let client = Client::from_connection(caller).await?;
     let link = client.connection(BASE, PATH).await?;
-    let call = async { link.ssap().read(99, 0).await };
+    let call = async { link.ssap().read(99, 0, deadline()).await };
     let interleave = async {
         state.entered.notified().await;
         state.generation.store(8, Ordering::SeqCst);
@@ -211,7 +227,7 @@ async fn late_reply_cannot_complete_under_changed_generation_and_old_owner() -> 
         client.daemon_owner()
     );
     assert!(matches!(
-        link.ssap().read(17, 2).await,
+        link.ssap().read(17, 2, deadline()).await,
         Err(ApplicationError::Identity(_))
     ));
     assert_eq!(state.calls.load(Ordering::SeqCst), 1);

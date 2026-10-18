@@ -31,7 +31,13 @@ impl Link {
     fn get_info(&self) -> (u64, u64, u16, u8, u8, String, bool, bool) {
         (7, 11, 3, 0, 1, "01:02:03:04:05:06".into(), true, true)
     }
-    fn read_ssap_value(&self, handle: u16, minimum: u32) -> zbus::fdo::Result<Vec<u8>> {
+    fn read_ssap_value(
+        &self,
+        handle: u16,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
         self.calls.fetch_add(1, Ordering::SeqCst);
         match (handle, minimum) {
             (17, 2) => Ok(vec![0x34, 0x78]),
@@ -49,7 +55,9 @@ impl Link {
         handle: u16,
         value: Vec<u8>,
         minimum: u32,
+        deadline: slk_contract::Deadline,
     ) -> zbus::fdo::Result<Vec<u8>> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
         self.calls.fetch_add(1, Ordering::SeqCst);
         if (handle, minimum, value) != (17, 1, vec![0x56, 0x12]) {
             return Err(zbus::fdo::Error::InvalidArgs("exact fixture write".into()));

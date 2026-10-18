@@ -15,7 +15,11 @@ impl Manager {
     }
 }
 fn after(duration: Duration) -> Deadline {
-    Deadline(Instant::now() + duration)
+    at(Instant::now() + duration)
+}
+fn at(point: Instant) -> Deadline {
+    let deadline = slk_channel::deadline::Deadline::at(point).unwrap();
+    Deadline(deadline.instant(), deadline.stamp().monotonic_ns)
 }
 fn open(address: String) -> Result<SyncClient> {
     SyncClient::start(after(Duration::from_secs(3)), move || async move {
@@ -147,7 +151,7 @@ fn expired_connect_is_rejected_before_dependency_and_current_runtime_can_call() 
     let called = Arc::new(AtomicUsize::new(0));
     let count = called.clone();
     assert!(matches!(
-        SyncClient::start(Deadline(Instant::now()), move || async move {
+        SyncClient::start(at(Instant::now()), move || async move {
             count.fetch_add(1, Ordering::SeqCst);
             Err(ApplicationError::Invalid("fixture"))
         }),

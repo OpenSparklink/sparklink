@@ -91,31 +91,64 @@ impl<'a> RemoteSsap<'a> {
         })
         .await
     }
-    pub async fn read(&self, handle: u16, minimum: u32) -> Result<Vec<u8>> {
-        self.current(async {
-            Ok(self
-                .link
-                .client
-                .proxy(&self.link.path, contract::CONNECTION)
-                .await?
-                .call(wire::READ, &(handle, minimum))
-                .await?)
-        })
+    pub async fn read(
+        &self,
+        handle: u16,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<Vec<u8>> {
+        self.value(handle, None, minimum, original).await
+    }
+    /// Same five-second ceiling as the existing daemon protocol, established
+    /// before identity checks or RPC queueing. No relative deadline is renewed.
+    async fn value(
+        &self,
+        handle: u16,
+        value: Option<Vec<u8>>,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<Vec<u8>> {
+        let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
+        let result = tokio::time::timeout_at(
+            original.instant().into(),
+            self.current(async {
+                original.remaining()?;
+                let proxy = self
+                    .link
+                    .client
+                    .proxy(&self.link.path, contract::CONNECTION)
+                    .await?;
+                original.remaining()?;
+                let deadline = contract::deadline_wire(original.stamp());
+                let result: Vec<u8> = match value {
+                    None => proxy.call(wire::READ, &(handle, minimum, deadline)).await?,
+                    Some(value) => {
+                        proxy
+                            .call(wire::WRITE, &(handle, value, minimum, deadline))
+                            .await?
+                    }
+                };
+                original.remaining()?;
+                Ok(result)
+            }),
+        )
         .await
+        .map_err(|_| {
+            ApplicationError::Io(std::io::Error::from_raw_os_error(nix::libc::ETIMEDOUT))
+        })??;
+        original.remaining()?;
+        Ok(result)
     }
     /// Uses the daemon's existing short-write contract. No truncation, long
     /// write fallback or local echo is performed by the SDK.
-    pub async fn write(&self, handle: u16, value: Vec<u8>, minimum: u32) -> Result<Vec<u8>> {
-        self.current(async {
-            Ok(self
-                .link
-                .client
-                .proxy(&self.link.path, contract::CONNECTION)
-                .await?
-                .call(wire::WRITE, &(handle, value, minimum))
-                .await?)
-        })
-        .await
+    pub async fn write(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<Vec<u8>> {
+        self.value(handle, Some(value), minimum, original).await
     }
     /// Actual ExchangeInfo, never inferred service discovery or security.
     pub async fn exchange_info(&self) -> Result<wire::ExchangeInfo> {

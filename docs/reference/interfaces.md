@@ -123,10 +123,31 @@ Python `Client.connection(ControllerId, full_connection_path, deadline_ns=...)`
 和`.write(handle, bytes_like, ...)`使用同一C ABI并返回相同字节。每次只执行一次，
 不按错误长度自动重试。关闭Connection后已有SSAP视图失效；不关闭物理连接。
 
-这些入口的deadline仍是覆盖**本地**排队／等待的原始绝对单调时钟期限；当前D-Bus
-方法没有新增跨进程deadline字段，不能宣称已经实现端到端原期限传递。超时、取消
-本地等待或写后输出失败均不撤销已发生的远端副作用。协议结果也不等于对端应用
-已经处理业务。新入口的[17b4限定实机报告](../evidence/application-connection-ssap-clients-real-20261018.json)
+R5f6候选源码已将**SSAP值读／短写**的原期限传到现有daemon Query；尚未取得新
+artifact的实机资格。Rust方法显式接收`libsparklink::Deadline`，C/Python仍接收绝对
+`CLOCK_MONOTONIC`纳秒。既有五秒协议上限在SDK操作入口确定，C/Python在进入
+本地队列前确定；原期限更短时不延长。身份检查、总线排队、锁和协商等待共享该期限。
+其余Client管理、发现／订阅等入口的完整端到端期限仍未由本批接通或验收。
+
+D-Bus值方法新增末尾`(ttttt)`：到期纳秒、boot UUID高64位／低64位（各按UUID
+字节的大端顺序解释）、time namespace设备号／inode。五个固定uint64避免可变
+长度分配；无旧shape兼容。固定版本zbus对错误签名在dispatch前返回
+`org.freedesktop.zbus.Error`及Signature mismatch；已解码的无效字段为InvalidArgs，
+时钟域不一致为NotSupported，原期限结束为Timeout。要求可信procfs、相同boot和
+当前time namespace；内核发送还要求进程／线程同域且monotonic/boottime偏移均零。
+不支持或读取失败时明确拒绝，不能猜测时钟或从收到RPC时重新起算。
+
+应用等待、发送准入和物理清理分开。未准入的过期／关闭请求从既有队列移除；可能
+已准入者保留原请求与安全身份，等待匹配回复或有限清理期限。晚到回复不能完成
+已超时的作者；清理期限不允许新业务提交，也不退款。无可归属回复时仍需退休该
+协议通道；不承诺固件无重复／晚到行为已经证明。
+
+共享SSAP初始化归Connection owner，只有一个存储的任务；请求超时不丢弃其
+Native操作。初始化与ExchangeInfo共用独立的原五秒期限，不在fd返回后重启计时；
+退休先拒绝新starter，join实际初始化再停止Engine。初始化完成不代表协议Ready；
+Ready仍取决于真实协商。Native操作未返回时保留引用等待清理，不宣称Free或已
+证明所有驱动路径的墙钟上界。超时、取消本地等待或写后输出失败均不撤销已发生的
+远端副作用。协议结果也不等于对端应用已经处理业务。新入口的[17b4限定实机报告](../evidence/application-connection-ssap-clients-real-20261018.json)
 单列管理组普通UID的32字节SSAP协议结果与对端本地反查，不继承旧CLI或basic资格。
 它不授予apps-only权限，也不等于Owned／ServiceAuthorizer或独立应用语义ACK验收。
 完整高阶发现、Owned、Agent及通用API仍待整改，不能由这些方法推导已支持。

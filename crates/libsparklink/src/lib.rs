@@ -12,6 +12,7 @@ pub mod ssap;
 mod sync_client;
 pub use client::{ApplicationConnection, ApplicationError, Client};
 pub use slk_channel::Channel;
+pub use slk_channel::deadline::Deadline;
 /// Local SSAP API access requirements, separate from operation indicators.
 pub const SSAP_ACCESS_WRITE_ENCRYPTED: u32 = 1;
 const _: () =

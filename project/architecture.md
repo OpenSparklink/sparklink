@@ -622,7 +622,7 @@ slkd直接使用Native/Channel/契约，不反向依赖自己的客户端。CLI�
 实际接口开放及尚缺客户端仅按唯一计划/能力记录读取；依赖图本身不是全部接口资格。
 C/Python派生Connection仅持有原caller与既有Rust lifetime视图，最后引用释放
 同一执行器；不持有物理Session或管理lease。其SSAP封装使用原RemoteSsap和daemon
-Engine，输出失败／本地超时不撤销远端副作用；原期限端到端传递是独立未闭合契约。
+Engine，输出失败／本地超时不撤销远端副作用。值读／短写的R5f6候选共用boot/time namespace绑定的绝对期限和既有Query；尚缺新artifact实机资格及其他方法的完整期限契约。
 
 旧差距快照保留在history，不继续作为当前实现描述。
 

@@ -11,6 +11,12 @@ Connection for the current daemon SSAP read/short-write methods. Every call take
 deadline (at most 30 seconds ahead). The returned standard socket owns its fd;
 closing the Client does not close it or disconnect the physical link. Timeout
 ends local waiting, not necessarily remote execution. Do not retry implicitly.
+The R5f6 candidate forwards value-read/short-write deadlines through the existing
+daemon Query, with the existing five-second protocol ceiling fixed before
+queueing. It requires the broker's boot/time namespace; kernel TX requires zero
+time offsets. Submitted work is drained separately and never becomes successful
+merely because a late reply arrives. New-artifact device qualification is pending;
+other methods do not inherit this end-to-end deadline scope.
 A derived Connection retains that same caller after Client.close; close the
 Connection explicitly or use its context manager. It never disconnects the
 physical link. Its `ssap().read` / `ssap().write` return the existing Rust method

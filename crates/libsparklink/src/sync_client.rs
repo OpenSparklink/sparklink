@@ -9,45 +9,27 @@ use std::{
     time::{Duration, Instant},
 };
 
-pub(crate) const MAX_WAIT: Duration = Duration::from_secs(30);
 const QUEUED: usize = 8;
 type Job = Box<dyn FnOnce(Client) -> Pin<Box<dyn Future<Output = ()> + Send>> + Send>;
 type Result<T> = std::result::Result<T, i32>;
 
 #[derive(Clone, Copy)]
-pub(crate) struct Deadline(Instant);
+pub(crate) struct Deadline(Instant, u64);
 impl Deadline {
     pub(crate) fn from_monotonic_ns(value: u64) -> Result<Self> {
-        // Sample Instant first: conversion must not extend the supplied budget.
-        let start = Instant::now();
-        let mut stamp = nix::libc::timespec {
-            tv_sec: 0,
-            tv_nsec: 0,
-        };
-        if unsafe { nix::libc::clock_gettime(nix::libc::CLOCK_MONOTONIC, &mut stamp) } != 0 {
-            return Err(std::io::Error::last_os_error()
-                .raw_os_error()
-                .unwrap_or(nix::libc::EIO));
-        }
-        let now = (stamp.tv_sec as u64)
-            .checked_mul(1_000_000_000)
-            .and_then(|n| n.checked_add(stamp.tv_nsec as u64))
-            .ok_or(nix::libc::EOVERFLOW)?;
-        let left = value
-            .checked_sub(now)
-            .filter(|n| *n != 0)
-            .ok_or(nix::libc::ETIMEDOUT)?;
-        let left = Duration::from_nanos(left);
-        if left > MAX_WAIT {
-            return Err(nix::libc::EINVAL);
-        }
-        Ok(Self(start + left))
+        slk_channel::deadline::local_instant_from_monotonic_ns(value)
+            .map(|at| Self(at, value))
+            .map_err(|e| e.raw_os_error().unwrap_or(nix::libc::EIO))
     }
     fn remaining(self) -> Result<Duration> {
-        self.0
-            .checked_duration_since(Instant::now())
-            .filter(|n| !n.is_zero())
-            .ok_or(nix::libc::ETIMEDOUT)
+        slk_channel::deadline::remaining(self.0)
+            .map_err(|e| e.raw_os_error().unwrap_or(nix::libc::EIO))
+    }
+    pub(crate) fn protocol(self) -> Result<slk_channel::deadline::Deadline> {
+        // Capture the existing protocol ceiling before entering the local queue.
+        slk_channel::deadline::Deadline::from_monotonic_ns(self.1)
+            .and_then(|deadline| deadline.capped(slk_channel::deadline::PROTOCOL_WAIT))
+            .map_err(|e| e.raw_os_error().unwrap_or(nix::libc::EIO))
     }
 }
 

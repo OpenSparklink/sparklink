@@ -101,9 +101,10 @@ unsafe fn copy_result(
 /// Capacity1..65535 is a language-boundary memory budget, not a negotiated MTU.
 /// ENOBUFS updates length but leaves buffer unchanged; the remote read already
 /// ran, so do not retry as a size query. Other failures leave both unchanged.
-/// The original absolute deadline covers local queue/wait only; ending that
-/// wait cannot undo remote effects. This API adds no end-to-end deadline wire
-/// field. Success is the existing protocol result, not application processing.
+/// The original absolute deadline covers the local queue and daemon operation.
+/// The existing five-second protocol ceiling is captured before queueing. A
+/// timeout cannot undo remote effects; success is the existing protocol result,
+/// not application processing. Requires the broker's same boot/time namespace.
 /// # Safety
 /// connection remains live, with no concurrent close; buffer is an exclusive
 /// capacity-byte writable region, length an exclusive aligned writable slot.
@@ -125,8 +126,9 @@ pub unsafe extern "C" fn slk_connection_ssap_read(
     let view = unsafe { &*connection };
     let link = view.link.clone();
     let result = Deadline::from_monotonic_ns(deadline_ns).and_then(|deadline| {
+        let original = deadline.protocol()?;
         view.inner.call(deadline, move |_| async move {
-            link.ssap().read(handle, minimum).await
+            link.ssap().read(handle, minimum, original).await
         })
     });
     unsafe { copy_result(result, buffer, capacity, length) }
@@ -169,6 +171,10 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
         Ok(value) => value,
         Err(e) => return -e,
     };
+    let original = match deadline.protocol() {
+        Ok(value) => value,
+        Err(error) => return -error,
+    };
     let value = if value_length == 0 {
         Vec::new()
     } else {
@@ -177,7 +183,7 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
     let view = unsafe { &*connection };
     let link = view.link.clone();
     let result = view.inner.call(deadline, move |_| async move {
-        link.ssap().write(handle, value, minimum).await
+        link.ssap().write(handle, value, minimum, original).await
     });
     unsafe { copy_result(result, buffer, capacity, length) }
 }

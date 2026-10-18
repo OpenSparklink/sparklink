@@ -30,8 +30,13 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
 被Connection引用的caller，最后本地引用才join。Connection固定现有Rust视图的
 identity，远端SSAP读／短写使用同一RemoteSsap方法和daemon Engine。对象释放不
 隐式断链、撤权或回滚。C缓冲不足在远端执行后只是本地结果交付失败，不进行size
-query重试；Python一次分配有界结果缓冲，不截断。当前方法的本地等待期限不能
-被描述为已传播至daemon的端到端原期限；完整期限传递仍保留原整改门禁。
+query重试；Python一次分配有界结果缓冲，不截断。R5f6候选沿既有Client/Query
+传播值读／短写的原期限，固定五uint64绑定boot/time namespace；不用Rust固定
+字节数组的隐式D-Bus struct，也不引入可变长UUID解析。未发布签名同迁调用者，
+不留旧shape兼容。作者等待、准入和物理drain分别保留：可能已提交者不随作者
+超时消失，晚到响应只结清原义务。共享初始化由Connection持有单一任务并join，
+不随RPC取消丢弃Native引用；初始化成功不等于Ready，无法清理不能宣布Free。
+本候选仍需新artifact实机/交错验证；其他方法及完整公共期限门禁保持开放。
 
 
 1. 应用的扫描租约、通道 Binding 与管理者的 controller/物理连接权限分别授权。

@@ -3,6 +3,31 @@
 use slk_protocol::SleAddr;
 pub mod security;
 
+/// Absolute CLOCK_MONOTONIC ns, UUID high/low (big-endian bytes), namespace
+/// device/inode. Five fixed uint64 fields avoid variable-length allocation and
+/// Rust fixed-array/DBus-struct ambiguity. Pure transport, never authority.
+pub type Deadline = (u64, u64, u64, u64, u64);
+pub fn deadline_wire(stamp: slk_protocol::deadline::DeadlineStamp) -> Deadline {
+    (
+        stamp.monotonic_ns,
+        u64::from_be_bytes(stamp.boot_id[..8].try_into().expect("fixed UUID half")),
+        u64::from_be_bytes(stamp.boot_id[8..].try_into().expect("fixed UUID half")),
+        stamp.time_namespace_device,
+        stamp.time_namespace_inode,
+    )
+}
+pub fn deadline_stamp(value: Deadline) -> slk_protocol::deadline::DeadlineStamp {
+    let mut boot_id = [0; 16];
+    boot_id[..8].copy_from_slice(&value.1.to_be_bytes());
+    boot_id[8..].copy_from_slice(&value.2.to_be_bytes());
+    slk_protocol::deadline::DeadlineStamp {
+        monotonic_ns: value.0,
+        boot_id,
+        time_namespace_device: value.3,
+        time_namespace_inode: value.4,
+    }
+}
+
 pub const SERVICE: &str = "org.sparklink";
 pub const MANAGER_PATH: &str = "/org/sparklink";
 pub const MANAGER: &str = "org.sparklink.Manager";
@@ -187,6 +212,25 @@ pub fn matches_connection(controller: ControllerId, path: &str, info: &Connectio
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn deadline_has_literal_field_order_and_dbus_shape() {
+        use zvariant::Type;
+        let value = slk_protocol::deadline::DeadlineStamp {
+            monotonic_ns: 19,
+            boot_id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+            time_namespace_device: 23,
+            time_namespace_inode: 29,
+        };
+        assert_eq!(
+            deadline_wire(value),
+            (19, 0x0001020304050607, 0x08090a0b0c0d0e0f, 23, 29)
+        );
+        assert_eq!(
+            deadline_stamp((19, 0x0001020304050607, 0x08090a0b0c0d0e0f, 23, 29)),
+            value
+        );
+        assert_eq!(Deadline::SIGNATURE.to_string(), "(ttttt)");
+    }
     #[test]
     fn literal_identity_and_alias_rejection() {
         let id = ControllerId {

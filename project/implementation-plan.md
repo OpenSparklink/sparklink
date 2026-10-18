@@ -1504,13 +1504,23 @@ private sockaddr与两项原生产函数测试已迁到Native，全部Connection
 原fa310只保留自己的资格。该有限批退出，不授完整架构或整个HEAD资格；Kernel
 Session/Grant/credit/Ticket与唯一SSAP Engine不变，不新增Host或协议状态机。
 
-下一批R5f6修正**正在使用的SSAP值操作端到端原期限**：SDK本地队列/等待已有绝对
-期限，但当前D-Bus值方法未携带该期限，daemon/observer另起5秒。沿既有Client、
-共享契约、Connection与Query传播同一预算，明确同本机clock domain和不匹配拒绝；
-不新增Engine或借取消抹去已提交物理义务。生产函数、真实private bus与原始期限负向
-先验，再用准确新artifact取得两语言/对端/两端USB门禁和适用原路径保持；不先要求
-全部控制面竞争组合。随后继续公共lifecycle/Grant撤权与同行业务、higher/common API、
-每应用DiscoverySession及R6c；既有未支持能力继续明确，不用空门面宣称完整。
+R5f6正在整改**SSAP值操作端到端原期限**，尚未授新资格。
+[调用审计／三类去向／原失败](../docs/evidence/ssap-value-deadline-audit-20261018.json)绑定aa46基线；
+既有Client/contract/Connection/Query现传递同一绝对期限。五uint64显式绑定boot与
+time namespace，Kernel ktime投影还要求零偏移；不猜测或重算收到RPC后的新预算。
+原五秒协议上限在进入SDK队列前确定。共享初始化归Connection，只有一份存储任务；
+作者超时不丢Native引用，退休先拒绝starter再join实际初始化。初始化与ExchangeInfo
+共用其独立原期限，成功创建Engine不等于协议Ready。未提交过期工作删除，可能已
+提交者保留身份直到匹配回复或drain退休；清理期限不允许新TX、不退款或迟到成功。
+Native操作未返回时保留Retiring引用，不能用超时提前Free；墙钟上界仍需实测/证明。
+
+本批退出：严格default/allfeatures、实际C/Python/private bus、独立D-Bus签名/字段
+与头/ELF/绑定、生产函数及初始化取消/停止/晚到义务回归，然后封存准确新artifact，
+在VM取得真实SDK正向和受控原期限/调用者退出/部分初始化/晚到回复/同行业务证据，
+并保持原发现/连接/长度/Owned/动态/受保护路径。首轮proc路径失败、数组signature
+失败与未知C诊断失败保留，后续PASS不覆盖，也不推导根因已修复。不等待全部控制面
+竞争组合；随后继续其他方法的公共期限、lifecycle/Grant撤权与同行、higher/common API、
+每应用DiscoverySession和R6c。所有原scope、自然RCA/非人工恢复及未证明项仍OPEN。
 
 C同步入口继续保持每客户端独立执行器、有界8请求队列及一个在途请求，不持有
 controller管理lease。绝对CLOCK_MONOTONIC原期限覆盖本地排队和等待；超时不

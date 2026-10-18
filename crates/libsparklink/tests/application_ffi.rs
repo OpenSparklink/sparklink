@@ -62,7 +62,14 @@ impl Link {
     }
     // Finite broker serialization/identity fixture, not a protocol peer or
     // successful dependency stub. Wrong requests fail and result != input.
-    async fn read_ssap_value(&self, handle: u16, minimum: u32) -> zbus::fdo::Result<Vec<u8>> {
+    async fn read_ssap_value(
+        &self,
+        handle: u16,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
         self.1.fetch_add(1, Ordering::SeqCst);
         match (handle, minimum) {
             (17, 0 | 2) => Ok(vec![0x34, 0x78]),
@@ -85,7 +92,10 @@ impl Link {
         handle: u16,
         value: Vec<u8>,
         minimum: u32,
+        deadline: slk_contract::Deadline,
     ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
         self.1.fetch_add(1, Ordering::SeqCst);
         match (handle, minimum, value.as_slice()) {
             (17, 1, [0x56, 0x12]) => Ok(vec![0x90]),
@@ -125,11 +135,15 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
             if self.1 {
                 let _ = std::fs::remove_dir_all(&self.0);
             } else if !self.0.join("COMPLETE").exists() {
-                let _ = std::fs::write(self.0.join("INCOMPLETE"), b"Failed or incomplete fixture; not qualification.\n");
+                let _ = std::fs::write(
+                    self.0.join("INCOMPLETE"),
+                    b"Failed or incomplete fixture; not qualification.\n",
+                );
             }
         }
     }
-    // Keep failed binaries/stdout/stderr even without explicit retention.
+    // Failure diagnostics and the actual executed ELF must survive even when
+    // the caller omitted explicit artifact retention. COMPLETE is written last.
     let mut cleanup = Cleanup(directory.clone(), false);
     // The compiled file has its real installed ABI SONAME. Supply only that
     // runtime name in this private directory, with the exact compiled bytes.
@@ -250,7 +264,12 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 "unexpected Python consumer diagnostic: {warning}"
             );
         } else {
-            anyhow::ensure!(output.stderr.is_empty(), "unexpected C consumer diagnostic (retained {}): {}", directory.display(), String::from_utf8_lossy(&output.stderr));
+            anyhow::ensure!(
+                output.stderr.is_empty(),
+                "unexpected C consumer diagnostic (retained {}): {}",
+                directory.display(),
+                String::from_utf8_lossy(&output.stderr)
+            );
         }
         anyhow::ensure!(
             output.status.success(),

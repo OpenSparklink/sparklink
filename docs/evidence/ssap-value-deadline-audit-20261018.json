@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "result": "SOURCE_AUDIT_AND_IMPLEMENTATION_CANDIDATE_NOT_QUALIFIED",
+  "baseline": "aa46ae400bcabd2d107d11ad4d3e9a1198853e41",
+  "baseline_files": {
+    "crates/libsparklink/src/sync_client.rs": "cdb8ae07bb287d5c84918c1bae78b8ae7d5ed1781ba044d3f62858eeb330ab3b",
+    "crates/libsparklink/src/ffi_connection.rs": "42552a66fc7ee181e767ffb9a627d2aba7542c3dad85dab4694959104e6df35b",
+    "crates/libsparklink/src/ssap.rs": "838985089f592cd8f3b44f310ced89a1d5d0485f95dd01e26a03924684c957be",
+    "crates/slk-channel/src/security.rs": "c44ee641485f6dafe06f7a7306dd25fde9ba53fcbdc4ad0e042cd6818a405480",
+    "crates/slk-contract/src/lib.rs": "735d47f1c36c16455aa829dbfcfcdf07ea0f8992ebb5f5c94f8f92634ff91b12",
+    "crates/slkd/src/connection_object.rs": "7a307580248e099b51131b1a259af9d605aaed3c5ba0a17be772eef25d21b463",
+    "crates/slkd/src/ssap_engine.rs": "5c1d41cca4b2388c821b0fab776013e90890eb1b96d8741745f89c9091a5d327",
+    "crates/slctl/src/commands.rs": "c01a09ef217fe77b7009fd9c7cae11b2dc445d8a8a721279e25ae1ae5b0625d2",
+    "bindings/python/sparklink/client.py": "d8e7f7630aced47fc7e6b34aef19347d2ac7758bdf3516e6c2b78502c4ec0493"
+  },
+  "production_call_chain": [
+    "C/Python absoluteCLOCK_MONOTONIC -> existing bounded SyncClient",
+    "Rust RemoteSsap read/write -> shared D-Bus deadline stamp",
+    "Connection scoped caller/original deadline -> existing Observer::value/Query::Value",
+    "existing Engine request -> same Channel intent -> kernel Session/Grant/Ticket/credit"
+  ],
+  "triage": {
+    "immediate_delete": [
+      "Duplicate SDK local clock conversion delegates to Channel",
+      "Fresh five-second value deadline in Observer removed; caller deadline flows through",
+      "Request-owned cancellation of shared initializer replaced by one stored connection-owned task"
+    ],
+    "preserve_tests": [
+      "Original FFI expiry/queue/lifetime/no-echo and cross-language fixtures retained",
+      "Actual Engine unsubmitted cancellation/admitted drain and initializer join regressions run against production functions",
+      "Historical raw reports/compiled source IDs untouched"
+    ],
+    "waiting_replacement": [
+      "Other operations/full shared API deadlines and public lifecycle/fd-transfer/revocation remain",
+      "Real newartifact peer/USB and controlled deadline/partial-init/caller-exit/peer-isolation gates pending",
+      "Native operation wall-clock completion/firmware duplicates and safe late/reuse assumptions not proved"
+    ]
+  },
+  "implementation": {
+    "wire": "Five fixed u64 (ttttt):absolute ns,boot UUID high/low big-endian,namespace dev/inode;unpublished and no old shape compatibility",
+    "clock": "Trusted local Linux procfs;current boot/time namespace must match. Kernel ktime projection additionally requires matching process/thread namespaces and zero offsets. No guessed clock/fresh deadline fallback.",
+    "ownership": "Sole Engine and shared initialization task;caller wait cancellation does not detach Native work;retirement fences new starts and joins initializer. Init completion is not protocolReady.",
+    "obligations": "Unsubmitted expired work removed;possible submitted request identity/security kept for matching response/drain. Late reply cannot change expired author result. Independent bounded drain is not permission for new TX or a credit refund."
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "SDK": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+    "scope": "Existing read/write response correlation/envelopes retained;no copied Engine or new air/DLI encoding;reference not standard oracle."
+  },
+  "failures": [
+    "First clock projection used unsupported TID proc path;original two failures retained,actual TGID table source used for correction.",
+    "One early C consumer unexpected diagnostic had no retained original stderr/ELF;cause unresolved. Later clang/defaultcc finite passes do not prove a fix. Retention now survives failure and logs compiler/environment plus original diagnostic.",
+    "Initial Rust-array D-Bus shape mismatched intended bytearray;fixed explicit fiveu64 contract and independent literal expectations.",
+    "Malformed signature is rejected by pinned zbus before dispatch as org.freedesktop.zbus.Error;decoded invalid fields use FDO InvalidArgs. Original mistaken error-name assertion retained."
+  ],
+  "new_formal_proofs": 0,
+  "new_real_device_runs": 0,
+  "scope": "Uncommitted development snapshot/audit only,not offlinePASS ornew qualification. FullS0-S6/19WP/10FV/12DG/UserHostP4/VM-only and originalscope preserved."
+}

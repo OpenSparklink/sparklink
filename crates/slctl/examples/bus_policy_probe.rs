@@ -754,7 +754,14 @@ async fn application_channel(path: &str) -> anyhow::Result<()> {
                     path,
                     Some(slk_contract::CONNECTION),
                     "ReadSsapValue",
-                    &(1u16, 0u32),
+                    &(
+                        1u16,
+                        0u32,
+                        slk_contract::deadline_wire(
+                            libsparklink::Deadline::after(std::time::Duration::from_secs(5))?
+                                .stamp(),
+                        ),
+                    ),
                 )
                 .await,
         )?;
@@ -766,7 +773,15 @@ async fn application_channel(path: &str) -> anyhow::Result<()> {
                     path,
                     Some(slk_contract::CONNECTION),
                     "WriteSsapValue",
-                    &(1u16, vec![0u8], 0u32),
+                    &(
+                        1u16,
+                        vec![0u8],
+                        0u32,
+                        slk_contract::deadline_wire(
+                            libsparklink::Deadline::after(std::time::Duration::from_secs(5))?
+                                .stamp(),
+                        ),
+                    ),
                 )
                 .await,
         )?;

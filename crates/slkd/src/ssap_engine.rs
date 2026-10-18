@@ -65,13 +65,30 @@ impl Engine {
         fd: OwnedFd,
         expected: (u16, u64, u64, u16),
         database: Store,
+        original_deadline: Instant,
     ) -> io::Result<Self> {
+        if Instant::now() >= original_deadline {
+            return Err(io::Error::new(
+                io::ErrorKind::TimedOut,
+                "SSAP initialization original deadline",
+            ));
+        }
         let fd = AsyncFd::new(fd)?;
         let (state_tx, state) = watch::channel(Status::Starting);
         let (stop, stopped) = oneshot::channel();
         let (queries, incoming) = mpsc::channel(8);
         let task = tokio::spawn(async move {
-            if let Err(error) = run(fd, stopped, incoming, expected, &state_tx, database).await {
+            if let Err(error) = run(
+                fd,
+                stopped,
+                incoming,
+                expected,
+                &state_tx,
+                database,
+                original_deadline,
+            )
+            .await
+            {
                 state_tx.send_replace(Status::Failed(error.to_string()));
             } else {
                 state_tx.send_replace(Status::Failed("SSAP actor stopped".into()));
@@ -279,10 +296,15 @@ impl Observer {
         handle: u16,
         value: Option<Vec<u8>>,
         minimum: u32,
+        deadline: Instant,
     ) -> Result<Vec<u8>, String> {
-        let deadline = Instant::now() + Duration::from_secs(5);
+        if Instant::now() >= deadline {
+            return Err("SSAP value original deadline".into());
+        }
         let queries = self.queries.clone();
-        let info = self.info().await?;
+        let info = tokio::time::timeout_at(deadline, self.info())
+            .await
+            .map_err(|_| "SSAP value original deadline".to_string())??;
         let mut bytes = vec![0; usize::from(info.5)];
         let pdu = match &value {
             Some(value) => ValuePdu::Write {
@@ -300,6 +322,9 @@ impl Observer {
             .encode(info.5, &mut bytes)
             .map_err(|e| format!("value codec: {e:?}"))?;
         bytes.truncate(len);
+        if Instant::now() >= deadline {
+            return Err("SSAP value original deadline".into());
+        }
         let (reply, result) = oneshot::channel();
         queries
             .try_send(Query::Value {
@@ -418,7 +443,62 @@ struct ClientRequest {
     bytes: Vec<u8>,
     deadline: Instant,
     admitted: bool,
-    reply: oneshot::Sender<Result<Vec<u8>, String>>,
+    // Starts once at software admission, when physical submission is possible.
+    // This is a drain bound, never a renewed author/admission/TX deadline.
+    cleanup_deadline: Option<Instant>,
+    reply: Option<oneshot::Sender<Result<Vec<u8>, String>>>,
+}
+impl ClientRequest {
+    fn obligation_deadline(&self) -> Instant {
+        if self.admitted {
+            let physical = self
+                .cleanup_deadline
+                .expect("admitted request owns drain deadline");
+            if self.reply.as_ref().is_some_and(|r| !r.is_closed()) {
+                physical.min(self.deadline)
+            } else {
+                physical
+            }
+        } else {
+            self.deadline
+        }
+    }
+}
+fn finish_client(
+    reply: Option<oneshot::Sender<Result<Vec<u8>, String>>>,
+    result: Result<Vec<u8>, String>,
+) {
+    if let Some(reply) = reply {
+        let _ = reply.send(result);
+    }
+}
+/// Only this actor mutates its pending queue. Unsubmitted work can be removed;
+/// admitted work retains its frozen request/security identity until a matching
+/// reply or bounded wire retirement. No refund or successful late result.
+fn retire_client_wait(
+    client: &mut Option<ClientRequest>,
+    pending: &mut VecDeque<Pending>,
+    now: Instant,
+) {
+    let Some(current) = client.as_mut() else {
+        return;
+    };
+    if now < current.deadline && current.reply.as_ref().is_some_and(|r| !r.is_closed()) {
+        return;
+    }
+    if current.admitted {
+        finish_client(
+            current.reply.take(),
+            Err("SSAP caller cancelled/original deadline".into()),
+        );
+    } else {
+        let current = client.take().expect("current request");
+        pending.retain(|p| !matches!(p.purpose, Purpose::Client));
+        finish_client(
+            current.reply,
+            Err("SSAP caller cancelled/original deadline before admission".into()),
+        );
+    }
 }
 struct Pending {
     bytes: Vec<u8>,
@@ -813,8 +893,14 @@ async fn run(
     expected: (u16, u64, u64, u16),
     state: &watch::Sender<Status>,
     database: Store,
+    original_deadline: Instant,
 ) -> io::Result<()> {
-    let original_deadline = Instant::now() + Duration::from_secs(5);
+    if Instant::now() >= original_deadline {
+        return Err(io::Error::new(
+            io::ErrorKind::TimedOut,
+            "SSAP initialization original deadline",
+        ));
+    }
     let capabilities = loop {
         tokio::select! {
             _ = &mut stopped => return Ok(()),
@@ -887,6 +973,7 @@ async fn exchange_loop(
     let mut server: Option<(Instant, ServerTask)> = None;
     let mut next_server_id = 0u64;
     loop {
+        retire_client_wait(&mut client, &mut pending, Instant::now());
         if server.is_none()
             && let Some(packet) = server_queue.pop_front()
         {
@@ -933,7 +1020,7 @@ async fn exchange_loop(
         let debt_deadline = pending
             .iter()
             .map(|p| p.deadline)
-            .chain(client.as_ref().map(|v| v.deadline))
+            .chain(client.as_ref().map(ClientRequest::obligation_deadline))
             .chain(server.as_ref().map(|v| v.0))
             .chain(server_queue.iter().map(|v| v.deadline))
             .chain(
@@ -951,7 +1038,8 @@ async fn exchange_loop(
         tokio::select! {
             _ = &mut *stopped => return Ok(()),
             _ = tokio::time::sleep_until(deadline) => {
-                if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.deadline) || server.as_ref().is_some_and(|v|Instant::now()>=v.0) || server_queue.iter().any(|v|Instant::now()>=v.deadline) {
+                retire_client_wait(&mut client, &mut pending, Instant::now());
+                if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.obligation_deadline()) || server.as_ref().is_some_and(|v|Instant::now()>=v.0) || server_queue.iter().any(|v|Instant::now()>=v.deadline) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP obligation deadline"));
                 }
                 slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
@@ -971,7 +1059,7 @@ async fn exchange_loop(
                     if reply.is_closed(){continue;}
                     let constraint=match wire.prepare(minimum,deadline) {Ok(c)=>c,Err(e)=>{let _=reply.send(Err(format!("SSAP send intent refused: {e}")));continue;}};
                     let epoch=constraint.map(|c|c.security_epoch);
-                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client,constraint});client=Some(ClientRequest{bytes,deadline,minimum,epoch,admitted:false,reply});continue;
+                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client,constraint});client=Some(ClientRequest{bytes,deadline,minimum,epoch,admitted:false,cleanup_deadline:None,reply:Some(reply)});continue;
                 }
                 if let Query::TransportStatus{deadline,reply}=query {
                     if reply.is_closed() {continue;}
@@ -1004,7 +1092,8 @@ async fn exchange_loop(
             }
             ready = wire.fd.writable(), if !pending.is_empty() => {
                 let mut ready = ready?;
-                let packet = pending.front().expect("guarded queue");
+                retire_client_wait(&mut client, &mut pending, Instant::now());
+                let Some(packet) = pending.front() else { continue; };
                 if Instant::now() >= packet.deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "expired SSAP submit")); }
                 if let Ok(result) = ready.try_io(|fd| wire.send(fd.get_ref(), packet)) {
                     result?;
@@ -1013,7 +1102,7 @@ async fn exchange_loop(
                         Purpose::Request => request_admitted = true,
                         Purpose::Response => response_admitted = packet.bytes,
                         Purpose::Error | Purpose::ValueResponse => {},
-                        Purpose::Client => {if let Some(client)=&mut client {client.admitted=true;}}
+                        Purpose::Client => {if let Some(client)=&mut client {client.admitted=true;client.cleanup_deadline=Some(Instant::now()+Duration::from_secs(5));}}
                     }
                 }
             }
@@ -1041,26 +1130,27 @@ async fn exchange_loop(
                         next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
                         server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:negotiated,level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
                     } else if matches!(raw[0],1|5|7|9|11|14) {
-                        let Some(ClientRequest{bytes:request,deadline,minimum,epoch,admitted,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        let Some(ClientRequest{bytes:request,deadline,minimum,epoch,admitted,cleanup_deadline,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        let reply=reply.filter(|r| !r.is_closed() && Instant::now()<deadline);
                         if let Some(epoch)=epoch {
                             let m=receipt.ok_or_else(||io::Error::other("missing reply receipt"))?;
                             if m.security_epoch!=epoch || m.security<minimum{return Err(io::Error::other("SSAP reply differs from original request security intent"));}
                         }
-                        if !admitted || Instant::now()>=deadline {return Err(io::Error::other("SSAP reply before submit or after original deadline"));}
+                        if !admitted || cleanup_deadline.is_none_or(|at|Instant::now()>=at) {return Err(io::Error::other("SSAP reply before admission or after physical drain deadline"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         if request[0]==10 {
                             let r=slk_protocol::ssap::read_uuid::Request::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local UUID request"))?;
-                            if let Ok(ValuePdu::ReadError(16))=ValuePdu::decode(negotiated,raw){let _=reply.send(Err("peer requires unsupported SSAP fragmentation".into()));continue;}
-                            if let Ok(ValuePdu::Error{request:10,error,..})=ValuePdu::decode(negotiated,raw){let _=reply.send(Err(format!("peer read UUID protocol error {error}")));continue;}
+                            if let Ok(ValuePdu::ReadError(16))=ValuePdu::decode(negotiated,raw){finish_client(reply,Err("peer requires unsupported SSAP fragmentation".into()));continue;}
+                            if let Ok(ValuePdu::Error{request:10,error,..})=ValuePdu::decode(negotiated,raw){finish_client(reply,Err(format!("peer read UUID protocol error {error}")));continue;}
                             let entries=slk_protocol::ssap::read_uuid::decode(negotiated,raw).map_err(|_|io::Error::other("invalid read UUID response"))?;
                             if entries.iter().any(|i|i.handle<r.start || i.handle>r.end) {return Err(io::Error::other("read UUID response outside requested range"));}
-                            let _=reply.send(Ok(raw.to_vec()));continue;
+                            finish_client(reply,Ok(raw.to_vec()));continue;
                         }
                         if matches!(request[0],4|6) {
                             let request=slk_protocol::ssap::discovery::FindRequest::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local find request"))?;
                             if raw[0]==1 {match ValuePdu::decode(negotiated,raw) {Ok(ValuePdu::Error{request:op,..}) if op==request.opcode()=>{},_=>return Err(io::Error::other("invalid find error response"))}}
                             else {slk_protocol::ssap::discovery::decode_page(request,negotiated,raw).map_err(|_|io::Error::other("invalid find response"))?;}
-                            let _=reply.send(Ok(raw.to_vec()));continue;
+                            finish_client(reply,Ok(raw.to_vec()));continue;
                         }
                         let parsed=ValuePdu::decode(negotiated,raw).map_err(|_|io::Error::other("invalid value response"))?;
                         let result=match (ValuePdu::decode(capabilities.mtu,&request).map_err(|_|io::Error::other("invalid local request"))?,parsed) {
@@ -1070,7 +1160,7 @@ async fn exchange_loop(
                             (ValuePdu::Write{handle,..},ValuePdu::WriteError{handle:h,error}) if handle==h=>Err(format!("peer write error {error}")),
                             (ValuePdu::Read{..},ValuePdu::Error{request:8,error,..})|(ValuePdu::Write{..},ValuePdu::Error{request:13,error,..})=>Err(format!("peer protocol error {error}")),
                             _=>return Err(io::Error::other("SSAP response does not match original operation")),
-                        };let _=reply.send(result);
+                        };finish_client(reply,result);
                     } else if raw[0] == 2 || raw[0] == 3 {
                         let info = match ExchangeInfo::decode(capabilities.mtu,raw) {
                             Ok(info)=>info,
@@ -1109,6 +1199,129 @@ async fn exchange_loop(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn expired_initializer_cannot_register_a_reactor_or_start_wire_work() {
+        let (fd, _peer) = transport_pair();
+        let result = Engine::start(
+            fd,
+            (0, 1, 1, 0),
+            std::sync::Arc::new(std::sync::Mutex::new(
+                crate::ssap_database::Database::default(),
+            )),
+            Instant::now(),
+        );
+        assert!(matches!(result,Err(error)if error.kind()==io::ErrorKind::TimedOut));
+        // No Tokio runtime: moving the check past AsyncFd::new would panic.
+    }
+    #[test]
+    fn actual_client_retirement_removes_only_definite_unsubmitted_work() {
+        let now = Instant::now();
+        for close in [false, true] {
+            let (tx, mut rx) = oneshot::channel();
+            let mut client = Some(ClientRequest {
+                minimum: 0,
+                epoch: None,
+                bytes: vec![8, 0, 17, 0],
+                deadline: now + Duration::from_secs(1),
+                admitted: false,
+                cleanup_deadline: None,
+                reply: Some(tx),
+            });
+            let mut pending = VecDeque::from([
+                Pending {
+                    bytes: vec![1],
+                    deadline: now + Duration::from_secs(2),
+                    purpose: Purpose::Response,
+                    constraint: None,
+                },
+                Pending {
+                    bytes: vec![8, 0, 17, 0],
+                    deadline: now + Duration::from_secs(1),
+                    purpose: Purpose::Client,
+                    constraint: None,
+                },
+            ]);
+            if close {
+                rx.close();
+            }
+            retire_client_wait(
+                &mut client,
+                &mut pending,
+                if close {
+                    now
+                } else {
+                    now + Duration::from_secs(1)
+                },
+            );
+            assert!(client.is_none());
+            assert_eq!(pending.len(), 1);
+            assert!(matches!(pending[0].purpose, Purpose::Response));
+            assert_eq!(pending[0].bytes, [1]);
+            if !close {
+                assert!(
+                    rx.try_recv()
+                        .unwrap()
+                        .unwrap_err()
+                        .contains("before admission")
+                );
+            }
+        }
+    }
+    #[test]
+    fn actual_admitted_retirement_preserves_physical_identity_and_never_renews_author() {
+        let now = Instant::now();
+        let original = now + Duration::from_secs(1);
+        let drain = now + Duration::from_secs(5);
+        let (tx, mut rx) = oneshot::channel();
+        let mut client = Some(ClientRequest {
+            minimum: 2,
+            epoch: Some(37),
+            bytes: vec![8, 0, 17, 0],
+            deadline: original,
+            admitted: true,
+            cleanup_deadline: Some(drain),
+            reply: Some(tx),
+        });
+        let mut pending = VecDeque::new();
+        retire_client_wait(&mut client, &mut pending, original);
+        assert!(
+            rx.try_recv()
+                .unwrap()
+                .unwrap_err()
+                .contains("original deadline")
+        );
+        let c = client.as_ref().unwrap();
+        assert!(c.admitted && c.reply.is_none());
+        assert_eq!((c.minimum, c.epoch), (2, Some(37)));
+        assert_eq!(c.bytes, [8, 0, 17, 0]);
+        assert_eq!(c.deadline, original);
+        assert_eq!(c.obligation_deadline(), drain);
+        retire_client_wait(
+            &mut client,
+            &mut pending,
+            original + Duration::from_millis(1),
+        );
+        let mut c = client.take().unwrap();
+        finish_client(c.reply.take(), Ok(vec![99]));
+        assert_eq!(rx.try_recv(), Err(oneshot::error::TryRecvError::Closed));
+        assert!(pending.is_empty());
+    }
+    #[tokio::test]
+    async fn actual_observer_original_deadline_bounds_negotiation_and_never_enqueues_late_value() {
+        let (_state, state) = watch::channel(Status::Starting);
+        let (queries, mut incoming) = mpsc::channel(8);
+        let observer = Observer { state, queries };
+        let end = Instant::now() + Duration::from_millis(20);
+        let result =
+            tokio::time::timeout(Duration::from_millis(250), observer.value(17, None, 0, end))
+                .await
+                .expect("must not start fresh five seconds");
+        assert!(result.unwrap_err().contains("original deadline"));
+        assert!(matches!(
+            incoming.try_recv(),
+            Err(mpsc::error::TryRecvError::Disconnected)
+        ));
+    }
     fn transport_pair() -> (OwnedFd, OwnedFd) {
         let (a, b) = std::os::unix::net::UnixDatagram::pair().unwrap();
         a.set_nonblocking(true).unwrap();

@@ -232,6 +232,7 @@ impl Context {
                 Ok(())
             }
             "ssap-read" | "ssap-write" => {
+                let original = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
                 if (args[0] == "ssap-read" && !(3..=4).contains(&args.len()))
                     || (args[0] == "ssap-write" && !(4..=5).contains(&args.len()))
                 {
@@ -244,7 +245,11 @@ impl Context {
                 let handle: u16 = args[2].parse()?;
                 let value = if args[0] == "ssap-read" {
                     object
-                        .read(handle, args.get(3).map_or(Ok(0u32), |v| v.parse())?)
+                        .read(
+                            handle,
+                            args.get(3).map_or(Ok(0u32), |v| v.parse())?,
+                            original,
+                        )
                         .await?
                 } else {
                     object
@@ -252,6 +257,7 @@ impl Context {
                             handle,
                             parse_hex_bytes(args[3])?,
                             args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                            original,
                         )
                         .await?
                 };

@@ -3,6 +3,7 @@
 //! syscall; successful software admission does not mean peer delivery.
 pub use slk_protocol::{SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus};
 use std::{io, os::fd::RawFd};
+pub mod deadline;
 pub mod security;
 
 nix::ioctl_read!(sl_channel_info, b'S', 0xe0, SleChannelInfo);

@@ -308,9 +308,10 @@ void slk_connection_close(struct SlkConnection *connection);
  * Capacity1..65535 is a language-boundary memory budget, not a negotiated MTU.
  * ENOBUFS updates length but leaves buffer unchanged; the remote read already
  * ran, so do not retry as a size query. Other failures leave both unchanged.
- * The original absolute deadline covers local queue/wait only; ending that
- * wait cannot undo remote effects. This API adds no end-to-end deadline wire
- * field. Success is the existing protocol result, not application processing.
+ * The original absolute deadline covers the local queue and daemon operation.
+ * The existing five-second protocol ceiling is captured before queueing. A
+ * timeout cannot undo remote effects; success is the existing protocol result,
+ * not application processing. Requires the broker's same boot/time namespace.
  * # Safety
  * connection remains live, with no concurrent close; buffer is an exclusive
  * capacity-byte writable region, length an exclusive aligned writable slot.

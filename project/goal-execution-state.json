@@ -4375,7 +4375,7 @@
   },
   "controller_native_return_gate": {
     "id": "R5f9h",
-    "status": "FIRST_REAL_VM_FAIL_OWNER_BARRIER_CORRECTION_PENDING",
+    "status": "TWO_RAW_VM_FAILURES_RETAINED_PEER_SETTLEMENT_ORDER_CORRECTION_PENDING",
     "plan": "project/implementation-plan.md",
     "production_change": false,
     "production_service": "77f7953e1273065e9a538ab554d2fad6a90c3067",
@@ -4390,7 +4390,7 @@
     ],
     "exit": "Actual original user SYS_bind held across the existing one-leaf QMP removal; original controller retirement and other Ready before explicit return; late fd refused; same daemon, new generation/HCC then ordinary two-role real random payload validation/replies with original RF/capture proofs.",
     "limits": "Controlled VM guest removal only; physical power is unchanged. Root OS fd/inode observations are not kernel ref/callback/UAF/drain or automatic recovery proof. E/mixed/cold-ROM and all uncompleted original scopes remain OPEN.",
-    "new_real_runs": 1,
+    "new_real_runs": 2,
     "new_formal_proofs": 0,
     "offline_checks": {
       "targeted_methods": 11,
@@ -4419,6 +4419,17 @@
         "tools/tests/test_ws73_native_controller_return.py": "c1ffaef1dc26f162f9c410ac1924b562cfa46984af835193bdfcaf0a55c4eb67"
       },
       "rule": "Only exact original-broker owner-retiring error releases the hold; Core/SDK refusal, other errors and new fd success do not. Original late-fd assertion unchanged."
+    },
+    "second_failure": {
+      "manifest": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/manifest.json",
+      "result": "FAIL",
+      "executed_tools": "543b370bed9c3c9c9acca73c1bedf07a1f5ba2d5",
+      "owner_barrier_observed": true,
+      "original_late_fd_rejection_observed": true,
+      "error": "parent survivor scan EBUSY before live peer connection settlement",
+      "cleanup_failure": "scan off returned firmware0x0b; not converted to success",
+      "reason": "Guest detach leaves chip radio powered. Existing parent Run scans the survivor before before_readd; peer Disconnect/known Down/drain must occur in removed() before that original assertion. Move the same real settlement, keep scan assertion and both original failures.",
+      "acceptor_not_run": true
     }
   }
 }

@@ -77,6 +77,32 @@ class ControllerReturn(unittest.TestCase):
                       dict(exit=1,stdout='',stderr='Error: GDBus.Error:org.freedesktop.DBus.Error.UnknownObject: gone\n')]:
             with self.subTest(value=value),self.assertRaises(gate.CaptureError):gate.owner_probe_state(value)
 
+    def test_peer_settlement_precedes_parent_survivor_scan(self):
+        # Ordering fixture only: no D-Bus/Native/USB operation is manufactured
+        # as real evidence. The real VM must corroborate peer Disconnect/Down.
+        import tempfile
+        instance=object.__new__(gate.Session);events=[]
+        target=dict(index=0,generation=1,port='1-1',path='/org/sparklink/slk0_g1')
+        other=dict(index=1,generation=2,port='1-2',path='/org/sparklink/slk1_g2')
+        phase=dict(target=target,other=other,selection={'fixture':True},
+                   typed_objects=[dict(owner=target,object={'path':target['path']+'/peer_t00_000000000001/link_0000000000000001'})])
+        run=Mock();run.args.slctl=Path('/fixture/slctl');run.data={'bus_before':{'owner':':1.0'}}
+        run.command.side_effect=[dict(exit=1,stdout='',stderr='error: adapter is not a live registration: old\n'),
+            dict(exit=1,stdout='',stderr='Error: GDBus.Error:org.freedesktop.DBus.Error.Failed: connection owner retiring\n')]
+        instance.run=run;instance.record={'phase':phase};instance.client=Mock();instance.pending=Mock()
+        instance.pending.row=dict(exit=1,stderr='connection owner retired during native bind')
+        instance.pending.finish.side_effect=lambda:events.append('original-return-finished')
+        def settle():
+            events.append('peer-settled');phase.update(peer_down={'fixture':True},drained={'fixture':True})
+        instance.settle_peer=Mock(side_effect=settle)
+        with tempfile.TemporaryDirectory() as tmp,patch('ws73_north_star.USB_ROOT',Path(tmp)), \
+             patch.object(gate,'file_record',return_value={'sha256':'a'*64}):
+            instance.removed()
+        self.assertEqual(events,['original-return-finished','peer-settled'])
+        instance.before_readd()
+        del phase['peer_down']
+        with self.assertRaises(gate.CaptureError):instance.before_readd()
+
     def test_ordinary_business_runs_on_replacement_in_this_mode(self):
         events=[];instance=object.__new__(ConnectionControlRun)
         instance.args=SimpleNamespace(native_return_verify=False,ssap_initialization_verify=False)

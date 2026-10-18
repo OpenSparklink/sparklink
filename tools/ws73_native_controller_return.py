@@ -133,8 +133,17 @@ class Session:
         if not self.pending.row['exit'] or 'retired during native bind' not in self.pending.row['stderr']:
             raise CaptureError('actual user fd cannot escape its retired controller owner')
         run.save()
+        # The parent runner next tests survivor scanning. Guest detach leaves
+        # the radio powered, so settle its real connection first; EBUSY is
+        # never converted to a successful scan or hidden by retrying it.
+        self.settle_peer()
 
     def before_readd(self):
+        phase = self.record['phase']
+        if 'peer_down' not in phase or 'drained' not in phase:
+            raise CaptureError('peer connection and original Native work must settle before parent survivor/re-add checks')
+
+    def settle_peer(self):
         from ws73_connection_control import canonical_link_state, result
         run = self.run; phase = self.record['phase']; other = phase['other']; target = phase['target']
         # Guest USB detach does not cut radio power. Settle the surviving

@@ -5,7 +5,9 @@
     "compiled_userspace": "d9dc373120cbb173be195647d22da10c25987641",
     "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
     "executed_host_tools": "d9dc373120cbb173be195647d22da10c25987641",
-    "executed_guest_tools": "d9dc373120cbb173be195647d22da10c25987641"
+    "executed_guest_tools": "d9dc373120cbb173be195647d22da10c25987641",
+    "compiled_kernel_helpers": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+    "evidence_validator": "6c7a2e31bd7c99a171fd435a3e5c0fde14090290"
   },
   "qualification": {
     "result": "PASS",
@@ -248,7 +250,9 @@
     "strict_HTML_inventory": 117,
     "new_formal_proofs": false,
     "browser": "NOT_RUN",
-    "CI": "d9 Documentation workflow passed;fullRust/tool CI not triggered onthisbranch,localchecks are not online requiredchecks"
+    "CI": "d9 Documentation workflow passed;fullRust/tool CI not triggered onthisbranch,localchecks are not online requiredchecks",
+    "qualification_validator_tool_methods": 913,
+    "material_binding": "Previously accepted path/hash rebind negatives now rejected;versioned producer/registry manifest binding. No hardware rerun or extra formal proof."
   },
   "retained_audit_failure": {
     "material": "connection-posture-full-audit-v2.json",
@@ -717,8 +721,60 @@
       "bytes": 1219868,
       "format": "json",
       "access": "private"
+    },
+    "source-map-v2": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-source-map-v2.json",
+      "sha256": "c8a369e49f79fdba61270f924139a2ad15b8afeb1eb9fc2feeb5a653b899e87a",
+      "bytes": 45324,
+      "format": "json",
+      "access": "private"
+    },
+    "material-binding-counterexample": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/qualification-material-binding-counterexample-v1.log",
+      "sha256": "cbab3f3d7cefc2429125c81efe4dee8dec67766b6c9ca099ffb66f810b149e47",
+      "bytes": 15064,
+      "format": "bytes",
+      "access": "private"
+    },
+    "material-binding-tests": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/qualification-material-binding-tests-v1.log",
+      "sha256": "2f4a0b8c5c9907ca20ca638a9c9e04011e412011f856cc0479dc80fe418ad9e1",
+      "bytes": 6405,
+      "format": "bytes",
+      "access": "private"
+    },
+    "material-binding-tools": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/qualification-material-binding-tools-v1.log",
+      "sha256": "7aecca2d70ac79a5ba14a67217bcf73e83312466a37d020e10e67b519057fd3a",
+      "bytes": 1089,
+      "format": "bytes",
+      "access": "private"
+    },
+    "source-check_qualifications.py": {
+      "base": "repo",
+      "path": "tools/check_qualifications.py",
+      "source_commit": "6c7a2e31bd7c99a171fd435a3e5c0fde14090290",
+      "sha256": "b514182cbab3ed5677a5f278c0e764cf7d23cf21168efc4e5e3d7fe64d0a75ad",
+      "bytes": 26323,
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-test_qualifications.py": {
+      "base": "repo",
+      "path": "tools/tests/test_qualifications.py",
+      "source_commit": "6c7a2e31bd7c99a171fd435a3e5c0fde14090290",
+      "sha256": "0848a432ee5597ed0f61565db21f6558425c1c4f3dc73bc1dc175e70a89fd316",
+      "bytes": 28209,
+      "access": "public",
+      "format": "bytes"
     }
   },
   "access": "457originalguest files are private in a verified tar/index. NoSDK/firmware/rootdisk copied topublicdocs. Localoperator access andrecordedworkspace/source needed for exactreplay.",
-  "replay": "Existingws73_target.py with explicitnegotiable-t andstrictallocation;restore archivedrelativepaths thenaudit_connection_posture_v3.py --output NEWFILE. Do not reclassify oldFixedT failures or substitute NOCP/USBwrite/models forpeerapp validation."
+  "replay": "Existingws73_target.py with explicitnegotiable-t andstrictallocation;restore archivedrelativepaths thenaudit_connection_posture_v3.py --output NEWFILE. Do not reclassify oldFixedT failures or substitute NOCP/USBwrite/models forpeerapp validation.",
+  "evidence_manifest_version": 1,
+  "source_scope_note": "Executed tool scopes use staged WS73 namespace/recorded input and static local-import closure,not unrelated metadata tools. Full294file D9 archive retained;metadata validator separately mapped to its actual revision. No executed input removed to hide a changed file."
 }

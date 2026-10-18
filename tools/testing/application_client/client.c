@@ -12,6 +12,10 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
+#include <stddef.h>
+_Static_assert(sizeof(struct SlkDiscoveryBatch)==40,"discovery batch ABI");
+_Static_assert(sizeof(struct SlkDiscoveryReport)==312,"discovery report ABI");
+_Static_assert(offsetof(struct SlkDiscoveryReport,data)==51,"discovery data offset");
 
 static uint64_t now_ns(void) {
     struct timespec t;
@@ -98,7 +102,44 @@ done:
     if (status) perror("application-client-c-ssap");
     slk_connection_close(link);slk_client_close(client);return status;
 }
+/* Bounded external discovery consumer of the same SDK; no scanner/decoder. */
+static int discovery_mode(int argc,char **argv) {
+    if (argc!=7) return 2;
+    uint64_t index=number(argv[2]),generation=number(argv[3]),wanted=number(argv[5]);
+    uint8_t prefix[2042],address[2042];size_t length=bytes(argv[4],prefix);
+    if (index>UINT16_MAX || !generation || !wanted || wanted>1024 || length>64 || bytes(argv[6],address)!=6) return 2;
+    const uint64_t deadline=now_ns()+20000000000ULL;
+    struct SlkClient *client=NULL;struct SlkDiscovery *view=NULL;int status=1,error;
+    struct SlkControllerId id={.generation=generation,.index=(uint16_t)index},actual={0};uint64_t session=0;
+    error=slk_client_open_system(deadline,&client);if (error) {errno=-error;goto done;}
+    error=slk_client_discover(client,&id,prefix,length,-128,20000,deadline,&view);if (error) {errno=-error;goto done;}
+    error=slk_discovery_identity(view,&actual,&session);if (error) {errno=-error;goto done;}
+    if (actual.index!=id.index || actual.generation!=id.generation || !session) {errno=EPROTO;goto done;}
+    slk_client_close(client);client=NULL;
+    printf("Selected /org/sparklink/slk%u_g%"PRIu64"\n",id.index,generation);
+    printf("DiscoverySession: id=%"PRIu64" path=/org/sparklink/slk%u_g%"PRIu64" state=active source=broker\n",session,id.index,generation);fflush(stdout);
+    uint64_t received=0;
+    while (received<wanted) {
+        struct SlkDiscoveryBatch batch={0};struct SlkDiscoveryReport reports[32];uintptr_t count=0;
+        error=slk_discovery_read(view,&batch,reports,32,&count,1,deadline);if (error) {errno=-error;goto done;}
+        if (batch.session!=session || batch.generation!=generation || count>32) {errno=EPROTO;goto done;}
+        for (uintptr_t n=0;n<count && received<wanted;n++) {
+            const struct SlkDiscoveryReport *r=&reports[n];if (memcmp(r->address,address,6)) continue;
+            if (r->rssi_known!=1 || r->data_length>255) {errno=EPROTO;goto done;}
+            printf("DiscoveryReport: session=%"PRIu64" generation=%"PRIu64" sequence=%"PRIu64" address_type=%u address=",session,generation,r->sequence,r->address_type);
+            hex_print(r->address,6);printf(" rssi=%d data=",r->rssi);hex_print(r->data,r->data_length);printf("\n");fflush(stdout);received++;
+        }
+    }
+    uint32_t stopped=99;error=slk_discovery_release(view,deadline,&stopped);if (error) {errno=-error;goto done;}
+    if (stopped>1) {errno=EPROTO;goto done;}
+    printf("DiscoveryReleased: session=%"PRIu64" last_physical_stop_confirmed=%s\n",session,stopped?"true":"false");fflush(stdout);status=0;
+done:
+    if (status) perror("application-client-c-discovery");
+    slk_discovery_free(view);slk_client_close(client);return status;
+}
+
 int main(int argc,char **argv) {
+    if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);
     if (argc!=7 || strlen(argv[3])>256) return 2;
     uint64_t index=number(argv[1]),generation=number(argv[2]),role=number(argv[4]);

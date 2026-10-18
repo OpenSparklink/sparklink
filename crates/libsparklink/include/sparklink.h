@@ -40,6 +40,12 @@ typedef struct SlkConnection SlkConnection;
  */
 typedef struct SlkControllerEvents SlkControllerEvents;
 
+/**
+ * Caller-owned discovery view, sharing the original Client executor and owner.
+ * It is an application scan lease, never a controller-management lease.
+ */
+typedef struct SlkDiscovery SlkDiscovery;
+
 typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
     uint16_t version;
     uint16_t size;
@@ -164,6 +170,36 @@ typedef struct SlkControllerEvent {
     uint32_t kind;
     uint32_t reserved;
 } SlkControllerEvent;
+
+/**
+ * Batch metadata, not Ready or lossless delivery. All reserved bytes are zero.
+ */
+typedef struct SlkDiscoveryBatch {
+    uint64_t generation;
+    uint64_t session;
+    uint64_t dropped;
+    uint64_t kernel_lost;
+    uint16_t version;
+    uint8_t reserved[6];
+} SlkDiscoveryBatch;
+
+/**
+ * Validated observation. Only data[0..data_length] is meaningful; unused data
+ * and reserved bytes are zero. rssi_known=0 denotes RSSI127 (unknown).
+ * kernel_boottime_ns belongs to the daemon's kernel clock, not caller RTT.
+ */
+typedef struct SlkDiscoveryReport {
+    uint64_t sequence;
+    uint64_t kernel_boottime_ns;
+    int16_t rssi;
+    uint16_t data_length;
+    uint8_t address_type;
+    uint8_t rssi_known;
+    uint8_t address[6];
+    uint8_t header[23];
+    uint8_t data[255];
+    uint8_t reserved[6];
+} SlkDiscoveryReport;
 
 #ifdef __cplusplus
 extern "C" {
@@ -413,6 +449,82 @@ int slk_controller_events_next(const struct SlkControllerEvents *observer,
  * concurrent call/close or subsequent use of that pointer.
  */
 void slk_controller_events_close(struct SlkControllerEvents *observer);
+
+/**
+ * Acquire the existing passive frame-1 discovery lease. prefix length0..64,
+ * minimum_rssi=-128..20 (-128 includes unknown), duration_ms250..60000.
+ * deadline_ns is future absolute CLOCK_MONOTONIC, <=30s, same boot/time domain
+ * as the daemon; it covers the local queue and RPC. 0/-errno, output unchanged
+ * on failure. Timeout may leave a finite server lease until expiry/owner loss;
+ * no automatic retry, guessed ID, global scan stop or downgrade.
+ * # Safety
+ * client/controller are live immutable objects; prefix is a valid immutable
+ * length-byte region, null only for0. output is an exclusive aligned pointer
+ * slot, nonaliasing inputs. No concurrent Client close, invalid pointer or fork use.
+ */
+int slk_client_discover(const struct SlkClient *client,
+                        const struct SlkControllerId *controller,
+                        const uint8_t *prefix,
+                        uintptr_t length,
+                        int16_t minimum_rssi,
+                        uint32_t duration_ms,
+                        uint64_t deadline_ns,
+                        struct SlkDiscovery **output);
+
+/**
+ * Immutable acquired lease identity only; not Ready, active scan or cleanup.
+ * Returns0/-errno; outputs unchanged on error, reserved bytes always zero.
+ * # Safety
+ * view remains live; controller/session are exclusive aligned nonaliasing
+ * writable slots. No concurrent free or invalid pointer.
+ */
+int slk_discovery_identity(const struct SlkDiscovery *view,
+                           struct SlkControllerId *controller,
+                           uint64_t *session);
+
+/**
+ * One destructive reader. flags:bit0 wait for reports,bit1 peek; other bits
+ * rejected. capacity0..32, null buffer only for0. ENOBUFS sets count only and
+ * retains the whole batch; other errors change no outputs. Success copies
+ * metadata/count and whole reports, never truncates. Peek and a locally
+ * received timeout retain one batch. Remote read timeout/cancel may still lose
+ * a consumed reply; counters expose known gaps, not lossless observation.
+ * Concurrent read/release on this view returns EAGAIN; a blocking read shares
+ * the Client executor queue. Original deadline is never renewed.
+ * # Safety
+ * view stays live; output/count/buffer are exclusive, aligned, valid writable
+ * nonaliasing regions, buffer sized for capacity reports. No concurrent free.
+ */
+int slk_discovery_read(const struct SlkDiscovery *view,
+                       struct SlkDiscoveryBatch *output,
+                       struct SlkDiscoveryReport *buffer,
+                       uintptr_t capacity,
+                       uintptr_t *count,
+                       uint32_t flags,
+                       uint64_t deadline_ns);
+
+/**
+ * Explicitly withdraw only this discovery lease. stopped=1 only if the broker
+ * confirms last-lease physical STOP;0 means this lease released while shared
+ * scan remains. 0/-errno, output unchanged on failure. A timeout/error is not
+ * proof of cleanup: local close may already be terminal and must not be retried
+ * as a fresh lease. No disconnect or management release; pending data becomes
+ * unreadable once the underlying Rust session begins close.
+ * # Safety
+ * view is live,stopped is an exclusive aligned writable slot; no concurrent free.
+ */
+int slk_discovery_release(const struct SlkDiscovery *view, uint64_t deadline_ns, uint32_t *stopped);
+
+/**
+ * Free local delivery and this caller reference only,NULL allowed. Does not
+ * report or guarantee remote STOP. Call release first to observe that result;
+ * otherwise owner loss/original finite lease expiry bound server cleanup.
+ * Other views can keep the caller alive after this free. Final executor join
+ * waits bounded local work; Client close alone does not invalidate this view.
+ * # Safety
+ * view is NULL or one live owned pointer,freed once,no concurrent calls or later use.
+ */
+void slk_discovery_free(struct SlkDiscovery *view);
 
 #ifdef __cplusplus
 }  // extern "C"

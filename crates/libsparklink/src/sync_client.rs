@@ -190,3 +190,7 @@ mod tests;
 #[cfg(test)]
 #[path = "sync_client/controller_events_tests.rs"]
 mod controller_events_tests;
+
+#[cfg(test)]
+#[path = "sync_client/discovery_tests.rs"]
+mod discovery_tests;

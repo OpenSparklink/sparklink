@@ -144,6 +144,11 @@ class Client:
                                                     ctypes.byref(count), deadline_ns))
             return tuple(ControllerId(value.index, value.generation) for value in values[:count.value])
 
+    def discover(self, controller, *, prefix=b"", minimum_rssi=-128, duration_ms=20000, deadline_ns):
+        """Acquire a caller discovery lease; see DiscoverySession for release semantics."""
+        from .discovery import DiscoverySession
+        return DiscoverySession._open(self, controller, prefix, minimum_rssi, duration_ms, deadline_ns)
+
     def open_channel(self, controller, connection_path, *, deadline_ns, directions=3, minimum=0):
         """Owned datagram socket for an existing exact connection object.
 

@@ -16,6 +16,23 @@ pub struct SlkControllerId {
     pub reserved: [u8; 6],
 }
 
+// Immutable identity validation shared by all application language views.
+pub(crate) unsafe fn controller_input(
+    controller: *const SlkControllerId,
+) -> Result<slk_contract::ControllerId, i32> {
+    if controller.is_null() {
+        return Err(nix::libc::EINVAL);
+    }
+    let id = unsafe { *controller };
+    if id.generation == 0 || id.reserved != [0; 6] {
+        return Err(nix::libc::EINVAL);
+    }
+    Ok(slk_contract::ControllerId {
+        index: id.index,
+        generation: id.generation,
+    })
+}
+
 // Shared language-boundary input validation, not an identity/authorization cache.
 // Caller guarantees valid immutable regions; no operation or output mutation.
 pub(crate) unsafe fn connection_input(
@@ -26,22 +43,13 @@ pub(crate) unsafe fn connection_input(
     if controller.is_null() || path.is_null() || !(1..=256).contains(&path_length) {
         return Err(nix::libc::EINVAL);
     }
-    let id = unsafe { *controller };
-    if id.generation == 0 || id.reserved != [0; 6] {
-        return Err(nix::libc::EINVAL);
-    }
+    let id = unsafe { controller_input(controller) }?;
     let raw = unsafe { std::slice::from_raw_parts(path, path_length) };
     let path = match std::str::from_utf8(raw) {
         Ok(path) if !path.contains('\0') => path.to_owned(),
         _ => return Err(nix::libc::EINVAL),
     };
-    Ok((
-        slk_contract::ControllerId {
-            index: id.index,
-            generation: id.generation,
-        },
-        path,
-    ))
+    Ok((id, path))
 }
 
 /// Connect to the system broker, pinning its current unique owner. All deadlines

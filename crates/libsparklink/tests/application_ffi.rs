@@ -38,6 +38,66 @@ impl Manager {
 struct Adapter;
 #[zbus::interface(name = "org.sparklink.Adapter")]
 impl Adapter {
+    // Finite language serialization fixture, not scan scheduling or RF success.
+    fn acquire_discovery(
+        &self,
+        prefix: Vec<u8>,
+        rssi: i16,
+        duration: u32,
+        stamp: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<u64> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        if (prefix, rssi, duration) != (vec![0xab], -128, 20000) {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "finite discovery fixture".into(),
+            ));
+        }
+        Ok(9)
+    }
+    fn read_discovery(
+        &self,
+        session: u64,
+        _wait: bool,
+        stamp: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::discovery::Batch> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        if session != 9 {
+            return Err(zbus::fdo::Error::UnknownObject(
+                "finite discovery fixture".into(),
+            ));
+        }
+        let mut header = vec![0; 23];
+        header[2..8].copy_from_slice(&[1, 2, 3, 4, 5, 6]);
+        Ok(slk_contract::discovery::Batch {
+            version: 1,
+            session,
+            generation: 7,
+            dropped: 0,
+            kernel_lost: 0,
+            reports: vec![slk_contract::discovery::Report {
+                sequence: 1,
+                kernel_boottime_ns: 1,
+                address_type: 0,
+                address: vec![1, 2, 3, 4, 5, 6],
+                rssi: -42,
+                rssi_known: true,
+                header,
+                data: vec![0xab, 0xff],
+            }],
+        })
+    }
+    fn release_discovery(
+        &self,
+        session: u64,
+        _stamp: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<bool> {
+        if session != 9 {
+            return Err(zbus::fdo::Error::UnknownObject(
+                "finite discovery fixture".into(),
+            ));
+        }
+        Ok(true)
+    }
     #[zbus(property(emits_changed_signal = "false"))]
     fn generation(&self) -> u64 {
         7
@@ -250,6 +310,42 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         )?
         .build()
         .await?;
+    for language in ["c", "python"] {
+        let mut command = Command::new("timeout");
+        command.arg("10s");
+        if language == "c" {
+            command.arg(&sdk_probe);
+        } else {
+            command
+                .arg("python3")
+                .arg(root.join("tools/testing/application_client/client.py"));
+        }
+        let output = command
+            .args(["discovery", "2", "7", "ab", "1", "010203040506"])
+            .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+            .env("LIBSPARKLINK_PATH", &runtime_library)
+            .env("PYTHONPATH", root.join("bindings/python"))
+            .env("LD_LIBRARY_PATH", &directory)
+            .output()?;
+        std::fs::write(
+            directory.join(format!("{language}-discovery.stdout")),
+            &output.stdout,
+        )?;
+        std::fs::write(
+            directory.join(format!("{language}-discovery.stderr")),
+            &output.stderr,
+        )?;
+        anyhow::ensure!(
+            output.status.success() && output.stderr.is_empty(),
+            "external discovery {language}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let text = std::str::from_utf8(&output.stdout)?;
+        anyhow::ensure!(
+            text == "Selected /org/sparklink/slk2_g7\nDiscoverySession: id=9 path=/org/sparklink/slk2_g7 state=active source=broker\nDiscoveryReport: session=9 generation=7 sequence=1 address_type=0 address=010203040506 rssi=-42 data=abff\nDiscoveryReleased: session=9 last_physical_stop_confirmed=true\n",
+            "exact external discovery delivery {language}"
+        );
+    }
     for language in ["c", "python"] {
         lifetime.store(11, Ordering::SeqCst);
         let mut command = Command::new("timeout");

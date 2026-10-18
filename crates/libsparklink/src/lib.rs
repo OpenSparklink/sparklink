@@ -9,6 +9,7 @@ pub mod ffi;
 pub mod ffi_client;
 pub mod ffi_connection;
 pub mod ffi_controller_events;
+pub mod ffi_discovery;
 pub mod peer;
 pub mod security;
 pub mod ssap;

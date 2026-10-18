@@ -582,6 +582,7 @@ async fn dispatch_native_with<
             return;
         }
         st.events_lost = st.events_lost.saturating_add(event.lost);
+        st.discovery.lost(event.lost);
         let refresh = event.lost != 0 || is_link && event.seq > st.native_link_barrier;
         if refresh {
             st.invalidate_native_connections();
@@ -609,6 +610,7 @@ async fn dispatch_native_with<
         }
         return;
     };
+    st.discovery.report(&event, &report);
     let address: [u8; 6] = report.header[2..8].try_into().expect("fixed WS73 address");
     let received_at_ms = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)

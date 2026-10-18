@@ -2,6 +2,7 @@
 //! Values describe observations, not authority or proof of physical completion.
 use slk_protocol::SleAddr;
 pub mod controller_events;
+pub mod discovery;
 pub mod security;
 
 /// Absolute CLOCK_MONOTONIC ns, UUID high/low (big-endian bytes), namespace

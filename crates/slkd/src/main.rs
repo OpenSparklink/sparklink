@@ -9,6 +9,7 @@ mod connection_object;
 mod controller;
 mod controller_events;
 mod dbus_iface;
+mod discovery;
 mod event_loop;
 #[cfg(test)]
 mod profile_runtime;

@@ -221,6 +221,7 @@ struct Node {
     connection: zbus::Connection,
     event: Option<EventTask>,
     init: JoinHandle<()>,
+    discovery: JoinHandle<()>,
     cancel: watch::Sender<bool>,
 }
 impl Node {
@@ -314,6 +315,7 @@ impl Node {
         let event =
             EventTask::start_native(subscription, state.clone(), connection.clone(), snapshot);
         let (cancel, cancelled) = watch::channel(false);
+        let discovery = crate::discovery::start_worker(&state, cancelled.clone());
         let init_control = control.clone();
         let init_state = state.clone();
         let init_connection = connection.clone();
@@ -346,6 +348,7 @@ impl Node {
             connection: connection.clone(),
             event: Some(event),
             init,
+            discovery,
             cancel,
         })
     }
@@ -396,6 +399,7 @@ impl Node {
         let registrations = {
             let mut st = self.state.lock().await;
             st.present = false;
+            st.discovery.invalidate(true);
             let entries = st
                 .native_connection_objects
                 .values()
@@ -428,6 +432,9 @@ impl Node {
             let _ = event.shutdown().await;
         }
         let _ = self.init.await;
+        if let Err(error) = self.discovery.await {
+            warn!(%error, path=%self.path, "application scanner worker exited abnormally");
+        }
         let peer_paths = {
             let st = self.state.lock().await;
             st.peers
@@ -821,6 +828,7 @@ mod retired_interface_tests {
                 connection: server.clone(),
                 event: None,
                 init: tokio::spawn(async move { cancelled.changed().await.unwrap() }),
+                discovery: crate::discovery::start_worker(&state, cancel.subscribe()),
                 cancel,
             };
             let mut retirement = tokio::spawn({

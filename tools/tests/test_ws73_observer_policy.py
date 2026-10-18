@@ -67,21 +67,31 @@ class ObserverPolicyTests(unittest.TestCase):
         self.assertFalse(any(a.get('send_type')=='method_call' and 'send_interface' not in a for a in allows))
         self.assertIn({'send_destination':'org.sparklink'},[a.attrib for a in default.findall('deny')])
 
-    def test_channel_only_group_has_no_controller_or_service_ownership(self):
+    def test_application_group_has_scoped_discovery_not_controller_or_service_ownership(self):
         root=ET.parse(Path(__file__).resolve().parents[2]/'data/dbus/sparklink.conf').getroot()
         app=root.find("policy[@group='sparklink-apps']")
         self.assertIsNotNone(app)
         rules=[a.attrib for a in app.findall('allow')]
         self.assertEqual(rules,[
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Adapter','send_member':'AcquireDiscovery'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Adapter','send_member':'ReadDiscovery'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Adapter','send_member':'ReleaseDiscovery'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'GetInfo'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannel'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannelScoped'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'PrepareDynamicChannel'},
         ])
-        self.assertFalse(any('own' in r or r.get('send_interface')=='org.sparklink.Adapter' for r in rules))
+        self.assertFalse(any('own' in r for r in rules))
+        # Contract change: applications own only their bounded discovery lease.
+        # A controller scan/stop/cancel, connection teardown or future method
+        # remains management authority; do not replace this with a broad allow.
+        adapter_members={r['send_member']for r in rules if r.get('send_interface')=='org.sparklink.Adapter'}
+        self.assertEqual(adapter_members,{'AcquireDiscovery','ReadDiscovery','ReleaseDiscovery'})
+        for method in ['StartControllerScan','StopControllerScan','SubmitScanning','SubmitStopScanning','CancelDiscoveryPolicies','FutureControl']:
+            self.assertNotIn(method,adapter_members)
         default=root.find("policy[@context='default']")
         self.assertFalse(any(a.get('send_interface')=='org.sparklink.Connection' and a.get('send_member')=='GetInfo' for a in default.findall('allow')))
-        self.assertEqual({a['send_interface']for a in rules},{'org.sparklink.Connection'})
+        self.assertEqual({a['send_interface']for a in rules},{'org.sparklink.Connection','org.sparklink.Adapter'})
         source=(Path(__file__).resolve().parents[2]/'crates/slkd/src/dbus_iface.rs').read_text()
         self.assertIn('async fn start_controller_scan',source)
         self.assertIn('async fn stop_controller_scan',source)

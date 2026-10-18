@@ -71,22 +71,78 @@ async fn submit(
     let policy = state.lock().await.native_discovery_policy.ok_or_else(|| {
         zbus::fdo::Error::NotSupported("registration discovery policy unavailable".into())
     })?;
+    let scanner = state.lock().await.discovery.clone();
     tokio::task::spawn_blocking(move || {
         // Keep this guard in the blocking task even if its RPC is abandoned.
         // Cancellation/removal cannot hand off authority underneath an ioctl.
         let mut authority = authority;
-        let snapshot = fd.controller_snapshot(generation)?;
-        let request = build(snapshot, policy)?;
-        // Conservative even when admission fails: never reuse initialization
-        // provenance after attempting a later policy in the same domain.
-        let domain = usize::from(matches!(request.operation, 3 | 4 | 6));
-        authority.initialized_off[domain] = None;
-        fd.submit_discovery(&request)?;
-        Ok::<_, slk_native::Error>(request.data[..request.data_len as usize].to_vec())
+        let snapshot = fd.controller_snapshot(generation).map_err(failed)?;
+        let request = build(snapshot, policy).map_err(failed)?;
+        scanner.manager(
+            generation,
+            authority
+                .token
+                .ok_or_else(|| failed("management unavailable"))?,
+            request.request_id,
+            request.operation,
+        )?;
+        admit(&fd, &mut authority, &request).map_err(failed)
     })
     .await
     .map_err(failed)?
-    .map_err(failed)
+}
+
+fn admit(
+    fd: &Adapter,
+    authority: &mut crate::state::NativeManagement,
+    request: &SleDiscoverySubmit,
+) -> slk_native::Result<Vec<u8>> {
+    let domain = usize::from(matches!(request.operation, 3 | 4 | 6));
+    authority.initialized_off[domain] = None;
+    fd.submit_discovery(request)?;
+    Ok(request.data[..request.data_len as usize].to_vec())
+}
+
+/// The unique application scanner worker keeps Native authority through the
+/// actual result. No second command codec, Engine, credit or relative deadline.
+pub(crate) async fn session_operation(
+    state: &SharedState,
+    authority: tokio::sync::OwnedMutexGuard<crate::state::NativeManagement>,
+    enable: bool,
+    until: std::time::Instant,
+) -> zbus::fdo::Result<()> {
+    let (fd, generation) = selected(state).await?;
+    let policy = state
+        .lock()
+        .await
+        .native_discovery_policy
+        .ok_or_else(|| failed("WS73 policy unavailable"))?;
+    let id = random_id().await?;
+    let query = fd.clone();
+    let authority = tokio::task::spawn_blocking(move || {
+        let mut authority = authority;
+        if std::time::Instant::now() >= until {
+            return Err(failed("original scanner deadline before admission"));
+        }
+        let snapshot = fd.controller_snapshot(generation).map_err(failed)?;
+        let request = if enable {
+            policy.scan(&snapshot, id)
+        } else {
+            slk_native::ws73_discovery_stop(&snapshot, id, slk_protocol::DISCOVERY_SCAN_STOP)
+        }
+        .map_err(failed)?;
+        if std::time::Instant::now() >= until {
+            return Err(failed("original scanner deadline after identity query"));
+        }
+        admit(&fd, &mut authority, &request).map_err(failed)?;
+        Ok(authority)
+    })
+    .await
+    .map_err(failed)??;
+    let result = wait_result(query, generation, id, until).await?;
+    crate::discovery::validate_receipt(&result, generation, id, enable)?;
+    drop(authority);
+    Ok(())
 }
 
 /// Withdraw this controller lease, including connection and discovery cleanup. This
@@ -128,6 +184,7 @@ pub(crate) async fn cancel_policies(state: &SharedState) -> zbus::fdo::Result<u6
                 ));
             }
             authority.accepting = false;
+            state.lock().await.discovery.invalidate(false);
             authority.initialized_off = [None; 2];
             // Keep the credential on failure so removal can retry its withdrawal;
             // submissions stay disabled until a successful new acquisition.
@@ -152,6 +209,7 @@ pub(crate) async fn cancel_policies(state: &SharedState) -> zbus::fdo::Result<u6
                 return Err(failed("registration removed during management acquisition"));
             }
             authority.accepting = true;
+            state.lock().await.discovery.credential_replaced();
             Ok(generation)
         }
         .await;
@@ -217,12 +275,27 @@ pub(crate) async fn result(
     id: u64,
 ) -> zbus::fdo::Result<DiscoveryResultRecord> {
     let (fd, generation) = selected(state).await?;
-    tokio::task::spawn_blocking(move || fd.discovery_result(generation, id))
-        .await
-        .map_err(failed)?
-        .map_err(failed)?
-        .map(|r| r.as_record())
-        .ok_or_else(|| zbus::fdo::Error::UnknownObject("operation absent or evicted".into()))
+    let (scanner, lease) = {
+        let st = state.lock().await;
+        (st.discovery.clone(), st.native_lease.clone())
+    };
+    // Queries still work while a handoff holds the gate. Only observation of a
+    // STOP under its unchanged credential may free the scanner policy domain.
+    let authority = lease.and_then(|lease| lease.try_lock_owned().ok());
+    tokio::task::spawn_blocking(move || {
+        let result = fd.discovery_result(generation, id)?;
+        if let (Some(r), Some(authority)) = (result, authority)
+            && let Some(token) = authority.token.filter(|_| authority.accepting)
+        {
+            scanner.observe_manager(token, r);
+        }
+        Ok::<_, slk_native::Error>(result)
+    })
+    .await
+    .map_err(failed)?
+    .map_err(failed)?
+    .map(|r| r.as_record())
+    .ok_or_else(|| zbus::fdo::Error::UnknownObject("operation absent or evicted".into()))
 }
 
 /// Read the actual initializer's result only while its registration, credential
@@ -373,6 +446,37 @@ pub(crate) async fn wait(state: &SharedState, id: u64) -> zbus::fdo::Result<()> 
             ));
         }
         tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+}
+
+async fn wait_result(
+    fd: Arc<Adapter>,
+    generation: u64,
+    id: u64,
+    until: std::time::Instant,
+) -> zbus::fdo::Result<slk_protocol::SleDiscoveryResult> {
+    loop {
+        if std::time::Instant::now() >= until {
+            return Err(failed("original scanner result deadline expired"));
+        }
+        let query = fd.clone();
+        let result = tokio::task::spawn_blocking(move || query.discovery_result(generation, id))
+            .await
+            .map_err(failed)?
+            .map_err(failed)?
+            .ok_or_else(|| failed("scanner result absent or evicted"))?;
+        if result.is_terminal() {
+            if std::time::Instant::now() >= until {
+                return Err(failed("late scanner result"));
+            }
+            return Ok(result);
+        }
+        tokio::time::sleep_until(
+            (std::time::Instant::now() + Duration::from_millis(10))
+                .min(until)
+                .into(),
+        )
+        .await;
     }
 }
 

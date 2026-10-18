@@ -113,6 +113,69 @@ impl AdapterIface {
 
 #[interface(name = "org.sparklink.Adapter")]
 impl AdapterIface {
+    /// Caller-owned bounded scan lease; never returns the Native credential.
+    async fn acquire_discovery(
+        &self,
+        prefix: Vec<u8>,
+        minimum_rssi: i16,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<u64> {
+        let name = header
+            .sender()
+            .ok_or_else(|| zbus::fdo::Error::AccessDenied("unique caller required".into()))?
+            .to_string();
+        crate::discovery::acquire(
+            &self.state,
+            connection.clone(),
+            name,
+            prefix,
+            minimum_rssi,
+            duration_ms,
+            crate::discovery::deadline(deadline)?,
+        )
+        .await
+    }
+    /// False: only this caller lease was released. True: the last lease was
+    /// released AND its actual physical STOP was confirmed before the deadline.
+    async fn release_discovery(
+        &self,
+        session: u64,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<bool> {
+        let name = header
+            .sender()
+            .ok_or_else(|| zbus::fdo::Error::AccessDenied("unique caller required".into()))?;
+        crate::discovery::release(
+            &self.state,
+            name.as_str(),
+            session,
+            crate::discovery::deadline(deadline)?,
+        )
+        .await
+    }
+    async fn read_discovery(
+        &self,
+        session: u64,
+        wait: bool,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::discovery::Batch> {
+        let name = header
+            .sender()
+            .ok_or_else(|| zbus::fdo::Error::AccessDenied("unique caller required".into()))?;
+        crate::discovery::reports(
+            &self.state,
+            name.as_str(),
+            session,
+            wait,
+            crate::discovery::deadline(deadline)?,
+        )
+        .await
+    }
     /// Manager operation on the physical scanner, not an application scan lease.
     async fn start_controller_scan(&self) -> zbus::fdo::Result<()> {
         if self.state.lock().await.controller.profile == 1 {

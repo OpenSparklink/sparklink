@@ -89,6 +89,7 @@ pub(crate) type NativeLease = Arc<Mutex<NativeManagement>>;
 
 /// Shared adapter state accessible from D-Bus + event loop.
 pub struct AdapterState {
+    pub(crate) discovery: Arc<crate::discovery::Coordinator>,
     pub(crate) security_policy: crate::security_policy::Shared,
     pub(crate) ssap_database: Arc<std::sync::Mutex<crate::ssap_database::Database>>,
     pub(crate) ssap_owner_slots: Arc<tokio::sync::Semaphore>,
@@ -135,6 +136,7 @@ impl AdapterState {
         let adapter = adapter.into();
         let name = config.general.name.clone();
         Self {
+            discovery: Arc::new(crate::discovery::Coordinator::default()),
             security_policy: Arc::new(Mutex::new(crate::security_policy::Registry::default())),
             adapter,
             ssap_database: Arc::new(std::sync::Mutex::new(

@@ -82,6 +82,8 @@ class DirectoryObserver(unittest.TestCase):
             maps='00000000-00001000 r--p 00000000 00:01 1 /usr/lib/libsparklink.so.0\n'
             raw['process'].update(native_library_loaded=False,loaded_library=dict(clients['library']),maps=maps,maps_sha256=hashlib.sha256(maps.encode()).hexdigest())
             raw['invocation']['args']=gate.consumer_args(language,clients)
+            raw['invocation']['pid']=14 if language=='c' else 15
+            raw['process']['pid']=raw['invocation']['pid']
             raw['consumer_source']=clients['script']if language=='python'else None
             children[language]=raw
         r['languages']=children
@@ -103,6 +105,9 @@ class DirectoryObserver(unittest.TestCase):
         bad=copy.deepcopy(r);bad['languages']['python']['consumer_source']=None
         with self.assertRaises(ValueError):gate.corroborate_all(bad,c,'a'*64,'b'*64,clients)
         for change in [dict(proof,program_sha256='0'*64),dict(proof,prepared_clients={}),dict(proof,rust={})]:self.assertFalse(gate.valid_all_summary(change))
+        for value in [None,[],True,0,'missing',{}]:self.assertFalse(gate.valid_all_summary(value))
+        bad=copy.deepcopy(r);bad['languages']['c']['invocation']['pid']=r['invocation']['pid'];bad['languages']['c']['process']['pid']=r['invocation']['pid']
+        with self.assertRaises(ValueError):gate.corroborate_all(bad,c,'a'*64,'b'*64,clients)
 
     def test_sealed_staged_consumers_and_manifest_reject_missing_changed_or_escaped_inputs(self):
         with tempfile.TemporaryDirectory()as name:

@@ -160,6 +160,7 @@ def consumer_args(language,clients):
 def corroborate_all(record,control,program,verifier,clients):
     if not _client_shape(clients)or set(record['languages'])!={'c','python'}:raise ValueError('both actual language observers required')
     rust=corroborate(record,control,program,verifier);proofs={}
+    if len({record['invocation']['pid'],*[r['invocation']['pid']for r in record['languages'].values()]})!=3:raise ValueError('three distinct actual observer processes required')
     for language in ['c','python']:
         raw=record['languages'][language]
         proof=_corroborate(raw,control,clients[language]['sha256'],verifier,consumer_args(language,clients))
@@ -179,6 +180,7 @@ def corroborate_all(record,control,program,verifier,clients):
     return result
 
 def valid_all_summary(value):
+    if not isinstance(value,dict):return False
     try:
         if value.get('status')!=ALL_STATUS or not _client_shape(value['prepared_clients'])or set(value['languages'])!={'c','python'}:return False
         rust=value['rust'];clients=value['prepared_clients']

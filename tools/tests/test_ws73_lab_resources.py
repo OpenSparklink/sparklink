@@ -127,7 +127,11 @@ class AllocatedResources(unittest.TestCase):
             self.assertEqual(subprocess.run([sys.executable,'-c',script,str(p)]).returncode,0)
 
     def test_independent_paths_and_worktree_no_old_prepared_root(self):
-        data=resource.policy();root=resource.workspace()/data['run_root']
+        data=copy.deepcopy(resource.policy())
+        # Exercise the path contract in any checkout; only actual physical
+        # execution uses the thread's fixed worktree from the shipped policy.
+        data['worktree']=Path(resource.__file__).resolve().parents[1].relative_to(resource.workspace()).as_posix()
+        root=resource.workspace()/data['run_root']
         resource.check_paths(root/'run1',root/'prepared1',data)
         for value in [Path('/tmp/old'),root/'../escaped',root/'../../sparklink']:
             with self.assertRaises(ValueError):resource.check_paths(value,root/'prepared1',data)

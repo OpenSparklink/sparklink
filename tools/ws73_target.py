@@ -1821,13 +1821,14 @@ def run_exit_code(record):
 def run(args):
     # Share the actual flock inode with the existing firmware lab. A lock file
     # alone is never treated as evidence that another process is live.
-    lab=lab_module()
     if args.command == 'support':
+        lab=lab_module()
         with lab.lab_lock(SimpleNamespace(action='target-support',build_dir=args.prepared)):
             return _run(args)
     allocation=resources.policy()
     resources.selected(args.ports, allocation)
     resources.check_paths(args.output, args.prepared, allocation)
+    lab=lab_module()
     root=build_workspace()/allocation['run_root'];root.mkdir(parents=True,exist_ok=True)
     # Per-thread VM/run inode; the shared per-port leases still exclude races.
     from build_resources import real_device_vm

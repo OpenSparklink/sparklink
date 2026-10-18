@@ -15,6 +15,11 @@ fail() {
         wait "$application_role_supervisor"
         application_role_supervisor=''
     fi
+    if [ -n "${controller_directory_supervisor:-}" ]; then
+        kill -TERM "$controller_directory_supervisor" 2>/dev/null
+        wait "$controller_directory_supervisor"
+        controller_directory_supervisor=''
+    fi
     # A failed bootstrap is still evidence. Stop our owned processes and
     # flush usbmon before shutdown, even when the ordinary shell never opened.
     if [ -n "${daemon:-}" ]; then
@@ -453,7 +458,21 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     if native_return_fixture_enabled; then
         /bin/python3 /usr/share/sparklink/tools/ws73_native_return.py supervise /evidence "$daemon" > /evidence/native-return-supervisor.log 2>&1 & native_return_supervisor=$!
     fi
+    if grep -qw ws73.controller_directory_events=1 /proc/cmdline; then
+        /bin/python3 /usr/share/sparklink/tools/ws73_controller_directory.py --daemon-pid "$daemon" > /evidence/controller-directory-supervisor.log 2>&1 & controller_directory_supervisor=$!
+        for n in $(seq 1 100); do
+            [ ! -f /evidence/controller-directory/ready ] || break
+            kill -0 "$controller_directory_supervisor" 2>/dev/null || fail 'directory observer exited before snapshot'
+            sleep 0.1
+        done
+        [ -f /evidence/controller-directory/ready ] || fail 'directory observer snapshot deadline'
+    fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg $initializer_arg $connection_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
+    if grep -qw ws73.controller_directory_events=1 /proc/cmdline; then
+        wait "$controller_directory_supervisor" || fail 'actual controller directory observer'
+        controller_directory_supervisor=''
+        echo WS73_TARGET_CONTROLLER_DIRECTORY_PASS
+    fi
     if grep -qw ws73.ssap_initialization=1 /proc/cmdline; then wait "$initialization_fds" || fail 'partial initialization fd observer'; fi
     if native_return_fixture_enabled; then wait "$native_return_supervisor" || fail 'actual Native return supervisor'; fi
     if grep -qw ws73.link_resync=1 /proc/cmdline; then wait "$resync_supervisor" || fail 'real subscriber overflow supervisor'; fi

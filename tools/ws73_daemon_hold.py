@@ -21,39 +21,43 @@ class DaemonHoldCoordinator(HoldCoordinator):
 
 class Invocation:
     """Read live pipes, never a redirected producer file; reap before sealing."""
-    def __init__(self, args, toggle):
+    def __init__(self, args, toggle, *, credentials=None):
         self.row=dict(args=args,toggle=toggle,start_wall_ns=time.time_ns())
-        self.process=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        options={} if credentials is None else dict(user=credentials[0],group=credentials[1],extra_groups=[])
+        self.process=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,**options)
         self.row['pid']=self.process.pid
         self.prefix=b''
 
-    def identifier(self):
-        deadline=time.monotonic()+2
+    def until(self, pattern, *, timeout=2, limit=None, label='actual scan request marker'):
+        deadline=time.monotonic()+timeout
         with selectors.DefaultSelector() as watch:
             watch.register(self.process.stdout,selectors.EVENT_READ)
             while time.monotonic()<deadline:
                 for key,_ in watch.select(.005):
                     data=os.read(key.fileobj.fileno(),4096)
-                    if not data:raise ValueError('caller ended before actual scan request marker')
+                    if not data:raise ValueError('caller ended before '+label)
                     self.prefix+=data
-                    pattern = (rb'^NativePoliciesCancelRequest: generation=(\d+)\n' if self.row['toggle']=='cancel' else rb'^NativeScanRequest: request=(\d+) enable='+self.row['toggle'].encode()+rb'\n')
+                    if limit is not None and len(self.prefix)>limit:raise ValueError('bounded '+label+' output exceeded')
                     matches=re.findall(pattern,self.prefix,re.M)
-                    if len(matches)==1:
-                        identifier=int(matches[0])
-                        if not identifier:raise ValueError('nonzero actual caller request required')
-                        self.row['generation' if self.row['toggle']=='cancel' else 'request_id']=identifier
-                        self.row['marker_wall_ns']=time.time_ns()
-                        return identifier
-                    if len(matches)>1:raise ValueError('duplicate actual scan request marker')
-                if self.process.poll() is not None:raise ValueError('caller failed before actual request marker')
-        raise TimeoutError('bounded actual scan request marker')
+                    if len(matches)==1:return matches[0]
+                    if len(matches)>1:raise ValueError('duplicate '+label)
+                if self.process.poll() is not None:raise ValueError('caller failed before '+label)
+        raise TimeoutError('bounded '+label)
 
-    def finish(self, kill=False):
+    def identifier(self):
+        pattern = (rb'^NativePoliciesCancelRequest: generation=(\d+)\n' if self.row['toggle']=='cancel' else rb'^NativeScanRequest: request=(\d+) enable='+self.row['toggle'].encode()+rb'\n')
+        identifier=int(self.until(pattern))
+        if not identifier:raise ValueError('nonzero actual caller request required')
+        self.row['generation' if self.row['toggle']=='cancel' else 'request_id']=identifier
+        self.row['marker_wall_ns']=time.time_ns()
+        return identifier
+
+    def finish(self, kill=False, *, timeout=3):
         if kill:
             self.row['kill_wall_ns']=time.time_ns()
             self.process.kill()
         try:
-            out,err=self.process.communicate(timeout=3)
+            out,err=self.process.communicate(timeout=timeout)
         except BaseException:
             if self.process.poll() is None:self.process.kill()
             out,err=self.process.communicate()

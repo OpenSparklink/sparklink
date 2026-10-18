@@ -1622,7 +1622,7 @@ def _run(args):
         if (output/'root.btrfs').is_file():
             m['vm_disk_after'] = file_record(output/'root.btrfs')
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
-    code=run_exit_code(m)
+    code=run_exit_code(m, supervisor_pending=True)
     m['supervisor_exit']=code
     if code and m['status']!='FAIL':
         m['status']='FAIL';m['error']='terminal success status lacks required corroborated exit contract'
@@ -1672,7 +1672,7 @@ def valid_parallel_burst(proof):
     return True
 
 
-def run_exit_code(record):
+def run_exit_code(record, *, supervisor_pending=False):
     initialization=record.get('ssap_initialization_requested',False)
     if type(initialization)is not bool:return 1
     if initialization:
@@ -1687,7 +1687,8 @@ def run_exit_code(record):
                 or held.get('method')!=METHOD or held.get('qemu_sha256')!=QEMU_SHA256 or held.get('complete')is not True
                 or not valid_summary(record.get('ssap_initialization_corroboration',{}))
                 or type(record.get('qemu_exit'))is not int or record['qemu_exit']!=0
-                or type(record.get('supervisor_exit'))is not int or record['supervisor_exit']!=0):return 1
+                or ('supervisor_exit' in record and (type(record['supervisor_exit'])is not int or record['supervisor_exit']!=0))
+                or ('supervisor_exit' not in record and not supervisor_pending)):return 1
     elif record.get('ssap_initialization_acceptance')or record.get('ssap_initialization_corroboration'):return 1
     lifecycle=record.get('ssap_owner_lifecycle_requested',False)
     if type(lifecycle)is not bool:return 1

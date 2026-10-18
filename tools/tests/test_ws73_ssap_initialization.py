@@ -166,6 +166,33 @@ class InitializationGate(unittest.TestCase):
         r.update(ssap_initialization_requested=True,ssap_initialization_acceptance=True)
         self.assertEqual(run_exit_code(r),1)
 
+    def test_supervisor_finalization_is_explicit_and_final_report_fails_closed(self):
+        # Verdict fixture only; not controller, wire or VM qualification.
+        proofs=[]
+        for n in range(2):
+            down=dict(event=5)
+            proofs.append(dict(selection=dict(slot=n,role=n),
+                host_hold=dict(status='ACTUAL_HOST_HOLD_CORROBORATED'),
+                late_capability=dict(data=init.RESPONSE),cleanup=dict(outcomes=[down]),peer_rx_progress_during_hold=down))
+        proof=dict(status='REAL_CMTC_REVOKE_LATE_REPLY_DAEMON_FD_CONVERGENCE',proofs=proofs,
+            **dict.fromkeys(['kernel_reference_or_uaf_proof','native_bind_inflight_proof',
+                            'initializer_task_join_proof','connection_object_removal_proof','natural_recovery_acceptance'],False))
+        r=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,ssap_initialization_requested=True,
+            ssap_initialization_acceptance=True,ordinary_channel_socket_acceptance=True,channel_socket_verification_requested=True,
+            channel_socket_corroboration=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8),
+            ssap_initialization_hold=dict(method=init.METHOD,qemu_sha256=init.QEMU_SHA256,complete=True),
+            ssap_initialization_corroboration=proof)
+        self.assertEqual(run_exit_code(r),1)  # missing final supervisor receipt
+        self.assertEqual(run_exit_code(r,supervisor_pending=True),0)
+        for value in [1,True,'0',None]:
+            bad=dict(r,supervisor_exit=value)
+            self.assertEqual(run_exit_code(bad),1)
+            self.assertEqual(run_exit_code(bad,supervisor_pending=True),1)
+        r['supervisor_exit']=0
+        self.assertEqual(run_exit_code(r),0)
+        r.pop('ssap_initialization_corroboration')
+        self.assertEqual(run_exit_code(r,supervisor_pending=True),1)
+
     def test_real_local_socket_inode_snapshot_and_strict_bounds(self):
         import os
         a,b=socket.socketpair()

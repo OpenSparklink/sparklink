@@ -153,6 +153,11 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
             if material not in materials:
                 errors.append(f'{ident}: unknown required material {material}')
         for gate in gates.values():
+            if 'result_binding_version' in gate and (
+                    type(gate['result_binding_version']) is not int
+                    or gate['result_binding_version'] != 1
+                    or not binding or 'report_pointer' not in gate):
+                errors.append(f'{ident}/{gate["id"]}: invalid gate result binding')
             if gate['result'] == 'PASS' and not gate['materials']:
                 errors.append(f'{ident}/{gate["id"]}: PASS lacks evidence')
             for material in gate['materials']:
@@ -163,6 +168,9 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
                 row = select(report, gate['report_pointer'])
                 if row['name'] != gate['id'] or row['status'] != gate['reported_status']:
                     errors.append(f'{ident}/{gate["id"]}: gate/report identity mismatch')
+                if gate.get('result_binding_version') == 1 and (
+                        row['status'] not in RESULTS or row['status'] != gate['result']):
+                    errors.append(f'{ident}/{gate["id"]}: gate/report verdict mismatch')
         for role, source in record['sources'].items():
             if source['repo'] not in ('sparklink', 'linux') or any(Path(p).is_absolute() or '..' in Path(p).parts for p in source['scopes']):
                 errors.append(f'{ident}/{role}: unsafe source scope')

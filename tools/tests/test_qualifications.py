@@ -73,6 +73,51 @@ class QualificationTests(unittest.TestCase):
         self.assertEqual(result['errors'], [])
         self.assertEqual(result['verification'], 'RETAINED_BYTES_VERIFIED_NOT_REPLAYED')
 
+    def typed_failed_matrix(self):
+        record = self.data['records'][0]
+        self.report.update(status='FAILED', runs=[
+            dict(name='gate', status='PASS'), dict(name='failed', status='FAIL')])
+        record.update(result='FAIL', required_gates=['gate', 'failed'])
+        record['report']['verdict_results']['FAILED'] = 'FAIL'
+        record['report']['gate_rows_pointer'] = ['runs']
+        record['gates'] = [dict(id=name, result=status, materials=['report.json', 'artifact'],
+                                report_pointer=['runs', i], reported_status=status,
+                                result_binding_version=1)
+                           for i, (name, status) in enumerate([('gate', 'PASS'), ('failed', 'FAIL')])]
+        self.update_report()
+        self.assertEqual(self.run_check()['errors'], [])
+        self.assertNotEqual(self.run_check()['overall'], 'PASS')
+        return record
+
+    def test_failed_matrix_does_not_hide_individual_result_drift(self):
+        record = self.typed_failed_matrix()
+        for slot, status in [(0, 'UNPROVED'), (1, 'PASS')]:
+            with self.subTest(slot=slot, status=status):
+                gate = record['gates'][slot]
+                original = gate['result']
+                gate['result'] = status
+                self.assertIn(f'one/{gate["id"]}: gate/report verdict mismatch',
+                              self.run_check()['errors'])
+                gate['result'] = original
+
+    def test_typed_gate_rejects_unknown_status_even_when_identity_matches(self):
+        record = self.typed_failed_matrix()
+        self.report['runs'][0]['status'] = 'UNSUPPORTED_TOOL_EXIT_ZERO'
+        record['gates'][0]['reported_status'] = 'UNSUPPORTED_TOOL_EXIT_ZERO'
+        self.update_report()
+        self.assertIn('one/gate: gate/report verdict mismatch', self.run_check()['errors'])
+
+    def test_gate_result_binding_requires_known_version_and_report_pointer(self):
+        record = self.typed_failed_matrix()
+        gate = record['gates'][0]
+        for version in [0, 2, True, False, None, '1']:
+            with self.subTest(version=version):
+                gate['result_binding_version'] = version
+                self.assertIn('one/gate: invalid gate result binding', self.run_check()['errors'])
+        gate['result_binding_version'] = 1
+        del gate['report_pointer']
+        self.assertIn('one/gate: invalid gate result binding', self.run_check()['errors'])
+
     def test_old_source_in_report(self):
         self.report['source'] = 'f' * 40
         self.update_report()

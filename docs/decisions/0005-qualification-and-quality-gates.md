@@ -20,6 +20,12 @@ PASS/FAIL/UNPROVED/MISSING/SKIP 分开。某个必需项非 PASS 则整组不能
 unsupported、timeout、未展开/缺性质不得靠退出0、计数或其他局部 PASS 升级。
 `INCOMPLETE` 的完整目标不会因保留21组或算术100检查通过变为完成。
 
+枚举状态的门禁采用 `result_binding_version: 1`：报告行的 `status` 必须是上述
+五种结果之一，且与该门禁的 `result` 完全一致，未知版本拒绝。整体已经 FAIL
+也不能放过局部标签漂移；例如将失败尺寸单独改成 PASS，或把报告 PASS 改为
+UNPROVED，均须拒绝绑定。它不改变历史 opaque 状态记录的含义，也不将 metadata
+检查升级为实测。原报告／源码／artifact 身份仍分别固定，失败记录不覆盖。
+
 ## 材料与信任边界
 
 公开 CI 的 metadata 模式检查公开报告、scope、门禁身份、生成摘要和可取得的

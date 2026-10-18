@@ -1,0 +1,1095 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "compiled_userspace": "77f7953e1273065e9a538ab554d2fad6a90c3067",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "executed_host_tools": "14331322d9dfd824a25e98405f992c7266b443c9",
+  "executed_guest_tools": "14331322d9dfd824a25e98405f992c7266b443c9",
+  "native_fixture_source": "14331322d9dfd824a25e98405f992c7266b443c9",
+  "tested_tools": "14331322d9dfd824a25e98405f992c7266b443c9",
+  "scope": [
+    "One target slot0 user CUTC creator in each actual physical role; not service/dynamic/controller combinations, author cancellation/release/dup/SCM_RIGHTS/full original deadline matrix.",
+    "Controlled guest-only QMP removal; not physical unplug/power/natural startup failure or automatic recovery.",
+    "Root fd/inode convergence and original-broker refusal are not kernel reference/callback/UAF proof; NOCP truth/old firmware drain/reuse barrier and formal refinement remain unproved.",
+    "Only this exact77 service/143 tools/2fc kernel/SDK110US U pair; no qualification of E/mixed/cold-ROM auto-selection, latest whole tree, length matrix/multichannel/four-device or security/Bond.",
+    "First77 FAIL conflated Core and owner; second543 FAIL scanned still-connected peer before physical settlement and retained cleanup0x0b. Both raw FAIL remain; no argument that any error is successful withdrawal."
+  ],
+  "bounds": {
+    "actual_attempts": 4,
+    "current_tool_successful_vms": 2,
+    "retained_failed_vms": 2,
+    "actual_controller_roles": 2,
+    "user_return_slices": 2,
+    "post_readd_ordinary_roundtrips": 16,
+    "radio_matches": 44,
+    "capture_packets": 8072,
+    "capture_dropped": 0,
+    "raw_hcc_queries": 6,
+    "raw_hcc_replies": 6,
+    "evidence_input_negatives": 36,
+    "tool_methods": 879,
+    "targeted_methods": 13,
+    "strict_documents": 116,
+    "new_formal_proofs": 0
+  },
+  "roles": [
+    {
+      "role": "initiator",
+      "status": "SCOPED_REAL_CONTROLLER_RETURN_AND_NEW_GENERATION_BUSINESS_PASS",
+      "hold_ns": 257665912,
+      "core_refusal_before_owner_probe": true,
+      "owner_probes": 6,
+      "bound_socket_fds": 7,
+      "baseline_socket_fds": 4,
+      "drained_socket_fds": 4,
+      "old_generation": 1,
+      "new_generation": 3,
+      "other_generation": 2,
+      "same_daemon": true,
+      "business_roundtrips": 8,
+      "radio_matches": 22,
+      "capture_packets": 4041,
+      "startup_hcc": {
+        "queries": [
+          {
+            "bus": 1,
+            "device": 2,
+            "record": 156
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "record": 340
+          },
+          {
+            "bus": 1,
+            "device": 4,
+            "record": 1266
+          }
+        ],
+        "replies": [
+          {
+            "bus": 1,
+            "device": 2,
+            "record": 163,
+            "model": "U",
+            "bus_type": "USB",
+            "usb_sha256": "ca13ee2ab24fc03c7f84e0deca24e33c659b85b92d0e2ed2b0979bf3a1d4deb4"
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "record": 347,
+            "model": "U",
+            "bus_type": "USB",
+            "usb_sha256": "07bfbc3c4b22b9f74709af9d7e37c1a62b60b27491516f1af301cc52dca2b313"
+          },
+          {
+            "bus": 1,
+            "device": 4,
+            "record": 1273,
+            "model": "U",
+            "bus_type": "USB",
+            "usb_sha256": "68c6f3a4938fbbad2b3fc01bd0b6e71feed7d2a0ab26fc384a901ca0174c2a54"
+          }
+        ],
+        "ports": [
+          "1-1.1.1",
+          "1-1.1.2"
+        ],
+        "vm_only": true
+      }
+    },
+    {
+      "role": "acceptor",
+      "status": "SCOPED_REAL_CONTROLLER_RETURN_AND_NEW_GENERATION_BUSINESS_PASS",
+      "hold_ns": 243663912,
+      "core_refusal_before_owner_probe": true,
+      "owner_probes": 5,
+      "bound_socket_fds": 7,
+      "baseline_socket_fds": 4,
+      "drained_socket_fds": 4,
+      "old_generation": 1,
+      "new_generation": 3,
+      "other_generation": 2,
+      "same_daemon": true,
+      "business_roundtrips": 8,
+      "radio_matches": 22,
+      "capture_packets": 4031,
+      "startup_hcc": {
+        "queries": [
+          {
+            "bus": 1,
+            "device": 2,
+            "record": 154
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "record": 338
+          },
+          {
+            "bus": 1,
+            "device": 4,
+            "record": 1260
+          }
+        ],
+        "replies": [
+          {
+            "bus": 1,
+            "device": 2,
+            "record": 161,
+            "model": "U",
+            "bus_type": "USB",
+            "usb_sha256": "5e1f73061a995aec155bc7f1dc09a105ed776e15ff2f939c57f5c58e556160b6"
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "record": 345,
+            "model": "U",
+            "bus_type": "USB",
+            "usb_sha256": "dc7ed5a750b2d98f1712ab0b1ecaab988b49565686ae04d9b30955b77002aaa5"
+          },
+          {
+            "bus": 1,
+            "device": 4,
+            "record": 1267,
+            "model": "U",
+            "bus_type": "USB",
+            "usb_sha256": "18ef31e4ab83f9353a928e0e4928dd78f46c126c2b395b170bbdff3654500f5a"
+          }
+        ],
+        "ports": [
+          "1-1.1.1",
+          "1-1.1.2"
+        ],
+        "vm_only": true
+      }
+    }
+  ],
+  "firmware": {
+    "model": "U",
+    "sdk": "1.10.110",
+    "variant": "us",
+    "images": {
+      "ws73.bin": {
+        "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+        "bytes": 143956
+      },
+      "wifi_cali.bin": {
+        "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+        "bytes": 21044
+      },
+      "btc_cali.bin": {
+        "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+        "bytes": 7772
+      }
+    }
+  },
+  "remaining": "Actual service/dynamic creators across controller retirement,full author/release/last-fd/dup/fork/SCM_RIGHTS/original-deadline and handle/Grant-credit-Ticket/late Complete-NOCP compositions;kernel reference/callback/UAF/drain and firmware reuse barriers;normal/debug/longterm,four-device/E/mixed/cold-ROM/natural failure root causes/nonmanual recovery;all uncompleted original S0-S6/19WP/10FV/12DG and deployment/release. UserHost remains P4 planning;no all-control prerequisite for data/security/SSAP.",
+  "retained_failures": [
+    {
+      "status": "ORIGINAL_REAL_VM_FAIL_RETAINED_NOT_QUALIFIED",
+      "compiled_service": "77f7953e1273065e9a538ab554d2fad6a90c3067",
+      "executed_tools": "77f7953e1273065e9a538ab554d2fad6a90c3067",
+      "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+      "held": {
+        "phase": 2,
+        "pid": 557,
+        "tid": 578,
+        "fd": 19,
+        "controller": 0,
+        "handle": 0,
+        "generation": 1,
+        "lifetime": 1,
+        "start_mono_ns": 40872662015,
+        "start_wall_ns": 1792327335151239441,
+        "end_mono_ns": 0,
+        "end_wall_ns": 0,
+        "outcome": 0,
+        "kind": 1
+      },
+      "returned": {
+        "phase": 2,
+        "pid": 557,
+        "tid": 578,
+        "fd": 19,
+        "controller": 0,
+        "handle": 0,
+        "generation": 1,
+        "lifetime": 1,
+        "start_mono_ns": 40872662015,
+        "start_wall_ns": 1792327335151239441,
+        "end_mono_ns": 40999894805,
+        "end_wall_ns": 1792327335278472262,
+        "outcome": 1,
+        "kind": 1
+      },
+      "actual_hold_ns": 127232790,
+      "pending_user": {
+        "args": [
+          "/usr/libexec/opensparklink/native-lab/77f7953e1273/slktest",
+          "--adapter",
+          "/org/sparklink/slk0_g1",
+          "channel",
+          "ping",
+          "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001",
+          "--check",
+          "--count",
+          "1",
+          "--bytes",
+          "61"
+        ],
+        "toggle": "native-controller-return-user",
+        "start_wall_ns": 1792327335149017383,
+        "pid": 927,
+        "stdout": "",
+        "stderr": "error: immutable identity unavailable or changed: registration removed\n",
+        "exit": 1,
+        "end_wall_ns": 1792327335283892527
+      },
+      "qemu_exit": 0,
+      "supervisor_exit": 1,
+      "guest_status": "FAIL",
+      "guest_error": "actual user fd cannot escape its retired controller owner",
+      "capture_packets": 1125,
+      "scope": "Core old-selection rejection is not daemon-owner retirement. Existing cmd_channel obtains fd before its second connection() query. Original strict late-fd rejection assertion failed; direct old-owner refusal barrier added rather than accepting SDK identity error. No observed business stray/UAF or confirmed production revocation defect. No completed drain/re-add/post-readd business in this failed attempt."
+    },
+    {
+      "status": "SECOND_RAW_REAL_VM_FAIL_RETAINED_NOT_WHOLE_GATE_QUALIFIED",
+      "compiled_service": "77f7953e1273065e9a538ab554d2fad6a90c3067",
+      "executed_tools": "543b370bed9c3c9c9acca73c1bedf07a1f5ba2d5",
+      "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+      "held": {
+        "phase": 2,
+        "pid": 560,
+        "tid": 585,
+        "fd": 19,
+        "controller": 0,
+        "handle": 0,
+        "generation": 1,
+        "lifetime": 1,
+        "start_mono_ns": 41070230866,
+        "start_wall_ns": 1792328737316303153,
+        "end_mono_ns": 0,
+        "end_wall_ns": 0,
+        "outcome": 0,
+        "kind": 1
+      },
+      "returned": {
+        "phase": 2,
+        "pid": 560,
+        "tid": 585,
+        "fd": 19,
+        "controller": 0,
+        "handle": 0,
+        "generation": 1,
+        "lifetime": 1,
+        "start_mono_ns": 41070230866,
+        "start_wall_ns": 1792328737316303153,
+        "end_mono_ns": 41359574322,
+        "end_wall_ns": 1792328737605646589,
+        "outcome": 1,
+        "kind": 1
+      },
+      "actual_hold_ns": 289343456,
+      "owner_retiring": {
+        "args": [
+          "/bin/native-owner-probe",
+          "call",
+          "--system",
+          "--dest",
+          ":1.0",
+          "--object-path",
+          "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001",
+          "--method",
+          "org.sparklink.Connection.OpenChannel",
+          "--timeout",
+          "1"
+        ],
+        "start_wall_ns": 1792328737575109535,
+        "start_monotonic_ns": 41329037468,
+        "start_boottime_ns": 41329037789,
+        "pid": 963,
+        "stdout": "",
+        "stderr": "Error: GDBus.Error:org.freedesktop.DBus.Error.Failed: connection owner retiring\n",
+        "exit": 1,
+        "end_wall_ns": 1792328737587876017,
+        "end_monotonic_ns": 41341804381,
+        "end_boottime_ns": 41341804761
+      },
+      "pending_user": {
+        "args": [
+          "/usr/libexec/opensparklink/native-lab/77f7953e1273/slktest",
+          "--adapter",
+          "/org/sparklink/slk0_g1",
+          "channel",
+          "ping",
+          "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001",
+          "--check",
+          "--count",
+          "1",
+          "--bytes",
+          "61"
+        ],
+        "toggle": "native-controller-return-user",
+        "start_wall_ns": 1792328737313843067,
+        "pid": 931,
+        "stdout": "",
+        "stderr": "error: broker: org.freedesktop.DBus.Error.Failed: connection owner retired during native bind: org.freedesktop.DBus.Error.Failed: connection owner retired during native bind\n",
+        "exit": 1,
+        "end_wall_ns": 1792328737612971886
+      },
+      "qemu_exit": 0,
+      "supervisor_exit": 1,
+      "guest_error": "slctl failed; preserve command 159",
+      "capture_packets": 1131,
+      "scope": "Exact original broker owner-retiring barrier and original late-fd refusal observed. Parent survivor scan EBUSY because peer physical connection was not yet settled; subsequent cleanup scan-off0x0b retained. No drain/re-add/new-generation business PASS. Same existing real peer settlement is moved earlier; scan assertion is unchanged."
+    }
+  ],
+  "negative_controls": [
+    {
+      "name": "initiator-missing-owner",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-SDK-instead-of-owner",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-wrong-probe-binary",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-expired-return",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-wrong-original-lifetime",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-old-generation-replacement",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-post-removal-business-before-readd",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-missing-new-proof",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-bad-terminal",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-wrong-owner-tool",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-missing-preserved-business",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-missing-real-peer-Down",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-missing-real-Up-2",
+      "result": "REJECTED"
+    },
+    {
+      "name": "initiator-missing-real-Up-3",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-missing-owner",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-SDK-instead-of-owner",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-wrong-probe-binary",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-expired-return",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-wrong-original-lifetime",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-old-generation-replacement",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-post-removal-business-before-readd",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-missing-new-proof",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-bad-terminal",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-wrong-owner-tool",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-missing-preserved-business",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-missing-real-peer-Down",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-missing-real-Up-3",
+      "result": "REJECTED"
+    },
+    {
+      "name": "acceptor-missing-real-Up-2",
+      "result": "REJECTED"
+    },
+    {
+      "role": "initiator",
+      "device": 4,
+      "direction": "in",
+      "result": "REJECTED"
+    },
+    {
+      "role": "initiator",
+      "device": 4,
+      "direction": "out",
+      "result": "REJECTED"
+    },
+    {
+      "role": "initiator",
+      "device": 3,
+      "direction": "in",
+      "result": "REJECTED"
+    },
+    {
+      "role": "initiator",
+      "device": 3,
+      "direction": "out",
+      "result": "REJECTED"
+    },
+    {
+      "role": "acceptor",
+      "device": 4,
+      "direction": "in",
+      "result": "REJECTED"
+    },
+    {
+      "role": "acceptor",
+      "device": 4,
+      "direction": "out",
+      "result": "REJECTED"
+    },
+    {
+      "role": "acceptor",
+      "device": 3,
+      "direction": "in",
+      "result": "REJECTED"
+    },
+    {
+      "role": "acceptor",
+      "device": 3,
+      "direction": "out",
+      "result": "REJECTED"
+    }
+  ],
+  "test_source_provenance": "13 targeted/879 tool methods ran at543b370+the exact source bytes committed as1433132;not a clean143 checkout compilation. Production Rust/policy/Cargo scopes are byte-identical to actual compiled77 service. Kernel artifact2fc unchanged;report commit is not compiled identity.",
+  "material_access": {
+    "access": "private",
+    "location": "original workspace .dev/main-thread-01a120fe and referenced immutable inputs",
+    "public_site_contains": "hashes/metadata only;noSDK,firmware,restrictedstandards,rootfsorlargecaptures",
+    "replay": "Use signed1433132 tools, recorded CLI/preparation/manifests/Root C observations and raw usbmon; original two FAILs must remain FAIL. Frozen auditor and negative inputs are private and source/hash-bound;not complete independent implementation of all decoders."
+  },
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-controller-postflight-v1.json",
+      "sha256": "0c7673b258177a3f25e8ef2795cfbcb91ad63f0520d73f25dda95910d2659c71",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-controller-preflight-v1.json",
+      "sha256": "406d6d791a7dee169eed58f416faa5990e6e20c6c1e43ea164b9e2e4abdba3b2",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-controller-preflight-v2.json",
+      "sha256": "af04faa89c282c8b0e790f6d2115724b3b16155e25919e90d85eda01072f26e6",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-controller-preflight-v3.json",
+      "sha256": "959a038b753fb8aa2d0a2804d63742b92ba0fe8be369baa376ebbe4734734053",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-controller-preflight-v4.json",
+      "sha256": "72ef4ceb246fcabd42cb2762af1c5c426b961e50cdf5119ba9fa49af201a34f6",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/audit-native-controller-v1.py",
+      "sha256": "797fa8204aeee8df50c4eaa8c5d49159ae5d37ed0e8a3f81623b458cd0f1bbf9",
+      "bytes": 9615
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/build-native-controller-bundle-command-v1.json",
+      "sha256": "413ad7edd3c555722864ae315b26f10410b9c4ba7e592fe9ad724e147dfd020f",
+      "bytes": 1080
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/build-native-controller-bundle-v1.log",
+      "sha256": "3f2b2b397323c4703dd218fe0be9944f9cd14733c1deee50fd6ef052ec58d6fe",
+      "bytes": 259
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/console.log",
+      "sha256": "ebe47f9dd03e53e27bb2b0eb4036a0caf853c281b67fdd31c2e91a9c2b424cc1",
+      "bytes": 16466
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/application/passthrough-control/run.json",
+      "sha256": "22247acb34761bcfdc33403641213861f240a45b5fe153e8c417868a7a5eb32b",
+      "bytes": 949598
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/capture-stats.txt",
+      "sha256": "b6876669643314a61300c844e1be5eb8ae8bb7de93a9d3765c4a7ab433e7ade0",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/native-return-root/12.json",
+      "sha256": "3afda74e4a45c3467ea154136cef3cc8dfa3ac5473c357e32d5aee6a6c848934",
+      "bytes": 640
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/native-return-root/13.json",
+      "sha256": "8d7967cb95dd724967390ee9a25aa56dfaadc56cbef7667b5d3d8c62dd1563dd",
+      "bytes": 1034
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/native-return-root/14.json",
+      "sha256": "fe0cfc0d3a3ba3ab4f86973eed14117bb56895fa009e306f7bf9c7a42132b1e0",
+      "bytes": 1001
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/native-return-root/15.json",
+      "sha256": "e0e19ea5bf452f307c45447bc8b6ce81eeb5f951c260c3482435c769c7ba968a",
+      "bytes": 863
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/native-return-root/3-held.bin",
+      "sha256": "bf182ba9f16372c04542e5fc592b53dca6c518ffab5062094b3ff0fb91059720",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/native-return-root/3-returned.bin",
+      "sha256": "468ced97789b04fcca2519174170a33e6a4a2743d3d45fd51aca3610600deb0f",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/native-return-root/3-selection.bin",
+      "sha256": "d48056ac0e4bf2b2d0bd2468d67c6ea39bd03232c5dd49d635d1b3960a653048",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/native-return-supervisor.log",
+      "sha256": "102c3b52dc6ff6407e65630050cca87516ffcabdf9ea17b2db76ab78e17d1332",
+      "bytes": 39
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/slkd.log",
+      "sha256": "521ad41556edda8c3b4f840ccff9e16e70b3b1f721b9b06ecb3632c45dc934a1",
+      "bytes": 6401
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/guest-output/ws73.pcap",
+      "sha256": "05a48d5de941c13944dd354a6f5670d1eeb3980a21305dde9d378a7fc2d0f26a",
+      "bytes": 615678
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/manifest.json",
+      "sha256": "76a6918b550f56b3cca04f382f8ef39ed6d605e90e2d88504bb15bc544b5fc4b",
+      "bytes": 1533822
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-acceptor-us-v3/qmp.jsonl",
+      "sha256": "491df1ce21fce181a5d98fd1d41469e2d014c1be5dfccfcff8457c711137e7c7",
+      "bytes": 1757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-audit-v1.json",
+      "sha256": "b981e776e901bdf71b0e7eb8181edad4bf79567765b6c9f5ee1ec188d4f4bf8d",
+      "bytes": 23550
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-docs-v4.log",
+      "sha256": "de466cdcc4355c169d1cedb374e1722c865ad16a74f590fd10bec5a10831d397",
+      "bytes": 1387505
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-exchange-us-prepared-v3/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-exchange-us-prepared-v3/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-exchange-us-prepared-v3/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-exchange-us-prepared-v3/manifest.json",
+      "sha256": "3e77912bdd8d4ea03a6d26d585687174f2b07758d5c55815f42adcadf995357e",
+      "bytes": 331352
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-exchange-us-prepared-v3/root.btrfs",
+      "sha256": "336c807c27d66ef2a309f5ec558d0f7c2eb0b5de91684406d90d7be06c1c68c0",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-exchange-us-prepared-v3/root/bin/native-owner-probe",
+      "sha256": "5b720e1843c8b3208d22ef0dbfbdb911caa038d52de653b0ff94d3ab10ae5b83",
+      "bytes": 52936
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-first-failure-audit-v1.json",
+      "sha256": "d547f05c3c329e39109e83566ca91b342cf6af42b28b75ef9cc20aa7b86e7b0c",
+      "bytes": 5333
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/console.log",
+      "sha256": "6baa10cf4a148083ffbf14717b9a903acefc1f58ed5bc3fc0fc1126d861578bb",
+      "bytes": 61862
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "6eeb9f6a257db7200a0be88505084daf8bff453f7ce0c3b493b078391c830ab8",
+      "bytes": 269545
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/capture-stats.txt",
+      "sha256": "1f252b2c4fe5d0749487ea356b934c12af4a30b56cd6dab7e70a475824ff29e9",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/native-return-root/10.json",
+      "sha256": "1c941295538eaf7a1505258111fc066862db8b2a6467cc92b7765887ba27177b",
+      "bytes": 1001
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/native-return-root/2-held.bin",
+      "sha256": "3f54c3817c730f927afe13ccd4ef75326f0695c9f29c684109bc8db1e21f6f4d",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/native-return-root/2-returned.bin",
+      "sha256": "2a47e2124ea532cb95b7619554a99e8982d38cc9770c2c3d7cbbb45bbc2340ab",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/native-return-root/2-selection.bin",
+      "sha256": "7432ec1361fa883ee90e87d9b5ead2c070c5267560db35fc752fa80a1cba0d83",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/native-return-root/8.json",
+      "sha256": "a9a1d48e6e585384be52496c07069fffbdfd38bbd7cb48cc0295585ee2d562b1",
+      "bytes": 639
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/native-return-root/9.json",
+      "sha256": "04b590660e1ac518976874406452ff57fae3ffdfa8e50d0fbd119e5b7f4a52ed",
+      "bytes": 1033
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/native-return-supervisor.log",
+      "sha256": "8e42bde88e45a99e9f26529e78bbad3ae547d83ea3acc2d44a93042deb00e25c",
+      "bytes": 1158
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/slkd.log",
+      "sha256": "76167bda029a33aa5d5ca5618260695e98edc3116dc11cf493a40275c9610d4d",
+      "bytes": 3542
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/guest-output/ws73.pcap",
+      "sha256": "fb14be266eea22afe949c9856d47a156387b8eda274f9629a81835e9520ad73d",
+      "bytes": 155904
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/manifest.json",
+      "sha256": "005c7485267e69c8069cda6f88ed287169e02eabfdc9d342aca04f734b5e00f8",
+      "bytes": 58857
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/qmp.jsonl",
+      "sha256": "8656f2375bb75a92c11752fb007086bad5e68d2a498ed30679c953efab77738e",
+      "bytes": 1376
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/console.log",
+      "sha256": "cfc3cd72c51023194e6e98bcd75ce9360ae27de155af4d501741e4369aeb4889",
+      "bytes": 64503
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "58ab55d9fcd35c2bc2336bc93fe4de1d03698a8132a3cda269f6322695fb61e9",
+      "bytes": 282669
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/capture-stats.txt",
+      "sha256": "e4423f69e40be44ab9926e55050baf8f79a14e9abf722298da73ead31d4d5b18",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/native-return-root/10.json",
+      "sha256": "54b182d042979bfa571324ecff0a45228ed7c58ba16644b9255ad78efdd75663",
+      "bytes": 1001
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/native-return-root/2-held.bin",
+      "sha256": "290c672926f3cc59031d8be7ac34f1318401a9f2d9974a2fc3e979cda6ee191e",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/native-return-root/2-returned.bin",
+      "sha256": "56e0d8f5ed7171937260661c3a49155eba8529727f0b513de8a0254d42ca6d33",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/native-return-root/2-selection.bin",
+      "sha256": "7432ec1361fa883ee90e87d9b5ead2c070c5267560db35fc752fa80a1cba0d83",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/native-return-root/8.json",
+      "sha256": "739e3c78083088904a6993a7eab62766ee524e622dfdf013b4a37ff7b321e921",
+      "bytes": 639
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/native-return-root/9.json",
+      "sha256": "7b0cd683cb5a7feab67b0ed9c5a8d6085e60d26c4974011794bd1edd0c5fb9d3",
+      "bytes": 1033
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/native-return-supervisor.log",
+      "sha256": "45d294cd0e13b9405964495321f1671f2d259c91dfa01c1a364df288b4792513",
+      "bytes": 1158
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/slkd.log",
+      "sha256": "c5f888943a2c73af2cedfe0a57de64d58aa9164db5a7e3f5284a2578c6d755b5",
+      "bytes": 4222
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/guest-output/ws73.pcap",
+      "sha256": "c279d3b827eb6f16db2bc431678a9061c51e8161354325f8f3051996bf7d7377",
+      "bytes": 156868
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/manifest.json",
+      "sha256": "2d8bcac1804a754af2aa5bb575c470ad4c5448b3ab01706b8c7a8183b5502ad4",
+      "bytes": 59446
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/qmp.jsonl",
+      "sha256": "618688bf75e68c8b47d88ca200fb02e9a8b23d03c48f81e5a0cedf15a5e8df82",
+      "bytes": 1376
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/console.log",
+      "sha256": "93b62440da3da0dbcf467910837c4d9999864244fb17a0578ba961c593f90bfb",
+      "bytes": 16277
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/application/passthrough-control/run.json",
+      "sha256": "a0003e7dec0bbbf97b87c6f006197d04882a5fd7f925ceee2589b33f7289607b",
+      "bytes": 949052
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/capture-stats.txt",
+      "sha256": "4f60222f0fd0b19c364fc573c54adcc319c92cab032a5f2ec4268c3bfe52313f",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/native-return-root/10.json",
+      "sha256": "c40d2443d939c92337306328d9afd04f952e3ed5dcb285b562f41f95e9c909c6",
+      "bytes": 1001
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/native-return-root/11.json",
+      "sha256": "f3ee53e0cce26acd0899be72de3a66e1de70635b9f9db5a0f7b85fde38c8f9fe",
+      "bytes": 863
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/native-return-root/2-held.bin",
+      "sha256": "11d10a4cfa020ca5ca68af1a3a72e1aeac38b85c0e21db41543feb9f2714b9b3",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/native-return-root/2-returned.bin",
+      "sha256": "6cd39b132afdc9d1bb732759b6d3098bb0540318020b27c2bd8cce82fdc1ea24",
+      "bytes": 88
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/native-return-root/2-selection.bin",
+      "sha256": "7432ec1361fa883ee90e87d9b5ead2c070c5267560db35fc752fa80a1cba0d83",
+      "bytes": 32
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/native-return-root/8.json",
+      "sha256": "e52800900e5af7fe023918a5d0866fc559794d7781c718c51fabb1781900bd36",
+      "bytes": 639
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/native-return-root/9.json",
+      "sha256": "655afe50e1b8fa6c47ce67aa837c5c7b6a2f71fac44b9ee3bc8e42d58f380320",
+      "bytes": 1033
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/native-return-supervisor.log",
+      "sha256": "102c3b52dc6ff6407e65630050cca87516ffcabdf9ea17b2db76ab78e17d1332",
+      "bytes": 39
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/slkd.log",
+      "sha256": "f3d4e5ce7f751174f9e8a2350a7d18ecb2de389b909c186f1224190debe14301",
+      "bytes": 6401
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/guest-output/ws73.pcap",
+      "sha256": "bf2e8dd4caad4c4cfac967569e9108f66a7bd7f4b3fa144d99fd54bd72c1e866",
+      "bytes": 617268
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/manifest.json",
+      "sha256": "6f9b08c7541463458116749c52b242e8e25e2f0df1f4a03df21266973db087e7",
+      "bytes": 1533872
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-initiator-us-v3/qmp.jsonl",
+      "sha256": "cdfe4c115a7ce59e8ebe42cf0424799501a6f71e193a7f1fac8836689d2a53cd",
+      "bytes": 1757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-real-attempts-v1.json",
+      "sha256": "ab08298b952ec9db158cd433047fd3ad212a6f006a68c7187aee79faf9987c9c",
+      "bytes": 1968
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-real-attempts-v2.json",
+      "sha256": "9b4cfd9394a1e02ed37db5f899eda70ce1cdd389ca5d0327608436be98c28ddd",
+      "bytes": 1968
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-real-attempts-v3.json",
+      "sha256": "a83425e0c3d6b2a7225bcb31862fcef255b70df2649e56d7fa40d9258310d2f7",
+      "bytes": 3082
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-second-failure-audit-v1.json",
+      "sha256": "dbd1e0dae1bf56c1463e70c71bc4b49d19c6763db13f848288286dbbd18db7d3",
+      "bytes": 6041
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-targeted-v4.log",
+      "sha256": "70bf64bb872d076fcd42200b1b3d49d60f10dc164120215768aed8965e21093c",
+      "bytes": 2387
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-tools-v4.log",
+      "sha256": "ed9ea5f8da0c3028e92838fd7ea35b9a0a6aefc823a2c469d515c5f2f588fa48",
+      "bytes": 145152
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/manifest.json",
+      "sha256": "d527e732535a48c87a8cab3196cc50afe48cecf540b30db33996e982c0623942",
+      "bytes": 31663
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "7278f3e480cc34d46c885550c4da5c80cbeb2ec8bb744fcfc81897e7dc057c80",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/77f7953e1273/liblibsparklink.so",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/77f7953e1273/libslk_native.so",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/77f7953e1273/slctl",
+      "sha256": "fd24f53ce5372fc4229a8e88a0c374ea8508121aec8ba025b17c186969bb9690",
+      "bytes": 8431560
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/77f7953e1273/slkconfig",
+      "sha256": "3f58a6739f8dbc9315153114be7020eb7fe9fc04890416530dfe2dc8e807b8b3",
+      "bytes": 1338168
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/77f7953e1273/slkd",
+      "sha256": "7525e55756a57c18a9a210ad7823e52bc3d9a9d133acc35f420832e15248f852",
+      "bytes": 10139424
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/77f7953e1273/slkdump",
+      "sha256": "484d9ee6a6826c1da14464c2c8b6c8f60faaa81e3580d90af67485a878eab34a",
+      "bytes": 1660584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/77f7953e1273/slkmon",
+      "sha256": "d259c65a4c5fdee07b6ef8e82ae56e20833df2f85d36a88ad2c91ce51f0c64a9",
+      "bytes": 1660792
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/77f7953e1273/slktest",
+      "sha256": "d138d3efcc92c53dffb4c2f04cbe6ef121cbf5fefeee87a999f39735ec01fbe0",
+      "bytes": 5764672
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-controller-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "483439bee98b6d1158ea181512611056e8053c09526c2116ada00894f6fe430c",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-preservation-audit-v2.py",
+      "sha256": "b9635ce21acf198f4be23c0effa30fa1b60b1374e64823977d04c403d6e5770e",
+      "bytes": 10389
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-native-controller-exchange-command-v1.json",
+      "sha256": "33dfe4409c12416f33851d55f7a481f6abf8403f8bc44e2fa265247e14d4375e",
+      "bytes": 2218
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-native-controller-exchange-command-v2.json",
+      "sha256": "e9d19703ca58ddb8f11ae3b4790944e8f6f2efb4e4fc3e528cca5185d8f2283b",
+      "bytes": 2269
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-native-controller-exchange-command-v3.json",
+      "sha256": "5735059053d3fbfe2989fc56212f4e902154e48dd38953a715a44a3676682e09",
+      "bytes": 2269
+    }
+  ],
+  "gates": [
+    {
+      "name": "two-real-user-controller-roles",
+      "result": "PASS",
+      "status": "TWO_REAL_ROLE_NATIVE_RETURN_NEW_GENERATION_APPLICATION_SCOPED_PASS"
+    },
+    {
+      "name": "source-artifact-material-closure",
+      "result": "PASS",
+      "status": "EXACT77_SERVICE_143_TOOLS_2FC_KERNEL_SDK110US_MATERIALS_CHECKED"
+    },
+    {
+      "name": "input-negative-controls",
+      "result": "PASS",
+      "status": "THIRTY_SIX_OFFLINE_INPUT_MUTATIONS_REJECTED"
+    },
+    {
+      "name": "tool-regression",
+      "result": "PASS",
+      "status": "THIRTEEN_TARGETED_879_TOOL_METHODS_AND_116_DOCUMENTS_PASS"
+    },
+    {
+      "name": "retain-original-failures",
+      "result": "PASS",
+      "status": "ORIGINAL77_AND543_VM_FAIL_BYTES_IDENTITIES_RETAINED_NOT_PASSED"
+    }
+  ],
+  "goal_complete": false
+}

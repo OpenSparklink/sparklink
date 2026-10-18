@@ -306,27 +306,32 @@
     {
       "name": "default-observer-actual-two-role-client",
       "result": "PASS",
-      "status": "TWO_ROLE_REAL_DIRECTORY_OBSERVER_SCOPED_PASS_ORIGINAL_PRE_VM_TOOL_FAILURE_RETAINED"
+      "status": "PASS",
+      "detail": "TWO_ROLE_REAL_DIRECTORY_OBSERVER_SCOPED_PASS_ORIGINAL_PRE_VM_TOOL_FAILURE_RETAINED"
     },
     {
       "name": "original-seven-length-owned-ssap-and-boundaries",
       "result": "PASS",
-      "status": "FINITE_SEVEN_LENGTH_CONTROLLER_DIRECTORY_ARTIFACT_PRESERVATION_RECOMPUTED"
+      "status": "PASS",
+      "detail": "FINITE_SEVEN_LENGTH_CONTROLLER_DIRECTORY_ARTIFACT_PRESERVATION_RECOMPUTED"
     },
     {
       "name": "raw-two-endpoint-hcc-payload-and-terminal-independent-replay",
       "result": "PASS",
-      "status": "CAPTURE_ZERO_DROP_APPLICATION_REPLY_AND_EXACT_SOURCE_RECOMPUTED"
+      "status": "PASS",
+      "detail": "CAPTURE_ZERO_DROP_APPLICATION_REPLY_AND_EXACT_SOURCE_RECOMPUTED"
     },
     {
       "name": "fail-closed-input-and-qualification-material-closure",
       "result": "PASS",
-      "status": "SOURCE_ARTIFACT_MATERIAL_CLOSURE_AND_BUSINESS_NEGATIVES_PASS_NOT_FULL_GOAL"
+      "status": "PASS",
+      "detail": "SOURCE_ARTIFACT_MATERIAL_CLOSURE_AND_BUSINESS_NEGATIVES_PASS_NOT_FULL_GOAL"
     },
     {
       "name": "source-bound-offline-and-strict-documentation",
       "result": "PASS",
-      "status": "379_ALLFEATURES_888_TOOLS_11_TARGETED_116_DOCUMENTS_NOT_NEW_FORMAL_PROOF"
+      "status": "PASS",
+      "detail": "379_ALLFEATURES_888_TOOLS_11_TARGETED_116_DOCUMENTS_NOT_NEW_FORMAL_PROOF"
     }
   ],
   "remaining": [
@@ -2576,6 +2581,16 @@
       "path": ".dev/main-thread-01a120fe/prepare-controller-directory-exchange-command-v2.json",
       "sha256": "7452ff322a2c2411dde9317a512e81d8832a8079dfe5a4033380a4bae28eacda",
       "bytes": 2266
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/register-controller-directory-v1.log",
+      "sha256": "5a4a4407bfde7a8ee75268621c1b811a3aa9d237a7080ef8bd3277c17fc9a7eb",
+      "bytes": 1413
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/register-controller-directory-v1.py",
+      "sha256": "796faaa652ea22399cca8510db31d092d717d1b6e780bc571764ee6196161882",
+      "bytes": 8761
     }
   ],
   "access": {
@@ -2586,5 +2601,12 @@
       "tools/check_qualifications.py --mode local checks retained bytes, not independent USB replay"
     ],
     "host_testing": "No host experimental driver/firmware download/install. Individual leaf-only disposable VM; shared build12/VM8, stable build directories, own leases/root."
+  },
+  "aggregation_preflight": {
+    "first_report_commit": "a04d79d",
+    "first_report_sha256": "17bdd97aec49f064283eedac4fafa4d626c3d9e68dc59282919f33ce99dbf9ce",
+    "result": "REJECTED_BEFORE_QUALIFICATION_REGISTERED",
+    "reason": "Human-readable gate labels incorrectly occupied canonical status. Existing checker rejected all five rows. Correct representation uses status=PASS and retains original labels in detail; raw VM/assertions and validator unchanged.",
+    "failure_log": ".dev/main-thread-01a120fe/register-controller-directory-v1.log"
   }
 }

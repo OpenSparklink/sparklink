@@ -13,16 +13,17 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP03-WP18-R5f11-controller-directory-language-bridge",
-    "production_behavior": "One Rust stream/executor across Rust/C/Python. Clean compiled3bd SDK/service,executed80e Host/guest,2fcKernel;fixed d912 validator offlineonly. Six actual UID1001 observers/12directorychanges,9VM/72peerreplies/198RF/40431USBdrop0,27actualHCCpairs. 106newinput/56preservation/8registrynegatives;383dirtymappedRust/61Python/891tools/116docs,no newformalproof. Original argv/audit-path/missing-proof AttributeError retained;fullstate/DiscoverySession/otherSDK/security/recovery stillopen.",
-    "state": "ACTUAL_RUST_C_PYTHON_TWO_ROLE_AND_SEVEN_LENGTH_SCOPED_REAL_PASS_ORIGINAL_COUNTEREXAMPLES_FORMAL_OPEN",
-    "exit": [
-      "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
-      "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
-      "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
-      "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
+    "id": "WP03-WP18-R5f12-application-discovery",
+    "production_behavior": "Per-controller caller-owned bounded scanner leases through existing Native management guard/recipes/results. Rust Client and slctl own filtering/read/release,not management credentials. Last lease requests actual STOP; manager handoff/retirement fences late work; unknown cleanup staysFault,notOff/Free.",
+    "state": "IMPLEMENTED_OFFLINE_AND_FENCE_SCOPED_PASS_REAL_GATES_MISSING",
+    "records": [
+      "application-discovery-offline-r5f12",
+      "application-discovery-fence-r5f12",
+      "application-discovery-real-r5f12"
     ],
-    "next": "Continue bounded per-application DiscoverySession coordinator/ownership and full state/EventStream plus remaining SDK/SSAP/Agent interfaces. Do not wrap manager scanner commands as application leases. Complete related lifecycle/initialization/Grant-credit-Ticket/deadline work alongside actual data/security/SSAP/multichannel/four-device delivery;not all control permutations as prerequisites. Journal/pending-delivery/executor/NOCP/callback/reuse assumptions remain NOT_PROVEN. NaturalRCA/nonmanualrecovery OPEN;UserHostP4;fullS0-S6/19WP/10FV/12DG/VM-only/SDK110/strict4leaves/shared12or8 unchanged."
+    "exit_ref": "application-discovery-real-r5f12.required_gates; see canonical implementation-plan R5f12 for steps",
+    "next": "Freeze accurate clean release bundle/Host/guest in existing VM-only U1-1.1.1/.2 runner. Verify two ordinary apps-only callers sharing one scanner with actual random peer data/address/RSSI;release/caller-loss/TTL/manager revoke,role swap and matching USB commands. Regress original business/length/SSAP on same artifact. New positive CLI and actual systembus permissions remain required,not substituted by privatebus tests.",
+    "scope": "Complete originalS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged. Data/security/SSAP/multichannel/fourdevice/lifecycle/cleanup/recovery/deployment remainOPEN in parallel;not all control permutations as prerequisites. UserHostP4;E/mixed/coldROM/naturalRCA/nonmanualrecovery not qualified."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -223,7 +224,10 @@
     "native-controller-user-return-r5f9h",
     "debian-upgrade-rollback-r6c",
     "controller-directory-observer-r5f10",
-    "controller-directory-language-r5f11"
+    "controller-directory-language-r5f11",
+    "application-discovery-offline-r5f12",
+    "application-discovery-fence-r5f12",
+    "application-discovery-real-r5f12"
   ],
   "records": [
     {
@@ -241023,6 +241027,909 @@
         "raw-two-endpoint-hcc-payload-and-terminal-independent-replay",
         "fail-closed-input-and-qualification-material-closure",
         "source-bound-offline-and-strict-documentation"
+      ]
+    },
+    {
+      "id": "application-discovery-offline-r5f12",
+      "title": "Scoped discovery daemon/Rust SDK/CLI：397+397及封存14项限定离线",
+      "level": "offline",
+      "result": "PASS",
+      "contracts": [
+        "CallerScopedDiscoveryLeaseAndControllerManagementSeparation",
+        "PerControllerNativeScopeEpochAndBoundedResources"
+      ],
+      "bounds": {
+        "default_tests": 397,
+        "all_features_tests": 397,
+        "sealed_new_methods": 14,
+        "tool_methods": 898,
+        "generated_c_header_unchanged": true,
+        "new_real_device_runs": 0,
+        "strict_documents": 117
+      },
+      "excluded": [
+        "Production scanner coordinator, existing Nativeguard/recipes/query, bounded caller watches/readers/queues/filter/watermark. Real privatebus owner-loss/RPC; /dev/null Native rejection and seeded post-receipt states are explicit fixtures. No successful Native completion or RF is mocked in defaultproduction.",
+        "Rust SDK wire reply/error/delay fixtures test caller/deadline/validation only, not controller/Host/protocol execution. CLI entry is wired; new actual positive device invocation remainsunqualified.",
+        "Compilation/execution ran dirtyf9 exact157inputbytes mapped to signeda8; not described as clean-commit compilation. Three test executables sealed and reexecuted14methods with binary/log hashes. Full default/allfeatures397 each; strictClippy;898toolmethods; unchanged generatedCheader. No new C/Python or RFqualification."
+      ],
+      "remaining": [
+        "Accurate clean new bundle/Host tools in VM, ordinary apps-only users, two realU controllers and two independent caller leases with random payload/address/RSSI checks.",
+        "Explicit release/caller-loss/TTL/manager revoke, original deadlines/partial initialization/late result/drain and peer business isolation; unknown cleanup remainsFault,notOff/Free.",
+        "Preserve actual discovery/connection/short business/acquired lengths and applicableSSAP on same new artifact; no historical qualification transfer.",
+        "C/Python discovery API,new systembus/udev/group deployment,fullRegistry/Mutex/Notify/callback/Native/USBrefinement,wholeS0-S6/19WP/10FV/12DG remainOPEN. E/mixed/coldROM/naturalRCA/nonmanual recovery/UserHostP4 boundaries unchanged."
+      ],
+      "sources": {
+        "implementation": {
+          "repo": "sparklink",
+          "commit": "a8bf6a98a6a8b9df95e32261fe8cb581d4df4662",
+          "scopes": [
+            "crates",
+            "data/dbus",
+            "data/config",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+            "crates/libsparklink/Cargo.toml": "110c2fd1a2b073e47ce69b7264d92981e4e87ad1c2333b9bd215a5a1c15c7a5f",
+            "crates/libsparklink/build.rs": "b3e8c5660d724b7ac271e62b4af8766aaf4da2543034480ca9d4f4890195c332",
+            "crates/libsparklink/cbindgen.toml": "43e20d719319ecbdc029e3f8ae57b136db3bf427888fc8f29033f08166493812",
+            "crates/libsparklink/include/sparklink.h": "24fa758b1d89676e1899314d663b7a08dff0b49d93f76596ec043bceb645aeb3",
+            "crates/libsparklink/src/agent.rs": "228eda84396aa941c602d6d68c0a46df919464ee3228e41dc4f1acbb541c606c",
+            "crates/libsparklink/src/client.rs": "166207439e36325fca0668115b64cabd1ab744539b593666be09e547d33c37a8",
+            "crates/libsparklink/src/controller.rs": "b2e118baa9e291499927f77ad499d61c82c9154b03c9ffb006ed69086d7e1c2b",
+            "crates/libsparklink/src/controller_events.rs": "ddbf0004d97ab25ebf55b70768513b7af1715ca8c0874a7b05a10e46bf120cf1",
+            "crates/libsparklink/src/discovery.rs": "3392770eca1217aa36cc8074235aa2b3f848497d4b5c0dcc639595b80ff72683",
+            "crates/libsparklink/src/discovery_tests.rs": "d39262d02b91303e11df3e4949a3e73e8adad9ebcf6f16d76364dab931349a6c",
+            "crates/libsparklink/src/ffi.rs": "3767df93edc688cf4a80c88d434e5816e06f76589101dcbafe9251780b9ed716",
+            "crates/libsparklink/src/ffi_client.rs": "82b3bdb9b689606e9ab5867d2ca86c6d783a8b696a67935d21dc823a65a9a1ec",
+            "crates/libsparklink/src/ffi_connection.rs": "eaf1c49974cbf3601c1f785e34766f88567eed639f58e7a35658559d434c7bc6",
+            "crates/libsparklink/src/ffi_controller_events.rs": "31b4b68b2f29967cdacf3adfe1f9af18b02d5cca18ab2e6a6a961ab2fa0c5521",
+            "crates/libsparklink/src/lib.rs": "17e02316a5cbf09a0c023b0df41b0db3f749fd801c5e9e6dc26a2cca3d62a40f",
+            "crates/libsparklink/src/peer.rs": "832620f318b104711cda8189ec743c0b3d61cf9bc934b24d5fffbe57e047a603",
+            "crates/libsparklink/src/security.rs": "e9f1b28e3126f737850caa8ee6c471b00cae73c1a4807d656a0aeb37abead0b6",
+            "crates/libsparklink/src/ssap.rs": "bb7fa9a98d1ac6fa4a0c4b4d1c4cbdbbdc68973513b938194ffb0945a871e085",
+            "crates/libsparklink/src/ssap/local.rs": "90513938236cdadf3303f0c1651711a89d771652bddb84c27bbfbb1b057c9842",
+            "crates/libsparklink/src/sync_client.rs": "9c649ea636bc57119c41dc07f02a07d33bcc098dc21ed9646815b320714ac410",
+            "crates/libsparklink/src/sync_client/controller_events_tests.rs": "4caadc4202c5f39adf917727392ff814c61fbab7ee6afc76d3ffbac89467973b",
+            "crates/libsparklink/src/sync_client/tests.rs": "6df518102c912afee82e7dbc54705d1b9138e4c6bb0769873875099d6128d2bb",
+            "crates/libsparklink/tests/application_broker.rs": "a3ae07a32d60c1aafe839d25c9a939ffebf2b4b62b410de39498714f25a0a949",
+            "crates/libsparklink/tests/application_ffi.rs": "b1017260518a0a54a4e50f63349babe17c1ecfe07f9688ccd0e2aa806344f6c3",
+            "crates/libsparklink/tests/client_scope.rs": "6f15c094a7e9f5ec53f126010131c239dcd7ab9c0680c58491ec1deaae2a3abe",
+            "crates/libsparklink/tests/controller_client.rs": "bea22dd7a490fba2631bda82cdeea7063f99dbcd407b64b139c01223e3f522c8",
+            "crates/libsparklink/tests/controller_events.rs": "5eb45c35abbda8fc35a23d98fcbad1cc9164fb1aaecbd5ca0ff59c85a2c185a5",
+            "crates/libsparklink/tests/fixtures/application_client.c": "6a83b654c54dde35364b56088d42b86813f483d98b8069307890a707db8fc913",
+            "crates/libsparklink/tests/fixtures/application_client.py": "520acf036b330ca1434b0e8eaa001bf2f4fec1cef02da22d9a3cd2ecef09d61f",
+            "crates/libsparklink/tests/local_staging_client.rs": "46425c48da1fe9a7d7b3ef114d05a5c37e655d6eb3084c2e075dad046ee5cf87",
+            "crates/libsparklink/tests/owned_client.rs": "36438c7eaf26280d14cb49c24c41875f6aabc8832fb06c725b40703b2eb2d6a3",
+            "crates/libsparklink/tests/peer_client.rs": "2c04cb8b0cbe209fd30bf0e97b0c3b88b52a4c51065bf337033e8fcf54b2df92",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "bbc1e47bacde4137cc8961ccfd1def2a0cc172eeba244561e98457cafa8f07e7",
+            "crates/libsparklink/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/Cargo.toml": "f7589f3c0b47984ca6253879138adb1c2bb22901e1477d94a432e63b0c08af56",
+            "crates/slctl/examples/bus_policy_probe.rs": "738aea7f795d823dbc2e0daf35140b42761a6dc90e1a0c0927846a4c88671351",
+            "crates/slctl/examples/native_security_agent_probe.rs": "58d191fc9163d30a24c31fbf136ea8f2eb035158109284431d0d191f9b29de5f",
+            "crates/slctl/src/commands.rs": "47b2ac2a7d7f0b66e619ac43797c6f7953a8f45ea46eada12f515e80bd6083db",
+            "crates/slctl/src/main.rs": "a483840f276275958c0e3fedf779eaff5d632bf692b6a3a3f464bacff75a3252",
+            "crates/slctl/src/security_agent.rs": "76dd1972113be126bf51ab607eb437aa54014604f21b8082195fe786d1ce6123",
+            "crates/slctl/src/ssap_server.rs": "d63113241dad6198c3186bc12800df9ee579a3e32c152867d5f4686a1c4e8948",
+            "crates/slctl/tests/application_ssap.rs": "dec7337ebf8308d36a001fa4011042ba2503569e462f868924026e0ba6dba370",
+            "crates/slctl/tests/local_staging.rs": "9b213cf27a2ad591fdb7862e2351d894af49e6acb597bc6f62fc6c66942d89ff",
+            "crates/slctl/tests/management_owner.rs": "0665f718e90bcfe578557ee8f1333db77a5f1f89ad0f8af2e95fdb9c868142de",
+            "crates/slctl/tests/owned_local.rs": "5352abd93f1f9e4c2cdb00184b3d4da4d689c49ec68227e5d5f30c585f229b1c",
+            "crates/slctl/tests/retired_security.rs": "7cdc2f39374460b5f2073e378d4d5179657f93a3be8d43f33f5986c7e1cdb845",
+            "crates/slctl/tests/scan_freshness.rs": "bd7deb97194f01c95c62b43c63ddd4ce4f9ade4a8d9649c1f9f3c9b392998a02",
+            "crates/slctl/tests/security_agent.rs": "5711568f02d3c1c864657b1b30ce4e7693d3c23387df21dfbb76feecc3ecb608",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-channel/Cargo.toml": "1852a9e066d9d9fb966e89be6810c3ab60841a68c081c46fc280f0e679616212",
+            "crates/slk-channel/src/deadline.rs": "6ec52823f48fcc2f2f7e64dd892b7a36f776e7b39be42cf21dd6c68da74e0102",
+            "crates/slk-channel/src/lib.rs": "ff663009b9a23d1e708a1335d31edb2e4fc485341b2201099ce345381e0e3853",
+            "crates/slk-channel/src/security.rs": "0952c100016f0876f9e16e5334006042db46a022937e295ba36633b61c8c5240",
+            "crates/slk-contract/Cargo.toml": "a6c5fdf4de6e5a90cfc51c9bb91f8c6e9bff0c912bee47d0b7061a3453e0abb0",
+            "crates/slk-contract/src/controller_events.rs": "299b13ff19f0bf02d96f795b6fd117bbd5299aab5dacb780595616b92a63128e",
+            "crates/slk-contract/src/discovery.rs": "fe6b86dd7b9800f1ccd77a9f4c24ffc92f85711419af64a37febdd1ec8aa2b3d",
+            "crates/slk-contract/src/lib.rs": "3f093bb2f921ac93e5dc367fc1ee9cdd29941cd13d6fe90b7f04ce2050110dcb",
+            "crates/slk-contract/src/security.rs": "4a63aa6821844b784e061b73d59151c51c56cac18e8fdf2ef44eb3ddcb8f1054",
+            "crates/slk-experimental/Cargo.toml": "cb5b8a8f128ddc1b70da40582eecfd2f148679c5b594da8b50669dde15c07003",
+            "crates/slk-experimental/README.md": "febc95f37c0ed8e932d168ee199f4f0c602c0ea4ab5c718252029623fb8c3aa1",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "658504ecd9499ed7cd086d7ec9f1705fb6883f387f3e2d165d17cf7c3b3177ea",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-native/Cargo.toml": "6b7291fadb49e0d6474c9d2cbc86e45ca5f9815708b1901538471f8e387cda7b",
+            "crates/slk-native/build.rs": "be3b6be28f5692fd1da3977b6ea6c6ff64349bf496f8798fbcda0222b8c5c98c",
+            "crates/slk-native/cbindgen.toml": "c772f0abb4563c75cdafbca6daf75f0ab2d7892d26d03dcbe00615c44b345504",
+            "crates/slk-native/include/sparklink_native.h": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+            "crates/slk-native/src/adapter.rs": "d0096de48a574a367b213710b50f320b90c3146bb075c54a6904eb64d6b4ea17",
+            "crates/slk-native/src/channel.rs": "ca3906dc575d0b633af3f8fcc65591ce68e67a897ea81f1373e7aca8fbc7169c",
+            "crates/slk-native/src/controller_events.rs": "5f0796edd8307b3da44eda56bff00428d842babf44524d3e8fe7247b80df931a",
+            "crates/slk-native/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/slk-native/src/ffi.rs": "f96b55125dbfce1ad4a758616e2da3f97bb572b64baddaf83aa0ca2d87440dba",
+            "crates/slk-native/src/ffi_native.rs": "6c20c5b36739376c4af24ae7fedb51c198ed8a6e6269fedaddda3659a215cf7b",
+            "crates/slk-native/src/ioctl.rs": "849d9daa032491822632ca2014d4f167bcc0635e5de65f1681c5feb9e820836b",
+            "crates/slk-native/src/lib.rs": "e0cbf35aa9abfaeea1ff6707fe8778a03503ee7b059d2ea23b30e9ec4ab69f8d",
+            "crates/slk-native/src/retired_event.rs": "399da4e4c6814435f6fa16c33fc10691316c8df0709202a912dbffa56b7e49dd",
+            "crates/slk-native/src/snoop.rs": "3cc3de4abf2d229b5ddb95bae676eacd0145d8c9bcb649a0b788d3c294304292",
+            "crates/slk-native/src/ws73_discovery.rs": "acdaac152c1590194683953896f853ffdae8ae88475f7a63a9622115e00a0a8f",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "46a3576b7c50b86aba933ba3045b7d3209698984b3d083b75c9e4ff1c19c76d6",
+            "crates/slk-protocol/src/channel.rs": "343a0ed2fc1e125c7cf7011970448613ea83dc9d733481c524d2d67adfd195c7",
+            "crates/slk-protocol/src/deadline.rs": "bca13c2674cb585fd97a083741cd414f5a044dda3feab5ee558db80567cac732",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/lib.rs": "3a329fa6c4b385f6cc4ce24327b0188b16f781d22ee2c5a81fc2aaa0aa0815a9",
+            "crates/slk-protocol/src/message_security.rs": "002108cc82f7b4e560b4d781ae067338bd1d8bb9451ea8ede4edf503117622d9",
+            "crates/slk-protocol/src/retired_types.rs": "727d3a70590115006823ec92012e1f8d00c538ef46d10894c2314fa723ef88b4",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+            "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "624407534c5b9896bf97fdd0b80a4c80f2e20bd1b3bceb6a7a4501ac9e434d0d",
+            "crates/slk-protocol/src/types.rs": "ebcccd1368abcb2bf4a20022b1e0f6be92724085ae5dd50afed4a832971e9be2",
+            "crates/slkconfig/Cargo.toml": "f5c51129cccbbd10db446c4e18a7e725cad67cdd8e002741fd6e9d57deeab069",
+            "crates/slkconfig/src/main.rs": "603c7db900894bfc70282ef5be838a8495cbca2427ce1c9953b76402444ebd75",
+            "crates/slkd/Cargo.toml": "762675a8cddbb4297dc47841faee7b40966f6f3b4acb700ca8b839f70b2a354a",
+            "crates/slkd/src/adapters.rs": "e523d60e283ed841900976df75d0d2e4836ba987d37271d762fdbba1b408a96d",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/config.rs": "bee373a36b82ff9432ca1f3c8aea854cb11d8a7caee62602bc65ba64556f4a78",
+            "crates/slkd/src/connection.rs": "76a2896c98cd3f26765598f39903cbe5909a83c1b03de944d239e51f810b6a82",
+            "crates/slkd/src/connection_object.rs": "c817547365ed6fe8706eb1c749c9d81c3018fd8dd5c5ba494623b3962dc775f7",
+            "crates/slkd/src/controller.rs": "93d075b1ad094990e7fee97c589e62ed2b7d01d1d94b31ffd8b2decb446cf569",
+            "crates/slkd/src/controller_events.rs": "3012c6ea2a2598a6adaabe4023fa085c2012e4fda2e83ddb99765632d380630f",
+            "crates/slkd/src/dbus_iface.rs": "5dc9f21af7c63ae999b0405648d38e1a0f515a95f40297478fbe47562c45fe8d",
+            "crates/slkd/src/discovery.rs": "39bb72b5838195c14916a60bd75ad627e7255605b371bd772bd137bf99f489c2",
+            "crates/slkd/src/discovery_fence.rs": "8c1bea25254e86bef3062e1debdc2f21b8e369c3c0e8bf34a69884751333149d",
+            "crates/slkd/src/discovery_tests.rs": "38aeeefca55677845119ae9f1fe859557aec9affe8fe36f5e158fb9b4c2bb923",
+            "crates/slkd/src/event_loop.rs": "fa9fde0ab4389b891f247d7e60c97d8f8a303775941f35cb54553d8f55fb451f",
+            "crates/slkd/src/event_loop_tests.rs": "8ca47947d44860bccee90bc665068a73e578a862ab7512480f52795235ef8cc5",
+            "crates/slkd/src/kernel.rs": "21483ca487eb657e4666e414d51b862472186e34d34a7a0f46a1069e89eb3297",
+            "crates/slkd/src/main.rs": "1605ff1f79ba43c41f37a36aa0fbc5d1d65d0aec977571ceede5fa74fdf01afb",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "fdfb9e62e371041ab5efbc8bf1d3fd8f09299af62fff86081f43c326c1e6a329",
+            "crates/slkd/src/registration.rs": "2c3719883241c94a33e38f10a5a67d67b238fc902d47c6addcae81e8b7279eb1",
+            "crates/slkd/src/security.rs": "0310a37899df07ab594b61cf3e2317a510e66d70474b704695ff7c15720fb467",
+            "crates/slkd/src/security_policy.rs": "4d443f35f0de81384718be82f269569712ca55e8011e2f8f211d5bace671afcf",
+            "crates/slkd/src/security_policy_tests.rs": "65f6ea3ecbadfc80e970b5459cd13d2deb0bb20517eab85b2172f5f594f0da5e",
+            "crates/slkd/src/service.rs": "d22210adcc9d0212fe50bdeff581b803493464687b5e38cd710e6b41e2f5d6f1",
+            "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+            "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+            "crates/slkd/src/ssap_database.rs": "2422a8c6dfd3940595e70c27eac9b6f834d466deb4d18a3e413320fb4fd4e3e8",
+            "crates/slkd/src/ssap_engine.rs": "6b8e13dec64794929180b08a5753b7d60625bf366ac458a599f23f5869cf0824",
+            "crates/slkd/src/state.rs": "81c192075f2e2fe07ef2b29dd4e2353c90aa910f8b326f9b6fd21090d6f7fd46",
+            "crates/slkd/tests/config_startup.rs": "be6ebe8269e1c160844d91c31278c3306dbd117e8ae940fff8c3aa63359bcaa9",
+            "crates/slkdump/Cargo.toml": "cfa8a051c1f96f1ad16b99de57fc19aa47b99dc7f87d4382147ef5937d39ca64",
+            "crates/slkdump/src/main.rs": "6b4f7a3b271583a5b3d7fc2a3d489f9c6b822dc6f66bf127709373a2edcfe28a",
+            "crates/slkmon/Cargo.toml": "f9c218e1f1b5a0314c65e795cc89d529f271a44f245d5c3d9f7566b6679aa792",
+            "crates/slkmon/src/main.rs": "fe537266f8c5f80310709eb4247fb145cc3fb424137f6075b3123b37474c14b1",
+            "crates/slktest/Cargo.toml": "78656d09a49eb593c495d964a075a32e9911930eaf068cbfa5e6834e98491070",
+            "crates/slktest/src/benchmark.rs": "3fdade2e65655dc24cb4ccda431193beae34e5fa662f51e2d6ba72cc68507780",
+            "crates/slktest/src/benchmark/load.rs": "2d3e667b1dc9fa3c9ab1134997292990273347c288ab918e5221585c9c5dd5ff",
+            "crates/slktest/src/channel.rs": "dd76516470e1ea703b67a22b44596b94cf49edd5f5f7fbc9d98a9fee27aca0f1",
+            "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+            "crates/slktest/src/connection.rs": "614809d5a0af516d9bbd42425390ce3b123f5bc378744c068a7b1d86153fa3e6",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755",
+            "data/config/main.conf": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "9f0528281791367d8dc4521b3e83c587db0becf91849cd2a39147a4fac9c9672"
+          },
+          "manifest_mapping": {
+            "material": "discovery-r5f12-m45",
+            "pointer": [
+              "runtime",
+              "files"
+            ]
+          }
+        }
+      },
+      "report": {
+        "material": "discovery-r5f12-report",
+        "verdict_pointer": [
+          "qualification",
+          "offline",
+          "result"
+        ],
+        "verdict_results": {
+          "PASS": "PASS"
+        },
+        "scope_pointer": [
+          "qualification",
+          "offline",
+          "scope"
+        ],
+        "bounds_pointer": [
+          "qualification",
+          "offline",
+          "bounds"
+        ],
+        "source_pointers": {
+          "implementation": [
+            "mapped_source_commit"
+          ]
+        },
+        "gate_rows_pointer": [
+          "qualification",
+          "offline",
+          "gates"
+        ]
+      },
+      "report_commit": "a05c74ac45614015cfbf6149394bfc699ec4dc65",
+      "artifact_materials": [
+        "discovery-r5f12-m39",
+        "discovery-r5f12-m34",
+        "discovery-r5f12-m37"
+      ],
+      "tool_materials": [
+        "discovery-r5f12-m33",
+        "discovery-r5f12-m36",
+        "discovery-r5f12-m44",
+        "discovery-r5f12-m47"
+      ],
+      "configuration_materials": [
+        "discovery-r5f12-m45",
+        "discovery-r5f12-m29",
+        "discovery-r5f12-m31"
+      ],
+      "gates": [
+        {
+          "id": "strict-clippy",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m33",
+            "discovery-r5f12-m36",
+            "discovery-r5f12-m44",
+            "discovery-r5f12-m47"
+          ],
+          "report_pointer": [
+            "qualification",
+            "offline",
+            "gates",
+            0
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "default-workspace",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m33",
+            "discovery-r5f12-m36",
+            "discovery-r5f12-m44",
+            "discovery-r5f12-m47"
+          ],
+          "report_pointer": [
+            "qualification",
+            "offline",
+            "gates",
+            1
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "all-features-workspace",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m33",
+            "discovery-r5f12-m36",
+            "discovery-r5f12-m44",
+            "discovery-r5f12-m47"
+          ],
+          "report_pointer": [
+            "qualification",
+            "offline",
+            "gates",
+            2
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "sealed-production-sdk-bus-cases",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m33",
+            "discovery-r5f12-m36",
+            "discovery-r5f12-m44",
+            "discovery-r5f12-m47"
+          ],
+          "report_pointer": [
+            "qualification",
+            "offline",
+            "gates",
+            3
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "tool-verdict-and-policy-contract",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m33",
+            "discovery-r5f12-m36",
+            "discovery-r5f12-m44",
+            "discovery-r5f12-m47"
+          ],
+          "report_pointer": [
+            "qualification",
+            "offline",
+            "gates",
+            4
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "generated-c-header-unchanged",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m33",
+            "discovery-r5f12-m36",
+            "discovery-r5f12-m44",
+            "discovery-r5f12-m47"
+          ],
+          "report_pointer": [
+            "qualification",
+            "offline",
+            "gates",
+            5
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "strict-documentation",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m33",
+            "discovery-r5f12-m36",
+            "discovery-r5f12-m44",
+            "discovery-r5f12-m47"
+          ],
+          "report_pointer": [
+            "qualification",
+            "offline",
+            "gates",
+            6
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        }
+      ],
+      "required_gates": [
+        "strict-clippy",
+        "default-workspace",
+        "all-features-workspace",
+        "sealed-production-sdk-bus-cases",
+        "tool-verdict-and-policy-contract",
+        "generated-c-header-unchanged",
+        "strict-documentation"
+      ]
+    },
+    {
+      "id": "application-discovery-fence-r5f12",
+      "title": "实际生产scanner epoch：初始/任意u64单步/八步及错误性质负对照",
+      "level": "formal_bounded",
+      "result": "PASS",
+      "contracts": [
+        "DirectProductionScannerEpochNoReuseOrRevival"
+      ],
+      "bounds": {
+        "production_harnesses": 3,
+        "negative_controls": 1,
+        "arbitrary_counter_bits": 64,
+        "sequence_steps": 8,
+        "unsupported_attempts_retained": 2,
+        "hardware_runs": 0
+      },
+      "excluded": [
+        "Only actual production discovery_fence.rs, directly included by Kani; no verification-only transition or Native success stub.",
+        "Initial state plus arbitraryu64/retired one-step safety are separate from bounded8-step advance/retire sequence. Accepted identity is nonzero,current,notretired; advancement never reuses and exhaustion/retirement are absorbing.",
+        "Not Registry/NativeScope/connectionlifetime/Mutex/Notify/fairness/drain/callback/refcount/command-credit/USB/firmware/hardware implementationrefinement. Caller/source mapping is reviewed,not automatically proved.",
+        "Kani0.68/CBMC6.11/nightly1.100 actual export metadata. Cargo CLI has no --locked; zero-dependency lock hashes unchanged/CARGO_NET_OFFLINE=true. Positive raw logs and structured expected properties allchecked; deliberate stale-epoch assertion mustfail."
+      ],
+      "remaining": [
+        "Accurate clean new bundle/Host tools in VM, ordinary apps-only users, two realU controllers and two independent caller leases with random payload/address/RSSI checks.",
+        "Explicit release/caller-loss/TTL/manager revoke, original deadlines/partial initialization/late result/drain and peer business isolation; unknown cleanup remainsFault,notOff/Free.",
+        "Preserve actual discovery/connection/short business/acquired lengths and applicableSSAP on same new artifact; no historical qualification transfer.",
+        "C/Python discovery API,new systembus/udev/group deployment,fullRegistry/Mutex/Notify/callback/Native/USBrefinement,wholeS0-S6/19WP/10FV/12DG remainOPEN. E/mixed/coldROM/naturalRCA/nonmanual recovery/UserHostP4 boundaries unchanged."
+      ],
+      "sources": {
+        "implementation": {
+          "repo": "sparklink",
+          "commit": "a8bf6a98a6a8b9df95e32261fe8cb581d4df4662",
+          "scopes": [
+            "crates/slkd/src/discovery_fence.rs",
+            "formal/discovery_fence",
+            "tools/run_formal.py",
+            "tools/tests/test_discovery_fence_verdict.py"
+          ],
+          "files": {
+            "crates/slkd/src/discovery_fence.rs": "8c1bea25254e86bef3062e1debdc2f21b8e369c3c0e8bf34a69884751333149d",
+            "formal/discovery_fence/Cargo.lock": "eac9d1fc2d1537beb0e628f1e0bb78f3776c469f6e4fcf916726ca15824f9b64",
+            "formal/discovery_fence/Cargo.toml": "7e722c04368827c175288304552ab3366b97880fd6c091d87fa4550a4c0bede6",
+            "formal/discovery_fence/src/lib.rs": "7d798340691d35ef435acd29201c25274d1290110067ecdf86821b40fdcb0fc2",
+            "tools/run_formal.py": "a5dc3746c89f8f5004f05a544f75d4bda8c4b12626827457c189900383af4afd",
+            "tools/tests/test_discovery_fence_verdict.py": "06d6f4e4e6a0d43309afe9239bb794f30b7b16c9388830d1e480639bdec972a6"
+          },
+          "manifest_mapping": {
+            "material": "discovery-r5f12-m45",
+            "pointer": [
+              "formal",
+              "files"
+            ]
+          }
+        }
+      },
+      "report": {
+        "material": "discovery-r5f12-report",
+        "verdict_pointer": [
+          "qualification",
+          "formal",
+          "result"
+        ],
+        "verdict_results": {
+          "PASS": "PASS"
+        },
+        "scope_pointer": [
+          "qualification",
+          "formal",
+          "scope"
+        ],
+        "bounds_pointer": [
+          "qualification",
+          "formal",
+          "bounds"
+        ],
+        "source_pointers": {
+          "implementation": [
+            "mapped_source_commit"
+          ]
+        },
+        "gate_rows_pointer": [
+          "qualification",
+          "formal",
+          "gates"
+        ]
+      },
+      "report_commit": "a05c74ac45614015cfbf6149394bfc699ec4dc65",
+      "artifact_materials": [
+        "discovery-r5f12-m21",
+        "discovery-r5f12-m17",
+        "discovery-r5f12-m19",
+        "discovery-r5f12-m24"
+      ],
+      "tool_materials": [
+        "discovery-r5f12-m21",
+        "discovery-r5f12-m17",
+        "discovery-r5f12-m19",
+        "discovery-r5f12-m24",
+        "discovery-r5f12-m23",
+        "discovery-r5f12-m26"
+      ],
+      "configuration_materials": [
+        "discovery-r5f12-m45",
+        "discovery-r5f12-m29",
+        "discovery-r5f12-m31"
+      ],
+      "gates": [
+        {
+          "id": "initial-fence",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m21",
+            "discovery-r5f12-m17",
+            "discovery-r5f12-m19",
+            "discovery-r5f12-m24",
+            "discovery-r5f12-m23",
+            "discovery-r5f12-m26"
+          ],
+          "report_pointer": [
+            "qualification",
+            "formal",
+            "gates",
+            0
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "arbitrary-one-step-fence",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m21",
+            "discovery-r5f12-m17",
+            "discovery-r5f12-m19",
+            "discovery-r5f12-m24",
+            "discovery-r5f12-m23",
+            "discovery-r5f12-m26"
+          ],
+          "report_pointer": [
+            "qualification",
+            "formal",
+            "gates",
+            1
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "eight-step-fence",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m21",
+            "discovery-r5f12-m17",
+            "discovery-r5f12-m19",
+            "discovery-r5f12-m24",
+            "discovery-r5f12-m23",
+            "discovery-r5f12-m26"
+          ],
+          "report_pointer": [
+            "qualification",
+            "formal",
+            "gates",
+            2
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "stale-epoch-negative-control",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m21",
+            "discovery-r5f12-m17",
+            "discovery-r5f12-m19",
+            "discovery-r5f12-m24",
+            "discovery-r5f12-m23",
+            "discovery-r5f12-m26"
+          ],
+          "report_pointer": [
+            "qualification",
+            "formal",
+            "gates",
+            3
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        },
+        {
+          "id": "raw-and-structured-property-agreement",
+          "result": "PASS",
+          "materials": [
+            "discovery-r5f12-m21",
+            "discovery-r5f12-m17",
+            "discovery-r5f12-m19",
+            "discovery-r5f12-m24",
+            "discovery-r5f12-m23",
+            "discovery-r5f12-m26"
+          ],
+          "report_pointer": [
+            "qualification",
+            "formal",
+            "gates",
+            4
+          ],
+          "reported_status": "PASS",
+          "result_binding_version": 1
+        }
+      ],
+      "required_gates": [
+        "initial-fence",
+        "arbitrary-one-step-fence",
+        "eight-step-fence",
+        "stale-epoch-negative-control",
+        "raw-and-structured-property-agreement"
+      ]
+    },
+    {
+      "id": "application-discovery-real-r5f12",
+      "title": "新artifact双应用共享真实scanner、权限及原路径保持尚未执行",
+      "level": "real_device",
+      "result": "MISSING",
+      "contracts": [
+        "CallerScopedDiscoveryLeaseAndControllerManagementSeparation",
+        "PerControllerNativeScopeEpochAndBoundedResources"
+      ],
+      "bounds": {
+        "new_real_device_runs": 0,
+        "qualification_transferred": false
+      },
+      "excluded": [
+        "No new compiled SDK/service/Host/guest/firmware application-discovery VM gate has run. Old manager scan or directory/C/Python/short-business qualification is not reused."
+      ],
+      "remaining": [
+        "Accurate clean new bundle/Host tools in VM, ordinary apps-only users, two realU controllers and two independent caller leases with random payload/address/RSSI checks.",
+        "Explicit release/caller-loss/TTL/manager revoke, original deadlines/partial initialization/late result/drain and peer business isolation; unknown cleanup remainsFault,notOff/Free.",
+        "Preserve actual discovery/connection/short business/acquired lengths and applicableSSAP on same new artifact; no historical qualification transfer.",
+        "C/Python discovery API,new systembus/udev/group deployment,fullRegistry/Mutex/Notify/callback/Native/USBrefinement,wholeS0-S6/19WP/10FV/12DG remainOPEN. E/mixed/coldROM/naturalRCA/nonmanual recovery/UserHostP4 boundaries unchanged."
+      ],
+      "sources": {
+        "implementation": {
+          "repo": "sparklink",
+          "commit": "a8bf6a98a6a8b9df95e32261fe8cb581d4df4662",
+          "scopes": [
+            "crates",
+            "data/dbus",
+            "data/config",
+            "Cargo.toml",
+            "Cargo.lock"
+          ],
+          "files": {
+            "Cargo.lock": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+            "crates/libsparklink/Cargo.toml": "110c2fd1a2b073e47ce69b7264d92981e4e87ad1c2333b9bd215a5a1c15c7a5f",
+            "crates/libsparklink/build.rs": "b3e8c5660d724b7ac271e62b4af8766aaf4da2543034480ca9d4f4890195c332",
+            "crates/libsparklink/cbindgen.toml": "43e20d719319ecbdc029e3f8ae57b136db3bf427888fc8f29033f08166493812",
+            "crates/libsparklink/include/sparklink.h": "24fa758b1d89676e1899314d663b7a08dff0b49d93f76596ec043bceb645aeb3",
+            "crates/libsparklink/src/agent.rs": "228eda84396aa941c602d6d68c0a46df919464ee3228e41dc4f1acbb541c606c",
+            "crates/libsparklink/src/client.rs": "166207439e36325fca0668115b64cabd1ab744539b593666be09e547d33c37a8",
+            "crates/libsparklink/src/controller.rs": "b2e118baa9e291499927f77ad499d61c82c9154b03c9ffb006ed69086d7e1c2b",
+            "crates/libsparklink/src/controller_events.rs": "ddbf0004d97ab25ebf55b70768513b7af1715ca8c0874a7b05a10e46bf120cf1",
+            "crates/libsparklink/src/discovery.rs": "3392770eca1217aa36cc8074235aa2b3f848497d4b5c0dcc639595b80ff72683",
+            "crates/libsparklink/src/discovery_tests.rs": "d39262d02b91303e11df3e4949a3e73e8adad9ebcf6f16d76364dab931349a6c",
+            "crates/libsparklink/src/ffi.rs": "3767df93edc688cf4a80c88d434e5816e06f76589101dcbafe9251780b9ed716",
+            "crates/libsparklink/src/ffi_client.rs": "82b3bdb9b689606e9ab5867d2ca86c6d783a8b696a67935d21dc823a65a9a1ec",
+            "crates/libsparklink/src/ffi_connection.rs": "eaf1c49974cbf3601c1f785e34766f88567eed639f58e7a35658559d434c7bc6",
+            "crates/libsparklink/src/ffi_controller_events.rs": "31b4b68b2f29967cdacf3adfe1f9af18b02d5cca18ab2e6a6a961ab2fa0c5521",
+            "crates/libsparklink/src/lib.rs": "17e02316a5cbf09a0c023b0df41b0db3f749fd801c5e9e6dc26a2cca3d62a40f",
+            "crates/libsparklink/src/peer.rs": "832620f318b104711cda8189ec743c0b3d61cf9bc934b24d5fffbe57e047a603",
+            "crates/libsparklink/src/security.rs": "e9f1b28e3126f737850caa8ee6c471b00cae73c1a4807d656a0aeb37abead0b6",
+            "crates/libsparklink/src/ssap.rs": "bb7fa9a98d1ac6fa4a0c4b4d1c4cbdbbdc68973513b938194ffb0945a871e085",
+            "crates/libsparklink/src/ssap/local.rs": "90513938236cdadf3303f0c1651711a89d771652bddb84c27bbfbb1b057c9842",
+            "crates/libsparklink/src/sync_client.rs": "9c649ea636bc57119c41dc07f02a07d33bcc098dc21ed9646815b320714ac410",
+            "crates/libsparklink/src/sync_client/controller_events_tests.rs": "4caadc4202c5f39adf917727392ff814c61fbab7ee6afc76d3ffbac89467973b",
+            "crates/libsparklink/src/sync_client/tests.rs": "6df518102c912afee82e7dbc54705d1b9138e4c6bb0769873875099d6128d2bb",
+            "crates/libsparklink/tests/application_broker.rs": "a3ae07a32d60c1aafe839d25c9a939ffebf2b4b62b410de39498714f25a0a949",
+            "crates/libsparklink/tests/application_ffi.rs": "b1017260518a0a54a4e50f63349babe17c1ecfe07f9688ccd0e2aa806344f6c3",
+            "crates/libsparklink/tests/client_scope.rs": "6f15c094a7e9f5ec53f126010131c239dcd7ab9c0680c58491ec1deaae2a3abe",
+            "crates/libsparklink/tests/controller_client.rs": "bea22dd7a490fba2631bda82cdeea7063f99dbcd407b64b139c01223e3f522c8",
+            "crates/libsparklink/tests/controller_events.rs": "5eb45c35abbda8fc35a23d98fcbad1cc9164fb1aaecbd5ca0ff59c85a2c185a5",
+            "crates/libsparklink/tests/fixtures/application_client.c": "6a83b654c54dde35364b56088d42b86813f483d98b8069307890a707db8fc913",
+            "crates/libsparklink/tests/fixtures/application_client.py": "520acf036b330ca1434b0e8eaa001bf2f4fec1cef02da22d9a3cd2ecef09d61f",
+            "crates/libsparklink/tests/local_staging_client.rs": "46425c48da1fe9a7d7b3ef114d05a5c37e655d6eb3084c2e075dad046ee5cf87",
+            "crates/libsparklink/tests/owned_client.rs": "36438c7eaf26280d14cb49c24c41875f6aabc8832fb06c725b40703b2eb2d6a3",
+            "crates/libsparklink/tests/peer_client.rs": "2c04cb8b0cbe209fd30bf0e97b0c3b88b52a4c51065bf337033e8fcf54b2df92",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "bbc1e47bacde4137cc8961ccfd1def2a0cc172eeba244561e98457cafa8f07e7",
+            "crates/libsparklink/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/Cargo.toml": "f7589f3c0b47984ca6253879138adb1c2bb22901e1477d94a432e63b0c08af56",
+            "crates/slctl/examples/bus_policy_probe.rs": "738aea7f795d823dbc2e0daf35140b42761a6dc90e1a0c0927846a4c88671351",
+            "crates/slctl/examples/native_security_agent_probe.rs": "58d191fc9163d30a24c31fbf136ea8f2eb035158109284431d0d191f9b29de5f",
+            "crates/slctl/src/commands.rs": "47b2ac2a7d7f0b66e619ac43797c6f7953a8f45ea46eada12f515e80bd6083db",
+            "crates/slctl/src/main.rs": "a483840f276275958c0e3fedf779eaff5d632bf692b6a3a3f464bacff75a3252",
+            "crates/slctl/src/security_agent.rs": "76dd1972113be126bf51ab607eb437aa54014604f21b8082195fe786d1ce6123",
+            "crates/slctl/src/ssap_server.rs": "d63113241dad6198c3186bc12800df9ee579a3e32c152867d5f4686a1c4e8948",
+            "crates/slctl/tests/application_ssap.rs": "dec7337ebf8308d36a001fa4011042ba2503569e462f868924026e0ba6dba370",
+            "crates/slctl/tests/local_staging.rs": "9b213cf27a2ad591fdb7862e2351d894af49e6acb597bc6f62fc6c66942d89ff",
+            "crates/slctl/tests/management_owner.rs": "0665f718e90bcfe578557ee8f1333db77a5f1f89ad0f8af2e95fdb9c868142de",
+            "crates/slctl/tests/owned_local.rs": "5352abd93f1f9e4c2cdb00184b3d4da4d689c49ec68227e5d5f30c585f229b1c",
+            "crates/slctl/tests/retired_security.rs": "7cdc2f39374460b5f2073e378d4d5179657f93a3be8d43f33f5986c7e1cdb845",
+            "crates/slctl/tests/scan_freshness.rs": "bd7deb97194f01c95c62b43c63ddd4ce4f9ade4a8d9649c1f9f3c9b392998a02",
+            "crates/slctl/tests/security_agent.rs": "5711568f02d3c1c864657b1b30ce4e7693d3c23387df21dfbb76feecc3ecb608",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-channel/Cargo.toml": "1852a9e066d9d9fb966e89be6810c3ab60841a68c081c46fc280f0e679616212",
+            "crates/slk-channel/src/deadline.rs": "6ec52823f48fcc2f2f7e64dd892b7a36f776e7b39be42cf21dd6c68da74e0102",
+            "crates/slk-channel/src/lib.rs": "ff663009b9a23d1e708a1335d31edb2e4fc485341b2201099ce345381e0e3853",
+            "crates/slk-channel/src/security.rs": "0952c100016f0876f9e16e5334006042db46a022937e295ba36633b61c8c5240",
+            "crates/slk-contract/Cargo.toml": "a6c5fdf4de6e5a90cfc51c9bb91f8c6e9bff0c912bee47d0b7061a3453e0abb0",
+            "crates/slk-contract/src/controller_events.rs": "299b13ff19f0bf02d96f795b6fd117bbd5299aab5dacb780595616b92a63128e",
+            "crates/slk-contract/src/discovery.rs": "fe6b86dd7b9800f1ccd77a9f4c24ffc92f85711419af64a37febdd1ec8aa2b3d",
+            "crates/slk-contract/src/lib.rs": "3f093bb2f921ac93e5dc367fc1ee9cdd29941cd13d6fe90b7f04ce2050110dcb",
+            "crates/slk-contract/src/security.rs": "4a63aa6821844b784e061b73d59151c51c56cac18e8fdf2ef44eb3ddcb8f1054",
+            "crates/slk-experimental/Cargo.toml": "cb5b8a8f128ddc1b70da40582eecfd2f148679c5b594da8b50669dde15c07003",
+            "crates/slk-experimental/README.md": "febc95f37c0ed8e932d168ee199f4f0c602c0ea4ab5c718252029623fb8c3aa1",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "658504ecd9499ed7cd086d7ec9f1705fb6883f387f3e2d165d17cf7c3b3177ea",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-native/Cargo.toml": "6b7291fadb49e0d6474c9d2cbc86e45ca5f9815708b1901538471f8e387cda7b",
+            "crates/slk-native/build.rs": "be3b6be28f5692fd1da3977b6ea6c6ff64349bf496f8798fbcda0222b8c5c98c",
+            "crates/slk-native/cbindgen.toml": "c772f0abb4563c75cdafbca6daf75f0ab2d7892d26d03dcbe00615c44b345504",
+            "crates/slk-native/include/sparklink_native.h": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+            "crates/slk-native/src/adapter.rs": "d0096de48a574a367b213710b50f320b90c3146bb075c54a6904eb64d6b4ea17",
+            "crates/slk-native/src/channel.rs": "ca3906dc575d0b633af3f8fcc65591ce68e67a897ea81f1373e7aca8fbc7169c",
+            "crates/slk-native/src/controller_events.rs": "5f0796edd8307b3da44eda56bff00428d842babf44524d3e8fe7247b80df931a",
+            "crates/slk-native/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/slk-native/src/ffi.rs": "f96b55125dbfce1ad4a758616e2da3f97bb572b64baddaf83aa0ca2d87440dba",
+            "crates/slk-native/src/ffi_native.rs": "6c20c5b36739376c4af24ae7fedb51c198ed8a6e6269fedaddda3659a215cf7b",
+            "crates/slk-native/src/ioctl.rs": "849d9daa032491822632ca2014d4f167bcc0635e5de65f1681c5feb9e820836b",
+            "crates/slk-native/src/lib.rs": "e0cbf35aa9abfaeea1ff6707fe8778a03503ee7b059d2ea23b30e9ec4ab69f8d",
+            "crates/slk-native/src/retired_event.rs": "399da4e4c6814435f6fa16c33fc10691316c8df0709202a912dbffa56b7e49dd",
+            "crates/slk-native/src/snoop.rs": "3cc3de4abf2d229b5ddb95bae676eacd0145d8c9bcb649a0b788d3c294304292",
+            "crates/slk-native/src/ws73_discovery.rs": "acdaac152c1590194683953896f853ffdae8ae88475f7a63a9622115e00a0a8f",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "46a3576b7c50b86aba933ba3045b7d3209698984b3d083b75c9e4ff1c19c76d6",
+            "crates/slk-protocol/src/channel.rs": "343a0ed2fc1e125c7cf7011970448613ea83dc9d733481c524d2d67adfd195c7",
+            "crates/slk-protocol/src/deadline.rs": "bca13c2674cb585fd97a083741cd414f5a044dda3feab5ee558db80567cac732",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/lib.rs": "3a329fa6c4b385f6cc4ce24327b0188b16f781d22ee2c5a81fc2aaa0aa0815a9",
+            "crates/slk-protocol/src/message_security.rs": "002108cc82f7b4e560b4d781ae067338bd1d8bb9451ea8ede4edf503117622d9",
+            "crates/slk-protocol/src/retired_types.rs": "727d3a70590115006823ec92012e1f8d00c538ef46d10894c2314fa723ef88b4",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+            "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "624407534c5b9896bf97fdd0b80a4c80f2e20bd1b3bceb6a7a4501ac9e434d0d",
+            "crates/slk-protocol/src/types.rs": "ebcccd1368abcb2bf4a20022b1e0f6be92724085ae5dd50afed4a832971e9be2",
+            "crates/slkconfig/Cargo.toml": "f5c51129cccbbd10db446c4e18a7e725cad67cdd8e002741fd6e9d57deeab069",
+            "crates/slkconfig/src/main.rs": "603c7db900894bfc70282ef5be838a8495cbca2427ce1c9953b76402444ebd75",
+            "crates/slkd/Cargo.toml": "762675a8cddbb4297dc47841faee7b40966f6f3b4acb700ca8b839f70b2a354a",
+            "crates/slkd/src/adapters.rs": "e523d60e283ed841900976df75d0d2e4836ba987d37271d762fdbba1b408a96d",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/config.rs": "bee373a36b82ff9432ca1f3c8aea854cb11d8a7caee62602bc65ba64556f4a78",
+            "crates/slkd/src/connection.rs": "76a2896c98cd3f26765598f39903cbe5909a83c1b03de944d239e51f810b6a82",
+            "crates/slkd/src/connection_object.rs": "c817547365ed6fe8706eb1c749c9d81c3018fd8dd5c5ba494623b3962dc775f7",
+            "crates/slkd/src/controller.rs": "93d075b1ad094990e7fee97c589e62ed2b7d01d1d94b31ffd8b2decb446cf569",
+            "crates/slkd/src/controller_events.rs": "3012c6ea2a2598a6adaabe4023fa085c2012e4fda2e83ddb99765632d380630f",
+            "crates/slkd/src/dbus_iface.rs": "5dc9f21af7c63ae999b0405648d38e1a0f515a95f40297478fbe47562c45fe8d",
+            "crates/slkd/src/discovery.rs": "39bb72b5838195c14916a60bd75ad627e7255605b371bd772bd137bf99f489c2",
+            "crates/slkd/src/discovery_fence.rs": "8c1bea25254e86bef3062e1debdc2f21b8e369c3c0e8bf34a69884751333149d",
+            "crates/slkd/src/discovery_tests.rs": "38aeeefca55677845119ae9f1fe859557aec9affe8fe36f5e158fb9b4c2bb923",
+            "crates/slkd/src/event_loop.rs": "fa9fde0ab4389b891f247d7e60c97d8f8a303775941f35cb54553d8f55fb451f",
+            "crates/slkd/src/event_loop_tests.rs": "8ca47947d44860bccee90bc665068a73e578a862ab7512480f52795235ef8cc5",
+            "crates/slkd/src/kernel.rs": "21483ca487eb657e4666e414d51b862472186e34d34a7a0f46a1069e89eb3297",
+            "crates/slkd/src/main.rs": "1605ff1f79ba43c41f37a36aa0fbc5d1d65d0aec977571ceede5fa74fdf01afb",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "fdfb9e62e371041ab5efbc8bf1d3fd8f09299af62fff86081f43c326c1e6a329",
+            "crates/slkd/src/registration.rs": "2c3719883241c94a33e38f10a5a67d67b238fc902d47c6addcae81e8b7279eb1",
+            "crates/slkd/src/security.rs": "0310a37899df07ab594b61cf3e2317a510e66d70474b704695ff7c15720fb467",
+            "crates/slkd/src/security_policy.rs": "4d443f35f0de81384718be82f269569712ca55e8011e2f8f211d5bace671afcf",
+            "crates/slkd/src/security_policy_tests.rs": "65f6ea3ecbadfc80e970b5459cd13d2deb0bb20517eab85b2172f5f594f0da5e",
+            "crates/slkd/src/service.rs": "d22210adcc9d0212fe50bdeff581b803493464687b5e38cd710e6b41e2f5d6f1",
+            "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+            "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+            "crates/slkd/src/ssap_database.rs": "2422a8c6dfd3940595e70c27eac9b6f834d466deb4d18a3e413320fb4fd4e3e8",
+            "crates/slkd/src/ssap_engine.rs": "6b8e13dec64794929180b08a5753b7d60625bf366ac458a599f23f5869cf0824",
+            "crates/slkd/src/state.rs": "81c192075f2e2fe07ef2b29dd4e2353c90aa910f8b326f9b6fd21090d6f7fd46",
+            "crates/slkd/tests/config_startup.rs": "be6ebe8269e1c160844d91c31278c3306dbd117e8ae940fff8c3aa63359bcaa9",
+            "crates/slkdump/Cargo.toml": "cfa8a051c1f96f1ad16b99de57fc19aa47b99dc7f87d4382147ef5937d39ca64",
+            "crates/slkdump/src/main.rs": "6b4f7a3b271583a5b3d7fc2a3d489f9c6b822dc6f66bf127709373a2edcfe28a",
+            "crates/slkmon/Cargo.toml": "f9c218e1f1b5a0314c65e795cc89d529f271a44f245d5c3d9f7566b6679aa792",
+            "crates/slkmon/src/main.rs": "fe537266f8c5f80310709eb4247fb145cc3fb424137f6075b3123b37474c14b1",
+            "crates/slktest/Cargo.toml": "78656d09a49eb593c495d964a075a32e9911930eaf068cbfa5e6834e98491070",
+            "crates/slktest/src/benchmark.rs": "3fdade2e65655dc24cb4ccda431193beae34e5fa662f51e2d6ba72cc68507780",
+            "crates/slktest/src/benchmark/load.rs": "2d3e667b1dc9fa3c9ab1134997292990273347c288ab918e5221585c9c5dd5ff",
+            "crates/slktest/src/channel.rs": "dd76516470e1ea703b67a22b44596b94cf49edd5f5f7fbc9d98a9fee27aca0f1",
+            "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+            "crates/slktest/src/connection.rs": "614809d5a0af516d9bbd42425390ce3b123f5bc378744c068a7b1d86153fa3e6",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755",
+            "data/config/main.conf": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "9f0528281791367d8dc4521b3e83c587db0becf91849cd2a39147a4fac9c9672"
+          },
+          "manifest_mapping": {
+            "material": "discovery-r5f12-m45",
+            "pointer": [
+              "runtime",
+              "files"
+            ]
+          }
+        }
+      },
+      "report": {
+        "material": "discovery-r5f12-report",
+        "verdict_pointer": [
+          "qualification",
+          "real",
+          "result"
+        ],
+        "verdict_results": {
+          "MISSING": "MISSING"
+        },
+        "scope_pointer": [
+          "qualification",
+          "real",
+          "scope"
+        ],
+        "bounds_pointer": [
+          "qualification",
+          "real",
+          "bounds"
+        ],
+        "source_pointers": {
+          "implementation": [
+            "mapped_source_commit"
+          ]
+        },
+        "gate_rows_pointer": [
+          "qualification",
+          "real",
+          "gates"
+        ]
+      },
+      "report_commit": "a05c74ac45614015cfbf6149394bfc699ec4dc65",
+      "artifact_materials": [],
+      "tool_materials": [],
+      "configuration_materials": [],
+      "gates": [
+        {
+          "id": "ordinary-two-callers-one-real-scanner-and-random-peer-data",
+          "result": "MISSING",
+          "materials": [],
+          "report_pointer": [
+            "qualification",
+            "real",
+            "gates",
+            0
+          ],
+          "reported_status": "MISSING",
+          "result_binding_version": 1
+        },
+        {
+          "id": "release-caller-loss-ttl-manager-stop-original-deadline",
+          "result": "MISSING",
+          "materials": [],
+          "report_pointer": [
+            "qualification",
+            "real",
+            "gates",
+            1
+          ],
+          "reported_status": "MISSING",
+          "result_binding_version": 1
+        },
+        {
+          "id": "role-swap-native-usb-receipts-and-peer-isolation",
+          "result": "MISSING",
+          "materials": [],
+          "report_pointer": [
+            "qualification",
+            "real",
+            "gates",
+            2
+          ],
+          "reported_status": "MISSING",
+          "result_binding_version": 1
+        },
+        {
+          "id": "original-business-length-ssap-preservation-on-new-artifact",
+          "result": "MISSING",
+          "materials": [],
+          "report_pointer": [
+            "qualification",
+            "real",
+            "gates",
+            3
+          ],
+          "reported_status": "MISSING",
+          "result_binding_version": 1
+        },
+        {
+          "id": "actual-systembus-app-role-permissions",
+          "result": "MISSING",
+          "materials": [],
+          "report_pointer": [
+            "qualification",
+            "real",
+            "gates",
+            4
+          ],
+          "reported_status": "MISSING",
+          "result_binding_version": 1
+        }
+      ],
+      "required_gates": [
+        "ordinary-two-callers-one-real-scanner-and-random-peer-data",
+        "release-caller-loss-ttl-manager-stop-original-deadline",
+        "role-swap-native-usb-receipts-and-peer-isolation",
+        "original-business-length-ssap-preservation-on-new-artifact",
+        "actual-systembus-app-role-permissions"
       ]
     }
   ],
@@ -516150,6 +517057,406 @@
       "base": "workspace",
       "access": "private",
       "format": "json"
+    },
+    "discovery-r5f12-m0": {
+      "path": ".dev/main-thread-01a120fe/discovery-application-header-v1.h",
+      "sha256": "24fa758b1d89676e1899314d663b7a08dff0b49d93f76596ec043bceb645aeb3",
+      "bytes": 16907,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m1": {
+      "path": ".dev/main-thread-01a120fe/discovery-cbindgen-v1.json",
+      "sha256": "c7a4d65ff131a01ebc4525b82cd1a8c11044390a26b9476dfc24d7499d0fe270",
+      "bytes": 585,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m2": {
+      "path": ".dev/main-thread-01a120fe/discovery-cbindgen-v1.log",
+      "sha256": "3fd03e7b10c45aed4aff1423a37e9900979cbc186a93b509133734b03873e3cc",
+      "bytes": 392,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m3": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v1/arbitrary_transition_never_reuses_or_revives.log",
+      "sha256": "cfa9ed8a13ae9f8319661c79d255fc4d6910ddfe21f84acc2b3a1b62d63c4a39",
+      "bytes": 169,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m4": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v1/bounded_eight_step_cancel_reopen_retire_sequence.log",
+      "sha256": "cfa9ed8a13ae9f8319661c79d255fc4d6910ddfe21f84acc2b3a1b62d63c4a39",
+      "bytes": 169,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m5": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v1/initial_state_does_not_accept_any_identity.log",
+      "sha256": "cfa9ed8a13ae9f8319661c79d255fc4d6910ddfe21f84acc2b3a1b62d63c4a39",
+      "bytes": 169,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m6": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v1/manifest.json",
+      "sha256": "3401b2d34b1a168e05e2d61df6029faf54019a6becb833817cb35802ad4be517",
+      "bytes": 4590,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m7": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v1/negative_control_old_epoch_is_still_accepted.log",
+      "sha256": "cfa9ed8a13ae9f8319661c79d255fc4d6910ddfe21f84acc2b3a1b62d63c4a39",
+      "bytes": 169,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m8": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/arbitrary_transition_never_reuses_or_revives.json",
+      "sha256": "e9f3ca2b8ed01cb5192e5b3acfd1f16d122a92d53ac90037c1f2b2733c3c7a4b",
+      "bytes": 35540,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m9": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/arbitrary_transition_never_reuses_or_revives.log",
+      "sha256": "7ca6ef88c773d9d86344ebb687cc5586b4c146465ed0b3e6b6195097dd92380b",
+      "bytes": 21935,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m10": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/bounded_eight_step_cancel_reopen_retire_sequence.json",
+      "sha256": "925a0edbca11a53afe24af3da9d3f473eb38320fb03fb36196ab1e38a24539ad",
+      "bytes": 189774,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m11": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/bounded_eight_step_cancel_reopen_retire_sequence.log",
+      "sha256": "d10392fb2c4a97f12d2ea10a4c5065c44d79bd463f8b4471c24cd25800606c22",
+      "bytes": 169881,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m12": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/initial_state_does_not_accept_any_identity.json",
+      "sha256": "3a16030376ab7fbd950b0adbed0da8ed7ef9ba81d8456afddfbbb7a1bf5dc936",
+      "bytes": 15210,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m13": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/initial_state_does_not_accept_any_identity.log",
+      "sha256": "6d685a8effa438a88d097c18653b3fea26357d8147a339fa3f76d3098ad37581",
+      "bytes": 8882,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m14": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/manifest.json",
+      "sha256": "c173fd382f69a0a70d4403d6132b0aa4dbaa8dec5fd7d3120b918f042f00ba08",
+      "bytes": 4817,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m15": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/negative_control_old_epoch_is_still_accepted.json",
+      "sha256": "b69cf571c5f729a527f13b1e05c0a5546570211f647888913e9ae4429ead6486",
+      "bytes": 24112,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m16": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v2/negative_control_old_epoch_is_still_accepted.log",
+      "sha256": "aa70683944812d26b0036971fe5cb3698fb802d25564567741dc6e8f07aa6ddd",
+      "bytes": 14490,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m17": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/arbitrary_transition_never_reuses_or_revives.json",
+      "sha256": "22877a29c490246a2385119547fee275314a790ae1d80045d0d1460666a1919d",
+      "bytes": 35541,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m18": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/arbitrary_transition_never_reuses_or_revives.log",
+      "sha256": "dffd213d5a67cdf52910593fdd1f05a92b1fec5d1387fb6a9eb0996e2ce2761d",
+      "bytes": 21934,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m19": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/bounded_eight_step_cancel_reopen_retire_sequence.json",
+      "sha256": "66a52443e8b7704129a9be5c18ec06ef8b0ac88a013650feec6ac6de4836a0b8",
+      "bytes": 29665,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m20": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/bounded_eight_step_cancel_reopen_retire_sequence.log",
+      "sha256": "e5eede7e23126033778681803250d03d90cb688c53ad5f3e4a44af78bfe3e2f9",
+      "bytes": 20785,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m21": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/initial_state_does_not_accept_any_identity.json",
+      "sha256": "b9b45bfb7ccd03b358a995719498e0469c22586e6537edcd0cea57a8baa10b70",
+      "bytes": 15207,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m22": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/initial_state_does_not_accept_any_identity.log",
+      "sha256": "d478901b8622292f62c06dea0f7931d7156cd5a9520963ae79ca744e97fe6036",
+      "bytes": 8881,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m23": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/manifest.json",
+      "sha256": "45650ba9ade588d1a5e094811d970ab614925455766928d0d06c0eb3af7286eb",
+      "bytes": 5025,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m24": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/negative_control_old_epoch_is_still_accepted.json",
+      "sha256": "e884bd3b7c5c8983dd4d5f8364db4706238ec71e63e2f0d94803bc94c5f6e135",
+      "bytes": 27438,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m25": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-kani-v3/negative_control_old_epoch_is_still_accepted.log",
+      "sha256": "4710168ab93642d12d2a50d9a38ddf4b4281a6e3eaba155b0fe0f45f07bcec19",
+      "bytes": 16436,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m26": {
+      "path": ".dev/main-thread-01a120fe/discovery-fence-structured-audit-v2.json",
+      "sha256": "50b6bbb12efcd906a511865aba0ccead17f123d133ccd01b5e2f28870d761d0e",
+      "bytes": 713,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m27": {
+      "path": ".dev/main-thread-01a120fe/discovery-final-allfeatures-v1.json",
+      "sha256": "2626a08e76c804024270c1531c674559362f24ebc20e8904d4529487bfcfdd33",
+      "bytes": 930,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m28": {
+      "path": ".dev/main-thread-01a120fe/discovery-final-allfeatures-v1.log",
+      "sha256": "3b998610d1e714619ad408076edb5bd88f9fad6146adb24b40e7a1e18a58109b",
+      "bytes": 42154,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m29": {
+      "path": ".dev/main-thread-01a120fe/discovery-final-clippy-v1.json",
+      "sha256": "068c92116cd3ca4009783bec487c6123447ef10736b416dca2a63400eff6873c",
+      "bytes": 989,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m30": {
+      "path": ".dev/main-thread-01a120fe/discovery-final-clippy-v1.log",
+      "sha256": "f0308815110711beb71b94b4e381e34e2bd22054b8f0099f5972d16369cea4eb",
+      "bytes": 840,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m31": {
+      "path": ".dev/main-thread-01a120fe/discovery-final-default-v1.json",
+      "sha256": "da8d881ea25dd520122259bee59b406c348e42723b55faead689628f517bdc3d",
+      "bytes": 908,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m32": {
+      "path": ".dev/main-thread-01a120fe/discovery-final-default-v1.log",
+      "sha256": "c9a6d6a91cf3cbe4d38df65f45e7f9149aa9ea8de9e3744bfbc8abc6250c4bce",
+      "bytes": 42013,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m33": {
+      "path": ".dev/main-thread-01a120fe/discovery-final-rust-pipeline-v1.json",
+      "sha256": "27d935eaaf8b878c48a98f93fe4f4595691a1e4e96184c899ad0eae4c93f0c02",
+      "bytes": 27811,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m34": {
+      "path": ".dev/main-thread-01a120fe/discovery-sealed-offline-v1/libsparklink",
+      "sha256": "04ac4611c11cadf45d27e8b8e5cf3f4afce85407cd1db9f2b4753faa98229adc",
+      "bytes": 70931512,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m35": {
+      "path": ".dev/main-thread-01a120fe/discovery-sealed-offline-v1/libsparklink.log",
+      "sha256": "1f562db269b043f3db979d47b6cb35abb255b145d2039208b494d8a422dde4bb",
+      "bytes": 401,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m36": {
+      "path": ".dev/main-thread-01a120fe/discovery-sealed-offline-v1/manifest.json",
+      "sha256": "54916460ae16bc70e29327f9dfb6e807ec660594e03afa4527d700d6f732d9e1",
+      "bytes": 1536,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m37": {
+      "path": ".dev/main-thread-01a120fe/discovery-sealed-offline-v1/slk_contract",
+      "sha256": "cd3293d2fcecae45cb046ff9ac5031596380494372de5e1cc7c003a84dc35514",
+      "bytes": 19005216,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m38": {
+      "path": ".dev/main-thread-01a120fe/discovery-sealed-offline-v1/slk_contract.log",
+      "sha256": "98564eb74ada47e706a9c40196e54561656d5f58749592b2e1a7736c211b1c5c",
+      "bytes": 177,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m39": {
+      "path": ".dev/main-thread-01a120fe/discovery-sealed-offline-v1/slkd",
+      "sha256": "4bb9e53714eee09c721b4d2220ca91985b19589d1231c5c70c3e1bde8932f7ea",
+      "bytes": 170813336,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m40": {
+      "path": ".dev/main-thread-01a120fe/discovery-sealed-offline-v1/slkd.log",
+      "sha256": "7c00bf882e0c78671086b59abc25998caabe271112990b340121624c6c4d9116",
+      "bytes": 1096,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m41": {
+      "path": ".dev/main-thread-01a120fe/discovery-strict-clippy-v2.log",
+      "sha256": "274a6690f4592d088114ef0bf3c966113d3d0d2ef7e5825bb519f49f23e98c4a",
+      "bytes": 1586,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m42": {
+      "path": ".dev/main-thread-01a120fe/discovery-tools-final-v1.log",
+      "sha256": "cb0cea0644abeaa7eff92374b94d0cbbe0efebd6916b7ad6781d7708637f74f6",
+      "bytes": 8539,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m43": {
+      "path": ".dev/main-thread-01a120fe/discovery-tools-final-v2.log",
+      "sha256": "7fb7ecc2287f278be48c57482c6321da6eee252c09595010025759bd56a067cf",
+      "bytes": 1956,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m44": {
+      "path": ".dev/main-thread-01a120fe/discovery-tools-final-v3.log",
+      "sha256": "651220a35ae28ff3ba4d243c7a63b8a9457a17fded1b14b8b531232374df7db9",
+      "bytes": 1074,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m45": {
+      "path": ".dev/main-thread-01a120fe/discovery-source-signed-map-v1.json",
+      "sha256": "d51d69eef8368b6243c865983599935489964d960c2901cbf451493e09512b28",
+      "bytes": 18040,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m46": {
+      "path": ".dev/main-thread-01a120fe/discovery-reference-source-v1.json",
+      "sha256": "52e49f30045ded6686a235320adf5269dc446cc3979ae12c8d8153de1f3b5a70",
+      "bytes": 883,
+      "access": "private",
+      "format": "json",
+      "base": "workspace"
+    },
+    "discovery-r5f12-m47": {
+      "path": ".dev/main-thread-01a120fe/discovery-docs-v1.log",
+      "sha256": "a5ececcf800a20872a93139c44ab5fc33ff00ee6d88a9bf48dc5f565bb7b6c3b",
+      "bytes": 1444295,
+      "access": "private",
+      "format": "bytes",
+      "base": "workspace"
+    },
+    "discovery-r5f12-report": {
+      "path": "docs/evidence/application-discovery-offline-20261019.json",
+      "base": "repo",
+      "access": "public",
+      "format": "json",
+      "sha256": "32ded3bd2048782365e9ca0a6f533177c3b150f6001ac1dfd9cadcb9417d14ac",
+      "bytes": 32224,
+      "assertions": [
+        {
+          "pointer": [
+            "mapped_source_commit"
+          ],
+          "equals": "a8bf6a98a6a8b9df95e32261fe8cb581d4df4662"
+        }
+      ]
     }
   },
   "baseline_record": "hcc-timed110-data",

@@ -1994,20 +1994,33 @@
       "controller-directory-language-r5f11": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "application-discovery-offline-r5f12": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "application-discovery-fence-r5f12": {
+        "level": "formal_bounded",
+        "result": "PASS"
+      },
+      "application-discovery-real-r5f12": {
+        "level": "real_device",
+        "result": "MISSING"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP18-R5f11-controller-directory-language-bridge",
-      "production_behavior": "One Rust stream/executor across Rust/C/Python. Clean compiled3bd SDK/service,executed80e Host/guest,2fcKernel;fixed d912 validator offlineonly. Six actual UID1001 observers/12directorychanges,9VM/72peerreplies/198RF/40431USBdrop0,27actualHCCpairs. 106newinput/56preservation/8registrynegatives;383dirtymappedRust/61Python/891tools/116docs,no newformalproof. Original argv/audit-path/missing-proof AttributeError retained;fullstate/DiscoverySession/otherSDK/security/recovery stillopen.",
-      "state": "ACTUAL_RUST_C_PYTHON_TWO_ROLE_AND_SEVEN_LENGTH_SCOPED_REAL_PASS_ORIGINAL_COUNTEREXAMPLES_FORMAL_OPEN",
-      "exit": [
-        "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
-        "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
-        "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
-        "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
+      "id": "WP03-WP18-R5f12-application-discovery",
+      "production_behavior": "Per-controller caller-owned bounded scanner leases through existing Native management guard/recipes/results. Rust Client and slctl own filtering/read/release,not management credentials. Last lease requests actual STOP; manager handoff/retirement fences late work; unknown cleanup staysFault,notOff/Free.",
+      "state": "IMPLEMENTED_OFFLINE_AND_FENCE_SCOPED_PASS_REAL_GATES_MISSING",
+      "records": [
+        "application-discovery-offline-r5f12",
+        "application-discovery-fence-r5f12",
+        "application-discovery-real-r5f12"
       ],
-      "next": "Continue bounded per-application DiscoverySession coordinator/ownership and full state/EventStream plus remaining SDK/SSAP/Agent interfaces. Do not wrap manager scanner commands as application leases. Complete related lifecycle/initialization/Grant-credit-Ticket/deadline work alongside actual data/security/SSAP/multichannel/four-device delivery;not all control permutations as prerequisites. Journal/pending-delivery/executor/NOCP/callback/reuse assumptions remain NOT_PROVEN. NaturalRCA/nonmanualrecovery OPEN;UserHostP4;fullS0-S6/19WP/10FV/12DG/VM-only/SDK110/strict4leaves/shared12or8 unchanged."
+      "exit_ref": "application-discovery-real-r5f12.required_gates; see canonical implementation-plan R5f12 for steps",
+      "next": "Freeze accurate clean release bundle/Host/guest in existing VM-only U1-1.1.1/.2 runner. Verify two ordinary apps-only callers sharing one scanner with actual random peer data/address/RSSI;release/caller-loss/TTL/manager revoke,role swap and matching USB commands. Regress original business/length/SSAP on same artifact. New positive CLI and actual systembus permissions remain required,not substituted by privatebus tests.",
+      "scope": "Complete originalS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged. Data/security/SSAP/multichannel/fourdevice/lifecycle/cleanup/recovery/deployment remainOPEN in parallel;not all control permutations as prerequisites. UserHostP4;E/mixed/coldROM/naturalRCA/nonmanualrecovery not qualified."
     },
     "selected_qualification": {
       "version": 1,
@@ -4549,5 +4562,48 @@
     "qualification_record": "native-controller-user-return-r5f9h",
     "remaining": "Continue original dynamic Native creator/author cancel/release/last-fd/dup/SCM_RIGHTS/original deadline and Grant-credit-Ticket/late NOCP compositions with the same owner/Session. Two slot0 User controller roles do not complete service/dynamic/all device combinations or Kernel ref/callback/drain/UAF/firmware reuse proof. Keep real data/security/SSAP/multichannel/four-device vertical delivery parallel;not all control permutations as prerequisites. Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;UserHost P4;fullS0-S6/19WP/10FV/12DG/VM-only/strictports/SDK110/shared12or8unchanged.",
     "next": "Continue original dynamic Native creator/author cancel/release/last-fd/dup/SCM_RIGHTS/original deadline and Grant-credit-Ticket/late NOCP compositions with the same owner/Session. Two slot0 User controller roles do not complete service/dynamic/all device combinations or Kernel ref/callback/drain/UAF/firmware reuse proof. Keep real data/security/SSAP/multichannel/four-device vertical delivery parallel;not all control permutations as prerequisites. Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;UserHost P4;fullS0-S6/19WP/10FV/12DG/VM-only/strictports/SDK110/shared12or8unchanged."
+  },
+  "application_discovery_batch": {
+    "report": "docs/evidence/application-discovery-offline-20261019.json",
+    "offline_record": "application-discovery-offline-r5f12",
+    "fence_record": "application-discovery-fence-r5f12",
+    "real_record": "application-discovery-real-r5f12",
+    "previous_source_bound_batch": {
+      "id": "WP03-WP18-R5f11-controller-directory-language-bridge",
+      "production_behavior": "One Rust stream/executor across Rust/C/Python. Clean compiled3bd SDK/service,executed80e Host/guest,2fcKernel;fixed d912 validator offlineonly. Six actual UID1001 observers/12directorychanges,9VM/72peerreplies/198RF/40431USBdrop0,27actualHCCpairs. 106newinput/56preservation/8registrynegatives;383dirtymappedRust/61Python/891tools/116docs,no newformalproof. Original argv/audit-path/missing-proof AttributeError retained;fullstate/DiscoverySession/otherSDK/security/recovery stillopen.",
+      "state": "ACTUAL_RUST_C_PYTHON_TWO_ROLE_AND_SEVEN_LENGTH_SCOPED_REAL_PASS_ORIGINAL_COUNTEREXAMPLES_FORMAL_OPEN",
+      "exit": [
+        "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
+        "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
+        "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
+        "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
+      ],
+      "next": "Continue bounded per-application DiscoverySession coordinator/ownership and full state/EventStream plus remaining SDK/SSAP/Agent interfaces. Do not wrap manager scanner commands as application leases. Complete related lifecycle/initialization/Grant-credit-Ticket/deadline work alongside actual data/security/SSAP/multichannel/four-device delivery;not all control permutations as prerequisites. Journal/pending-delivery/executor/NOCP/callback/reuse assumptions remain NOT_PROVEN. NaturalRCA/nonmanualrecovery OPEN;UserHostP4;fullS0-S6/19WP/10FV/12DG/VM-only/SDK110/strict4leaves/shared12or8 unchanged."
+    },
+    "scope_changed": false,
+    "new_real_device_runs": 0,
+    "local_revalidation": {
+      "path": ".dev/main-thread-01a120fe/discovery-current-qualification-audit-v1.json",
+      "sha256": "5ec62867ac89e01879837ad615cfa5781085cdb1dce2a5c64ca476266987454d",
+      "required_materials": 17,
+      "negative_mutations_rejected": 8,
+      "overall": "INCOMPLETE;realMISSING",
+      "scope": "Onlythree new records/source/runtime scopes locally reverified;historical records not upgraded"
+    },
+    "documentation": {
+      "strict_html": "PASS",
+      "inventory_documents": 117,
+      "receipt": ".dev/main-thread-01a120fe/discovery-docs-v1.log",
+      "browser_new_page": "NOT_RUN",
+      "report_commit": "a05c74ac45614015cfbf6149394bfc699ec4dc65"
+    },
+    "source_ref": "project/qualification-records.json:application-discovery-offline-r5f12.sources",
+    "execution_ref": "qualification_view.current_batch",
+    "remaining_ref": "project/qualification-records.json:application-discovery-real-r5f12.required_gates",
+    "state_sync_maintenance": {
+      "receipt": ".dev/main-thread-01a120fe/discovery-goal-batch-sync-counterexample-v1.json",
+      "sha256": "53c7f8ff1361496a02d986c4443f2a9f3d99bead20a61448e8858f7c6bd76351",
+      "scope": "Canonical registry.batch corrected; generated view compared equal. No proof or realqualification upgrade."
+    }
   }
 }

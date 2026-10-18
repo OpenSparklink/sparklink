@@ -614,6 +614,9 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | U247→Udb724→U247：实际开发Debian修订升级/回滚、匹配SDK和状态保留限定通过 | `virtual_integration` | `PASS` |
 | fd0服务/4d9工具：默认observer真实目录变化，两角色与七尺寸/Owned保持；原启动前FAIL保留 | `real_device` | `PASS` |
 | 3bdSDK/80e运行/d912离线校验：真实C/Python目录观察及七尺寸保持，反例保留 | `real_device` | `PASS` |
+| Scoped discovery daemon/Rust SDK/CLI：397+397及封存14项限定离线 | `offline` | `PASS` |
+| 实际生产scanner epoch：初始/任意u64单步/八步及错误性质负对照 | `formal_bounded` | `PASS` |
+| 新artifact双应用共享真实scanner、权限及原路径保持尚未执行 | `real_device` | `MISSING` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

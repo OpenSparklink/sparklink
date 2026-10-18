@@ -13,16 +13,16 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP03-WP18-R5f10-controller-directory-observer",
-    "production_behavior": "Same-directory bounded Root journal/typed Rust Client/actualslctl;fd0 compiledservice/4d9 host-guesttools/2fc kernel/SDK110US. Two actual default-observer roles plus seven preserved lengths/OwnedSSAP,72actualpeerreplies/198RF/zero capture drops. Original pre-QEMU toolFAIL preserved;379 cleanfd0 allfeatures/888tools/11targeted/116docs. No newformalproof;not NativeReady/Down/drain or complete state/EventStream;C/Python stream and per-app DiscoverySession stillmissing.",
-    "state": "EXACT_NEW_OBSERVER_TWO_ROLE_AND_SEVEN_LENGTH_PRESERVATION_SCOPED_REAL_PASS_FORMAL_OPEN",
+    "id": "WP03-WP18-R5f11-controller-directory-language-bridge",
+    "production_behavior": "C/Python reuse original Rust stream/executor, single pending observation and source-bound errno/identity/deadline/gap/finalref contract. Four production/export/slot cases,actualC/Pythoncdylib fixture,383allfeatures/61Python/strictClippy/generatedheader/export/116docs passed,dirty-scoped source accurately retained;notcleancommitcompile. First environment/ClippyFAILs retained,noallow. NewlanguageVM/formal NOT_RUN/NOT_PROVEN;oldrealrecordsunchanged.",
+    "state": "IMPLEMENTED_SCOPED_OFFLINE_PASS_NEW_C_PYTHON_VM_AND_FORMAL_PENDING",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "Continue bounded architecture API/DiscoverySession and C/Python shared client stream, Native creator/parent cleanup and related Grant-credit-Ticket/deadline compositions. Preserve actual data/security/SSAP/multichannel/four-device delivery;do not wait for all control permutations. Journal notification/source refinement remains NOT_PROVEN. Natural startup/reenumeration/disappearance RCA and nonmanual recovery OPEN;UserHostP4;fullS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged."
+    "next": "Finish strict source-bound offline/ABI/header/error gates,sign exact source,stage real C/Python ordinary observers using existing VM collector and unique Runtime journal. Obtain actual two-role directory changes plus original peer data/length/SSAP preservation for exact new artifact. Then continue bounded DiscoverySession ownership and original lifecycle/data/security/SSAP/multichannel/four-device work. FullS0-S6/19WP/10FV/12DG,VM-only,SDK110,four-leaf policy,shared12or8 andUserHostP4 unchanged;naturalRCA/nonmanualrecovery OPEN."
   },
   "overall_required_records": [
     "deadline-real21",

@@ -1,0 +1,628 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "level": "offline",
+  "compiled_base_head": "d4cbbacf5e3ce3fd7e412cfc14c6d930676c928c",
+  "source_kind": "DIRTY_SCOPED_BYTES_NOT_CLEAN_COMMIT",
+  "tested_source_snapshot": ".dev/main-thread-01a120fe/controller-language-tested-source-v2.json",
+  "scope": [
+    "Actual public C exports and production observation delivery slot, original pinned Rust Client and SyncClient executor. Four production/export/state tests include peek, ENOBUFS, original deadline after actual RPC-entry barrier, concurrent-next EAGAIN, late reply, Gap, owner release/reacquire, retained caller/final join and rejected wrong acknowledgement. Finite private bus metadata fixtures, not Native events or hardware.",
+    "Actual compiled shared library, current C header and actual Python public entry reuse existing application_ffi consumer. Source is d4+exact dirty file snapshot; NOT a clean signed-commit compilation. A later signed SDK commit must byte-map the full snapshot; report/document commit is not the compilation identity.",
+    "Test-profile cdylib, affected actual Rust test executables, C consumer/library/build-env/hash manifests/stdout/stderr and original failed runs retained privately. Final Python61 and export checks use sealed library bytes. ABI/type/syscall fixtures do not prove kernel authorization, concurrency, firmware or RF.",
+    "No new Host, Engine, protocol codec, Native permission/UAPI/controller operations. One pending observation is a delivery cache only. ACK clears it before infallible copying to valid C regions; it is not USB/NOCP/peer/application completion. Invalid or aliased C regions are caller UB, not kernel EFAULT coverage.",
+    "Same caller/executor retained across parent close; synchronous requests share8 queued/1executing slots. Long observation can delay the same Client requests; no independent process/scheduling guarantee. Forked Python use rejects before locks; C fork use remains prohibited by API contract.",
+    "First Python run omitted library/UAPI paths; second still had missing UAPI and sandbox-denied Unix/invalid-fd syscalls. Original logs retained; accurate paths plus original assertions passed outside that syscall sandbox. First strictClippy rejected repeated private-bus fixture module inclusion; one shared test-only fixture fixed it, no allow or weakened warning."
+  ],
+  "bounds": {
+    "workspace_allfeatures_tests": 383,
+    "new_production_export_slot_tests": 4,
+    "actual_external_c_python_fixture_tests": 1,
+    "python_tests": 61,
+    "strict_documents": 116,
+    "real_ws73_vms": 0,
+    "new_formal_proofs": 0
+  },
+  "gates": [
+    {
+      "name": "production-export-slot-controlled-private-bus",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "actual-cdylib-c-header-python-consumer",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "python61-sealed-libraries",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "workspace383-strict-clippy-locked",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "generated-header-dynamic-export-and-strict-html",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "remaining": [
+    "Accurate new C/Python ordinary-observer VM positive evidence, two actual roles, source-bound library/consumer/interpreter/scripts/loaded-process identity and two-endpoint business/length/Owned preservation still NOT_RUN. Oldfd0/4d9 real qualification cannot substitute.",
+    "Production pending-slot direct test plus executor tests are not full interleaving/refinement or memory-order proof. Journal notification/drain, SDK response-delivery composition, NOCP/USB/firmware reuse assumptions remain NOT_PROVEN.",
+    "Full per-app DiscoverySession coordinator, full/pre-Runtime EventStream, current SDK/Agent/security/Bond/Profile/deployment matrix, dynamic/multichannel/four-device/long-run and original lifecycle scopes remain open. Preserve S0-S6/19WP/10FV/12DG and all original issues.",
+    "Strict four-leaf allocation, SDK110 E/US sets and shared12/VM8 unchanged. No E/mixed/cold-ROM auto-selection qualification or new hardware action. Natural failure root causes/nonmanual recovery remain OPEN;UserHostP4."
+  ],
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-command-v1.json",
+      "sha256": "d8ad15737b81c9ab08ada7a626d3a75606413f8566b08178b174f5a2101ff518",
+      "bytes": 956
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-command-v2.json",
+      "sha256": "4075f70231f5366077d9510ee7968b3b66f013cc9933df00116588a0246491de",
+      "bytes": 956
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1.log",
+      "sha256": "3faf18c7123aeeb058babeb4266691de3db3fcf16f3b7f611aa4661b4ac98ae9",
+      "bytes": 926
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/build-environment.txt",
+      "sha256": "da3c634f4d484e02069b3837d85f043d92fb8543bf5d8ab7e9f2833da7fd8d5a",
+      "bytes": 606
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/c.stdout",
+      "sha256": "e35deb9a248929d6266c2b1b2de5b7c7a3a15b81c4b5fec33de73261faa7d0f8",
+      "bytes": 159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/client",
+      "sha256": "6155d0378b955be66f610de66c1ad2901a095a91449567828e27870cd2eb5eed",
+      "bytes": 87504
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/libsparklink.so.0",
+      "sha256": "b5ba6f9a963edc6c90981651be65bf1c7a4608a245cd50cdb619e545fc95708d",
+      "bytes": 59935432
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/materials.sha256",
+      "sha256": "1333510cfc56c90644c0f7536b34046f12aaacbad1456fbb4e95ed284fce78cf",
+      "bytes": 1706
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/python.stderr",
+      "sha256": "19be6291ba710bf0e60cb8d18604996b3b9a3d37277a0f1b9a9f360f749031b9",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/python.stdout",
+      "sha256": "e35deb9a248929d6266c2b1b2de5b7c7a3a15b81c4b5fec33de73261faa7d0f8",
+      "bytes": 159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-timeout-read.stdout",
+      "sha256": "393e91f2b02d375f23974e633c48bd1c86a71a2ea68efddc069b17fd265ffe6a",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-timeout-write.stdout",
+      "sha256": "5de1c5204d94f1fd0dabed0fbfe02b19db5e46389b49ab623355e2f0d67968e5",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-unexpected-success.stdout",
+      "sha256": "6d7b1421efe84e63a74f1144f13aa71b3e1c365e103454a9f564786e06eb0f1f",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-c-wrong-errno.stdout",
+      "sha256": "47ad6d6e0711294f3c330b1831569a39f5ea07035fac791d5f2c9bea5e9e795e",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-timeout-read.stdout",
+      "sha256": "d3a53b9fe95987e7d97b47a2222655d53b2a021739c75324806bab28ef24d69e",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-timeout-write.stdout",
+      "sha256": "2c352504ef80289de98a8abe91c667959b54a17c742aad33094b2a37644cf4fe",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-unexpected-success.stdout",
+      "sha256": "289df3f49926a5718c7b27ad318437a477c1de9c8516ac63e8d73ac60ac26f0d",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-wrong-errno.stderr",
+      "sha256": "7c9e980aafc309d06525fa7ca7fbfcad95e41f4a15f7e1b3f5a02685e866b347",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-python-wrong-errno.stdout",
+      "sha256": "9bc5dc74022ca01bd0cf28b3fe7a02bf37ffb6131c8f9855d10cf1c473340326",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v1/sdk-ssap-probe",
+      "sha256": "bc66a46eec47824eb33d7fd2c9dad12dc60a55c42593280e5d46d9a8c8b1a6b1",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2.log",
+      "sha256": "1012f43252448d57cd12f55ff6cb7842b9d4fec9bb2dff82ad7e5884e6f1fd51",
+      "bytes": 926
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/build-environment.txt",
+      "sha256": "a31e4562e600e139b7f738efd4eb590c8d03deacc469432b5eec7d25feb083b0",
+      "bytes": 606
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/c.stdout",
+      "sha256": "e35deb9a248929d6266c2b1b2de5b7c7a3a15b81c4b5fec33de73261faa7d0f8",
+      "bytes": 159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/client",
+      "sha256": "6155d0378b955be66f610de66c1ad2901a095a91449567828e27870cd2eb5eed",
+      "bytes": 87504
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/libsparklink.so.0",
+      "sha256": "b5ba6f9a963edc6c90981651be65bf1c7a4608a245cd50cdb619e545fc95708d",
+      "bytes": 59935432
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/materials.sha256",
+      "sha256": "5a7c102febf3800288ac6118b392693f203b6acaff5f83073b37eb6a0201d395",
+      "bytes": 1706
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/python.stderr",
+      "sha256": "895e40e6eef37e281d9bc7d344c97e3360e5243557395a1dad5c0ba33e09eeb1",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/python.stdout",
+      "sha256": "e35deb9a248929d6266c2b1b2de5b7c7a3a15b81c4b5fec33de73261faa7d0f8",
+      "bytes": 159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-timeout-read.stdout",
+      "sha256": "dec45d4149e81cbe317c9c8a2c45e3ae99aac6f86ae343f1e2e9f09a2d70cec3",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-timeout-write.stdout",
+      "sha256": "b1cbf21b203b2e6bf7e0e5670a06418f78cdb1953c841408eaee6c3571745735",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-unexpected-success.stdout",
+      "sha256": "bce1243d206d6ad250694f7a91cf69e61360f630fef1069c70b7803be04fd491",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-c-wrong-errno.stdout",
+      "sha256": "2f3b272b122a049231c901318441c604f7271e157e632558bba420786a3928f9",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-timeout-read.stdout",
+      "sha256": "80d34158dd41f9c6bf41315b35fd0255244c00be7eaecca267da7d07c7a088e9",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-timeout-write.stdout",
+      "sha256": "704fe5d59c25e471275d53d5a1ec270f54a9d3731a691ab520b03345cc983436",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-unexpected-success.stdout",
+      "sha256": "b1ceea503fd08b3a10bdf828f7b34fe637f4dd33c29acb12907929461e8dd949",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-wrong-errno.stderr",
+      "sha256": "7c9e980aafc309d06525fa7ca7fbfcad95e41f4a15f7e1b3f5a02685e866b347",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-python-wrong-errno.stdout",
+      "sha256": "412dbe5e3e309a2b3a321857f84f77f15e8e6be998886bbbe4a78d7b2947a254",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-actual-ffi-v2/sdk-ssap-probe",
+      "sha256": "bc66a46eec47824eb33d7fd2c9dad12dc60a55c42593280e5d46d9a8c8b1a6b1",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-allfeatures-v1.json",
+      "sha256": "6ebb10d8df1e1375d8b9b2ed745e9e3a89d859ce6cbf58761f884baa67b8abcc",
+      "bytes": 930
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-allfeatures-v1.log",
+      "sha256": "7a57b055393d1a12b7a3a32dd718033af7cf9e6fd81c0bb289fc689fd41a88b8",
+      "bytes": 41747
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-allfeatures-v2.json",
+      "sha256": "a1aa13f09c143803360f5110edd77cf8e6cbe8f4f0d98a10e013565e48ff9bf7",
+      "bytes": 930
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-allfeatures-v2.log",
+      "sha256": "945ada93b2119a07e2db9336761f57359144f3c7f3651a8417500e5766cc362f",
+      "bytes": 41078
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-allfeatures-v3.json",
+      "sha256": "d1235c3962cf1a6d329b7c97390b77ce8fa71f684b9e59da78bba7c69f6f30d5",
+      "bytes": 930
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-allfeatures-v3.log",
+      "sha256": "5d71580a9b043bf05ece69fcca30f788d2f1d4ebad578bff9b5ad105328b5144",
+      "bytes": 40820
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-cbindgen-v1.log",
+      "sha256": "3fd03e7b10c45aed4aff1423a37e9900979cbc186a93b509133734b03873e3cc",
+      "bytes": 392
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-check-v1.json",
+      "sha256": "f6bfe93ce7cb70425091f7f252039759eb14869ab38e27e6f4aedd0e93ee4586",
+      "bytes": 920
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-check-v1.log",
+      "sha256": "f40d8442f7dfab2f5e1773d2ee34d65b25d887ff697a13e630774b5e8f1a4e98",
+      "bytes": 582
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-clippy-v1.json",
+      "sha256": "7c29d897406d3bcf37fde90609560901c57a01ba5a2c2b1719acb735e7cf3eb6",
+      "bytes": 991
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-clippy-v1.log",
+      "sha256": "88f2de5496442c03b8a734107c309f797dea984a2677d6b2cb2968035a6267bf",
+      "bytes": 1900
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-clippy-v2.json",
+      "sha256": "a4eadda16979d982de6a7cf9e8bd7d7fc9922140aaa9cf649ee24f101e438af4",
+      "bytes": 989
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-clippy-v2.log",
+      "sha256": "3e477cfbc670a2ef02d1e7738e54084e60503ed610ccd937db5c84e0d6b846cd",
+      "bytes": 840
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-docs-v1.log",
+      "sha256": "b2b0be49179d2540abde99e9c4442237eb8944b65455519a3f5755e59c5bdb95",
+      "bytes": 1422337
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-offline-frozen-v1/actual-ffi-test",
+      "sha256": "91ca8006525faac4cd0933f40f6cee67f85a58ce4ae2b3b5f2ee03d62ca741a9",
+      "bytes": 55451504
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-offline-frozen-v1/libslk_native.so.0",
+      "sha256": "5610bcf4dff54179318b385e5f97a418e212d18841e6ced399096c2577713c45",
+      "bytes": 16376768
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-offline-frozen-v1/libsparklink.so.0",
+      "sha256": "b5ba6f9a963edc6c90981651be65bf1c7a4608a245cd50cdb619e545fc95708d",
+      "bytes": 59935432
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-offline-frozen-v1/sdk-unit",
+      "sha256": "a2a2947c67e235fcd8e36a98a925251e6a09aa1ff819f0c41a1dae05ec1da93d",
+      "bytes": 68634088
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-production-tests-v1.json",
+      "sha256": "e746c15b98ff8d3362c250ace4b319b5f5f4027b51bf220da2054990ce54c00c",
+      "bytes": 963
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-production-tests-v1.log",
+      "sha256": "9d74495a6f0d20b430ca0a9ec1112f2531551759fca5993f0d8590cf708dc5e3",
+      "bytes": 1185
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-python-tests-v1.log",
+      "sha256": "956ae04e752177166e86a6d2f536f43cbe1817a6c27b9343f4b8f67822749a4e",
+      "bytes": 24211
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-python-tests-v2.log",
+      "sha256": "ef4a1d91fe77db6277b8a0ef9ec9a157dfa0dabb489a51d28623bb5f45f1bfdd",
+      "bytes": 15343
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-python-tests-v3.log",
+      "sha256": "20d13d55ead498438e8e0d68269e56353160c52840846578f89ad4515a25c951",
+      "bytes": 8879
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-python-tests-v4.log",
+      "sha256": "8e5552556bfefcd0bec5f7e9dd3942edfdea309f98702083b285d77abe5631f5",
+      "bytes": 8879
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-symbols-v1.json",
+      "sha256": "2243442c68b6d797ae9fd407ba6b3d4c0afe681e7ae1e1dbd06adbf8a814db80",
+      "bytes": 3674
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-symbols-v2.json",
+      "sha256": "d7207ce414b35ac22ada1575386cf53f1297de9890c77ffc96ae90d4a45902f9",
+      "bytes": 3800
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-tested-source-v1.json",
+      "sha256": "739c83552af52b5a3ea05e019576290608ae89d715acec347a49517d35ff2fc9",
+      "bytes": 73162
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-tested-source-v2.json",
+      "sha256": "12bcae30bb3e4cf3b8203fe5241a35c095508b193948a7c2f6f206ceffca7ed0",
+      "bytes": 73476
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/controller-language-signed-source-map-v1.json",
+      "sha256": "67330f7887e695da06fd7fe75090537530f96ae30568a084025685ae0c9284c8",
+      "bytes": 563
+    }
+  ],
+  "access": {
+    "raw": "Private workspace via project owner; hash/bytes/path retained, no firmware/SDK/standards or raw captures published.",
+    "replay": "Rebuild exact byte-mapped SDK source and rerun existing cargo test/application_ffi, production-slot tests, Python suite and symbol/header checks; preserve original material and use a fresh output path."
+  },
+  "signed_source_mapping": {
+    "status": "EVERY_SCOPED_DIRTY_BYTE_MATCHES_SIGNED_SOURCE_NOT_CLEAN_COMPILE",
+    "signed_commit": "7626dd9c1d00dd279f3caddcb0294fec9a6ff56d",
+    "source_kind": "DIRTY_SCOPED_BYTES_NOT_CLEAN_COMMIT",
+    "snapshot": {
+      "path": ".dev/main-thread-01a120fe/controller-language-tested-source-v2.json",
+      "sha256": "12bcae30bb3e4cf3b8203fe5241a35c095508b193948a7c2f6f206ceffca7ed0"
+    },
+    "scopes": [
+      "crates",
+      "bindings/python",
+      "tools",
+      "data",
+      "Cargo.toml",
+      "Cargo.lock"
+    ],
+    "files": 467,
+    "new_real_or_formal_qualification": false
+  }
+}

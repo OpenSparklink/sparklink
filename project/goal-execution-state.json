@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F10_DIRECTORY_OBSERVER_SCOPED_REAL_PASS_FULL_SCOPE_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F11_CONTROLLER_LANGUAGE_BRIDGE_IMPLEMENTATION_REAL_GATES_PENDING",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:finite0.1.0-1/db724-2/rollback pair qualified;broader migration/debug/dwz/usrmerge/dependencies/supportmatrix/license/SBOM/provenance/CI release remain. New package actual-kernel/WS73 gates separate.",
@@ -1994,16 +1994,16 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP18-R5f10-controller-directory-observer",
-      "production_behavior": "Same-directory bounded Root journal/typed Rust Client/actualslctl;fd0 compiledservice/4d9 host-guesttools/2fc kernel/SDK110US. Two actual default-observer roles plus seven preserved lengths/OwnedSSAP,72actualpeerreplies/198RF/zero capture drops. Original pre-QEMU toolFAIL preserved;379 cleanfd0 allfeatures/888tools/11targeted/116docs. No newformalproof;not NativeReady/Down/drain or complete state/EventStream;C/Python stream and per-app DiscoverySession stillmissing.",
-      "state": "EXACT_NEW_OBSERVER_TWO_ROLE_AND_SEVEN_LENGTH_PRESERVATION_SCOPED_REAL_PASS_FORMAL_OPEN",
+      "id": "WP03-WP18-R5f11-controller-directory-language-bridge",
+      "production_behavior": "C/Python reuse original Rust stream/executor, single pending observation and source-bound errno/identity/deadline/gap/finalref contract. Four production/export/slot cases,actualC/Pythoncdylib fixture,383allfeatures/61Python/strictClippy/generatedheader/export/116docs passed,dirty-scoped source accurately retained;notcleancommitcompile. First environment/ClippyFAILs retained,noallow. NewlanguageVM/formal NOT_RUN/NOT_PROVEN;oldrealrecordsunchanged.",
+      "state": "IMPLEMENTED_SCOPED_OFFLINE_PASS_NEW_C_PYTHON_VM_AND_FORMAL_PENDING",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Continue bounded architecture API/DiscoverySession and C/Python shared client stream, Native creator/parent cleanup and related Grant-credit-Ticket/deadline compositions. Preserve actual data/security/SSAP/multichannel/four-device delivery;do not wait for all control permutations. Journal notification/source refinement remains NOT_PROVEN. Natural startup/reenumeration/disappearance RCA and nonmanual recovery OPEN;UserHostP4;fullS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged."
+      "next": "Finish strict source-bound offline/ABI/header/error gates,sign exact source,stage real C/Python ordinary observers using existing VM collector and unique Runtime journal. Obtain actual two-role directory changes plus original peer data/length/SSAP preservation for exact new artifact. Then continue bounded DiscoverySession ownership and original lifecycle/data/security/SSAP/multichannel/four-device work. FullS0-S6/19WP/10FV/12DG,VM-only,SDK110,four-leaf policy,shared12or8 andUserHostP4 unchanged;naturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -4202,6 +4202,37 @@
         "path": ".dev/main-thread-01a120fe/controller-directory-qualification-preflight-v2.json",
         "sha256": "42e5a3791a07466a746879bc0427175bdce4a28c507f29cb2923f5f84b6ea280",
         "scope": "Eight rejected source/artifact/scope/gate identity mutations. First noncanonical report-status preflight remains in source-bound report; no validator weakening or new formal proof."
+      }
+    },
+    "controller_directory_languages": {
+      "execution_ref": "qualification_view.current_batch",
+      "plan_ref": "implementation-plan.md",
+      "scope": "SameRuststream/sameexecutor;nonewHost/Engine/Nativepermission. No new real/formal qualification;originalrecords/remainingfullscopeunchanged.",
+      "plan_section": "R5f11",
+      "offline_report": "docs/evidence/controller-language-offline-20261018.json",
+      "tested_source_snapshot": {
+        "path": ".dev/main-thread-01a120fe/controller-language-tested-source-v2.json",
+        "sha256": "12bcae30bb3e4cf3b8203fe5241a35c095508b193948a7c2f6f206ceffca7ed0",
+        "source_kind": "DIRTY_SCOPED_BYTES_NOT_CLEAN_COMMIT"
+      },
+      "signed_source_mapping": {
+        "status": "EVERY_SCOPED_DIRTY_BYTE_MATCHES_SIGNED_SOURCE_NOT_CLEAN_COMPILE",
+        "signed_commit": "7626dd9c1d00dd279f3caddcb0294fec9a6ff56d",
+        "source_kind": "DIRTY_SCOPED_BYTES_NOT_CLEAN_COMMIT",
+        "snapshot": {
+          "path": ".dev/main-thread-01a120fe/controller-language-tested-source-v2.json",
+          "sha256": "12bcae30bb3e4cf3b8203fe5241a35c095508b193948a7c2f6f206ceffca7ed0"
+        },
+        "scopes": [
+          "crates",
+          "bindings/python",
+          "tools",
+          "data",
+          "Cargo.toml",
+          "Cargo.lock"
+        ],
+        "files": 467,
+        "new_real_or_formal_qualification": false
       }
     }
   },

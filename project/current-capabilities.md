@@ -5,7 +5,8 @@
 
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
-| 普通观察者 Runtime 目录流 | [fd0服务／4d9工具的目录观察与原路径保持](../docs/evidence/controller-directory-observer-20261018.json) | 实际 Rust/slctl、同daemon与两角色新generation；不是Native Ready、Down或drain。C/Python stream、pre-Runtime完整状态和每应用扫描租约仍缺；新增形式化证明未取得 |
+| C／Python目录观察视图 | [已实现／限定离线](../docs/evidence/controller-language-offline-20261018.json) | 同一Rust stream/executor，未确认交付槽、原owner/期限/Gap/最终引用；dirty源码准确保留。新语言VM及形式化仍缺，不继承下行旧产物实机资格 |
+| 普通观察者 Runtime 目录流 | [fd0服务／4d9工具的目录观察与原路径保持](../docs/evidence/controller-directory-observer-20261018.json) | 实际 Rust/slctl、同daemon与两角色新generation；不是Native Ready、Down或drain。该记录不涵盖新增C/Python入口，pre-Runtime完整状态和每应用扫描租约仍缺；新增形式化证明未取得 |
 | User Native 返回跨 controller 退休 | [77服务／143工具两角色与原两FAIL](../docs/evidence/native-controller-return-20261018.json) | 固定target slot0、User CUTC；精确owner屏障、迟到fd拒绝、真实peer结清、同daemon新generation后16次回复。不是Service/dynamic、完整fd组合、Kernel ref/callback/UAF或自然恢复资格 |
 | 实际 Native 返回与 Connection 退休 | [26b服务／ae40工具的四切片与旧版反向FAIL](../docs/evidence/native-return-connection-retirement-20261018.json) | Service/User各发起/接受，真实peer Down、迟到fd拒绝、旧对象/OS fd收敛及原业务；SDK live拒绝不是直接broker探针。Dynamic/controller移除、完整fd/期限及Kernel ref/callback/UAF/drain仍缺 |
 | Connection 创建排空与独立物理投影 | [生产函数／原反例及限定离线](../docs/evidence/native-creation-drain-offline-20261018.json)、[26b原路径实机保持](../docs/evidence/native-creation-drain-real-20261018.json) | 同一owner创建guard、惰性初始化及物理发布解耦；原有限fixture/保持范围不变，后续真实切片见上行，原fd失败未归因 |

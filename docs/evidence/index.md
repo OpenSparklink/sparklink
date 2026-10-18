@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+- [C／Python目录视图限定离线](controller-language-offline-20261018.json)：
+  实际C导出、生产交付槽、原Client/executor及真实共享库消费者；编译身份为准确
+  dirty字节，不能称为干净提交编译。原环境与Clippy失败保留，新增语言实机及形式化
+  资格未取得；不以旧Rust/slctl门禁替代，后续须用新准确artifact单独验收。
+
 - [默认观察者目录变化与原路径保持](controller-directory-observer-20261018.json)：
   编译服务 fd0、Host/guest 工具 4d9、编译内核 2fc、SDK110US。两种连接角色的
   实际 Rust/slctl 目录观察与七尺寸/Owned SSAP 保持分别重放；原启动前工具失败保留。

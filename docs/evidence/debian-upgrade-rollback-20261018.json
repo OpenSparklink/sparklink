@@ -1,0 +1,1717 @@
+{
+  "schema": 1,
+  "result_binding_version": 1,
+  "result": "PASS",
+  "level": "virtual_integration",
+  "compiled_userspace": "db724e3e31949723e068c210aaa7aab18eb5725c",
+  "previous_userspace": "247e3a96569e61fee277e942cb364206ecb4edea",
+  "executed_guest_tools": "db724e3e31949723e068c210aaa7aab18eb5725c",
+  "kernel_vendor": "6.12.113+deb13-cloud-amd64",
+  "bounds": {
+    "runtime_vm_runs": 1,
+    "actual_required_gates": 74,
+    "different_version_upgrades": 1,
+    "actual_rollbacks": 1,
+    "package_versions": 2,
+    "stage_payload_files": 35,
+    "loaded_daemon_replacements": 2,
+    "system_bus_role_executions": 12,
+    "policy_denials": 42,
+    "allowed_unknown_targets": 18,
+    "external_c_consumers": 6,
+    "matching_python_consumers": 3,
+    "actual_remove": 1,
+    "real_ws73_runs": 0,
+    "new_formal_proofs": 0,
+    "build_vm_attempts": 2,
+    "successful_build_vm_runs": 1,
+    "workspace_rust_tests": 368,
+    "tools_methods": 883,
+    "evidence_negative_controls": 17,
+    "build_warning_lines": 10,
+    "new_firmware_operations": 0
+  },
+  "scope": [
+    "Finite Debian13 vendor-kernel, no USB deployment test of actual different-source development revisions 0.1.0-1 -> 0.1.0-2 -> 0.1.0-1. Old compiled source247e3a9; new compiled/guest source db724e3. Report commit is not a build identity. Runtime VM is separate from the build VM, with fresh base root and no experimental driver or host installation. Both full source archives and actual primary .deb hashes bound.",
+    "Actual package versions, 35 non-config /usr payload files per stage, loaded daemon hash/PID and unique bus owner, matching source Python and installed C/Native SDK tested at all three stages. Distinct daemon bytes are required, so relabelled same-version reinstall cannot satisfy this gate. No new-SDK/old-runtime compatibility or stable ABI promise; upstream remains unpublished0.1.0, these are development Debian revisions.",
+    "Twelve actual nonroot system-bus role executions cover42 AccessDenied and18 allowed UnknownObject results, zero controllers. Bus admission, pure SSAP permission function, EBADF and ENOTTY checks are not kernel Grant, positive SSAP/Native, Ready, socket business or real WS73 qualification. Existing actual consumers and assertions are extracted from the matching committed guest_probe, not replaced with success fixtures.",
+    "Explicit dpkg --force-confold policy preserves administrator config bytes0600/parent0700, extra config0600/parent0700 and opaque state0600 through upgrade, rollback and remove. Post-exit raw filesystem tar metadata and35payload paths independently inspected; no trusted Bond migration, arbitrary version/schema migration, crash/disk-full atomicity or unattended default conffile policy qualification.",
+    "Build uses actual pinned lab Rust1.96.1 payload, locked/offline Cargo and real Debian helper/dependency checks, 12vCPU/12jobs under shared global lock. Default workspace368Rust tests pass, none failed/ignored; all-features/support combinations not inferred. Ten dwz/usrmerge dependency warning lines remain retained and unresolved; no complete thirdparty license/SBOM/provenance/debug/release qualification.",
+    "Original first build FAIL (8guestCPU/12jobs rejected by existing budget guard), missing-host-dpkg-deb preparation failure, local fixture setup FileExists error, first all-tools environment failures (missing explicit sibling source and restricted generic Unix sockets), and first auditor directory-mode interpretation failure are preserved. No production regression/root cause inferred. New correct-environment883tools pass;17 independent evidence negatives reject partial, old source, wrong loaded identity, missing role/log, altered bytes/modes, remaining payload, SKIP/false exit and abnormal supervisor/QEMU.",
+    "Safe tar extraction discards directory permissions: audit reads original read-only-exported tar headers, not host extraction-directory modes. Original0700 assertion is unchanged. Security of filesystem/compiler/loader/vendorOS/hypervisor and tool correctness remains trusted; no new formal proof, sanitizer, RF or implementation-refinement claim.",
+    "Four thread-allocated USB serial/hub/sharedPCI pins remain read-only checked, U5EP/E2EP; rootFD visibility limited. No USB open/download/reset/power/detach or forbidden leaf/hub/controller operation. E HCC/mixed/cold-ROM qualification remains missing; no historical PASS transfer. Existing canonical whitelist, independent worktree/run root and aggregate12or8 budget unchanged.",
+    "FullS0-S6/19WP/10FV/12DG/originalissue scopes remain OPEN: full architecture/API/discovery/ownership/control combinations, deployment debug/dependencies/supplychain/release, new package actual-kernel/RF, SSAP/security/Bond/multichannel/fourdevice/performance/PM and natural fault RCA/nonmanual recovery. UserHost P4. Manual unplug/hub power/QMP/injected recovery never substitutes natural recovery."
+  ],
+  "versions": {
+    "install": {
+      "source": "247e3a96569e61fee277e942cb364206ecb4edea",
+      "version": "0.1.0-1",
+      "pid": 1792,
+      "bus_owner": "s \":1.8\"",
+      "daemon_sha256": "bd454aa37b325bf799b44b5f293729f8c541fe7ae4e304320db6f428f5dc75d9",
+      "matching_wheel_sha256": "d5416bab2bef33718fd15fdb8814b6b85901ce079bc92676c52bf05dd71aab56"
+    },
+    "upgrade": {
+      "source": "db724e3e31949723e068c210aaa7aab18eb5725c",
+      "version": "0.1.0-2",
+      "pid": 2035,
+      "bus_owner": "s \":1.16\"",
+      "daemon_sha256": "957885f8dc6c5cffec287f188d27c7db3c7c323f4d623553b927e4cea6a023b3",
+      "matching_wheel_sha256": "dabe82dd9a76502ad09946e496ca5c84a3057b3611cf6331d3dda76b7f931a9d"
+    },
+    "rollback": {
+      "source": "247e3a96569e61fee277e942cb364206ecb4edea",
+      "version": "0.1.0-1",
+      "pid": 2233,
+      "bus_owner": "s \":1.24\"",
+      "daemon_sha256": "bd454aa37b325bf799b44b5f293729f8c541fe7ae4e304320db6f428f5dc75d9",
+      "matching_wheel_sha256": "889a68bcae0be076d0702da6b7ba6adddbdad249e54ea15c1d0d19e151efff08"
+    }
+  },
+  "gates": [
+    {
+      "name": "apt-update",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/apt-update.log"
+    },
+    {
+      "name": "tools",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/tools.log"
+    },
+    {
+      "name": "version-order",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/version-order.log"
+    },
+    {
+      "name": "source-old",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/source-old.log"
+    },
+    {
+      "name": "source-new",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/source-new.log"
+    },
+    {
+      "name": "user-observer",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-observer.log"
+    },
+    {
+      "name": "user-application",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-application.log"
+    },
+    {
+      "name": "user-publisher",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-publisher.log"
+    },
+    {
+      "name": "user-manager",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-manager.log"
+    },
+    {
+      "name": "venv",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/venv.log"
+    },
+    {
+      "name": "install-apt",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-apt.log"
+    },
+    {
+      "name": "install-package-status",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-package-status.log"
+    },
+    {
+      "name": "install-service-active",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-service-active.log"
+    },
+    {
+      "name": "install-service-identity",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-service-identity.log"
+    },
+    {
+      "name": "install-config-check",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-config-check.log"
+    },
+    {
+      "name": "install-policy-observer",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-observer.log"
+    },
+    {
+      "name": "install-policy-application",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-application.log"
+    },
+    {
+      "name": "install-policy-publisher",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-publisher.log"
+    },
+    {
+      "name": "install-policy-manager",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-manager.log"
+    },
+    {
+      "name": "install-python-wheel",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-python-wheel.log"
+    },
+    {
+      "name": "install-python-install",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-python-install.log"
+    },
+    {
+      "name": "install-external-python",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-python.log"
+    },
+    {
+      "name": "install-pkgconfig-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-pkgconfig-sparklink.log"
+    },
+    {
+      "name": "install-compile-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-compile-sparklink.log"
+    },
+    {
+      "name": "install-external-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-sparklink.log"
+    },
+    {
+      "name": "install-needed-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-needed-sparklink.log"
+    },
+    {
+      "name": "install-pkgconfig-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-pkgconfig-sparklink-native.log"
+    },
+    {
+      "name": "install-compile-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-compile-sparklink-native.log"
+    },
+    {
+      "name": "install-external-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-sparklink-native.log"
+    },
+    {
+      "name": "install-needed-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-needed-sparklink-native.log"
+    },
+    {
+      "name": "upgrade-apt",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-apt.log"
+    },
+    {
+      "name": "upgrade-package-status",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-package-status.log"
+    },
+    {
+      "name": "upgrade-service-active",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-service-active.log"
+    },
+    {
+      "name": "upgrade-service-identity",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-service-identity.log"
+    },
+    {
+      "name": "upgrade-config-check",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-config-check.log"
+    },
+    {
+      "name": "upgrade-policy-observer",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-observer.log"
+    },
+    {
+      "name": "upgrade-policy-application",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-application.log"
+    },
+    {
+      "name": "upgrade-policy-publisher",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-publisher.log"
+    },
+    {
+      "name": "upgrade-policy-manager",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-manager.log"
+    },
+    {
+      "name": "upgrade-python-wheel",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-python-wheel.log"
+    },
+    {
+      "name": "upgrade-python-install",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-python-install.log"
+    },
+    {
+      "name": "upgrade-external-python",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-python.log"
+    },
+    {
+      "name": "upgrade-pkgconfig-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-pkgconfig-sparklink.log"
+    },
+    {
+      "name": "upgrade-compile-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-compile-sparklink.log"
+    },
+    {
+      "name": "upgrade-external-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-sparklink.log"
+    },
+    {
+      "name": "upgrade-needed-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-needed-sparklink.log"
+    },
+    {
+      "name": "upgrade-pkgconfig-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-pkgconfig-sparklink-native.log"
+    },
+    {
+      "name": "upgrade-compile-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-compile-sparklink-native.log"
+    },
+    {
+      "name": "upgrade-external-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-sparklink-native.log"
+    },
+    {
+      "name": "upgrade-needed-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-needed-sparklink-native.log"
+    },
+    {
+      "name": "rollback-apt",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-apt.log"
+    },
+    {
+      "name": "rollback-package-status",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-package-status.log"
+    },
+    {
+      "name": "rollback-service-active",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-service-active.log"
+    },
+    {
+      "name": "rollback-service-identity",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-service-identity.log"
+    },
+    {
+      "name": "rollback-config-check",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-config-check.log"
+    },
+    {
+      "name": "rollback-policy-observer",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-observer.log"
+    },
+    {
+      "name": "rollback-policy-application",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-application.log"
+    },
+    {
+      "name": "rollback-policy-publisher",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-publisher.log"
+    },
+    {
+      "name": "rollback-policy-manager",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-manager.log"
+    },
+    {
+      "name": "rollback-python-wheel",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-python-wheel.log"
+    },
+    {
+      "name": "rollback-python-install",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-python-install.log"
+    },
+    {
+      "name": "rollback-external-python",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-python.log"
+    },
+    {
+      "name": "rollback-pkgconfig-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-pkgconfig-sparklink.log"
+    },
+    {
+      "name": "rollback-compile-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-compile-sparklink.log"
+    },
+    {
+      "name": "rollback-external-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-sparklink.log"
+    },
+    {
+      "name": "rollback-needed-sparklink",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-needed-sparklink.log"
+    },
+    {
+      "name": "rollback-pkgconfig-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-pkgconfig-sparklink-native.log"
+    },
+    {
+      "name": "rollback-compile-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-compile-sparklink-native.log"
+    },
+    {
+      "name": "rollback-external-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-sparklink-native.log"
+    },
+    {
+      "name": "rollback-needed-sparklink-native",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-needed-sparklink-native.log"
+    },
+    {
+      "name": "remove",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/remove.log"
+    },
+    {
+      "name": "removed-state",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/removed-state.log"
+    },
+    {
+      "name": "journal",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/journal.log"
+    },
+    {
+      "name": "kernel-log",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/kernel-log.log"
+    },
+    {
+      "name": "actual-pinned-build-and-default-workspace-tests",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/package-build.log"
+    },
+    {
+      "name": "independent-post-state-and-seventeen-negative-controls",
+      "status": "PASS",
+      "material": ".dev/main-thread-01a120fe/r6c-independent-audit-v2.json"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r6b-package-v5/export/artifacts/libsparklink-dev_0.1.0-1_amd64.deb",
+      "sha256": "3f161028c1b48c11de134782201112ae04244bd17da21c8bc72f7c27eb22723d",
+      "bytes": 21116,
+      "access": "private"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v5/export/artifacts/libsparklink0_0.1.0-1_amd64.deb",
+      "sha256": "9afd8aa74aff5a8f17fd42d7d50677d7cb21c3ed5bf514e4775867a3c7e8415d",
+      "bytes": 271836,
+      "access": "private"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v5/export/artifacts/sparklink_0.1.0-1_amd64.deb",
+      "sha256": "4c4323597f8611159631d23e124b63231f7673c1339f5fe4117bf02f5130d946",
+      "bytes": 3789892,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-r6c-wip-v1.json",
+      "sha256": "d510de12f5631f099576116d051d1ce63ece014a6a0afcf611e2bfcebe7b86b7",
+      "bytes": 1695,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-build-v2.log",
+      "sha256": "028a052829e960c4dc055b3e9932a1a71c8b57e00e14543299b391bfc0acd8df",
+      "bytes": 921,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-guards-v2.log",
+      "sha256": "d9fc1e930abc84ad545cecacccb0bc0f7da87115e826879eb081b65f0baae4e2",
+      "bytes": 1809,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-refresh-v2.json",
+      "sha256": "d7c55413ee8a302b7ea37b6b1c22cf61a8f9a91c39040102138231349cfa4176",
+      "bytes": 4622,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-refresh-v2.py",
+      "sha256": "57cca314818a8f95a670f7db2f357f658dd08d9927930334ec433d43a1c147ca",
+      "bytes": 4152,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-all-tools-v1.log",
+      "sha256": "333898f5bb4df91f41f80e5ba92944f81cef58031f3b23d94a6cfa5f14c595da",
+      "bytes": 8119,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-all-tools-v2.log",
+      "sha256": "74ab750a5fe4d3028d4bf7ada6121d64471d371683db5914dde5dcd66a713f81",
+      "bytes": 1059,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-audit-lifecycle-v1.py",
+      "sha256": "d450e6c80c3d8d05f3e69e826fd93117c1dab0749fde922b521d279d6432685a",
+      "bytes": 8339,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-audit-lifecycle-v2.py",
+      "sha256": "fea262d868ba1e28036eb62029427093384188dfd7b0814a33eda5783c0e9cea",
+      "bytes": 8687,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-existing-consumers-v1.log",
+      "sha256": "19adad5af73b431ffa205d9bed64876d6bd5ee815f58a6ef7ae0a08f1c851076",
+      "bytes": 406,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-independent-audit-v1.log",
+      "sha256": "ef8c51f2ec57a467775f5a74bfcaf25460c022f21bda251ef758310f49073828",
+      "bytes": 711,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-independent-audit-v2.json",
+      "sha256": "690ef7157456f87894b578b9418f309475bb9ce43d73805985f7a4dce55ac62c",
+      "bytes": 1054,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-independent-audit-v2.log",
+      "sha256": "5ef92a92785ab0d88edd748cbf8ecfa75d1b63142aaeff52a415de81397e0a55",
+      "bytes": 906,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/10-slkr6.network",
+      "sha256": "3c0023ce4a077925e827c2af9af9a19a695d7df2d24d4cff73a1b0ea6a9105ee",
+      "bytes": 42,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/console.log",
+      "sha256": "e0708277ad12576fbe6c7d10330a02ce1935b72303e7da67e5383d95978b4c90",
+      "bytes": 69403,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/create-data.log",
+      "sha256": "f7baafc67dc5b52a24ad0749687279eb00bd513ef3097c80f01f9a3211c87da8",
+      "bytes": 347,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/create-overlay.log",
+      "sha256": "9fa62bc6bfced2434b88d392f5545db90402ca20b08bd7318023b331d7e78b80",
+      "bytes": 384,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/apt-install.log",
+      "sha256": "1ac10ea4e9bef13ef0b72abaf4f215f653458163ccac5c26bdfe0dd8de572620",
+      "bytes": 32931,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/apt-update.log",
+      "sha256": "526ac9740c5afc9032ab139b9c71602d2ce93e54b32cb1170731701842b83222",
+      "bytes": 1428,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/build-dependencies.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/package-build.log",
+      "sha256": "932be6fc9599e2aafdc2fdf2288948ee5950e979512306af05407c63d25d3dfc",
+      "bytes": 2025,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/real-package-files.log",
+      "sha256": "426f013e0e002bf4459e80c3f32674d5954684a7fcf75a74f1e3057abad09869",
+      "bytes": 283374,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/real-packaged-cargo.log",
+      "sha256": "b1e146f4c74466cbfc3f0c9ab7f510ec1c325df3538507bbd86a4433d57a8d3e",
+      "bytes": 337,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/real-packaged-rustc.log",
+      "sha256": "2af3376cb254e69564e00978cada767f05432a299af78300c47d14c103366c1e",
+      "bytes": 196,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/result.json",
+      "sha256": "091f9af35fa43ae9a56892cb8f6ce31bffc92bcf60ec502e96003720631fd3bc",
+      "bytes": 4048,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/source-extract.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/toolchain-package-install.log",
+      "sha256": "56c794534ff1e7ebc1b7951432962b86ad52d49fb902cd9deb209a8ae3948f4c",
+      "bytes": 343,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/guest-marker",
+      "sha256": "12a38a849f7482da13835113e262858288f68b985388e22ba1be0323a6b368f4",
+      "bytes": 30,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/guest.py",
+      "sha256": "3815be081e8c6a552835b1e4801db0c4dbc744e086cb338733b3731719880b78",
+      "bytes": 3245,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/inject-test.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/input-manifest.json",
+      "sha256": "f2fd5ae9e43cb63c53911517ba717c0bd212b59475b7926ad66280787ae052bd",
+      "bytes": 948,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/populate-data.log",
+      "sha256": "2993687b06b48275efebae88ca7f572f7d8d768bee54ce13981e379f162aa312",
+      "bytes": 150,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/prepare-supervisor.log",
+      "sha256": "2bc5d3b40edd71a090994c61279f507e589090a6887a85e77de1bd11a1e4fe2a",
+      "bytes": 90,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/prepare.py",
+      "sha256": "0c987c0cc87df309d17b3887bde1213b7ec36dc09bdd446c5554b2c057f39548",
+      "bytes": 3148,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/prepared.json",
+      "sha256": "f78fa8d6297c5fe730a52aa55a94089d4cf72f78d9efad0dab525b5394b4b526",
+      "bytes": 172,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/qemu.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/resolv.conf",
+      "sha256": "cc002ee0eb2e8702c97d16f4ce628841cd5fe10195875a075432e92248741424",
+      "bytes": 20,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/run.json",
+      "sha256": "4c98f7101dbb674dbadbd4d866bd25190ba5a70240130b5fe76267325207ed68",
+      "bytes": 1522,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/run.py",
+      "sha256": "c9a284f2cf15871ff8fc8e56a40e8d36be3056278fc26213ef64087d9e8b1d49",
+      "bytes": 2101,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/slkr6.service",
+      "sha256": "0d59a0b43e532bc03cc085670f5f09bac39a27b7381ff5099a1e0fadd012eb04",
+      "bytes": 393,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/supervisor.log",
+      "sha256": "38411105fcaf209568815eac44d24eda630771ebe4d5ebf653785766a36a9ae5",
+      "bytes": 1352,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/10-slkr6.network",
+      "sha256": "3c0023ce4a077925e827c2af9af9a19a695d7df2d24d4cff73a1b0ea6a9105ee",
+      "bytes": 42,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/console.log",
+      "sha256": "8e5a0569300feb2fb65456dc06851c40ef20dfb9848988d97b4c16509b978d30",
+      "bytes": 64006,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/create-data.log",
+      "sha256": "49dd87ab53bc0b140c05bbfb7b5305d27ca65692d7a50e13b0c4e66bac00a0b4",
+      "bytes": 347,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/create-overlay.log",
+      "sha256": "674e99d61f85f56e3d843d54886305d087d9f82d2043e22294b6d5a0253ffebd",
+      "bytes": 384,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/libsparklink-dev_0.1.0-2_amd64.deb",
+      "sha256": "e17da902792ec036af6fb0ee7663b0ddca596e6fdd1239c132ca60e0f896cd1e",
+      "bytes": 23164,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/libsparklink0-dbgsym_0.1.0-2_amd64.deb",
+      "sha256": "e95d55292d55f780032e19a3b367d1e7dec996c7c4d07dc3e9c998b42553cc9c",
+      "bytes": 155444,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/libsparklink0_0.1.0-2_amd64.deb",
+      "sha256": "496d53f16888d7e854ccd0ca5e56e68e3a2126ed5789e01793960cb35ae189d2",
+      "bytes": 994456,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/sparklink-dbgsym_0.1.0-2_amd64.deb",
+      "sha256": "b3f9ad578be79bff178a3748fc40079f958d2d37ce26893e307bd624d9fd0f02",
+      "bytes": 575788,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/sparklink_0.1.0-2_amd64.buildinfo",
+      "sha256": "3443fdff0d1e4b9560cb3eca1f4a7a99cd19455cc24738a081c32ef6212fca8a",
+      "bytes": 6428,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/sparklink_0.1.0-2_amd64.changes",
+      "sha256": "7a29001b0766bba53969e6c775b3e40a56dfc13164e4d7dcb78e4b8527eb12b8",
+      "bytes": 2496,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/sparklink_0.1.0-2_amd64.deb",
+      "sha256": "c814469fe73396675ca206f69541f8b84606141d420d3bcf5c16aafef8eef194",
+      "bytes": 3871208,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/apt-install.log",
+      "sha256": "0c163bcb5a4a541a11711608963ae9f6011895ffc07f90f9f8cbd36a477093ab",
+      "bytes": 32931,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/apt-update.log",
+      "sha256": "7b0cfbc6e452c61147c37bbd9a9b5302dd3ddaaec90e09e0758374be2c420c1c",
+      "bytes": 1427,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/build-dependencies.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/package-build.log",
+      "sha256": "3e67dab54dfe48d934641e5a522b5027b984e4d0154a525b1b6fe20e2638c084",
+      "bytes": 59995,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/real-package-files.log",
+      "sha256": "426f013e0e002bf4459e80c3f32674d5954684a7fcf75a74f1e3057abad09869",
+      "bytes": 283374,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/real-packaged-cargo.log",
+      "sha256": "b1e146f4c74466cbfc3f0c9ab7f510ec1c325df3538507bbd86a4433d57a8d3e",
+      "bytes": 337,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/real-packaged-rustc.log",
+      "sha256": "2af3376cb254e69564e00978cada767f05432a299af78300c47d14c103366c1e",
+      "bytes": 196,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/result.json",
+      "sha256": "e16ea7a48a2c86178adcd10812e28fb7ac3640867ddf8cf8ff6fac289108ef0f",
+      "bytes": 3285,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/source-extract.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/toolchain-package-install.log",
+      "sha256": "56c794534ff1e7ebc1b7951432962b86ad52d49fb902cd9deb209a8ae3948f4c",
+      "bytes": 343,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/guest-marker",
+      "sha256": "12a38a849f7482da13835113e262858288f68b985388e22ba1be0323a6b368f4",
+      "bytes": 30,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/guest.py",
+      "sha256": "38283f1149b05a7cac7b292729b70b5668054a8fd04d4e97d4820bc7b45c5fef",
+      "bytes": 3245,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/inject-test.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/input-manifest.json",
+      "sha256": "32272580ce83b4cb4aaea6d3a62b1d99499eb5f5fcb526cfc561dacf27154f25",
+      "bytes": 1056,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/populate-data.log",
+      "sha256": "2993687b06b48275efebae88ca7f572f7d8d768bee54ce13981e379f162aa312",
+      "bytes": 150,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/prepare-supervisor.log",
+      "sha256": "2bc5d3b40edd71a090994c61279f507e589090a6887a85e77de1bd11a1e4fe2a",
+      "bytes": 90,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/prepare.py",
+      "sha256": "7155ea8042a6efc67a6002991010245bf8fd02b7761ee094b74a78319a9b3dbc",
+      "bytes": 3148,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/prepared.json",
+      "sha256": "52c51e60e9aa90cc32b348bc876aba40103cf71c5927a4e25080f2aec24dc4e6",
+      "bytes": 172,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/qemu.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/resolv.conf",
+      "sha256": "cc002ee0eb2e8702c97d16f4ce628841cd5fe10195875a075432e92248741424",
+      "bytes": 20,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/run.json",
+      "sha256": "53f4b31955bb38bb6e04d1d03db1b7e36aee053388c61961922518722a711e03",
+      "bytes": 1523,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/run.py",
+      "sha256": "1382cae4dae3ceaae4239588f2d9134e746e92ee2aa050a3f33b59e8d9d2819d",
+      "bytes": 2169,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/slkr6.service",
+      "sha256": "0d59a0b43e532bc03cc085670f5f09bac39a27b7381ff5099a1e0fadd012eb04",
+      "bytes": 393,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/supervisor.log",
+      "sha256": "586c965d943b50716704a8c196faddb6efd960daec4164b8022c41befc9ba1d3",
+      "bytes": 1353,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-preparation-first-failure.json",
+      "sha256": "7a8d78891e99b26af0c0b76fb5cc43ade5fc92e9895f451fb59812e1f655da40",
+      "bytes": 437,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-prepare-lifecycle-v1.py",
+      "sha256": "5b95c5062fd3bdc31bf251429dbd281e346b434fef85ffc25965c0c26f11cf94",
+      "bytes": 4224,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-prepare-lifecycle-v2.py",
+      "sha256": "0367a173732d667c171e374d458293ffa4fde671e0570abbeafcec614de60c6d",
+      "bytes": 4619,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-probe-offline-v1.log",
+      "sha256": "0f66f0568a90d5849a4430f09a0387059ffe58cec8162eef5466a5281dc40b08",
+      "bytes": 1902,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-probe-offline-v2.log",
+      "sha256": "da2c8c8eada1d72010f4f88daff0995028faf3b5d8f63a425793f049fcd3bbc0",
+      "bytes": 768,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/10-slkr6.network",
+      "sha256": "3c0023ce4a077925e827c2af9af9a19a695d7df2d24d4cff73a1b0ea6a9105ee",
+      "bytes": 42,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/console.log",
+      "sha256": "de856f5b8231f853db28c0f9d4a930c6eed243c07b81d836dd30a9c412f6df32",
+      "bytes": 71616,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/create-data.log",
+      "sha256": "e1fc223d8e20db0edc73f5363757f4cc622f906c8e10d148ad076193b6ecd485",
+      "bytes": 355,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/create-overlay.log",
+      "sha256": "14d55f10c5a57fb2a5856788f524edd64933e8a0d6f8c8807c1708913076d8e6",
+      "bytes": 384,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/config.tar",
+      "sha256": "8694da21f608bbe52996f575875fe5f601710c066ccd5f1569ff1b15b9c10368",
+      "bytes": 10240,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/apt-update.log",
+      "sha256": "8e7b6427fa5e600a9be113f80fff1945115a372ca52667399fd995152893f6c7",
+      "bytes": 1428,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-apt.log",
+      "sha256": "3878c31308ba4572d637aa3c05f1de3dd6a41a479542dd6b023675e4f7cd630d",
+      "bytes": 2220,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-compile-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-compile-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-config-check.log",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-python.log",
+      "sha256": "b55f3f1d2faf6ef5734a7f1b71a239814834d2c95a1b42bf91eea8a68d2757a4",
+      "bytes": 62,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external.py",
+      "sha256": "b3c957bebf4f636e0e1e664cc261c3c17f1d8216b46ef3f25264b28cdc143310",
+      "bytes": 617,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-needed-sparklink-native.log",
+      "sha256": "680077cd55946d4f034394180c79aa4cb6d8a5694fd91ed500b65f2e97989dca",
+      "bytes": 1463,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-needed-sparklink.log",
+      "sha256": "aae42ee0eb936e339ccf4baef65259f5ef379e290905d65d35c68263eca4b6f7",
+      "bytes": 1461,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-package-status.log",
+      "sha256": "15098cd84749849f07149c9aa323659fdd3042483d2dae8af088408d66dc6baa",
+      "bytes": 128,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-pkgconfig-sparklink-native.log",
+      "sha256": "7a044573c61fee16a833b857bfe59a6b0860a4c06d4b175f7ef8f4ac6f462370",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-pkgconfig-sparklink.log",
+      "sha256": "2c4ca9e0081a9bd52c8bfa26f0d2d0931554e90b86e69105b742567e043ead30",
+      "bytes": 13,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-application.log",
+      "sha256": "c5db0a575fe75cf6f88d4e6d40ac5bb329bb72f8b1ffe7ef40a26215762ae063",
+      "bytes": 398,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-manager.log",
+      "sha256": "be6646366f59d07669d8b0bd0c233b8ff4d536b17aa386968aa99b6a5b50d109",
+      "bytes": 397,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-observer.log",
+      "sha256": "22bb0e6545babd3bfea849648d83f70d14c11a4fe99b1cbf4c16940c0491a56d",
+      "bytes": 389,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-publisher.log",
+      "sha256": "8de6f4f04841cda351dd70001cd8dd633194365e2d25ca8cca0131810afa3fd7",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy.py",
+      "sha256": "6df0b1c608b96d1b1013ca36200162ff4122336f38e258ed42d5726676c31804",
+      "bytes": 1751,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-python-install.log",
+      "sha256": "fd006ea489ca554bdf21b59f4686b05c4571ba8337c6217fe2b99236db38bc60",
+      "bytes": 167,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-python-wheel.log",
+      "sha256": "799b1709199181214c0c5b6880f5b7b49245e2b3d2996108ad6a4899aca9d778",
+      "bytes": 668,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-service-active.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-service-identity.log",
+      "sha256": "e214474d1569fef5f90d9cf0a9a2a18d4a1b77bf246fb1b3d4f3f5bc39a14693",
+      "bytes": 9,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-sparklink",
+      "sha256": "5285afebcf13edcf2d8329f93dae8d02f025223806e76bebb4d61d084e5e96a2",
+      "bytes": 16120,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-sparklink-native",
+      "sha256": "8496a00fcfe8525cf8ab6bb0445ea364f87e2dc7704cb32ecac899922ce60788",
+      "bytes": 16176,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-sparklink-native.c",
+      "sha256": "b9d48dc79d59d800d40248fb5a93c6d0dd46e8fedf6686d73f11f7003095d599",
+      "bytes": 302,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-sparklink.c",
+      "sha256": "a1acea86304b7266e5044b9beadbbdb4720f9a6e75b2ee652a0b4756651453f8",
+      "bytes": 248,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-wheel/sparklink-0.1.0-py3-none-any.whl",
+      "sha256": "d5416bab2bef33718fd15fdb8814b6b85901ce079bc92676c52bf05dd71aab56",
+      "bytes": 35534,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/journal.log",
+      "sha256": "ae24e0f9cfeea8319b296734071ff0914203fc10483df6b886dba86b1aec9bb2",
+      "bytes": 2010,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/kernel-log.log",
+      "sha256": "cce5f5305a5aa060bcdf2a2b60806c0db2a6e351d56f595bd71756fa4142f5cd",
+      "bytes": 40072,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/remove.log",
+      "sha256": "26349ac65647e4366fc4a622f2550da1860e94261eb1e38d750c0358f5778e5d",
+      "bytes": 1161,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/removed-state.log",
+      "sha256": "cb6f82a52d11c260ee6936511d22d5a7db55f8e7c5afe9f03ea847350ce860c5",
+      "bytes": 9,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/result.json",
+      "sha256": "d54b6ad185705782d629e3ae5c2994d93d4304ce3eea71478d63d65320d7c49d",
+      "bytes": 51750,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-apt.log",
+      "sha256": "0052c9b190dc602ebcce2a1362d346c0233f992380a37ad4f8ff1fce174886f5",
+      "bytes": 2016,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-compile-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-compile-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-config-check.log",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-python.log",
+      "sha256": "b55f3f1d2faf6ef5734a7f1b71a239814834d2c95a1b42bf91eea8a68d2757a4",
+      "bytes": 62,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external.py",
+      "sha256": "b3c957bebf4f636e0e1e664cc261c3c17f1d8216b46ef3f25264b28cdc143310",
+      "bytes": 617,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-needed-sparklink-native.log",
+      "sha256": "680077cd55946d4f034394180c79aa4cb6d8a5694fd91ed500b65f2e97989dca",
+      "bytes": 1463,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-needed-sparklink.log",
+      "sha256": "aae42ee0eb936e339ccf4baef65259f5ef379e290905d65d35c68263eca4b6f7",
+      "bytes": 1461,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-package-status.log",
+      "sha256": "15098cd84749849f07149c9aa323659fdd3042483d2dae8af088408d66dc6baa",
+      "bytes": 128,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-pkgconfig-sparklink-native.log",
+      "sha256": "7a044573c61fee16a833b857bfe59a6b0860a4c06d4b175f7ef8f4ac6f462370",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-pkgconfig-sparklink.log",
+      "sha256": "2c4ca9e0081a9bd52c8bfa26f0d2d0931554e90b86e69105b742567e043ead30",
+      "bytes": 13,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-application.log",
+      "sha256": "c5db0a575fe75cf6f88d4e6d40ac5bb329bb72f8b1ffe7ef40a26215762ae063",
+      "bytes": 398,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-manager.log",
+      "sha256": "be6646366f59d07669d8b0bd0c233b8ff4d536b17aa386968aa99b6a5b50d109",
+      "bytes": 397,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-observer.log",
+      "sha256": "22bb0e6545babd3bfea849648d83f70d14c11a4fe99b1cbf4c16940c0491a56d",
+      "bytes": 389,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-publisher.log",
+      "sha256": "8de6f4f04841cda351dd70001cd8dd633194365e2d25ca8cca0131810afa3fd7",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy.py",
+      "sha256": "6df0b1c608b96d1b1013ca36200162ff4122336f38e258ed42d5726676c31804",
+      "bytes": 1751,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-python-install.log",
+      "sha256": "65fce9743b610840b0a94d3d8d664900d4e821a789c26631b8e53a4807025cfa",
+      "bytes": 332,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-python-wheel.log",
+      "sha256": "36cac914f3ab59c94801ff1852c4d3969030db6c2f03ea13463cb26a1c917f84",
+      "bytes": 668,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-service-active.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-service-identity.log",
+      "sha256": "40d3e8e447264f2ea472ea4209a6ce81fd9c8aa52500a92d13686d8a12aa04a1",
+      "bytes": 10,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-sparklink",
+      "sha256": "88be6e5b849b25249de749c0cfc16f6b128a857dc1a1832488b24275ba4edc17",
+      "bytes": 16120,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-sparklink-native",
+      "sha256": "5c93b1aa86faa818e15f471ce7f2d6a38b3f528ed45e7026d91931c1b41e0696",
+      "bytes": 16176,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-sparklink-native.c",
+      "sha256": "b9d48dc79d59d800d40248fb5a93c6d0dd46e8fedf6686d73f11f7003095d599",
+      "bytes": 302,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-sparklink.c",
+      "sha256": "a1acea86304b7266e5044b9beadbbdb4720f9a6e75b2ee652a0b4756651453f8",
+      "bytes": 248,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-wheel/sparklink-0.1.0-py3-none-any.whl",
+      "sha256": "889a68bcae0be076d0702da6b7ba6adddbdad249e54ea15c1d0d19e151efff08",
+      "bytes": 65929,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/source-new.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/source-old.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/tools.log",
+      "sha256": "e0b91259b721970e6244ec076bc6e8f24b5c2894104e055ac99eb96f8decdad8",
+      "bytes": 25657,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-apt.log",
+      "sha256": "e26b232c896b6fa985bfc2645369e98c12a82c7a27c5b85b388207bf6f9ddcf6",
+      "bytes": 1858,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-compile-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-compile-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-config-check.log",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-python.log",
+      "sha256": "b55f3f1d2faf6ef5734a7f1b71a239814834d2c95a1b42bf91eea8a68d2757a4",
+      "bytes": 62,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external.py",
+      "sha256": "b3c957bebf4f636e0e1e664cc261c3c17f1d8216b46ef3f25264b28cdc143310",
+      "bytes": 617,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-needed-sparklink-native.log",
+      "sha256": "680077cd55946d4f034394180c79aa4cb6d8a5694fd91ed500b65f2e97989dca",
+      "bytes": 1463,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-needed-sparklink.log",
+      "sha256": "aae42ee0eb936e339ccf4baef65259f5ef379e290905d65d35c68263eca4b6f7",
+      "bytes": 1461,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-package-status.log",
+      "sha256": "e41a551269b24642f9a5d86d58aa34e82611a7d7383fc21b167d63ce47259e06",
+      "bytes": 128,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-pkgconfig-sparklink-native.log",
+      "sha256": "7a044573c61fee16a833b857bfe59a6b0860a4c06d4b175f7ef8f4ac6f462370",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-pkgconfig-sparklink.log",
+      "sha256": "2c4ca9e0081a9bd52c8bfa26f0d2d0931554e90b86e69105b742567e043ead30",
+      "bytes": 13,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-application.log",
+      "sha256": "c5db0a575fe75cf6f88d4e6d40ac5bb329bb72f8b1ffe7ef40a26215762ae063",
+      "bytes": 398,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-manager.log",
+      "sha256": "be6646366f59d07669d8b0bd0c233b8ff4d536b17aa386968aa99b6a5b50d109",
+      "bytes": 397,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-observer.log",
+      "sha256": "22bb0e6545babd3bfea849648d83f70d14c11a4fe99b1cbf4c16940c0491a56d",
+      "bytes": 389,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-publisher.log",
+      "sha256": "8de6f4f04841cda351dd70001cd8dd633194365e2d25ca8cca0131810afa3fd7",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy.py",
+      "sha256": "6df0b1c608b96d1b1013ca36200162ff4122336f38e258ed42d5726676c31804",
+      "bytes": 1751,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-python-install.log",
+      "sha256": "ca3a9704922e388bc105f8dcad95a1c3a0338eebad3eaac511588ba8bfbbcfcb",
+      "bytes": 331,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-python-wheel.log",
+      "sha256": "7ad27f2407db2d7db3ec597932aca31500550bec25fd6e8fc40f00e9f9dbdb7a",
+      "bytes": 668,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-service-active.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-service-identity.log",
+      "sha256": "09debf726c5496f280165ee17887df36ab652c39df115e76405969d7ef8d26a6",
+      "bytes": 10,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-sparklink",
+      "sha256": "b57ce47e28cc1a853e7aedbd4bb794639d0ed9dbc69ad15deb3fbb47b15f890d",
+      "bytes": 16120,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-sparklink-native",
+      "sha256": "43a3cea4d41108bc1ba5159aed4d76950545c227d970125d23f51df41e3320bb",
+      "bytes": 16176,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-sparklink-native.c",
+      "sha256": "b9d48dc79d59d800d40248fb5a93c6d0dd46e8fedf6686d73f11f7003095d599",
+      "bytes": 302,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-sparklink.c",
+      "sha256": "a1acea86304b7266e5044b9beadbbdb4720f9a6e75b2ee652a0b4756651453f8",
+      "bytes": 248,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-wheel/sparklink-0.1.0-py3-none-any.whl",
+      "sha256": "dabe82dd9a76502ad09946e496ca5c84a3057b3611cf6331d3dda76b7f931a9d",
+      "bytes": 43183,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-application.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-manager.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-observer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-publisher.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/venv.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/version-order.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/state.tar",
+      "sha256": "c0ca45285150358e454249939a191cd83f6641ae0da7715bd71a180d56015d3d",
+      "bytes": 10240,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export-data.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/guest-marker",
+      "sha256": "12a38a849f7482da13835113e262858288f68b985388e22ba1be0323a6b368f4",
+      "bytes": 30,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/guest.py",
+      "sha256": "cafc2bd7acd90bdbf43255d2570e0bdec1ba925b877074458c3c3b7b09fd24bd",
+      "bytes": 15308,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/inject-test.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/input-manifest.json",
+      "sha256": "32272580ce83b4cb4aaea6d3a62b1d99499eb5f5fcb526cfc561dacf27154f25",
+      "bytes": 1056,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/lifecycle-inputs.json",
+      "sha256": "9af40020804d3d524c60dd16146d6bc2fac957bd0f949431472f1445c53c59f2",
+      "bytes": 12566,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/old-source.tar",
+      "sha256": "5081b0ca80e1551358747183ccb51824207445ff4ece4ca3a725c2f96e8ac252",
+      "bytes": 209623040,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/populate-data.log",
+      "sha256": "2993687b06b48275efebae88ca7f572f7d8d768bee54ce13981e379f162aa312",
+      "bytes": 150,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/post-removal-inspection.log",
+      "sha256": "23bd73f7b3b12056b95e064f855b78542fe42a372354c018a27ce95a9fe9d5af",
+      "bytes": 420,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/prepare-supervisor.log",
+      "sha256": "2bc5d3b40edd71a090994c61279f507e589090a6887a85e77de1bd11a1e4fe2a",
+      "bytes": 90,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/prepare.py",
+      "sha256": "7293ff526d3a01d83b6128623e57a8d620ed4bb23e608b4f5d98ede348b7cfdc",
+      "bytes": 3192,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/prepared.json",
+      "sha256": "440a947971af9a07f4702860995bca4eab3f326c942194b6048d5af8d2cfe6f7",
+      "bytes": 172,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/qemu.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/resolv.conf",
+      "sha256": "cc002ee0eb2e8702c97d16f4ce628841cd5fe10195875a075432e92248741424",
+      "bytes": 20,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/run.json",
+      "sha256": "428eb3b875905da0128265393f45f9f377fd3289d8bb6e2666f42a910e10f46b",
+      "bytes": 1563,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/run.py",
+      "sha256": "cc54508ce1503a88e5acb218f2673350463e792ba6fdbe52e37d7c75cb1cb0ca",
+      "bytes": 2050,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/slkr6.service",
+      "sha256": "8458c6fa08ee1d9aa46d18ff4f6c7c6a61785cdd0bdd63342d1fe8db35a23406",
+      "bytes": 417,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/source.tar",
+      "sha256": "2961244157ea42cefc93e832d944c64c397f555e64c1fc36c4e8c19a351f7612",
+      "bytes": 220190720,
+      "access": "private"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/supervisor.log",
+      "sha256": "f2f66c5590a4ce90b2c026e80a6046f88ba456eca088f424c392f56c527a8814",
+      "bytes": 1391,
+      "access": "private"
+    }
+  ],
+  "raw_status": "DIFFERENT_VERSION_LIFECYCLE_COMPLETED_INDEPENDENT_AUDIT_PENDING",
+  "negative_controls": [
+    "missing-stage",
+    "same-version",
+    "old-source",
+    "daemon-identity",
+    "same-owner",
+    "bad-package",
+    "missing-log",
+    "missing-role",
+    "bad-config",
+    "bad-mode",
+    "bad-directory-mode",
+    "remaining-payload",
+    "qemu-failed",
+    "skip",
+    "false-exit",
+    "truncated-journal",
+    "wrong-probe"
+  ],
+  "access": {
+    "owner": "local project owner",
+    "retention_root": ".dev/main-thread-01a120fe",
+    "public_mirror": "none; raw archives/VM payloads not uploaded to documentation site",
+    "replay": "python3 .dev/main-thread-01a120fe/r6c-audit-lifecycle-v2.py, after restoring private hashed materials at recorded paths; original output exists, use a new audit receipt path for replay",
+    "tools": "Pinned tool/manifest hashes in materials; VM orchestration is private and hash-bound, not falsely claimed to be committed production code."
+  },
+  "references": [
+    "https://www.debian.org/doc/debian-policy/ch-controlfields.html#version",
+    "https://www.debian.org/doc/debian-policy/ch-files.html#configuration-files"
+  ],
+  "time_ns": 1792332712511912683
+}

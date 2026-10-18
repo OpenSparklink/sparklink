@@ -52,9 +52,50 @@
     "First clock projection used unsupported TID proc path;original two failures retained,actual TGID table source used for correction.",
     "One early C consumer unexpected diagnostic had no retained original stderr/ELF;cause unresolved. Later clang/defaultcc finite passes do not prove a fix. Retention now survives failure and logs compiler/environment plus original diagnostic.",
     "Initial Rust-array D-Bus shape mismatched intended bytearray;fixed explicit fiveu64 contract and independent literal expectations.",
-    "Malformed signature is rejected by pinned zbus before dispatch as org.freedesktop.zbus.Error;decoded invalid fields use FDO InvalidArgs. Original mistaken error-name assertion retained."
+    "Malformed signature is rejected by pinned zbus before dispatch as org.freedesktop.zbus.Error;decoded invalid fields use FDO InvalidArgs. Original mistaken error-name assertion retained.",
+    "Confirmed production6b local protocol ceiling composition defect: effective five-second wire deadline existed but local executor waited on longer caller deadline. Original six-second controlled failure/exit101/ELF/test-only patch retained; later353-test passes did not cover this invariant. Candidate6b is not qualified for hardware."
   ],
   "new_formal_proofs": 0,
   "new_real_device_runs": 0,
-  "scope": "Uncommitted development snapshot/audit only,not offlinePASS ornew qualification. FullS0-S6/19WP/10FV/12DG/UserHostP4/VM-only and originalscope preserved."
+  "scope": "Development source audit and focused controlled counterexample/fix;no complete offline or real-device qualification for the new candidate. Original material identities retained. Full S0-S6/19WP/10FV/12DG/UserHostP4/VM-only unchanged.",
+  "local_protocol_ceiling_counterexample": {
+    "result": "CONFIRMED_LOCAL_PROTOCOL_CEILING_COUNTEREXAMPLE",
+    "production_source": "6b621137171481cc3c61af825e5b0f8c543760bd",
+    "original_exit": 101,
+    "expected": "Effective five-second value deadline ends caller wait while an unrelated local job is held;no queued expired operation invocation",
+    "observed": "Five-second wire deadline existed but FFI-style local call still waited on30second deadline;no result before sixsecond barrier release. Threads drained before assertion.",
+    "scope": "Actual SDK executor/private bus/scheduling fixture;not wire,driver,firmware or RF",
+    "materials": {
+      ".dev/architecture-r5f6-protocol-wait-counterexample-v1.log": {
+        "sha256": "bbf60f590533defc3595db8146e44420138ce3ffffa8092b9ac79a9cda7090d1",
+        "bytes": 1557
+      },
+      ".dev/architecture-r5f6-protocol-wait-counterexample-v1/test-executable": {
+        "sha256": "2ac55f56f5b41c6fc73f3c32864967cb514f6d056e9a334ed7e8d3ddaeaa3761",
+        "bytes": 64831304
+      },
+      ".dev/architecture-r5f6-protocol-wait-counterexample-v1/test-only.patch": {
+        "sha256": "e9ac7609cfd501339bf98eea04c227cc9f8cd841b746841d3d6b9998f428bceb",
+        "bytes": 3083
+      },
+      ".dev/architecture-r5f6-protocol-wait-counterexample-v1/test-source.rs": {
+        "sha256": "1d8f82adabbee8ab535f6daa88971ac7ae573504bc9ccfa5f42b6a0cf681d87b",
+        "bytes": 8899
+      }
+    }
+  },
+  "local_protocol_ceiling_fix": {
+    "state": "FOCUSED_ACTUAL_EXECUTOR_REGRESSION_PASS_FULL_NEW_ARTIFACT_GATES_PENDING",
+    "change": "Derive local queue/wait deadline and shared wire deadline together before queue admission;C read/write use both effective values. No second protocol implementation or extended deadline.",
+    "unchanged_oracle": "Held unrelated actual SyncClient job;result before six-second gate release;ETIMEDOUT;expired operation invocation count zero;fixture threads always drained.",
+    "log": ".dev/architecture-r5f6-protocol-wait-fixed-v1.log",
+    "sha256": "211fbd30f11c99f0259d3660e9da46c799f0a9e3e0022555aa943658c24c608b",
+    "result": "One focused test PASS in5.01s;not formal or kernel/RF qualification",
+    "source_parent": "6b621137171481cc3c61af825e5b0f8c543760bd",
+    "source_files": {
+      "crates/libsparklink/src/sync_client.rs": "815a7f930bc135644763fe349f8336cca2c3ae5e572aa3718960553bd06ebfad",
+      "crates/libsparklink/src/ffi_connection.rs": "eaf1c49974cbf3601c1f785e34766f88567eed639f58e7a35658559d434c7bc6",
+      "crates/libsparklink/src/sync_client/tests.rs": "c5500ffa87de5e455067c196a79b9092cbeab11b8490d8bc02d6c9c6bd386d2c"
+    }
+  }
 }

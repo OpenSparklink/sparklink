@@ -1893,14 +1893,14 @@
     "current_batch": {
       "id": "WP03-WP06-WP08-WP18-R5f6-ssap-value-original-deadline-active",
       "production_behavior": "Currentdevelopmentcandidate forwards immutable value deadlines through existingSDK/contract/Connection/Query, separatesauthor/physicaldrain and owns onecancel-safe initializer. No newEngine/Host/ABIqualification. Existing81bd records retain only their own scope.",
-      "state": "R5F6_VALUE_DEADLINE_AND_OWNER_CLEANUP_IMPLEMENTED_CANDIDATE_OFFLINE_AND_REAL_PENDING",
+      "state": "R5F6_LOCAL_PROTOCOL_CEILING_COUNTEREXAMPLE_FIXED_NEW_SOURCE_GATES_PENDING",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Finishstrictdefault/allfeatures,actualC/Python/header/bindings andsourceboundoffline gates;thenexactnewartifact SDKpositive and controlleddeadline/callerexit/partialinit/latephysicalreply/peerisolation with originalradio/connection/length/Owned/dynamic/protected gates inVM. PreserveunexplainedCfailure. Fullpubliclifecycle/commonAPI/perappDiscovery/R6c,naturalRCA/recovery OPEN."
+      "next": "Preserve confirmed6b queue/wait ceiling counterexample and all prior failures;seal the effective-local/wire-deadline fix, rerun source-bound default/allfeatures/actual C-Python/header/export gates, build new artifact (never qualify6b bundle), then VM SDKpositive and controlled originaldeadline/callerexit/partialinit/latephysicalreply/peerisolation plus original preservation. Full scope unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -3631,7 +3631,8 @@
       "audit": "docs/evidence/ssap-value-deadline-audit-20261018.json",
       "scope": "Existing value operation and connection-owned initialization/drain;no newEngine orairprotocol",
       "exit": "Sourceboundstrict/offline/actualbindings plusnewartifact VMpositive+controlleddeadline/lifetime/cleanup andoriginalpreservation;old81bd qualifiesonlyitself",
-      "remaining": "Finishstrictdefault/allfeatures,actualC/Python/header/bindings andsourceboundoffline gates;thenexactnewartifact SDKpositive and controlleddeadline/callerexit/partialinit/latephysicalreply/peerisolation with originalradio/connection/length/Owned/dynamic/protected gates inVM. PreserveunexplainedCfailure. Fullpubliclifecycle/commonAPI/perappDiscovery/R6c,naturalRCA/recovery OPEN."
+      "remaining": "Preserve confirmed6b queue/wait ceiling counterexample and all prior failures;seal the effective-local/wire-deadline fix, rerun source-bound default/allfeatures/actual C-Python/header/export gates, build new artifact (never qualify6b bundle), then VM SDKpositive and controlled originaldeadline/callerexit/partialinit/latephysicalreply/peerisolation plus original preservation. Full scope unchanged.",
+      "counterexample": "Confirmed production6b local wait used30s despite effective5s wiredeadline;original failure and exactELF retained in existing audit. Fixed in development;no newartifact hardware qualification."
     }
   },
   "owned_ssap_c6_historical_batch": {

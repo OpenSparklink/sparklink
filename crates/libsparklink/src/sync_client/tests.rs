@@ -177,3 +177,68 @@ fn expired_connect_is_rejected_before_dependency_and_current_runtime_can_call() 
         ));
     });
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn protocol_ceiling_ends_local_queue_wait_before_an_unrelated_long_job() -> anyhow::Result<()>
+{
+    // Actual production executor/private bus. A held local job is an explicit
+    // scheduling fixture, not a successful Native or SSAP backend.
+    let bus = support::Bus::start();
+    let _server = zbus::connection::Builder::address(bus.address.as_str())?
+        .name("org.sparklink")?
+        .serve_at("/org/sparklink", Manager)?
+        .build()
+        .await?;
+    let client = Arc::new(open(bus.address.clone()).map_err(std::io::Error::from_raw_os_error)?);
+    let (started, seen) = mpsc::sync_channel(1);
+    let gate = Arc::new(tokio::sync::Notify::new());
+    let blocked = thread::spawn({
+        let c = client.clone();
+        let gate = gate.clone();
+        move || {
+            c.call(after(Duration::from_secs(10)), move |_| async move {
+                started.send(()).unwrap();
+                gate.notified().await;
+                Ok(())
+            })
+        }
+    });
+    seen.recv_timeout(Duration::from_secs(2)).unwrap();
+    let deadline = after(Duration::from_secs(30));
+    let (deadline, original) = deadline.protocol().unwrap();
+    let invoked = Arc::new(AtomicUsize::new(0));
+    let (result_tx, result_rx) = mpsc::sync_channel(1);
+    let queued = thread::spawn({
+        let c = client.clone();
+        let invoked = invoked.clone();
+        move || {
+            // Same arguments as the public FFI value path, including a long caller
+            // budget but the existing five-second protocol ceiling fixed at entry.
+            let result = c.call(deadline, move |_| async move {
+                invoked.fetch_add(1, Ordering::SeqCst);
+                original.remaining()?;
+                Ok(())
+            });
+            result_tx.send(result).unwrap();
+            result
+        }
+    });
+    let before_release = result_rx.recv_timeout(Duration::from_secs(6));
+    gate.notify_one();
+    assert_eq!(blocked.join().unwrap(), Ok(()));
+    let final_result = queued.join().unwrap();
+    // Always drain fixture threads before assertions; a counterexample cannot
+    // leave a detached waiter or a COMPLETE artifact behind.
+    assert!(
+        before_release.is_ok(),
+        "local waiter outlived effective protocol deadline while previous work was still held"
+    );
+    assert_eq!(before_release.unwrap(), Err(nix::libc::ETIMEDOUT));
+    assert_eq!(final_result, Err(nix::libc::ETIMEDOUT));
+    assert_eq!(
+        invoked.load(Ordering::SeqCst),
+        0,
+        "expired protocol job must not invoke the broker operation"
+    );
+    Ok(())
+}

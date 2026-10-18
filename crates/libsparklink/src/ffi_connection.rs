@@ -126,7 +126,7 @@ pub unsafe extern "C" fn slk_connection_ssap_read(
     let view = unsafe { &*connection };
     let link = view.link.clone();
     let result = Deadline::from_monotonic_ns(deadline_ns).and_then(|deadline| {
-        let original = deadline.protocol()?;
+        let (deadline, original) = deadline.protocol()?;
         view.inner.call(deadline, move |_| async move {
             link.ssap().read(handle, minimum, original).await
         })
@@ -171,7 +171,7 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
         Ok(value) => value,
         Err(e) => return -e,
     };
-    let original = match deadline.protocol() {
+    let (deadline, original) = match deadline.protocol() {
         Ok(value) => value,
         Err(error) => return -error,
     };

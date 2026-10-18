@@ -4436,14 +4436,19 @@
         "path": ".dev/main-thread-01a120fe/controller-language-allocation-postflight-v1.json",
         "sha256": "5b79f9cf18ae87b1cdc148c5cf695d23b0454c9e77e4b7224f658def5f3997df",
         "scope": "After9U-onlyVMs four allocated serialpins/hubs/sharedPCIstillmatch,U5EP/E2EP;visiblefd/libvirt/leases/buildlock noconflictobserved,privilegedfdvisibilitylimited. NoE/forbidden/hub/controlleroperation,nootherthreadbusiness/E/mixed/coldROMqualification. Existing strict policy/SDK110/budget unchanged;original10WIP preserved."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/allocation-thread-20261019-readonly-v1.json",
+        "sha256": "996c0feb54f55677c21ce2c8de9d5dd0ae18c4c4bbe0ccad91338452b911b3ac",
+        "bytes": 6228,
+        "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed",
+        "scope": "Fresh four serial pins/hubs/shared PCI match;U5EP/E2EP;no conflict observed in drivers/visiblefds/liveLibvirtXML/leases/buildlock. NoUSBoperation;rootFDvisibilitylimited;noE/mixed/coldROM/naturalrecoveryqualification."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-thread-20261019-readonly-v1.json",
-      "sha256": "996c0feb54f55677c21ce2c8de9d5dd0ae18c4c4bbe0ccad91338452b911b3ac",
-      "bytes": 6228,
-      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed",
-      "scope": "Fresh four serial pins/hubs/shared PCI match;U5EP/E2EP;no conflict observed in drivers/visiblefds/liveLibvirtXML/leases/buildlock. NoUSBoperation;rootFDvisibilitylimited;noE/mixed/coldROM/naturalrecoveryqualification."
+      "path": ".dev/main-thread-01a120fe/resource-readonly-20261019-v3.json",
+      "sha256": "56739c5508b1d0735371d675614f7a6722542e6d9e3c2eeeaeec4a43befb192c",
+      "scope": "Four allowed serial pins/hubs/PCI present;U5EP/E2EP,unbound,visible fds/live libvirt assignments/leases/build lock show no conflict at observation. Root fd visibility incomplete;repeat before launch. Read-only,noUSB I/O or model/firmware/newRF qualification."
     },
     "current_finite_gate_ref": "controller-directory-language-r5f11",
     "live_vm_launch_guard": {
@@ -4604,6 +4609,20 @@
       "receipt": ".dev/main-thread-01a120fe/discovery-goal-batch-sync-counterexample-v1.json",
       "sha256": "53c7f8ff1361496a02d986c4443f2a9f3d99bead20a61448e8858f7c6bd76351",
       "scope": "Canonical registry.batch corrected; generated view compared equal. No proof or realqualification upgrade."
+    },
+    "next_real_slice": {
+      "selector": "--application-discovery-verify",
+      "implementation": "tools/ws73_application_discovery.py",
+      "scope": "Existing VM runner/SDK/UID1004 roles/capture;explicit release two scanner roles only. New real-device execution pending;caller-loss/TTL/manager-stop/partial-init/deadline remain separate missing gates.",
+      "qualification_ref": "project/qualification-records.json:application-discovery-real-r5f12",
+      "production_runtime_changed": false,
+      "architecture_goal_scope_changed": false,
+      "offline_record": {
+        "path": ".dev/main-thread-01a120fe/discovery-vm-gate-offline-v1.json",
+        "sha256": "09909d89fce4d89cd3091159077715be5b1ebe85bb9f8b881cef5cbc27aa74d6",
+        "source_commit": "4cfd30febfadef03977e2c753aed5f6ff2ff409d",
+        "status": "OFFLINE_GATE_FIXTURE_CHECKS_PASS_NOT_RF_QUALIFICATION"
+      }
     }
   }
 }

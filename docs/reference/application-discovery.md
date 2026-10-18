@@ -85,3 +85,23 @@ COUNT 为 1…1024，CLI 租期为 250…30000ms；默认任意前缀、1 条、
 输出 `DiscoverySession` 表示 broker 会话 active，不是 Native Ready 或持续空口接收证明。
 `DiscoveryReleased` 分别显示是否拿到最后一次物理 STOP 确认。
 这是接口语法参考；新流程尚未形成已验收教程，所有实机操作继续 VM-only。
+
+## 受控验收入口与限定范围
+
+现有 `ws73_target.py run` 的 `--application-discovery-verify` 是维护者验收选择器，
+要求显式两只设备、Native VM、`--qmp-hotplug --connection-verify`；可附同一
+artifact 的普通 socket／长度边界保持门禁，不能混入独立故障、Agent 或 benchmark。
+本线程还须通过端口白名单、序列号、占用与 SDK110 全套固件校验；选项不会放开这些限制。
+
+VM 监督器按固定命令启动两个 UID/GID1004、无附加组和 capabilities 的实际
+`slctl discover`，先等待双方 active，再允许另一只广播随机标识。第一个读者
+只收一条并显式释放；第二个保留会话，接收原标识及第一个释放后的新标识，最后
+显式释放。随后交换 scanner 角色。START／最终 STOP、两端 marker 数据和逐条
+接收均由原 USB/HCC/DLI 校验器核对；同一 RX 可由两个会话观察，同一读者的不同
+Native 序号不能反复借用一条捕获记录。缺失原始文件或失败不能由日志摘要补齐。
+
+监督器有环境预算，应用保留实际20秒租期；选中标识的交付另受原10秒门禁约束。
+测试监督器退出不撤销已开始的物理义务。caller-loss、TTL、管理STOP、部分初始化、
+取消及原期限交错是后续独立门禁，本入口仅覆盖显式release的正向切片。
+**验收器离线检查不代表本入口已在真实 WS73 或部署权限环境通过**；准确新镜像、
+完整system bus角色和原路径保持回归仍以[当前能力](../../project/current-capabilities.md)记录为准。

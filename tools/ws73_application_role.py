@@ -51,7 +51,7 @@ def read_json(path, uid, limit=131072):
         info=os.fstat(fd)
         if (not stat.S_ISREG(info.st_mode) or info.st_uid!=uid or
                 info.st_mode&0o022 or not 0<info.st_size<=limit):
-            raise CaptureError('bounded original owner evidence file required')
+            raise CaptureError(f'bounded original owner evidence file required: uid={info.st_uid} mode={info.st_mode & 0o777:o} bytes={info.st_size} expected_uid={uid} limit={limit}')
         with os.fdopen(os.dup(fd),'r')as stream:return json.load(stream)
     finally:os.close(fd)
 
@@ -90,7 +90,10 @@ def request_pair(run,row):
     request=run.output/f'app-channel-role-{row["phase"]}.request.json'
     temporary=request.with_suffix('.tmp')
     with temporary.open('x')as stream:json.dump(row,stream)
+    temporary.chmod(0o600)
     os.link(temporary,request);temporary.unlink()
+    observed=request.stat()
+    row['role_request_file']=dict(uid=observed.st_uid,gid=observed.st_gid,mode=observed.st_mode & 0o777,bytes=observed.st_size);run.save()
     # The root helper cannot accept arbitrary programs or privileged operations.
     # This timeout only supervises the test; SDK children keep original5s.
     response=ROOT/f'phase-{row["phase"]}'/'run.json';end=time.monotonic()+35
@@ -171,7 +174,7 @@ def supervise(daemon_pid):
         row.update(channel_role='sparklink-apps-only',role_supervisor=supervisor)
         def save():
             target=folder/'progress.json';temporary=folder/'progress.tmp'
-            temporary.write_text(json.dumps(row,indent=2)+'\n');temporary.replace(target)
+            temporary.write_text(json.dumps(row,indent=2)+'\n');temporary.chmod(0o644);temporary.replace(target)
         context=SimpleNamespace(output=folder,save=save)
         try:
             if row['tools']!={key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}:
@@ -193,7 +196,8 @@ def supervise(daemon_pid):
             row.update(pair_status='FAIL',error=str(error),error_traceback=traceback.format_exc());raise
         finally:
             save();(folder/'progress.json').replace(folder/'run.json')
-    (ROOT/'finished.json').write_text(json.dumps(dict(status='TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor))+'\n')
+    finished=ROOT/'finished.json'
+    finished.write_text(json.dumps(dict(status='TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor))+'\n');finished.chmod(0o644)
 
 
 if __name__=='__main__':

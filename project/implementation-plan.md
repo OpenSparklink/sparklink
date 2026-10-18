@@ -32,6 +32,9 @@ command collector 并继续准确校验非零退出及 EACCES；普通调用者�
 广播集而失败，整轮保留于 `ssap-initialization-us-v3`。每个切片结束后通过实际
 管理事务恢复两端 beacon，再复用原连接门禁；保留“必须重建”断言，不接受少一步
 初始化来迁就当前状态。首个切片不升级为完整双端门禁通过。
+1e72 第三轮又明确暴露 ON beacon 不能重建（Host 准入要求 advertising OFF），保留
+`ssap-initialization-us-v4` 的真实 EBUSY。恢复必须包含实际 stop Complete，使保留的
+配置为 OFF beacon；禁止重试掩盖原 EBUSY 或弱化 Host 准入。
 单 bulk RX URB 持有 CMTC 时，后续同端 Down 也不能进入 guest，故使用真实 Managed
 lease Revoking 作原始屏障：原 lifetime 在该端规范快照中尚为 Up（Down仍被hold），
 旧 Engine 报当前 EACCES 并收敛 fd；

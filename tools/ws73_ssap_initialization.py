@@ -281,12 +281,15 @@ def restore_beacons(run, phase):
     # The shared connection gate requires a fresh beacon -> connectable set
     # transition. Reusing its advertiser without this real policy transaction
     # leaves an OFF connectable set and correctly fails that original assertion.
+    # Recreation itself requires advertising OFF (Host::admit_discovery), so
+    # retain the beacon configuration only after an actual stop Complete.
     from ws73_north_star import parse_result
     phase['beacon_restoration'] = []
     for owner in [phase['caller'], phase['peer']]:
         row = run.ctl(owner, 'advertise', 'on')
         parse_result(row['stdout'], owner, 1, allow_recreate=True)
         phase['beacon_restoration'].append(dict(owner=owner, command=len(run.data['commands'])-1))
+        run.stop(owner, 'advertise')
         run.save()
 
 

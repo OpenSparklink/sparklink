@@ -1,5 +1,19 @@
 # SparkLink / Linux 联合实施方案
 
+### R5f9e：Native bind 离开异步worker（离线通过，新产物VM待验）
+
+本批只将现有Native socket/bind/connect移动到阻塞线程，原owner退休标志和实际
+lease guard随在途工作持有，调用前后拒绝退休，实际返回的fd仍唯一拥有。
+原Session／Engine、Kernel Grant／credit／Ticket、协议和五秒期限不变。
+退出门禁：生产helper验证异步worker可运行、取消不释放在途guard、退休后返回fd
+被关闭、Native错误不变成功；严格default/all-features与Clippy；新准确服务artifact
+在VM内回归原发现／连接／业务及适用SSAP／长度／撤权路径。
+fixture不能证明真实Native syscall内部交错、parent退休或kernel引用排空；这些仍
+待受控VM屏障，不将本批保持回归升级为完整生命周期资格。
+生产helper三项已通过，default/all-features各363项与严格Clippy通过；首轮筛选
+漏选第三项被计数门禁拒绝，原失败保留。实际测试源码为97e46ad基线加本批dirty
+字节，后续映射准确签名提交，不冒充干净提交编译。构建按共享锁单独12路执行。
+
 ### R5f9d：被动诊断已接通，四轮未复现；根因仍开放
 
 原253 FAIL保持必需失败。它的peerDown约在断链OUT后5.08秒、清理广告命令之后

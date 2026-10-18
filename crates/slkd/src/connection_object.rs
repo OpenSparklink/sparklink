@@ -274,6 +274,41 @@ async fn initialize_once(
     result
 }
 
+/// Native socket creation can sleep in the kernel. Its actual admission guard
+/// stays with that work even if the async caller stops waiting. This is the
+/// same owner retirement flag, not a second authorization/state source.
+async fn bind_off_worker(
+    retiring: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    admission: tokio::sync::OwnedMutexGuard<crate::state::NativeManagement>,
+    bind: impl FnOnce() -> std::io::Result<std::os::fd::OwnedFd> + Send + 'static,
+) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
+    tokio::task::spawn_blocking(move || {
+        let _admission = admission;
+        if retiring.load(std::sync::atomic::Ordering::Acquire) {
+            return Err(zbus::fdo::Error::Failed("connection owner retiring".into()));
+        }
+        let fd = bind().map_err(|error| {
+            if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
+                zbus::fdo::Error::NotSupported(
+                    "channel mode or same-lifetime rebinding is not supported".into(),
+                )
+            } else {
+                zbus::fdo::Error::Failed(format!("native channel bind: {error}"))
+            }
+        })?;
+        if retiring.load(std::sync::atomic::Ordering::Acquire) {
+            // fd is still uniquely owned here; rejection closes the real
+            // returned descriptor instead of publishing it after retirement.
+            return Err(zbus::fdo::Error::Failed(
+                "connection owner retired during native bind".into(),
+            ));
+        }
+        Ok(fd)
+    })
+    .await
+    .map_err(|error| zbus::fdo::Error::Failed(format!("native bind task: {error}")))?
+}
+
 /// Resource owner retained by the controller before any Native creation.
 /// Weak context prevents the State -> Registration -> Owner -> State cycle.
 /// D-Bus views reference this owner; publication is not its lifetime root.
@@ -284,7 +319,7 @@ pub(crate) struct ConnectionOwner {
     ssap_security: u32,
     ssap: tokio::sync::Mutex<Option<crate::ssap_engine::Engine>>,
     ssap_initialization: tokio::sync::Mutex<Initialization>,
-    ssap_retiring: std::sync::atomic::AtomicBool,
+    ssap_retiring: std::sync::Arc<std::sync::atomic::AtomicBool>,
     remote_services: tokio::sync::Mutex<Option<Vec<slk_protocol::ssap::discovery::Entry>>>,
 }
 
@@ -318,7 +353,7 @@ impl ConnectionOwner {
             ssap_security,
             ssap: tokio::sync::Mutex::new(None),
             ssap_initialization: tokio::sync::Mutex::new(Initialization::NotStarted),
-            ssap_retiring: std::sync::atomic::AtomicBool::new(false),
+            ssap_retiring: std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),
             remote_services: tokio::sync::Mutex::new(None),
         })
     }
@@ -394,42 +429,23 @@ impl ConnectionOwner {
         let token = admission
             .token
             .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?;
-        let fd = match kind {
+        let (generation, lifetime, handle) = (
+            self.generation,
+            self.reference.lifetime,
+            self.reference.handle,
+        );
+        let fd = bind_off_worker(self.ssap_retiring.clone(), admission, move || match kind {
             ChannelKind::Service => slk_native::channel::open_service(
-                index,
-                self.generation,
-                self.reference.lifetime,
-                self.reference.handle,
-                token,
-                security,
+                index, generation, lifetime, handle, token, security,
             ),
             ChannelKind::User => slk_native::channel::open(
-                index,
-                self.generation,
-                self.reference.lifetime,
-                self.reference.handle,
-                token,
-                directions,
-                security,
+                index, generation, lifetime, handle, token, directions, security,
             ),
             ChannelKind::Dynamic(config) => slk_native::channel::open_dynamic(
-                index,
-                self.generation,
-                self.reference.lifetime,
-                self.reference.handle,
-                token,
-                config,
+                index, generation, lifetime, handle, token, config,
             ),
-        }
-        .map_err(|error| {
-            if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
-                zbus::fdo::Error::NotSupported(
-                    "channel mode or same-lifetime rebinding is not supported".into(),
-                )
-            } else {
-                zbus::fdo::Error::Failed(format!("native channel bind: {error}"))
-            }
-        })?;
+        })
+        .await?;
         if self.is_retiring() {
             return Err(zbus::fdo::Error::Failed(
                 "connection owner retired during native bind".into(),
@@ -1195,6 +1211,134 @@ mod grant_tests {
     use super::*;
     use std::sync::Arc;
     use tokio::sync::Mutex;
+
+    fn bind_lease() -> crate::state::NativeLease {
+        Arc::new(Mutex::new(crate::state::NativeManagement {
+            token: Some(19),
+            accepting: true,
+            connection_id: 0,
+            initialized_off: [None; 2],
+        }))
+    }
+
+    /// Actual production offload/guard and OS socket ownership. The blocked
+    /// Native syscall is a finite dependency fixture, not a kernel/USB proof.
+    #[tokio::test]
+    async fn blocking_native_bind_keeps_runtime_live_and_closes_return_after_retirement() {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        use std::time::Duration;
+        let lease = bind_lease();
+        let retiring = Arc::new(AtomicBool::new(false));
+        let admission = lease.clone().lock_owned().await;
+        let (fd, peer) = std::os::unix::net::UnixDatagram::pair().unwrap();
+        let (entered, started) = tokio::sync::oneshot::channel();
+        let (release, released) = std::sync::mpsc::sync_channel(0);
+        let runtime_thread = std::thread::current().id();
+        let task = tokio::spawn(bind_off_worker(retiring.clone(), admission, move || {
+            entered.send(std::thread::current().id()).unwrap();
+            released
+                .recv_timeout(Duration::from_secs(3))
+                .map_err(std::io::Error::other)?;
+            Ok(fd.into())
+        }));
+        // Default Tokio test is single-threaded: reaching this receipt while
+        // the dependency waits establishes that the async worker is available.
+        assert_ne!(
+            tokio::time::timeout(Duration::from_secs(1), started)
+                .await
+                .unwrap()
+                .unwrap(),
+            runtime_thread
+        );
+        assert!(lease.try_lock().is_err());
+        retiring.store(true, Ordering::Release);
+        assert!(!task.is_finished());
+        release.send(()).unwrap();
+        assert!(
+            task.await
+                .unwrap()
+                .unwrap_err()
+                .to_string()
+                .contains("retired during native bind")
+        );
+        assert!(lease.try_lock().is_ok());
+        assert_eq!(
+            peer.send(&[1]).unwrap_err().kind(),
+            std::io::ErrorKind::ConnectionRefused
+        );
+    }
+
+    #[tokio::test]
+    async fn cancelled_native_bind_wait_retains_actual_admission_until_return() {
+        use std::sync::atomic::AtomicBool;
+        use std::time::Duration;
+        let lease = bind_lease();
+        let admission = lease.clone().lock_owned().await;
+        let (fd, peer) = std::os::unix::net::UnixDatagram::pair().unwrap();
+        peer.set_nonblocking(true).unwrap();
+        let (entered, started) = tokio::sync::oneshot::channel();
+        let (release, released) = std::sync::mpsc::sync_channel(0);
+        let task = tokio::spawn(bind_off_worker(
+            Arc::new(AtomicBool::new(false)),
+            admission,
+            move || {
+                entered.send(()).unwrap();
+                released
+                    .recv_timeout(Duration::from_secs(3))
+                    .map_err(std::io::Error::other)?;
+                Ok(fd.into())
+            },
+        ));
+        tokio::time::timeout(Duration::from_secs(1), started)
+            .await
+            .unwrap()
+            .unwrap();
+        task.abort();
+        assert!(task.await.unwrap_err().is_cancelled());
+        assert!(
+            lease.try_lock().is_err(),
+            "author cancellation cannot release actual in-flight admission"
+        );
+        release.send(()).unwrap();
+        tokio::time::timeout(Duration::from_secs(1), async {
+            loop {
+                let closed = matches!(peer.send(&[1]), Err(e) if e.kind()==std::io::ErrorKind::ConnectionRefused);
+                if closed && lease.try_lock().is_ok() { break; }
+                tokio::task::yield_now().await;
+            }
+        }).await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn queued_retired_native_bind_does_not_run_and_errors_do_not_succeed() {
+        use std::sync::atomic::AtomicBool;
+        let lease = bind_lease();
+        let admission = lease.clone().lock_owned().await;
+        let denied = bind_off_worker(Arc::new(AtomicBool::new(true)), admission, || {
+            panic!("a queued retired owner must not start Native work")
+        })
+        .await
+        .unwrap_err();
+        assert!(denied.to_string().contains("owner retiring"));
+        assert!(lease.try_lock().is_ok());
+        for errno in [
+            nix::libc::EOPNOTSUPP,
+            nix::libc::EACCES,
+            nix::libc::ETIMEDOUT,
+        ] {
+            let admission = lease.clone().lock_owned().await;
+            let error = bind_off_worker(Arc::new(AtomicBool::new(false)), admission, move || {
+                Err(std::io::Error::from_raw_os_error(errno))
+            })
+            .await
+            .unwrap_err();
+            assert_eq!(
+                matches!(error, zbus::fdo::Error::NotSupported(_)),
+                errno == nix::libc::EOPNOTSUPP
+            );
+            assert!(lease.try_lock().is_ok());
+        }
+    }
 
     #[tokio::test]
     async fn actual_dbus_deadline_rejects_foreign_old_shape_and_expires_before_held_state() {

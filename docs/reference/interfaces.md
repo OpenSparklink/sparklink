@@ -38,6 +38,12 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 通用Operation/跨进程原始Deadline/EventStream尚未开放，future取消不承诺撤销已开始的物理义务。
 内核/daemon/工具既有原期限、最后关闭和Grant规则继续执行。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
 
+daemon的Native通道创建在阻塞线程执行，实际工作持有同一管理准入guard直至
+系统调用返回；取消等待不能提前释放它。排队工作及实际返回分别检查同一个owner
+退休标志，退休后拒绝并关闭尚未发布的fd。SSAP初始化仍检查原期限，不通过取消
+冒充已中止内核调用。它不改变D-Bus签名、Grant或socket完成语义，也不提供独立
+进程故障域；准确实机范围仍以[资格入口](../../project/current-capabilities.md)为准。
+
 ### C/Python 同步应用入口
 
 `slk_client_open_system` 创建一个调用者 bus 连接，固定当前 daemon unique owner；

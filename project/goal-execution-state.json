@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9D_BOUNDED_NONREPRODUCTION_RCA_UNPROVED_ORIGINAL253FAIL_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9E_NATIVE_BIND_OFF_WORKER_OFFLINE_PASS_NEW_ARTIFACT_PENDING",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -4060,6 +4060,19 @@
           "qualification_record_ref": "down-passive-diagnostic-r5f9d",
           "observed_real_failure_windows": 0,
           "next": "R5f9d bounded4new8f51toolVMs finitePASS32actualreplies/88discoveries,0originalDownfailure reproduction and0realpassivewindow;RCA/observerremainUNPROVED,originalsevenmatrix253FAILrequiredunchanged. Stop declaredrepeatbound;nextactualNative-return/parentretirement barrier,task/reference/callbackdrain andoriginalrelease/finalfd/dup/SCM/Down/deadline/reuse;data/credit/SSAP/security/multichannel/fourdeviceparallel,noallcontrolprerequisite. FullS0-S6/19WP/10FV/12DG,VM-only/SDK110/allocatedports/shared12or8budget,UserHostP4,naturalRCA/nonmanualrecovery,E/mixed/coldROM/releaseallOPEN."
+        },
+        "native_bind_offload": {
+          "id": "R5f9e",
+          "status": "PRODUCTION_HELPER3_DEFAULT363_ALLFEATURES363_CLIPPY_PASS_NEW_ARTIFACT_VM_PENDING",
+          "production_behavior": "ActualNative socket/bind/connect movedoffTokio worker;originalleaseguardretainedthroughactualreturn/cancellation;sharedoriginalretiringflag checkedbefore/after. No newEngine/Session/creditpath/deadline/ABI.",
+          "exit": "Productionhelperruntime-progress/actualguard/cancel/OSfd-close/errorfixtures;strictdefault/allfeatures/Clippy;newexactserviceartifactVMoriginalpaths. RealNative-syscall-internal/parentretire/refdrain stillrequirecontrolledVMbarrier,notfixturequalification.",
+          "original_failure_retained": "docs/evidence/native-service-owner-preservation-20261018.json",
+          "full_scope_unchanged": "S0-S6/19WP/10FV/12DG/VM-only/allocatedports/SDK110/shared12or8/UserHostP4/naturalRCA/nonmanualrecovery remainOPEN.",
+          "offline_receipt": {
+            "path": ".dev/main-thread-01a120fe/native-bind-offline-v2.json",
+            "sha256": "65fc4faa04ecf7eadf999c892088d76cffe24895cf12051f1b13d9be7ed29812",
+            "scope": "Actualtested97e46ad+dirtybytes;Nativeblockingdependencyfixture,actualproductionhelper/OSfd/OwnedMutexGuard/currentthread;notNativeKernel/USB/refdrain/formalqualification. FirstselectorFAILretained."
+          }
         }
       }
     }

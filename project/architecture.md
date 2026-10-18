@@ -201,6 +201,14 @@ Ready、Enabled、Available、Powered 不互相替代。Controller 元数据有�
 
 Managed release、最后 fd、dup、在途回复、设备移除和 daemon crash 与这份初始化事实日志组合验收，保持活动 Ready 同行不变。
 
+SSAP 初始化分开记录 Native fd 创建、内核 CMTC、用户态 ExchangeInfo 和应用可用。
+当前 creator 的同步非阻塞 bind 不经过通用 NativeWork；actor 创建成功不代表协商
+完成，SOCK_NONBLOCK 也不证明锁等待有界。VM 中观察 daemon fd 数量／inode 收敛，
+不能替代 initializer task join、对象退休、内核引用和 Session stop/drain 的证明。
+保留单 bulk RX URB 的原始 CMTC 回复时，后续同端 Down 也延迟，故必须用真实
+Managed Revoking 标识撤权时点；原规范连接仍 Up 只表示最后确认值。物理 Down
+会结束该连接两端，同行 controller 的独立 Ready／RX 进展与后续业务分别验收。
+
 
 ### 固件身份与分阶段转发证据
 

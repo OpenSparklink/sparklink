@@ -25,6 +25,13 @@ ConnectionSession 独立于应用fd。最后fd关闭释放Binding和其未提交
 同lifetime基本通道重绑当前明确EOPNOTSUPP，已实机验证拒绝；固定标识1换成递增编号也不足以防止残留业务数据。
 Session需保留协商上下文、接收水位与通道归属，定义重新授权/重新绑定的排空屏障。
 
+SSAP creator 的 fd 创建、CMTC、ExchangeInfo 与应用可用是独立阶段。测试只能用
+实际生产路径和各阶段事实作为屏障；不能把 actor 发布当作协议 Ready，或把 daemon
+fd inode 消失当作 task join／内核引用排空。单 RX URB 保留能力回复时同端 Down
+不可先见，因此撤权以真实 Managed 状态为准；原连接 Up 观察不授予发送权限。
+清理使用其准确生产原因码及真实双端事件核验，不借用公开主动断链的作者终态。
+有限门禁及仍缺的证明只在[资格入口](../../project/current-capabilities.md)维护。
+
 ### 安全能力交换沿用同一物理 Session
 
 受限capability-only入口不是另一Engine，也不授予可信安全状态。管理批准必须由

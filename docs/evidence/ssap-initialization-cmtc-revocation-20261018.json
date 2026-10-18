@@ -313,8 +313,8 @@
   ],
   "replay": {
     "access": "Private local artifacts required; SDK,firmware andfullcaptures not public. Hashes/locations below,owner-controlled retention.",
-    "command": "python3 .dev/main-thread-01a120fe/ssap-init-audit-v1.py",
-    "source": "Exact frozen7b90092 host plus prepared-v8 guest tools. Replay writes a new output;preserve the original immutable audit before choosing a distinct output for another attempt."
+    "command": "python3 .dev/main-thread-01a120fe/ssap-init-audit-v2.py --output .dev/main-thread-01a120fe/ssap-init-replay-NEW.json",
+    "source": "Exact frozen7b90092 host and prepared-v8 guest. Choose a fresh output path under this thread directory; existing output is rejected. v1 and independently repeated v2 audits retained, including identical raw evidence and all negative controls."
   },
   "materials": [
     {
@@ -1301,6 +1301,16 @@
       "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v5/receipt.json",
       "sha256": "49740dbfc78829cdc61bc8e8bdaf4b2bae61d646db747aa05d001cec80140ee8",
       "bytes": 2050
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/ssap-init-audit-v2.py",
+      "sha256": "afaa0dca944ad40fd6dc4090176f9a871664a7fa836b713fd8f790839ca69bec",
+      "bytes": 11599
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/ssap-init-audit-v2.json",
+      "sha256": "c41b6612d09a03a0605bace16d07a5675c8df6af4c68df626be4ec8222f95d8a",
+      "bytes": 65929
     }
   ]
 }

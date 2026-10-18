@@ -1824,3 +1824,297 @@ async fn typed_peer_replay_and_capacity_never_replace_unretired_or_pinned_slots(
     // Cleanup must actually unpublish before its old slot is reusable. Existing
     // ObjectServer tests cover timeout, conflicting owner and eventual retry.
 }
+
+/// Real registry/reconcile/ObjectServer and Tokio cancellation. The table and
+/// blocked Native dependency are fixtures; no successful kernel/USB operation.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn unpublished_initializer_survives_parent_and_retirement_wait_cancellation() {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    let bus = PrivateBus::start();
+    let state = state();
+    let expected = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    let table = native_table(10, 1, &[(1, 7, 0, 0, [1; 6])]);
+    let registration = {
+        let mut st = state.lock().await;
+        st.controller = expected;
+        st.apply_native_links(table, 0).unwrap();
+        st.connection_publications(&state).pending.remove(0)
+    };
+    let owner = registration.owner.clone();
+    let server = server(&bus, state.clone()).await;
+    let calls = Arc::new(AtomicUsize::new(0));
+    let (entered, started) = oneshot::channel();
+    let (release, released) = oneshot::channel();
+    let first = tokio::spawn({
+        let owner = owner.clone();
+        let calls = calls.clone();
+        async move {
+            owner
+                .initialize_with_fixture(async move {
+                    calls.fetch_add(1, Ordering::SeqCst);
+                    entered.send(()).unwrap();
+                    released.await.unwrap();
+                    Err("finite Native dependency failure after return".into())
+                })
+                .await
+        }
+    });
+    started.await.unwrap();
+    first.abort();
+    assert!(first.await.unwrap_err().is_cancelled());
+    let mut publication = tokio::spawn({
+        let state = state.clone();
+        let server = server.clone();
+        async move { reconcile_native(&state, &server, expected, 0, Ok(table)).await }
+    });
+    assert!(
+        timeout(Duration::from_millis(100), &mut publication)
+            .await
+            .is_err()
+    );
+    publication.abort();
+    assert!(publication.await.unwrap_err().is_cancelled());
+    assert!(
+        !release.is_closed(),
+        "parent cancel cannot drop the actual dependency task"
+    );
+    assert!(
+        server
+            .object_server()
+            .interface::<_, crate::connection_object::ConnectionIface>(registration.path.as_str())
+            .await
+            .is_err()
+    );
+    assert!(Arc::ptr_eq(
+        &state.lock().await.native_connection_objects[&1].owner,
+        &owner
+    ));
+    let down = native_table(11, 2, &[]);
+    let retirement = tokio::spawn({
+        let state = state.clone();
+        let server = server.clone();
+        async move { reconcile_native(&state, &server, expected, 11, Ok(down)).await }
+    });
+    timeout(Duration::from_secs(1), async {
+        while !owner.is_retiring() {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    retirement.abort();
+    assert!(retirement.await.unwrap_err().is_cancelled());
+    assert!(Arc::ptr_eq(
+        &state.lock().await.retiring_connection_objects[&registration.path].owner,
+        &owner
+    ));
+    let mut retry = tokio::spawn({
+        let state = state.clone();
+        let server = server.clone();
+        async move { reconcile_native(&state, &server, expected, 11, Ok(down)).await }
+    });
+    assert!(
+        timeout(Duration::from_millis(100), &mut retry)
+            .await
+            .is_err(),
+        "cleanup cannot finish while Native dependency has not returned"
+    );
+    assert!(!release.is_closed());
+    release.send(()).unwrap();
+    timeout(Duration::from_secs(1), retry)
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(state.lock().await.retiring_connection_objects.is_empty());
+    assert!(state.lock().await.native_connection_objects.is_empty());
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert!(
+        owner
+            .start_ssap()
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("retiring")
+    );
+}
+
+/// Actual invalid ObjectServer path and subsequent real registration/retry;
+/// failed initializer dependency, not an always-successful Native fixture.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn publication_failure_and_existing_interface_retry_reuse_one_resource_owner() {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    let bus = PrivateBus::start();
+    let state = state();
+    let expected = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    let table = native_table(10, 1, &[(1, 7, 0, 0, [1; 6])]);
+    let registration = {
+        let mut st = state.lock().await;
+        st.controller = expected;
+        st.apply_native_links(table, 0).unwrap();
+        st.connection_publications(&state).pending.remove(0)
+    };
+    let owner = registration.owner.clone();
+    let calls = Arc::new(AtomicUsize::new(0));
+    let called = calls.clone();
+    owner
+        .initialize_with_fixture(async move {
+            called.fetch_add(1, Ordering::SeqCst);
+            Err("original finite creator failure".into())
+        })
+        .await
+        .unwrap_err();
+    let server = server(&bus, state.clone()).await;
+    state
+        .lock()
+        .await
+        .native_connection_objects
+        .get_mut(&1)
+        .unwrap()
+        .path = "invalid object path".into();
+    reconcile_native(&state, &server, expected, 0, Ok(table)).await;
+    assert!(!state.lock().await.native_connection_objects[&1].published);
+    assert!(Arc::ptr_eq(
+        &state.lock().await.native_connection_objects[&1].owner,
+        &owner
+    ));
+    state
+        .lock()
+        .await
+        .native_connection_objects
+        .get_mut(&1)
+        .unwrap()
+        .path = registration.path.clone();
+    reconcile_native(&state, &server, expected, 0, Ok(table)).await;
+    assert!(state.lock().await.native_connection_objects[&1].published);
+    let iface = server
+        .object_server()
+        .interface::<_, crate::connection_object::ConnectionIface>(registration.path.as_str())
+        .await
+        .unwrap();
+    assert!(iface.get().await.belongs_to(&owner));
+    // Simulate cancellation after at inserted but before publication metadata
+    // was acknowledged. at(false) must reuse the registered original owner.
+    state
+        .lock()
+        .await
+        .native_connection_objects
+        .get_mut(&1)
+        .unwrap()
+        .published = false;
+    reconcile_native(&state, &server, expected, 0, Ok(table)).await;
+    assert!(state.lock().await.native_connection_objects[&1].published);
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert!(
+        owner
+            .start_ssap()
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("original finite creator failure")
+    );
+    drop(iface);
+    reconcile_native(&state, &server, expected, 11, Ok(native_table(11, 2, &[]))).await;
+    assert!(state.lock().await.retiring_connection_objects.is_empty());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn unfinished_retirement_retains_budget_and_missing_live_owner_is_retried_after_drain() {
+    let bus = PrivateBus::start();
+    let state = state();
+    let expected = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    let links = (1..=16)
+        .map(|i| (i, i as u16, 0, 0, [i as u8; 6]))
+        .collect::<Vec<_>>();
+    let old = {
+        let mut st = state.lock().await;
+        st.controller = expected;
+        assert!(st.native_lease.is_none()); // no Native socket can be created
+        st.apply_native_links(native_table(10, 16, &links), 0)
+            .unwrap();
+        st.connection_publications(&state).pending
+    };
+    let next = native_table(11, 17, &[(17, 7, 0, 0, [17; 6])]);
+    {
+        let mut st = state.lock().await;
+        st.apply_native_links(next, 11).unwrap();
+        let batch = st.connection_publications(&state);
+        assert_eq!(batch.refused, 1);
+        assert!(batch.pending.is_empty());
+        assert_eq!(batch.retired.len(), 16);
+        assert_eq!(st.retiring_connection_objects.len(), 16);
+        assert!(st.connection_publication_pending());
+        assert!(old.iter().all(|v| v.owner.is_retiring()));
+    }
+    let server = server(&bus, state.clone()).await;
+    // Actual stop/join and ObjectServer InterfaceNotFound for owners that have
+    // never acquired a resource. No assumed successful cleanup callback.
+    reconcile_native(&state, &server, expected, 11, Ok(next)).await;
+    assert!(state.lock().await.retiring_connection_objects.is_empty());
+    assert!(state.lock().await.native_connection_objects.is_empty());
+    assert!(state.lock().await.connection_publication_pending());
+    reconcile_native(&state, &server, expected, 11, Ok(next)).await;
+    assert!(state.lock().await.native_connection_objects[&17].published);
+    assert_eq!(state.lock().await.native_connection_objects.len(), 1);
+    assert!(
+        !state.lock().await.native_connection_objects[&17]
+            .owner
+            .is_retiring()
+    );
+}
+
+#[tokio::test]
+async fn retiring_registration_never_removes_another_resource_owner_at_its_path() {
+    use crate::connection_object::{ConnectionIface, ConnectionOwner, retire_registration};
+    let bus = PrivateBus::start();
+    let shared = state();
+    let expected = slk_protocol::SleControllerSnapshot {
+        generation: 7,
+        profile: 1,
+        ..Default::default()
+    };
+    let entry = {
+        let mut st = shared.lock().await;
+        st.controller = expected;
+        st.apply_native_links(native_table(10, 1, &[(1, 7, 0, 0, [1; 6])]), 0)
+            .unwrap();
+        st.connection_publications(&shared).pending.remove(0)
+    };
+    let foreign = ConnectionOwner::new(&shared, 7, entry.reference, 0);
+    let server = server(&bus, shared.clone()).await;
+    server
+        .object_server()
+        .at(
+            entry.path.as_str(),
+            ConnectionIface::from_owner(shared.clone(), foreign.clone()).unwrap(),
+        )
+        .await
+        .unwrap();
+    assert!(retire_registration(&server, &entry).await.is_err());
+    assert!(entry.owner.is_retiring());
+    assert!(!foreign.is_retiring());
+    let iface = server
+        .object_server()
+        .interface::<_, ConnectionIface>(entry.path.as_str())
+        .await
+        .unwrap();
+    assert!(iface.get().await.belongs_to(&foreign));
+    assert!(
+        shared
+            .lock()
+            .await
+            .native_connection_objects
+            .contains_key(&1)
+    );
+}

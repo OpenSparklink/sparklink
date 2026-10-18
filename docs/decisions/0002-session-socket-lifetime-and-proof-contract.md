@@ -37,8 +37,15 @@ controller 生命周期必须持有开始初始化前登记的唯一用户态服
 发布重试复用实际 owner，失败不遗留资源；资源表不复制 Kernel 的连接状态，且不得
 形成永久 Arc 环。只提前发布 D-Bus 对象不足以替代这份资源所有权。
 [调用审计](../../history/architecture/native-initialization-owner-audit-20261018.json)记录了
-当前 eager start 先于 ObjectServer.at、parent cancel 与清理查找的组合缺口；它是源码
+当时 eager start 先于 ObjectServer.at、parent cancel 与清理查找的组合缺口；它是源码
 事实及待验证风险，不是已经发生的实机泄漏/UAF或串包。整改仍需准确新artifact回归。
+
+R5f9c 将现有 registration 变为初始化开始前的资源根，D-Bus 只引用同一个
+ConnectionOwner；以 Weak context 避免新增永久 State/owner 环。未完成退休保留
+原 owner 及预算，拒绝超额准入；清理等待取消不移出原 Engine／JoinHandle。
+发布失败与已插入但未确认的重试复用原 owner，移除前核对 Arc 身份。此设计不增加
+物理状态来源、不授予 Ready，也不证明内核引用或 USB callback 已排空。离线受控
+依赖、实际私有 D-Bus／OS fd 回归及新 artifact 实机范围在资格入口分别表达。
 
 ### 安全能力交换沿用同一物理 Session
 

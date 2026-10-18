@@ -1,5 +1,14 @@
 # 当前能力与资格
 
+R5f9c 生产资源所有权整改已接通，default/all-features 各360项、严格Clippy、架构
+检查及116文档严格HTML通过，**新 artifact 实机尚未验收**。
+controller registration 在 Native 创建前持有唯一 SSAP owner；取消初始化或 stop 的
+等待不移出原 task，发布重试复用同一 owner，未完成退休仍占有限预算。离线私有
+D-Bus／OS fd 与显式 Native/table fixture 不授内核并发、USB drain 或自然恢复资格。
+初始缺D-Bus工具配置、非法snapshot fixture和Clippy风格失败均保留，未修改生产
+校验或放宽断言；通过范围只绑定最终测试的准确源码hash。
+下述 DA 服务的历史门禁仍只适用于各自准确 artifact，不转授本批代码。
+
 部分初始化清理现有两份独立、准确 artifact 的有限实机记录；它们不授予整个HEAD资格：
 
 | 等待阶段 | 实际 guest／Host 工具 | 真实退出及保持门禁 | 证据 |

@@ -25,7 +25,7 @@ CMTC先决完成必须在捕获中成立；目标不可先收到另一份响应�
 称为内核bind内部交错，也不等待所有控制面组合才继续数据/SSAP/security主线。
 task join、Nativebind内部、内核引用/UAF/drain、E/混合与自然恢复保持开放。
 
-R5f9c 下一批整改：根据[当前调用审计](../history/architecture/native-initialization-owner-audit-20261018.json)，
+R5f9c 当前整改：根据[历史调用审计](../history/architecture/native-initialization-owner-audit-20261018.json)，
 现路径先初始化、后ObjectServer.at，而parent EventTask可取消dispatch；仅证明直接
 调用者取消保留JoinHandle，尚未证明未发布owner被controller退休稳定持有并join。
 在已有每controller/物理lifetime资源关系中登记同一个SSAP owner，再开始Nativefactory；
@@ -33,6 +33,17 @@ D-Bus只引用它，发布失败/取消/重试统一收敛。保留唯一initial
 只提前发布D-Bus对象掩盖资源所有权，也不复制Kernel物理状态或引入永久Arc环。
 有限退出包括实际生产取消/发布失败/重试回归，准确Native返回屏障和新artifact VM
 发现/连接/短包/原长度/SSAP/同行保持；尚未执行的join、引用/UAF性质不计通过。
+
+本批已接通 controller registration 稳定持有同一个 ConnectionOwner、弱 context、
+16 项 active+retiring 总预算和取消安全的原 Engine/task join；原 Kernel 物理状态、
+唯一 Engine、Session／Grant／credit／Ticket 不变。Native 创建／返回前后检查退休，
+发布失败或 parent dispatch 取消后重试不再创建第二 owner。离线退出检查实际
+reconcile、ObjectServer、取消/重试、Unknown、预算保留、foreign owner 拒绝和实际
+Unix fd 关闭；Native 依赖/table fixture 显式标注。新编译 artifact 的 VM 门禁仍待执行，
+尤其 Native 同步 bind 内部交错与引用/UAF/drain 不由这些离线用例替代。
+离线有限退出已通过：default/all-features 各360项（含实际私有D-Bus/C/Python调用），
+严格Clippy、架构检查、15资源守卫/构建预算用例及116文档严格HTML。原失败保留。
+继续封存同一源码的新服务artifact，并在白名单U双设备逐叶VM回归；不转授旧DA资格。
 
 本切片[实机记录](../docs/evidence/ssap-initialization-cmtc-revocation-20261018.json)已登记：
 准确7b90092工具、DA服务/应用、2fc内核；仅分配的U两口，六轮实机保留五个整体FAIL。

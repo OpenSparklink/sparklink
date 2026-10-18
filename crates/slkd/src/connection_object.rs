@@ -77,6 +77,40 @@ pub(crate) struct Registration {
     pub reference: SleLinkInfo,
     pub path: String,
     pub published: bool,
+    pub owner: std::sync::Arc<ConnectionOwner>,
+}
+
+pub(crate) struct Registrations {
+    pub pending: Vec<Registration>,
+    pub retired: Vec<Registration>,
+    pub refused: usize,
+}
+
+pub(crate) async fn retire_registration(
+    connection: &zbus::Connection,
+    entry: &Registration,
+) -> zbus::Result<()> {
+    entry.owner.stop_ssap().await;
+    match connection
+        .object_server()
+        .interface::<_, ConnectionIface>(entry.path.as_str())
+        .await
+    {
+        Ok(iface) => {
+            if !iface.get().await.belongs_to(&entry.owner) {
+                return Err(zbus::Error::Failure(
+                    "foreign connection owner during retirement".into(),
+                ));
+            }
+        }
+        Err(zbus::Error::InterfaceNotFound) => return Ok(()),
+        Err(error) => return Err(error),
+    }
+    connection
+        .object_server()
+        .remove::<ConnectionIface, _>(entry.path.as_str())
+        .await?;
+    Ok(())
 }
 pub(crate) use slk_contract::PeerInfo;
 pub(crate) struct PeerIface {
@@ -240,45 +274,72 @@ async fn initialize_once(
     result
 }
 
-#[derive(Clone)]
-pub(crate) struct ConnectionIface {
-    state: SharedState,
+/// Resource owner retained by the controller before any Native creation.
+/// Weak context prevents the State -> Registration -> Owner -> State cycle.
+/// D-Bus views reference this owner; publication is not its lifetime root.
+pub(crate) struct ConnectionOwner {
+    context: std::sync::Weak<tokio::sync::Mutex<crate::state::AdapterState>>,
     generation: u64,
     reference: SleLinkInfo,
     ssap_security: u32,
-    ssap: std::sync::Arc<tokio::sync::Mutex<Option<crate::ssap_engine::Engine>>>,
-    ssap_initialization: std::sync::Arc<tokio::sync::Mutex<Initialization>>,
-    ssap_retiring: std::sync::Arc<std::sync::atomic::AtomicBool>,
-    remote_services:
-        std::sync::Arc<tokio::sync::Mutex<Option<Vec<slk_protocol::ssap::discovery::Entry>>>>,
+    ssap: tokio::sync::Mutex<Option<crate::ssap_engine::Engine>>,
+    ssap_initialization: tokio::sync::Mutex<Initialization>,
+    ssap_retiring: std::sync::atomic::AtomicBool,
+    remote_services: tokio::sync::Mutex<Option<Vec<slk_protocol::ssap::discovery::Entry>>>,
+}
+
+#[derive(Clone)]
+pub(crate) struct ConnectionIface {
+    state: SharedState,
+    owner: std::sync::Arc<ConnectionOwner>,
+}
+impl std::ops::Deref for ConnectionIface {
+    type Target = ConnectionOwner;
+    fn deref(&self) -> &ConnectionOwner {
+        &self.owner
+    }
 }
 enum ChannelKind {
     User,
     Service,
     Dynamic(slk_native::channel::DynamicConfig),
 }
-impl ConnectionIface {
+impl ConnectionOwner {
     pub(crate) fn new(
-        state: SharedState,
+        state: &SharedState,
         generation: u64,
         reference: SleLinkInfo,
         ssap_security: u32,
-    ) -> Self {
-        Self {
-            state,
+    ) -> std::sync::Arc<Self> {
+        std::sync::Arc::new(Self {
+            context: std::sync::Arc::downgrade(state),
             generation,
             reference,
             ssap_security,
-            ssap: std::sync::Arc::new(tokio::sync::Mutex::new(None)),
-            ssap_initialization: std::sync::Arc::new(tokio::sync::Mutex::new(
-                Initialization::NotStarted,
-            )),
-            ssap_retiring: std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),
-            remote_services: std::sync::Arc::new(tokio::sync::Mutex::new(None)),
-        }
+            ssap: tokio::sync::Mutex::new(None),
+            ssap_initialization: tokio::sync::Mutex::new(Initialization::NotStarted),
+            ssap_retiring: std::sync::atomic::AtomicBool::new(false),
+            remote_services: tokio::sync::Mutex::new(None),
+        })
+    }
+    fn context(&self) -> zbus::fdo::Result<SharedState> {
+        self.context
+            .upgrade()
+            .ok_or_else(|| zbus::fdo::Error::Failed("controller context retired".into()))
+    }
+    pub(crate) fn retire(&self) {
+        self.ssap_retiring
+            .store(true, std::sync::atomic::Ordering::Release);
+    }
+    pub(crate) fn is_retiring(&self) -> bool {
+        self.ssap_retiring
+            .load(std::sync::atomic::Ordering::Acquire)
     }
     async fn observation(&self) -> (bool, bool) {
-        let st = self.state.lock().await;
+        let Some(context) = self.context.upgrade() else {
+            return (false, false);
+        };
+        let st = context.lock().await;
         let known = st.controller.generation == self.generation && st.native_links_known();
         let current = known
             && st
@@ -287,15 +348,16 @@ impl ConnectionIface {
                 .is_some_and(|table| table.links[..table.count as usize].contains(&self.reference));
         (known, current)
     }
-}
-
-impl ConnectionIface {
     async fn authorized_fd(
         &self,
         directions: u32,
         security: u32,
         kind: ChannelKind,
     ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
+        if self.is_retiring() {
+            return Err(zbus::fdo::Error::Failed("connection owner retiring".into()));
+        }
+        let context = self.context()?;
         slk_native::channel::validate(directions, security).map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
                 zbus::fdo::Error::NotSupported("unsupported channel security requirement".into())
@@ -304,7 +366,7 @@ impl ConnectionIface {
             }
         })?;
         let (index, lease) = {
-            let st = self.state.lock().await;
+            let st = context.lock().await;
             if !st.present
                 || st.controller.generation != self.generation
                 || !st.native_links_known()
@@ -368,7 +430,50 @@ impl ConnectionIface {
                 zbus::fdo::Error::Failed(format!("native channel bind: {error}"))
             }
         })?;
+        if self.is_retiring() {
+            return Err(zbus::fdo::Error::Failed(
+                "connection owner retired during native bind".into(),
+            ));
+        }
         Ok(fd)
+    }
+}
+
+impl ConnectionIface {
+    pub(crate) fn from_owner(
+        state: SharedState,
+        owner: std::sync::Arc<ConnectionOwner>,
+    ) -> zbus::fdo::Result<Self> {
+        if !owner.context.ptr_eq(&std::sync::Arc::downgrade(&state)) {
+            return Err(zbus::fdo::Error::Failed(
+                "foreign controller service owner".into(),
+            ));
+        }
+        Ok(Self { state, owner })
+    }
+    pub(crate) fn belongs_to(&self, owner: &std::sync::Arc<ConnectionOwner>) -> bool {
+        std::sync::Arc::ptr_eq(&self.owner, owner)
+    }
+    #[cfg(test)]
+    pub(crate) fn new(
+        state: SharedState,
+        generation: u64,
+        reference: SleLinkInfo,
+        security: u32,
+    ) -> Self {
+        let owner = ConnectionOwner::new(&state, generation, reference, security);
+        Self::from_owner(state, owner).unwrap()
+    }
+    async fn start_ssap(&self) -> zbus::fdo::Result<()> {
+        self.owner.start_ssap().await
+    }
+    #[cfg(test)]
+    async fn start_ssap_on_publication(&self) -> zbus::fdo::Result<()> {
+        self.owner.start_ssap_on_publication().await
+    }
+    #[cfg(test)]
+    async fn stop_ssap(&self) {
+        self.owner.stop_ssap().await;
     }
     async fn open_authorized_channel(
         &self,
@@ -454,26 +559,42 @@ impl ConnectionIface {
         original.remaining().map_err(deadline_error)?;
         Ok(result)
     }
+}
+
+impl ConnectionOwner {
+    #[cfg(test)]
+    pub(crate) async fn initialize_with_fixture(
+        self: &std::sync::Arc<Self>,
+        dependency: impl std::future::Future<Output = Result<(), String>> + Send + 'static,
+    ) -> Result<(), String> {
+        // Same production owned slot and transition; only the Native
+        // dependency is controlled. No socket/protocol success is simulated.
+        initialize_once(&self.ssap_initialization, &self.ssap_retiring, dependency).await
+    }
+
     async fn ssap_context(
         &self,
-    ) -> (
+    ) -> zbus::fdo::Result<(
         u16,
         std::sync::Arc<std::sync::Mutex<crate::ssap_database::Database>>,
-    ) {
-        let state = self.state.lock().await;
-        (state.controller.dev_index, state.ssap_database.clone())
+    )> {
+        let context = self.context()?;
+        let state = context.lock().await;
+        Ok((state.controller.dev_index, state.ssap_database.clone()))
     }
     /// Ordinary SMTC keeps the qualified eager start. Protected SMTC is not
     /// bound before a real mechanism exists; requests and actual security
     /// completion use start_ssap, which always asks the kernel for the frozen
     /// requirement. No timer, Agent approval or cached request grants access.
-    pub(crate) async fn start_ssap_on_publication(&self) -> zbus::fdo::Result<()> {
+    pub(crate) async fn start_ssap_on_publication(
+        self: &std::sync::Arc<Self>,
+    ) -> zbus::fdo::Result<()> {
         if self.ssap_security != 0 {
             return Ok(());
         }
         self.start_ssap().await
     }
-    pub(crate) async fn start_ssap(&self) -> zbus::fdo::Result<()> {
+    pub(crate) async fn start_ssap(self: &std::sync::Arc<Self>) -> zbus::fdo::Result<()> {
         let owner = self.clone();
         let original = tokio::time::Instant::now() + std::time::Duration::from_secs(5);
         initialize_once(&self.ssap_initialization, &self.ssap_retiring, async move {
@@ -502,7 +623,7 @@ impl ConnectionIface {
         let fd = self
             .authorized_fd(3, self.ssap_security, ChannelKind::Service)
             .await?;
-        let (index, database) = self.ssap_context().await;
+        let (index, database) = self.ssap_context().await?;
         if tokio::time::Instant::now() >= original {
             return Err(zbus::fdo::Error::Timeout(
                 "SSAP initialization returned after original deadline".into(),
@@ -533,14 +654,18 @@ impl ConnectionIface {
         // Fence new starters before taking the same slot. A Native bind already
         // begun retains its actual guard/fd until the initializer returns; do
         // not detach it and declare cleanup complete on an author's timeout.
-        self.ssap_retiring
-            .store(true, std::sync::atomic::Ordering::Release);
+        self.retire();
         if let Err(error) = self.ssap_initialization.lock().await.finish().await {
             tracing::debug!(%error, "SSAP initializer finished without a published owner");
         }
-        if let Some(actor) = self.ssap.lock().await.take() {
-            actor.stop().await;
+        // The Engine and its JoinHandle stay in the owner while awaiting.
+        // Cancelling this wait must not detach the task or let a second stop
+        // observe an empty slot before the first actual join has completed.
+        let mut actor = self.ssap.lock().await;
+        if let Some(engine) = actor.as_mut() {
+            engine.stop().await;
         }
+        actor.take();
     }
 }
 
@@ -1172,6 +1297,129 @@ mod grant_tests {
     }
 
     #[tokio::test]
+    async fn controller_owner_has_no_strong_context_cycle_or_unknown_start_admission() {
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(std::path::Path::new("/tmp"), "owner-weak-context"),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let owner = {
+            let mut st = state.lock().await;
+            st.controller.generation = 7;
+            st.controller.profile = 1;
+            let mut table = slk_protocol::SleLinkSnapshot {
+                generation: 7,
+                profile: 1,
+                version: 1,
+                flags: 1,
+                count: 1,
+                revision: 1,
+                ..Default::default()
+            };
+            table.links[0] = SleLinkInfo {
+                lifetime: 1,
+                handle: 7,
+                address: [1; 6],
+                ..Default::default()
+            };
+            st.apply_native_links(table, 0).unwrap();
+            let owner = st.connection_publications(&state).pending.remove(0).owner;
+            st.invalidate_native_connections();
+            assert!(st.connection_publications(&state).pending.is_empty());
+            assert!(matches!(
+                *owner.ssap_initialization.try_lock().unwrap(),
+                Initialization::NotStarted
+            ));
+            owner
+        };
+        let weak = Arc::downgrade(&state);
+        drop(state);
+        assert!(
+            weak.upgrade().is_none(),
+            "resource owner must not keep its controller State alive forever"
+        );
+        assert_eq!(owner.observation().await, (false, false));
+        assert!(owner.context().is_err());
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn cancelled_engine_stop_wait_keeps_original_task_and_real_fd_for_the_next_join() {
+        use std::os::fd::OwnedFd;
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(std::path::Path::new("/tmp"), "stop-join-owner"),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let owner = ConnectionOwner::new(&state, 7, SleLinkInfo::default(), 0);
+        let (fd, peer) = std::os::unix::net::UnixDatagram::pair().unwrap();
+        let fd: OwnedFd = fd.into();
+        let (entered, started) = tokio::sync::oneshot::channel();
+        let (release, released) = tokio::sync::oneshot::channel();
+        let (closed, closed_rx) = tokio::sync::oneshot::channel();
+        let task = tokio::spawn(async move {
+            entered.send(()).unwrap();
+            released.await.unwrap();
+            drop(fd);
+            closed.send(()).unwrap();
+        });
+        started.await.unwrap();
+        *owner.ssap.lock().await = Some(crate::ssap_engine::Engine::task_fixture(task));
+        let mut first = tokio::spawn({
+            let owner = owner.clone();
+            async move { owner.stop_ssap().await }
+        });
+        assert!(
+            tokio::time::timeout(std::time::Duration::from_millis(100), &mut first)
+                .await
+                .is_err()
+        );
+        first.abort();
+        assert!(first.await.unwrap_err().is_cancelled());
+        assert!(
+            owner.ssap.lock().await.is_some(),
+            "cancel must not take the original Engine/task out of its owner"
+        );
+        assert!(!release.is_closed());
+        assert_eq!(peer.send(&[1]).unwrap(), 1);
+        let mut second = tokio::spawn({
+            let owner = owner.clone();
+            async move { owner.stop_ssap().await }
+        });
+        assert!(
+            tokio::time::timeout(std::time::Duration::from_millis(100), &mut second)
+                .await
+                .is_err()
+        );
+        // Stop of an independent owner has no shared wait/lock with this task.
+        let peer_owner = ConnectionOwner::new(
+            &state,
+            7,
+            SleLinkInfo {
+                lifetime: 2,
+                ..Default::default()
+            },
+            0,
+        );
+        tokio::time::timeout(
+            std::time::Duration::from_millis(100),
+            peer_owner.stop_ssap(),
+        )
+        .await
+        .unwrap();
+        release.send(()).unwrap();
+        second.await.unwrap();
+        closed_rx.await.unwrap();
+        assert!(owner.ssap.lock().await.is_none());
+        // Observe the original socket peer, never a reusable process fd number.
+        assert_eq!(
+            peer.send(&[2]).unwrap_err().kind(),
+            std::io::ErrorKind::ConnectionRefused
+        );
+    }
+
+    #[tokio::test]
     async fn cancelling_initializer_wait_retains_one_actual_owned_task_and_failure() {
         use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
         let slot = Arc::new(Mutex::new(Initialization::NotStarted));
@@ -1227,8 +1475,8 @@ mod grant_tests {
         )));
         let iface = ConnectionIface::new(state, 7, SleLinkInfo::default(), 0);
         let starter = iface.clone();
-        assert!(Arc::ptr_eq(&iface.ssap, &starter.ssap));
-        assert!(Arc::ptr_eq(
+        assert!(Arc::ptr_eq(&iface.owner, &starter.owner));
+        assert!(std::ptr::eq(
             &iface.remote_services,
             &starter.remote_services
         ));
@@ -1450,6 +1698,7 @@ mod grant_tests {
         let (index, store) =
             tokio::time::timeout(std::time::Duration::from_millis(100), iface.ssap_context())
                 .await
+                .unwrap()
                 .unwrap();
         let guard = state
             .try_lock()

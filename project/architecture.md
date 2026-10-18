@@ -205,6 +205,12 @@ SSAP 初始化分开记录 Native fd 创建、内核 CMTC、用户态 ExchangeIn
 每连接的用户态服务资源 owner 必须在 Native 创建开始前被 controller 生命周期持有，
 独立于 D-Bus 对象发布。D-Bus 引用同一 owner；发布失败、重试或 dispatch 取消不能
 另建 Engine 或失去初始化的 join。这里登记的是资源所有权，不是另一份物理连接状态。
+实现以 controller 的 registration 持有同一 `ConnectionOwner`，其 context 使用 Weak
+引用；D-Bus view 持有该 owner。已退休但尚未 join／移除的记录仍占每 controller
+16 项总预算，不能为新连接丢弃旧工作。初始化、Engine 和实际 JoinHandle 在等待
+期间保留在原槽位；取消等待不等于完成清理。Unknown 快照不启动新 owner，发布
+重试复用原 owner，路径冲突不能删除其他 owner。实际 task／fd 回归与内核引用、
+callback drain、Native bind 内交错和真实空口资格分别记录。
 当前 creator 的同步非阻塞 bind 不经过通用 NativeWork；actor 创建成功不代表协商
 完成，SOCK_NONBLOCK 也不证明锁等待有界。VM 中观察 daemon fd 数量／inode 收敛，
 不能替代 initializer task join、对象退休、内核引用和 Session stop/drain 的证明。

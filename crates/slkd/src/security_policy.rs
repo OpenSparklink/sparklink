@@ -914,7 +914,6 @@ async fn supervise(
                         if completed {
                             crate::event_loop::start_ssap_after_security(
                                 state,
-                                connection,
                                 native.generation,
                                 entry.reference,
                             )

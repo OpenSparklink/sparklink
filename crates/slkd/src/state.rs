@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::collections::{BTreeMap, VecDeque};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
@@ -107,9 +107,11 @@ pub struct AdapterState {
     pub native_links: Option<slk_protocol::SleLinkSnapshot>,
     pub native_link_barrier: u64,
     pub native_link_revision: u64,
-    /// D-Bus publication metadata only. Physical state remains native_links.
+    /// Physical identity comes only from native_links. Each registration also
+    /// owns its one SSAP resource owner before Native creation/publication.
     pub(crate) native_connection_objects: BTreeMap<u64, crate::connection_object::Registration>,
-    pub(crate) retiring_connection_objects: BTreeSet<String>,
+    pub(crate) retiring_connection_objects:
+        BTreeMap<String, crate::connection_object::Registration>,
     pub config: DaemonConfig,
     pub(crate) peers: BTreeMap<PeerKey, PeerEntry>,
     pub(crate) observation_drops: u64,
@@ -154,7 +156,7 @@ impl AdapterState {
             native_link_barrier: 0,
             native_link_revision: 0,
             native_connection_objects: BTreeMap::new(),
-            retiring_connection_objects: BTreeSet::new(),
+            retiring_connection_objects: BTreeMap::new(),
             config,
             peers: BTreeMap::new(),
             observation_drops: 0,
@@ -477,12 +479,14 @@ impl AdapterState {
         Ok(())
     }
 
-    /// Reconcile bounded publication metadata from the canonical table.
+    /// Reconcile bounded resource owners/publication from the canonical table.
     /// Unknown retains prior identities without declaring them connected.
     pub(crate) fn connection_publications(
         &mut self,
-    ) -> (Vec<crate::connection_object::Registration>, Vec<String>) {
+        context: &SharedState,
+    ) -> crate::connection_object::Registrations {
         let mut retired = Vec::new();
+        let mut refused = 0;
         if self.native_links_known() {
             let table = self.native_links.expect("known table");
             self.native_connection_objects.retain(|lifetime, entry| {
@@ -490,33 +494,60 @@ impl AdapterState {
                     .iter()
                     .any(|link| &link.lifetime == lifetime);
                 if !keep {
-                    retired.push(entry.path.clone());
+                    entry.owner.retire();
+                    retired.push(entry.clone());
                 }
                 keep
             });
+            self.retiring_connection_objects
+                .extend(retired.into_iter().map(|v| (v.path.clone(), v)));
             for link in &table.links[..table.count as usize] {
+                if !self.native_connection_objects.contains_key(&link.lifetime)
+                    && self.native_connection_objects.len() + self.retiring_connection_objects.len()
+                        >= table.links.len()
+                {
+                    // Unfinished retirement retains its budget; never evict
+                    // work or create an untracked owner to admit a new link.
+                    refused += 1;
+                    continue;
+                }
                 self.native_connection_objects
                     .entry(link.lifetime)
                     .or_insert_with(|| crate::connection_object::Registration {
                         reference: *link,
                         path: crate::connection_object::path(&self.object_path, *link),
                         published: false,
+                        owner: crate::connection_object::ConnectionOwner::new(
+                            context,
+                            self.controller.generation,
+                            *link,
+                            self.config.ssap.channel_security,
+                        ),
                     });
             }
         }
-        self.retiring_connection_objects.extend(retired);
-        (
-            self.native_connection_objects
+        crate::connection_object::Registrations {
+            pending: self
+                .native_connection_objects
                 .values()
-                .filter(|entry| !entry.published)
+                .filter(|entry| {
+                    self.native_links_known() && !entry.published && !entry.owner.is_retiring()
+                })
                 .cloned()
                 .collect(),
-            self.retiring_connection_objects.iter().cloned().collect(),
-        )
+            retired: self.retiring_connection_objects.values().cloned().collect(),
+            refused,
+        }
     }
 
     pub(crate) fn connection_publication_pending(&self) -> bool {
         !self.retiring_connection_objects.is_empty()
+            || (self.native_links_known()
+                && self.native_links.as_ref().is_some_and(|table| {
+                    table.links[..table.count as usize]
+                        .iter()
+                        .any(|link| !self.native_connection_objects.contains_key(&link.lifetime))
+                }))
             || self
                 .native_connection_objects
                 .values()

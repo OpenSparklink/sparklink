@@ -3939,11 +3939,28 @@
         "ssap-initialization-exchange-revocation-r5f9b"
       ],
       "native_owner_next_batch": {
-        "status": "SOURCE_COMPOSITION_AUDITED_NOT_IMPLEMENTED_OR_REAL_PROVEN",
+        "status": "PRODUCTION_CONNECTED_SOURCE_BOUND_OFFLINE_PASS_NEW_ARTIFACT_VM_NOT_RUN",
         "audit": "history/architecture/native-initialization-owner-audit-20261018.json",
         "sha256": "0af3bdf6ef2de9cdcbefe32cca00fb3c09e3dcc1e587e4abd65e3c5d022adacc",
         "scope": "Unpublishedinitializer ownership,parentdispatchcancel,publishretry;no claim ofactualleak/UAF/newReady",
-        "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4."
+        "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4.",
+        "implemented": [
+          "ExistingRegistration retainssameConnectionOwner beforeNativecreation;Weakcontext avoidsintroducedpermanentStatecycle;D-Busonlyreferencesresourceowner.",
+          "Bound16active+retiringowners;Unknownadmitsnone;unfinishedretirementretainsbudget;actualjoin/removalbeforefreeingrecord.",
+          "Originalinitializer/EngineJoinHandle remainsinslotacrossawait;parentpublicationorstopwaitcancelcannotdetachit;actualretriesreuseowner;foreignownerpathnotremoved.",
+          "AdapterretirementfencesallregisteredownersbeforewaitingNativelease;actualbindreturnrechecksretiring."
+        ],
+        "offline_report": ".dev/main-thread-01a120fe/native-owner-offline-v2.json",
+        "offline_scope": "Actualproductionregistry/reconcile/ObjectServer/Tokio/OSUnixfd plusvisibleNative/tablefixtures;notexperimentalKernelconcurrency/USB/UAF/drain ornewformalproof.",
+        "real_device_qualified": false,
+        "exit_remaining": "Exactnewcompiledservice/tools VMCMTC/Exchange,ordinarydiscovery/connection/shortmessage/originallength/SSAPandpeerpreservation;actualNative-returnbarrier. Kernelrefs/UAF/callbackdrain/fullrole/fd/revoke/Down/deadline/reuse andoriginalfullscopeOPEN.",
+        "offline_sha256": "2c90aa906159c8bba00235824ad2d0cfe39f90f22ed330fad3f25f84b29d43b4",
+        "offline_methods": {
+          "default": 360,
+          "all-features": 360,
+          "clippy": 0
+        },
+        "new_formal_proofs": 0
       }
     }
   },
@@ -4032,12 +4049,23 @@
         "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v5/receipt.json",
         "sha256": "49740dbfc78829cdc61bc8e8bdaf4b2bae61d646db747aa05d001cec80140ee8",
         "scope": "Fourallowedserialpinsstillavailable;selectedUonlyactualHCC;E/mixedNOT_RUN;nototherthreadbusinessproof"
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/exchange-allocation-postflight-v1.json",
+        "sha256": "586e65b96ef1977e1b0eaa42d5fb9df1737333f6c211d4e183475e24e8f7d5e4",
+        "scope": "Fourallocatedserialpinsavailable,onlyUactualHCC/VM;E/mixednotrun,nototherthreadbusinessproof"
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/exchange-allocation-postflight-v1.json",
-      "sha256": "586e65b96ef1977e1b0eaa42d5fb9df1737333f6c211d4e183475e24e8f7d5e4",
-      "scope": "Fourallocatedserialpinsavailable,onlyUactualHCC/VM;E/mixednotrun,nototherthreadbusinessproof"
+      "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v6/receipt.json",
+      "sha256": "22232f3cb68b35eebfd94dde7a723a66bcfc3faed62234a08ded5f54099f920a",
+      "scope": "Fourallowedserialpins/hubs/PCI unchanged;U runtime5endpoints,E ROM2endpoints;accessiblefd/driver/liveLibvirtXML noallocatedWS73/sharedPCIobserved. Rootfdvisibilitylimited. Readonly,noUSBio/claim/reset/power. E/mixed/coldROMNOT_RUN,noqualificationtransfer.",
+      "guard_tests": {
+        "path": ".dev/main-thread-01a120fe/allocation-guard-tests-v6.log",
+        "sha256": "6eae99d9e25a89db51f06b3a1db98d3a1829ee89443f8c52639aef87b01f1763",
+        "methods": 15,
+        "scope": "Existinghostguard/sharedbuildwrapper filesystem/fd/QMPfixtures only"
+      }
     },
     "current_finite_gate_ref": "ssap-initialization-exchange-revocation-r5f9b"
   }

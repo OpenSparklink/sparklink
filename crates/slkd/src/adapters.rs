@@ -391,7 +391,22 @@ impl Node {
     }
     async fn remove(mut self, connection: &zbus::Connection, directory: &AdapterDirectory) {
         directory.lock().await.remove(&self.path);
-        self.state.lock().await.present = false;
+        let registrations = {
+            let mut st = self.state.lock().await;
+            st.present = false;
+            let entries = st
+                .native_connection_objects
+                .values()
+                .chain(st.retiring_connection_objects.values())
+                .cloned()
+                .collect::<Vec<_>>();
+            // Fence even an unpublished Native creator before waiting for its
+            // actual management guard. Registration, not D-Bus, owns the work.
+            for entry in &entries {
+                entry.owner.retire();
+            }
+            entries
+        };
         let _ = self.cancel.send(true);
         // Do this before awaiting event/actor/RPC teardown. Queries can finish,
         // but retained clones cannot admit another management operation.
@@ -418,26 +433,30 @@ impl Node {
                 .map(|(key, p)| (*key, p.object_path.clone(), st.controller.generation))
                 .collect::<Vec<_>>()
         };
-        let connection_paths = {
-            let st = self.state.lock().await;
-            st.native_connection_objects
-                .values()
-                .map(|entry| entry.path.clone())
-                .chain(st.retiring_connection_objects.iter().cloned())
-                .collect::<Vec<_>>()
-        };
-        for path in connection_paths {
-            if let Ok(iface) = connection
-                .object_server()
-                .interface::<_, crate::connection_object::ConnectionIface>(path.as_str())
-                .await
-            {
-                iface.get().await.stop_ssap().await;
+        for entry in registrations {
+            match crate::connection_object::retire_registration(connection, &entry).await {
+                Ok(()) => {
+                    let mut st = self.state.lock().await;
+                    if st
+                        .native_connection_objects
+                        .get(&entry.reference.lifetime)
+                        .is_some_and(|v| Arc::ptr_eq(&v.owner, &entry.owner))
+                    {
+                        st.native_connection_objects
+                            .remove(&entry.reference.lifetime);
+                    }
+                    if st
+                        .retiring_connection_objects
+                        .get(&entry.path)
+                        .is_some_and(|v| Arc::ptr_eq(&v.owner, &entry.owner))
+                    {
+                        st.retiring_connection_objects.remove(&entry.path);
+                    }
+                }
+                Err(error) => {
+                    warn!(%error,path=%entry.path,"connection owner retirement remains unresolved")
+                }
             }
-            let _ = connection
-                .object_server()
-                .remove::<crate::connection_object::ConnectionIface, _>(path.as_str())
-                .await;
         }
         for (key, path, generation) in peer_paths {
             let Ok(iface) = connection

@@ -148,27 +148,21 @@ impl Drop for EventTask {
 /// live management lease and kernel mechanism. Failure never falls back.
 pub(crate) async fn start_ssap_after_security(
     state: &SharedState,
-    connection: &zbus::Connection,
     generation: u64,
     reference: slk_protocol::SleLinkInfo,
 ) {
-    let path = {
+    let owner = {
         let st = state.lock().await;
-        if !st.present || st.controller.generation != generation {
+        if st.controller.generation != generation || !st.native_links_known() {
             return;
         }
         match st.native_connection_objects.get(&reference.lifetime) {
-            Some(v) if v.published && v.reference == reference => v.path.clone(),
+            Some(v) if v.reference == reference && !v.owner.is_retiring() => v.owner.clone(),
             _ => return,
         }
     };
-    if let Ok(iface) = connection
-        .object_server()
-        .interface::<_, crate::connection_object::ConnectionIface>(path.as_str())
-        .await
-        && let Err(error) = iface.get().await.start_ssap().await
-    {
-        tracing::warn!(%error, %path, "SMTC security requirement not satisfied; no fallback or rebind");
+    if let Err(error) = owner.start_ssap().await {
+        tracing::warn!(%error, "SMTC security requirement not satisfied; no fallback or rebind");
     }
 }
 
@@ -364,16 +358,7 @@ async fn reconcile_native(
     minimum_seq: u64,
     snapshot: zbus::fdo::Result<slk_protocol::SleLinkSnapshot>,
 ) {
-    let (
-        known,
-        barrier,
-        revision,
-        adapter_path,
-        publications,
-        retired,
-        connection_paths,
-        peer_paths,
-    ) = {
+    let (known, barrier, revision, adapter_path, registrations, connection_paths, peer_paths) = {
         let mut st = state.lock().await;
         if !st.present || st.controller.generation != expected.generation {
             return;
@@ -393,7 +378,7 @@ async fn reconcile_native(
                 tracing::warn!(%error, generation=expected.generation, "canonical links unknown; bounded-rate refresh scheduled");
             }
         };
-        let (publications, retired) = st.connection_publications();
+        let registrations = st.connection_publications(state);
         let peer_paths = st
             .peers
             .values()
@@ -409,60 +394,99 @@ async fn reconcile_native(
             st.native_link_barrier,
             st.native_link_revision,
             st.object_path.clone(),
-            publications,
-            retired,
+            registrations,
             connection_paths,
             peer_paths,
         )
     };
-    for path in retired {
-        if let Ok(iface) = connection
-            .object_server()
-            .interface::<_, crate::connection_object::ConnectionIface>(path.as_str())
-            .await
-        {
-            iface.get().await.stop_ssap().await;
-        }
-        match connection
-            .object_server()
-            .remove::<crate::connection_object::ConnectionIface, _>(path.as_str())
-            .await
-        {
-            Ok(_) | Err(zbus::Error::InterfaceNotFound) => {
-                state.lock().await.retiring_connection_objects.remove(&path);
+    if registrations.refused != 0 {
+        tracing::warn!(
+            count = registrations.refused,
+            "SSAP owner budget retains unfinished retirements; new owner admission deferred"
+        );
+    }
+    for entry in registrations.retired {
+        match crate::connection_object::retire_registration(connection, &entry).await {
+            Ok(()) => {
+                let mut st = state.lock().await;
+                if st
+                    .retiring_connection_objects
+                    .get(&entry.path)
+                    .is_some_and(|v| std::sync::Arc::ptr_eq(&v.owner, &entry.owner))
+                {
+                    st.retiring_connection_objects.remove(&entry.path);
+                }
             }
             Err(error) => {
-                error!(%error, %path, "retired connection object removal failed; will retry")
+                error!(%error,path=%entry.path,"connection retirement retained; will retry")
             }
         }
     }
-    for entry in publications {
-        let iface = crate::connection_object::ConnectionIface::new(
-            state.clone(),
-            expected.generation,
-            entry.reference,
-            state.lock().await.config.ssap.channel_security,
-        );
-        if let Err(error) = iface.start_ssap_on_publication().await {
+    for entry in registrations.pending {
+        // The registration already holds the sole owner. Cancelling this
+        // dispatch drops only its wait, not the initializer or cleanup handle.
+        if let Err(error) = entry.owner.start_ssap_on_publication().await {
             error!(%error,path=%entry.path,"SMTC actor binding failed; no SSAP qualification");
         }
+        let current = {
+            let st = state.lock().await;
+            st.present
+                && st.controller.generation == expected.generation
+                && !entry.owner.is_retiring()
+                && st
+                    .native_connection_objects
+                    .get(&entry.reference.lifetime)
+                    .is_some_and(|v| {
+                        v.reference == entry.reference
+                            && std::sync::Arc::ptr_eq(&v.owner, &entry.owner)
+                    })
+        };
+        if !current {
+            continue;
+        }
+        let iface = match crate::connection_object::ConnectionIface::from_owner(
+            state.clone(),
+            entry.owner.clone(),
+        ) {
+            Ok(iface) => iface,
+            Err(error) => {
+                error!(%error,path=%entry.path,"foreign connection service owner rejected");
+                continue;
+            }
+        };
         match connection
             .object_server()
             .at(entry.path.as_str(), iface)
             .await
         {
             Ok(_) => {
+                // at(false) means already registered, not ownership transfer.
+                let owned = match connection
+                    .object_server()
+                    .interface::<_, crate::connection_object::ConnectionIface>(entry.path.as_str())
+                    .await
+                {
+                    Ok(iface) => iface.get().await.belongs_to(&entry.owner),
+                    Err(_) => false,
+                };
                 let mut st = state.lock().await;
-                if let Some(current) = st
-                    .native_connection_objects
-                    .get_mut(&entry.reference.lifetime)
+                if owned
+                    && st.present
+                    && st.controller.generation == expected.generation
+                    && !entry.owner.is_retiring()
+                    && let Some(current) = st
+                        .native_connection_objects
+                        .get_mut(&entry.reference.lifetime)
                     && current.reference == entry.reference
+                    && std::sync::Arc::ptr_eq(&current.owner, &entry.owner)
                 {
                     current.published = true;
+                } else {
+                    error!(path=%entry.path,"connection publication has no current matching resource owner");
                 }
             }
             Err(error) => {
-                error!(%error, path=%entry.path, "typed connection publication failed; refresh will retry")
+                error!(%error,path=%entry.path,"typed connection publication failed; same owner retained for retry")
             }
         }
     }

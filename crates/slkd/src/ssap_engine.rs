@@ -61,6 +61,19 @@ pub(crate) struct Engine {
     task: Option<JoinHandle<()>>,
 }
 impl Engine {
+    #[cfg(test)]
+    pub(crate) fn task_fixture(task: JoinHandle<()>) -> Self {
+        // A controlled real task/OS-fd join, not a successful wire backend.
+        let (_, state) = watch::channel(Status::Starting);
+        let (queries, _) = mpsc::channel(8);
+        Self {
+            state,
+            queries,
+            stop: None,
+            task: Some(task),
+        }
+    }
+
     pub(crate) fn start(
         fd: OwnedFd,
         expected: (u16, u64, u64, u16),
@@ -107,18 +120,21 @@ impl Engine {
             queries: self.queries.clone(),
         }
     }
-    pub(crate) async fn stop(mut self) {
+    pub(crate) async fn stop(&mut self) {
         if let Some(stop) = self.stop.take() {
             let _ = stop.send(());
         }
-        if let Some(mut task) = self.task.take()
-            && tokio::time::timeout(Duration::from_secs(1), &mut task)
+        if let Some(task) = self.task.as_mut()
+            && tokio::time::timeout(Duration::from_secs(1), &mut *task)
                 .await
                 .is_err()
         {
             task.abort();
             let _ = task.await;
         }
+        // Keep the handle in its owner across every suspension above. A
+        // cancelled stop waiter leaves the same task available for joining.
+        self.task = None;
     }
 }
 pub(crate) struct Observer {

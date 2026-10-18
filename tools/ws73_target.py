@@ -1623,7 +1623,10 @@ def run_exit_code(record):
     if not isinstance(channel_proof,dict):return 1
     if lifecycle:
         from ws73_ssap_owner_lifecycle import valid_summary
-        if (record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0 or record.get('supervisor_exit')!=0
+        # _run computes this verdict before publishing supervisor_exit. Reject
+        # an explicitly failed result,but do not require our unwritten output.
+        if (record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0
+                or ('supervisor_exit'in record and (type(record['supervisor_exit'])is not int or record['supervisor_exit']!=0))
                 or record.get('ssap_owner_lifecycle_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or not valid_summary(channel_proof)):return 1
     elif record.get('ssap_owner_lifecycle_acceptance') or any(p.get('ssap_owner_lifecycle')for p in channel_proof.get('proofs',[])):return 1
     clients=record.get('application_client_verification_requested',False)

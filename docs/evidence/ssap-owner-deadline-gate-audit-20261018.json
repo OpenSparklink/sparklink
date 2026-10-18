@@ -49,5 +49,17 @@
     "cause": "Actual conservative sampling in slk-channel/deadline.rs may shorten effective Instant/stamp deadline relative to public ns argument. New exact returned>=argument constraint exceeded API contract.",
     "unchanged": "Original4500..5500ms process guard,actual errno110,identity/DB/USB required;only unsupported stronger equality removed. Immediate FDO fixture error still fails elapsed gate.",
     "evidence": ".dev/architecture-r5f7-clock-oracle-before-v1 and before/after logs retained;new six-method receipt/wire suite passes."
+  },
+  "first_real_attempt": {
+    "status": "FAIL_RETAINED_NOT_PROMOTED",
+    "compiled_and_guest_tools": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+    "host_tools": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+    "raw_manifest": ".dev/architecture-r5f7-owner-deadline-real-v1/manifest.json",
+    "sha256": "5e8021cbfe1389491fe8bba09ea3dc84868fd44d8c3e4ff60005c43218443d88",
+    "qemu_exit": 0,
+    "supervisor_exit": 1,
+    "cause": "Host finalizer calculates run_exit_code before publishing supervisor_exit;new oracle incorrectly required that future output. Actual lifecycle shape/guest checks completed but raw overall remainsFAIL.",
+    "fix": "Support actual pre-finalizer missing output while still rejecting explicit invalid/nonzero supervisor results. Seven-method receipt/wire tests pass;new real attempt required.",
+    "scope": "No Runtime,credit,Engine,firmware or protocol fix claimed;naturalRCA/nonmanual recovery stillOPEN."
   }
 }

@@ -85,6 +85,19 @@ def wire_fixture(phase=0,late=True):
 
 
 class LifecycleReceipts(unittest.TestCase):
+    def test_finalizer_computes_supervisor_result_before_it_is_published(self):
+        d=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,
+               ssap_owner_lifecycle_requested=True,ssap_owner_lifecycle_acceptance=True,
+               ordinary_channel_socket_acceptance=True,channel_socket_corroboration=summary())
+        # This is the actual _run finalizer's input state. It writes the
+        # supervisor result only after calling this production verdict function.
+        self.assertEqual(run_exit_code(d),0)
+        d['supervisor_exit']=0
+        self.assertEqual(run_exit_code(d),0)
+        for invalid in(1,None,False):
+            d['supervisor_exit']=invalid
+            self.assertEqual(run_exit_code(d),1)
+
     def test_conservative_clock_sampling_keeps_original_elapsed_guard(self):
         # Actual SDK Clock->Instant->stamp samples conservatively. Its effective
         # deadline may be shorter than the public argument;not a new budget.

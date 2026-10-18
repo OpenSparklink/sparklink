@@ -685,7 +685,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-17T22:00:24.192697+00:00",
+  "updated_at_utc": "2026-10-18T04:11:56.066169+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -805,8 +805,18 @@
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
-  "issue_sync_status": "R6A_SIX_EXISTING_PLUS_R6B_RELEVANT_UPDATES_READBACK_OPEN_NO_SCOPE_CHANGE",
-  "issue_sync_receipt": ".dev/architecture-r5f6-issue-receipts-v2.json",
+  "issue_sync_status": "2026-10-18 shared allocation/new U finite gate: five existing issues OPEN and original bodies unchanged;no partial closure.",
+  "issue_sync_receipt": {
+    "path": ".dev/main-thread-01a120fe/issue-receipts-v1.json",
+    "sha256": "d1802b6b1342aff7580b4b907b596e4bd9460ffa340a2f4dff229ab94a17608c",
+    "comments": [
+      "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245522093",
+      "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245522468",
+      "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6245522884",
+      "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6245523163",
+      "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6245523462"
+    ]
+  },
   "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_R6A_EXACT_GENERIC_VM_LIMITED_QUALIFICATION_FULL_R5F_R6_OPEN",
   "current_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
   "goal_api_status_observed": "active",
@@ -3750,6 +3760,10 @@
     "qualification": "New allocated U finite gate in shared-allocation-u-gate-20261018.json. E andmixed NOT_RUN;oldtopology remains historical,no transfer.",
     "build_budget": "Shared global build lock; across both threads total<=12 or<=8 with real VM; legacy outside lock requires coordination",
     "scope_and_goal_changed": false,
-    "new_U_gate": "docs/evidence/shared-allocation-u-gate-20261018.json"
+    "new_U_gate": "docs/evidence/shared-allocation-u-gate-20261018.json",
+    "followup_tooling": {
+      "commit": "a08fc5d",
+      "scope": "Rejection before kernel-helper load andportableCIpath fixture only;14local guard/build resource methods PASS. Actual real gate stays bound tocd7guestHost;no transfer tofollowup."
+    }
   }
 }

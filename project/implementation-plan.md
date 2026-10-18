@@ -601,6 +601,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 77服务/143工具：真实User返回跨controller退休两角色、新generation业务；原两FAIL保留 | `real_device` | `PASS` |
 | U247→Udb724→U247：实际开发Debian修订升级/回滚、匹配SDK和状态保留限定通过 | `virtual_integration` | `PASS` |
 | fd0服务/4d9工具：默认observer真实目录变化，两角色与七尺寸/Owned保持；原启动前FAIL保留 | `real_device` | `PASS` |
+| 3bdSDK/80e运行/d912离线校验：真实C/Python目录观察及七尺寸保持，反例保留 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -3031,7 +3032,7 @@ Root观察者复用现有pipe记录器，真实子进程、UID/GID/caps、实际
 不补齐C/Python、扫描租约或完整状态流，也不以单测和旧实机结果升级新HEAD。
 WP03／WP18，关联U#6／U#8／K#19；不创建新goal或总跟踪，不修改19WP/10FV/12DG。
 
-##### R5f11：C／Python 复用目录观察（本批实现中，未授新资格）
+##### R5f11：C／Python 复用目录观察（限定门禁完成，完整架构仍开放）
 
 生产行为：复用同一 Rust ControllerEvents 和现有同步 Client executor，提供普通应用
 C／Python 观察入口；不另造事件 Engine、D-Bus dispatch、Native fd 或管理 lease。
@@ -3050,3 +3051,8 @@ Clippy 和文档。VM 门禁使用准确新 binary／library／Python，普通 o
 退出要求是新入口、调用者、绑定、测试和文档一致，并取得对应新产物证据；不是完整
 EventStream／DiscoverySession／形式化证明或全部架构完成。WP03／WP18 原 scope 不变，
 S0–S6／19WP／10FV／12DG、VM-only、严格四叶资源和 SDK110、UserHost P4 保持。
+
+本批有限结果见[准确实机报告](../docs/evidence/controller-language-observer-20261019.json)及
+结构化资格：编译3bd、运行80e、内核2fc与离线修复校验器d912分别标识。原参数/审计路径
+失败及缺失proof异常保留，严格回归和原件重放不授修复工具整树新VM资格。后续按
+`qualification_view.current_batch.next`继续协调器及既有纵向链路，不另维护进度计数。

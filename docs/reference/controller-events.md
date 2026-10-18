@@ -105,4 +105,5 @@ Python `Client.controller_events(deadline_ns=...)`返回`ControllerEvents`，
 `snapshot`／`published`／`withdrawn`／`gap`，controllers为身份tuple。支持上下文管理器。
 调用和close串行；fork后在触碰继承mutex前拒绝使用，先exec／spawn再创建新Client。
 Python不自行调用D-Bus或解释另一套wire事件。畸形ABI输出明确报EPROTO并释放该
-观察，不自动重试。当前新增语言入口尚须各自准确artifact的实机门禁，离线不授RF资格。
+观察，不自动重试。新增语言入口的有限实机门禁见[准确记录](../evidence/controller-language-observer-20261019.json)；
+它不补齐完整SDK或状态流，旧离线与新实机身份分开，离线不授RF资格。

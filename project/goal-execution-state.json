@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F11_CONTROLLER_LANGUAGE_BRIDGE_IMPLEMENTATION_REAL_GATES_PENDING",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F11_C_PYTHON_DIRECTORY_SCOPED_REAL_PASS_FULL_SCOPE_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:finite0.1.0-1/db724-2/rollback pair qualified;broader migration/debug/dwz/usrmerge/dependencies/supportmatrix/license/SBOM/provenance/CI release remain. New package actual-kernel/WS73 gates separate.",
@@ -1990,20 +1990,24 @@
       "controller-directory-observer-r5f10": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "controller-directory-language-r5f11": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP03-WP18-R5f11-controller-directory-language-bridge",
-      "production_behavior": "C/Python reuse original Rust stream/executor, single pending observation and source-bound errno/identity/deadline/gap/finalref contract. Four production/export/slot cases,actualC/Pythoncdylib fixture,383allfeatures/61Python/strictClippy/generatedheader/export/116docs passed,dirty-scoped source accurately retained;notcleancommitcompile. First environment/ClippyFAILs retained,noallow. NewlanguageVM/formal NOT_RUN/NOT_PROVEN;oldrealrecordsunchanged.",
-      "state": "IMPLEMENTED_SCOPED_OFFLINE_PASS_NEW_C_PYTHON_VM_AND_FORMAL_PENDING",
+      "production_behavior": "One Rust stream/executor across Rust/C/Python. Clean compiled3bd SDK/service,executed80e Host/guest,2fcKernel;fixed d912 validator offlineonly. Six actual UID1001 observers/12directorychanges,9VM/72peerreplies/198RF/40431USBdrop0,27actualHCCpairs. 106newinput/56preservation/8registrynegatives;383dirtymappedRust/61Python/891tools/116docs,no newformalproof. Original argv/audit-path/missing-proof AttributeError retained;fullstate/DiscoverySession/otherSDK/security/recovery stillopen.",
+      "state": "ACTUAL_RUST_C_PYTHON_TWO_ROLE_AND_SEVEN_LENGTH_SCOPED_REAL_PASS_ORIGINAL_COUNTEREXAMPLES_FORMAL_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Finish strict source-bound offline/ABI/header/error gates,sign exact source,stage real C/Python ordinary observers using existing VM collector and unique Runtime journal. Obtain actual two-role directory changes plus original peer data/length/SSAP preservation for exact new artifact. Then continue bounded DiscoverySession ownership and original lifecycle/data/security/SSAP/multichannel/four-device work. FullS0-S6/19WP/10FV/12DG,VM-only,SDK110,four-leaf policy,shared12or8 andUserHostP4 unchanged;naturalRCA/nonmanualrecovery OPEN."
+      "next": "Continue bounded per-application DiscoverySession coordinator/ownership and full state/EventStream plus remaining SDK/SSAP/Agent interfaces. Do not wrap manager scanner commands as application leases. Complete related lifecycle/initialization/Grant-credit-Ticket/deadline work alongside actual data/security/SSAP/multichannel/four-device delivery;not all control permutations as prerequisites. Journal/pending-delivery/executor/NOCP/callback/reuse assumptions remain NOT_PROVEN. NaturalRCA/nonmanualrecovery OPEN;UserHostP4;fullS0-S6/19WP/10FV/12DG/VM-only/SDK110/strict4leaves/shared12or8 unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -4233,7 +4237,11 @@
         ],
         "files": 467,
         "new_real_or_formal_qualification": false
-      }
+      },
+      "qualification_record": "controller-directory-language-r5f11",
+      "real_report": "docs/evidence/controller-language-observer-20261019.json",
+      "qualification": "Source-bound six actual ordinary observers and preserved data only;actual80e vs repairedvalidator d912 separate. Other SDK,DiscoverySession/fullstate andformal notcompleted.",
+      "new_formal_proofs": 0
     }
   },
   "owned_ssap_c6_historical_batch": {
@@ -4399,20 +4407,25 @@
         "path": ".dev/main-thread-01a120fe/allocation-thread-shared-refresh-v2.json",
         "sha256": "d7c55413ee8a302b7ea37b6b1c22cf61a8f9a91c39040102138231349cfa4176",
         "scope": "Four allocated serial pins/hubs/shared PCI match; U5EP/E2EP. Visible USB fds/drivers and actual libvirt hostdev XML show no conflict; privileged fd visibility incomplete. All cooperative port leases/global build lock available. No USB operation, no E/mixed/cold-ROM qualification. Existing policy and caller constraints unchanged."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/hardware-share-postflight-v1.json",
+        "sha256": "909d5d0a97344d1b86bad2f2016190199102ec6ffa578355ae83acb24e9f3aa5",
+        "scope": "Fresh original user allocation recheck after seven newU-onlypreservationVMs and prior twoobserverVMs. Four serialpins/hubs/sharedPCIstillmatch;U5EP/E2EP,visiblefds/libvirt/leases/buildlock noconflictobserved,privilegedfdvisibilitylimited. NoE/forbidden/hub/controlleroperation,noE/mixed/coldROMorotherthreadbusinessqualification.",
+        "guard_tests": {
+          "path": ".dev/main-thread-01a120fe/hardware-share-resource-tests-v1.log",
+          "sha256": "6295b930cb08dd4af701496d53d8f48116e48bcd5885f4be59afc82de1d9c3bc",
+          "methods": 15
+        },
+        "configuration_change": "Existing active worktree runner/config/callers already match requested strict four-leaf allocation and SDK110sets;no second selector/fallback, sourceWIP or sealed artifacts modified. Refreshed read-only current-state record only."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/hardware-share-postflight-v1.json",
-      "sha256": "909d5d0a97344d1b86bad2f2016190199102ec6ffa578355ae83acb24e9f3aa5",
-      "scope": "Fresh original user allocation recheck after seven newU-onlypreservationVMs and prior twoobserverVMs. Four serialpins/hubs/sharedPCIstillmatch;U5EP/E2EP,visiblefds/libvirt/leases/buildlock noconflictobserved,privilegedfdvisibilitylimited. NoE/forbidden/hub/controlleroperation,noE/mixed/coldROMorotherthreadbusinessqualification.",
-      "guard_tests": {
-        "path": ".dev/main-thread-01a120fe/hardware-share-resource-tests-v1.log",
-        "sha256": "6295b930cb08dd4af701496d53d8f48116e48bcd5885f4be59afc82de1d9c3bc",
-        "methods": 15
-      },
-      "configuration_change": "Existing active worktree runner/config/callers already match requested strict four-leaf allocation and SDK110sets;no second selector/fallback, sourceWIP or sealed artifacts modified. Refreshed read-only current-state record only."
+      "path": ".dev/main-thread-01a120fe/controller-language-allocation-postflight-v1.json",
+      "sha256": "5b79f9cf18ae87b1cdc148c5cf695d23b0454c9e77e4b7224f658def5f3997df",
+      "scope": "After9U-onlyVMs four allocated serialpins/hubs/sharedPCIstillmatch,U5EP/E2EP;visiblefd/libvirt/leases/buildlock noconflictobserved,privilegedfdvisibilitylimited. NoE/forbidden/hub/controlleroperation,nootherthreadbusiness/E/mixed/coldROMqualification. Existing strict policy/SDK110/budget unchanged;original10WIP preserved."
     },
-    "current_finite_gate_ref": "controller-directory-observer-r5f10"
+    "current_finite_gate_ref": "controller-directory-language-r5f11"
   },
   "native_return_controlled_gate": {
     "id": "R5f9g",

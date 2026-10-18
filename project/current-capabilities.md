@@ -5,7 +5,7 @@
 
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
-| C／Python目录观察视图 | [已实现／限定离线](../docs/evidence/controller-language-offline-20261018.json) | 同一Rust stream/executor，未确认交付槽、原owner/期限/Gap/最终引用；dirty源码准确保留。新语言VM及形式化仍缺，不继承下行旧产物实机资格 |
+| C／Python目录观察视图 | [3bdSDK／80e运行／d912离线核对的限定实机](../docs/evidence/controller-language-observer-20261019.json)、[原限定离线](../docs/evidence/controller-language-offline-20261018.json) | 同一Rust stream/executor，实际普通进程与映射库、新generation及原业务保持。缺失proof异常与原失败保留；修复校验器未作为新运行工具。非完整SDK/状态流/扫描租约或形式化资格 |
 | 普通观察者 Runtime 目录流 | [fd0服务／4d9工具的目录观察与原路径保持](../docs/evidence/controller-directory-observer-20261018.json) | 实际 Rust/slctl、同daemon与两角色新generation；不是Native Ready、Down或drain。该记录不涵盖新增C/Python入口，pre-Runtime完整状态和每应用扫描租约仍缺；新增形式化证明未取得 |
 | User Native 返回跨 controller 退休 | [77服务／143工具两角色与原两FAIL](../docs/evidence/native-controller-return-20261018.json) | 固定target slot0、User CUTC；精确owner屏障、迟到fd拒绝、真实peer结清、同daemon新generation后16次回复。不是Service/dynamic、完整fd组合、Kernel ref/callback/UAF或自然恢复资格 |
 | 实际 Native 返回与 Connection 退休 | [26b服务／ae40工具的四切片与旧版反向FAIL](../docs/evidence/native-return-connection-retirement-20261018.json) | Service/User各发起/接受，真实peer Down、迟到fd拒绝、旧对象/OS fd收敛及原业务；SDK live拒绝不是直接broker探针。Dynamic/controller移除、完整fd/期限及Kernel ref/callback/UAF/drain仍缺 |
@@ -280,6 +280,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 77服务/143工具：真实User返回跨controller退休两角色、新generation业务；原两FAIL保留 | `real_device` | `PASS` |
 | U247→Udb724→U247：实际开发Debian修订升级/回滚、匹配SDK和状态保留限定通过 | `virtual_integration` | `PASS` |
 | fd0服务/4d9工具：默认observer真实目录变化，两角色与七尺寸/Owned保持；原启动前FAIL保留 | `real_device` | `PASS` |
+| 3bdSDK/80e运行/d912离线校验：真实C/Python目录观察及七尺寸保持，反例保留 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

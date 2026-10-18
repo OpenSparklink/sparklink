@@ -4339,9 +4339,9 @@
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-native-controller-postflight-v1.json",
-      "sha256": "0c7673b258177a3f25e8ef2795cfbcb91ad63f0520d73f25dda95910d2659c71",
-      "scope": "Fourallocatedserialpins/hubs/sharedPCIstillmatchafter4U-onlyVMattempts. NoE/forbidden/hub/controllerreset/power/detach/takeover;U5EP/E2EP,rootFDvisibilitylimited. Nototherthreadbusiness,E/mixed/coldROMqualification."
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-refresh-v2.json",
+      "sha256": "d7c55413ee8a302b7ea37b6b1c22cf61a8f9a91c39040102138231349cfa4176",
+      "scope": "Four allocated serial pins/hubs/shared PCI match; U5EP/E2EP. Visible USB fds/drivers and actual libvirt hostdev XML show no conflict; privileged fd visibility incomplete. All cooperative port leases/global build lock available. No USB operation, no E/mixed/cold-ROM qualification. Existing policy and caller constraints unchanged."
     },
     "current_finite_gate_ref": "native-controller-user-return-r5f9h"
   },

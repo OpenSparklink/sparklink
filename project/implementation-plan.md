@@ -1795,7 +1795,12 @@ FAIL、warm启动观察、复制审计摘要的旧source/count标注及封存器
 3. 复用现有Client／Channel／唯一SSAP Engine，收敛高阶跨语言调用者与共享API；
    管理staging、Owned、ServiceAuthorizer和安全Agent职责不合并。不得由空类型、
    别名或NotSupported门面宣称API树完成，旧未发布入口迁移后删除，旧编号不复用。
-4. R6c在干净VM完成实际跨版本升级／回滚及迁移边界，收敛debug_info／dwz／动态
+4. R6c首先验证真实开发Debian修订`0.1.0-1 → 0.1.0-2 → 0.1.0-1`：
+   旧包绑定247源码，新包绑定本批签名源码；实际加载daemon、system bus、逐阶段
+   匹配版本C/Python、管理员配置／状态／权限及remove均独立核验。显式confold，
+   不宣称任意版本兼容、可信Bond迁移、无人工恢复或正式发布；无USB/vendor内核。
+   复用既有guest消费者及VM设施，缺失／重复／非零门禁不得PASS。然后
+   收敛debug_info／dwz／动态
    依赖、第三方许可证、来源／SBOM和CI发布汇总；准确新产物原生权限与WS73另验。
    部署、文档或离线通过不改变原功能资格。
 

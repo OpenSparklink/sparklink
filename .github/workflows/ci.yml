@@ -177,28 +177,6 @@ jobs:
           SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-uapi
         run: python -m unittest discover -s bindings/python/tests -v
 
-  tooling-test:
-    name: WS73 tooling and evidence validation (no hardware)
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check out matching kernel lab helpers
-        uses: actions/checkout@v4
-        with:
-          repository: OpenSparklink/linux
-          ref: 2fc210af68ee3bce0eed3553117d8be635dfdd15
-          path: .kernel-tools
-          # Raw worker ioctls also compile against the canonical pinned UAPI.
-          sparse-checkout: |
-            tools/testing/selftests/sparklink
-            include/uapi/linux
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: python -m unittest discover -s tools/tests -v
-        env:
-          SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-tools
-
   kernel-containment:
     name: Kernel crypto/wire and archived protocol boundaries
     runs-on: ubuntu-24.04

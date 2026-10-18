@@ -21,6 +21,31 @@
 Installed、transport 可用和每设备 Ready 分开观察。内核及所有真实 WS73 操作保持
 VM-only，主机不安装实验内核、驱动或服务。普通应用业务权限与环境管理/捕获权限分开。
 
+## 固件证据范围是必选输入
+
+新物理 `run` 必须显式指定 `--firmware-evidence runtime-observation|rom-upload`。
+缺失时在读取 prepared、加载内核辅助工具或启动 VM 前拒绝；旧封存工具和历史记录
+保持原身份，不自动获得新资格。新 prepared 冻结对应核对器及输入契约版本。
+
+`runtime-observation` 允许独立记录运行态功能，但不承诺本轮装载了 staged SDK110
+字节。`rom-upload` 当前用于独立双设备普通 connection/socket 门禁，要求每个
+观察到的 Runtime 都有同一 guest 拓扑路径上紧邻的 ROM 上传见证。它复用成功 USB
+提交/完成、三份镜像字节核对及 HCC 型号核对；不按枚举编号大小或设备数量配对。
+完整 kernel USB 路径日志、pcap 和固定 guest-slot 映射必须属于同一封存 VM。
+
+最终 manifest 的 `firmware_evidence` 分别保存每次 Runtime 的来源、实际镜像输入、
+模型及限定结果。缺上传为 `MISSING`，捕获/长度/归属不确定为 `UNPROVED`；丢包、
+不匹配、空集合或缺少一个 controller 都不能得到完整上传通过。后续运行态重枚举
+不继承前次上传资格；因此 QMP 重接即使业务成功，严格上传门禁仍可能失败。
+`behavior_status_before_firmware_gate` 保留此前已核对的业务结果，不覆盖整轮失败。
+保存记录的资格核对者还须从封存调用命令/产物绑定预期 mode，不能用记录自身的
+mode 作为外部预期。生产终态检查使用原始参数；删除或降级新契约不能绕过该预期。
+没有新契约的历史记录仅按旧范围解析，不自动获得上传资格。
+
+该门禁只证明所观察到的成功 USB ROM 输入，不认证执行固件或真实冷断电；两项
+标志持续为 false。不通过复位、切电、重新命名或放宽断言制造缺失见证。当前混合
+E/U 和逐设备固件来源交接仍未合格，资源白名单与型号输入检查始终独立强制。
+
 ## 当前共享硬件边界
 
 本线程的 [资源配置](../../project/lab-resource-policy.json)固定允许 U

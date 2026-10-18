@@ -115,13 +115,10 @@ python3 tools/ws73_credit_observation.py --run-folder SAVED_VM_RUN --output NEW_
 
 这是集成测试维护者的门禁；d01aa82已取得[首轮限定结果](../evidence/four-device-business-20261016.json)，
 其他提交和配置必须重新核对，不能由历史结果继承资格。
-前置条件是已冻结的 Native VM prepared 目录、四只可独占的真实 WS73、原始捕获
-和普通用户工具。不得与广播 parallel、QMP故障或双设备选择项混用：
-
-```sh
-python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN \
-  --ports 1-2.1.1 1-2.1.2 1-2.1.3 1-2.1.4 --four-device-business
-```
+前置条件是已冻结的 Native VM prepared 目录、四只另行授权且镜像来源合格的真实
+WS73、原始捕获和普通用户工具。当前本线程只有两U和两E，混合下载未合格，且两组
+其他端口属于另一线程，因此这里仅说明如何核对历史证据，不提供旧四口执行命令。
+未来重新满足条件后，独立 `--four-device-business` 不与广播、QMP故障或双设备选项混用。
 
 `application/parallel-business/run.json` 必须包含两组 worker、原始四只 Ready身份、
 未变更daemon身份及所有有序pipe屏障。每组两种连接角色各20轮61字节业务，合计80次；
@@ -154,13 +151,8 @@ USB故障、物理拔插或自然恢复。普通用户与管理者的权限、�
 ## 核对四设备并行长包burst和预算
 
 `--four-device-burst` 在编译d01/工具d42取得[限定结果](../evidence/four-device-burst-20261016.json)；
-其他提交/配置不继承该资格。准备条件同四设备门禁，使用
-独立输出目录，以该选项替换其他four-device选项，不能组合：
-
-```sh
-python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN \
-  --ports 1-2.1.1 1-2.1.2 1-2.1.3 1-2.1.4 --four-device-burst
-```
+其他提交/配置不继承该资格。准备条件同上；当前资源不满足，不能复制旧四口命令
+执行。未来具备条件时仍使用独立输出目录和唯一 four-device 选项，不能组合。
 
 两组两角色各16次2042字节业务，共64次对端实际校验回复。核对两组USB区间重叠、
 长PDU两端重组和有序DLI PB分片；每组每角色须保留真实软件队列阻塞/恢复记录。

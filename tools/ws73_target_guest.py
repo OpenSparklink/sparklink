@@ -13,7 +13,7 @@ import sys
 import time
 
 from ws73_capture import command_reply, check_capture_stats, corroborate, corroborate_synthetic, corroborate_passthrough, corroborate_recovery, discovery, read_capture, CaptureError
-from ws73_north_star import daemon_identity, healthy_native_runtime, ordinary_identity, registration
+from ws73_north_star import daemon_identity, healthy_native_runtime, ordinary_identity, registration, file_record
 
 EVIDENCE = Path('/evidence')
 TOOLS = Path(__file__).resolve().parent
@@ -356,6 +356,12 @@ def verify_passthrough():
         from ws73_acb_transport_probe import corroborate as acb_corroborate
         acb_corroborate(run,capture,(EVIDENCE/'kernel.log').read_text())
     requested_connection = 'ws73.connection_verify=1' in Path('/proc/cmdline').read_text().split()
+    requested_discovery = 'ws73.application_discovery=1' in Path('/proc/cmdline').read_text().split()
+    if requested_discovery != ('application_discovery' in run):raise ValueError('explicit application discovery request/evidence mismatch')
+    if requested_discovery:
+        from ws73_application_discovery import corroborate as discovery_corroborate,verify_supervisor_artifacts
+        proofs.append({'discovery_supervision':verify_supervisor_artifacts(run,EVIDENCE,file_record(TOOLS/'ws73_application_discovery.py'))})
+        proofs.append({'application_discovery':discovery_corroborate(run,capture)})
     requested_clients = 'ws73.application_clients=1' in Path('/proc/cmdline').read_text().split()
     if requested_clients != ('application_clients' in run):raise ValueError('explicit application client request/evidence mismatch')
     if requested_clients:

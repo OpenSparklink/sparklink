@@ -82,6 +82,9 @@ class ConnectionControlRun(PassthroughControlRun):
             execute(self, a, b)
             from ws73_registry_metadata import execute as registry_metadata
             registry_metadata(self, a, b)
+            if getattr(self.args,'application_discovery_verify',False):
+                from ws73_application_discovery import execute as application_discovery
+                application_discovery(self,a,b)
         return super().phase(a, b, count, label)
 
     def confirm(self, message):
@@ -156,6 +159,7 @@ def main():
     parser.add_argument('--slctl',type=Path,required=True)
     parser.add_argument('--slkd-pid',type=int,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--application-discovery-verify',action='store_true')
     parser.add_argument('--application-client-verify',action='store_true',help='dedicated actual public C/Python fixed-channel one-shot/dup/final-close gate')
     parser.add_argument('--passthrough',action='store_true',help='real RF, QMP guest-only disconnect; excludes physical unplug acceptance')
     parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')
@@ -192,6 +196,9 @@ def main():
     args=parser.parse_args()
     from ws73_connection_control import requested_down_failure_observation
     try:requested_down_failure_observation(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_application_discovery import requested as discovery_requested
+    try:discovery_requested(args)
     except ValueError as error:parser.error(str(error))
     if args.application_client_verify and (not args.passthrough or not args.connection_verify or any(getattr(args,key,False) for key in ['channel_socket_verify','acb_transport_probe','security_agent','daemon_link_resync','channel_benchmark','dynamic_channel_verify','channel_fairness_verify'])):parser.error('application clients require a dedicated real connection gate')
     if args.application_client_verify and any(value for key,value in vars(args).items() if type(value) is bool and key not in ['passthrough','connection_verify','application_client_verify']):parser.error('application clients cannot combine independent lifecycle/fault gates')

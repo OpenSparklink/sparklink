@@ -113,7 +113,7 @@ def prepare_locked(args, build_fd):
         inputs = [args.kernel_build/'arch/x86/boot/bzImage',args.kernel_build/'.config',
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
-                  HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',
+                  HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_application_discovery.py',
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
@@ -300,7 +300,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -571,6 +571,8 @@ def _run(args):
     if benchmark_mode and (benchmark_mode not in ['rate','window','duplex'] or not passthrough or not connection_verify or support or parallel or acb_probe or agent_mode or dynamic_channels or getattr(args,'daemon_link_resync',False) or getattr(args,'channel_socket_verify',False)):
         raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
+    from ws73_application_discovery import requested as discovery_requested
+    application_discovery=discovery_requested(args)
     application_clients=bool(getattr(args,'application_client_verify',False))
     if application_clients and (not passthrough or not connection_verify or any([channel_socket,benchmark_mode,acb_probe,agent_mode,dynamic_channels,fairness,getattr(args,'daemon_link_resync',False)])):
         raise ValueError('application clients require a dedicated native real connection VM')
@@ -784,6 +786,9 @@ def _run(args):
     m['socket_benchmark_acceptance']=False
     m['performance_qualified']=False
     m['channel_socket_verification_requested']=channel_socket
+    m['application_discovery_requested']=application_discovery
+    m['application_discovery_acceptance']=False
+    if application_discovery:m['application_discovery_verifier']=file_record(HERE/'ws73_application_discovery.py')
     m['application_client_verification_requested']=application_clients
     m['application_client_acceptance']=False
     if application_clients:
@@ -927,6 +932,8 @@ def _run(args):
         if ssap_initialization:
             from ws73_ssap_initialization import validate_qemu
             validate_qemu(package['qemu']['path'], initialization_stage)
+        if application_discovery and 'native_vm' not in package:
+            raise ValueError('application discovery requires the verified native VM profile')
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if agent_mode and ('native_vm' not in package or 'native_security_agent_probe' not in package):raise ValueError('Agent requires native VM and staged real witness')
@@ -1027,6 +1034,7 @@ def _run(args):
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (' ws73.ssap_owned=1' if ssap_owned else '')+
                      (' ws73.application_clients=1' if application_clients else '')+
+                     (' ws73.application_discovery=1' if application_discovery else '')+
                      (' ws73.ssap_owner_lifecycle=1' if owner_lifecycle else '')+
                      (' ws73.ssap_requester_lifecycle=1' if requester_lifecycle else '')+
                      (' ws73.native_return=1' if native_return else '')+
@@ -1446,6 +1454,20 @@ def _run(args):
                     if m['benchmark_verifiers']!=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py']]:raise ValueError('benchmark verifier changed during execution')
                     m['socket_benchmark_acceptance']=True
                 if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
+                if application_discovery != ('application_discovery' in control):raise ValueError('explicit application discovery request/evidence mismatch')
+                if application_discovery:
+                    from ws73_application_discovery import corroborate as discovery_corroborate,verify_supervisor_artifacts
+                    verifier=m['application_discovery_verifier']
+                    if file_record(HERE/'ws73_application_discovery.py')!=verifier:raise ValueError('discovery verifier changed during run')
+                    staged=args.prepared/'root/usr/share/sparklink/tools/ws73_application_discovery.py'
+                    if file_record(staged)['sha256']!=verifier['sha256']:raise ValueError('staged discovery verifier differs from host')
+                    staged_slctl=args.prepared/'root/bin/slctl'
+                    matches=[x for x in package['guest_files'] if x['path']==str(staged_slctl)]
+                    if control['slctl']['path']!='/bin/slctl' or len(matches)!=1 or matches[0]['sha256']!=control['slctl']['sha256'] or file_record(staged_slctl)['sha256']!=control['slctl']['sha256']:raise ValueError('actual discovery slctl differs from sealed image')
+                    expected=dict(path='/usr/share/sparklink/tools/ws73_application_discovery.py',sha256=verifier['sha256'])
+                    m['application_discovery_supervision']=verify_supervisor_artifacts(control,share,expected)
+                    m['application_discovery_corroboration']=discovery_corroborate(control,capture)
+                    m['application_discovery_acceptance']=True
                 if application_clients != ('application_clients' in control):raise ValueError('explicit application client request/evidence mismatch')
                 if application_clients:
                     from ws73_application_client import corroborate as client_corroborate
@@ -1795,6 +1817,17 @@ def run_exit_code(record, *, supervisor_pending=False):
     elif not supervisor_pending:
         return 1
     if type(record.get('qemu_exit')) is not int or record['qemu_exit'] != 0:
+        return 1
+    from ws73_application_discovery import valid_summary as valid_discovery
+    discovery=record.get('application_discovery_requested',False)
+    if type(discovery) is not bool:return 1
+    discovery_tokens=sum(arg.split().count('ws73.application_discovery=1') for arg in record.get('qemu_args',[]) if isinstance(arg,str))
+    if discovery_tokens!=int(discovery):return 1
+    if discovery:
+        if (record.get('application_discovery_acceptance')is not True or not valid_discovery(record.get('application_discovery_corroboration',{})) or
+                record.get('application_discovery_supervision')!=dict(status='ORIGINAL_DISCOVERY_ROLE_FILES_CHECKED',uid=1004,phases=2)):
+            return 1
+    elif record.get('application_discovery_acceptance') or record.get('application_discovery_corroboration'):
         return 1
     native_return=record.get('native_return_requested',False)
     if type(native_return) is not bool:return 1
@@ -2164,6 +2197,7 @@ def main():
             cmd.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester death/old reply drain and ordinary CUTC while real owner prompt held')
             cmd.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
+            cmd.add_argument('--application-discovery-verify',action='store_true',help='actual apps-only shared discovery and explicit release, two scanner roles; optional ordinary connection/socket preservation')
             cmd.add_argument('--application-client-verify',action='store_true',help='dedicated real public C/Python SDK one-shot/dup/final-close gate;not fullSDK orpermission qualification')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')

@@ -146,8 +146,9 @@ def valid_supervision(proof):
     except (KeyError,TypeError):return False
 
 
-def require_vm():
-    if (os.geteuid()!=0 or 'ws73.application_clients=1'not in Path('/proc/cmdline').read_text().split()or
+def require_vm(token='ws73.application_clients=1'):
+    if (token not in ('ws73.application_clients=1', 'ws73.application_discovery=1') or
+            os.geteuid()!=0 or token not in Path('/proc/cmdline').read_text().split()or
             Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU'or not Path('/scratch-root-uuid').is_file()):
         raise CaptureError('explicit disposable QEMU SDK role gate required')
 

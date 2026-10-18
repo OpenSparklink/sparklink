@@ -359,6 +359,9 @@ fi
 if grep -q 'ws73.event_copy=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_event_copy_probe.py --probe /bin/event-copy-probe --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/event-copy" || fail 'live event copy fault gate'
 fi
+if grep -qw ws73.application_discovery=1 /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_application_discovery.py "$daemon" > /evidence/discovery-role-supervisor.log 2>&1 & application_role_supervisor=$!
+fi
 if grep -qw ws73.application_clients=1 /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" > /evidence/application-role-supervisor.log 2>&1 & application_role_supervisor=$!
 fi
@@ -393,6 +396,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         case "$posture" in fixed-t|negotiable-t) ;; *) fail 'explicit connection posture' ;; esac
         connection_arg="--connection-verify --connection-advertising $posture"
         if grep -qw ws73.application_clients=1 /proc/cmdline; then connection_arg="$connection_arg --application-client-verify"; fi
+        if grep -qw ws73.application_discovery=1 /proc/cmdline; then connection_arg="$connection_arg --application-discovery-verify"; fi
         if grep -qw ws73.channel_socket=1 /proc/cmdline; then
             channel_rounds=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_rounds=/){sub(/^ws73.channel_rounds=/,"",$i);print $i}}' /proc/cmdline)
             channel_bytes=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_bytes=/){sub(/^ws73.channel_bytes=/,"",$i);print $i}}' /proc/cmdline)

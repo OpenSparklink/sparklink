@@ -307,7 +307,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 服务owner/SDK原期限：offline限定通过；完整架构开放 | `offline` | `PASS` |
 | 服务owner/SDK原期限：real限定通过；完整架构开放 | `real_device` | `PASS` |
 | 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
-| 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
+| Requester进程退出／旧写回复排空／提示挂起期间业务：限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

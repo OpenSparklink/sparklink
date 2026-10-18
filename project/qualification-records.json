@@ -191501,7 +191501,7 @@
     },
     {
       "id": "ssap-requester-drain-held-business-r5f8",
-      "title": "服务owner/SDK原期限：allocated-u限定通过；完整架构开放",
+      "title": "Requester进程退出／旧写回复排空／提示挂起期间业务：限定通过；完整架构开放",
       "level": "real_device",
       "result": "PASS",
       "contracts": [

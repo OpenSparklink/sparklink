@@ -240,8 +240,8 @@
         },
         {
           "name": "role-swap-native-usb-receipts-and-peer-isolation",
-          "result": "PASS",
-          "detail": "Two scanner roles;one START and final STOP each;one caller releases while survivor receives fresh marker. Not a live peer business isolation gate."
+          "result": "MISSING",
+          "detail": "Two scanner roles and actual shared START/final STOP passed as a slice;required peer business isolation has not run. Do not turn role-swap positive into full combined gate PASS."
         },
         {
           "name": "original-business-length-ssap-preservation-on-new-artifact",
@@ -1003,7 +1003,8 @@
     "Preparation v1 passed manifest file to directory parameter:rejected,nohardware.",
     "VM1:guest pair set after validator;fix4267105 and direct CLI regression.",
     "Source review caught versioned absolute guest alias and Selected line;reuse existing staged_program,do not resolve guest absolute links in host root.",
-    "VM2/VM3:Status0 present,missing Outcome/handle and failed cleanup. Original v1 private interpretation incorrectly called flags1 an OUT flag;correction source2fc states1=Status,2=Outcome,4=handle. Both original and correction retained."
+    "VM2/VM3:Status0 present,missing Outcome/handle and failed cleanup. Original v1 private interpretation incorrectly called flags1 an OUT flag;correction source2fc states1=Status,2=Outcome,4=handle. Both original and correction retained.",
+    "First evidence snapshot0142081 used PASS for combined role/peer-isolation gate;corrected toMISSING before registry adoption because peer business isolation not executed. Original snapshot remains in git;aggregate whole run was FAIL throughout."
   ],
   "offline": {
     "tool_methods": 908,
@@ -1436,6 +1437,134 @@
       "sha256": "f1000c9ad8fd3c0bfccb2a8411a83da8e75407fab2f8cbbc24ab9bdc2a1433d8",
       "bytes": 145497,
       "format": "bytes",
+      "access": "private"
+    },
+    "original-role-finished.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/finished.json",
+      "sha256": "2fbd8d909b1158a78ece8c46f1f6c04d1fa04c0669c5cb191c167b2206273ba4",
+      "bytes": 114,
+      "format": "json",
+      "access": "private"
+    },
+    "original-role-phase-0-0.stderr": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-0/0.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "format": "bytes",
+      "access": "private"
+    },
+    "original-role-phase-0-0.stdout": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-0/0.stdout",
+      "sha256": "34b6b6b3d984f6814ae8c189271ef19a7c6d370ce2a5b9c88e7d278a97a4de2c",
+      "bytes": 361,
+      "format": "bytes",
+      "access": "private"
+    },
+    "original-role-phase-0-1.stderr": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-0/1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "format": "bytes",
+      "access": "private"
+    },
+    "original-role-phase-0-1.stdout": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-0/1.stdout",
+      "sha256": "dedb1c0bc6d64d4d2dea3d5d6ad54a6f5f74ac8487bcc8d7a2334987cd93c7b0",
+      "bytes": 1669,
+      "format": "bytes",
+      "access": "private"
+    },
+    "original-role-phase-0-first-released.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-0/first-released.json",
+      "sha256": "3f2aeee89ab282d4de9c3b0bd369c359fb887b8bca0940d50004b49759ded101",
+      "bytes": 130,
+      "format": "json",
+      "access": "private"
+    },
+    "original-role-phase-0-ready.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-0/ready.json",
+      "sha256": "4f26f834b61f850189eb38f3103def775eca786f0ffb543ab7b9e52cbda7ac7f",
+      "bytes": 135,
+      "format": "json",
+      "access": "private"
+    },
+    "original-role-phase-0-run.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-0/run.json",
+      "sha256": "55d9ff02f706b9619ebe9b86df8e3975b5f21582b176721e9e56d4171bbe7dcd",
+      "bytes": 10533,
+      "format": "json",
+      "access": "private"
+    },
+    "original-role-phase-1-0.stderr": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-1/0.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "format": "bytes",
+      "access": "private"
+    },
+    "original-role-phase-1-0.stdout": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-1/0.stdout",
+      "sha256": "0ed70f504d0719d45db2181b18485e821934f6a69f9179b46bbad882b52f29ab",
+      "bytes": 361,
+      "format": "bytes",
+      "access": "private"
+    },
+    "original-role-phase-1-1.stderr": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-1/1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "format": "bytes",
+      "access": "private"
+    },
+    "original-role-phase-1-1.stdout": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-1/1.stdout",
+      "sha256": "9970d96136dd184cebc8d477911bcfa9625f4c0f6a6ca9b483b47518782bcb0f",
+      "bytes": 1669,
+      "format": "bytes",
+      "access": "private"
+    },
+    "original-role-phase-1-first-released.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-1/first-released.json",
+      "sha256": "d0d419538481f76c12ba001cfc2c0b93e62f6c72a392493a9efbc32fdaac4de2",
+      "bytes": 130,
+      "format": "json",
+      "access": "private"
+    },
+    "original-role-phase-1-ready.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-1/ready.json",
+      "sha256": "e3be4630e560ec85906a408f9d67bfe866ccd9f552f9b49ff375569a3f8b59d6",
+      "bytes": 135,
+      "format": "json",
+      "access": "private"
+    },
+    "original-role-phase-1-run.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/discovery-role/phase-1/run.json",
+      "sha256": "bf1eded5fb6d35e8131e4f47bff6b4f04b1ee5cd00b4ffcbfcbb8ae9aa6acdd4",
+      "bytes": 10533,
+      "format": "json",
+      "access": "private"
+    },
+    "host-source-archive": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/source.json",
+      "sha256": "2ef759dd33ee183294952ce093844117610f917d27d4c47464cf0b02fe39d901",
+      "bytes": 33136,
+      "format": "json",
       "access": "private"
     }
   },

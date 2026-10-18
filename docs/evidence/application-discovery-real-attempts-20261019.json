@@ -230,28 +230,28 @@
       "gates": [
         {
           "name": "ordinary-two-callers-one-real-scanner-and-random-peer-data",
-          "result": "PASS",
-          "detail": "Four real UID1004 SDK readers,random payload/address/known RSSI,independent USB/HCC/DLI corroboration."
+          "detail": "Four real UID1004 SDK readers,random payload/address/known RSSI,independent USB/HCC/DLI corroboration.",
+          "status": "PASS"
         },
         {
           "name": "release-caller-loss-ttl-manager-stop-original-deadline",
-          "result": "MISSING",
-          "detail": "Explicit release slice only;other required exit/TTL/manager/deadline/partial-init cases not executed."
+          "detail": "Explicit release slice only;other required exit/TTL/manager/deadline/partial-init cases not executed.",
+          "status": "MISSING"
         },
         {
           "name": "role-swap-native-usb-receipts-and-peer-isolation",
-          "result": "MISSING",
-          "detail": "Two scanner roles and actual shared START/final STOP passed as a slice;required peer business isolation has not run. Do not turn role-swap positive into full combined gate PASS."
+          "detail": "Two scanner roles and actual shared START/final STOP passed as a slice;required peer business isolation has not run. Do not turn role-swap positive into full combined gate PASS.",
+          "status": "MISSING"
         },
         {
           "name": "original-business-length-ssap-preservation-on-new-artifact",
-          "result": "FAIL",
-          "detail": "First Create Status0 then deadline without Outcome/handle,cleanup target failed;business/length/SSAP not reached."
+          "detail": "First Create Status0 then deadline without Outcome/handle,cleanup target failed;business/length/SSAP not reached.",
+          "status": "FAIL"
         },
         {
           "name": "actual-systembus-app-role-permissions",
-          "result": "MISSING",
-          "detail": "Apps-only success is not the full required permission/denial/deployment matrix."
+          "detail": "Apps-only success is not the full required permission/denial/deployment matrix.",
+          "status": "MISSING"
         }
       ]
     }

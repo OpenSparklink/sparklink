@@ -1,5 +1,11 @@
 # 证据入口与取得限制
 
+- [默认观察者目录变化与原路径保持](controller-directory-observer-20261018.json)：
+  编译服务 fd0、Host/guest 工具 4d9、编译内核 2fc、SDK110US。两种连接角色的
+  实际 Rust/slctl 目录观察与七尺寸/Owned SSAP 保持分别重放；原启动前工具失败保留。
+  目录撤回不是 Native Ready、Down 或 drain 屏障；E、混合型号、完整状态流和新形式化
+  证明未取得资格。准确计数、来源、私有原件 hash 和剩余条件由报告维护。
+
 - [实际Native返回/Connection退休四切片及旧版反向FAIL](native-return-connection-retirement-20261018.json)：
   26b服务、2fc内核、ae40 Host/guest/测试库；Service/User各发起/接受，原8次真实回复。
   旧6dc原始FAIL和最初准备来源guard拒绝保留，不把反向检出升级为旧runtime资格。

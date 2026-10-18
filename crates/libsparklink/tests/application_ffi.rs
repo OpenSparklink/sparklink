@@ -124,16 +124,36 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         fn drop(&mut self) {
             if self.1 {
                 let _ = std::fs::remove_dir_all(&self.0);
+            } else if !self.0.join("COMPLETE").exists() {
+                let _ = std::fs::write(self.0.join("INCOMPLETE"), b"Failed or incomplete fixture; not qualification.\n");
             }
         }
     }
-    let _cleanup = Cleanup(directory.clone(), retained.is_none());
+    // Keep failed binaries/stdout/stderr even without explicit retention.
+    let mut cleanup = Cleanup(directory.clone(), false);
     // The compiled file has its real installed ABI SONAME. Supply only that
     // runtime name in this private directory, with the exact compiled bytes.
     let runtime_library = directory.join("libsparklink.so.0");
     std::fs::copy(&library, &runtime_library)?;
+    let compiler = std::env::var("CC").unwrap_or("cc".into());
+    let compiler_version = Command::new(&compiler).arg("--version").output()?;
+    anyhow::ensure!(
+        compiler_version.status.success(),
+        "C compiler version failed"
+    );
+    std::fs::write(
+        directory.join("build-environment.txt"),
+        format!(
+            "compiler={compiler:?}\nversion_stdout={}\nversion_stderr={}\ntoolchain={:?}\nrust_test={:?}\nloaded_library={:?}\nscope=Actual test-profile fixture;not device/Engine/RF\n",
+            String::from_utf8_lossy(&compiler_version.stdout),
+            String::from_utf8_lossy(&compiler_version.stderr),
+            std::env::var("RUSTUP_TOOLCHAIN").ok(),
+            std::env::current_exe()?,
+            runtime_library
+        ),
+    )?;
     let c = directory.join("client");
-    let compile = Command::new(std::env::var("CC").unwrap_or("cc".into()))
+    let compile = Command::new(&compiler)
         .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.c"))
         .arg("-I")
@@ -148,7 +168,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         String::from_utf8_lossy(&compile.stderr)
     );
     let sdk_probe = directory.join("sdk-ssap-probe");
-    let compiled = Command::new(std::env::var("CC").unwrap_or("cc".into()))
+    let compiled = Command::new(&compiler)
         .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
         .arg(root.join("tools/testing/application_client/client.c"))
         .arg("-I")
@@ -230,7 +250,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 "unexpected Python consumer diagnostic: {warning}"
             );
         } else {
-            anyhow::ensure!(output.stderr.is_empty(), "unexpected C consumer diagnostic");
+            anyhow::ensure!(output.stderr.is_empty(), "unexpected C consumer diagnostic (retained {}): {}", directory.display(), String::from_utf8_lossy(&output.stderr));
         }
         anyhow::ensure!(
             output.status.success(),
@@ -346,5 +366,6 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         directory.join("COMPLETE"),
         b"CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS\n",
     )?;
+    cleanup.1 = retained.is_none();
     Ok(())
 }

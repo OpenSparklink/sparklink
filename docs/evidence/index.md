@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+- [新分配 U 双设备：实际 HCC 与 owner／原期限限定门禁](shared-allocation-u-gate-20261018.json)：
+  DA 服务、cd7 guest/Host、2fc 内核；4235 USB包／零丢包，8次实际业务回复、27负对照。
+  E及混合未验；前后其他六口描述不变不等于另一线程业务隔离资格。
+
+
 Native通道创建边界迁移按证据层级分别查看：
 [离线与ABI/依赖](native-channel-creation-offline-20261018.json)、
 [实际应用组SDK](native-channel-creation-apps-real-20261018.json)、

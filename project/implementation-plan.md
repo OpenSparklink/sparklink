@@ -1,6 +1,31 @@
 # SparkLink / Linux 联合实施方案
 
-### R5f8：真实 requester 退出、旧回复排空与挂起期间同行业务（本批）
+### R5f9：部分初始化清理（当前有限批次）
+
+生产行为目标：复用唯一 initializer/Engine/Session，在 fd 已创建而内核 CMTC 或
+SSAP ExchangeInfo 尚未完成时退休 owner；不让迟到任务发布新 Ready，不分离后台任务，
+真实 fd、guard、worker 引用必须收敛。Native 同步 bind 入口内的交错另列，不由
+CMTC 屏障冒充已覆盖；协议原五秒期限不延长。本批无新增 Host/Engine 或业务旁路。
+
+第一步采用现有 QEMU 两秒有界真实 IN81 保留机制，加测试专用的 SDK110 CMTC
+CapabilityRsp 选择器。它只识别完整有界 aggregate 中的当前基本格式，不修改或
+生成回复；不匹配的原始输入仍走原 callback。对象身份/期限由现有 coordinator
+与双端独立捕获核对，选择器本身不证明 lifetime。4 项实际 C helper 离线测试通过；
+对原 B847 捕获的1171个成功RX逐一重放，准确匹配4个能力回复，24个变异负对照拒绝。
+这是新测试 helper 对旧证据的映射检查，**不是新 VM、固件或初始化清理资格**。
+
+第一步退出：选择器/回调补丁可审查、真实旧捕获匹配且不改字节、失败拒绝、
+准确测试 QEMU 构建身份封存。共享构建锁当前由另一线程 KUnit jobs4 持有，
+本线程编译被锁拒绝且未开始；不抢占、不绕锁、不把未构建状态写成通过。
+构建就绪后接现有逐叶直通 runner，在指定 U 双设备取得受控 CMTC/协商等待、
+退休/Down、旧回复及新 lifetime 的真实证据，并单独保留普通业务和长度资格回归。
+物理 Down 会结束同一条链路两端，不将其解释为同行 controller 故障；另一只
+controller 的独立 Ready/管理推进与后续实际业务需分别检查。E/混合不授旧 PASS。
+
+本批门禁仅约束这条初始化纵向链路；Native bind 内部竞争、全部引用/回收组合、
+全复用屏障、SSAP 原期限和其他剩余生命周期范围仍开放，不能因 helper 通过关闭整项。
+
+### R5f8：真实 requester 退出、旧回复排空与挂起期间同行业务（有限批次已封存）
 
 同一新guest的[原owner/原期限保持](../docs/evidence/ssap-requester-owner-preservation-20261018.json)
 另以1f15 Host重跑：C/Python实际errno110约5.010/5.057秒，8次后续真实回复、27负对照。

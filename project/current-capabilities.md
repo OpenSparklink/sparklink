@@ -1,5 +1,10 @@
 # 当前能力与资格
 
+R5f9 目前只有测试专用 CMTC 选择器的离线检查及其对旧捕获的映射：4项 C helper
+测试、1171个旧成功RX、4个准确匹配、24负对照；没有新生产行为、形式化证明或
+实机资格。测试 QEMU 编译遇到另一线程的共享构建锁，未绕过；初始化/退休/drain
+仍待准确 artifact 的 VM 门禁。fd 创建、CMTC Ready、SSAP Ready 分阶段检查。
+
 R5f8 的[新独立记录](../docs/evidence/ssap-requester-drain-held-business-20261018.json)已登记：
 B847 guest/Host、DA服务、2fc内核，两角色真实 requester 死亡后旧写回复排空、
 新读独立校验及提示挂起期间8次真实业务回复；32证据负对照、6资格负对照通过。

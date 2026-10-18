@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F8_REQUESTER_WRITE_DRAIN_HELD_BUSINESS_FINITE_PASS_PARTIAL_INIT_NEXT",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9_PARTIAL_INIT_SELECTOR_OFFLINE_ONLY_SHARED_BUILD_WAIT",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -3711,7 +3711,7 @@
     "r5f8": {
       "state": "R5F8_REQUESTER_DRAIN_HELD_BUSINESS_AND_OLD_OWNER_PRESERVATION_FINITE_PASS_PARTIAL_INIT_NEXT",
       "scope": "tools/callers only unless actual existing production defect is reproduced",
-      "exit_reference": "project/implementation-plan.md#r5f8真实-requester-退出旧回复排空与挂起期间同行业务本批",
+      "exit_reference": "project/implementation-plan.md / R5f8 sealed finite batch",
       "constraints": "strictallocatedU/SDK110/VM-only;original5s;soleEngine/Session;oldcd7qualification historical only",
       "remaining": "Next actual partialinitialization cleanup audit/gate must distinguish Nativefd creation,synchronousnonblockingbind,kernelCMTC,SSAPExchange andowner retirement;current source doesnot route authorized_fd through genericNativeWork. Reuse actualownedinitializer/creator andexistingtestfacilities;do notclaim old Managedadv/scan initializer tests coverSSAP. Then remainingoriginalarchitecture/fullS0-S6/19WP/10FV/12DG. StrictallocatedU/SDK110/VM-only/UserHostP4,naturalRCA/nonmanualrecovery OPEN.",
       "retained_failure": ".dev/main-thread-01a120fe/requester-exit-us-v1/manifest.json",
@@ -3752,6 +3752,31 @@
       "correction": "This current creator doesnotuse genericNativeWork. Existing ws73_initialization_lifecycle.py validates Managedadvertising/scanning provenance,not this SSAP initializer. Do not reuse its PASS asSSAP partialinit evidence.",
       "boundaries": "FDcreated / kernelCMTCready / SSAPExchangeInfo negotiated / applicationvalue ready are separate. InitializationCompletedOk only means actorpublished,not protocolnegotiated. DefaultSMTC fd hasnoSO_LINGER;sl_release purgesownbinding/queues andkicksSession,while connection_session_stop joinsworker separately. SOCK_NONBLOCK isnot a proof of boundedallocation/lock wait.",
       "next": "Choose actual per-stage controlledVM barrier beforeimplementing/refactoring. Requireoriginaldeadline,no secondinitializer,retiring prevents latepublish,real fd/guard/work references converge,peercontroller stays independentlyReady. Distinguish physicalDown effects onthe sharedlink fromothercontroller retirement. Preservefullscope andnotallcontrolcombinations asprerequisite."
+    },
+    "r5f9": {
+      "status": "TEST_SELECTOR_OFFLINE_ONLY_NOT_NEW_VM_OR_PRODUCTION_PROOF",
+      "exit_reference": "project/implementation-plan.md / R5f9 partial initialization",
+      "scope": "Existing bounded2s original real IN81 hold with narrow SDK110 CMTC CapabilityRsp selector;sole actual Engine/Session/initializer unchanged. No new protocol implementation.",
+      "selector_source": {
+        "path": "tools/lab/ws73_cmtc_hold_selector.h",
+        "sha256": "1ea75c5c5d51976f2e0a9bfc1195e71304ee3e8c614469766491ff90f826d303"
+      },
+      "patch": {
+        "path": "tools/lab/qemu_cmtc_capability_hold.patch",
+        "sha256": "691d3d398cc381414c0a30b9ff5cfe425059fb4ee3d09c27514752eb78aaf040"
+      },
+      "offline_audit": {
+        "path": ".dev/main-thread-01a120fe/ssap-init-selector-capture-audit-v2.json",
+        "sha256": "a4cc5b4f0f3ae2dad266ad2777c7de2c6304bb6195d704e7be746599f043685d",
+        "scope": "1171 retained actual RX transfers;4 exact CMTC aggregates;24 mutation refusals;4 C helper tests. Not new physical qualification.",
+        "patch_application": "Actual patch applied to a private copy of exact reviewed base; reproduced candidate source01461648;baselinehash4443a201 unchanged. No QEMU compile or VM qualification."
+      },
+      "build": "Notbuilt: shared lock held by other-thread ws73-upstream run-kunit.py --jobs4. No compile/link begun,no bypass or interruption. .dev/main-thread-01a120fe/ssap-init-qemu-v1/build-manifest.json retains lock-conflict status.",
+      "next": "Build exact fixture under existing global lock,wire existing runner/coordinator,then actual allocatedU SDK110 VM CMTC/ExchangeInfo wait-retire-cleanup and current-path preservation. Native synchronousbind-inflight needs separate actual barrier,not old Managed initializer or abstract futurefixture.",
+      "remaining": "All originalS0-S6/19WP/10FV/12DG,fullR5f9initcleanup,otherarchitecture,lifetimes,RCA/nonmanual recovery OPEN;goal active;E/mixed qualification notinherited.",
+      "production_changed": false,
+      "new_formal_proofs": 0,
+      "new_device_qualifications": 0
     }
   },
   "owned_ssap_c6_historical_batch": {
@@ -3825,7 +3850,14 @@
       "checks": ".dev/main-thread-01a120fe/allocation-checks-v3.json",
       "checks_sha256": "f84104150c5f385c1dab9e6afbd7ca85c20c38811c98f1949a6cc7ef38ac0612",
       "scope": "Allfourpinnedleaves present;U/runtime5endpoints,E/ROM2endpoints;nohostkernelbinding;twoexistinglibvirtVMs holdotherUSBdevices,noallocatedWS73/sharedPCIobserved;rootFDvisibilitylimited. NoUSBio/download/reset/power/claim. Offlineguard/view consistency only;new topology/E/mixed gain no new qualification.",
-      "current_authority": "project/lab-resource-policy.json;old hardware_constraint map marked historical;check_qualifications rejects stale/forbidden/currentmap drift"
+      "current_authority": "project/lab-resource-policy.json;old hardware_constraint map marked historical;check_qualifications rejects stale/forbidden/currentmap drift",
+      "tool_regression": {
+        "path": ".dev/main-thread-01a120fe/allocation-tools-v4.log",
+        "sha256": "1b2711d48c335db1e049b66219a52830ad3f79ddb6c0db7fb5f994a01fc9f2eb",
+        "scope": "839 offline tool methods PASS including four current C selector methods;explicit kernel path and local credential capability;not device/formal qualification",
+        "retained_environment_failure": ".dev/main-thread-01a120fe/allocation-tools-v3.log",
+        "failure_scope": "835 methods,5errors: omitted explicit kernel worktree env and sandbox-denied local SO_PASSCRED. Original log retained; rerun doesnot overwrite it."
+      }
     }
   }
 }

@@ -799,7 +799,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F7_SERVICE_OWNER_AND_DEADLINE_FINITE_PASS_REMAINING_LIFECYCLE_ACTIVE",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F7_ALLOCATED_U_HCC_AND_OWNER_DEADLINE_FINITE_PASS_REMAINING_LIFECYCLE_ACTIVE",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1911,20 +1911,24 @@
       "ssap-owner-deadline-real-r5f7": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "shared-allocation-u-hcc-owner-deadline-r5f7": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP03-WP06-WP08-WP18-R5f7-owner-exit-typed-deadline-gate-active",
-      "production_behavior": "Existing owner/callback/SDK/recorder gates directly exercised. Actualda201 guest and9a1Host two-role ServiceOwner exit/stale-late refusal/C-Python5second timeout,unchangedDB andCUTCafterwards finitePASS. Originalv1FAIL preserved;no newEngine/Runtime orfullarchitecture qualification.",
-      "state": "R5F7_SERVICE_OWNER_AND_SDK_ORIGINAL_DEADLINE_FINITE_PASS_FULL_LIFECYCLE_OPEN",
+      "production_behavior": "Exact DA service/newcd7 guest-Host/2fc kernel on allocated U1-1.1.1/.2:three actual HCC U/USB query-replies,service publisher exit/C-Python original5s/stale-late refusal,8normal peerreplies;27evidence negativecontrols. Resource config only,no production Runtime/Engine change. E/mixed notqualified.",
+      "state": "R5F7_NEW_ALLOCATED_U_HCC_OWNER_DEADLINE_FINITE_PASS_FULL_LIFECYCLE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "New hardware allocation is strict:U1-1.1.1/.2,E1-2.1.1/.2,other .3/.4 forbidden;old topology is historical only. New explicitSDK110 same-model guest/HCC/artifact gates first;mixed download refused. Advance actual requester-caller exit with late response/drain,concurrent peer business while callback held,andpartialNativeinit using existing SDK/Engine/Session andcontrolledVM facilities. Current owner/stale-late policy/originaldeadline slice does not cover them. Then remaining public lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c. FullS0-S6/19WP/10FV/12DG/UserHostP4/VM-only,naturalRCA/nonmanualrecovery OPEN."
+      "next": "Continue actual requester exit/late physical reply anddrain,concurrent peerbusiness duringheldcallback andpartialNativeinit using existing SDK/Engine/Session andcontrolledVM facilities on this allocated U pair. E-only artifact/HCC andmixed perdevice firmware remain separate,not a new mainline prerequisite. OriginalS0-S6/19WP/10FV/12DG,allissue scopes,VM-only,UserHostP4,naturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3673,16 +3677,17 @@
       }
     },
     "r5f7": {
-      "state": "R5F7_SERVICE_OWNER_AND_SDK_ORIGINAL_DEADLINE_FINITE_PASS_FULL_LIFECYCLE_OPEN",
+      "state": "R5F7_NEW_ALLOCATED_U_HCC_OWNER_DEADLINE_FINITE_PASS_FULL_LIFECYCLE_OPEN",
       "audit": "docs/evidence/ssap-owner-deadline-gate-audit-20261018.json",
       "source_parent": "0fdeed5c9abcd5fb0d5e9824c5b40c9cf005ee78",
       "scope": "Test tools/fixtures only;reuse existing production implementations",
-      "remaining": "New hardware allocation is strict:U1-1.1.1/.2,E1-2.1.1/.2,other .3/.4 forbidden;old topology is historical only. New explicitSDK110 same-model guest/HCC/artifact gates first;mixed download refused. Advance actual requester-caller exit with late response/drain,concurrent peer business while callback held,andpartialNativeinit using existing SDK/Engine/Session andcontrolledVM facilities. Current owner/stale-late policy/originaldeadline slice does not cover them. Then remaining public lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c. FullS0-S6/19WP/10FV/12DG/UserHostP4/VM-only,naturalRCA/nonmanualrecovery OPEN.",
+      "remaining": "Continue actual requester exit/late physical reply anddrain,concurrent peerbusiness duringheldcallback andpartialNativeinit using existing SDK/Engine/Session andcontrolledVM facilities on this allocated U pair. E-only artifact/HCC andmixed perdevice firmware remain separate,not a new mainline prerequisite. OriginalS0-S6/19WP/10FV/12DG,allissue scopes,VM-only,UserHostP4,naturalRCA/nonmanualrecovery OPEN.",
       "reports": [
         "docs/evidence/ssap-owner-deadline-offline-20261018.json",
-        "docs/evidence/ssap-owner-deadline-real-20261018.json"
+        "docs/evidence/ssap-owner-deadline-real-20261018.json",
+        "docs/evidence/shared-allocation-u-gate-20261018.json"
       ],
-      "qualification": "Two finite records only;firstv1 overallFAIL neverrewritten. Compiled/guestda201,Host9a1,debug483 andtool-source roles separatelymapped."
+      "qualification": "Historical offline/real andnewUreal are separatelyregistered;newU DAservice/cd7guestHost/2fckernel only,not currentfulltree orE/mixed."
     }
   },
   "owned_ssap_c6_historical_batch": {
@@ -3737,13 +3742,14 @@
       "1-2.1.3",
       "1-2.1.4"
     ],
-    "model_basis": "USER_PLACEMENT_NOT_YET_INDIVIDUALLY_HCC_RECHECKED",
+    "model_basis": "U1-1.1.1/.2 confirmed by actual HCC U/USB in newcd7 guest;E1-2.1.1/.2 remains userplacement only",
     "runtime_directory": ".dev/main-thread-01a120fe",
     "source_worktree": ".dev/architecture-r4f2e-userspace-worktree",
     "usb_actions": "VM-only individual leaf passthrough;nohub/controller reset,power,detach or takeover;conflict/missing/identitychange stops for coordination",
     "firmware": "Explicit SDK110U/us orE/e full3-file hash set. Global-image driver permits homogeneous guest only. Mixed cold boot and unproven runtime-only adoption refused. ColdROM automatic choice NOT_QUALIFIED.",
-    "qualification": "Old ports2/3 US results retain historical source/tool/artifact identities only. This is a resource change,no new hardware PASS. New U/E/mixed artifacts separate.",
+    "qualification": "New allocated U finite gate in shared-allocation-u-gate-20261018.json. E andmixed NOT_RUN;oldtopology remains historical,no transfer.",
     "build_budget": "Shared global build lock; across both threads total<=12 or<=8 with real VM; legacy outside lock requires coordination",
-    "scope_and_goal_changed": false
+    "scope_and_goal_changed": false,
+    "new_U_gate": "docs/evidence/shared-allocation-u-gate-20261018.json"
   }
 }

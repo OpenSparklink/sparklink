@@ -1,7 +1,7 @@
 # SparkLink / Linux 联合实施方案
 
 2026-10-18 硬件资源调整不改变本计划的 S0–S6、19 WP、10 FV、12 DG 或门禁。
-本线程资源与串口序列 hash 绑定见 [执行配置](lab-resource-policy.json)；
+本线程资源与 USB 序列号 hash 绑定见 [执行配置](lab-resource-policy.json)；
 实际机壳编号未知，型号先按用户布置，启动后用现有 HCC 独立核对。
 先完成严格白名单、独立目录、逐次附加复核及 SDK110 全套固件拒绝检查；
 使用新准确 guest/host artifact 在 U 同型号双设备继续现有 owner/原期限链路。
@@ -9,8 +9,11 @@ E 同型号另建 E guest，先核对 HCC/启动，再验证业务；现有驱�
 混合 E/U 下载保持拒绝，不能借本批资源修改另造启动流程或默认落入 US。
 只用叶子设备直通，禁止 hub/PCI 切电、复位、透传、强制解绑或终止其他任务；
 资源冲突、缺失或映射变化先协调。共享重构建锁和跨线程总12/VM8路预算继续执行。
-本批退出：离线负对照拒绝越界/替换/旧镜像/混装，准确新 U guest 的 HCC 与既有
-真实双端应用门禁另记；未完成的新 E/混合与恢复不继承历史 PASS。
+本批资源限定退出已达：离线拒绝越界/替换/旧镜像/混装，
+[准确新 U guest 的独立门禁](../docs/evidence/shared-allocation-u-gate-20261018.json)确认 HCC、
+两角色owner/原五秒期限、8次实际回复及27证据负对照。完整生命周期退出仍缺。
+下一步继续原 requester退出/晚到物理回复及drain、挂起期间同行业务与部分初始化，
+不将 E/混合资格或全部控制面组合设为新前置；E/混合与恢复继续单列开放。
 
 
 当前按2026-10-17架构优先指令，先完成现有生产路径的R4退休、R5应用接口/调用者和
@@ -248,6 +251,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | e776 SSAP值期限/共享初始化：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | 服务owner/SDK原期限：offline限定通过；完整架构开放 | `offline` | `PASS` |
 | 服务owner/SDK原期限：real限定通过；完整架构开放 | `real_device` | `PASS` |
+| 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

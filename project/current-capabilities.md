@@ -1,9 +1,13 @@
 # 当前能力与资格
 
 2026-10-18 资源边界调整：本线程仅使用 U `1-1.1.1/.2`、E `1-2.1.1/.2`；
-两组 `.3/.4` 属于另一线程，禁止操作。该型号来自用户布置，尚未逐只 HCC 复核；
+两组 `.3/.4` 属于另一线程，禁止操作。U 两口已由新 guest 的实际 HCC 确认为 U/USB，
+E 两口仍仅按用户布置，尚未 HCC 复核；
 `1-2.1.2` 不再是旧 U。旧报告保留当时拓扑和准确 artifact，不能转授给新设备。
 [资源配置](lab-resource-policy.json)只限定执行权限，不授任何功能资格。
+[新 U 双设备记录](../docs/evidence/shared-allocation-u-gate-20261018.json)独立绑定 DA 服务、
+cd7 guest/Host 与2fc内核：实际 HCC、两角色owner/原期限及8次业务回复；
+该有限资格不覆盖 E、混合、晚到成功/drain或挂起期间的并发同行业务。
 新固件下载限同型号、显式 SDK110 三文件；混合冷启动及无逐设备固件来源的
 runtime-only 接管拒绝。冷 ROM 自动选择、自然根因及非人工恢复仍未验收。
 
@@ -294,6 +298,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | e776 SSAP值期限/共享初始化：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | 服务owner/SDK原期限：offline限定通过；完整架构开放 | `offline` | `PASS` |
 | 服务owner/SDK原期限：real限定通过；完整架构开放 | `real_device` | `PASS` |
+| 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -116,27 +116,27 @@
   "gates": [
     {
       "name": "New allocated U mapping and individually guarded QMP attaches",
-      "result": "PASS"
+      "status": "PASS"
     },
     {
       "name": "Explicit SDK110US complete image hashes andactual HCC query/reply",
-      "result": "PASS"
+      "status": "PASS"
     },
     {
       "name": "Actual service owner exit andC/Python originaldeadline bothroles",
-      "result": "PASS"
+      "status": "PASS"
     },
     {
       "name": "BothUSB ends actual ordinary peer payload validation/replies andradio matches",
-      "result": "PASS"
+      "status": "PASS"
     },
     {
       "name": "Frozen actual production verifier replay and27failclosed negatives",
-      "result": "PASS"
+      "status": "PASS"
     },
     {
       "name": "Other six descriptor observations unchanged andthis VM leases released",
-      "result": "PASS"
+      "status": "PASS"
     }
   ],
   "remaining": [
@@ -1037,8 +1037,29 @@
       "path": ".dev/main-thread-01a120fe/qualification-metadata-v1.json",
       "sha256": "6bff19e724f0ebb948b2ae06a5ab88d61366a579417083bb40d6a01946648ac9",
       "bytes": 1205328
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/unregistered-gate-report-schema-v1.json",
+      "sha256": "eb60e463bfeecb922d8256ab851e8cc19adecdb4790c695da87eb8c3ebe40f77",
+      "bytes": 47450
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/register-u-gate-v1.py",
+      "sha256": "c49faaecba9ffa1d7290525868c60041c6bccb705bc403480b87ab379d5d8ed9",
+      "bytes": 7956
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/register-u-gate-v1.log",
+      "sha256": "00bda8716c110b5c536a2569d0d1d29603f05c0609dcfed3b9d331ad7a351e6b",
+      "bytes": 1073
     }
   ],
   "access": "Private .dev originals andfrozen exactsource available to authorized workspace users;public report contains hashes andlimited scope,not firmware/SDK/restricted standards/large captures.",
-  "replay": "Use frozen cd7Host andnew preparedcd7 guest code,compiledDA service and2fckernel. Run owner-deadline-audit-v2.py withoriginal manifest/apps/pcap/stats;all27negative mutations must reject. Auditv1failure retained. No currenttree orfuturehardware qualification inferred."
+  "replay": "Use frozen cd7Host andnew preparedcd7 guest code,compiledDA service and2fckernel. Run owner-deadline-audit-v2.py withoriginal manifest/apps/pcap/stats;all27negative mutations must reject. Auditv1failure retained. No currenttree orfuturehardware qualification inferred.",
+  "format_correction": {
+    "original_report_commit": "a97f51bd0493e259e538969a665ffb2633de5c5d",
+    "original_report_sha256": "eb60e463bfeecb922d8256ab851e8cc19adecdb4790c695da87eb8c3ebe40f77",
+    "field": "gates[].result renamed to contract-required gates[].status",
+    "reason": "First registration failed closed with KeyError status;no record was written. Raw run,scope,bounds,proofs andgate verdicts unchanged. Original public bytes retained in git andprivate snapshot."
+  }
 }

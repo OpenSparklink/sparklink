@@ -216,13 +216,15 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放 | `real_device` | `PASS` |
 | U668：干净Debian VM通用安装、四角色system bus与外部基础SDK限定通过；软件包/实机另验 | `virtual_integration` | `PASS` |
 | U247：实际Debian分包基础安装/四角色bus/外部SDK/重装remove限定通过；升级发布仍开放 | `virtual_integration` | `PASS` |
-| U40c:C/Python实际Client桥接的限定离线通过；实际权限及WS73仍缺 | `offline` | `PASS` |
-| C/Python当前Client新产物实际部署/内核Grant/WS73及高阶API仍缺 | `implemented` | `MISSING` |
+| U40c公共Client桥接：限定离线证据，未包含部署权限或WS73资格 | `offline` | `PASS` |
+| C/Python完整公开接口、部署与生命周期矩阵：仍未完成 | `implemented` | `MISSING` |
 | U3ff/工具004c:C/Python真实授权fd与双端业务限定通过；完整矩阵仍缺 | `real_device` | `PASS` |
 | U3ff/工具004c:七真实VM原短包与七尺寸保持，完整架构未退出 | `real_device` | `PASS` |
-| 22cd C/Python固定Connection与SSAP读短写：实际private-bus限定通过，实机与权限仍缺 | `offline` | `PASS` |
+| 22cd固定Connection/SSAP读短写：限定private-bus序列化与生命周期，未包含RF或权限资格 | `offline` | `PASS` |
 | 17b4:公共C/Python真实通道与16组SSAP32字节限定通过，原矩阵/权限/完整架构仍开放 | `real_device` | `PASS` |
 | 17b4:八真实VM长度与独立Owned有限保持；ENODATA根因及完整架构开放 | `real_device` | `PASS` |
+| fa310:真实apps-only公共SDK通道与管理SSAP限定通过；完整架构开放 | `real_device` | `PASS` |
+| fa310:七真实VM原短包/Owned/七尺寸有限保持；完整生命周期开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1476,7 +1478,24 @@ UID1000继续现有SSAP测试。监督器仅在QEMU和显式门禁下接收两�
 正向必须经过实际system bus、新SDK授权fd和两端真实业务/USB，且管理操作、SSAP
 RPC、interface-less调用、未知方法、own-service和裸设备打开仍拒绝。完成新artifact
 相关原路径回归后方登记有限资格；完整release/revoke/Down/原期限与R5/R6scope仍开放。
-当前只完成测试接线/离线检查，旧17b4实机资格不转授本批。
+[fa310限定角色实机报告](../docs/evidence/application-apps-role-real-20261018.json)现已独立重算：
+apps-only C/Python普通进程完成真实随机回复，管理/SSAP/安全/裸设备/service所有权
+仍拒绝；管理UID的原SSAP组另验。24项原件/角色负对照拒绝，两个原IPC请求与
+root监督输出对应。它是专用VM实际type=system bus/实验账户门禁，不是发行版
+systemd/udev安装或完整逐应用策略资格。[同源七VM保持](../docs/evidence/application-apps-preservation-real-20261018.json)
+已保留Owned、七尺寸、56次业务回复和42个证据负对照，旧资格未转授新镜像。
+完整release/revoke/Down/原期限、fd传递/独立同行业务等仍需单列；本有限批不闭合架构。
+
+下一整改切片（R5f5）：调用审计发现`slkd/src/channel.rs`同时承载特权socket
+创建/Native地址ABI和D-Bus TransportInfo转换。前者应归现有`slk-native`，后者归
+纯`slk-contract`；普通`slk-channel`仍只操作已授权fd，`libsparklink`不依赖Native。
+三类去向：**立即删除**迁移接通后的daemon特权创建及重复ABI；**移入适当测试**
+保留原权限/身份/地址编码回归，随同实际生产函数迁入Native测试；**等待替代**仅保留
+原高阶/common API、原期限和R6c等明确缺项，不保留第二套创建器或永久拒绝门面。
+本批生产行为不扩展；复用原实现并迁移全部调用者，在同一提交删除旧逻辑。
+退出须严格default/all-features、依赖方向、跨语言契约及准确新artifact的实际SDK角色、
+发现/连接/业务/长度/适用Owned保持门禁通过。Kernel Session/Grant/credit/Ticket与
+唯一SSAP Engine不变，不新增Host或协议状态机；部分通过不关闭原issue。
 
 C同步入口继续保持每客户端独立执行器、有界8请求队列及一个在途请求，不持有
 controller管理lease。绝对CLOCK_MONOTONIC原期限覆盖本地排队和等待；超时不

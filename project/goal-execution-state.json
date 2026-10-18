@@ -799,9 +799,9 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F3_REAL_CLIENT_SSAP_AND_PRESERVATION_FINITE_PASS_FULL_SCOPE_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F4_APPS_ONLY_PRESERVATION_FINITE_PASS_NATIVE_FACTORY_AUDIT_NEXT",
   "next_resume_tasks": [
-    "Fix actual apps-only SDK preflight/role boundary, then public release/revoke/Down/originaldeadline/peerisolation; complete higherSDK/commonAPI/perappDiscovery andR6c. Preserve original scope and ENODATA/naturalRCA/nonmanualrecovery OPEN.",
+    "Audit/move actual privileged channel socket creation out of slkd into existing Native layer;keep D-Bus tuple conversion in contract and remove duplicate creator. Then originaldeadline/publiclifecycle/sharedAPI/higherSDK/perappDiscovery/R6c. ENODATA/naturalRCA/nonmanualrecovery and all original scopes OPEN.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
@@ -1863,20 +1863,28 @@
       "application-connection-preservation-real-r5f3": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "application-apps-role-real-r5f4": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "application-apps-preservation-real-r5f4": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R5f3-shared-client-real-SSAP-and-preservation-limited-pass",
-      "production_behavior": "Compiled17b4/kernel2fc/SDK110explicitUS. New C-Python2CUTC and16SSAPgroups/48SDKcalls;separate8preservationVMs/64peerreplies/allsevenlengths/originalOwned. Lengthtools17b4,Owneddiagnostictools071ea. BothsourceboundandrawUSBrecomputed. ENODATAfailedattemptretainedandrootcauseOPEN;notfullpermissions/lifecycle/deadline/architecture/recovery.",
-      "state": "R5F3_REAL_SDK_SSAP_AND_ORIGINAL_PRESERVATION_LIMITED_PASS_FULL_SCOPE_OPEN",
+      "id": "WP18-R5f4-apps-only-and-original-preservation-finite-pass",
+      "production_behavior": "fa310/kernel2fc/SDK110 explicitUS:onlyapps-group readonlyGetInfo added. ActualUID/GID1004/noextragroups channelC/Python/peer replies;management/SSAP/security/raw-device/nameownership denied. ManagerSSAP48calls separatelyretained. SevenoriginalVMs/56peerreplies/Owned/lengths independentlyreplayed. No fullpubliclifecycle/deadline/architecture/recovery promotion.",
+      "state": "R5F4_ACTUAL_APPS_ONLY_AND_PRESERVATION_LIMITED_PASS_FULL_ARCHITECTURE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Fix actual apps-only SDK preflight/role boundary, then public release/revoke/Down/originaldeadline/peerisolation; complete higherSDK/commonAPI/perappDiscovery andR6c. Preserve original scope and ENODATA/naturalRCA/nonmanualrecovery OPEN."
+      "next": "Audit/move actual privileged channel socket creation out of slkd into existing Native layer;keep D-Bus tuple conversion in contract and remove duplicate creator. Then originaldeadline/publiclifecycle/sharedAPI/higherSDK/perappDiscovery/R6c. ENODATA/naturalRCA/nonmanualrecovery and all original scopes OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3576,6 +3584,16 @@
       "preservation_report": "docs/evidence/application-connection-preservation-real-20261018.json",
       "unresolved_counterexample": "docs/evidence/application-owned-preservation-counterexample-20261018.json",
       "next": "Actual apps-only GetInfo preflight boundary, public permission/lifecycle/deadline matrix;higherSDK/commonAPI/perappDiscovery/R6c;all original scope remains."
+    },
+    "r5f4": {
+      "state": "SOURCE_BOUND_APPS_ONLY_AND_PRESERVATION_FINITE_PASS_FULL_SCOPE_OPEN",
+      "implementation": "fa31031cafa4997809e63969d8c8d888ce78dc1c",
+      "scope": "Actual apps-only sharedClient socket and read-only Connection preflight;no SSAP rights or manager lease in SDK",
+      "exit_reference": "Canonical R5f4 finite role gate; full original architecture remains open",
+      "negative_report": "docs/evidence/application-apps-role-negative-20261018.json",
+      "role_report": "docs/evidence/application-apps-role-real-20261018.json",
+      "preservation_report": "docs/evidence/application-apps-preservation-real-20261018.json",
+      "remaining": "Full public lifecycle/originaldeadline, higher/common APIs, perappDiscovery, R6c, ENODATA/naturalRCA/recovery remain."
     }
   },
   "owned_ssap_c6_historical_batch": {

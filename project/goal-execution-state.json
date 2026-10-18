@@ -685,7 +685,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-18T04:40:34.165884+00:00",
+  "updated_at_utc": "2026-10-18T04:52:59.199292+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -805,10 +805,10 @@
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
-  "issue_sync_status": "R5f8 finite requester/oldreply/heldbusiness verified:fiveexistingissuesOPEN,originalbodiesunchanged;fulloriginalscopeactive.",
+  "issue_sync_status": "R5f8 newrequester plusindependentoldownerpreservation andactualpartialinit sourceaudit:fiveexistingissuesOPEN,originalbodyandoriginalcommentprefixpreserved;no partialclosure.",
   "issue_sync_receipt": {
-    "path": ".dev/main-thread-01a120fe/requester-issue-receipts-v1.json",
-    "sha256": "0743fad0bd2a46af24eceddee63972ab56672415c5c94db50c50dd4fe5f74d0f",
+    "path": ".dev/main-thread-01a120fe/requester-issue-receipts-v2.json",
+    "sha256": "8c86b5a76d689c1b9ded9fe263b4d4df2a0fa8a5c755fc19c02852a1e3734e95",
     "comments": [
       "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245729849",
       "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245730189",

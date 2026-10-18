@@ -800,16 +800,16 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9B_EXCHANGE_GATE_OFFLINE_READY_REAL_VM_PENDING",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9B_FINITE_EXCHANGE_PASS_R5F9C_UNPUBLISHED_OWNER_REMEDIATION_NEXT",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
-  "issue_sync_status": "Fiveexistingissuesoriginalscopeandpreviouscommentprefixpreserved;R5f9finiteCMTC/HCC/ordinarybusiness andfiveFAILs updated;allOPEN,fullscope/RCA/nonmanualrecoveryOPEN.",
+  "issue_sync_status": "FiveexistingOPEN issues preserveoriginalbodiesandcommentprefixes;actualExchangeInfo finitequalification,auditno-opfailureandnextunpublishedownercompositionwork synchronized;no issueclosed.",
   "issue_sync_receipt": {
-    "path": ".dev/main-thread-01a120fe/ssap-init-issue-receipts-v1.json",
-    "sha256": "6203e2b34278e450f7430e2a1379ac60b9c668242fb7e4bb8171c431ff9f94d8",
+    "path": ".dev/main-thread-01a120fe/native-publication-issue-receipts-v1.json",
+    "sha256": "d19bbde6ea92187febda533d8121c2074b8ff7630e717b3a60df8928ffb9842f",
     "comments": [
       "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245729849",
       "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245730189",
@@ -1938,20 +1938,24 @@
       "ssap-initialization-cmtc-revocation-r5f9": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "ssap-initialization-exchange-revocation-r5f9b": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP18-R5f9-cmtc-withdrawal",
-      "production_behavior": "Existing soleinitializer/Engine/Session exercised:exact7b90092 tools,DA compiledservice,2fc kernel. TwoactualCMTClease revocations,unchangedlateUSB,fd4->6->4->4,otherRXduringhold,then8peerapplicationreplies/22discoveries. FivewholeFAILs/21evidencenegativesretained;no newproductioncode/formalproof.",
-      "state": "R5F9_CMTC_LEASE_LATE_REPLY_FD_CONVERGENCE_FINITE_REAL_PASS_FULL_ARCHITECTURE_OPEN",
+      "id": "WP03-WP06-WP08-WP18-R5f9b-exchange-withdrawal",
+      "production_behavior": "Existingproductionsoleinitializer/Engine/Session exercised,notreimplemented:exact1cd2bfdtools/DAservice/2fckernel;actualCMTCbeforeSSAPrequestTX/peerRX/responseTX,heldresponse/Managedwithdrawal/EACCES/fdconvergence/pairedDown;then8actualpeerreplies/22discoveries. 4179USB/drop0/27effectiveinputnegatives;privateauditno-opcounterexamplekept,newformal0.",
+      "state": "R5F9B_EXCHANGE_PENDING_REQUEST_REPLY_AND_FD_CONVERGENCE_FINITE_REAL_PASS_FULL_ARCHITECTURE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "R5f9 finite CMTClease slices done,not wholepartialinit. Next actual SSAPExchangeInfo-pending owner retirement andremaining Nativebind/taskjoin/objectremoval/refdrain gates using soleproductioninitializer/Engine. Keeporiginalrelease/finalfd/dup/SCM/Down/deadline/peer isolation,current data/SSAP/security parallel andcomplete S0-S6/19WP/10FV/12DG. UserHostP4,VM-only,allocatedports/SDK110;E/mixed/coldROM/RCA/nonmanualrecovery OPEN."
+      "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4."
     },
     "selected_qualification": {
       "version": 1,
@@ -2161,7 +2165,9 @@
     },
     ".dev/architecture-r5c-issue-receipts-v1.json",
     ".dev/architecture-r5d-issue-receipts-v1.json",
-    ".dev/main-thread-01a120fe/allocation-r5f9-issue-receipts-v1.json"
+    ".dev/main-thread-01a120fe/allocation-r5f9-issue-receipts-v1.json",
+    ".dev/main-thread-01a120fe/ssap-init-issue-receipts-v1.json",
+    ".dev/main-thread-01a120fe/ssap-exchange-issue-receipts-v1.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -3759,7 +3765,7 @@
       "next": "Choose actual per-stage controlledVM barrier beforeimplementing/refactoring. Requireoriginaldeadline,no secondinitializer,retiring prevents latepublish,real fd/guard/work references converge,peercontroller stays independentlyReady. Distinguish physicalDown effects onthe sharedlink fromothercontroller retirement. Preservefullscope andnotallcontrolcombinations asprerequisite."
     },
     "r5f9": {
-      "status": "FINITE_CMTC_GATE_REAL_PASS_FULL_PARTIAL_INITIALIZATION_OPEN",
+      "status": "IN_PROGRESS_FULL_PARTIAL_INITIALIZATION_NOT_QUALIFIED",
       "exit_reference": "project/implementation-plan.md / R5f9 partial initialization",
       "scope": "Existing bounded2s original real IN81 hold with narrow SDK110 CMTC CapabilityRsp selector;sole actual Engine/Session/initializer unchanged. No new protocol implementation.",
       "selector_source": {
@@ -3777,7 +3783,7 @@
         "patch_application": "Historical helper-only replay before QEMU build. Actual builtfixture andfiniteVM results referenced separately;no transfer fromoffline test."
       },
       "build": "First two attempts refused shared lock before compile;v3 acquired same global lock,8job budget/oneactualcompileunit,compile/link0,baseline binary and930linkobjects unchanged. Not device qualification.",
-      "next": "R5f9 finite CMTClease slices done,not wholepartialinit. Next actual SSAPExchangeInfo-pending owner retirement andremaining Nativebind/taskjoin/objectremoval/refdrain gates using soleproductioninitializer/Engine. Keeporiginalrelease/finalfd/dup/SCM/Down/deadline/peer isolation,current data/SSAP/security parallel andcomplete S0-S6/19WP/10FV/12DG. UserHostP4,VM-only,allocatedports/SDK110;E/mixed/coldROM/RCA/nonmanualrecovery OPEN.",
+      "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4.",
       "remaining": [
         "Actual SSAPExchangeInfo-pending owner retirement,Native synchronous bind-inflight andrealinitializer taskjoin/objectremoval/refworkerdrain/UAF;full2x2 FD/revoke/lifetime interleavings remain.",
         "Fullrelease/finalfd/dup/SCM_RIGHTS/Down/originaldeadline andnecessarycontrolrace matrix not completedbythis CMTClease slice;oldsource-boundreportsretaintheirscope.",
@@ -3787,7 +3793,6 @@
       ],
       "production_changed": false,
       "new_formal_proofs": 0,
-      "new_device_qualifications": 1,
       "latest_shared_build_observation": "Exact same shared global nonblocking lock acquired for v3 and released after actual compilation;budget8/oneunit. Recheck every further build/VM launch,no bypass or task interruption.",
       "build_manifest": {
         "path": ".dev/main-thread-01a120fe/ssap-init-qemu-v3/build-manifest.json",
@@ -3807,8 +3812,6 @@
         "reason": "Expected EACCES reached success-only ctl wrapper; no assertion relaxed; new exact artifact rerun required",
         "qualification": false
       },
-      "qualification_record": "ssap-initialization-cmtc-revocation-r5f9",
-      "report": "docs/evidence/ssap-initialization-cmtc-revocation-20261018.json",
       "executed_tools": "7b9009279eb573d5e1bd0d930eafbefac6751872",
       "retained_failures": [
         {
@@ -3866,7 +3869,7 @@
         "scope": "116documentinventory/example/metadata/nitpickyWerrorHTMLonly;no newreaderflow/browser/external-linkorhardwarequalification"
       },
       "exchange_stage": {
-        "status": "OFFLINE_READY_VM_PENDING_NOT_QUALIFIED",
+        "status": "FINITE_EXCHANGE_PENDING_GATE_REAL_PASS_FULL_PARTIAL_INITIALIZATION_OPEN",
         "method": "REAL_EXCHANGE_PENDING_MANAGED_WITHDRAWAL",
         "source": "Shared ws73_ssap_initialization gate;sole production Engine unchanged",
         "binary_sha256": "2063f9913aeafd9103fc43a87f199bf4757ae3a3b618e5b7d4970beff9731ea2",
@@ -3889,8 +3892,58 @@
         },
         "production_changed": false,
         "new_formal_proofs": 0,
-        "real_device_qualified": false,
-        "exit": "ActualpostCMTC requestTX/peerRX/responseTX beforeheldresponse;original withdrawal/fdcleanup/twopairedDown/peerRXandReady;then8ordinaryreplies/22discoveries;not fullrole/bind/taskjoin/kernelrefs/naturalrecovery"
+        "real_device_qualified": true,
+        "exit": "ActualpostCMTC requestTX/peerRX/responseTX beforeheldresponse;original withdrawal/fdcleanup/twopairedDown/peerRXandReady;then8ordinaryreplies/22discoveries;not fullrole/bind/taskjoin/kernelrefs/naturalrecovery",
+        "qualification_record": "ssap-initialization-exchange-revocation-r5f9b",
+        "report": "docs/evidence/ssap-initialization-exchange-revocation-20261018.json",
+        "executed_tools": "1cd2bfd0bd5cc0ed5b23e447531120315f5db467",
+        "qualification_scope": "ExacttwoCMTCcompleted/ExchangeInfo-pending slots0initiator/1acceptor,notfull2x2/bind/taskjoin/refdrain",
+        "remaining": [
+          "ActualNativefactory synchronousbind/return ownership andinitializerretirement/taskjoin/objectfree;kernelreference/drain/UAF andfull2x2role/release/finalfd/dup/SCM/Down/originaldeadline/reuse matrix remain.",
+          "A daemonfd/inode observation doesnotprovekernelworker/allocator/USBcallbackcleanup. NoKASAN/KCSAN/lockdep/refinementorwholefirmwareproof added.",
+          "EindividualHCC/SDK110startupandrealregression,qualifiedperdeviceimageflowformixedVM,coldROMvalidread/autoselection remain.",
+          "Naturalstartup/reenumeration/disappearanceRCAandnonmanualrecoveryOPEN;warmretrylogsretainallattempts;QMP/hold/physicalplug/powernot substitutes.",
+          "RemainingfullS0-S6/19WP/10FV/12DG,architecture/SSAP/security/Bond/data/multichannel/fourdevice/performance/deployment/releaseOPEN;UserHostP4."
+        ],
+        "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4.",
+        "audit_failure": {
+          "path": ".dev/main-thread-01a120fe/exchange-audit-negative-noop-v1.json",
+          "scope": "Auditfailedbecausecopy-filterremovednoinput;VMoriginalPASSunchanged;v2requiresactualmutation"
+        },
+        "audits": [
+          {
+            "path": ".dev/main-thread-01a120fe/ssap-exchange-audit-v2.json",
+            "sha256": "00e9177a3442bd0e26118ba156d9d364b84c25cde90cc961cb66d554391f24e1"
+          },
+          {
+            "path": ".dev/main-thread-01a120fe/exchange-source-mapping-v1.json",
+            "sha256": "889c98ee9826b8a9438e3fc9c86d915b4ac799e68c5be581bf261d700b3ebb5b"
+          },
+          {
+            "path": ".dev/main-thread-01a120fe/exchange-reference-scope-v1.json",
+            "sha256": "ad1b073e501c1fbf7011153f50cd061341d35ff328eed20fba489e136c4e35f5"
+          }
+        ],
+        "strict_docs": {
+          "path": ".dev/main-thread-01a120fe/ssap-exchange-docs-v3.log",
+          "sha256": "19bbd79b62e5c67dd49110dbb726b79cc702e395d89f7ae5d328465b7ae535bf",
+          "inventory": ".dev/main-thread-01a120fe/exchange-documentation-audit-v3.json",
+          "inventory_sha256": "40c68eec04c9ffffcdf8a9bf1e481f4572186660cfb8f7ec38e192bde8cbb976",
+          "scope": "116documentinventory/staticexamples/metadata/nitpickyWerrorHTML;notbrowser/external-link/readerflow orfunctionalqualification"
+        }
+      },
+      "cmtc_qualification_record": "ssap-initialization-cmtc-revocation-r5f9",
+      "cmtc_report": "docs/evidence/ssap-initialization-cmtc-revocation-20261018.json",
+      "qualification_record_refs": [
+        "ssap-initialization-cmtc-revocation-r5f9",
+        "ssap-initialization-exchange-revocation-r5f9b"
+      ],
+      "native_owner_next_batch": {
+        "status": "SOURCE_COMPOSITION_AUDITED_NOT_IMPLEMENTED_OR_REAL_PROVEN",
+        "audit": "history/architecture/native-initialization-owner-audit-20261018.json",
+        "sha256": "0af3bdf6ef2de9cdcbefe32cca00fb3c09e3dcc1e587e4abd65e3c5d022adacc",
+        "scope": "Unpublishedinitializer ownership,parentdispatchcancel,publishretry;no claim ofactualleak/UAF/newReady",
+        "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4."
       }
     }
   },
@@ -3974,13 +4027,18 @@
           "retained_environment_failure": ".dev/main-thread-01a120fe/allocation-tools-v3.log",
           "failure_scope": "835 methods,5errors: omitted explicit kernel worktree env and sandbox-denied local SO_PASSCRED. Original log retained; rerun doesnot overwrite it."
         }
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v5/receipt.json",
+        "sha256": "49740dbfc78829cdc61bc8e8bdaf4b2bae61d646db747aa05d001cec80140ee8",
+        "scope": "Fourallowedserialpinsstillavailable;selectedUonlyactualHCC;E/mixedNOT_RUN;nototherthreadbusinessproof"
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v5/receipt.json",
-      "sha256": "49740dbfc78829cdc61bc8e8bdaf4b2bae61d646db747aa05d001cec80140ee8",
-      "scope": "Fourallowedserialpinsstillavailable;selectedUonlyactualHCC;E/mixedNOT_RUN;nototherthreadbusinessproof"
+      "path": ".dev/main-thread-01a120fe/exchange-allocation-postflight-v1.json",
+      "sha256": "586e65b96ef1977e1b0eaa42d5fb9df1737333f6c211d4e183475e24e8f7d5e4",
+      "scope": "Fourallocatedserialpinsavailable,onlyUactualHCC/VM;E/mixednotrun,nototherthreadbusinessproof"
     },
-    "current_finite_gate_ref": "ssap-initialization-cmtc-revocation-r5f9"
+    "current_finite_gate_ref": "ssap-initialization-exchange-revocation-r5f9b"
   }
 }

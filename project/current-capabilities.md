@@ -1,21 +1,21 @@
 # 当前能力与资格
 
-R5f9b ExchangeInfo 等待退休门禁已接入共享工具，854项离线检查、旧捕获选择器重放
-与新测试QEMU无USB启动通过；当前只有离线/基础设施范围，尚未新增实机或形式化资格。
-CMTC历史记录保留原7b90092工具及原artifact，不能转授本批工具。
+部分初始化清理现有两份独立、准确 artifact 的有限实机记录；它们不授予整个HEAD资格：
 
-R5f9 新增[准确 artifact 的有限实机记录](../docs/evidence/ssap-initialization-cmtc-revocation-20261018.json)：
-7b90092 guest/Host、DA编译服务/应用、2fc内核，**仅本线程 U 两口**。发起端与接收端
-CMTC等待期间实际 Managed 撤权，原能力回复完整保留/释放，真实 Status/双端 Down、
-daemon fd `4→6→4→4` 及另一 controller RX/Ready 分别核对；随后同 daemon 交换角色，
-8次实际随机应用回复、22次发现。4143USB包／零丢包、21证据负对照，独立重算两次；
-6项资格聚合负对照拒绝旧源码、缺失/hash不符的artifact、错误范围、漏门禁和未证明。
+| 等待阶段 | 实际 guest／Host 工具 | 真实退出及保持门禁 | 证据 |
+| --- | --- | --- | --- |
+| CMTC | 7b90092 | 双端撤权、原回复、fd收敛；后续8次应用回复／22次发现，4143USB／零丢包、21证据负对照 | [限定记录](../docs/evidence/ssap-initialization-cmtc-revocation-20261018.json) |
+| SSAP ExchangeInfo | 1cd2bfd | CMTC先决、请求TX／对端RX／响应TX先于撤权，原响应随后释放、fd收敛；后续8次应用回复／22次发现，4179USB／零丢包、27证据负对照 | [限定记录](../docs/evidence/ssap-initialization-exchange-revocation-20261018.json) |
 
-850工具离线检查通过，新增形式化证明0。六轮实机共五次整体FAIL、一次有限PASS；
-失败原样保留，纠正后重放不回写原结果。未新增生产 Engine/Runtime/ABI，未重编内核
-或服务；记录准确编译来源，并核对当前生产范围字节相同，不转授整个HEAD资格。
-本记录不证明 task join、内核引用/UAF/drain、bind内部、ExchangeInfo等待退休、
-完整2×2角色/fd矩阵、E或混合型号、冷ROM自动选型、自然故障根因及非人工恢复。
+两者均使用DA编译服务/应用、2fc内核，仅本线程U两口；每份只有slot0发起端与slot1
+接收端两个撤权切片，**不是完整2×2矩阵**。daemon fd `4→6→4→4`、同行controller
+独立RX/Ready及同daemon后续业务分别核对。Nativebind内部、initializer task join、
+对象free、内核引用/UAF/worker drain、完整release/最终fd/dup/SCM/Down/原期限/复用仍缺。
+
+854项离线工具检查及每份6项资格记录负对照单独记录，新增形式化证明0。CMTC五次
+整体FAIL保留；ExchangeInfo的私有审计初版无效变异FAIL保留，修正后27项变异均确认
+实际改变输入。旧报告不回写。未新增生产Engine/Runtime/ABI，未重编服务或内核。
+E/混合、冷ROM自动选择、自然故障根因及非人工恢复继续开放。
 
 R5f8 的[新独立记录](../docs/evidence/ssap-requester-drain-held-business-20261018.json)已登记：
 B847 guest/Host、DA服务、2fc内核，两角色真实 requester 死亡后旧写回复排空、
@@ -333,6 +333,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | Requester进程退出／旧写回复排空／提示挂起期间业务：限定通过；完整架构开放 | `real_device` | `PASS` |
 | 同一新guest的原服务owner／五秒期限保持：限定通过；完整架构开放 | `real_device` | `PASS` |
 | CMTC等待期间撤权／原回复／daemon fd收敛：有限实机通过；完整部分初始化开放 | `real_device` | `PASS` |
+| ExchangeInfo等待期间撤权／原回复／daemon fd收敛：有限实机通过；完整部分初始化开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -207,7 +207,7 @@ class AllocatedResources(unittest.TestCase):
              patch.object(target,'_run',return_value=17) as run,\
              patch.object(build,'real_device_vm',return_value=nullcontext(42)) as marker,\
              patch.object(resource,'check_live_vms',side_effect=ValueError('peer VM conflict')) as inventory:
-            args=SimpleNamespace(command='run',ports=['1-1.1.1'],output=Path(tmp)/'run',prepared=Path(tmp)/'prepared')
+            args=SimpleNamespace(command='run',ports=['1-1.1.1'],output=Path(tmp)/'run',prepared=Path(tmp)/'prepared',firmware_evidence='runtime-observation')
             with self.assertRaisesRegex(ValueError,'peer VM conflict'):target.run(args)
             inventory.assert_called_once_with(list(resource.policy()['ports']),resource.policy())
             run.assert_not_called();marker.assert_not_called()

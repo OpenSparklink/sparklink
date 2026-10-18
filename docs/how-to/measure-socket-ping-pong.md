@@ -137,6 +137,7 @@ python3 tools/ws73_benchmark.py --left "$SOURCE_REPORT" --right "$PEER_REPORT" -
 
 ```sh
 python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT_B" \
+  --firmware-evidence runtime-observation \
   --qmp-hotplug --connection-verify --connection-advertising negotiable-t \
   --channel-benchmark window --timeout 600 --output "$NEW_RUN_DIRECTORY"
 ```
@@ -145,6 +146,8 @@ python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT
 原始报告/hash、两连接角色及两端 USB 逐条匹配。可分别换成 `rate` 或 `duplex`；
 首批固定20条61字节、窗口4，rate间隔100ms，不与其它通道/Agent/four-device门禁混跑。
 不覆盖旧目录；失败保留后使用新目录诊断，不放宽期限，也不把 QMP 当物理拔插或恢复。
+这里选择运行态观察，测量不能据此宣称本轮下载或执行了 staged 固件；固件来源的
+单独必需门禁及缺失处理见[输入契约](../reference/vm-gate-inputs.md#固件证据范围是必选输入)。
 
 完整捕获运行结束后，可只读观测单 bulk RX URB 空窗：
 
@@ -199,6 +202,7 @@ Session 原件；任一失败整轮不能通过。输出位于 guest-output 的 
 
 ```sh
 python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT_B" \
+  --firmware-evidence runtime-observation \
   --qmp-hotplug --connection-verify --connection-advertising negotiable-t \
   --channel-socket-verify --channel-fairness-verify --timeout 600 --output "$NEW_RUN_DIRECTORY"
 ```

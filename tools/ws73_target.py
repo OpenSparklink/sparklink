@@ -27,9 +27,12 @@ from ws73_north_star import file_record, ordinary_identity
 from ws73_capture import CaptureError, check_capture_stats, read_capture
 import ws73_vm_native_root as native_vm
 import ws73_lab_resources as resources
+import ws73_firmware_upload_evidence as firmware_evidence
 from build_resources import build_lock, configuration as build_configuration, workspace as build_workspace, environment as build_environment
 
 USERSPACE = Path(__file__).resolve().parents[1]
+FIRMWARE_EVIDENCE_HELPERS = ('ws73_firmware_upload_evidence.py', 'ws73_boot_code_evidence.py',
+                             'ws73_model_evidence.py', 'ws73_capture.py')
 # Local workspaces keep both repositories side by side. CI checks out the
 # pinned kernel selftests inside its workspace instead of assuming that layout.
 LINUX = Path(os.environ.get('SPARKLINK_KERNEL_SOURCE', USERSPACE.parent / 'linux')).resolve()
@@ -101,6 +104,7 @@ def prepare_locked(args, build_fd):
     manifest = {'version':1, 'scope':'isolated development environment preparation',
                 'physical_acceptance':False, 'status':'PREPARING', 'inputs':[],
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
+    manifest['firmware_evidence_contract_version'] = 1
     try:
         module_profile = native_vm.enabled(args)
         config_required(args.kernel_build / '.config', module_profile)
@@ -147,6 +151,10 @@ def prepare_locked(args, build_fd):
             if not module_profile:raise ValueError('daemon fd client requires native VM profile')
             inputs.append(args.native_channel_fd_probe)
         manifest['inputs'] = [file_record(p) for p in inputs]
+        for name in FIRMWARE_EVIDENCE_HELPERS:
+            entry = file_record(HERE/name)
+            if entry not in manifest['inputs']:
+                manifest['inputs'].append(entry)
         manifest['inputs'] += [file_record(HERE / 'ws73_lab_resources.py'), file_record(resources.POLICY), file_record(HERE / 'build_resources.py'),
                                file_record(USERSPACE / 'project/build-resource-policy.json')]
         source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
@@ -744,6 +752,7 @@ def _run(args):
         raise ValueError('live event copy gate requires real fault-recovery VM mode')
     if diagnostic and (support or not recovery):
         raise ValueError('live diagnostic gate requires real fault-recovery VM mode')
+    firmware_mode = None if support else firmware_evidence.requested_mode(args)
     output.mkdir(mode=0o700,parents=True,exist_ok=False)
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
        'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
@@ -751,6 +760,11 @@ def _run(args):
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
     m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py','ws73_native_return.py','ws73_native_controller_return.py')]
+    if not support:
+        m['firmware_evidence_contract_version'] = 1
+        m['firmware_evidence_mode'] = firmware_mode
+        m['firmware_evidence_helpers'] = [file_record(HERE/name) for name in FIRMWARE_EVIDENCE_HELPERS]
+        m['runner_inputs'] += m['firmware_evidence_helpers']
     if ssap_initialization:m['runner_inputs'] += [file_record(HERE/name) for name in ('ws73_ssap_initialization.py','ws73_diagnostic_hold.py','ws73_channel_prefix_hold.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_daemon_hold.py') ]
     m['early_bootstrap_fault_requested']=early_fault
     if early_fault:m['early_bootstrap_verifier']=file_record(HERE/'ws73_early_fault.py')
@@ -985,11 +999,15 @@ def _run(args):
         if not support:
             if package.get('resource_contract_version') != 1:
                 raise ValueError('old prepared guest lacks explicit model/HCC resource contract; prepare a new artifact')
+            if package.get('firmware_evidence_contract_version') != 1:
+                raise ValueError('old prepared artifact lacks explicit firmware evidence contract; prepare a new artifact')
             physical_boundary=resources.PhysicalBoundary(args.ports, package, args.prepared.resolve())
             m['physical_resource_allocation']={'policy':file_record(resources.POLICY),
                 'guard':file_record(HERE/'ws73_lab_resources.py'),
+                'selected_ports':list(args.ports),
                 'live_vm_inventory':args._resource_vm_inventory,
                 'firmware':physical_boundary.firmware,'observations':physical_boundary.observations,
+                'firmware_scope':'STAGED_INPUT_HASHES_ONLY_NOT_A_LOADED_IMAGE_WITNESS',
                 'model_basis':'USER_PLACEMENT_UNTIL_GUEST_HCC_CHECK', 'vm_only':True}
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
         if not support:
@@ -1758,10 +1776,26 @@ def _run(args):
             ['usb-lifecycle.events', 'usb-lifecycle.log'] if (output/name).is_file()]
         if (output/'root.btrfs').is_file():
             m['vm_disk_after'] = file_record(output/'root.btrfs')
+        if not support:
+            try:
+                if m['firmware_evidence_helpers'] != [file_record(HERE/name) for name in FIRMWARE_EVIDENCE_HELPERS]:
+                    raise ValueError('firmware evidence helper changed during execution')
+                m['firmware_evidence'] = firmware_evidence.observe_run(
+                    output/'guest-output', args.prepared.resolve(), args.ports, package,
+                    m['physical_resource_allocation'])
+            except Exception as error:
+                # Failure is evidence unavailability, never a synthetic read
+                # or upload. Preserve an earlier production failure unchanged.
+                m['firmware_evidence'] = dict(version=1, result='UNPROVED',
+                    error=str(error) or type(error).__name__, selected_ports=list(args.ports),
+                    cold_power_verified=False, executing_firmware_attested=False)
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
-    code=run_exit_code(m, supervisor_pending=True)
+    code=run_exit_code(m, supervisor_pending=True, expected_firmware_mode=firmware_mode)
     m['supervisor_exit']=code
     if code and m['status']!='FAIL':
+        if not firmware_evidence.exit_gate(m):
+            m['behavior_status_before_firmware_gate'] = m['status']
+            m['physical_acceptance'] = False
         m['status']='FAIL';m['error']='terminal success status lacks required corroborated exit contract'
     write_json(output/'manifest.json',m)
     print(m['status'],output/'manifest.json')
@@ -1809,11 +1843,13 @@ def valid_parallel_burst(proof):
     return True
 
 
-def run_exit_code(record, *, supervisor_pending=False):
+def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=None):
     # One finalization contract for every mode, not just SSAP lifecycle gates.
     # _run alone computes its result before writing supervisor_exit. A saved
     # record without that receipt cannot be interpreted as a completed PASS.
     if type(supervisor_pending) is not bool:
+        return 1
+    if not firmware_evidence.exit_gate(record, expected_firmware_mode):
         return 1
     if 'supervisor_exit' in record:
         if type(record['supervisor_exit']) is not int or record['supervisor_exit'] != 0:
@@ -2091,6 +2127,7 @@ def run(args):
             return _run(args)
     allocation=resources.policy()
     resources.selected(args.ports, allocation)
+    firmware_evidence.requested_mode(args)
     resources.check_paths(args.output, args.prepared, allocation)
     lab=lab_module()
     root=build_workspace()/allocation['run_root'];root.mkdir(parents=True,exist_ok=True)
@@ -2131,6 +2168,8 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs='+',required=True)
+            cmd.add_argument('--firmware-evidence',choices=firmware_evidence.MODES,
+                             help='required physical scope: rom-upload demands actual inputs before every observed Runtime; runtime-observation grants no loaded-image qualification')
             cmd.add_argument('--four-device-burst',action='store_true',help='two real pairs,2roles16replies2042bytes each:64actual app replies,USB fragmentation,finite-queue pressure and observed pool/NOCP resumption;not fairness or credit correctness proof')
             cmd.add_argument('--four-device-disconnect',action='store_true',help='dedicated four-real-device controlled pair Disconnect/Down while other pair continues actual replies; alternates victims, no fault/recovery claim')
             cmd.add_argument('--four-device-business',action='store_true',help='four real controllers, two physical pairs, two connection roles, 80 ordinary app round trips; positive fixed-channel slice only')

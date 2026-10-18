@@ -1,0 +1,1384 @@
+{
+  "schema_version": 1,
+  "implementation_commit": "ccef31048111a87d721057cb28a058cde543b245",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "result": "FAIL",
+  "new_formal_proofs": 0,
+  "architecture_complete": false,
+  "remaining": [
+    "The exactccef310 originalseven-size preservation matrix FAILED at253bytes:peerDown arrived afterthe unchangedshared5s budget. Other scopedPASS rows do not override this failure;no retry replaces the original.",
+    "Actual Native synchronous bind/return versus parent-dispatch cancellation and retirement, complete task/object/kernel-reference/USB-callback drain and UAF detection remain open. Unix-fd/private-D-Bus fixtures are not these proofs.",
+    "Full 2x2 role/fd, release/final fd/dup/SCM_RIGHTS/Down/original deadline/reuse compositions, cleanup failure and stop/join cancellation timing remain open. Finite tests do not prove whole implementation refinement.",
+    "E-only SDK110/HCC startup and regression, qualified per-device firmware flow for mixed E/U, genuine cold-ROM valid-read/automatic firmware choice remain NOT_QUALIFIED.",
+    "Natural startup timeout, re-enumeration failure/disappearance RCA and nonmanual recovery remain OPEN. Guest leaf QMP, held replies, physical plug or hub power are not natural recovery acceptance.",
+    "Full S0-S6/19WP/10FV/12DG, security/Bond, data/credit/NOCP assumptions, multichannel/four-device, performance, deployment/upgrade/release and all original issue scopes remain OPEN. UserHost is P4 planning only."
+  ],
+  "access_policy": "Public report contains metadata/hashes only. Raw test binaries, logs, VM images, captures, SDK and board inputs stay in the private workspace under the recorded relative paths; access requires owner permission and the fixed SDK110 files. Frozen source and replay scripts are retained; do not copy SDK/firmware/standards into the public site.",
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
+  },
+  "level": "real_device",
+  "compiled_userspace": "ccef31048111a87d721057cb28a058cde543b245",
+  "executed_guest_tools": "ccef31048111a87d721057cb28a058cde543b245",
+  "executed_host_tools": "ccef31048111a87d721057cb28a058cde543b245",
+  "bounds": {
+    "real_vms": 7,
+    "qualified_vms": 6,
+    "failed_vms": 1,
+    "failed_application_lengths": [
+      253
+    ],
+    "application_lengths": [
+      61,
+      249,
+      250,
+      253,
+      254,
+      255,
+      2042
+    ],
+    "ordinary_round_trips": 48,
+    "radio_matches": 132,
+    "evidence_negative_controls": 36,
+    "oversize_rejections_249": 16,
+    "new_formal_proofs": 0
+  },
+  "scope": [
+    "Exact new ccef310 service/tools with old accurately compiled2fc kernel, same SDK110US U pair, individual VM leaf passthrough. Original seven gates and assertions reused; no performance, RF-timestamp or whole-tree qualification.",
+    "253-byte entiregate failed in the first role after application process exits0:pairedDown wasnot observed in original5s. RawpeerDown arrived5.080827s afterdisconnect;guestIN request stayedpending throughout,then14/15us resubmit gaps;532successfulruntimecompletion/resubmit samples showP50=6us/P90=13us/P99=26us/max46us. Low-loadfunctionaltrace,notbenchmarkorworstcasebound. Initialdiagnosticv1selectedonlytheDownrequest;fullstreamv3/v4correctedthatinterpretationandretainedthecounterexample. Not an RF-only measurement or provenfirmwarecause. 61-byte gate includes actual Owned SSAP;249-byte gate includes original16oversize refusals. Other lengths check real random peer replies and real completion witnesses, not USB-write-only success.",
+    "Application bytes and DTAP SDU bytes(length+5) are separate; long/fragmented acceptance is only the recorded basic-channel modes. Full zero-length/other modes/credit depletion/fairness/four-device and original lifecycle scope remain open."
+  ],
+  "gates": [
+    {
+      "name": "application-61",
+      "result": "PASS",
+      "round_trips": 8,
+      "capture_packets": 4431,
+      "negative_controls": 6,
+      "status": "PASS"
+    },
+    {
+      "name": "application-249",
+      "result": "PASS",
+      "round_trips": 8,
+      "capture_packets": 4127,
+      "negative_controls": 6,
+      "status": "PASS"
+    },
+    {
+      "name": "application-250",
+      "result": "PASS",
+      "round_trips": 8,
+      "capture_packets": 4223,
+      "negative_controls": 6,
+      "status": "PASS"
+    },
+    {
+      "name": "application-253",
+      "result": "FAIL",
+      "round_trips": 0,
+      "capture_packets": 1857,
+      "negative_controls": 0,
+      "status": "FAIL"
+    },
+    {
+      "name": "application-254",
+      "result": "PASS",
+      "round_trips": 8,
+      "capture_packets": 4223,
+      "negative_controls": 6,
+      "status": "PASS"
+    },
+    {
+      "name": "application-255",
+      "result": "PASS",
+      "round_trips": 8,
+      "capture_packets": 4223,
+      "negative_controls": 6,
+      "status": "PASS"
+    },
+    {
+      "name": "application-2042",
+      "result": "PASS",
+      "round_trips": 8,
+      "capture_packets": 6911,
+      "negative_controls": 6,
+      "status": "PASS"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-audit-v2.py",
+      "sha256": "6e3c27b87f753c2ceb63744e3ccf7fcaf595339b20ebdc980d15238ac344296c",
+      "bytes": 10198
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-exchange-us-prepared-v1/manifest.json",
+      "sha256": "137bf1b8e97c2a63133ebbf8d93386308b06646bedbdeaeb0fbd9bf060d26722",
+      "bytes": 321054
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/manifest.json",
+      "sha256": "6c13db10cfb852f5c3b8c3d2d9975e1fe51ef696b0b03d5260a477ae8d0ca8a7",
+      "bytes": 31663
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-exchange-us-prepared-v1/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-exchange-us-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-exchange-us-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-exchange-us-prepared-v1/root.btrfs",
+      "sha256": "03e798bde196eec1bee915552fa3d127d069cddd3a935a08b6b91bd48b4a72e9",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slkd",
+      "sha256": "3ef8796b990979b5a3a30622d65ebd079d9ede7cf2f2088d4e70cb4b0f186839",
+      "bytes": 10050072
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slkconfig",
+      "sha256": "3f58a6739f8dbc9315153114be7020eb7fe9fc04890416530dfe2dc8e807b8b3",
+      "bytes": 1338168
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slctl",
+      "sha256": "fd24f53ce5372fc4229a8e88a0c374ea8508121aec8ba025b17c186969bb9690",
+      "bytes": 8431560
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slktest",
+      "sha256": "d138d3efcc92c53dffb4c2f04cbe6ef121cbf5fefeee87a999f39735ec01fbe0",
+      "bytes": 5764672
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slkmon",
+      "sha256": "d259c65a4c5fdee07b6ef8e82ae56e20833df2f85d36a88ad2c91ce51f0c64a9",
+      "bytes": 1660792
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slkdump",
+      "sha256": "484d9ee6a6826c1da14464c2c8b6c8f60faaa81e3580d90af67485a878eab34a",
+      "bytes": 1660584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/liblibsparklink.so",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/libslk_native.so",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "60d604f5ccf0954d7dcb551b8ac89a0479db970b39192ec967640701a3aaeb4c",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "1029703ffa8eac4564775daaef5122aa6e20e0b9c45cbac04d225b0b1a46a9fc",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-original-matrix-v1.json",
+      "sha256": "afe154ed5ae0f6c39179796b5162bb46d33e88e6f3747ee148d9c0f7c9da384f",
+      "bytes": 4439
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-original-matrix-remainder-v1.json",
+      "sha256": "5da1738ff752b3285e5b406fa693ae36e9677e636ee4cd5c4813bc785ee3509e",
+      "bytes": 3351
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "62b2eb287fbf4047f1097061eb259a1dbaa482e8a9b1cc9103267fe9348caa60",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "40988450ad5718f6832a09adbcfa3104edf50215d3d71236c2457091283b5ebd",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "8d87989781b57b463a18460715936f1955e2e07a068a03dd766f7a6b2bea52f6",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "22e90257fa8ad7901faedf4b49671f145c9008b4c3a933036b27bf9158415c89",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "893d54bd918f36559e3404a3fbb86ba07430326de870d0d372998d3e5e234d53",
+      "bytes": 995515
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-allow.stdout",
+      "sha256": "a545acd19ffa5be8465383277123f6b95b8c13c179dc129f7abcf5fb42b19694",
+      "bytes": 623
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-0-0-deny.stdout",
+      "sha256": "90143906e7889af66938edb71ab5d1636e51cd6214ced191abe5b40241504b77",
+      "bytes": 627
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-allow.stdout",
+      "sha256": "fcb0a5f00a27a123941c97154a1ca9750a02a4c6ecae1e9310ebbae3658e9e45",
+      "bytes": 623
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-0-1-deny.stdout",
+      "sha256": "29c62ef1128415582a8039aba6214d272a2018683be6d727dd63d4c418f6fcc5",
+      "bytes": 627
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-allow.stdout",
+      "sha256": "432a90a8fde3f90c35573d8c746f0283df1aba46f21bb1947702c70d02e32f91",
+      "bytes": 623
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-1-0-deny.stdout",
+      "sha256": "ef531e6df36e832f0a3e5e2cd33f5089fb0638321ade6a5ad531d2445f1773c7",
+      "bytes": 627
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-allow.stdout",
+      "sha256": "b32a6e665081b4f952af6d8732ad3aa5ceb0175666aba32d6e382f951f9320b2",
+      "bytes": 623
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/passthrough-control/ssap-owned-1-1-deny.stdout",
+      "sha256": "652841196f84229918842b9fc19eb04d3e03aeaa9e84999e765a2089776f3484",
+      "bytes": 627
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/capture-process-status.txt",
+      "sha256": "dcfdb8e4e6cbe9b0e59b4ca5b2a931ddbd2176c37cbf5c56d4f65189b7d47971",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/capture-stats.txt",
+      "sha256": "72bf840aa129132035ea7e994f6ece7aa53902f46e0d0a4c58342370ead8f489",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/kernel.log",
+      "sha256": "1b8c0fe5452aeb0274dc67796aece24615025a308aa6d86c649e222bad24f8a7",
+      "bytes": 50141
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "97d82bb92eb3c39e6968a338c075a91607ecad45206d7953f1bf3cdc23e1a21c",
+      "bytes": 477385
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/pending-observations-0.json",
+      "sha256": "2b4850c7dcc81726e3398b74eac0385865fda82b26a1d1abf7c72181ae429372",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/pending-observations-1.json",
+      "sha256": "86cb8ffb8a66858e9937f7849b366c31eea7ecec5d1bf0c32c03ac334cb7a804",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/ready-progress-0.json",
+      "sha256": "1402921bddf1769f9c72ab323adccd34cba4431faa80b3b5d521c5423f6a7672",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/ready-progress-1.json",
+      "sha256": "65c0b1e117312792a69e475c0390fcc8fb109304f4c92ef5f4ffa570296159fb",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/slkd-process-status.txt",
+      "sha256": "80d2c73c48fe50648c9502b33cfcdb5116e738129edfa7b19861dc9b22e4fbdd",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/slkd.log",
+      "sha256": "73d09c45b832f851a949a9f41e26e486a2b808cc24b1bbc6d8edeb33ccba3e66",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/ws73.pcap",
+      "sha256": "57086a6b28046ae79628a63feeb81b4b8a5104f0068bf21648ccdcfb22261c31",
+      "bytes": 680528
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "fc7bec943fc83ab3fca60df603708dca56229e6c213cd0b940568609fcad48f9",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/guest-output/xhci-trace.log",
+      "sha256": "e0340fe0b97a8280ce7900d3efc30e4ec135cfa678991b9f96d9b4c9d117c10c",
+      "bytes": 2418858
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-short-v1/manifest.json",
+      "sha256": "f524f5369bad761807569737b9c58485b003070cf8ae03866af7fbf25e55c285",
+      "bytes": 1797741
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "42af5f3a4af92072fa161efa04784d37ffca44b8f51ffc2c403e1dc01c04c862",
+      "bytes": 22160
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "56f952de04849a0534c4d5f0e24cf754062e72bac5b46d7e1d311751fd767117",
+      "bytes": 24667
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "18baf5e87647838b3ec3e250ca7ce29dad8bba7548753f08108b5b1ac5bb923b",
+      "bytes": 22160
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "9b611c1430af7f5312c6b45330a80822384ee55019e4710ae7a43af00b887cb0",
+      "bytes": 24667
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "2fec1630d1282880120df6a1491b2fac4b1d278bdb44297ff9c549dffa83027a",
+      "bytes": 970945
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/capture-process-status.txt",
+      "sha256": "1d012e09c08280b3c504da8c3cea56c42ba6e62d47fa913fca7f291851bf3c8f",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/capture-stats.txt",
+      "sha256": "e88fff78fe5bcfae43e0b37299cf355cd0584fcfc0d64ea5322846f13720f7f1",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/kernel.log",
+      "sha256": "09f741a353cf4049c387eeb58cfd350ea491c84f973fad4690f03441e411b61f",
+      "bytes": 49946
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "33aa21ec8cce8050edafb4175209040f012459e0528f04d752344420810cd905",
+      "bytes": 477385
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/pending-observations-0.json",
+      "sha256": "32fad9b538e6b9256d9bf441994b0b5da231ee68750e7e53dad4c6e259aa1dfb",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/pending-observations-1.json",
+      "sha256": "e7bd17929e91fa09669cf94e5775942725c53c9004bba221c916a54c4a2c5c71",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/ready-progress-0.json",
+      "sha256": "58ccc747d1639dc037e924c1dc532a8c93ef3d33dfbce7fcce70754dbd53983c",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/ready-progress-1.json",
+      "sha256": "eb8a5f30a236907fe78aba92133c761f4ce499ab3e785b06d29626f0c4eecfd0",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/slkd-process-status.txt",
+      "sha256": "8ab46f18b1fdc3a806df253a5393a9e5822c740f70dd4c0119e558124c2b0037",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/slkd.log",
+      "sha256": "a6471633dad3593bb56b71f878e594d722256da039369f3b008c230ec93626ce",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/ws73.pcap",
+      "sha256": "eaafea5c0d6fae6673cb6a4a5d24c735738a6ccc936997c7fc726a41d81d7fd4",
+      "bytes": 636160
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "c70afaa266d730e897fa312bb049ac3e85cd46bc373e1273a7aa88db229bb6bc",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/guest-output/xhci-trace.log",
+      "sha256": "e673d540d034eb6126b08d3e038a59c411cbc20f000be1cf42d2d01d9549d806",
+      "bytes": 2264011
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length249-v1/manifest.json",
+      "sha256": "fb4bfbc15887aa92304e1d83c1b32f6cacdfdb899771e065c5b27c4795691f63",
+      "bytes": 1608989
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "30d8d978290823e4152fe672693ec08c3709c77f7de73c5558cbe9908d9386a0",
+      "bytes": 5604
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "b22c04178581c7adb3bcf09d161ba8cd564e30c1c1f8b8a65ec2e1347e88996b",
+      "bytes": 8111
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "d85e92fe221f6d1680f1b5b1237597b68a3c7723ff4a9a75a3733bbf81d2a164",
+      "bytes": 5604
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "381237b92930e52ce52fad7ad99b0bb9f22486d62ae0c42b552175647c24a8e7",
+      "bytes": 8111
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "015832a78e4aa32776371faec75dddb046af353cee28c6a30bd13333318748ee",
+      "bytes": 905029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/capture-process-status.txt",
+      "sha256": "8b73eb9a74e89f021f231e075cf1c00354c5b905649e03777158f5697f898fd6",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/kernel.log",
+      "sha256": "59e48b56a68c7e75fb5c492549c79b33c63e6e16bbbbac47edd17a68e870c8b7",
+      "bytes": 49943
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "710174f59130650f652e567b31bf0b652b1accb0325729121658e97cf455d805",
+      "bytes": 477384
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/pending-observations-0.json",
+      "sha256": "717f88a0af5bd5012fba38c6e09fe3e642c4fa39d030b8a8856e64a9e0c287fe",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/pending-observations-1.json",
+      "sha256": "5121a9eaf5e5f50e011ec80353001ad8324082eee2a5917df870d189daefa37d",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/ready-progress-0.json",
+      "sha256": "13efd5d82d79378ae2c0c579c9638d546a240be7445311d3f071b426281233f1",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/ready-progress-1.json",
+      "sha256": "66e193b53f315a5f1d8a44eeac9f8173e446cbea132dd5293a86f8cd7728839d",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/slkd-process-status.txt",
+      "sha256": "eee2b7a9b9be60c93b01ab28c119774b59fcd79a51d78c701a8b19f90219b2a9",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/slkd.log",
+      "sha256": "981c14982f7b286d42e5b717bb4f40f8283be2f05f44d7bb514384d36ed8479b",
+      "bytes": 5536
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/ws73.pcap",
+      "sha256": "853fd5aa1c707f115ba1aec3df35609613f935cc7ba4d3024711ba7f1c6c2319",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "c8dfd40b183e48fb88b36967de0fe715c7e94f90243f7a594bb108ca66f198d3",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/guest-output/xhci-trace.log",
+      "sha256": "73f8dd1b15b4ff8a3378f819dd99e67a1badfc8fa2263cc442541a088a8b6d4a",
+      "bytes": 2313918
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length250-v1/manifest.json",
+      "sha256": "57fddf2a387316007cf512bc606dd01ae62620d3259305a95eb99ac9328af4bd",
+      "bytes": 1630856
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length253-v1/manifest.json",
+      "sha256": "edfbb30091280ddd6b34400ce4cbed27a4409d306e1474d6e8b80604bb635e5b",
+      "bytes": 57310
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length253-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "c5fecd84868792dca218502da13f7e3583129655ed9185aa19e4ad08151628cd",
+      "bytes": 412904
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length253-v1/guest-output/ws73.pcap",
+      "sha256": "f17d6730ce92735e29e76757730fa422bdfeb39d85e36d08853de1b766754246",
+      "bytes": 280930
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length253-v1/guest-output/capture-stats.txt",
+      "sha256": "cd29f5aaec1254e2b7a7482419325d24bac55fef7da50b1eb890b2f4a4eb9109",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-length253-usb-triage-v3.json",
+      "sha256": "324cdd80ca0ba89a39788136b2025425bd855225e107b0b8b5c3b78f0336dda8",
+      "bytes": 6328
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "73aa63523bffd106ddad2f4eab1ec4d22520b5f0470d17172b69019cb4618091",
+      "bytes": 5668
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "8993fef26b53eae65a414c80e43ebbee94b29eb54a9de42e2a1347a52e985c0b",
+      "bytes": 8175
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "5108c7683a545d7ddff0c4ebfd216bb04745b9f29763e6685e5618816f6c05f1",
+      "bytes": 5668
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "46f7e63f16f9fe6c4f5b89578c04164088c6ab1f1db5fe9ac0543a1842d7c6ed",
+      "bytes": 8175
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "7cb04b8e4bbd90dbc98de10bb5703393d9d4008527138bea3b3d226434d992ec",
+      "bytes": 904705
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/capture-process-status.txt",
+      "sha256": "06642ea239c4b9541251178d34dc213444d165f92fdefe86087137d2000d7212",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/kernel.log",
+      "sha256": "1570258d62116f2927adb0b71bb5927d52994f08a704caa0f872477480186423",
+      "bytes": 50154
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "bd8158ae2eb5e21a824246812c3b5080fb4f0ea65806e083c28237eaa6f02996",
+      "bytes": 477385
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/pending-observations-0.json",
+      "sha256": "685f6343591948ca95f0ef1668d1209c9a1d2a97e4911b5f8563f7257407f48b",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/pending-observations-1.json",
+      "sha256": "ac69d84de2a703211be1bd4a2180e20e388a546e8bd82c043d0f2645bda1c72b",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/ready-progress-0.json",
+      "sha256": "3dccf1541edf17a6b3e5fc0ad65ce16bb98c045ce0037b6851a6ef7dbde69359",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/ready-progress-1.json",
+      "sha256": "1bc4f1f7cb1ec2e4f4348478613fdb3f9879ef5ab85873debe56f4362e16a284",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/slkd-process-status.txt",
+      "sha256": "1a6d79dc7357e6f880dce584723f926c6a3b64dc92a9a37b429da4d5b8440b66",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/slkd.log",
+      "sha256": "e1330f5c60d8c516a9d9d34439f3aec8805a61f3d7756046cb71c1312d2c20e5",
+      "bytes": 6215
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/ws73.pcap",
+      "sha256": "9960f52236ff4b4f2aa3a3451eead506d44b8756352d652facea3b3090c5f4bf",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "0fb55feb88e5da540f280263fe6e7e0265d9c7504e756a6fb07259ca2f7a9a44",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/guest-output/xhci-trace.log",
+      "sha256": "f71dd9e54ed760b56481970894dcaf7ca2a5dad7df5214c321c07cc3bcc76f21",
+      "bytes": 2314080
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length254-v1/manifest.json",
+      "sha256": "08b33fe1404082a0140d932227dd6dcdff725e3cef19faca05c8d3439d65e6c5",
+      "bytes": 1631366
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "7d40c164569e5d529fa31da09293ce3f70c2c69f8d9915f646ea50a03e7a18bb",
+      "bytes": 5684
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "aafe83171aa3fa43f21571f3fa74ff6e0458f84b6d2344fdb3d831c510fc1270",
+      "bytes": 8191
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "f8ccdaa43f040cf4aec4cb2c00b9addf5fb89edea507848732c838f424f1efdf",
+      "bytes": 5684
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "c5c5655ef511d86c05949c2ed335abbd2a16f04e2ff8f739938044d27e0822a9",
+      "bytes": 8191
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "6f7db7d3cde5752267a7c0dc7ed36f81a5ce269bca48d034c77a941182e73b52",
+      "bytes": 904765
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/capture-process-status.txt",
+      "sha256": "54b2ffa376af622acd0dc179978cf0456a5de3e330575cbab099c1aab4aa1c72",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/kernel.log",
+      "sha256": "c9e6d54c37bf72a2de77df0fdd4afe5077f8c45b4abd85808946a587be1b3c5d",
+      "bytes": 49942
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "a1701b91762f204cbb69f206a8fce85ad32aa5f1526e0dc95ffe2c210e482cfe",
+      "bytes": 477385
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/pending-observations-0.json",
+      "sha256": "a90cfc24b3fdaf8bb8fc11a2bc5b20846b688bedbbebf2f2a18e9ae67b978ed1",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/pending-observations-1.json",
+      "sha256": "c705cf22ded23f0206f74b00d84c7c4fef8a7dc78d4a139f6ea4e40890118365",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/ready-progress-0.json",
+      "sha256": "be7a5243bf57fb8c3592456e174ad1d3c19a4d1e9cdfe863afee754ba21f063f",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/ready-progress-1.json",
+      "sha256": "74b4b7ebefeeae6f71e759f770e9346eeea9db702e86e206f2f1530b8febbc78",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/slkd-process-status.txt",
+      "sha256": "49c9076b8dfa8c457bc65d2031ffa2333a45343d498894a6ea784e7d9a9b66c4",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/slkd.log",
+      "sha256": "2240f7144cc9eb8b8afa7b41882c89322c902d77f795257870c68e020fb6e2ff",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/ws73.pcap",
+      "sha256": "7b0bbd1bf7db80f709710ec3160e2fd7b230db3b0e0d4300970336d3a537ea80",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "463f2d666965afd92142c3522a96e75058a6e1c3b124577a9e600df24b2fced2",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/guest-output/xhci-trace.log",
+      "sha256": "7d5d614b691fdb750533640471d942bcc070ab41eea58c149bc09db8e202755a",
+      "bytes": 2313116
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length255-v1/manifest.json",
+      "sha256": "ab954415747740386749f65fe81eca9f59f5d1ddf63f313954d553e9e657f87c",
+      "bytes": 1631495
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "0f3069034e30235c59dc6c30d49aa540c077d5282c9e570aa06af20a26351d42",
+      "bytes": 34281
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "d0e9abfddbd600209abf64d1230c6bd1925d7066294559423dee46bf1d7d9f04",
+      "bytes": 36784
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "4928a80bddefc85f1e88c3bd1887316e894fb93187a2bdca1b8f49bfa6338da7",
+      "bytes": 34282
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "443da5c4c4f6ff6f94fe5a7193499a27f8fd861254ca20126d1389baa275be37",
+      "bytes": 36785
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "3b0645689cd83076a0d3be3e7f16bbcb6d45cc40ba76563f3955d1a8a6bbba69",
+      "bytes": 1019212
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/capture-process-status.txt",
+      "sha256": "29ed094e2bb2913f09ea2246040836e6984e5a7a4329920bd7b69cc43680360d",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/capture-stats.txt",
+      "sha256": "9ae3d7de6f23bbb1cd7609e27b6ae076e7f3192a4c6fc995506edf25cac426b7",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/kernel.log",
+      "sha256": "0854e153fee2bb5267a2c9d1479da5f70a0ebce17222371a3f1980a851874ae6",
+      "bytes": 49944
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "439184e36df19584c9c795906517454c6f78e8e5f49d9d3955fc4a741ad1f641",
+      "bytes": 477872
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/pending-observations-0.json",
+      "sha256": "6e565de6222bb2557678fcda6f34d78c89da7854057630dd8e79b0a01b70653c",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/pending-observations-1.json",
+      "sha256": "a5171eec2abacc94750dae27e23fcee5da114bc6afa0c4122edb5dfd6ba2a9c3",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/ready-progress-0.json",
+      "sha256": "6d9b2f728b029498420811ba9383db84164b9a0eec78697bb0bb5293c528a999",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/ready-progress-1.json",
+      "sha256": "46d46099eb6547c97a4af6f4e26ad1921440fcbe4c4670c1e8db986f595d7985",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/slkd-process-status.txt",
+      "sha256": "a9c052a1f11b9236cf750e1bf419a92fd2a1ce175090c4b88246f449e9fc14af",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/slkd.log",
+      "sha256": "849cd3453550119c33f60844965cfa79c4986f21c620db8e2b55c1c4e6170cef",
+      "bytes": 5536
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/ws73.pcap",
+      "sha256": "5bd32c9fc9fa1ecd8a4747c8b3f22b4bb87ebc5ca138f6135fb626a73c28e6fb",
+      "bytes": 1122544
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "f8d625fa482989116137aa9a330e3d731a5501ea21aef7de48116eb2e687c280",
+      "bytes": 285
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/guest-output/xhci-trace.log",
+      "sha256": "2c2690eccd1364220b7d1b79e152b189efcbf6bb4522f59d59dd7e337f594155",
+      "bytes": 3661531
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-length2042-v1/manifest.json",
+      "sha256": "47815c17ca88104e66381f2b25f746577eada17dc14d553f81229b9a2972ea75",
+      "bytes": 2588947
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-preservation-audit-v2.json",
+      "sha256": "dc87b090ec2da5b218a5b4f28588d835372612207b994e0a768d28cd97f00e88",
+      "bytes": 11249658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-original-matrix-v1.py",
+      "sha256": "8f576e5dfa3462178dd765ba219ef7a6970e2b234fb0a4f44af8cf8b2c9dcce3",
+      "bytes": 2176
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-original-matrix-remainder-v1.py",
+      "sha256": "4b9bc3559cc08dc4d60348cb07825d3939c40df62d4b2541b8926adc8f5adc40",
+      "bytes": 2156
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-length253-usb-triage-v1.json",
+      "sha256": "4b547999e63f8b99a8169e41714f00817c630da4b69ec19d58334e453a90304a",
+      "bytes": 2310
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-length253-usb-triage-v2.json",
+      "sha256": "5298133226adad9c9595f47ef1216ac759d8eef6d40ec99489791bddb6bab7a6",
+      "bytes": 5383
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-length253-usb-triage-v4.json",
+      "sha256": "f4a96fe91ad9bb148bef4b00820991cae1cc2d13b74bb07962abd814b83eb38f",
+      "bytes": 83772
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-postflight-v1.json",
+      "sha256": "644e3c3108ab9e6797b1a63313a75e807ffd1fc5991f7088ead8eb58aa196a92",
+      "bytes": 2998
+    }
+  ],
+  "replay": "Use retained original matrix commands and native-owner-preservation-audit-v2.py; fresh outputs only. Whole253gate and wholematrixremainFAIL;six scopedPASSrows do notreplace it. Original role/payload/completion/peer-capture/radio negative controls remain unmodified."
+}

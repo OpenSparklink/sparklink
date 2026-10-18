@@ -1,0 +1,722 @@
+{
+  "schema_version": 1,
+  "implementation_commit": "ccef31048111a87d721057cb28a058cde543b245",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "result": "PASS",
+  "new_formal_proofs": 0,
+  "architecture_complete": false,
+  "remaining": [
+    "The exactccef310 originalseven-size preservation matrix FAILED at253bytes:peerDown arrived afterthe unchangedshared5s budget. Other scopedPASS rows do not override this failure;no retry replaces the original.",
+    "Actual Native synchronous bind/return versus parent-dispatch cancellation and retirement, complete task/object/kernel-reference/USB-callback drain and UAF detection remain open. Unix-fd/private-D-Bus fixtures are not these proofs.",
+    "Full 2x2 role/fd, release/final fd/dup/SCM_RIGHTS/Down/original deadline/reuse compositions, cleanup failure and stop/join cancellation timing remain open. Finite tests do not prove whole implementation refinement.",
+    "E-only SDK110/HCC startup and regression, qualified per-device firmware flow for mixed E/U, genuine cold-ROM valid-read/automatic firmware choice remain NOT_QUALIFIED.",
+    "Natural startup timeout, re-enumeration failure/disappearance RCA and nonmanual recovery remain OPEN. Guest leaf QMP, held replies, physical plug or hub power are not natural recovery acceptance.",
+    "Full S0-S6/19WP/10FV/12DG, security/Bond, data/credit/NOCP assumptions, multichannel/four-device, performance, deployment/upgrade/release and all original issue scopes remain OPEN. UserHost is P4 planning only."
+  ],
+  "access_policy": "Public report contains metadata/hashes only. Raw test binaries, logs, VM images, captures, SDK and board inputs stay in the private workspace under the recorded relative paths; access requires owner permission and the fixed SDK110 files. Frozen source and replay scripts are retained; do not copy SDK/firmware/standards into the public site.",
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
+  },
+  "level": "offline",
+  "tested_source": "ccef31048111a87d721057cb28a058cde543b245",
+  "kernel_abi": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "actual_test_compile_base": "cce5c5da7dd8957026945cde47139b1102b32626",
+  "actual_test_compile_dirty_diff_sha256": "4305fe0020c26cbc7cf2611aabc970b09febb15cbe9d9bd417bc5145caf77360",
+  "compilation_identity": "Tests were compiled at the recorded base plus exact dirty source. All tested production/tool bytes mapped to the later signed implementation commit; this is not a claim of clean-commit test compilation.",
+  "bounds": {
+    "default_workspace_methods": 360,
+    "allfeatures_workspace_methods": 360,
+    "new_production_owner_cases": 6,
+    "sealed_test_executables": 31,
+    "resource_guard_methods": 15,
+    "new_real_device_runs": 0,
+    "new_formal_proofs": 0
+  },
+  "scope": [
+    "Actual production registry/reconcile/ObjectServer and same initializer/Engine; explicit canonical Native/table dependency fixtures, real private D-Bus/Unix-fd/Tokio task cancellation, foreign owner rejection and bounded retirement.",
+    "No experimental-kernel concurrency, RF, lifetime-reference/drain/UAF, full Native syscall, system deployment, or new formal proof."
+  ],
+  "gates": [
+    {
+      "name": "default",
+      "result": "PASS",
+      "methods": 360,
+      "status": "PASS"
+    },
+    {
+      "name": "all-features",
+      "result": "PASS",
+      "methods": 360,
+      "status": "PASS"
+    },
+    {
+      "name": "clippy",
+      "result": "PASS",
+      "methods": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "architecture-boundaries",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "resource-whitelist-and-build-budget",
+      "result": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/native-owner-default-v2.log",
+      "sha256": "98c93a935bbd1d7ee3115025f353c273518bf49b61833686dca5712158e41534",
+      "bytes": 38237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/native-owner-all-features-v2.log",
+      "sha256": "38a8beb3074af3bd874415b00b1e7fad5a02d1d2e0821f29044e6f3bf5a9b5a1",
+      "bytes": 38112
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/native-owner-clippy-v2.log",
+      "sha256": "00305e19ea1441fbecf27da636d0a36b8320ecbe184c904778adc3d35a87a5ae",
+      "bytes": 566
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/application_broker-436eb7280a162504",
+      "sha256": "b5286acc8ab5e69e495763192891e9ff4c13a26b305992f58efc9a6a40d24b67",
+      "bytes": 62741560
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/application_ffi-bde94cc6f810f893",
+      "sha256": "53b71946e770add423fd786e156f3d8d81bc0333794b1e2acd45081d266bfd4d",
+      "bytes": 55255136
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/application_ssap-c98e35f0aa8a8fbf",
+      "sha256": "b78595c3698275f032d45d1af175bd57da573a41e4f63290a9bac731a7754bbd",
+      "bytes": 61657992
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/client_scope-6415e6e5cb824fbd",
+      "sha256": "b9d571e732be37c2ebeaddc53cda639d377d33fe92fd76469c9bfa4bcd724910",
+      "bytes": 64399656
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/config_startup-95becc7ff2176486",
+      "sha256": "a86581f9e4a10fd7afabd3668ee4db68cbe99492de7ad5a2fa41fb39914c84f1",
+      "bytes": 7550456
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/controller_client-486f8d9267e42ec1",
+      "sha256": "a342517c6c7845c4dd8d04691d85289061fdc8efd8adf327cc345f11ea8e34cc",
+      "bytes": 64812432
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/entrypoint-986f70f4c6e9b30f",
+      "sha256": "99bc38c8a05fbcc77a798852c6a791129539248d7df261c21496e13f0c79a2e9",
+      "bytes": 7414648
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/libsparklink-37a3804d1d0bec37",
+      "sha256": "7ca53ef51a8df42cb064650be901eb2b2aefa784fb6b16eb15273ab82902c3f4",
+      "bytes": 65412920
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/local_staging-aa17959ddd872e70",
+      "sha256": "7803b5fdfdaf33d0e17b4e6cb973be8fca00da4373717607b6e701297471dac9",
+      "bytes": 52771712
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/local_staging_client-1e50c217e705b3dd",
+      "sha256": "d0d194aafbbacda55028e408c19ae30dd71a605069832b1c491f1ca1268c5722",
+      "bytes": 66213104
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/management_owner-7ffdd0adaa7659c1",
+      "sha256": "725f4179053b0dc922fc51c743d1cd34c6832b94c2fa21cccfe40ffcbf05e250",
+      "bytes": 53436016
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/owned_client-33e550af30da0580",
+      "sha256": "c811481e2874b9b735ec83759f5eac73ca049fcad5c93f3c01028f02cd54a264",
+      "bytes": 65398704
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/owned_local-458996ee3a54bc53",
+      "sha256": "88010f7f6c3fd61704477dad0f0a48305e09513a5ded50eb7cccee1478ffb4f8",
+      "bytes": 52761064
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/peer_client-528d89ecbf7058d7",
+      "sha256": "18235cf81e769a66742c1d35e75ba18992b6c6de8b1581c46d0af0c209288165",
+      "bytes": 63510992
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/remote_ssap_client-f021d03a6dc85d55",
+      "sha256": "03d2dbba49f2180eb57154f2e6ed6745f8537f0b29357f1f20094c3b7a1f1728",
+      "bytes": 65457608
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/retired_security-93e67fd87599e3e0",
+      "sha256": "dcef5066d52c0bf4f48ebe4329d54cdf00c978c72027d10f6821a8cf0b4bcec6",
+      "bytes": 7525576
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/scan_freshness-5a708a68d5401942",
+      "sha256": "2428876ed676483fe94ef7771ee59eb8bca40b805d2066c6711aae7578fd73ef",
+      "bytes": 53967472
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/security_agent-c47a132382d1e7e2",
+      "sha256": "47af8c78e1348c13bce667d959d6365f369c39332196514da6be45f62fc49042",
+      "bytes": 56445400
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slctl-edc8f2051ef0b75c",
+      "sha256": "3dd6042a83fee1e1e7beb0f0dba1ac0addabefbc55f8a584ca06993909d37102",
+      "bytes": 67811136
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slk_channel-e33630fa725ef720",
+      "sha256": "a05a54849d83f4c0833be7946defc7ce1cab670a5b222fdd379fdb517caf63d8",
+      "bytes": 9587408
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slk_contract-269e028873639091",
+      "sha256": "4978f34807ae54b759c354d53a95e3171f9a91517a61212d24429fe5c746c940",
+      "bytes": 18895736
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slk_experimental-c46a0fc7dd3c0aa3",
+      "sha256": "e2525968310b763e50485335864997b124c5e1f1e753acdf3f667c5881e2334e",
+      "bytes": 19649512
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slk_native-bdcfe92dbe3340ff",
+      "sha256": "16efbc6cbdebef5a627e4a7baf6e9076b99b67e18abea1aaf8dd62e4f414f885",
+      "bytes": 21549312
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slk_protocol-d6226b5ec5715618",
+      "sha256": "d48026255b7fce2a7021b6c5acd0bb0e68e698b9be8ce70624caf1cfa99159fe",
+      "bytes": 10292848
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slkconfig-755ebc5ccd0ca65b",
+      "sha256": "bf18980163dd5449b02a518aa46c5ee2e882f3389af97d138d5458f74f1b6bf8",
+      "bytes": 29318312
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slkd-d75fe32529fb42dd",
+      "sha256": "8736e4eb31f574dc860ef2cd9b2466fb8d7bbd6b4818b9033785dc20b80ca047",
+      "bytes": 151943656
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slkdump-bdfaba434ddef545",
+      "sha256": "1857acfd49d1707b2d6e306b73962f88fda145a0b16e635ac39eaa5dfd72c144",
+      "bytes": 18651056
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slkmon-d89c8fdb13f78669",
+      "sha256": "adb0f68c2714a057ff408a1b0ec63dba30b3648a49c33d0cb61200c32d93c04a",
+      "bytes": 18651048
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slktest-3bf69d8e25921b73",
+      "sha256": "57ad57f9133f768516e8512fdfb28e7a4833f2720f522767a3e13e5410582c63",
+      "bytes": 68578152
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/slktest-96bc2885fd7aef22",
+      "sha256": "f144d7cd978f2604a5becf73feeccaf40b8e58dff14ad9381a58dcd2da4c0db4",
+      "bytes": 51834320
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/test-binaries/tool_boundary-7f786ef157458341",
+      "sha256": "c6be27182db70cce79a6692943435f2b8af1f8082bc7c4f82a25df39ac5b6fc5",
+      "bytes": 7447944
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-offline-v2.json",
+      "sha256": "2c90aa906159c8bba00235824ad2d0cfe39f90f22ed330fad3f25f84b29d43b4",
+      "bytes": 58111
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-tests-v1.log",
+      "sha256": "508922d2ad985279148e02f3559d7e667a621e7acfbc045bc425f63849ca0083",
+      "bytes": 35846
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-tests-v2.log",
+      "sha256": "467cf022c537494cf6cd0467be611add7e5e162f0931779369df94c339d87b53",
+      "bytes": 11989
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-clippy-v1.log",
+      "sha256": "2e330b6b720666d58eba91bf790d9a1ef19640e34d7e151d3b542b70cb248b5a",
+      "bytes": 1574
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-check-v1.log",
+      "sha256": "423833957b8838db05511bd6d44cb02fc1edc4b4b721c6a21c3d53921334b8a4",
+      "bytes": 1899
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-candidate-v1.json",
+      "sha256": "518a72f23009c1f9b499fbea24c8239d054881bbcc634b027c61d028bd1733ef",
+      "bytes": 852
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-candidate-v2.json",
+      "sha256": "a6ed4ed6a8cfeea0a8f275f14d4556156da4f985a92f8043d7cbcc52792266b6",
+      "bytes": 1008
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-architecture-v1.log",
+      "sha256": "ed178cb4ca428c1ebbe784a6fe49539d632b3ed158219733c82d084c50017ab5",
+      "bytes": 2379
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/allocation-guard-tests-v6.log",
+      "sha256": "6eae99d9e25a89db51f06b3a1db98d3a1829ee89443f8c52639aef87b01f1763",
+      "bytes": 2812
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-main-wip-preserved-v1.json",
+      "sha256": "5f27e02909de70b50a08d5db1149f647d31185b348a848b8a6db992387129c2b",
+      "bytes": 1559
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/build-environment.txt",
+      "sha256": "fdf3d672103e7d2d1d455997b87bacf6e0eaf9a63cc4431d37f282387109fe61",
+      "bytes": 616
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/libsparklink.so.0",
+      "sha256": "6183efd4add2a28897aa5d1578ce9928e9d7d51252219de6e24b276a491ab700",
+      "bytes": 58871000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/materials.sha256",
+      "sha256": "974bb0081aa7d8e7fc7c52e8fd342d25c66d2c47aa71278a6213c45d6a88d77f",
+      "bytes": 1736
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/python.stderr",
+      "sha256": "dcdfe0528a68bdf0d3a5bdbd62444896b0977507b63170347bc56e4705e3aa0e",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-timeout-read.stdout",
+      "sha256": "db2b6dbfe7c95d5780cde0db306232c82c8d1cb82f220493a60ff82ffcf30059",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-timeout-write.stdout",
+      "sha256": "869fd753b8a4b1861f9e94bb00b67f21f27629ffb4e9f629f3e35f9d5adb61b0",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-unexpected-success.stdout",
+      "sha256": "4809df60cbe79908d36990db21313ae1d608ad204ead9a1af03ee4d185996f5d",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-c-wrong-errno.stdout",
+      "sha256": "fba8af903603da167393ecd7a3a70b02e3370f14043b2b5545a5c39ab6367697",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-timeout-read.stdout",
+      "sha256": "84420c342e7af552b561c7061832347cd3e5e01a7e4a3db10bd805d4bb69d830",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-timeout-write.stdout",
+      "sha256": "a42980703aab6c99ef77b1e07bdfa52f24554a7f7d26629726e866a66a363da2",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-unexpected-success.stdout",
+      "sha256": "7f517941b1fe87828360ebfbd462c69c9952a3830d8429eb853bcf042f337108",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-wrong-errno.stderr",
+      "sha256": "2ac7b9c33f93ceb564e2cfe190a20d55bc43b77a63fd921ca351bbd369466674",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-python-wrong-errno.stdout",
+      "sha256": "7afb679426c12b1b9e9de904e63832c12813b8480afe8e834ea828703face804",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-all-features-v2/sdk-ssap-probe",
+      "sha256": "319718c351044208c690c8a218266001740a268d6dfc2586a8718cf72f3e7a89",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/build-environment.txt",
+      "sha256": "6364a50c7bfa22153c2267fd5855a1303018322609b4ccc1488067d31479ea0f",
+      "bytes": 611
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/libsparklink.so.0",
+      "sha256": "6183efd4add2a28897aa5d1578ce9928e9d7d51252219de6e24b276a491ab700",
+      "bytes": 58871000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/materials.sha256",
+      "sha256": "8bbc9b85706be4171e22c4f94776434996ad02764ef89fed865879e60cabe603",
+      "bytes": 1721
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/python.stderr",
+      "sha256": "b11b42892adbcaa0b607142bf3ba75714391bc94fc2f49770653745614fec3a1",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-timeout-read.stdout",
+      "sha256": "0fbe0273d3c7717e0925e5ed67b8c82072cd28e4a6fb66b290625ba15ffafbbb",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-timeout-write.stdout",
+      "sha256": "204b27d73af23aa2f9ae42db3eebbf4fc4ca07bbe324b1330ca07c10e80dff07",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-unexpected-success.stdout",
+      "sha256": "f4ae86f7ad72590318fe6635de07b83b9a12c6ffbc674a11d80f6a8f7270ecf8",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-c-wrong-errno.stdout",
+      "sha256": "3569af2707749691c57c50404c62c70d3c93478af88e78fc773b80be2de41638",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-timeout-read.stdout",
+      "sha256": "2bceb2696c6c7f373936b33f4cce22f00fd3caa2122b828b38ad81541d18b859",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-timeout-write.stdout",
+      "sha256": "a59b14c9416385efa10f5abf456ec2740b139addda7299d3908f2f7498c3d71e",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-unexpected-success.stdout",
+      "sha256": "cc9a116ee25a0d51403bcbb2d6e9bfed6ea76b1512b1a778fa76932d07a28d6c",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-wrong-errno.stderr",
+      "sha256": "2ac7b9c33f93ceb564e2cfe190a20d55bc43b77a63fd921ca351bbd369466674",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-python-wrong-errno.stdout",
+      "sha256": "626eab5aec38878a8ec9883504eee51ca182758c81a3d09dc78012cc2e4a8e97",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/external-consumers/native-owner-cross-language-default-v2/sdk-ssap-probe",
+      "sha256": "319718c351044208c690c8a218266001740a268d6dfc2586a8718cf72f3e7a89",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-all-features-v2-build.json",
+      "sha256": "3d2064a64f6bc5362913dfc5b1637e99507b277d250a8c5da9edfbb96a21d795",
+      "bytes": 934
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-check-v2-build.json",
+      "sha256": "a6fa63be3fe085fdb7473682904c47acabb70b25a5f9fc30459ab66fda566637",
+      "bytes": 930
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-clippy-v2-build.json",
+      "sha256": "6146c04d3e59595eb951ce4f3e88b2df9f7a1ba66fed1f8bceaac6d65e68fd24",
+      "bytes": 993
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-default-v2-build.json",
+      "sha256": "db6c5a9634acdfde188d55fa6d0c99fc3d79f332f53f6a89ad502586e77c1413",
+      "bytes": 912
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/records/native-owner-tests-v2-build.json",
+      "sha256": "62aa9e5e84f5a599d999ef89bed032fb3e58c6932f4c60fb2a66385e7d1f7004",
+      "bytes": 913
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-sealed-v1/report.json",
+      "sha256": "bba8767148173fcd1d9e8390d4f9117836c833bd9dfd9c680f03da724d5b8468",
+      "bytes": 89370
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-offline-v2.py",
+      "sha256": "1fb5434119938cf93368957ccdbefc7433195b8d7225471b46a8fb7be61d333a",
+      "bytes": 3235
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/seal-native-owner-offline-v1.py",
+      "sha256": "f2c41143d4e79ca1100439171ed187cdead249b00922a1be7630fd9424041f46",
+      "bytes": 2758
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-docs-v1.log",
+      "sha256": "aafdc75377794f2109bb3935718276159e1b325e10b9daab351bd3f3c59a8418",
+      "bytes": 1264485
+    }
+  ],
+  "retained_failures": [
+    "Missing explicit local D-Bus executable and invalid snapshot fixture in first test run; second invalid revision fixture; original private cfg(test) constructor visibility error; first strict Clippy rejected nested condition. All original logs and source snapshots retained. Production checks and assertions were not loosened."
+  ],
+  "replay": "Use native-owner-offline-v2.py and retained source/fixtures/31 executable hashes. Reruns require fresh output paths; never overwrite the original reports."
+}

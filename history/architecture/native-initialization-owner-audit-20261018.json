@@ -1,0 +1,30 @@
+{
+  "result": "SOURCE_CALL_GRAPH_COMPOSITION_RISK_NOT_REAL_LEAK_OR_UAF_PROOF",
+  "source_head": "a1785520292ea11b712e670d5da7da97fdbaccd4",
+  "compiled_production": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+  "files": {
+    "crates/slkd/src/connection_object.rs": "82a33c109d1e34cb07caf2e38e859f97f6bdf88d4a07a7bce9d672d4beb33228",
+    "crates/slkd/src/event_loop.rs": "40897923299bf566785e88074a5b2c9e19baba80b1902f1102ff5840dce0e7b1",
+    "crates/slkd/src/adapters.rs": "a2c09a550eab96637ac680bf59d642edb7713ea0bf0a711a3c4a873151088d52",
+    "crates/slkd/src/state.rs": "3c4ec48c0b04c89f33cbf118a05555d0c668563577e7bdc11b3ef0e5bbe39c08",
+    "crates/slk-native/src/channel.rs": "ca3906dc575d0b633af3f8fcc65591ce68e67a897ea81f1373e7aca8fbc7169c"
+  },
+  "facts": [
+    "ConnectionIface.authorized_fd retains an owned per-controller NativeLease guard across synchronous slk_native.channel.open_service -> socket46 SOCK_DGRAM/CLOEXEC/NONBLOCK -> bind;SOCK_NONBLOCK doesnot boundallocation orlockwait.",
+    "initialize_once keeps the actual owned initializer JoinHandle in its shared slot. Direct caller cancellation retains task;stop_ssap fences starters and joins slot then stops sole Engine. Existing finite callback fixtures exercise these functions,not parentpublication cancellation.",
+    "event_loop.refresh_native constructs localIface andawaits start_ssap_on_publication BEFORE ObjectServer.at. A pending Nativecreator therefore neednot have a registered D-BusIface.",
+    "EventTask.start_native uses cancellable select around refresh_native/dispatch_native;cancellation can drop that awaiting publication future. Adapter.shutdown first awaits eventshutdown,then resolves connectionpaths through ObjectServer tostopSSAP. These facts alone do not demonstrate joining an unregistered initializer.",
+    "Publication retry constructs a new localIface before .at;the actual .at inserted/existing result andsingleowner reuse need explicit audit. No claim ofobservedreal duplicateEngine orcrosslifetimepacket."
+  ],
+  "limits": [
+    "No controlledNativebind/return run,allocationfailure,parentEventTaskcancel,taskjoin/ref/UAF proof in this audit. CurrentExchange gate coverspostCMTCactor,not this earlierstage.",
+    "KernelNativeLease/epoch fences remain;no assertion ofactualunauthorizedsubmission,leak orwrongReadyfrom source inspection alone."
+  ],
+  "required_fix_direction": "Stable per-controller physical-lifetime serviceowner must be retained before starting Nativefactory,independently ofD-Bus publication. Reuse the existing initializer/Engine andcanonical identity;D-Bus observes/references same owner. AvoidArc cycles andduplicate physical-state authority. Parent retirement must fence andjoin bothunpublished/published work;do not merely moveD-Bus publication earlier andcall that resourceownership.",
+  "next_exit": [
+    "Actualproductionownership path andfinite unit/privateD-Bus cancellation/registrationfailure/retry checks,with visible fixtures andsource mapping.",
+    "ControlledrealNativefactory-return barrier must be distinguished frompre-syscall ortruein-kernelbind;preserveoriginaldeadline/guard/fd/othercontroller.",
+    "Newcompiledartifact VM discovery/connect/short/length/SSAP andappAPI regression;fullrefs/UAF andoriginal S0-S6/19WP/10FV/12DG/naturalrecoveryremainOPEN."
+  ],
+  "schema_version": 1
+}

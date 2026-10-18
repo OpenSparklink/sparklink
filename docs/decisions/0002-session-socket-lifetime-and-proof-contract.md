@@ -32,6 +32,14 @@ fd inode 消失当作 task join／内核引用排空。单 RX URB 保留能力�
 清理使用其准确生产原因码及真实双端事件核验，不借用公开主动断链的作者终态。
 有限门禁及仍缺的证明只在[资格入口](../../project/current-capabilities.md)维护。
 
+controller 生命周期必须持有开始初始化前登记的唯一用户态服务 owner；D-Bus 只是
+对同一 owner 的引用。取消发布/dispatch 的等待，不能使未发布初始化脱离退休/join。
+发布重试复用实际 owner，失败不遗留资源；资源表不复制 Kernel 的连接状态，且不得
+形成永久 Arc 环。只提前发布 D-Bus 对象不足以替代这份资源所有权。
+[调用审计](../../history/architecture/native-initialization-owner-audit-20261018.json)记录了
+当前 eager start 先于 ObjectServer.at、parent cancel 与清理查找的组合缺口；它是源码
+事实及待验证风险，不是已经发生的实机泄漏/UAF或串包。整改仍需准确新artifact回归。
+
 ### 安全能力交换沿用同一物理 Session
 
 受限capability-only入口不是另一Engine，也不授予可信安全状态。管理批准必须由

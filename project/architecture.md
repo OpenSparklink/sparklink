@@ -202,6 +202,9 @@ Ready、Enabled、Available、Powered 不互相替代。Controller 元数据有�
 Managed release、最后 fd、dup、在途回复、设备移除和 daemon crash 与这份初始化事实日志组合验收，保持活动 Ready 同行不变。
 
 SSAP 初始化分开记录 Native fd 创建、内核 CMTC、用户态 ExchangeInfo 和应用可用。
+每连接的用户态服务资源 owner 必须在 Native 创建开始前被 controller 生命周期持有，
+独立于 D-Bus 对象发布。D-Bus 引用同一 owner；发布失败、重试或 dispatch 取消不能
+另建 Engine 或失去初始化的 join。这里登记的是资源所有权，不是另一份物理连接状态。
 当前 creator 的同步非阻塞 bind 不经过通用 NativeWork；actor 创建成功不代表协商
 完成，SOCK_NONBLOCK 也不证明锁等待有界。VM 中观察 daemon fd 数量／inode 收敛，
 不能替代 initializer task join、对象退休、内核引用和 Session stop/drain 的证明。

@@ -73,11 +73,15 @@ class ObserverPolicyTests(unittest.TestCase):
         self.assertIsNotNone(app)
         rules=[a.attrib for a in app.findall('allow')]
         self.assertEqual(rules,[
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'GetInfo'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannel'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannelScoped'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'PrepareDynamicChannel'},
         ])
         self.assertFalse(any('own' in r or r.get('send_interface')=='org.sparklink.Adapter' for r in rules))
+        default=root.find("policy[@context='default']")
+        self.assertFalse(any(a.get('send_interface')=='org.sparklink.Connection' and a.get('send_member')=='GetInfo' for a in default.findall('allow')))
+        self.assertEqual({a['send_interface']for a in rules},{'org.sparklink.Connection'})
         source=(Path(__file__).resolve().parents[2]/'crates/slkd/src/dbus_iface.rs').read_text()
         self.assertIn('async fn start_controller_scan',source)
         self.assertIn('async fn stop_controller_scan',source)

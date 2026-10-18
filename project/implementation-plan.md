@@ -1471,7 +1471,8 @@ R5f4角色切片（实现中，未授新权限实机资格）：原C/Python单�
 UID1000继续现有SSAP测试。监督器仅在QEMU和显式门禁下接收两个有界固定phase，
 无任意命令或生产提权API；结果、进程身份及原始stdout/stderr与普通控制记录独立
 核对。原5秒子进程期限和断言保留，监督等待与协议期限分开。
-本批先封存旧策略拒绝GetInfo的负对照，再仅补apps组必要的只读GetInfo规则；
+本批已封存[旧策略实际拒绝GetInfo](../docs/evidence/application-apps-role-negative-20261018.json)
+的负对照，原VM保持FAIL；当前仅补apps组必要的只读GetInfo规则，正向实机仍待验。
 正向必须经过实际system bus、新SDK授权fd和两端真实业务/USB，且管理操作、SSAP
 RPC、interface-less调用、未知方法、own-service和裸设备打开仍拒绝。完成新artifact
 相关原路径回归后方登记有限资格；完整release/revoke/Down/原期限与R5/R6scope仍开放。

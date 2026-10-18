@@ -110,8 +110,10 @@ generation、physical lifetime、handle和peer身份。它只是观察／调用�
 可安全重试的size query**。其他失败二者不变。超出65535的回复为EOVERFLOW。
 write输入允许空值，长度超65535为EMSGSIZE；这个语言内存上限不是协商MTU或长写
 支持，实际大小／安全要求继续由daemon及通道拒绝，不截断输入。
-权限继续按实际system bus策略逐方法拒绝；当前`sparklink-apps`只开放授权通道
-相关入口，没有因新增SDK方法开放SSAP或管理权。现有管理组可用的RPC不等于
+权限继续按实际system bus策略逐方法拒绝；当前`sparklink-apps`仅开放只读
+`Connection.GetInfo` 预检与既有 `OpenChannel`／`OpenChannelScoped`／
+`PrepareDynamicChannel`，没有开放SSAP或管理权。只读预检不制造Ready或授予权限；
+新规则的应用组实机资格另取，不能继承17b4管理组门禁。现有管理组可用的RPC不等于
 普通应用角色的SSAP授权已经完成，后者仍需独立策略／实际权限门禁。
 C调用者须提供真实有效、独占、无别名且满足声明长度的内存区域；坏指针属于FFI
 调用者契约，不能用来代替内核EFAULT门禁。

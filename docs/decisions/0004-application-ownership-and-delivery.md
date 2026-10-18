@@ -41,8 +41,10 @@ query重试；Python一次分配有界结果缓冲，不截断。当前方法的
 2. 当前真实扫描接口属于管理权限，迁移为 `StartControllerScan/StopControllerScan`。
    移除未发布的旧混淆名称并迁移调用者。**尚未实现客户端发现租约**；不把管理
    STOP 当应用释放，也不把仅改名当共享扫描完成。未来客户端入口须先接实际租约。
-3. `sparklink` 是管理组；可选 `sparklink-apps` 只开放 Connection 的 `OpenChannel`
-   和 `OpenChannelScoped`，不开放广播/扫描/断链/控制器操作或 service 名称所有权。
+3. `sparklink` 是管理组；可选 `sparklink-apps` 开放 Connection 的只读 `GetInfo`
+   和 `OpenChannel`／`OpenChannelScoped`／`PrepareDynamicChannel`。`GetInfo` 仅供 SDK
+   核对同一 generation/lifetime 的观察，不开启通道、创建租约或提交协议命令；
+   不开放广播/扫描/断链/控制器操作、SSAP RPC 或 service 名称所有权。
    kernel 仍要求特权创建绑定，broker 传递 scoped fd，内核强制 epoch/方向/lifetime。
    分组是粗粒度准入，**不是完整逐应用/逐 Peer 策略**；固定通道机制要求按后文安全epoch决策；动态protected仍拒绝。
 4. Peer 为身份/观察；ConnectionSession 为一次物理 lifetime、信令/能力/分流/安全；

@@ -67,6 +67,13 @@ fd 关闭判据的用例在 exec 后的独立进程创建 socket，避免其他�
 实际 Native 返回/parent 退休屏障、Kernel 引用、callback/UAF/drain 及完整 fd/Grant/
 credit 组合仍需 VM 门禁与各自证明，不能从宿主 fixture 或 inode 消失推出完成。
 
+受控返回设施仅供显式实验 VM：同一 syscall 先真实执行，按原身份选择后暂停返回，
+不替换结果、fd 或协议。Root 库/控制目录及原始观察固定，有限到期即测试失败。
+Service 切片检查初始化返回前的真实物理投影；User 切片检查未被初始化任务覆盖的
+实际创建与父 Connection 退休。对端真实断链、旧对象/OS fd 收敛、同行与后续应用
+回复分别核对。SDK 的 live 拒绝不等于直接 broker/Kernel 准入证明；测试 Root、
+libc/内核、固件与物理环境仍是受信任基础，设施本身及模型不提供完整 refinement。
+
 ### 安全能力交换沿用同一物理 Session
 
 受限capability-only入口不是另一Engine，也不授予可信安全状态。管理批准必须由

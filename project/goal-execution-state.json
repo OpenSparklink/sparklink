@@ -4299,5 +4299,15 @@
       "scope": "Allfourpins/parents/PCI/visiblefds/liveVMhostdevsafter10U-onlyVMs;U5EP/E2EP. NoE/forbidden/hub/controlleroperation;rootfdvisibilitylimited,noproofofotherthreadbusiness."
     },
     "current_finite_gate_ref": "native-creation-drain-real-r5f9f"
+  },
+  "native_return_controlled_gate": {
+    "id": "R5f9g",
+    "status": "IMPLEMENTING_TEST_ONLY_REAL_SYS_BIND_RETURN_GATE_NO_VM_QUALIFICATION",
+    "compiled_service": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
+    "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+    "scope": "FourService/Userxinitiator/acceptorslices,actualpeerDisconnectwhileoriginalbindreturnheld;no manufacturedoffload/Engine/fd/wire/state. PublicSDKDownrefusalnotdirectbrokerprobe. Defaultslkdunchanged.",
+    "remaining": "Exactnewtool/libraryVMrawrecords,originaltwoendUp/Down,fd/parentconvergence,otherReadyand8ordinaryactualreplies. Dynamic/controllerremoval/ref/callback/UAF/fullfdcombinationsandalloriginalscopeOPEN.",
+    "plan": "project/implementation-plan.md",
+    "new_formal_proofs": 0
   }
 }

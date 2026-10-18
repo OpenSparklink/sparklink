@@ -122,6 +122,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
                   HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_numeric.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_protected_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_rom_chip.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_native_return.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/genl_registry_test.c',
@@ -175,6 +176,18 @@ def prepare_locked(args, build_fd):
         for name in ['sh','mount','mdev','sleep','poweroff','dmesg','su','id','grep','awk','insmod','uname',
                      'seq','cat','pidof','chmod','mkdir','chown','kill','sync','setsid']:
             (root/'bin'/name).symlink_to('busybox')
+        if getattr(args, 'native_return_fixture', False):
+            if not module_profile: raise ValueError('Native return fixture requires native VM')
+            source = HERE/'ws73_native_return_fixture.c'
+            library = root/'usr/lib/sparklink/native-return-fixture.so'; library.parent.mkdir(parents=True,exist_ok=True)
+            command = [os.environ.get('CC','cc'),'-std=gnu11','-O2','-fPIC','-shared','-fvisibility=hidden',
+                       '-Wall','-Wextra','-Werror',str(source),'-o',str(library)]
+            subprocess.run(command,check=True)
+            manifest['native_return_fixture'] = dict(library=file_record(library),source=file_record(source),compile=command,
+                compiler=file_record(Path(shutil.which(command[0])).resolve()),
+                compiler_version=subprocess.check_output([command[0],'--version'],text=True).splitlines()[0])
+            manifest['inputs'] += [file_record(source)]
+            (root/'expected-native-return-sha256').write_text(file_record(library)['sha256']+'\n')
         programs = {'dbus-daemon':args.dbus_daemon,'tcpdump':args.tcpdump}
         probe = output/'event-copy-probe'
         compile_probe = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
@@ -265,7 +278,7 @@ def prepare_locked(args, build_fd):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_lab_resources.py', 'build_resources.py']:
+        for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py']:
             shutil.copy2(HERE/name, share/name)
         for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
@@ -549,6 +562,8 @@ def _run(args):
     from ws73_ssap_initialization import requested as initialization_requested
     ssap_initialization=initialization_requested(args,passthrough=passthrough)
     initialization_stage=getattr(args,'ssap_initialization_stage','cmtc')
+    from ws73_native_return import requested as native_return_requested
+    native_return = native_return_requested(args,passthrough=passthrough)
     if requester_lifecycle and (not channel_socket or not passthrough or owner_lifecycle or ssap_owned or agent_mode or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness or parallel):raise ValueError('requester lifecycle requires separate ordinary basic socket baseline')
     if owner_lifecycle and (not channel_socket or not passthrough or agent_mode or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owner lifecycle requires separate ordinary basic socket baseline')
     if ssap_owned and (not channel_socket or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owned SSAP requires separate ordinary socket baseline')
@@ -703,7 +718,7 @@ def _run(args):
        'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False)),
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
-    m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py')]
+    m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py','ws73_native_return.py')]
     if ssap_initialization:m['runner_inputs'] += [file_record(HERE/name) for name in ('ws73_ssap_initialization.py','ws73_diagnostic_hold.py','ws73_channel_prefix_hold.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_daemon_hold.py') ]
     m['early_bootstrap_fault_requested']=early_fault
     if early_fault:m['early_bootstrap_verifier']=file_record(HERE/'ws73_early_fault.py')
@@ -758,6 +773,9 @@ def _run(args):
     m['ssap_access_acceptance']=False
     m['ssap_owned_verification_requested']=ssap_owned
     m['ssap_owned_acceptance']=False
+    m['native_return_requested']=native_return
+    m['native_return_acceptance']=False
+    if native_return:m['runner_inputs'] += [file_record(HERE/'ws73_native_return_fixture.c')]
     m['ssap_initialization_requested']=ssap_initialization
     m['ssap_initialization_stage']=initialization_stage if ssap_initialization else None
     m['ssap_initialization_acceptance']=False
@@ -856,6 +874,9 @@ def _run(args):
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
         if down_failure_observe:
             validate_down_failure_inputs(package)
+        if native_return and ('native_vm' not in package or 'native_return_fixture' not in package):
+            raise ValueError('explicit staged real-bind fixture and native VM required')
+        if native_return:m['native_return_fixture']=package['native_return_fixture']
         if ssap_initialization:
             from ws73_ssap_initialization import validate_qemu
             validate_qemu(package['qemu']['path'], initialization_stage)
@@ -960,6 +981,7 @@ def _run(args):
                      (' ws73.application_clients=1' if application_clients else '')+
                      (' ws73.ssap_owner_lifecycle=1' if owner_lifecycle else '')+
                      (' ws73.ssap_requester_lifecycle=1' if requester_lifecycle else '')+
+                     (' ws73.native_return=1' if native_return else '')+
                      (' ws73.ssap_initialization=1' if ssap_initialization else '')+
                      (' ws73.ssap_initialization_stage='+initialization_stage if ssap_initialization else '')+
                      (' ws73.ssap_service_policy=1' if service_policy else '')+
@@ -1317,6 +1339,12 @@ def _run(args):
                     if link_resync:
                         from ws73_link_resync import corroborate as resync_corroborate
                         m['link_resync_corroboration']=resync_corroborate(control,capture)
+                if native_return != ('native_return' in control):raise ValueError('Native return request/evidence mismatch')
+                if native_return:
+                    from ws73_native_return import verify_root, corroborate as native_corroborate
+                    verify_root(control,share,package['native_return_fixture']['library']['sha256'])
+                    m['native_return_corroboration']=native_corroborate(control,capture)
+                    m['native_return_acceptance']=True
                 if ssap_initialization != ('ssap_initialization' in control):raise ValueError('SSAP initialization request/evidence mismatch')
                 if ssap_initialization:
                     from ws73_ssap_initialization import corroborate as initialize_corroborate, verify_fd_supervisor
@@ -1703,6 +1731,22 @@ def run_exit_code(record, *, supervisor_pending=False):
         return 1
     if type(record.get('qemu_exit')) is not int or record['qemu_exit'] != 0:
         return 1
+    native_return=record.get('native_return_requested',False)
+    if type(native_return) is not bool:return 1
+    command=record.get('qemu_args',[])
+    native_boot=any(isinstance(v,str) and 'ws73.native_return=1' in v.split() for v in command) if isinstance(command,list) else False
+    if native_boot != native_return:return 1
+    if native_return:
+        from ws73_native_return import valid_summary
+        if (record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('native_return_acceptance')is not True
+                or not valid_summary(record.get('native_return_corroboration',{}))
+                or record.get('ordinary_channel_socket_acceptance')is not True
+                or record.get('channel_socket_verification_requested')is not True
+                or record.get('channel_socket_corroboration',{}).get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
+                or type(record.get('channel_socket_corroboration',{}).get('round_trips'))is not int
+                or record['channel_socket_corroboration']['round_trips']!=8
+                or record.get('native_return_corroboration',{}).get('fixture_sha256')!=record.get('native_return_fixture',{}).get('library',{}).get('sha256')):return 1
+    elif record.get('native_return_acceptance') or record.get('native_return_corroboration'):return 1
     initialization=record.get('ssap_initialization_requested',False)
     if type(initialization)is not bool:return 1
     if initialization:
@@ -1929,6 +1973,7 @@ def main():
     for name in native_vm.OPTIONS:
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
+    pack.add_argument('--native-return-fixture',action='store_true',help='compile VM-only real SYS_bind return barrier; never default daemon instrumentation')
     pack.add_argument('--native-channel-fd-probe',type=Path,help='explicit isolated real D-Bus fd client binary; native VM only')
     pack.add_argument('--acb-probe-module',type=Path,help='explicit signed external selftest; never ordinary socket qualification')
     pack.add_argument('--native-discovery-config', type=Path,
@@ -2009,6 +2054,7 @@ def main():
             cmd.add_argument('--channel-benchmark-xhci',choices=['on','off'],default='on',help='VM-only xHCI trace comparison;usbmon remains enabled')
             cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate bounded real application benchmark in both connection roles;not performance qualification')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
+            cmd.add_argument('--native-return-verify',action='store_true',help='VM-only actual Native bind-return/physical Down/parent cleanup,then ordinary data preservation')
             cmd.add_argument('--ssap-initialization-verify',action='store_true',help='real negotiation-stage lease revoke/fd convergence then ordinary same-artifact connection/socket preservation')
             cmd.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')

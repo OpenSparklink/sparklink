@@ -365,6 +365,12 @@ def verify_passthrough():
         proofs.append({'application_clients':client_corroborate(run,capture)})
     if requested_connection != ('connection_control' in run):
         raise ValueError('explicit connection request and evidence must agree')
+    native_requested='ws73.native_return=1' in Path('/proc/cmdline').read_text().split()
+    if native_requested != ('native_return' in run):raise ValueError('Native return request/evidence mismatch')
+    if native_requested:
+        from ws73_native_return import verify_root, corroborate as native_corroborate
+        verify_root(run,EVIDENCE)
+        proofs.append({'native_return':native_corroborate(run,capture)})
     initialization_requested='ws73.ssap_initialization=1' in Path('/proc/cmdline').read_text().split()
     if initialization_requested != ('ssap_initialization' in run):raise ValueError('initialization request/evidence mismatch')
     if initialization_requested:

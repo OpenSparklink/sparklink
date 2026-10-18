@@ -377,3 +377,16 @@ SSAP 读应软件忙且不得上 USB；既有唯一 slktest CUTC pair 在提示�
 并回收自己的子进程。完整 dual-end USB、真实应用快照、所有 busy 尝试及捕获
 统计缺一不能通过。本门禁不证明内部取消任务已在某个未观测微观时点完成，也
 不证明 NOCP 真值、全复用屏障、完整退出/初始化组合或自然恢复。
+
+
+## 实际 Native 返回屏障（开发中）
+
+`prepare --native-return-fixture`只为 native VM 编译并封存测试库及编译器身份；
+`run --native-return-verify`要求独立真实双设备连接与普通 basic socket 保持门禁。
+只在该 boot 标志下给原 slkd 设置一次 LD_PRELOAD；不是生产安装配置，也没有
+全局 ld.so.preload。库先执行原 SYS_bind，只暂停明确 Service/User 绑定的返回，
+保留原结果与 errno。VM-root 监督器保留固定 selector、原始 C 记录及 socket inode。
+两秒到期、缺失/短记录、原 daemon 改变、无真实两端 Down 或后续业务不完整都失败。
+普通 SDK 的 Down 拒绝、在途创建晚到 fd 拒绝、物理投影和实际应用交付分别核对。
+原生动态 creator、controller 移除、Kernel 引用/UAF/callback 排空仍不在这项范围。
+源码接线和离线通过不授实机资格；准确状态只见当前能力入口。

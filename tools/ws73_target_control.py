@@ -66,6 +66,9 @@ class ConnectionControlRun(PassthroughControlRun):
 
     def phase(self, a, b, count, label):
         if label == 'initial':
+            if getattr(self.args, 'native_return_verify', False):
+                from ws73_native_return import execute as native_return
+                native_return(self, a, b)
             if getattr(self.args, 'ssap_initialization_verify', False):
                 from ws73_ssap_initialization import execute as initialize
                 initialize(self, a, b)
@@ -154,6 +157,7 @@ def main():
     parser.add_argument('--channel-benchmark-count',type=int,default=20)
     parser.add_argument('--channel-benchmark-bytes',type=int,default=61)
     parser.add_argument('--channel-benchmark-interval-us',type=int)
+    parser.add_argument('--native-return-verify',action='store_true')
     parser.add_argument('--ssap-initialization-verify',action='store_true',help='actual selected negotiation-stage lease revoke, fd convergence and ordinary new lifetime preservation')
     parser.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
     parser.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
@@ -169,6 +173,8 @@ def main():
     except ValueError as error:parser.error(str(error))
     if args.application_client_verify and (not args.passthrough or not args.connection_verify or any(getattr(args,key,False) for key in ['channel_socket_verify','acb_transport_probe','security_agent','daemon_link_resync','channel_benchmark','dynamic_channel_verify','channel_fairness_verify'])):parser.error('application clients require a dedicated real connection gate')
     if args.application_client_verify and any(value for key,value in vars(args).items() if type(value) is bool and key not in ['passthrough','connection_verify','application_client_verify']):parser.error('application clients cannot combine independent lifecycle/fault gates')
+    from ws73_native_return import requested as native_return_requested
+    native_return_requested(args)
     from ws73_ssap_initialization import requested
     try:requested(args)
     except ValueError as error:parser.error(str(error))

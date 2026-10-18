@@ -1,5 +1,22 @@
 # SparkLink / Linux 联合实施方案
 
+### R5f9g：实际 Native 返回与 Connection 退休屏障（实施中，未授实机资格）
+
+只在显式测试 VM 加载 interposer：先执行真实 SYS_bind，成功且匹配原
+controller/generation/Service 或 User 身份后，最多保留返回两秒；返回原结果/errno，
+不制造 fd、协议结果或 Ready。默认 daemon 不依赖它，Root 控制目录及库 hash 固定。
+四切片为 Service 发起/接受、User 发起/接受；复用原 connect/断链/SSAP/普通通道
+工具。真实对端断链后，旧物理对象仍能观察 Down，实际返回释放前不能提前移除；
+释放后旧 fd 与对象收敛，原 daemon/另一 controller 保持，随后完成原八次真实业务。
+User 在途创建需返回退休错误；新的普通 SDK 调用按自身 live 检查拒绝 Down，
+不能把这次 SDK 拒绝写成直接 broker/Kernel 准入探针。动态 creator、controller
+拔除、完整 release/finalfd/dup/SCM/期限组合和 Kernel ref/callback/UAF 证明仍缺。
+退出：实际 C 选择器/Unix syscall、parser/超限/expiry/缺失证据负对照及全工具回归；
+准确新工具/库配原26b服务、2fc内核/SDK110US，在白名单 U 两口取得四原始返回记录、
+真实两端 Up/Down、Root 原 inode 与原应用回复闭包。首失败保留，expiry 必须 FAIL。
+本批不新增协议 Engine，不改变完整 S0–S6/19WP/10FV/12DG；数据/安全/SSAP/
+多通道/四设备与自然故障根因/非人工恢复仍并行，不把全部控制面设为前置。
+
 ### R5f9f：连接级Native创建排空与独立物理投影（限定保持通过，真实Native屏障仍缺）
 
 两项生产函数/私有bus反例已保留：取消等待后Connection提前清理，及挂起Native

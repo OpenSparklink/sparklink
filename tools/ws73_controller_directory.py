@@ -21,6 +21,18 @@ STATUS='ACTUAL_CONTROLLER_DIRECTORY_OBSERVER_CORROBORATED'
 SNAPSHOT=rb'^ControllerDirectorySnapshot: cursor=(\d+) controllers=([^\n]*)\n'
 PATH=r'/org/sparklink/slk(0|[1-9][0-9]*)_g([1-9][0-9]*)'
 
+def staged_program(root, guest_files):
+    # /bin/slctl is an absolute guest alias. Never resolve it in the host root.
+    from ws73_security_cli import validate_binary
+    root=Path(root).resolve(strict=True)
+    target=os.readlink(root/'bin/slctl')
+    candidate=root/target.lstrip('/')
+    candidate.resolve(strict=True).relative_to(root)
+    if candidate.is_symlink()or not candidate.is_file():raise ValueError('regular staged CLI required')
+    binary=dict(path=target,sha256=hashlib.sha256(candidate.read_bytes()).hexdigest())
+    validate_binary(binary,root,guest_files)
+    return binary
+
 def paths(text):
     values=[] if not text else text.split('|')
     if len(values)>16 or len(set(values))!=len(values):raise ValueError('bounded distinct directory snapshot required')

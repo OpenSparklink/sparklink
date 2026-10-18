@@ -792,7 +792,6 @@ def _run(args):
     m['controller_directory_acceptance']=False
     if directory_events:
         m['controller_directory_verifier']=file_record(HERE/'ws73_controller_directory.py')
-        m['controller_directory_program']=file_record(args.prepared/'root/bin/slctl')
     if native_return or native_controller:m['runner_inputs'] += [file_record(HERE/'ws73_native_return_fixture.c')]
     m['ssap_initialization_requested']=ssap_initialization
     m['ssap_initialization_stage']=initialization_stage if ssap_initialization else None
@@ -890,6 +889,9 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if directory_events:
+            from ws73_controller_directory import staged_program
+            m['controller_directory_program']=staged_program(args.prepared.resolve()/'root',package['guest_files'])
         if down_failure_observe:
             validate_down_failure_inputs(package)
         if (native_return or native_controller) and ('native_vm' not in package or 'native_return_fixture' not in package):

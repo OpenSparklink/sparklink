@@ -3,6 +3,8 @@ import copy
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
+import hashlib
 from types import SimpleNamespace
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -21,6 +23,16 @@ class DirectoryObserver(unittest.TestCase):
             process={'pid':12,'uids':[1001]*4,'gids':[1001]*4,'groups':[],'caps':{'CapEff':0,'CapPrm':0,'CapAmb':0},'native_fds':[],'program_sha256':'a'*64})
         control=dict(initial=[a,b],replacement=n,daemon_before=daemon,daemon_after=daemon)
         return record,control
+
+    def test_guest_absolute_alias_is_checked_inside_staged_root(self):
+        with tempfile.TemporaryDirectory()as name:
+            root=Path(name);target='/usr/libexec/opensparklink/native-lab/'+'a'*12+'/slctl'
+            actual=root/target.lstrip('/');actual.parent.mkdir(parents=True);actual.write_bytes(b'explicit ELF-identity fixture,not executable')
+            (root/'bin').mkdir();(root/'bin/slctl').symlink_to(target)
+            files=[{'path':str(actual),'sha256':hashlib.sha256(actual.read_bytes()).hexdigest()}]
+            self.assertEqual(gate.staged_program(root,files)['sha256'],files[0]['sha256'])
+            actual.write_bytes(b'changed')
+            with self.assertRaises(ValueError):gate.staged_program(root,files)
 
     def test_actual_parser_and_scope_with_negative_mutations(self):
         r,c=self.fixture();proof=gate.corroborate(r,c,'a'*64,'b'*64);self.assertTrue(gate.valid_summary(proof))

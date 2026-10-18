@@ -1,5 +1,12 @@
 # 证据入口与取得限制
 
+- [SDK110 Negotiable-T原路径保持与共享发现限定实机](application-discovery-negotiable-20261019.json)：
+  准确d9用户态/Host/guest与2fc内核，显式复用历史已验收的Negotiable-T条件。
+  九个VM、七尺寸、Owned SSAP及公共C/Python实际消费者均重放，原始捕获和实际
+  模式字段核对完成。修复的是早期门禁误强制Fixed-T的配置问题，没有改协议或
+  Runtime，也没有自动fallback；原Fixed-T失败与其物理根因、完整租约生命周期、
+  部署权限和自然恢复仍开放。补充审计字段错误保留，未覆盖或重写原失败。
+
 - [R5f12真实共享发现的限定正向与整轮失败](application-discovery-real-attempts-20261019.json)：
   准确C5用户态/Host/guest、2fc内核、SDK110US；四名apps-only实际SDK调用者，两个
   scanner方向的显式释放和新随机标识有独立USB核对。整轮FAIL：后续Create仅Status0，

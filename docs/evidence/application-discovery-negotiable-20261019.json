@@ -1,0 +1,724 @@
+{
+  "schema_version": 1,
+  "title": "SDK110 Negotiable-T baseline restored;shared discovery explicit-release scoped real pass",
+  "source": {
+    "compiled_userspace": "d9dc373120cbb173be195647d22da10c25987641",
+    "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+    "executed_host_tools": "d9dc373120cbb173be195647d22da10c25987641",
+    "executed_guest_tools": "d9dc373120cbb173be195647d22da10c25987641"
+  },
+  "qualification": {
+    "result": "PASS",
+    "scope": [
+      "Explicit-release shared discovery and selected Negotiable-T preservation only;not full lifecycle/TTL/manager-revoke/deadline/partial-init/peer-business fault isolation.",
+      "64 UID1000 control-role replies plus2 actual apps-only C/Python replies;not all66 apps-only. Four discovery readers use UID1004/caps0/noextra groups.",
+      "Selected real guest system-bus/permission slices,not full deployed roles/udev/upgrade or app-onlySSAP policy. No C/Python discoveryAPI.",
+      "Basic fixedCUTC31/PI241 and selected SSAP read/write/discovery/Owned only;not full dynamic/multichannel/protected/reliable/notifications/indications/Profile/security/Bond.",
+      "No Fixed-T success,natural/nonmanual recovery,E/mixed/coldROM,performance promise or newformalproof. QMP/reinitialization/query results are not automatic recovery or firmware execution attestation."
+    ],
+    "bounds": {
+      "vm_runs": 9,
+      "compiled_userspace": "d9dc373120cbb173be195647d22da10c25987641",
+      "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+      "connection_advertising": "explicit negotiable-t;wire mode3 role0/posture0-1",
+      "application_sizes": [
+        61,
+        249,
+        250,
+        253,
+        254,
+        255,
+        2042
+      ],
+      "business_round_trips": 66,
+      "app_discovery_readers": 4,
+      "app_discovery_observations": 18,
+      "distinct_discovery_RX": 16,
+      "rf_rounds": 198,
+      "captured_usb_packets": 39537,
+      "owned_ssap_checks": 8,
+      "c_python_ssap_operations": 16,
+      "c_python_ssap_api_calls": 48
+    },
+    "gates": [
+      {
+        "name": "exact-clean-artifact-and-explicit-sdk110-negotiable-conditions",
+        "status": "PASS"
+      },
+      {
+        "name": "four-apps-shared-real-discovery-explicit-release-two-roles",
+        "status": "PASS"
+      },
+      {
+        "name": "seven-size-peer-validated-business-and-raw-acb-preservation",
+        "status": "PASS"
+      },
+      {
+        "name": "owned-ssap-existing-channel-engine-preservation",
+        "status": "PASS"
+      },
+      {
+        "name": "actual-c-python-client-channel-and-control-role-ssap",
+        "status": "PASS"
+      },
+      {
+        "name": "nine-complete-manifests-original-materials-and-independent-replay",
+        "status": "PASS"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "discovery-negotiable-us-release-v1",
+      "mode": "discovery",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 4023,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 8,
+      "application_bytes": 61,
+      "boundary_rejections": 16,
+      "source_role": "UID1000 caps0 with control-group privileges,broker-authorized fd;not apps-only"
+    },
+    {
+      "name": "connection-posture-length249-v1",
+      "mode": "length",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 4127,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 8,
+      "application_bytes": 249,
+      "boundary_rejections": 16,
+      "source_role": "UID1000 caps0 with control-group privileges,broker-authorized fd;not apps-only"
+    },
+    {
+      "name": "connection-posture-length250-v1",
+      "mode": "length",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 4223,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 8,
+      "application_bytes": 250,
+      "boundary_rejections": 16,
+      "source_role": "UID1000 caps0 with control-group privileges,broker-authorized fd;not apps-only"
+    },
+    {
+      "name": "connection-posture-length253-v1",
+      "mode": "length",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 4223,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 8,
+      "application_bytes": 253,
+      "boundary_rejections": 16,
+      "source_role": "UID1000 caps0 with control-group privileges,broker-authorized fd;not apps-only"
+    },
+    {
+      "name": "connection-posture-length254-v1",
+      "mode": "length",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 4225,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 8,
+      "application_bytes": 254,
+      "boundary_rejections": 16,
+      "source_role": "UID1000 caps0 with control-group privileges,broker-authorized fd;not apps-only"
+    },
+    {
+      "name": "connection-posture-length255-v1",
+      "mode": "length",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 4223,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 8,
+      "application_bytes": 255,
+      "boundary_rejections": 16,
+      "source_role": "UID1000 caps0 with control-group privileges,broker-authorized fd;not apps-only"
+    },
+    {
+      "name": "connection-posture-length2042-v1",
+      "mode": "length",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 6911,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 8,
+      "application_bytes": 2042,
+      "boundary_rejections": 16,
+      "source_role": "UID1000 caps0 with control-group privileges,broker-authorized fd;not apps-only"
+    },
+    {
+      "name": "connection-posture-ssap-owned-v1",
+      "mode": "owned",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 4431,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 8,
+      "application_bytes": 61,
+      "boundary_rejections": 0,
+      "source_role": "UID1000 caps0 with control-group privileges,broker-authorized fd;not apps-only"
+    },
+    {
+      "name": "connection-posture-apps-sdk-v1",
+      "mode": "clients",
+      "whole_status": "PASSTHROUGH_SUPPORT_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "radio_matches": 22,
+      "capture_packets": 3151,
+      "connection_advertising": "negotiable-t",
+      "round_trips": 2,
+      "source_role": "C/Python channel UID1004 apps-only;SSAP SDK UID1000 control role",
+      "ssap_operations": 16,
+      "ssap_api_calls": 48
+    }
+  ],
+  "change": {
+    "kind": "Test admission/configuration correction;no protocol/runtime modification or fallback",
+    "commit": "d9dc373120cbb173be195647d22da10c25987641",
+    "exact_binary_kernel_firmware_comparison": "connection-posture-identity-comparison-v1.json",
+    "cause_scope": "Old tests wrongly used fixed-t instead of recordednegotiable-t. This proves a setup error,not Fixed-T RF/firmware root cause.",
+    "success_adv": {
+      "mode": 3,
+      "role": 0,
+      "request_notification": 0,
+      "max_requests": 1,
+      "interval": [
+        100,
+        100
+      ]
+    },
+    "failure_adv": {
+      "mode": 1,
+      "role": 2,
+      "request_notification": 1,
+      "max_requests": 0,
+      "interval": [
+        0,
+        0
+      ]
+    },
+    "create_body_same": "0000000001093254f90101200020000c000c000000fc0100000000"
+  },
+  "original_failures": {
+    "report": "docs/evidence/application-discovery-real-attempts-20261019.json",
+    "revision": "733e36d347c51db6b4bbadcc7ccabb64ebaeb035",
+    "old_record": "application-discovery-real-r5f12 remainsFAIL underoriginalconditions",
+    "fixed_t_cause": "NOT_PROVEN",
+    "flags": "1=Status,2=Outcome,4=handle;Status0 isnot a complete connection"
+  },
+  "hardware": {
+    "policy": "project/lab-resource-policy.json",
+    "ports": [
+      "1-1.1.1",
+      "1-1.1.2"
+    ],
+    "sdk": "1.10.110",
+    "variant": "us",
+    "firmware_sha256": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+    "startup_hcc": "18 initial model/bus checks U/USB;not silicon attestation",
+    "E": "Onlyreadonlypins/descriptors;no passthrough/download/HCC",
+    "isolation": "No forbiddenport/hub/controller operation,original10WIP unchanged;nototherthreadbusinessproof",
+    "budget": "Global buildlock/fixedtarget,12solo or8withrealVM"
+  },
+  "offline": {
+    "tool_methods": 910,
+    "strict_HTML_inventory": 117,
+    "new_formal_proofs": false,
+    "browser": "NOT_RUN",
+    "CI": "d9 Documentation workflow passed;fullRust/tool CI not triggered onthisbranch,localchecks are not online requiredchecks"
+  },
+  "retained_audit_failure": {
+    "material": "connection-posture-full-audit-v2.json",
+    "reason": "Owned summaryhasno application_message_bytes. V3 checks actual run-row sizes/rounds andfulloracle;oldfailure retained,nohardware rerun or assertion weakening"
+  },
+  "full_original_scope": {
+    "unchanged": "S0-S6/19WP/10FV/12DG and alloriginalissues;UserHostP4",
+    "missing": [
+      "caller-loss/TTL/manager-stop/original-deadline/partial-init",
+      "peer business fault/revoke isolation",
+      "full deployment/newC-Python discoveryAPI",
+      "Fixed-T/naturalRCA/nonmanualrecovery",
+      "remainingdata/security/SSAP/multichannel/fourdevice/PM/release"
+    ]
+  },
+  "materials": {
+    "connection-posture-originals-v1.tar": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-originals-v1.tar",
+      "sha256": "da1db96ab3c2f2a0a4dc206ea9c932d2ee8ae1df5585226558fabce65c05f0e8",
+      "bytes": 59750400,
+      "format": "bytes",
+      "access": "private"
+    },
+    "connection-posture-originals-index-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-originals-index-v1.json",
+      "sha256": "2bec5bfa9ad68fbc6ceab776dbec4ddc1832f95bcada1d070cacb606e5ed13ac",
+      "bytes": 92162,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-full-audit-v2.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-full-audit-v2.json",
+      "sha256": "69ebf1aa7185a231a7729ceab3716c38e042f467fe5bbbabb2816a6b309e2a59",
+      "bytes": 865,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-full-audit-v2.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-full-audit-v2.log",
+      "sha256": "da7fadd6a590e5382831ebe09be93278969d5696e08d5dab2f28794b58a96c36",
+      "bytes": 445,
+      "format": "bytes",
+      "access": "private"
+    },
+    "audit_connection_posture_v2.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/audit_connection_posture_v2.py",
+      "sha256": "87ae17514c30b3a4363e1cf4dcdc8f9bdb49cd652c9dab9f59ec6d6bfccb85b6",
+      "bytes": 6240,
+      "format": "bytes",
+      "access": "private"
+    },
+    "connection-posture-full-audit-v3.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-full-audit-v3.json",
+      "sha256": "642cb13fd5633fccbe6d1b71c2a5ce8f9828ee67025321733858fede5b8c2dd8",
+      "bytes": 15599311,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-full-audit-v3.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-full-audit-v3.log",
+      "sha256": "fd286ddd77bd64990b84be682da065566ab50baca4966b073a5d4362783126c6",
+      "bytes": 571,
+      "format": "bytes",
+      "access": "private"
+    },
+    "audit_connection_posture_v3.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/audit_connection_posture_v3.py",
+      "sha256": "2d3491606fc30c88e32c7377400b9d51d95f5632fec08d9805a92fb246261741",
+      "bytes": 6477,
+      "format": "bytes",
+      "access": "private"
+    },
+    "connection-posture-identity-comparison-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-identity-comparison-v1.json",
+      "sha256": "1db2fad70d02731410f4cce0e875ae72b9802412379fb16a866243fc6dc507dd",
+      "bytes": 1298,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-outcome-wire-comparison-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-outcome-wire-comparison-v1.json",
+      "sha256": "ddac7e9e476f1a9fb25ca26cda166bdcc7544da81e709aa2f0e918db3235578e",
+      "bytes": 65163,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-baseline-material-check-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-baseline-material-check-v1.json",
+      "sha256": "7562fdb52390dd95362cd620f6e228fc115343f7d303d5d4e6ddedad2626e2d5",
+      "bytes": 1010,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-preflight-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-preflight-v1.json",
+      "sha256": "3ed433b673dc567722285197695ed9746807a465d8fa8cccbe51fa4a5b0725e6",
+      "bytes": 4969,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-postflight-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-postflight-v1.json",
+      "sha256": "825c227e886eab99a31ac58bbdc4b5781357cd0f61eeccff0ead4a5d2ac517e4",
+      "bytes": 3558,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-tools-v1.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-tools-v1.log",
+      "sha256": "6eb64185ff45478222c5e504cf033501792c07a2f64acaf5b0783c7e0329ff4f",
+      "bytes": 1086,
+      "format": "bytes",
+      "access": "private"
+    },
+    "connection-posture-docs-v1.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-docs-v1.log",
+      "sha256": "3851ae73e202775fb1ef233c29a9c0583b3947df50f26cef4452a0d705596971",
+      "bytes": 1449483,
+      "format": "bytes",
+      "access": "private"
+    },
+    "connection-posture-preservation-matrix-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-preservation-matrix-v1.json",
+      "sha256": "a6e9cbf637634758a003295aba37e44a459ea12f09503ca8af8d455d6f73515a",
+      "bytes": 6758,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-sdk-ssap-matrix-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-sdk-ssap-matrix-v1.json",
+      "sha256": "049aaea60146da2ce1efc6c9ae1cae84da159a35b51c445bb54133c1b1e57e5f",
+      "bytes": 2165,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-host-tools-d9-v1-source.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-host-tools-d9-v1/source.json",
+      "sha256": "b7726984a9b59ecdc90b18f17cb3849d7842c4495e5dd7d43d0228015d734059",
+      "bytes": 33123,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-negotiable-us-bundle-v1-manifest.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-negotiable-us-bundle-v1/manifest.json",
+      "sha256": "89bde6013570a1bfab9398136eeb69f968ef9f7f78eea57cb8987c397a3f8e61",
+      "bytes": 33265,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-negotiable-us-prepared-v1-manifest.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-negotiable-us-prepared-v1/manifest.json",
+      "sha256": "36dd76159721560c3fafdc077df3520a7c96427bfcfa6c17dddb68aa3947ed9f",
+      "bytes": 325558,
+      "format": "json",
+      "access": "private"
+    },
+    "actual-slkd": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-negotiable-us-prepared-v1/root/usr/libexec/opensparklink/native-lab/d9dc373120cb/slkd",
+      "sha256": "1c295f432fae02883641930c7d64ff46c176533d3e57a476ef0ac66e0d6cc1ad",
+      "bytes": 10506592,
+      "format": "bytes",
+      "access": "private"
+    },
+    "actual-slctl": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-negotiable-us-prepared-v1/root/usr/libexec/opensparklink/native-lab/d9dc373120cb/slctl",
+      "sha256": "d0c8bb21e674dc15affbeee6b31146c1affa8af1400caacedf1896456555a5f3",
+      "bytes": 9094384,
+      "format": "bytes",
+      "access": "private"
+    },
+    "actual-libsparklink.so.0": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-negotiable-us-prepared-v1/root/usr/lib/libsparklink.so.0",
+      "sha256": "a63c392209b2ef52af09de3c27a83006a3cd80b88f4725ca1deb1622d226c32e",
+      "bytes": 4646936,
+      "format": "bytes",
+      "access": "private"
+    },
+    "actual-libslk_native.so.0": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-negotiable-us-prepared-v1/root/usr/lib/libslk_native.so.0",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936,
+      "format": "bytes",
+      "access": "private"
+    },
+    "actual-c-client": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-negotiable-us-prepared-v1/root/bin/ws73-application-client-c",
+      "sha256": "350542f87366c1cf61792169b191d107048e6e3652e85a02962fddf811a6ccf3",
+      "bytes": 18256,
+      "format": "bytes",
+      "access": "private"
+    },
+    "firmware-ws73.bin": {
+      "base": "workspace",
+      "path": ".dev/firmware-1.10.110-us/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "format": "bytes",
+      "access": "private"
+    },
+    "firmware-wifi_cali.bin": {
+      "base": "workspace",
+      "path": ".dev/firmware-1.10.110-us/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "format": "bytes",
+      "access": "private"
+    },
+    "firmware-btc_cali.bin": {
+      "base": "workspace",
+      "path": ".dev/firmware-1.10.110-us/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "format": "bytes",
+      "access": "private"
+    },
+    "board-bsle_custom.bin": {
+      "base": "workspace",
+      "path": ".dev/board110-candidate-us-v1/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "format": "bytes",
+      "access": "private"
+    },
+    "board-pm_config.bin": {
+      "base": "workspace",
+      "path": ".dev/board110-candidate-us-v1/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "format": "bytes",
+      "access": "private"
+    },
+    "kernel-manifest": {
+      "base": "workspace",
+      "path": ".dev/architecture-r4f2e-kernel-artifacts-v1/manifest.json",
+      "sha256": "860aaf540a91bd36b1b0fd6590a5207e008e0a95fdf0326785cff0f5ab833a48",
+      "bytes": 228862,
+      "format": "json",
+      "access": "private"
+    },
+    "kernel-image": {
+      "base": "workspace",
+      "path": ".dev/architecture-r4f2e-kernel-artifacts-v1/artifacts/arch/x86/boot/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120,
+      "format": "bytes",
+      "access": "private"
+    },
+    "kernel-module": {
+      "base": "workspace",
+      "path": ".dev/architecture-r4f2e-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "f1000c9ad8fd3c0bfccb2a8411a83da8e75407fab2f8cbbc24ab9bdc2a1433d8",
+      "bytes": 145497,
+      "format": "bytes",
+      "access": "private"
+    },
+    "source-ws73_application_discovery.py": {
+      "base": "repo",
+      "path": "tools/ws73_application_discovery.py",
+      "sha256": "c96461907f2d354f6390609d60e39ba551beaf583337b676bdad616b3c217f68",
+      "bytes": 24258,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_target.py": {
+      "base": "repo",
+      "path": "tools/ws73_target.py",
+      "sha256": "af0a7191ecd038bcfca4547f9941eac24ee5f349a09978084ccec1fb37cc6946",
+      "bytes": 200366,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_target_control.py": {
+      "base": "repo",
+      "path": "tools/ws73_target_control.py",
+      "sha256": "e86c9e9d51629ce7d2cb26cb4ae6faba880a72a18632005828e39dc08d1b7da4",
+      "bytes": 17206,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_target_guest.py": {
+      "base": "repo",
+      "path": "tools/ws73_target_guest.py",
+      "sha256": "56748ce55e71396791d5dc96c30bcf139ea234ba73a533e134c74b8a5aa6a7ff",
+      "bytes": 37583,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_target_init.sh": {
+      "base": "repo",
+      "path": "tools/ws73_target_init.sh",
+      "sha256": "bec9899014e04e575a04667bf00289313585bb40d44b90e83e2c9b44560ad8d4",
+      "bytes": 40035,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_connection_control.py": {
+      "base": "repo",
+      "path": "tools/ws73_connection_control.py",
+      "sha256": "c8c3839bb5dfc246f137f4e75d7ab719c3481b3c03ad94edd33dd4866599ca5e",
+      "bytes": 29933,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_capture.py": {
+      "base": "repo",
+      "path": "tools/ws73_capture.py",
+      "sha256": "58f057f4927cbb7cd428375b04ad284c630efe7438c46d08294e824c530d2677",
+      "bytes": 43066,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_channel_socket.py": {
+      "base": "repo",
+      "path": "tools/ws73_channel_socket.py",
+      "sha256": "355026365af303660c1e3214689359e5afddb9ce1dad72a00a7a6e04f5a90e58",
+      "bytes": 58600,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_application_client.py": {
+      "base": "repo",
+      "path": "tools/ws73_application_client.py",
+      "sha256": "f6f30121a2880fc6ef19d9606f218ce11ae9568006b3aa966b707c276ff6f407",
+      "bytes": 19591,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_application_role.py": {
+      "base": "repo",
+      "path": "tools/ws73_application_role.py",
+      "sha256": "d72b58c02a2088cbf9e342ef6c4a5228e27ca20b74ec30aa39372e9c78b78de5",
+      "bytes": 12272,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_ssap_owned.py": {
+      "base": "repo",
+      "path": "tools/ws73_ssap_owned.py",
+      "sha256": "fbc5a68854b91ac02a1311b5c20001fee4b117db3ce756be7c630345585e9998",
+      "bytes": 10963,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-ws73_lab_resources.py": {
+      "base": "repo",
+      "path": "tools/ws73_lab_resources.py",
+      "sha256": "06fd196ca6b1c73ae9f7c9ffec852414e057b46131e855c60b8b82957596430a",
+      "bytes": 17383,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "source-build_resources.py": {
+      "base": "repo",
+      "path": "tools/build_resources.py",
+      "sha256": "3f579f699b40a51f473927285abdc110eae83204cc35de9574f69271b29421df",
+      "bytes": 7426,
+      "source_commit": "d9dc373120cbb173be195647d22da10c25987641",
+      "access": "public",
+      "format": "bytes"
+    },
+    "discovery-negotiable-us-release-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-negotiable-us-release-v1/manifest.json",
+      "sha256": "6e92264de559d50079981ff5ff7c2003656ea6d67f2b53acf301b00b0c5585c6",
+      "bytes": 1552415,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-length249-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-length249-v1/manifest.json",
+      "sha256": "6fe2212de68650bdaaa2b3752e587d0a1e56399facc128ff739da4515e012b8d",
+      "bytes": 1610561,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-length250-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-length250-v1/manifest.json",
+      "sha256": "c1a5093501c519f6a8044f61cfca6c75f7c9cac27ca6611f19e53664d5673c27",
+      "bytes": 1632558,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-length253-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-length253-v1/manifest.json",
+      "sha256": "6175a478b94d90e04e15b2cba94a3cbcb56874792dff48f1d26f5b892f7bc4ea",
+      "bytes": 1632943,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-length254-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-length254-v1/manifest.json",
+      "sha256": "74a3afbb7852ede1aabbf7d765dd9d5af9c071bc94eb6e7759f646d4d772ec02",
+      "bytes": 1633069,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-length255-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-length255-v1/manifest.json",
+      "sha256": "4520cead7c25269c796d3f2f0c5c7fd68837e3a08415aeb6b86d9c0c165c9c7e",
+      "bytes": 1633197,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-length2042-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-length2042-v1/manifest.json",
+      "sha256": "86e5b52542fd0151ea70ff4f443468690ff4645a7f10caef714979e213c54512",
+      "bytes": 2590652,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-ssap-owned-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-ssap-owned-v1/manifest.json",
+      "sha256": "3bf92a891bc456077fee802c5c06654d9250c867b646a0f97e1ce42c52564594",
+      "bytes": 1799472,
+      "format": "json",
+      "access": "private"
+    },
+    "connection-posture-apps-sdk-v1-manifest": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/connection-posture-apps-sdk-v1/manifest.json",
+      "sha256": "36aca2d8624f076e648b480b1c8cd73efedb627028403f5461ca23c8aab9e463",
+      "bytes": 1219868,
+      "format": "json",
+      "access": "private"
+    }
+  },
+  "access": "457originalguest files are private in a verified tar/index. NoSDK/firmware/rootdisk copied topublicdocs. Localoperator access andrecordedworkspace/source needed for exactreplay.",
+  "replay": "Existingws73_target.py with explicitnegotiable-t andstrictallocation;restore archivedrelativepaths thenaudit_connection_posture_v3.py --output NEWFILE. Do not reclassify oldFixedT failures or substitute NOCP/USBwrite/models forpeerapp validation."
+}

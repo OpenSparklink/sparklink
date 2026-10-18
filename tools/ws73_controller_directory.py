@@ -18,6 +18,7 @@ from ws73_daemon_hold import Invocation
 from ws73_north_star import daemon_identity, file_record
 
 STATUS='ACTUAL_CONTROLLER_DIRECTORY_OBSERVER_CORROBORATED'
+ALL_STATUS='ACTUAL_CONTROLLER_DIRECTORY_LANGUAGE_OBSERVERS_CORROBORATED'
 SNAPSHOT=rb'^ControllerDirectorySnapshot: cursor=(\d+) controllers=([^\n]*)\n'
 PATH=r'/org/sparklink/slk(0|[1-9][0-9]*)_g([1-9][0-9]*)'
 
@@ -63,7 +64,7 @@ def requested(args, *, passthrough=None):
             raise ValueError('directory observer requires existing real user-controller return gate')
     return enabled
 
-def corroborate(record, control, expected_program, expected_verifier):
+def _corroborate(record, control, expected_program, expected_verifier, expected_args):
     row=record['invocation'];proc=record['process'];observed=parse(row['stdout'])
     if record['source']['sha256']!=expected_verifier:raise ValueError('actual prepared guest verifier source required')
     if record['status']!='COMPLETE_NOT_QUALIFIED' or type(row['exit'])is not int or row['exit']!=0 or row['stderr']:
@@ -79,11 +80,14 @@ def corroborate(record, control, expected_program, expected_verifier):
     if (set(observed['initial_paths'])!={a['path'],b['path']}
             or observed['events'][0]['path']!=a['path'] or observed['events'][1]['path']!=new['path']
             or new['index']!=a['index']or new['generation']<=a['generation']
-            or row['args']!=['/bin/slctl','controller-events','3','30000']):
+            or row['args']!=expected_args):
         raise ValueError('actual old/new generation, untouched peer and exact SDK command required')
     return dict(status=STATUS,program_sha256=expected_program,verifier_sha256=expected_verifier,observer_uid=1001,event_count=2,
                 old_generation=a['generation'],new_generation=new['generation'],peer_generation=b['generation'],
                 native_event_acceptance=False,ready_acceptance=False,automatic_recovery=False,**observed)
+
+def corroborate(record, control, expected_program, expected_verifier):
+    return _corroborate(record,control,expected_program,expected_verifier,['/bin/slctl','controller-events','3','30000'])
 
 def valid_summary(value):
     try:
@@ -104,37 +108,147 @@ def valid_summary(value):
                 and any(p!=old and int(re.fullmatch(PATH,p)[2])==value['peer_generation']for p in parsed['initial_paths']))
     except (ValueError,KeyError,TypeError,IndexError):return False
 
+def _prepared_file(root,path):
+    root=Path(root).resolve(strict=True)
+    if not path.startswith('/')or '..'in Path(path).parts:raise ValueError('fixed absolute guest input required')
+    actual=root/path.lstrip('/')
+    if actual.is_symlink()or not actual.is_file():raise ValueError('regular staged consumer input required')
+    actual.resolve(strict=True).relative_to(root)
+    return dict(path=path,sha256=hashlib.sha256(actual.read_bytes()).hexdigest())
+
+def _client_shape(value):
+    try:
+        if set(value)!={'version','c','python','script','library'}or type(value['version'])is not int or value['version']!=1:return False
+        names=dict(c='/bin/controller-directory-client',script='/usr/share/sparklink/tools/ws73_controller_directory_client.py',library='/usr/lib/libsparklink.so.0')
+        for k in ['c','python','script','library']:
+            row=value[k]
+            if set(row)!={'path','sha256'}or re.fullmatch('[0-9a-f]{64}',row['sha256'])is None:return False
+            if k=='python':
+                if re.fullmatch(r'/usr/bin/python3\.[0-9]+',row['path'])is None:return False
+            elif row['path']!=names[k]:return False
+        return True
+    except (TypeError,KeyError):return False
+
+def stage_clients(root,python,compilation):
+    if re.fullmatch(r'python3\.[0-9]+',python)is None:raise ValueError('explicit prepared interpreter required')
+    value=dict(version=1,c=_prepared_file(root,'/bin/controller-directory-client'),
+        python=_prepared_file(root,'/usr/bin/'+python),
+        script=_prepared_file(root,'/usr/share/sparklink/tools/ws73_controller_directory_client.py'),
+        library=_prepared_file(root,'/usr/lib/libsparklink.so.0'))
+    if not _client_shape(value)or value['script']['sha256']!=compilation['script']['sha256']:raise ValueError('prepared actual consumer source differs')
+    (Path(root)/'expected-controller-directory-clients.json').write_text(json.dumps(value,indent=2)+'\n')
+    return value
+
+def staged_clients(root,files,value):
+    if not _client_shape(value):raise ValueError('new language gate requires prepared --controller-directory-clients')
+    for k in ['c','python','script','library']:
+        row=value[k];actual=_prepared_file(root,row['path'])
+        if actual!=row:raise ValueError('staged language input hash differs')
+        path=str(Path(root).resolve()/row['path'].lstrip('/'))
+        if dict(path=path,sha256=row['sha256'])not in files:raise ValueError('sealed guest input missing')
+    p=Path(root)/'expected-controller-directory-clients.json'
+    if p.is_symlink()or json.loads(p.read_text())!=value:raise ValueError('sealed expected language inputs differ')
+    if dict(path=str(p),sha256=hashlib.sha256(p.read_bytes()).hexdigest())not in files:raise ValueError('expected consumer manifest not sealed')
+    return value
+
+def consumer_args(language,clients):
+    library=clients['library']['path']
+    if language=='c':return [clients['c']['path'],library]
+    if language=='python':return ['/bin/python3',clients['script']['path'],library]
+    raise ValueError('explicit actual consumer language required')
+
+def corroborate_all(record,control,program,verifier,clients):
+    if not _client_shape(clients)or set(record['languages'])!={'c','python'}:raise ValueError('both actual language observers required')
+    rust=corroborate(record,control,program,verifier);proofs={}
+    for language in ['c','python']:
+        raw=record['languages'][language]
+        proof=_corroborate(raw,control,clients[language]['sha256'],verifier,consumer_args(language,clients))
+        if (raw['process']['native_library_loaded']is not False or raw['process']['loaded_library']!=clients['library']
+                or not re.fullmatch('[0-9a-f]{64}',raw['process']['maps_sha256'])):raise ValueError('actual mapped application library required,no Native library')
+        maps=raw['process']['maps']
+        if not isinstance(maps,str)or len(maps.encode())>128*1024 or hashlib.sha256(maps.encode()).hexdigest()!=raw['process']['maps_sha256']:raise ValueError('raw process map evidence required')
+        paths={v.split(maxsplit=5)[5]for v in maps.splitlines()if len(v.split(maxsplit=5))==6}
+        if clients['library']['path']not in paths or any(Path(v).name.startswith('libslk_native.so')for v in paths):raise ValueError('actual expected SDK map required')
+        script=clients['script']if language=='python'else None
+        if raw.get('consumer_source')!=script:raise ValueError('actual Python consumer source required')
+        if any(proof[k]!=rust[k]for k in ['before','initial_paths','events','old_generation','new_generation','peer_generation']):raise ValueError('language observer identity/cursor differs')
+        proof.update(library_sha256=clients['library']['sha256'],script_sha256=script['sha256']if script else None,native_library_loaded=False)
+        proofs[language]=proof
+    result=dict(rust,status=ALL_STATUS,rust=rust,languages=proofs,prepared_clients=clients)
+    if not valid_all_summary(result):raise ValueError('all-language observer proof malformed')
+    return result
+
+def valid_all_summary(value):
+    try:
+        if value.get('status')!=ALL_STATUS or not _client_shape(value['prepared_clients'])or set(value['languages'])!={'c','python'}:return False
+        rust=value['rust'];clients=value['prepared_clients']
+        if not valid_summary(rust)or any(value[k]!=v for k,v in rust.items()if k!='status'):return False
+        for language,proof in value['languages'].items():
+            if not valid_summary(proof)or proof['program_sha256']!=clients[language]['sha256']or proof['verifier_sha256']!=rust['verifier_sha256']:return False
+            if proof['library_sha256']!=clients['library']['sha256']or proof['native_library_loaded']is not False:return False
+            if proof['script_sha256']!=(clients['script']['sha256']if language=='python'else None):return False
+            if any(proof[k]!=rust[k]for k in ['before','initial_paths','events','old_generation','new_generation','peer_generation']):return False
+        return True
+    except (ValueError,KeyError,TypeError):return False
+
+def process_observation(process,library=None):
+    status={k:v.split()for line in Path(f'/proc/{process.pid}/status').read_text().splitlines()if ':'in line for k,v in [line.split(':',1)]}
+    fds=[]
+    for fd in Path(f'/proc/{process.pid}/fd').iterdir():
+        try:fds.append(os.readlink(fd))
+        except FileNotFoundError:pass  # An ephemeral deadline/proc fd closed; permission errors still fail.
+    result=dict(pid=process.pid,uids=list(map(int,status['Uid'])),gids=list(map(int,status['Gid'])),groups=list(map(int,status['Groups'])),
+        caps={k:int(status[k][0],16)for k in ['CapEff','CapPrm','CapAmb']},native_fds=[f for f in fds if f in ['/dev/sparklink','/dev/usbmon1']],
+        program_sha256=hashlib.sha256(Path(f'/proc/{process.pid}/exe').read_bytes()).hexdigest())
+    if library:
+        with Path(f'/proc/{process.pid}/maps').open('rb')as f:blob=f.read(128*1024+1)
+        if len(blob)>128*1024:raise ValueError('bounded process map evidence exceeded')
+        maps=blob.decode();paths={row.split(maxsplit=5)[5]for row in maps.splitlines()if len(row.split(maxsplit=5))==6}
+        actual=str(Path(library['path']).resolve(strict=True))
+        if actual!=library['path']or actual not in paths:raise ValueError('actual expected SDK library not mapped')
+        result.update(maps=maps,maps_sha256=hashlib.sha256(maps.encode()).hexdigest(),loaded_library=file_record(actual),
+            native_library_loaded=any(Path(p).name.startswith('libslk_native.so')for p in paths))
+    return result
+
 def supervise(daemon):
     if (os.geteuid()!=0 or Path('/proc/cmdline').read_text().split().count('ws73.controller_directory_events=1')!=1
             or 'opensparklink-native-lab'not in os.uname().release):
         raise ValueError('explicit disposable Native VM root required; no process started')
+    clients=json.loads(Path('/expected-controller-directory-clients.json').read_text())
+    if not _client_shape(clients):raise ValueError('explicit actual language inputs required')
     folder=Path('/evidence/controller-directory');folder.mkdir(mode=0o700)
-    path=folder/'result.json';p=None
-    record=dict(status='RUNNING_NOT_QUALIFIED',program=file_record('/bin/slctl'),
-                source=file_record(__file__),start_wall_ns=time.time_ns(),daemon_before=daemon_identity(daemon))
+    path=folder/'result.json';children=[]
+    record=dict(status='RUNNING_NOT_QUALIFIED',program=file_record('/bin/slctl'),source=file_record(__file__),
+        start_wall_ns=time.time_ns(),daemon_before=daemon_identity(daemon),languages={})
     def save():
         tmp=path.with_suffix('.tmp');tmp.write_text(json.dumps(record,indent=2)+'\n');tmp.replace(path)
     try:
         save();user=pwd.getpwnam('observer')
         if (user.pw_uid,user.pw_gid)!=(1001,1001):raise ValueError('fixed isolated observer role required')
-        p=Invocation(['/bin/slctl','controller-events','3','30000'],'controller-directory',credentials=(1001,1001))
-        record['invocation']=p.row;save()
-        p.until(SNAPSHOT,timeout=5,limit=16384,label='actual directory snapshot')
-        status={k:v.split()for line in Path(f'/proc/{p.process.pid}/status').read_text().splitlines()if ':'in line for k,v in [line.split(':',1)]}
-        fds=[os.readlink(f)for f in Path(f'/proc/{p.process.pid}/fd').iterdir()]
-        record['process']=dict(pid=p.process.pid,uids=list(map(int,status['Uid'])),gids=list(map(int,status['Gid'])),
-            groups=list(map(int,status['Groups'])),caps={k:int(status[k][0],16)for k in ['CapEff','CapPrm','CapAmb']},
-            native_fds=[f for f in fds if f in ['/dev/sparklink','/dev/usbmon1']],
-            program_sha256=hashlib.sha256(Path(f'/proc/{p.process.pid}/exe').read_bytes()).hexdigest())
-        save();(folder/'ready').write_text('ACTUAL_OBSERVER_SNAPSHOT\n')
-        row=p.finish(timeout=95)
-        if type(row['exit'])is not int or row['exit']!=0 or row['stderr']or len(row['stdout'])>16384:raise ValueError('actual directory observer failed')
-        parse(row['stdout']);record['daemon_after']=daemon_identity(daemon);record['status']='COMPLETE_NOT_QUALIFIED';save()
+        for language in ['rust','c','python']:
+            args=['/bin/slctl','controller-events','3','30000']if language=='rust'else consumer_args(language,clients)
+            raw=record if language=='rust'else dict(status='RUNNING_NOT_QUALIFIED',program=file_record(args[0]),source=record['source'],daemon_before=record['daemon_before'])
+            if language!='rust':
+                raw['program']=dict(clients[language])
+                raw['consumer_source']=clients['script']if language=='python'else None
+                record['languages'][language]=raw
+            p=Invocation(args,'controller-directory-'+language,credentials=(1001,1001));children.append((p,raw))
+            raw['invocation']=p.row;save();p.until(SNAPSHOT,timeout=5,limit=16384,label='actual '+language+' directory snapshot')
+            raw['process']=process_observation(p.process,None if language=='rust'else clients['library']);save()
+        (folder/'ready').write_text('ACTUAL_ALL_OBSERVERS_SNAPSHOT\n')
+        for p,raw in children:
+            row=p.finish(timeout=95)
+            if type(row['exit'])is not int or row['exit']!=0 or row['stderr']or len(row['stdout'])>16384:raise ValueError('actual directory language observer failed')
+            parse(row['stdout']);raw['daemon_after']=daemon_identity(daemon)
+            if raw is not record:raw['status']='COMPLETE_NOT_QUALIFIED'
+            save()
+        record['daemon_after']=daemon_identity(daemon);record['status']='COMPLETE_NOT_QUALIFIED';save()
     except BaseException as error:
         record.update(status='FAIL',error=repr(error))
-        if p is not None and 'exit'not in p.row:
-            try:p.finish(kill=p.process.poll()is None)
-            except BaseException as cleanup:record['cleanup_error']=repr(cleanup)
+        for p,raw in children:
+            if 'exit'not in p.row:
+                try:p.finish(kill=p.process.poll()is None)
+                except BaseException as cleanup:raw['cleanup_error']=repr(cleanup)
         raise
     finally:
         record['end_wall_ns']=time.time_ns();save()

@@ -405,3 +405,16 @@ SSAP 读应软件忙且不得上 USB；既有唯一 slktest CUTC pair 在提示�
 权限，不能以解包目标目录的权限替代guest目录权限。仅某一开发修订pair通过，
 不能推导任意迁移、稳定SDK、可信Bond存储或正式发布；准确记录见
 [唯一资格入口](../../project/current-capabilities.md)。
+## 目录观察者的新语言输入
+
+`prepare --controller-directory-clients`仅为原Native实验VM封存实际C消费者、Python脚本、
+解释器、应用共享库及编译输入。它要求显式Native service bundle，不授设备或ABI资格。
+当前`run --controller-directory-events`复用原`--qmp-hotplug`与
+`--native-controller-return initiator|acceptor`，要求该准备字段；不再把旧Rust-only
+准备产物作为新语言门禁。历史工具、命令和资格保留原身份。
+
+Root collector同时等待Rust、C、Python的实际初始输出屏障，三者均为UID1001、
+无附加组/caps/Native fd。C/Python复用公开SDK并先关闭父Client，实际映像、脚本和
+已映射应用库分别核对；原始maps有界保留，缺失、错误库、Native库或来源不符拒绝。
+每个进程正常退出且原daemon、目录游标/身份、Native返回及对端业务门禁一致才通过。
+该检查不是Native Ready/Down/drain、物理拔插、自然恢复或完整语言SDK资格。

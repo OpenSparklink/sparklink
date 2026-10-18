@@ -196,6 +196,19 @@ def prepare_locked(args, build_fd):
             manifest['native_return_probe']=dict(source=file_record(source),program=file_record(target),
                 invocation='gdbus call --system --dest ORIGINAL_UNIQUE_OWNER --object-path OLD_CONNECTION --method org.sparklink.Connection.OpenChannel --timeout 1')
         programs = {'dbus-daemon':args.dbus_daemon,'tcpdump':args.tcpdump}
+        if getattr(args,'controller_directory_clients',False):
+            if not module_profile or not getattr(args,'native_service_bundle',None):
+                raise ValueError('directory C/Python consumers require explicit native service bundle')
+            source=HERE/'testing/controller_events/client.c';script=HERE/'testing/controller_events/client.py'
+            header=USERSPACE/'crates/libsparklink/include/sparklink.h';probe=output/'controller-directory-client'
+            command=[os.environ.get('CC','cc'),'-std=gnu11','-O2','-Wall','-Wextra','-Werror',
+                     '-I'+str(header.parent),str(source),'-ldl','-o',str(probe)]
+            subprocess.run(command,check=True);programs['controller-directory-client']=probe
+            manifest['controller_directory_client_compile']=dict(command=command,source=file_record(source),
+                header=file_record(header),script=file_record(script),compiler=file_record(Path(shutil.which(command[0])).resolve()),
+                compiler_version=subprocess.check_output([command[0],'--version'],text=True).splitlines()[0])
+            manifest['inputs'] += [file_record(source),file_record(script),file_record(header)]
+
         probe = output/'event-copy-probe'
         compile_probe = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
                          str(LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c'),'-o',str(probe)]
@@ -318,6 +331,12 @@ def prepare_locked(args, build_fd):
             (root/'bin/ws73-channel-fd-probe').chmod(0o755)
             if file_record(probe)!=before:raise ValueError('fd client changed during staging')
             manifest['native_channel_fd_probe']=before
+
+        if getattr(args,'controller_directory_clients',False):
+            source=HERE/'testing/controller_events/client.py';target=root/'usr/share/sparklink/tools/ws73_controller_directory_client.py'
+            shutil.copy2(source,target)
+            from ws73_controller_directory import stage_clients
+            manifest['controller_directory_clients']=stage_clients(root,python.name,manifest['controller_directory_client_compile'])
         manifest['guest_files'] = [file_record(p) for p in sorted(root.rglob('*')) if p.is_file() and not p.is_symlink()]
         archive = output/'initramfs.cpio.gz'
         if module_profile:
@@ -892,6 +911,9 @@ def _run(args):
         if directory_events:
             from ws73_controller_directory import staged_program
             m['controller_directory_program']=staged_program(args.prepared.resolve()/'root',package['guest_files'])
+            from ws73_controller_directory import staged_clients
+            m['controller_directory_clients']=staged_clients(args.prepared.resolve()/'root',package['guest_files'],package.get('controller_directory_clients'))
+
         if down_failure_observe:
             validate_down_failure_inputs(package)
         if (native_return or native_controller) and ('native_vm' not in package or 'native_return_fixture' not in package):
@@ -1381,11 +1403,11 @@ def _run(args):
                     m['native_controller_return_corroboration']=proof
                     m['native_controller_return_acceptance']=True
                 if directory_events:
-                    from ws73_controller_directory import corroborate as directory_corroborate
+                    from ws73_controller_directory import corroborate_all as directory_corroborate
                     if text.count('WS73_TARGET_CONTROLLER_DIRECTORY_PASS')!=1:raise ValueError('root-reaped ordinary directory observer required')
                     if file_record(HERE/'ws73_controller_directory.py')!=m['controller_directory_verifier']:raise ValueError('directory verifier changed during run')
                     observed=json.loads((share/'controller-directory/result.json').read_text())
-                    m['controller_directory_corroboration']=directory_corroborate(observed,control,m['controller_directory_program']['sha256'],m['controller_directory_verifier']['sha256'])
+                    m['controller_directory_corroboration']=directory_corroborate(observed,control,m['controller_directory_program']['sha256'],m['controller_directory_verifier']['sha256'],m['controller_directory_clients'])
                     m['controller_directory_acceptance']=True
                 if ssap_initialization != ('ssap_initialization' in control):raise ValueError('SSAP initialization request/evidence mismatch')
                 if ssap_initialization:
@@ -1812,11 +1834,12 @@ def run_exit_code(record, *, supervisor_pending=False):
     directory_boot=[v.split('=',1)[1]for arg in command if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.controller_directory_events=')]if isinstance(command,list)else []
     if directory_boot!=(['1']if directory_events else []):return 1
     if directory_events:
-        from ws73_controller_directory import valid_summary as directory_summary
+        from ws73_controller_directory import valid_all_summary as directory_summary
         if (native_controller is None or record.get('controller_directory_acceptance')is not True
                 or not directory_summary(record.get('controller_directory_corroboration'))
                 or record['controller_directory_corroboration']['program_sha256']!=record.get('controller_directory_program',{}).get('sha256')
-                or record['controller_directory_corroboration']['verifier_sha256']!=record.get('controller_directory_verifier',{}).get('sha256')):return 1
+                or record['controller_directory_corroboration']['verifier_sha256']!=record.get('controller_directory_verifier',{}).get('sha256')
+                or record['controller_directory_corroboration'].get('prepared_clients')!=record.get('controller_directory_clients')):return 1
     elif record.get('controller_directory_acceptance')or record.get('controller_directory_corroboration'):return 1
     initialization=record.get('ssap_initialization_requested',False)
     if type(initialization)is not bool:return 1
@@ -2044,6 +2067,7 @@ def main():
     for name in native_vm.OPTIONS:
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
+    pack.add_argument('--controller-directory-clients',action='store_true',help='stage actual C/Python SDK directory consumers for the explicit VM observer gate')
     pack.add_argument('--native-return-fixture',action='store_true',help='compile VM-only real SYS_bind return barrier; never default daemon instrumentation')
     pack.add_argument('--native-return-probe',type=Path,help='explicit gdbus executable staged only for direct original-owner retirement observation')
     pack.add_argument('--native-channel-fd-probe',type=Path,help='explicit isolated real D-Bus fd client binary; native VM only')
@@ -2128,7 +2152,7 @@ def main():
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
             cmd.add_argument('--native-return-verify',action='store_true',help='VM-only actual Native bind-return/physical Down/parent cleanup,then ordinary data preservation')
             cmd.add_argument('--native-controller-return',choices=['initiator','acceptor'],help='actual User bind return across existing one-leaf QMP removal; original socket gate runs after re-add')
-            cmd.add_argument('--controller-directory-events',action='store_true',help='ordinary observer of directory withdrawal/republication in the existing controller-return VM gate')
+            cmd.add_argument('--controller-directory-events',action='store_true',help='actual Rust/C/Python ordinary directory observers;requires prepared --controller-directory-clients and existing controller-return gate')
             cmd.add_argument('--ssap-initialization-verify',action='store_true',help='real negotiation-stage lease revoke/fd convergence then ordinary same-artifact connection/socket preservation')
             cmd.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')

@@ -70,6 +70,69 @@ class DirectoryObserver(unittest.TestCase):
         row=p.finish();self.assertEqual(row['exit'],0);self.assertEqual(row['stdout'],text)
         self.assertEqual(gate.parse(row['stdout'])['before'],2)
 
+    def languages(self):
+        r,c=self.fixture()
+        clients=dict(version=1,c=dict(path='/bin/controller-directory-client',sha256='c'*64),
+            python=dict(path='/usr/bin/python3.14',sha256='d'*64),
+            script=dict(path='/usr/share/sparklink/tools/ws73_controller_directory_client.py',sha256='e'*64),
+            library=dict(path='/usr/lib/libsparklink.so.0',sha256='f'*64))
+        children={}
+        for language in ['c','python']:
+            raw=copy.deepcopy(r);raw['program']=dict(clients[language]);raw['process']['program_sha256']=clients[language]['sha256']
+            maps='00000000-00001000 r--p 00000000 00:01 1 /usr/lib/libsparklink.so.0\n'
+            raw['process'].update(native_library_loaded=False,loaded_library=dict(clients['library']),maps=maps,maps_sha256=hashlib.sha256(maps.encode()).hexdigest())
+            raw['invocation']['args']=gate.consumer_args(language,clients)
+            raw['consumer_source']=clients['script']if language=='python'else None
+            children[language]=raw
+        r['languages']=children
+        return r,c,clients
+
+    def test_both_languages_mapped_library_source_and_original_rust_are_required(self):
+        r,c,clients=self.languages();proof=gate.corroborate_all(r,c,'a'*64,'b'*64,clients);self.assertTrue(gate.valid_all_summary(proof))
+        for language in ['c','python']:
+            for mutate in [lambda x:x['languages'].pop(language),
+                lambda x:x['languages'][language]['process']['loaded_library'].update(sha256='0'*64),
+                lambda x:x['languages'][language]['process'].update(native_library_loaded=True),
+                lambda x:x['languages'][language]['process'].update(program_sha256='0'*64),
+                lambda x:x['languages'][language]['process'].update(uids=[0]*4),
+                lambda x:x['languages'][language]['invocation'].update(exit=1),
+                lambda x:x['languages'][language]['invocation'].update(stdout=x['invocation']['stdout'].replace('slk0_g3','slk0_g9'))]:
+                bad=copy.deepcopy(r);mutate(bad)
+                with self.assertRaises((ValueError,KeyError)):gate.corroborate_all(bad,c,'a'*64,'b'*64,clients)
+            bad=copy.deepcopy(proof);bad['languages'].pop(language);self.assertFalse(gate.valid_all_summary(bad))
+        bad=copy.deepcopy(r);bad['languages']['python']['consumer_source']=None
+        with self.assertRaises(ValueError):gate.corroborate_all(bad,c,'a'*64,'b'*64,clients)
+        for change in [dict(proof,program_sha256='0'*64),dict(proof,prepared_clients={}),dict(proof,rust={})]:self.assertFalse(gate.valid_all_summary(change))
+
+    def test_sealed_staged_consumers_and_manifest_reject_missing_changed_or_escaped_inputs(self):
+        with tempfile.TemporaryDirectory()as name:
+            root=Path(name)
+            names=['/bin/controller-directory-client','/usr/bin/python3.14','/usr/share/sparklink/tools/ws73_controller_directory_client.py','/usr/lib/libsparklink.so.0']
+            for path in names:
+                p=root/path.lstrip('/');p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'explicit nonexecuted identity fixture:'+path.encode())
+            script=root/names[2].lstrip('/');compilation=dict(script=dict(sha256=hashlib.sha256(script.read_bytes()).hexdigest()))
+            value=gate.stage_clients(root,'python3.14',compilation)
+            files=[dict(path=str(p),sha256=hashlib.sha256(p.read_bytes()).hexdigest())for p in root.rglob('*')if p.is_file()]
+            self.assertEqual(gate.staged_clients(root,files,value),value)
+            for bad in [None,{},dict(value,version=True),dict(value,library=dict(path='/tmp/elsewhere',sha256='f'*64))]:
+                with self.assertRaises(ValueError):gate.staged_clients(root,files,bad)
+            with self.assertRaises(ValueError):gate.staged_clients(root,files[:-1],value)
+            library=root/names[-1].lstrip('/');library.write_bytes(b'changed')
+            with self.assertRaises(ValueError):gate.staged_clients(root,files,value)
+            library.unlink();library.symlink_to('/etc/passwd')
+            with self.assertRaises(ValueError):gate.staged_clients(root,files,value)
+
+    def test_actual_c_consumer_build_and_argument_failure_are_not_an_event_pass(self):
+        import os
+        source=Path(gate.__file__).parent/'testing/controller_events/client.c'
+        header=Path(gate.__file__).parents[1]/'crates/libsparklink/include'
+        with tempfile.TemporaryDirectory()as name:
+            binary=Path(name)/'consumer'
+            subprocess.run([os.environ.get('CC','cc'),'-std=gnu11','-O2','-Wall','-Wextra','-Werror','-I'+str(header),str(source),'-ldl','-o',str(binary)],check=True)
+            for args in [[],['/explicitly-missing-app-library']]:
+                result=subprocess.run([str(binary),*args],capture_output=True,text=True,timeout=3)
+                self.assertNotEqual(result.returncode,0);self.assertEqual(result.stdout,'');self.assertTrue(result.stderr)
+
     def test_host_without_explicit_native_vm_is_rejected_before_start(self):
         p=subprocess.run([sys.executable,gate.__file__,'--daemon-pid','1'],capture_output=True,text=True,timeout=5)
         self.assertNotEqual(p.returncode,0);self.assertIn('no process started',p.stderr)

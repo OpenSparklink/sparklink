@@ -1,0 +1,46 @@
+name: WS73 offline tools
+
+on:
+  pull_request:
+    paths:
+      - 'tools/**'
+      - 'project/lab-resource-policy.json'
+      - 'project/build-resource-policy.json'
+      - '.github/workflows/tooling.yml'
+      - '.github/workflows/ci.yml'
+  push:
+    branches: [master, codex/sparklink-ws73, codex/firmware-evidence-modes]
+    paths:
+      - 'tools/**'
+      - 'project/lab-resource-policy.json'
+      - 'project/build-resource-policy.json'
+      - '.github/workflows/tooling.yml'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tooling-test:
+    name: WS73 tooling and evidence validation (no hardware)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check out matching kernel lab helpers (no driver execution)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: OpenSparklink/linux
+          ref: c41fd4e698ef6d86cd921fa677269b5c62102bb0
+          path: .kernel-tools
+          sparse-checkout: |
+            tools/testing/selftests/sparklink
+            include/uapi/linux
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Run existing tooling tests, including rejection controls
+        env:
+          SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-tools
+        run: python3 -m unittest discover -s tools/tests -v

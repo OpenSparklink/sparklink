@@ -5,7 +5,7 @@ No synthetic peer, controller or security result. The publisher is an actual
 slctl process on the guest system bus, with the same uid1000/no-capabilities
 scope as this runner. A service-only group deployment is a separate gate.
 """
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 import re
 import json
@@ -16,13 +16,62 @@ from ws73_capture import CaptureError
 from ws73_channel_socket import credentials
 
 
-def wait_text(process, path, pattern, deadline):
+def wait_text(process, path, pattern, deadline, min_count=1):
+    if not 1<=min_count<=16:raise CaptureError('bounded output observation count required')
     while True:
         text=Path(path).read_text()
         matches=re.findall(pattern,text,re.M)
-        if matches:return matches,text
+        if len(matches)>=min_count:return matches,text
         if process.poll() is not None or time.monotonic()>=deadline:
             raise CaptureError('owned service stopped or original observation deadline: '+text)
+        time.sleep(.01)
+
+
+@contextmanager
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None):
+    source,target=row['owners'][sender],row['owners'][1-sender]
+    secret=secrets.token_hex(32);value=secrets.token_hex(32);uuid=secrets.token_hex(16);service=secrets.token_hex(16)
+    prefix=run.output/f'ssap-owned-{row["phase"]}-{sender}-{label or policy}'
+    out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
+    args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve',service,uuid,'5','36',secret,policy]
+    item=dict(sender=sender,target=1-sender,policy=policy,secret=secret,value=value,uuid=uuid,service=service,args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
+    row.setdefault(collection,[]).append(item);run.save();process=None
+    try:
+        with ExitStack() as files:
+            process=subprocess.Popen(args,stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
+            item.update(pid=process.pid,credentials=credentials(process.pid));run.save()
+            matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
+            if len(matches)!=1:raise CaptureError('one actual owned registration required')
+            start,end,handle=map(int,matches[0]);item.update(start=start,end=end,handle=handle);run.save()
+            yield process,item
+    finally:
+        if process is not None:
+            if process.poll() is None:process.kill();process.wait(timeout=2)
+            item.update(exit=process.returncode,stdout=out.read_text() if out.exists() else '',stderr=err.read_text() if err.exists() else '')
+            if process.stdin:process.stdin.close()
+        item['end_wall_ns']=time.time_ns();run.save()
+
+
+def value_snapshot(process,item,expected):
+    path=Path(item['output_files'][0]);pattern=r'^SsapOwnedValue: handle=(\d+) value=([0-9a-f]*)$'
+    count=len(re.findall(pattern,path.read_text(),re.M));observation=dict(start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns())
+    process.stdin.write('value\n');process.stdin.flush()
+    values,_=wait_text(process,path,pattern,time.monotonic()+2,min_count=count+1)
+    if len(values)!=count+1 or values[-1]!=(str(item['handle']),expected):raise CaptureError('original owner application value snapshot differs')
+    observation.update(end_wall_ns=time.time_ns(),end_monotonic_ns=time.monotonic_ns(),handle=item['handle'],value=expected,ordinal=count+1)
+    item.setdefault('value_snapshots',[]).append(observation);return observation
+
+
+def await_removed(run,target,start):
+    deadline=time.monotonic()+2
+    while True:
+        c=run.command([str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-list'],max(.001,deadline-time.monotonic()),collection='ssap_owned_cleanup')
+        if time.monotonic()>deadline:raise CaptureError('original owner cleanup observation deadline')
+        if c['exit']:raise CaptureError('local metadata cleanup query failed')
+        lists=re.findall(r'^SsapLocalServices: (.+)$',c['stdout'],re.M)
+        if len(lists)!=1:raise CaptureError('one actual local metadata list required')
+        if not any(v[0]==start for v in json.loads(lists[0])):return c
+        if time.monotonic()>=deadline:raise CaptureError('service survived its unique owner')
         time.sleep(.01)
 
 
@@ -31,59 +80,24 @@ def execute(run,row):
     for sender in (0,1):
         source,target=row['owners'][sender],row['owners'][1-sender]
         for policy in ('allow','deny'):
-            secret=secrets.token_bytes(32);value=secrets.token_bytes(32);uuid=secrets.token_bytes(16);service=secrets.token_bytes(16)
-            prefix=run.output/f'ssap-owned-{row["phase"]}-{sender}-{policy}'
-            out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
-            args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve',service.hex(),uuid.hex(),'5','36',secret.hex(),policy]
-            item=dict(sender=sender,target=1-sender,policy=policy,secret=secret.hex(),value=value.hex(),uuid=uuid.hex(),service=service.hex(),args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
-            row['ssap_owned'].append(item);run.save()
-            def command(words):
-                return run.command([str(run.args.slctl),'--adapter',source['owner']['path'],*words],10,collection='ssap_owned')
-            process=None
-            try:
-                with ExitStack() as files:
-                    process=subprocess.Popen(args,stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
-                    item.update(pid=process.pid,credentials=credentials(process.pid));run.save()
-                    matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
-                    if len(matches)!=1:raise CaptureError('one actual owned registration required')
-                    start,end,handle=map(int,matches[0]);item.update(start=start,end=end,handle=handle);run.save()
-                    level=row.get('security_requirement',0)
-                    item['read']=command(['ssap-read',source['object']['path'],str(handle),str(level)])
-                    item['uuid_read']=command(['ssap-read-uuid',source['object']['path'],'16','65535',uuid.hex(),str(level)])
-                    item['write']=command(['ssap-write',source['object']['path'],str(handle),value.hex(),str(level)])
-                    item['read_after']=command(['ssap-read',source['object']['path'],str(handle),str(level)])
-                    for name in ('read','write','read_after'):
-                        c=item[name]
-                        if policy=='allow' and c['exit']:raise CaptureError('actual owned approval failed')
-                        if policy=='deny' and (not c['exit'] or f'peer {"write" if name=="write" else "read"} error 9' not in c['stderr']):raise CaptureError('actual owner refusal required')
-                    if item['uuid_read']['exit']:raise CaptureError('actual owned UUID transaction failed')
-                    process.stdin.write('value\n');process.stdin.flush()
-                    observed,_=wait_text(process,out,r'^SsapOwnedValue: handle=(\d+) value=([0-9a-f]*)$',time.monotonic()+2)
-                    expected=value if policy=='allow' else secret
-                    if observed!=[(str(handle),expected.hex())]:raise CaptureError('owner application did not verify actual opposite DB value')
-                    item['local_value']=expected.hex()
-                    # Abrupt owner death exercises NameOwnerChanged, not explicit
-                    # admin RemoveLocalService and not a controller teardown.
-                    process.kill();item['owner_exit']=process.wait(timeout=2);item['owner_exit_wall_ns']=time.time_ns()
-                    deadline=time.monotonic()+2
-                    while True:
-                        c=run.command([str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-list'],3,collection='ssap_owned_cleanup')
-                        if c['exit']:raise CaptureError('local metadata cleanup query failed')
-                        lists=re.findall(r'^SsapLocalServices: (.+)$',c['stdout'],re.M)
-                        if len(lists)!=1:raise CaptureError('one actual local metadata list required')
-                        services=json.loads(lists[0])
-                        if not any(v[0]==start for v in services):
-                            item['after_owner_exit']=c;break
-                        if time.monotonic()>=deadline:raise CaptureError('service survived its unique owner')
-                        time.sleep(.01)
-                    item['removed_read']=command(['ssap-read',source['object']['path'],str(handle),str(level)])
-                    if not item['removed_read']['exit'] or 'peer read error 4' not in item['removed_read']['stderr']:raise CaptureError('retired owner handle must fail over real SMTC')
-            finally:
-                if process is not None:
-                    if process.poll() is None:process.kill();process.wait(timeout=2)
-                    item.update(exit=process.returncode,stdout=out.read_text() if out.exists() else '',stderr=err.read_text() if err.exists() else '')
-                    if process.stdin:process.stdin.close()
-                item['end_wall_ns']=time.time_ns();run.save()
+            with publisher(run,row,sender,policy) as (process,item):
+                h=item['handle'];level=row.get('security_requirement',0)
+                def command(words):return run.command([str(run.args.slctl),'--adapter',source['owner']['path'],*words],10,collection='ssap_owned')
+                item['read']=command(['ssap-read',source['object']['path'],str(h),str(level)])
+                item['uuid_read']=command(['ssap-read-uuid',source['object']['path'],'16','65535',item['uuid'],str(level)])
+                item['write']=command(['ssap-write',source['object']['path'],str(h),item['value'],str(level)])
+                item['read_after']=command(['ssap-read',source['object']['path'],str(h),str(level)])
+                for name in ('read','write','read_after'):
+                    c=item[name]
+                    if policy=='allow' and c['exit']:raise CaptureError('actual owned approval failed')
+                    if policy=='deny' and (not c['exit'] or f'peer {"write" if name=="write" else "read"} error 9' not in c['stderr']):raise CaptureError('actual owner refusal required')
+                if item['uuid_read']['exit']:raise CaptureError('actual owned UUID transaction failed')
+                expected=item['value'] if policy=='allow' else item['secret']
+                value_snapshot(process,item,expected);item['local_value']=expected
+                process.kill();item['owner_exit']=process.wait(timeout=2);item['owner_exit_wall_ns']=time.time_ns()
+                item['after_owner_exit']=await_removed(run,target,item['start'])
+                item['removed_read']=command(['ssap-read',source['object']['path'],str(h),str(level)])
+                if not item['removed_read']['exit'] or 'peer read error 4' not in item['removed_read']['stderr']:raise CaptureError('retired owner handle must fail over real SMTC')
 
 
 def corroborate(row,matched):

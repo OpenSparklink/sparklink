@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "status": "RESOURCE_LAUNCH_BOUNDARY_IMPLEMENTED_OFFLINE_AND_READONLY_CHECKED",
+  "implementation_commit": "527b3385448e6648007a1405c0e0077c08f579ba",
+  "kernel_head_observed": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+  "scope": "Thread resource boundary only. No kernel/service/firmware/real-VM execution or qualification upgrade.",
+  "policy": "project/lab-resource-policy.json",
+  "allocation": {
+    "U": [
+      "1-1.1.1",
+      "1-1.1.2"
+    ],
+    "E": [
+      "1-2.1.1",
+      "1-2.1.2"
+    ],
+    "other_thread_do_not_operate": [
+      "1-1.1.3",
+      "1-1.1.4",
+      "1-2.1.3",
+      "1-2.1.4"
+    ],
+    "U_hub": "1-1.1 05e3:0610",
+    "E_hub": "1-2.1 1a40:0101",
+    "shared_controller": "0000:c5:00.3",
+    "authority": "Explicit user placement and serial pins; no new HCC identification. U runtime5EP / E ROM2EP in fresh read-only observation."
+  },
+  "implemented": [
+    "Reuse the existing independent worktree/run roots, strict serial/topology whitelist, per-leaf leases and guarded QMP attachments; no fallback or device-number selection.",
+    "Under selected leaf leases, inspect all four allocated leaves against live libvirt XML before launching own QEMU; common five-second query budget, at most64 domains and1MiB per response.",
+    "Reject allocated leaf/ancestor/shared PCI assignments and unresolved WS73 selectors. Resolve current bus/device to topology; permit explicit disjoint other-thread leaves.",
+    "Failure, malformed or unobservable inventory refuses launch, with leases released and no detach/stop/reset/power action. Record XML hashes/observations in each new live manifest."
+  ],
+  "checked": {
+    "live_inventory": {
+      "source_commit": "527b3385448e6648007a1405c0e0077c08f579ba",
+      "source_tree": "clean at actual read-only execution",
+      "vms": 2,
+      "conflicts_observed": 0,
+      "USB_IO": false,
+      "privileged_fd_visibility": "incomplete; no absolute exclusion proof"
+    },
+    "firmware": "All six local SDK110 E/e and U/us files match the unchanged explicit policy hashes; no download.",
+    "tools": {
+      "methods": 896,
+      "result": "PASS",
+      "execution_source": {
+        "base": "86205ffc397f823a1bb5468fb1478080389d832a",
+        "executed_source_form": "base plus current dirty files; do not claim a clean-commit execution",
+        "files": {
+          "tools/ws73_lab_resources.py": {
+            "sha256": "06fd196ca6b1c73ae9f7c9ffec852414e057b46131e855c60b8b82957596430a",
+            "bytes": 17383
+          },
+          "tools/ws73_target.py": {
+            "sha256": "f8ba5d27bb3f01dcd637547b3c143d987a1381893f4049191eff9865802b20e2",
+            "bytes": 197060
+          },
+          "tools/tests/test_ws73_lab_resources.py": {
+            "sha256": "356c90f796562fcf3eafcc1fed6dfec390acceff06749da27dde8292d3e0cfff",
+            "bytes": 17318
+          }
+        }
+      },
+      "mapped_to_signed_commit": "527b3385448e6648007a1405c0e0077c08f579ba",
+      "mapping": "Every executed changed Python/test file byte-matches the signed commit. Tests ran before commit on explicit dirty source, not described as clean HEAD execution.",
+      "fixtures": "Filesystem/proc/QMP/XML and actual runner boundary with mocked _run; no real QEMU started by these tests."
+    },
+    "documentation": {
+      "strict_html": "PASS",
+      "inventory_documents": 116,
+      "qualification_check": "METADATA_ONLY_NOT_REVERIFIED; errors empty; unavailable historical private materials are not requalified"
+    },
+    "user_work_in_progress": "All original ten files byte-identical; original worktree retained."
+  },
+  "failure_retained": {
+    "type": "Test invocation environment",
+    "observed": "First target-only invocation omitted SPARKLINK_KERNEL_SOURCE; 25 methods,2 FileNotFoundError errors for .dev/linux selftest helper. Original tool reply retained; private summary explicitly is not a raw log.",
+    "followup": "Same assertions with explicit Linux path:25 PASS; whole896 PASS. No test weakened."
+  },
+  "not_qualified": [
+    "New hardware/HCC for E or mixed E/U",
+    "Cold-ROM automatic identification/image choice",
+    "New real VM execution of this launch guard",
+    "Natural failure RCA/nonmanual recovery",
+    "Other-thread business isolation from actual traffic",
+    "Absence of privileged fds or later uncoordinated QMP changes"
+  ],
+  "unchanged": [
+    "Full S0-S6,19WP,10FV,12DG and original acceptance",
+    "VM-only individual leaf passthrough; no hub/controller reset/power/passthrough or forced detach",
+    "Explicit SDK110 three-image sets; current global-directory driver refuses mixed download",
+    "Global build lock total12 solo/8 with real VM; stable build directories and separately sealed artifacts",
+    "All prior source/artifact-bound qualifications and failures; issues remainOPEN; UserHost low-priority planning only"
+  ],
+  "continuation": "Return to canonical qualification_view.current_batch.next: real per-application DiscoverySession/shared-scanner ownership and remaining target-architecture cleanup, without aliasing controller management as an application lease.",
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-20261019-readonly-v1.json",
+      "sha256": "996c0feb54f55677c21ce2c8de9d5dd0ae18c4c4bbe0ccad91338452b911b3ac",
+      "bytes": 6228,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-live-vm-launch-check-v1.json",
+      "sha256": "af6f3dd905d5a82986ad3685c22437a6268dce119ab19d23c5899c54282efc97",
+      "bytes": 1002,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-live-vm-launch-check-v2.json",
+      "sha256": "59b89d5c998dc6983da93b7a9429e5ea46692e31136844d38ca7f50380a4a79e",
+      "bytes": 1254,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-firmware-wip-v1.json",
+      "sha256": "66d0197fb8660ce88d876f637b5e4286b9c605eb811e1ac2c1deca4c2e1b2686",
+      "bytes": 2859,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-launch-guard-tested-source-v1.json",
+      "sha256": "d786b6cf15cc88ca5c9f6d0493ede1bc0479e0668fdd35703d94b369c7c7ab8b",
+      "bytes": 624,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-launch-guard-environment-failure-v1.json",
+      "sha256": "6f09954b340b009a93690677e2260e5c60d3ac7d63ba913f692a56e8b1406b59",
+      "bytes": 608,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-launch-guard-tool-suite-v1.log",
+      "sha256": "30edc4bdb580d323a7beaa623cf7fbd372b7f36f042b1eb69ecc8286e01b1c52",
+      "bytes": 1072,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-launch-guard-docs-v1.log",
+      "sha256": "5011717d79a5bc622126800eb5cd92069f398ba24cafc3293818593186851e77",
+      "bytes": 1444180,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-launch-guard-issue-preflight-v1.json",
+      "sha256": "6109d85689a820aa3feae96fda859d71c551637cd37939982ff33429a43228d1",
+      "bytes": 971,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed"
+    }
+  ]
+}

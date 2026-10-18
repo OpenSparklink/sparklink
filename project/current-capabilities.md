@@ -21,6 +21,9 @@
 VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收。两组其他口属于
 另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
 接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
+启动前的 live libvirt 占用守卫及限定离线结果见
+[资源边界记录](../docs/evidence/shared-allocation-launch-guard-20261019.json)；
+它不更新上述服务/内核/实机资格，特权 fd 可见性和之后的非协作操作仍有限制。
 
 各批准确身份、计数、原失败和限制只在对应报告及下方结构化记录维护；
 后续顺序以唯一实施计划和 `qualification_view.current_batch` 为准，避免历史批次的

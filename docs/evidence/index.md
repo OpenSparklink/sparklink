@@ -1,5 +1,9 @@
 # 证据入口与取得限制
 
+- [共享硬件启动边界](shared-allocation-launch-guard-20261019.json)：准确527b工具、
+  896项限定离线回归与真实只读libvirt/sysfs审计。仅资源边界；没有启动QEMU或访问USB，
+  不授新E/混合、HCC、自然恢复或业务隔离资格。原调用环境错误和私有材料hash保留。
+
 - [Rust／C／Python真实目录观察与原路径保持](controller-language-observer-20261019.json)：
   编译服务/SDK 3bd、实际Host/guest工具80e、编译内核2fc；校验器修复d912仅离线重放。
   两角色实际普通观察者及映射库、七尺寸/Owned保持分别核对；原参数、审计路径及

@@ -4418,14 +4418,31 @@
           "methods": 15
         },
         "configuration_change": "Existing active worktree runner/config/callers already match requested strict four-leaf allocation and SDK110sets;no second selector/fallback, sourceWIP or sealed artifacts modified. Refreshed read-only current-state record only."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/controller-language-allocation-postflight-v1.json",
+        "sha256": "5b79f9cf18ae87b1cdc148c5cf695d23b0454c9e77e4b7224f658def5f3997df",
+        "scope": "After9U-onlyVMs four allocated serialpins/hubs/sharedPCIstillmatch,U5EP/E2EP;visiblefd/libvirt/leases/buildlock noconflictobserved,privilegedfdvisibilitylimited. NoE/forbidden/hub/controlleroperation,nootherthreadbusiness/E/mixed/coldROMqualification. Existing strict policy/SDK110/budget unchanged;original10WIP preserved."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/controller-language-allocation-postflight-v1.json",
-      "sha256": "5b79f9cf18ae87b1cdc148c5cf695d23b0454c9e77e4b7224f658def5f3997df",
-      "scope": "After9U-onlyVMs four allocated serialpins/hubs/sharedPCIstillmatch,U5EP/E2EP;visiblefd/libvirt/leases/buildlock noconflictobserved,privilegedfdvisibilitylimited. NoE/forbidden/hub/controlleroperation,nootherthreadbusiness/E/mixed/coldROMqualification. Existing strict policy/SDK110/budget unchanged;original10WIP preserved."
+      "path": ".dev/main-thread-01a120fe/allocation-thread-20261019-readonly-v1.json",
+      "sha256": "996c0feb54f55677c21ce2c8de9d5dd0ae18c4c4bbe0ccad91338452b911b3ac",
+      "bytes": 6228,
+      "access": "private local workspace; available to authorized maintainers; no SDK/firmware/raw VM XML distributed",
+      "scope": "Fresh four serial pins/hubs/shared PCI match;U5EP/E2EP;no conflict observed in drivers/visiblefds/liveLibvirtXML/leases/buildlock. NoUSBoperation;rootFDvisibilitylimited;noE/mixed/coldROM/naturalrecoveryqualification."
     },
-    "current_finite_gate_ref": "controller-directory-language-r5f11"
+    "current_finite_gate_ref": "controller-directory-language-r5f11",
+    "live_vm_launch_guard": {
+      "source": "527b3385448e6648007a1405c0e0077c08f579ba",
+      "evidence": "docs/evidence/shared-allocation-launch-guard-20261019.json",
+      "evidence_sha256": "4de1b255ca6fcd45f2718f86216df68e8d7bf94b9fab4b38b268497af064de1e",
+      "status": "RESOURCE_LAUNCH_BOUNDARY_IMPLEMENTED_OFFLINE_AND_READONLY_CHECKED",
+      "scope": "Thread resource boundary only. No kernel/service/firmware/real-VM execution or qualification upgrade.",
+      "continuation_ref": "qualification_view.current_batch.next",
+      "architecture_goal_scope_changed": false,
+      "real_vm_run": "NOT_RUN; existing exact-source qualifications remain unchanged"
+    }
   },
   "native_return_controlled_gate": {
     "id": "R5f9g",

@@ -4184,11 +4184,7 @@
       "qualification_record_ref": "debian-upgrade-rollback-r6c",
       "report": "docs/evidence/debian-upgrade-rollback-20261018.json",
       "scope": "Finite actual development revision pair, matching SDK and retained administrator data only; no RF/new native permissions, arbitrary migration or release. Original tool/build/audit failures and warnings retained.",
-      "remaining": [
-        "Only this actual development revision pair and explicit confold qualified;arbitrary schema/version/crash migration,debug/dwz/usrmerge dependencies,full thirdparty license/SBOM/provenance/CI release remain OPEN",
-        "No new package kernelGrant/RF qualification;all original architecture/lifecycle/control combinations,per-app discovery/common public flows,SSAP/security/Bond/multichannel/four/performance/PM still scoped independently",
-        "Full S0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8/UserHostP4 unchanged;natural fault RCA and nonmanual recovery OPEN"
-      ]
+      "remaining_ref": "qualification-records.json#debian-upgrade-rollback-r6c.remaining"
     }
   },
   "owned_ssap_c6_historical_batch": {

@@ -371,33 +371,41 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/Ud9：共享发现显式release及Negotiable-T七尺寸/Owned/C-Python限定实机**。
 仅记录范围：`real_device` / `PASS`。
-kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-compiled_userspace `41ae994b41b3064cae2dc52b5e0da657ef3961f2`。
-executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
-[准确范围与剩余条件](../docs/evidence/owned-agent-client-qualification-20261018.json)。
+compiled_kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
+compiled_userspace `d9dc373120cbb173be195647d22da10c25987641`。
+executed_host_tools `d9dc373120cbb173be195647d22da10c25987641`。
+executed_guest_tools `d9dc373120cbb173be195647d22da10c25987641`。
+compiled_kernel_helpers `c39686a8095818d8aed9e42ac1d15e0eee47e1e6`。
+evidence_validator `6c7a2e31bd7c99a171fd435a3e5c0fde14090290`。
+[准确范围与剩余条件](../docs/evidence/application-discovery-negotiable-20261019.json)。
 
 限定边界由同一记录生成；计数不代替必需门禁、假设或范围：
 ```json
 {
-  "actual_cli_agents": 8,
-  "actual_cli_requests": 8,
-  "cli_evidence_negatives": 20,
-  "evidence_negative_controls": 261,
-  "final_workspace_tests": 338,
-  "honest_unknown_observations": 6,
-  "new_formal_proofs": 0,
-  "oversize_refusals": 16,
-  "owned_cases": 40,
-  "peer_evidence_negatives": 84,
-  "peer_roundtrips": 48,
-  "peer_sdk_observations": 24,
-  "peer_usb_positive": 18,
-  "real_runs": 6,
-  "release_bindings_checks": 50,
-  "seal_schema_negatives": 8,
-  "service_role_denials": 68
+  "app_discovery_observations": 18,
+  "app_discovery_readers": 4,
+  "application_sizes": [
+    61,
+    249,
+    250,
+    253,
+    254,
+    255,
+    2042
+  ],
+  "business_round_trips": 66,
+  "c_python_ssap_api_calls": 48,
+  "c_python_ssap_operations": 16,
+  "captured_usb_packets": 39537,
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "compiled_userspace": "d9dc373120cbb173be195647d22da10c25987641",
+  "connection_advertising": "explicit negotiable-t;wire mode3 role0/posture0-1",
+  "distinct_discovery_RX": 16,
+  "owned_ssap_checks": 8,
+  "rf_rounds": 198,
+  "vm_runs": 9
 }
 ```
 
@@ -617,6 +625,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | Scoped discovery daemon/Rust SDK/CLI：397+397及封存14项限定离线 | `offline` | `PASS` |
 | 实际生产scanner epoch：初始/任意u64单步/八步及错误性质负对照 | `formal_bounded` | `PASS` |
 | 真实共享发现显式release限定正向；整轮建链保持失败及其他门禁仍缺失 | `real_device` | `FAIL` |
+| K2fc/Ud9：共享发现显式release及Negotiable-T七尺寸/Owned/C-Python限定实机 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -3093,9 +3102,12 @@ Coordinator/引用/Notify/Kernel/USB证明。C/Python发现会话及实际系统
 
 准确clean bundle／SDK110US及本线程U1-1.1.1/.2的三轮尝试，见
 [限定正向与整轮失败](../docs/evidence/application-discovery-real-attempts-20261019.json)。
-显式release已有真实输出／USB切片；整轮因Status0之后缺少连接Outcome/handle而失败，
-业务/长度/SSAP保持未执行。近期先定位该失败及未确认清理，不凭人工复位掩盖；
-随后按准确新artifact继续以下完整条件：
+原Fixed-T尝试因Status0之后缺少Outcome/handle而失败，清理未确认；不能抹去原失败。
+核对封存argv及实际DLI字段后，确认保持测试误选了独立未验收的Fixed-T对照。
+修正准入要求显式Negotiable-T，未改协议或Runtime，也不自动fallback；
+[d9准确新artifact](../docs/evidence/application-discovery-negotiable-20261019.json)已完成
+共享发现显式release及原七尺寸/Owned/C-Python保持，物理Fixed-T根因仍未证明。
+接下来按原范围继续以下缺失条件，原路径保持按新改动影响重验：
 两名仅apps组普通caller共享一只scanner，随机marker在另一只真实广播；两者独立
 校验地址/RSSI/data。一名显式release/caller退出后另一名继续收到新随机marker；
 USB核对一次共享START、仅最后释放STOP，再交换controller角色。管理STOP撤销旧id、
@@ -3115,5 +3127,6 @@ STOP Complete，交换scanner角色及同artifact原连接／业务／长度保�
 每marker10秒、应用原20秒租期不放宽；工具环境预算不冒充协议期限。
 离线仅验证真实格式解析、角色/身份/范围/捕获/报告负对照；不调用USB、不模拟生产成功。
 caller-loss／TTL／管理STOP／部分初始化／原期限组合分别保留缺口，不将显式release
-切片通过写成完整生命周期验收。已执行的整轮FAIL必须保留；正向切片不升级完整VM
-资格或同行业务／部署权限，原失败与剩余门禁绑定准确artifact分别重验。
+切片通过写成完整生命周期验收。原Fixed-T整轮FAIL和后续Negotiable-T限定成功分别
+绑定配置与artifact；不把后者当成同条件复现、Fixed-T修复、同行业务／部署权限或
+自然恢复资格。材料版本绑定与资格校验改动亦不能重命名实际执行镜像。

@@ -5,7 +5,7 @@
 
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
-| 应用发现租约／共享 scanner | [C5实际SDK与USB限定正向、整轮FAIL](../docs/evidence/application-discovery-real-attempts-20261019.json)、[原限定离线与生产Fence](../docs/evidence/application-discovery-offline-20261019.json)、[接口边界](../docs/reference/application-discovery.md) | 两U／两个scanner方向的apps-only显式release与新标识有真实证据；整轮连接Status0后无Outcome/handle，清理失败，业务/长度/SSAP保持未执行。caller-loss/TTL/管理STOP/期限/部分初始化、同行业务及完整部署权限仍缺；原失败保留，不升级完整资格 |
+| 应用发现租约／共享 scanner | [d9明确Negotiable-T的限定实机与原路径保持](../docs/evidence/application-discovery-negotiable-20261019.json)、[原Fixed-T失败](../docs/evidence/application-discovery-real-attempts-20261019.json)、[接口边界](../docs/reference/application-discovery.md) | 两U的apps-only显式release正向及七尺寸/Owned/C-Python保持取得准确新artifact证据。旧保持测试误选Fixed-T，原失败仍有效；不称已证明其物理根因。caller-loss/TTL/管理STOP/期限/部分初始化、同行业务及完整部署权限仍缺，完整资格不升级 |
 | C／Python目录观察视图 | [3bdSDK／80e运行／d912离线核对的限定实机](../docs/evidence/controller-language-observer-20261019.json)、[原限定离线](../docs/evidence/controller-language-offline-20261018.json) | 同一Rust stream/executor，实际普通进程与映射库、新generation及原业务保持。缺失proof异常与原失败保留；修复校验器未作为新运行工具。非完整SDK/状态流/扫描租约或形式化资格 |
 | 普通观察者 Runtime 目录流 | [fd0服务／4d9工具的目录观察与原路径保持](../docs/evidence/controller-directory-observer-20261018.json) | 实际 Rust/slctl、同daemon与两角色新generation；不是Native Ready、Down或drain。该记录不涵盖新增C/Python或发现租约；pre-Runtime完整状态及发现租约的实机资格仍缺；该记录未取得新形式化证明 |
 | User Native 返回跨 controller 退休 | [77服务／143工具两角色与原两FAIL](../docs/evidence/native-controller-return-20261018.json) | 固定target slot0、User CUTC；精确owner屏障、迟到fd拒绝、真实peer结清、同daemon新generation后16次回复。不是Service/dynamic、完整fd组合、Kernel ref/callback/UAF或自然恢复资格 |
@@ -42,33 +42,41 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
-选定保留产物（不是当前工作树整体资格）：**K2fc/U41ae、工具268：现有Owned/Agent客户端六真实VM限定通过，完整架构开放**。
+选定保留产物（不是当前工作树整体资格）：**K2fc/Ud9：共享发现显式release及Negotiable-T七尺寸/Owned/C-Python限定实机**。
 仅记录范围：`real_device` / `PASS`。
-kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
-compiled_userspace `41ae994b41b3064cae2dc52b5e0da657ef3961f2`。
-executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
-[准确范围与剩余条件](../docs/evidence/owned-agent-client-qualification-20261018.json)。
+compiled_kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。
+compiled_userspace `d9dc373120cbb173be195647d22da10c25987641`。
+executed_host_tools `d9dc373120cbb173be195647d22da10c25987641`。
+executed_guest_tools `d9dc373120cbb173be195647d22da10c25987641`。
+compiled_kernel_helpers `c39686a8095818d8aed9e42ac1d15e0eee47e1e6`。
+evidence_validator `6c7a2e31bd7c99a171fd435a3e5c0fde14090290`。
+[准确范围与剩余条件](../docs/evidence/application-discovery-negotiable-20261019.json)。
 
 限定边界由同一记录生成；计数不代替必需门禁、假设或范围：
 ```json
 {
-  "actual_cli_agents": 8,
-  "actual_cli_requests": 8,
-  "cli_evidence_negatives": 20,
-  "evidence_negative_controls": 261,
-  "final_workspace_tests": 338,
-  "honest_unknown_observations": 6,
-  "new_formal_proofs": 0,
-  "oversize_refusals": 16,
-  "owned_cases": 40,
-  "peer_evidence_negatives": 84,
-  "peer_roundtrips": 48,
-  "peer_sdk_observations": 24,
-  "peer_usb_positive": 18,
-  "real_runs": 6,
-  "release_bindings_checks": 50,
-  "seal_schema_negatives": 8,
-  "service_role_denials": 68
+  "app_discovery_observations": 18,
+  "app_discovery_readers": 4,
+  "application_sizes": [
+    61,
+    249,
+    250,
+    253,
+    254,
+    255,
+    2042
+  ],
+  "business_round_trips": 66,
+  "c_python_ssap_api_calls": 48,
+  "c_python_ssap_operations": 16,
+  "captured_usb_packets": 39537,
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "compiled_userspace": "d9dc373120cbb173be195647d22da10c25987641",
+  "connection_advertising": "explicit negotiable-t;wire mode3 role0/posture0-1",
+  "distinct_discovery_RX": 16,
+  "owned_ssap_checks": 8,
+  "rf_rounds": 198,
+  "vm_runs": 9
 }
 ```
 
@@ -288,6 +296,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | Scoped discovery daemon/Rust SDK/CLI：397+397及封存14项限定离线 | `offline` | `PASS` |
 | 实际生产scanner epoch：初始/任意u64单步/八步及错误性质负对照 | `formal_bounded` | `PASS` |
 | 真实共享发现显式release限定正向；整轮建链保持失败及其他门禁仍缺失 | `real_device` | `FAIL` |
+| K2fc/Ud9：共享发现显式release及Negotiable-T七尺寸/Owned/C-Python限定实机 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

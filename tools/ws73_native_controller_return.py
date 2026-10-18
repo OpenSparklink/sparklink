@@ -13,9 +13,24 @@ import time
 
 from ws73_capture import CaptureError
 from ws73_native_return import Client, STAGES, inodes, returned_pair, verify_root_phase
+from ws73_north_star import file_record
 
 STATUS = 'ACTUAL_USER_NATIVE_RETURN_CONTROLLER_REMOVAL_CORROBORATED'
 ROLES = ('initiator', 'acceptor')
+
+
+def owner_probe_state(row):
+    """Exact existing broker error, not SDK/Core availability or any failure."""
+    prefix = 'Error: GDBus.Error:org.freedesktop.DBus.Error.Failed: '
+    if type(row.get('exit')) is not int or row['exit'] != 1 or row.get('stdout') != '':
+        raise CaptureError('owner probe must refuse a new fd through the actual broker')
+    message = row.get('stderr', '')
+    if message == prefix+'connection owner retiring\n':
+        return 'retiring'
+    if message in [prefix+v+'\n' for v in ('management handoff busy', 'connection Native creation busy',
+                                         'connection lifetime is not current')]:
+        return 'not-yet-observed'
+    raise CaptureError('unexpected broker refusal is not an owner-retirement barrier')
 
 
 def requested(args, *, passthrough=None):
@@ -92,6 +107,27 @@ class Session:
                 raise CaptureError('original controller must retire before actual Native return')
             time.sleep(.005)
         phase['other_during_hold'] = run.ctl(other, 'show')
+        # ListAdapters rechecks Core and may refuse before the background
+        # owner observes removal. Probe the same original broker directly;
+        # no SDK precheck, successor lookup, management lease or fake fd.
+        selected = next(v for v in phase['typed_objects'] if v['owner'] == target)
+        destination = run.data['bus_before']['owner']
+        if not re.fullmatch(r':\d+\.\d+', destination):
+            raise CaptureError('original unique daemon owner required')
+        phase['owner_probe_binary'] = file_record('/bin/native-owner-probe')
+        phase['owner_probes'] = []
+        argv = ['/bin/native-owner-probe','call','--system','--dest',destination,
+                '--object-path',selected['object']['path'],'--method','org.sparklink.Connection.OpenChannel','--timeout','1']
+        limit = time.monotonic()+.8
+        while True:
+            row = run.command(argv, .5, collection='commands')
+            phase['owner_probes'].append(row); run.save()
+            if owner_probe_state(row) == 'retiring':
+                phase['owner_retiring'] = row
+                break
+            if time.monotonic() >= limit:
+                raise CaptureError('same owner must retire before original Native return release')
+            time.sleep(.005)
         phase['release'] = self.client.request(phase['selection'], 'release')
         self.pending.finish()
         if not self.pending.row['exit'] or 'retired during native bind' not in self.pending.row['stderr']:
@@ -191,11 +227,18 @@ def verify_guest(run):
             or drained != before):
         raise CaptureError('actual user/service fd ownership and convergence required')
     old = p['old_selection_refused']; ready = p['other_during_hold']; pending = p['pending_user']
+    owner = p['owner_retiring']
+    if (owner_probe_state(owner) != 'retiring' or not p['owner_probes'] or p['owner_probes'][-1] != owner
+            or any(owner_probe_state(row) != 'not-yet-observed' for row in p['owner_probes'][:-1])
+            or owner['args'] != ['/bin/native-owner-probe','call','--system','--dest',run['bus_before']['owner'],
+                '--object-path',selected['object']['path'],'--method','org.sparklink.Connection.OpenChannel','--timeout','1']):
+        raise CaptureError('direct original-owner retirement barrier required; SDK/Core refusal is insufficient')
     if (not held['start_wall_ns'] <= p['physical_while_held']['start_wall_ns']
             <= p['physical_while_held']['end_wall_ns'] <= p['remove_ready_wall_ns']
             <= p['remove_ack_wall_ns'] <= p['guest_port_absent']['wall_ns']
             <= old['start_wall_ns'] <= old['end_wall_ns'] <= ready['start_wall_ns']
-            <= ready['end_wall_ns'] <= p['release']['release_wall_ns'] <= returned['end_wall_ns']
+            <= ready['end_wall_ns'] <= owner['start_wall_ns'] <= owner['end_wall_ns']
+            <= p['release']['release_wall_ns'] <= returned['end_wall_ns']
             <= pending['end_wall_ns'] <= p['drained']['end_wall_ns'] <= p['end_wall_ns']
             <= value['replacement_observed_wall_ns']):
         raise CaptureError('controller retirement must precede original Native return and re-add')
@@ -241,6 +284,8 @@ def corroborate(run, capture, root, expected=None):
     return dict(status=STATUS, role=run['native_controller_return']['role'], slices=1,
                 held=p['bound']['held'], returned=p['release']['returned'], create=create, peer_down=downs[0], peer_cleanup=cleanup,
                 fixture_sha256=p['before']['fixture']['sha256'], actual_guest_controller_removal=True,
+                actual_owner_retirement_refusal=p['owner_retiring'],
+                owner_probe_binary=p['owner_probe_binary'],
                 replacement_generation=run['replacement']['generation'], hcc=run['native_controller_return']['hcc'],
                 same_daemon=True, socket_inode_convergence=True, kernel_reference_or_uaf_proof=False,
                 physical_acceptance=False, automatic_recovery=False)
@@ -257,6 +302,8 @@ def valid_summary(v):
                 or v['held']['phase'] != 2+ROLES.index(v['role']) or v['held']['kind'] != 1
                 or not all(v.get('create',{}).get(k) for k in ('command','status','outcomes'))
                 or len(v['create']['outcomes']) != 2 or not v.get('peer_down')
+                or owner_probe_state(v.get('actual_owner_retirement_refusal',{})) != 'retiring'
+                or not re.fullmatch('[0-9a-f]{64}',v.get('owner_probe_binary',{}).get('sha256',''))
                 or v.get('hcc',{}).get('source') != 'HCC_GET_CHIP_TYPE' or v['hcc'].get('bus') != 'USB'):
             return False
         returned_pair(v['held'],v['returned'])

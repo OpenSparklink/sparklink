@@ -188,6 +188,13 @@ def prepare_locked(args, build_fd):
                 compiler_version=subprocess.check_output([command[0],'--version'],text=True).splitlines()[0])
             manifest['inputs'] += [file_record(source)]
             (root/'expected-native-return-sha256').write_text(file_record(library)['sha256']+'\n')
+        if getattr(args, 'native_return_probe', None):
+            if not getattr(args, 'native_return_fixture', False):raise ValueError('owner probe requires explicit Native return VM fixture')
+            source=args.native_return_probe.resolve(strict=True)
+            target=root/'bin/native-owner-probe';copy_elf(source,target,root);target.chmod(0o755)
+            manifest['inputs'].append(file_record(source))
+            manifest['native_return_probe']=dict(source=file_record(source),program=file_record(target),
+                invocation='gdbus call --system --dest ORIGINAL_UNIQUE_OWNER --object-path OLD_CONNECTION --method org.sparklink.Connection.OpenChannel --timeout 1')
         programs = {'dbus-daemon':args.dbus_daemon,'tcpdump':args.tcpdump}
         probe = output/'event-copy-probe'
         compile_probe = [os.environ.get('CC','cc'),'-std=c11','-O2','-Wall','-Wextra','-Werror',
@@ -881,6 +888,11 @@ def _run(args):
         if (native_return or native_controller) and ('native_vm' not in package or 'native_return_fixture' not in package):
             raise ValueError('explicit staged real-bind fixture and native VM required')
         if native_return or native_controller:m['native_return_fixture']=package['native_return_fixture']
+        if native_controller:
+            if 'native_return_probe' not in package:raise ValueError('controller return requires pinned direct broker owner probe')
+            probe=args.prepared/'root/bin/native-owner-probe'
+            if file_record(probe)!=package['native_return_probe']['program']:raise ValueError('prepared owner probe changed')
+            m['native_return_probe']=package['native_return_probe']
         if ssap_initialization:
             from ws73_ssap_initialization import validate_qemu
             validate_qemu(package['qemu']['path'], initialization_stage)
@@ -1355,6 +1367,7 @@ def _run(args):
                     from ws73_native_controller_return import corroborate as controller_corroborate
                     proof=controller_corroborate(control,capture,share,package['native_return_fixture']['library']['sha256'])
                     if proof['role'] != native_controller:raise ValueError('controller Native return role mismatch')
+                    if proof['owner_probe_binary']['sha256'] != package['native_return_probe']['program']['sha256']:raise ValueError('actual owner probe differs from pinned prepared binary')
                     m['native_controller_return_corroboration']=proof
                     m['native_controller_return_acceptance']=True
                 if ssap_initialization != ('ssap_initialization' in control):raise ValueError('SSAP initialization request/evidence mismatch')
@@ -1770,6 +1783,7 @@ def run_exit_code(record, *, supervisor_pending=False):
                 or not valid_summary(record.get('native_controller_return_corroboration'))
                 or record['native_controller_return_corroboration']['role'] != native_controller
                 or record['native_controller_return_corroboration']['fixture_sha256'] != record.get('native_return_fixture',{}).get('library',{}).get('sha256')
+                or record['native_controller_return_corroboration']['owner_probe_binary']['sha256'] != record.get('native_return_probe',{}).get('program',{}).get('sha256')
                 or record.get('ordinary_channel_socket_acceptance') is not True
                 or record.get('channel_socket_verification_requested') is not True
                 or record.get('channel_socket_corroboration',{}).get('status') != 'ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
@@ -2003,6 +2017,7 @@ def main():
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
     pack.add_argument('--native-return-fixture',action='store_true',help='compile VM-only real SYS_bind return barrier; never default daemon instrumentation')
+    pack.add_argument('--native-return-probe',type=Path,help='explicit gdbus executable staged only for direct original-owner retirement observation')
     pack.add_argument('--native-channel-fd-probe',type=Path,help='explicit isolated real D-Bus fd client binary; native VM only')
     pack.add_argument('--acb-probe-module',type=Path,help='explicit signed external selftest; never ordinary socket qualification')
     pack.add_argument('--native-discovery-config', type=Path,

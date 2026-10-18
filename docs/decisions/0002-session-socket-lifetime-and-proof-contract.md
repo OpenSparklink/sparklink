@@ -670,3 +670,10 @@ K400bd6812608复用已有物理Session、唯一RX分流、ACB credit及提交票
 controller generation、HCC 及同 daemon 普通用户对端校验回复。此为受控生命周期
 门禁，不授自然恢复或 Kernel callback/ref/UAF 证明；原 Request/Grant/credit/Ticket
 语义和两秒测试屏障、协议原期限不变，超时仍 FAIL。
+
+
+R5f9h 首轮反例区分 Core 可用性和 daemon owner 观察：ListAdapters 独立重查
+Core，旧选择拒绝不是 owner AtomicBool 的撤销屏障。受控返回释放前，普通用户
+以原 daemon unique bus name 向同一旧 Connection 发送实际 OpenChannel，只有
+精确的 owner-retiring 拒绝能见证所需状态；其他错误、SDK预检查或新fd成功均不能
+替代。保留原VM FAIL及迟到fd断言；不据该失败宣称发生业务串包/UAF或生产撤销缺陷。

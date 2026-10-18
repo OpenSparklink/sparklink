@@ -65,6 +65,18 @@ class ControllerReturn(unittest.TestCase):
                               ('qemu_args',[]),('native_return_requested',True)]:
                 bad=dict(row);bad[key]=value;self.assertEqual(run_exit_code(bad),1)
 
+    def test_only_direct_owner_retiring_error_releases_the_barrier(self):
+        prefix='Error: GDBus.Error:org.freedesktop.DBus.Error.Failed: '
+        def row(message):return dict(exit=1,stdout='',stderr=prefix+message+'\n')
+        self.assertEqual(gate.owner_probe_state(row('connection owner retiring')),'retiring')
+        for message in ['management handoff busy','connection Native creation busy','connection lifetime is not current']:
+            self.assertEqual(gate.owner_probe_state(row(message)),'not-yet-observed')
+        for value in [row('registration removed'),row('connection owner retired during native bind'),
+                      dict(exit=0,stdout='(handle 0,)\n',stderr=''),dict(exit=False,stdout='',stderr=''),
+                      dict(exit='timeout',stdout='',stderr=''),
+                      dict(exit=1,stdout='',stderr='Error: GDBus.Error:org.freedesktop.DBus.Error.UnknownObject: gone\n')]:
+            with self.subTest(value=value),self.assertRaises(gate.CaptureError):gate.owner_probe_state(value)
+
     def test_ordinary_business_runs_on_replacement_in_this_mode(self):
         events=[];instance=object.__new__(ConnectionControlRun)
         instance.args=SimpleNamespace(native_return_verify=False,ssap_initialization_verify=False)
@@ -84,6 +96,8 @@ class ControllerReturn(unittest.TestCase):
             returned=dict(held,outcome=1,end_mono_ns=150,end_wall_ns=250),
             create=dict(command={'fixture':True},status={'fixture':True},outcomes=[{'fixture':True}]*2),
             peer_down={'fixture':True},fixture_sha256='a'*64,replacement_generation=9,
+            actual_owner_retirement_refusal=dict(exit=1,stdout='',stderr='Error: GDBus.Error:org.freedesktop.DBus.Error.Failed: connection owner retiring\n'),
+            owner_probe_binary=dict(sha256='b'*64),
             hcc=dict(source='HCC_GET_CHIP_TYPE',model='U',bus='USB'),
             actual_guest_controller_removal=True,same_daemon=True,socket_inode_convergence=True,
             kernel_reference_or_uaf_proof=False,physical_acceptance=False,automatic_recovery=False)
@@ -95,7 +109,10 @@ class ControllerReturn(unittest.TestCase):
                    lambda p:p.update(kernel_reference_or_uaf_proof=True),
                    lambda p:p['returned'].update(outcome=2),lambda p:p['returned'].update(lifetime=99),
                    lambda p:p['held'].update(fd=True),lambda p:p['create'].update(outcomes=[]),
-                   lambda p:p.pop('peer_down'),lambda p:p['hcc'].update(bus='UART')]
+                   lambda p:p.pop('peer_down'),lambda p:p['hcc'].update(bus='UART'),
+                   lambda p:p.pop('actual_owner_retirement_refusal'),
+                   lambda p:p['actual_owner_retirement_refusal'].update(stderr='error: immutable identity unavailable or changed: registration removed\n'),
+                   lambda p:p['owner_probe_binary'].update(sha256='old')]
         for n,mutate in enumerate(mutations):
             bad=copy.deepcopy(value);mutate(bad)
             with self.subTest(n=n):self.assertFalse(gate.valid_summary(bad))

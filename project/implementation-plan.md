@@ -1,6 +1,6 @@
 # SparkLink / Linux 联合实施方案
 
-### R5f9h：实际 User Native 返回跨 controller 退休（工具已接通，实机待执行）
+### R5f9h：实际 User Native 返回跨 controller 退休（首实机FAIL保留，修正owner观察屏障）
 
 本批复用既有单叶子 QMP remove/re-add、唯一 Native 返回库及 Root 观察器。
 每 VM 显式选择发起或接受角色；真实 `SYS_bind` 成功后保留原返回不超过两秒，
@@ -8,6 +8,13 @@
 Ready/generation，再显式释放并要求实际退休错误。之后结清仍通电 peer 的真实
 连接，观察原 socket inode 收敛，再让原 runner 重新附加同一白名单叶子。
 普通两角色8次随机业务往返放在新 generation Ready 后，原广播/扫描仍保留。
+首轮发起角色 VM 原始 FAIL 保留，接受角色未执行：Core 旧选择已拒绝时，daemon
+owner 尚未必观察到退休；`slktest` 取得 fd 后的再次 Connection 查询可能先报
+registration removed，不能当作预期 owner 拒绝。Manager.ListAdapters 直接重查
+Core，不能用它代替 owner 屏障。修正为普通用户通过固定原 daemon 唯一总线名，
+直接调用旧 Connection 现有 OpenChannel，严格观察 connection owner retiring
+后才释放原 Native 返回；busy/unknown/error/success均不冒充该状态。显式封存
+gdbus探针及依赖hash；原迟到fd拒绝断言和两秒expiry FAIL不变，无据此改写生产状态。
 不增加额外 QMP 拔插循环，不修改生产 Host/Session/Engine、Grant/credit/Ticket、
 Kernel 或原期限；C库仍先执行真实 syscall，不伪造结果或协议字节。
 

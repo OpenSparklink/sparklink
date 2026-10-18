@@ -4375,10 +4375,10 @@
   },
   "controller_native_return_gate": {
     "id": "R5f9h",
-    "status": "TOOLING_IMPLEMENTED_REAL_NOT_RUN",
+    "status": "FIRST_REAL_VM_FAIL_OWNER_BARRIER_CORRECTION_PENDING",
     "plan": "project/implementation-plan.md",
     "production_change": false,
-    "production_service": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
+    "production_service": "77f7953e1273065e9a538ab554d2fad6a90c3067",
     "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
     "planned_roles": [
       "initiator",
@@ -4390,12 +4390,35 @@
     ],
     "exit": "Actual original user SYS_bind held across the existing one-leaf QMP removal; original controller retirement and other Ready before explicit return; late fd refused; same daemon, new generation/HCC then ordinary two-role real random payload validation/replies with original RF/capture proofs.",
     "limits": "Controlled VM guest removal only; physical power is unchanged. Root OS fd/inode observations are not kernel ref/callback/UAF/drain or automatic recovery proof. E/mixed/cold-ROM and all uncompleted original scopes remain OPEN.",
-    "new_real_runs": 0,
+    "new_real_runs": 1,
     "new_formal_proofs": 0,
     "offline_checks": {
       "targeted_methods": 11,
       "tool_methods": 877,
-      "historical_raw_replay": "Original ae40/26b four Connection slices,8 business replies and22 radio matches accepted by current common decoder;not new runtime/device qualification."
+      "historical_raw_replay": "Original ae40/26b four Connection slices,8 business replies and22 radio matches accepted by current common decoder;not new runtime/device qualification.",
+      "source": "77f7953e1273065e9a538ab554d2fad6a90c3067"
+    },
+    "first_failure": {
+      "manifest": ".dev/main-thread-01a120fe/native-controller-initiator-us-v1/manifest.json",
+      "result": "FAIL",
+      "error": "actual user fd cannot escape its retired controller owner",
+      "observed_cli_error": "immutable identity unavailable or changed: registration removed",
+      "actual_bind_hold_ns": 127232790,
+      "reason": "ListAdapters queries Core directly; SDK old selection refusal is not evidence that the daemon owner has observed retirement. Existing slktest re-resolves Connection after obtaining fd. Original strict owner refusal assertion retained; new direct old-owner OpenChannel refusal will provide the correct release barrier. No observed business stray/UAF or confirmed production revoke defect.",
+      "original_inputs_retained": true
+    },
+    "owner_barrier_correction_checks": {
+      "status": "OFFLINE_SOURCE_BOUND_PASS_REAL_PENDING",
+      "targeted_methods": 12,
+      "tool_methods": 878,
+      "strict_documents": 116,
+      "production_source_changed": false,
+      "execution_sources": {
+        "tools/ws73_native_controller_return.py": "cdeeeab85896fcf11f7abb371a088122bd889765f11d26d8516eff013b5fe6b0",
+        "tools/ws73_target.py": "61a44f1ad22078dc7809f680549b6862d0e4c69b61efc21500e5c635d3b90ffd",
+        "tools/tests/test_ws73_native_controller_return.py": "c1ffaef1dc26f162f9c410ac1924b562cfa46984af835193bdfcaf0a55c4eb67"
+      },
+      "rule": "Only exact original-broker owner-retiring error releases the hold; Core/SDK refusal, other errors and new fd success do not. Original late-fd assertion unchanged."
     }
   }
 }

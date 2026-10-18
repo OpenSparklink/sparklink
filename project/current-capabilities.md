@@ -19,6 +19,9 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
 接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
 
+Controller 受控返回首轮 VM 为 FAIL：Core 的旧选择拒绝不能替代 daemon owner
+退休屏障；原记录与修正范围见[唯一计划](implementation-plan.md)，不记作通过。
+
 Controller 父级退休现有[补充离线检查](implementation-plan.md)
 仅覆盖生产调用链的有限依赖；尚无新的 controller 实机拔出/Native 返回排空资格，
 不将本地接口仍存在写成另一只设备业务通过。

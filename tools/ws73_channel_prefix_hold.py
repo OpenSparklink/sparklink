@@ -30,11 +30,11 @@ class PrefixCoordinator(HoldCoordinator):
 
 
 class PrefixBarrier:
-    def __init__(self, record, save, folder=Path('/evidence/channel-prefix-hold')):
+    def __init__(self, record, save, folder=Path('/evidence/channel-prefix-hold'), *, field='prefix_hold'):
         self.folder = Path(folder)
         self.folder.mkdir(exist_ok=False)
         self.row = dict(markers=[], acks=[], ack_receipts=[])
-        record['prefix_hold'] = self.row
+        record[field] = self.row
         self.save = save
 
     def stage(self, phase, ack):

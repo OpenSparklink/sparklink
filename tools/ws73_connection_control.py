@@ -129,6 +129,79 @@ def corroborate_down_property(run, phase, owner, event):
                 property_end_wall_ns=row['end_wall_ns'], deadline_wall_ns=limit)
 
 
+def connect_phase(run, phase, kind, previous_objects=(), number=0):
+    """One actual discovery/Create/publication path, shared by lifecycle gates."""
+    caller, peer = phase['caller'], phase['peer']
+    advertisement = run.ctl(peer, 'advertise', 'negotiable' if kind=='negotiable-t' else 'connectable')
+    if not parse_result(advertisement['stdout'], peer, 1, allow_recreate=True)['recreated']:
+        raise CaptureError('fresh beacon-to-connectable gate requires a recreated set')
+    phase['advertisement_command'] = len(run.data['commands'])-1
+    run.ctl(peer, 'show')
+    phase['policy_query_command'] = len(run.data['commands'])-1
+    markers = re.findall(r'^NativeAdvertisementAccepted: request=(\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+)$', advertisement['stdout'], re.M)
+    if len(markers)!=1 or markers[0][2]!=marker_data(markers[0][1]).hex():
+        raise CaptureError('original connectable random marker admission required')
+    phase['marker']=markers[0][1]
+    scan = run.ctl(caller, 'scan', 'on', phase['marker'], peer['address'])
+    phase['scan_command']=len(run.data['commands'])-1
+    parse_result(scan['stdout'],caller,3)
+    match = parse_match(scan['stdout'])
+    if (match['generation']!=caller['generation'] or match['address']!=peer['address']
+            or match['marker']!=phase['marker'] or match['data']!=markers[0][2]
+            or match['elapsed_ms']>=10000 or match['lost']):
+        raise CaptureError('connectable announcement must first be heard by the actual caller')
+    phase['scan_match']=match
+    if getattr(run.args,'daemon_link_resync',False):
+        from ws73_link_resync import execute as resync_execute
+        resync_execute(run,caller,peer,number)
+    run.stop(caller, 'scan')
+    phase['scan_stop_command']=len(run.data['commands'])-1
+    # Type 0 is an explicit candidate, not inferred from discovery's
+    # legacy fixed PUBLIC parser. Both raw connection events must
+    # corroborate the actual type and peer below.
+    phase['peer_address_type'] = 0
+    command = run.command([str(run.args.slctl), '--adapter', caller['path'],
+        'connect', peer['address'], '0'], 18, collection='commands')
+    phase['connect_command'] = len(run.data['commands'])-1
+    phase['connect'] = result(command['stdout'], caller, 1)
+    if command['exit']: raise CaptureError('ordinary connect command failed')
+    for owner, remote in [(caller,peer), (peer,caller)]:
+        deadline = time.monotonic()+1
+        while True:
+            row = run.ctl(owner, 'connections')
+            if canonical_link_state(row['stdout'],owner,remote['address']) is True:
+                if time.monotonic()>=deadline:raise CaptureError('Up observation exceeded original budget')
+                break
+            if time.monotonic() >= deadline:
+                raise CaptureError('both real physical connections must reach known canonical snapshots')
+            time.sleep(.01)
+    row=run.ctl(caller,'connections')
+    phase['links_command']=len(run.data['commands'])-1
+    phase['reference']=link_reference(row['stdout'],caller,peer,phase['connect']['handle'])
+    from ws73_connection_objects import observe, reject_old
+    phase['typed_objects']=[observe(run,owner,remote) for owner,remote in [(caller,peer),(peer,caller)]]
+    phase['stale_object_rejections']=[]
+    for old in previous_objects:
+        phase['stale_object_rejections'].append(reject_old(run,old,'while-reused-handle-live'));run.save()
+    selected=next(entry['object'] for entry in phase['typed_objects'] if entry['owner']==caller)
+    if any(selected[key]!=phase['reference'][key] for key in ['lifetime','handle','role','address_type','address']):raise CaptureError('object differs from original canonical reference')
+    return selected
+
+
+def observe_phase_down(run, phase):
+    """Actual two-end Down, old-object refusals and independent owners."""
+    from ws73_connection_objects import reject_old
+    caller, peer = phase['caller'], phase['peer']
+    await_down_properties(run, phase, caller, peer)
+    for entry in phase['typed_objects']:
+        phase['stale_object_rejections'].append(reject_old(run,entry,'after-down'));run.save()
+    # Require the original advertisement's actual STOP. If firmware
+    # has independently stopped it and rejects STOP, preserve that
+    # failure; no local connected/disconnected state means radio OFF.
+    run.stop(peer, 'advertise')
+    run.check(caller); run.check(peer)
+
+
 def execute(run, a, b):
     """Run once, before ordinary RF rounds, and retain every failed command."""
     kind = getattr(run.args, 'connection_advertising', 'fixed-t')
@@ -147,59 +220,7 @@ def execute(run, a, b):
             phase = dict(caller=caller, peer=peer, start_wall_ns=time.time_ns())
             record['phases'].append(phase); run.save()
             run.check(caller); run.check(peer)
-            advertisement = run.ctl(peer, 'advertise', 'negotiable' if kind=='negotiable-t' else 'connectable')
-            if not parse_result(advertisement['stdout'], peer, 1, allow_recreate=True)['recreated']:
-                raise CaptureError('fresh beacon-to-connectable gate requires a recreated set')
-            phase['advertisement_command'] = len(run.data['commands'])-1
-            run.ctl(peer, 'show')
-            phase['policy_query_command'] = len(run.data['commands'])-1
-            markers = re.findall(r'^NativeAdvertisementAccepted: request=(\d+) marker=([0-9a-f]{32}) data=([0-9a-f]+)$', advertisement['stdout'], re.M)
-            if len(markers)!=1 or markers[0][2]!=marker_data(markers[0][1]).hex():
-                raise CaptureError('original connectable random marker admission required')
-            phase['marker']=markers[0][1]
-            scan = run.ctl(caller, 'scan', 'on', phase['marker'], peer['address'])
-            phase['scan_command']=len(run.data['commands'])-1
-            parse_result(scan['stdout'],caller,3)
-            match = parse_match(scan['stdout'])
-            if (match['generation']!=caller['generation'] or match['address']!=peer['address']
-                    or match['marker']!=phase['marker'] or match['data']!=markers[0][2]
-                    or match['elapsed_ms']>=10000 or match['lost']):
-                raise CaptureError('connectable announcement must first be heard by the actual caller')
-            phase['scan_match']=match
-            if getattr(run.args,'daemon_link_resync',False):
-                from ws73_link_resync import execute as resync_execute
-                resync_execute(run,caller,peer,len(record['phases'])-1)
-            run.stop(caller, 'scan')
-            phase['scan_stop_command']=len(run.data['commands'])-1
-            # Type 0 is an explicit candidate, not inferred from discovery's
-            # legacy fixed PUBLIC parser. Both raw connection events must
-            # corroborate the actual type and peer below.
-            phase['peer_address_type'] = 0
-            command = run.command([str(run.args.slctl), '--adapter', caller['path'],
-                'connect', peer['address'], '0'], 18, collection='commands')
-            phase['connect_command'] = len(run.data['commands'])-1
-            phase['connect'] = result(command['stdout'], caller, 1)
-            if command['exit']: raise CaptureError('ordinary connect command failed')
-            for owner, remote in [(caller,peer), (peer,caller)]:
-                deadline = time.monotonic()+1
-                while True:
-                    row = run.ctl(owner, 'connections')
-                    if canonical_link_state(row['stdout'],owner,remote['address']) is True:
-                        if time.monotonic()>=deadline:raise CaptureError('Up observation exceeded original budget')
-                        break
-                    if time.monotonic() >= deadline:
-                        raise CaptureError('both real physical connections must reach known canonical snapshots')
-                    time.sleep(.01)
-            row=run.ctl(caller,'connections')
-            phase['links_command']=len(run.data['commands'])-1
-            phase['reference']=link_reference(row['stdout'],caller,peer,phase['connect']['handle'])
-            from ws73_connection_objects import observe, reject_old
-            phase['typed_objects']=[observe(run,owner,remote) for owner,remote in [(caller,peer),(peer,caller)]]
-            phase['stale_object_rejections']=[]
-            for old in previous_objects:
-                phase['stale_object_rejections'].append(reject_old(run,old,'while-reused-handle-live'));run.save()
-            selected=next(entry['object'] for entry in phase['typed_objects'] if entry['owner']==caller)
-            if any(selected[key]!=phase['reference'][key] for key in ['lifetime','handle','role','address_type','address']):raise CaptureError('object differs from original canonical reference')
+            selected = connect_phase(run, phase, kind, previous_objects, len(record['phases'])-1)
             if getattr(run.args, 'channel_daemon_crash', False):
                 run.connected_gate(phase)
                 record.update(status='DAEMON_CHANNEL_CONNECTED_GATE_PENDING',end_wall_ns=time.time_ns())
@@ -236,15 +257,8 @@ def execute(run, a, b):
             phase['disconnect'] = result(row['stdout'], caller, 2)
             if row['exit'] or phase['disconnect']['handle'] != phase['connect']['handle']:
                 raise CaptureError('exact established handle must disconnect')
-            await_down_properties(run, phase, caller, peer)
-            for entry in phase['typed_objects']:
-                phase['stale_object_rejections'].append(reject_old(run,entry,'after-down'));run.save()
+            observe_phase_down(run, phase)
             previous_objects=phase['typed_objects']
-            # Require the original advertisement's actual STOP. If firmware
-            # has independently stopped it and rejects STOP, preserve that
-            # failure; no local connected/disconnected state means radio OFF.
-            run.stop(peer, 'advertise')
-            run.check(caller); run.check(peer)
             if hasattr(run, 'connection_barrier'):
                 run.connection_barrier('down',phase)
             phase['end_wall_ns'] = time.time_ns(); run.save()
@@ -254,6 +268,56 @@ def execute(run, a, b):
         raise
     finally:
         record['end_wall_ns'] = time.time_ns(); run.save()
+
+
+def corroborate_wire_operation(run, phase, capture, operation, command_row, handle, handles, reference=None, reason=0x10):
+    """Real USB OUT/Status and paired physical outcomes; no author result invented."""
+    if operation not in (1, 2) or reason not in (0x10, 0x13):
+        raise CaptureError('explicit Create/Disconnect and current or historical reason required')
+    caller, peer = phase['caller'], phase['peer']
+    opcode, event_ids = (0x1401, {0x15, 0x1401}) if operation == 1 else (0x1403, {5, 0x1405})
+    start, end = command_row['start_wall_ns'], command_row['end_wall_ns']
+    def within(row, owner):
+        return (row['bus'],row['device']) == (owner['bus'],owner['device']) and start <= row['wall_ns'] <= end
+    commands = [c for c in capture['commands'] if within(c,caller) and c['opcode']==opcode]
+    statuses = [e for e in capture['native_events'] if within(e,caller) and e['event']==1
+        and len(bytes.fromhex(e['params']))==4 and int.from_bytes(bytes.fromhex(e['params'])[:2],'little')==opcode]
+    if (len(commands)!=1 or len(statuses)!=1 or bytes.fromhex(statuses[0]['params'])[3]
+            or not start<=commands[0]['completion']['wall_ns']<=end
+            or statuses[0]['wall_ns']<commands[0]['wall_ns']):
+        raise CaptureError('one real paired OUT and successful CommandStatus required')
+    if operation==1:
+        body=bytes.fromhex(commands[0]['params'])
+        if len(body)!=27 or body[2]!=phase['peer_address_type'] or body[3:9]!=bytes.fromhex(peer['address'].replace(':','')):
+            raise CaptureError('Create body must target actual peer/type')
+    elif commands[0]['params'] != (handle.to_bytes(2,'little')+bytes([reason])).hex():
+        raise CaptureError('Disconnect body must target exact handle/reason')
+    outcomes=[]
+    # Peer publication may follow the caller's terminal slightly; use
+    # the phase's bounded observations, without borrowing another phase.
+    for owner, remote in [(caller,peer), (peer,caller)]:
+        events=[e for e in capture['native_events'] if e['event'] in event_ids
+            and (e['bus'],e['device'])==(owner['bus'],owner['device'])
+            and start<=e['wall_ns']<=phase['end_wall_ns']]
+        if len(events)!=1: raise CaptureError('one matching raw physical outcome on each controller required')
+        if operation == 2:
+            corroborate_down_property(run, phase, owner, events[0])
+        body=bytes.fromhex(events[0]['params'])
+        if len(body)<(11 if operation==1 else 4) or body[0]:
+            raise CaptureError('successful bounded physical outcome required')
+        if owner==caller and int.from_bytes(body[1:3],'little')!=handle:
+            raise CaptureError('caller outcome handle disagrees with result')
+        if operation==1 and (body[3]>1 or body[4]!=0 or body[5:11]!=bytes.fromhex(remote['address'].replace(':',''))):
+            raise CaptureError('raw physical peer/role/type mismatch')
+        if operation==1 and owner==caller and reference is not None and (body[3]!=reference['role'] or body[4]!=reference['address_type']):
+            raise CaptureError('canonical reference must match actual physical Up role/type')
+        identity=(owner['bus'],owner['device'])
+        handle=int.from_bytes(body[1:3],'little')
+        if operation==1: handles[identity]=handle
+        elif handles.get(identity)!=handle:
+            raise CaptureError('peer Down must match its independently observed Up handle')
+        outcomes.append(events[0])
+    return dict(command=commands[0], status=statuses[0], outcomes=outcomes)
 
 
 def corroborate(run, capture, *, expected_disconnect_reason=0x10):
@@ -343,48 +407,8 @@ def corroborate(run, capture, *, expected_disconnect_reason=0x10):
             terminal = result(command_row['stdout'], caller, operation)
             if command_row['exit'] or terminal != phase[key]:
                 raise CaptureError('serialized terminal disagrees with original command')
-            start, end = command_row['start_wall_ns'], command_row['end_wall_ns']
-            def within(row, owner):
-                return (row['bus'],row['device']) == (owner['bus'],owner['device']) and start <= row['wall_ns'] <= end
-            commands = [c for c in capture['commands'] if within(c,caller) and c['opcode']==opcode]
-            statuses = [e for e in capture['native_events'] if within(e,caller) and e['event']==1
-                and len(bytes.fromhex(e['params']))==4 and int.from_bytes(bytes.fromhex(e['params'])[:2],'little')==opcode]
-            if (len(commands)!=1 or len(statuses)!=1 or bytes.fromhex(statuses[0]['params'])[3]
-                    or not start<=commands[0]['completion']['wall_ns']<=end
-                    or statuses[0]['wall_ns']<commands[0]['wall_ns']):
-                raise CaptureError('one real paired OUT and successful CommandStatus required')
-            if operation==1:
-                body=bytes.fromhex(commands[0]['params'])
-                if len(body)!=27 or body[2]!=phase['peer_address_type'] or body[3:9]!=bytes.fromhex(peer['address'].replace(':','')):
-                    raise CaptureError('Create body must target actual peer/type')
-            elif commands[0]['params'] != (terminal['handle'].to_bytes(2,'little')+bytes([expected_disconnect_reason])).hex():
-                raise CaptureError('Disconnect body must target exact handle/reason')
-            outcomes=[]
-            # Peer publication may follow the caller's terminal slightly; use
-            # the phase's bounded observations, without borrowing another phase.
-            for owner, remote in [(caller,peer), (peer,caller)]:
-                events=[e for e in capture['native_events'] if e['event'] in event_ids
-                    and (e['bus'],e['device'])==(owner['bus'],owner['device'])
-                    and start<=e['wall_ns']<=phase['end_wall_ns']]
-                if len(events)!=1: raise CaptureError('one matching raw physical outcome on each controller required')
-                if operation == 2:
-                    corroborate_down_property(run, phase, owner, events[0])
-                body=bytes.fromhex(events[0]['params'])
-                if len(body)<(11 if operation==1 else 4) or body[0]:
-                    raise CaptureError('successful bounded physical outcome required')
-                if owner==caller and int.from_bytes(body[1:3],'little')!=terminal['handle']:
-                    raise CaptureError('caller outcome handle disagrees with result')
-                if operation==1 and (body[3]>1 or body[4]!=0 or body[5:11]!=bytes.fromhex(remote['address'].replace(':',''))):
-                    raise CaptureError('raw physical peer/role/type mismatch')
-                if operation==1 and owner==caller and reference is not None and (body[3]!=reference['role'] or body[4]!=reference['address_type']):
-                    raise CaptureError('canonical reference must match actual physical Up role/type')
-                identity=(owner['bus'],owner['device'])
-                handle=int.from_bytes(body[1:3],'little')
-                if operation==1: handles[identity]=handle
-                elif handles.get(identity)!=handle:
-                    raise CaptureError('peer Down must match its independently observed Up handle')
-                outcomes.append(events[0])
-            steps.append(dict(command=commands[0], status=statuses[0], outcomes=outcomes, terminal=terminal))
+            step = corroborate_wire_operation(run, phase, capture, operation, command_row, terminal['handle'], handles, reference, expected_disconnect_reason)
+            steps.append(dict(**step, terminal=terminal))
         proofs.append(dict(caller=caller, peer=peer, advertisement=advertisement_proof,
             connectable_rx=heard, scan_stop=stop_proof, steps=steps))
     return proofs

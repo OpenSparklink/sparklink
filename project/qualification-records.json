@@ -13,16 +13,16 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP03-WP06-WP08-WP17-WP18-R5f9h-user-controller-return",
-    "production_behavior": "No production Rust/Kernel change;77service/143testtools/2fcKernel/SDK110US. Exact direct original-owner retiring barrier, actual held SYS_bind return and old user fd refusal, real peer settlement before original survivor scan, same daemon/new generation/HCC and16actualappreplies/44radio/8072USBdrop0. First77 Core/owner conflation FAIL and second543 scan-before-peer-settlement EBUSY/cleanup0x0b FAIL preserved. 13targeted/879tools/36input negatives/116docs;zero newformalproof.",
-    "state": "TWO_REAL_USER_CONTROLLER_ROLES_POST_READD_BUSINESS_SCOPED_PASS_TWO_RAW_FAILS_RETAINED",
+    "id": "WP18-R6c-distinct-package-revisions",
+    "production_behavior": "Actual247old/db724new development packages and matching SDKs: install0.1.0-1/upgrade0.1.0-2/rollback0.1.0-1/remove in independent noUSB vendorVM;74 actual gates,35payloadfiles/stage,three loaded owners/config/state/modes. 368Rust/883tools/17evidence negatives;original failures/warnings retained. No new RF/formalproof or architecture/scope change.",
+    "state": "DISTINCT_DEVELOPMENT_REVISION_PAIR_SCOPED_VM_PASS_FULL_ARCHITECTURE_AND_RELEASE_OPEN",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "Continue original dynamic Native creator/author cancel/release/last-fd/dup/SCM_RIGHTS/original deadline and Grant-credit-Ticket/late NOCP compositions with the same owner/Session. Two slot0 User controller roles do not complete service/dynamic/all device combinations or Kernel ref/callback/drain/UAF/firmware reuse proof. Keep real data/security/SSAP/multichannel/four-device vertical delivery parallel;not all control permutations as prerequisites. Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;UserHost P4;fullS0-S6/19WP/10FV/12DG/VM-only/strictports/SDK110/shared12or8unchanged."
+    "next": "Continue original lifecycle/dynamic/release/last-fd/dup/fd-transfer/deadline/credit-Ticket combinations with same owner/Session;bounded original gates,not all control permutations as prerequisites. R6 debug/dwz/usrmerge/dependency/supportmatrix/thirdpartylicense/SBOM/provenance/CI release and broader migration remain. Preserve actual data/security/SSAP/multichannel/four-device vertical delivery,all S0-S6/19WP/10FV/12DG/originalscopes/UserHostP4/VM-only/strictfourleaves/SDK110/shared12or8. E/mixed/coldROM andnaturalRCA/nonmanual recovery OPEN."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -220,7 +220,8 @@
     "native-creation-drain-offline-r5f9f",
     "native-creation-drain-real-r5f9f",
     "native-return-connection-retirement-r5f9g",
-    "native-controller-user-return-r5f9h"
+    "native-controller-user-return-r5f9h",
+    "debian-upgrade-rollback-r6c"
   ],
   "records": [
     {
@@ -231918,6 +231919,1791 @@
         "input-negative-controls",
         "tool-regression",
         "retain-original-failures"
+      ]
+    },
+    {
+      "id": "debian-upgrade-rollback-r6c",
+      "title": "U247→Udb724→U247：实际开发Debian修订升级/回滚、匹配SDK和状态保留限定通过",
+      "level": "virtual_integration",
+      "result": "PASS",
+      "result_binding_version": 1,
+      "contracts": [
+        "DistinctActualPackageAndLoadedDaemonIdentity",
+        "MatchingVersionInstalledSdkConsumers",
+        "ActualSystemBusRolesNotKernelAuthorization",
+        "ExplicitConffileRetentionAndOpaqueState",
+        "PostExitFilesystemMetadataAndRemoval",
+        "BoundedFailClosedQualificationNotReleaseOrRf"
+      ],
+      "bounds": {
+        "runtime_vm_runs": 1,
+        "actual_required_gates": 74,
+        "different_version_upgrades": 1,
+        "actual_rollbacks": 1,
+        "package_versions": 2,
+        "stage_payload_files": 35,
+        "loaded_daemon_replacements": 2,
+        "system_bus_role_executions": 12,
+        "policy_denials": 42,
+        "allowed_unknown_targets": 18,
+        "external_c_consumers": 6,
+        "matching_python_consumers": 3,
+        "actual_remove": 1,
+        "real_ws73_runs": 0,
+        "new_formal_proofs": 0,
+        "build_vm_attempts": 2,
+        "successful_build_vm_runs": 1,
+        "workspace_rust_tests": 368,
+        "tools_methods": 883,
+        "evidence_negative_controls": 17,
+        "build_warning_lines": 10,
+        "new_firmware_operations": 0
+      },
+      "excluded": [
+        "Finite Debian13 vendor-kernel, no USB deployment test of actual different-source development revisions 0.1.0-1 -> 0.1.0-2 -> 0.1.0-1. Old compiled source247e3a9; new compiled/guest source db724e3. Report commit is not a build identity. Runtime VM is separate from the build VM, with fresh base root and no experimental driver or host installation. Both full source archives and actual primary .deb hashes bound.",
+        "Actual package versions, 35 non-config /usr payload files per stage, loaded daemon hash/PID and unique bus owner, matching source Python and installed C/Native SDK tested at all three stages. Distinct daemon bytes are required, so relabelled same-version reinstall cannot satisfy this gate. No new-SDK/old-runtime compatibility or stable ABI promise; upstream remains unpublished0.1.0, these are development Debian revisions.",
+        "Twelve actual nonroot system-bus role executions cover42 AccessDenied and18 allowed UnknownObject results, zero controllers. Bus admission, pure SSAP permission function, EBADF and ENOTTY checks are not kernel Grant, positive SSAP/Native, Ready, socket business or real WS73 qualification. Existing actual consumers and assertions are extracted from the matching committed guest_probe, not replaced with success fixtures.",
+        "Explicit dpkg --force-confold policy preserves administrator config bytes0600/parent0700, extra config0600/parent0700 and opaque state0600 through upgrade, rollback and remove. Post-exit raw filesystem tar metadata and35payload paths independently inspected; no trusted Bond migration, arbitrary version/schema migration, crash/disk-full atomicity or unattended default conffile policy qualification.",
+        "Build uses actual pinned lab Rust1.96.1 payload, locked/offline Cargo and real Debian helper/dependency checks, 12vCPU/12jobs under shared global lock. Default workspace368Rust tests pass, none failed/ignored; all-features/support combinations not inferred. Ten dwz/usrmerge dependency warning lines remain retained and unresolved; no complete thirdparty license/SBOM/provenance/debug/release qualification.",
+        "Original first build FAIL (8guestCPU/12jobs rejected by existing budget guard), missing-host-dpkg-deb preparation failure, local fixture setup FileExists error, first all-tools environment failures (missing explicit sibling source and restricted generic Unix sockets), and first auditor directory-mode interpretation failure are preserved. No production regression/root cause inferred. New correct-environment883tools pass;17 independent evidence negatives reject partial, old source, wrong loaded identity, missing role/log, altered bytes/modes, remaining payload, SKIP/false exit and abnormal supervisor/QEMU.",
+        "Safe tar extraction discards directory permissions: audit reads original read-only-exported tar headers, not host extraction-directory modes. Original0700 assertion is unchanged. Security of filesystem/compiler/loader/vendorOS/hypervisor and tool correctness remains trusted; no new formal proof, sanitizer, RF or implementation-refinement claim.",
+        "Four thread-allocated USB serial/hub/sharedPCI pins remain read-only checked, U5EP/E2EP; rootFD visibility limited. No USB open/download/reset/power/detach or forbidden leaf/hub/controller operation. E HCC/mixed/cold-ROM qualification remains missing; no historical PASS transfer. Existing canonical whitelist, independent worktree/run root and aggregate12or8 budget unchanged.",
+        "FullS0-S6/19WP/10FV/12DG/originalissue scopes remain OPEN: full architecture/API/discovery/ownership/control combinations, deployment debug/dependencies/supplychain/release, new package actual-kernel/RF, SSAP/security/Bond/multichannel/fourdevice/performance/PM and natural fault RCA/nonmanual recovery. UserHost P4. Manual unplug/hub power/QMP/injected recovery never substitutes natural recovery."
+      ],
+      "remaining": [
+        "Only this actual development revision pair and explicit confold qualified;arbitrary schema/version/crash migration,debug/dwz/usrmerge dependencies,full thirdparty license/SBOM/provenance/CI release remain OPEN",
+        "No new package kernelGrant/RF qualification;all original architecture/lifecycle/control combinations,per-app discovery/common public flows,SSAP/security/Bond/multichannel/four/performance/PM still scoped independently",
+        "Full S0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8/UserHostP4 unchanged;natural fault RCA and nonmanual recovery OPEN"
+      ],
+      "sources": {
+        "compiled_userspace": {
+          "repo": "sparklink",
+          "commit": "db724e3e31949723e068c210aaa7aab18eb5725c",
+          "scopes": [
+            "crates",
+            "Cargo.toml",
+            "Cargo.lock",
+            "data",
+            "Makefile",
+            "debian",
+            "LICENSE",
+            "bindings/python",
+            "tools/install_layout.py",
+            "tools/build_resources.py",
+            "project/build-resource-policy.json"
+          ],
+          "files": {
+            "Cargo.lock": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+            "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+            "Makefile": "b331cc2011715937f6ccb087f6c9bb9fffc8f1157b8299f7d8c00616968b8469",
+            "bindings/python/README.md": "52370a6329e8c162d51bc1606729a3f3befacc74197500ff351efb27147a5520",
+            "bindings/python/pyproject.toml": "7bf5c0c1a25121c808be9f102444e1c542cee386e39384f76424dcb523a73eb1",
+            "bindings/python/sparklink/__init__.py": "21787314f384b205bb18fee8d09d1dff0fabcfe8d4e0c1d1950d0b2c5f1590aa",
+            "bindings/python/sparklink/_library.py": "72de10aa15b1c9383c2db8c75a43b0cdd8f86842e7344d4d8146882e92ec1fe1",
+            "bindings/python/sparklink/_validation.py": "a4dcb7967b601df96ec7332cd40827c711a2080419964a75bfd1ad08b5cf18db",
+            "bindings/python/sparklink/channel.py": "a6987c91a3640e81d213760ecdc04922f01769648b9deb754bdf9859585708f7",
+            "bindings/python/sparklink/client.py": "d8e7f7630aced47fc7e6b34aef19347d2ac7758bdf3516e6c2b78502c4ec0493",
+            "bindings/python/sparklink/native.py": "0b87e5eda601d719b8509d27ef8fd46402d14f4b44b8849c23c95919ddc2eea7",
+            "bindings/python/sparklink/ssap.py": "416fff90340d376c23c383b849a5ca15af38a4dc7e8ab73d57615b2a5caa60ad",
+            "bindings/python/sparklink/structs.py": "acb1892bf9d990a8e0ebbddeb60f850886610d30fe532a4c039e10af0d54ad38",
+            "bindings/python/tests/retired_fixture_provenance.json": "1e5da176377ed80668ed5ba9f24997de66ded189e8507f769d02c1c8aad0b2e1",
+            "bindings/python/tests/retired_kernel_layouts.h": "60dd1fb9a912ce5ddaa11536e8863187b7d306ef042353b08e7a4f7b9a1ac336",
+            "bindings/python/tests/retired_native_layouts.h": "42eedc6d1795dc5a4b47c19ed6fadcd5ac9bae581590a31cc8ce65796f2da778",
+            "bindings/python/tests/retired_ssap_permissions.h": "bd8cb10b2ba0d22297925da4743da79de9f5fcc9047c326885cb4386e13b51ef",
+            "bindings/python/tests/retired_structs.py": "92271b951011dcea67de224cf9966a6ccaa42e253c66cff55dc254530b04370f",
+            "bindings/python/tests/test_abi.py": "bfabcba6d7e84187f304802056e51fe3fa778201e922ad7c24f7a8c37fb2af7e",
+            "bindings/python/tests/test_bus_contract.py": "37efcf263bbe5598ff99ecaeb5c50611ac2053c1eeaf03350d7d9ad9de8c6a3d",
+            "bindings/python/tests/test_client_connection.py": "8e9e0640b4ff69db327c736bcdf7fc1de87be5645c6ac6b31d49ae92ed4e19fa",
+            "bindings/python/tests/test_client_socket.py": "1083fa457d97d505ff8200b4ad2dfa1a0e3ea0a710a0c1be0e858e82516da7fe",
+            "bindings/python/tests/test_genl_contract.py": "52e915a3c7a224483f900e72d1367f0ffcc29dadf85f469a2900c71e60a1560f",
+            "bindings/python/tests/test_library_loading.py": "4d1f1dbd907e83d89f0e63f71be65290df0c96b9a8075628fc2a344c5c6ea9f0",
+            "bindings/python/tests/test_native.py": "d3886df73374c70043ea10613bb62af910de16e9c38c1fe05d949ff3e412fbf2",
+            "bindings/python/tests/test_ssap_access.py": "1220bb4684cd1543a3d1d47d885c3b350b1983c5315bac1956b4a7ee558ba7e9",
+            "bindings/python/tests/test_ssap_operations.py": "6087c950532f31be64891f1d9710a2835ff9bb7341bcf9810c0eb10f8fa251a1",
+            "bindings/python/tests/test_structs.py": "11a82f649a843326f3697e76eab49dbb5553e52924069caabcfea7bdb431db73",
+            "crates/libsparklink/Cargo.toml": "110c2fd1a2b073e47ce69b7264d92981e4e87ad1c2333b9bd215a5a1c15c7a5f",
+            "crates/libsparklink/build.rs": "b3e8c5660d724b7ac271e62b4af8766aaf4da2543034480ca9d4f4890195c332",
+            "crates/libsparklink/cbindgen.toml": "43e20d719319ecbdc029e3f8ae57b136db3bf427888fc8f29033f08166493812",
+            "crates/libsparklink/include/sparklink.h": "c5add3f735bba645b5ff37703eac93821debacd4dc49879b36e8d54e6bb12dca",
+            "crates/libsparklink/src/agent.rs": "228eda84396aa941c602d6d68c0a46df919464ee3228e41dc4f1acbb541c606c",
+            "crates/libsparklink/src/client.rs": "d08132b8daaa050df18f0d8e44f19b39c107424680ebb62a9ef08ad3d500046f",
+            "crates/libsparklink/src/controller.rs": "b2e118baa9e291499927f77ad499d61c82c9154b03c9ffb006ed69086d7e1c2b",
+            "crates/libsparklink/src/ffi.rs": "3767df93edc688cf4a80c88d434e5816e06f76589101dcbafe9251780b9ed716",
+            "crates/libsparklink/src/ffi_client.rs": "82b3bdb9b689606e9ab5867d2ca86c6d783a8b696a67935d21dc823a65a9a1ec",
+            "crates/libsparklink/src/ffi_connection.rs": "eaf1c49974cbf3601c1f785e34766f88567eed639f58e7a35658559d434c7bc6",
+            "crates/libsparklink/src/lib.rs": "a32bbbe4e479deb5fb50eacaf481e3b6c843d0c805c95f2ee251c81b60a84de1",
+            "crates/libsparklink/src/peer.rs": "832620f318b104711cda8189ec743c0b3d61cf9bc934b24d5fffbe57e047a603",
+            "crates/libsparklink/src/security.rs": "e9f1b28e3126f737850caa8ee6c471b00cae73c1a4807d656a0aeb37abead0b6",
+            "crates/libsparklink/src/ssap.rs": "bb7fa9a98d1ac6fa4a0c4b4d1c4cbdbbdc68973513b938194ffb0945a871e085",
+            "crates/libsparklink/src/ssap/local.rs": "90513938236cdadf3303f0c1651711a89d771652bddb84c27bbfbb1b057c9842",
+            "crates/libsparklink/src/sync_client.rs": "815a7f930bc135644763fe349f8336cca2c3ae5e572aa3718960553bd06ebfad",
+            "crates/libsparklink/src/sync_client/tests.rs": "c5500ffa87de5e455067c196a79b9092cbeab11b8490d8bc02d6c9c6bd386d2c",
+            "crates/libsparklink/tests/application_broker.rs": "a3ae07a32d60c1aafe839d25c9a939ffebf2b4b62b410de39498714f25a0a949",
+            "crates/libsparklink/tests/application_ffi.rs": "103e20aa347b9eb919fb47a6d53194eaee20f74a20af706af1bfee13299c7266",
+            "crates/libsparklink/tests/client_scope.rs": "6f15c094a7e9f5ec53f126010131c239dcd7ab9c0680c58491ec1deaae2a3abe",
+            "crates/libsparklink/tests/controller_client.rs": "bea22dd7a490fba2631bda82cdeea7063f99dbcd407b64b139c01223e3f522c8",
+            "crates/libsparklink/tests/fixtures/application_client.c": "61d4e2a95811d60230f8c3a14aecda480fed6d35043d012c233ddb6856335f78",
+            "crates/libsparklink/tests/fixtures/application_client.py": "4f9645bbb942cd34f006738b41078254db1fec16d09a0b738ce7ec57ed86219c",
+            "crates/libsparklink/tests/local_staging_client.rs": "46425c48da1fe9a7d7b3ef114d05a5c37e655d6eb3084c2e075dad046ee5cf87",
+            "crates/libsparklink/tests/owned_client.rs": "36438c7eaf26280d14cb49c24c41875f6aabc8832fb06c725b40703b2eb2d6a3",
+            "crates/libsparklink/tests/peer_client.rs": "2c04cb8b0cbe209fd30bf0e97b0c3b88b52a4c51065bf337033e8fcf54b2df92",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "bbc1e47bacde4137cc8961ccfd1def2a0cc172eeba244561e98457cafa8f07e7",
+            "crates/libsparklink/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/Cargo.toml": "f7589f3c0b47984ca6253879138adb1c2bb22901e1477d94a432e63b0c08af56",
+            "crates/slctl/examples/bus_policy_probe.rs": "738aea7f795d823dbc2e0daf35140b42761a6dc90e1a0c0927846a4c88671351",
+            "crates/slctl/examples/native_security_agent_probe.rs": "58d191fc9163d30a24c31fbf136ea8f2eb035158109284431d0d191f9b29de5f",
+            "crates/slctl/src/commands.rs": "1ea0d4198f171ecb64d9c0cc15620446c7afebf8e3425087a62f78a8ddd73f04",
+            "crates/slctl/src/main.rs": "dfcffdf74388b78389a4037f864bbfa308a65ae62d0d00b0f9301e09cc0e10b5",
+            "crates/slctl/src/security_agent.rs": "76dd1972113be126bf51ab607eb437aa54014604f21b8082195fe786d1ce6123",
+            "crates/slctl/src/ssap_server.rs": "d63113241dad6198c3186bc12800df9ee579a3e32c152867d5f4686a1c4e8948",
+            "crates/slctl/tests/application_ssap.rs": "dec7337ebf8308d36a001fa4011042ba2503569e462f868924026e0ba6dba370",
+            "crates/slctl/tests/local_staging.rs": "9b213cf27a2ad591fdb7862e2351d894af49e6acb597bc6f62fc6c66942d89ff",
+            "crates/slctl/tests/management_owner.rs": "0665f718e90bcfe578557ee8f1333db77a5f1f89ad0f8af2e95fdb9c868142de",
+            "crates/slctl/tests/owned_local.rs": "5352abd93f1f9e4c2cdb00184b3d4da4d689c49ec68227e5d5f30c585f229b1c",
+            "crates/slctl/tests/retired_security.rs": "7cdc2f39374460b5f2073e378d4d5179657f93a3be8d43f33f5986c7e1cdb845",
+            "crates/slctl/tests/scan_freshness.rs": "bd7deb97194f01c95c62b43c63ddd4ce4f9ade4a8d9649c1f9f3c9b392998a02",
+            "crates/slctl/tests/security_agent.rs": "5711568f02d3c1c864657b1b30ce4e7693d3c23387df21dfbb76feecc3ecb608",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-channel/Cargo.toml": "1852a9e066d9d9fb966e89be6810c3ab60841a68c081c46fc280f0e679616212",
+            "crates/slk-channel/src/deadline.rs": "6ec52823f48fcc2f2f7e64dd892b7a36f776e7b39be42cf21dd6c68da74e0102",
+            "crates/slk-channel/src/lib.rs": "ff663009b9a23d1e708a1335d31edb2e4fc485341b2201099ce345381e0e3853",
+            "crates/slk-channel/src/security.rs": "0952c100016f0876f9e16e5334006042db46a022937e295ba36633b61c8c5240",
+            "crates/slk-contract/Cargo.toml": "a6c5fdf4de6e5a90cfc51c9bb91f8c6e9bff0c912bee47d0b7061a3453e0abb0",
+            "crates/slk-contract/src/lib.rs": "e2f5db6435f22f1a50618b2644be0fcb4c62b13a964c29364f274b1bd6d9bf2e",
+            "crates/slk-contract/src/security.rs": "4a63aa6821844b784e061b73d59151c51c56cac18e8fdf2ef44eb3ddcb8f1054",
+            "crates/slk-experimental/Cargo.toml": "cb5b8a8f128ddc1b70da40582eecfd2f148679c5b594da8b50669dde15c07003",
+            "crates/slk-experimental/README.md": "febc95f37c0ed8e932d168ee199f4f0c602c0ea4ab5c718252029623fb8c3aa1",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "658504ecd9499ed7cd086d7ec9f1705fb6883f387f3e2d165d17cf7c3b3177ea",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-native/Cargo.toml": "6b7291fadb49e0d6474c9d2cbc86e45ca5f9815708b1901538471f8e387cda7b",
+            "crates/slk-native/build.rs": "be3b6be28f5692fd1da3977b6ea6c6ff64349bf496f8798fbcda0222b8c5c98c",
+            "crates/slk-native/cbindgen.toml": "c772f0abb4563c75cdafbca6daf75f0ab2d7892d26d03dcbe00615c44b345504",
+            "crates/slk-native/include/sparklink_native.h": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+            "crates/slk-native/src/adapter.rs": "d0096de48a574a367b213710b50f320b90c3146bb075c54a6904eb64d6b4ea17",
+            "crates/slk-native/src/channel.rs": "ca3906dc575d0b633af3f8fcc65591ce68e67a897ea81f1373e7aca8fbc7169c",
+            "crates/slk-native/src/controller_events.rs": "5f0796edd8307b3da44eda56bff00428d842babf44524d3e8fe7247b80df931a",
+            "crates/slk-native/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/slk-native/src/ffi.rs": "f96b55125dbfce1ad4a758616e2da3f97bb572b64baddaf83aa0ca2d87440dba",
+            "crates/slk-native/src/ffi_native.rs": "6c20c5b36739376c4af24ae7fedb51c198ed8a6e6269fedaddda3659a215cf7b",
+            "crates/slk-native/src/ioctl.rs": "849d9daa032491822632ca2014d4f167bcc0635e5de65f1681c5feb9e820836b",
+            "crates/slk-native/src/lib.rs": "e0cbf35aa9abfaeea1ff6707fe8778a03503ee7b059d2ea23b30e9ec4ab69f8d",
+            "crates/slk-native/src/retired_event.rs": "399da4e4c6814435f6fa16c33fc10691316c8df0709202a912dbffa56b7e49dd",
+            "crates/slk-native/src/snoop.rs": "3cc3de4abf2d229b5ddb95bae676eacd0145d8c9bcb649a0b788d3c294304292",
+            "crates/slk-native/src/ws73_discovery.rs": "acdaac152c1590194683953896f853ffdae8ae88475f7a63a9622115e00a0a8f",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "46a3576b7c50b86aba933ba3045b7d3209698984b3d083b75c9e4ff1c19c76d6",
+            "crates/slk-protocol/src/channel.rs": "343a0ed2fc1e125c7cf7011970448613ea83dc9d733481c524d2d67adfd195c7",
+            "crates/slk-protocol/src/deadline.rs": "bca13c2674cb585fd97a083741cd414f5a044dda3feab5ee558db80567cac732",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/lib.rs": "3a329fa6c4b385f6cc4ce24327b0188b16f781d22ee2c5a81fc2aaa0aa0815a9",
+            "crates/slk-protocol/src/message_security.rs": "002108cc82f7b4e560b4d781ae067338bd1d8bb9451ea8ede4edf503117622d9",
+            "crates/slk-protocol/src/retired_types.rs": "727d3a70590115006823ec92012e1f8d00c538ef46d10894c2314fa723ef88b4",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+            "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "624407534c5b9896bf97fdd0b80a4c80f2e20bd1b3bceb6a7a4501ac9e434d0d",
+            "crates/slk-protocol/src/types.rs": "ebcccd1368abcb2bf4a20022b1e0f6be92724085ae5dd50afed4a832971e9be2",
+            "crates/slkconfig/Cargo.toml": "f5c51129cccbbd10db446c4e18a7e725cad67cdd8e002741fd6e9d57deeab069",
+            "crates/slkconfig/src/main.rs": "603c7db900894bfc70282ef5be838a8495cbca2427ce1c9953b76402444ebd75",
+            "crates/slkd/Cargo.toml": "762675a8cddbb4297dc47841faee7b40966f6f3b4acb700ca8b839f70b2a354a",
+            "crates/slkd/src/adapters.rs": "81a9b6ded6fc6b7e31699f73b6b696ecfcd89fcf26b9a2b769e66435d4525e1b",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/config.rs": "bee373a36b82ff9432ca1f3c8aea854cb11d8a7caee62602bc65ba64556f4a78",
+            "crates/slkd/src/connection.rs": "76a2896c98cd3f26765598f39903cbe5909a83c1b03de944d239e51f810b6a82",
+            "crates/slkd/src/connection_object.rs": "c817547365ed6fe8706eb1c749c9d81c3018fd8dd5c5ba494623b3962dc775f7",
+            "crates/slkd/src/controller.rs": "93d075b1ad094990e7fee97c589e62ed2b7d01d1d94b31ffd8b2decb446cf569",
+            "crates/slkd/src/dbus_iface.rs": "b3815a9d93ed54a0216a9990349f695c23fcceb8f00abdd111193e2c09c725e3",
+            "crates/slkd/src/event_loop.rs": "81f1d51d58b460b3f7f22f0983f57ef643f6bb624180cd6daaabedcdf74778c1",
+            "crates/slkd/src/event_loop_tests.rs": "8ca47947d44860bccee90bc665068a73e578a862ab7512480f52795235ef8cc5",
+            "crates/slkd/src/kernel.rs": "21483ca487eb657e4666e414d51b862472186e34d34a7a0f46a1069e89eb3297",
+            "crates/slkd/src/main.rs": "2c2926a454654f146975fa2b6d9fe8975e4d2af1a50d3b3829103bf496c60493",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "1a438ca4edcf0bd4c11b733d3c1419c5287ca7ea20fcc1f6372a5994a8d29bcb",
+            "crates/slkd/src/registration.rs": "8ad85b9c2aad253ecd3ee4997feeeeb1cfd7e8cf166f2feb3625bd537a7ba3ca",
+            "crates/slkd/src/security.rs": "0310a37899df07ab594b61cf3e2317a510e66d70474b704695ff7c15720fb467",
+            "crates/slkd/src/security_policy.rs": "4d443f35f0de81384718be82f269569712ca55e8011e2f8f211d5bace671afcf",
+            "crates/slkd/src/security_policy_tests.rs": "65f6ea3ecbadfc80e970b5459cd13d2deb0bb20517eab85b2172f5f594f0da5e",
+            "crates/slkd/src/service.rs": "d22210adcc9d0212fe50bdeff581b803493464687b5e38cd710e6b41e2f5d6f1",
+            "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+            "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+            "crates/slkd/src/ssap_database.rs": "2422a8c6dfd3940595e70c27eac9b6f834d466deb4d18a3e413320fb4fd4e3e8",
+            "crates/slkd/src/ssap_engine.rs": "6b8e13dec64794929180b08a5753b7d60625bf366ac458a599f23f5869cf0824",
+            "crates/slkd/src/state.rs": "251f04d5f933d286185950360f2445b39e6341a9c018a5026647657455d24dd2",
+            "crates/slkd/tests/config_startup.rs": "be6ebe8269e1c160844d91c31278c3306dbd117e8ae940fff8c3aa63359bcaa9",
+            "crates/slkdump/Cargo.toml": "cfa8a051c1f96f1ad16b99de57fc19aa47b99dc7f87d4382147ef5937d39ca64",
+            "crates/slkdump/src/main.rs": "6b4f7a3b271583a5b3d7fc2a3d489f9c6b822dc6f66bf127709373a2edcfe28a",
+            "crates/slkmon/Cargo.toml": "f9c218e1f1b5a0314c65e795cc89d529f271a44f245d5c3d9f7566b6679aa792",
+            "crates/slkmon/src/main.rs": "fe537266f8c5f80310709eb4247fb145cc3fb424137f6075b3123b37474c14b1",
+            "crates/slktest/Cargo.toml": "78656d09a49eb593c495d964a075a32e9911930eaf068cbfa5e6834e98491070",
+            "crates/slktest/src/benchmark.rs": "3fdade2e65655dc24cb4ccda431193beae34e5fa662f51e2d6ba72cc68507780",
+            "crates/slktest/src/benchmark/load.rs": "2d3e667b1dc9fa3c9ab1134997292990273347c288ab918e5221585c9c5dd5ff",
+            "crates/slktest/src/channel.rs": "dd76516470e1ea703b67a22b44596b94cf49edd5f5f7fbc9d98a9fee27aca0f1",
+            "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+            "crates/slktest/src/connection.rs": "614809d5a0af516d9bbd42425390ce3b123f5bc378744c068a7b1d86153fa3e6",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755",
+            "data/config/main.conf": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+            "data/man/man1/slctl.1": "dc3cf3c8adf56cf9483b57e532a99c627364893247c7118f59d9c090a91e8483",
+            "data/man/man1/slktest.1": "a60700e71e8c334bcdd84c1a4d57b9aebbe05320325100837e4b5e8bf0d2bcd6",
+            "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+            "data/man/man8/slkd.8": "55fac65b7c3093df366e6e3c7502e50f4cc84963882bba8288e0f8bbfd2c2b17",
+            "data/pkgconfig/sparklink-native.pc": "ff8cfc99e971b2a68ae293f5e284fcae8b04c973050644f4d73a54088a51a549",
+            "data/pkgconfig/sparklink.pc": "41d2d5e17ecf52bd64ff6d28b39bd2961bfeac65538d250064f645bf6eeb6b6c",
+            "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+            "data/sysusers/sparklink.conf": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+            "data/udev/99-sparklink.rules": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+            "debian/changelog": "97f2bb928bf368eb04b4614d241bc9c8e38af6ef455e3b7f7703131a8cda9b6a",
+            "debian/control": "ac26212580fdd3d51e098c483565ae22ad6c1284f7aa8044e31a5ec6db7d21fa",
+            "debian/copyright": "e7544ea498a6a658ae32ff48960202001de0a1a50c259ad4e2d451d977eb6a89",
+            "debian/libsparklink-dev.docs": "bead537895379e59c408be85aebb08c2f3fc269a132c49ba961aa82a102daf5c",
+            "debian/libsparklink-dev.install": "ba78f35dcddc7d1ebcce08b93c7342ff5fff7db5855ae3e7f990c610617ebb4f",
+            "debian/libsparklink0.docs": "bead537895379e59c408be85aebb08c2f3fc269a132c49ba961aa82a102daf5c",
+            "debian/libsparklink0.install": "f836c9c42eb49bd29f285de130e33f37ae977c0b61e883abef3f43e815f77e8c",
+            "debian/rules": "196e8e074ba42312e9431a0fe91518076bf2a0d3ac39a74d757d684f1bfcf2e7",
+            "debian/sparklink.install": "2c738b0269bf3071e4f6c2a282bb1e6c6db7deef27fcf46301ed054612b1d4dd",
+            "project/build-resource-policy.json": "a0820e592071f3b22423a0a8866d8e1f82fe933a0335ad395d61fdcdb464512f",
+            "tools/build_resources.py": "3f579f699b40a51f473927285abdc110eae83204cc35de9574f69271b29421df",
+            "tools/install_layout.py": "267c7af6fe0dd2a83932e668b065b094a032066f43ce4fcc559737899261adc3"
+          }
+        },
+        "previous_userspace": {
+          "repo": "sparklink",
+          "commit": "247e3a96569e61fee277e942cb364206ecb4edea",
+          "scopes": [
+            "crates",
+            "Cargo.toml",
+            "Cargo.lock",
+            "data",
+            "Makefile",
+            "debian",
+            "LICENSE",
+            "bindings/python",
+            "tools/install_layout.py",
+            "tools/build_resources.py",
+            "project/build-resource-policy.json",
+            "tools/testing/deployment/guest_probe.py"
+          ],
+          "files": {
+            "Cargo.lock": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+            "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+            "Makefile": "b331cc2011715937f6ccb087f6c9bb9fffc8f1157b8299f7d8c00616968b8469",
+            "bindings/python/README.md": "e7712371079f1907a914eb46a5a4c1ec434ba24df98f916be3e237502cfa204b",
+            "bindings/python/pyproject.toml": "7bf5c0c1a25121c808be9f102444e1c542cee386e39384f76424dcb523a73eb1",
+            "bindings/python/sparklink/__init__.py": "1e18db1e14faac2228ec63278b0075e601388aac01117ebf18b0cf8f39f479c2",
+            "bindings/python/sparklink/_library.py": "72de10aa15b1c9383c2db8c75a43b0cdd8f86842e7344d4d8146882e92ec1fe1",
+            "bindings/python/sparklink/_validation.py": "a4dcb7967b601df96ec7332cd40827c711a2080419964a75bfd1ad08b5cf18db",
+            "bindings/python/sparklink/channel.py": "a6987c91a3640e81d213760ecdc04922f01769648b9deb754bdf9859585708f7",
+            "bindings/python/sparklink/native.py": "0b87e5eda601d719b8509d27ef8fd46402d14f4b44b8849c23c95919ddc2eea7",
+            "bindings/python/sparklink/ssap.py": "416fff90340d376c23c383b849a5ca15af38a4dc7e8ab73d57615b2a5caa60ad",
+            "bindings/python/sparklink/structs.py": "acb1892bf9d990a8e0ebbddeb60f850886610d30fe532a4c039e10af0d54ad38",
+            "bindings/python/tests/retired_fixture_provenance.json": "1e5da176377ed80668ed5ba9f24997de66ded189e8507f769d02c1c8aad0b2e1",
+            "bindings/python/tests/retired_kernel_layouts.h": "60dd1fb9a912ce5ddaa11536e8863187b7d306ef042353b08e7a4f7b9a1ac336",
+            "bindings/python/tests/retired_native_layouts.h": "42eedc6d1795dc5a4b47c19ed6fadcd5ac9bae581590a31cc8ce65796f2da778",
+            "bindings/python/tests/retired_ssap_permissions.h": "bd8cb10b2ba0d22297925da4743da79de9f5fcc9047c326885cb4386e13b51ef",
+            "bindings/python/tests/retired_structs.py": "92271b951011dcea67de224cf9966a6ccaa42e253c66cff55dc254530b04370f",
+            "bindings/python/tests/test_abi.py": "bfabcba6d7e84187f304802056e51fe3fa778201e922ad7c24f7a8c37fb2af7e",
+            "bindings/python/tests/test_bus_contract.py": "37efcf263bbe5598ff99ecaeb5c50611ac2053c1eeaf03350d7d9ad9de8c6a3d",
+            "bindings/python/tests/test_genl_contract.py": "52e915a3c7a224483f900e72d1367f0ffcc29dadf85f469a2900c71e60a1560f",
+            "bindings/python/tests/test_library_loading.py": "4d1f1dbd907e83d89f0e63f71be65290df0c96b9a8075628fc2a344c5c6ea9f0",
+            "bindings/python/tests/test_native.py": "d3886df73374c70043ea10613bb62af910de16e9c38c1fe05d949ff3e412fbf2",
+            "bindings/python/tests/test_ssap_access.py": "1220bb4684cd1543a3d1d47d885c3b350b1983c5315bac1956b4a7ee558ba7e9",
+            "bindings/python/tests/test_ssap_operations.py": "6087c950532f31be64891f1d9710a2835ff9bb7341bcf9810c0eb10f8fa251a1",
+            "bindings/python/tests/test_structs.py": "11a82f649a843326f3697e76eab49dbb5553e52924069caabcfea7bdb431db73",
+            "crates/libsparklink/Cargo.toml": "110c2fd1a2b073e47ce69b7264d92981e4e87ad1c2333b9bd215a5a1c15c7a5f",
+            "crates/libsparklink/build.rs": "b3e8c5660d724b7ac271e62b4af8766aaf4da2543034480ca9d4f4890195c332",
+            "crates/libsparklink/cbindgen.toml": "43e20d719319ecbdc029e3f8ae57b136db3bf427888fc8f29033f08166493812",
+            "crates/libsparklink/include/sparklink.h": "475214480b0fa05ec72d42fb7ab922b67f12cc8517cca2564511c12a05a8a7ba",
+            "crates/libsparklink/src/agent.rs": "228eda84396aa941c602d6d68c0a46df919464ee3228e41dc4f1acbb541c606c",
+            "crates/libsparklink/src/client.rs": "d08132b8daaa050df18f0d8e44f19b39c107424680ebb62a9ef08ad3d500046f",
+            "crates/libsparklink/src/controller.rs": "b2e118baa9e291499927f77ad499d61c82c9154b03c9ffb006ed69086d7e1c2b",
+            "crates/libsparklink/src/ffi.rs": "3767df93edc688cf4a80c88d434e5816e06f76589101dcbafe9251780b9ed716",
+            "crates/libsparklink/src/lib.rs": "0215e50e37377fc5ed0b939c753694da2166d42c1a2e937c871ed1173249b550",
+            "crates/libsparklink/src/peer.rs": "832620f318b104711cda8189ec743c0b3d61cf9bc934b24d5fffbe57e047a603",
+            "crates/libsparklink/src/security.rs": "e9f1b28e3126f737850caa8ee6c471b00cae73c1a4807d656a0aeb37abead0b6",
+            "crates/libsparklink/src/ssap.rs": "838985089f592cd8f3b44f310ced89a1d5d0485f95dd01e26a03924684c957be",
+            "crates/libsparklink/src/ssap/local.rs": "90513938236cdadf3303f0c1651711a89d771652bddb84c27bbfbb1b057c9842",
+            "crates/libsparklink/tests/application_broker.rs": "a3ae07a32d60c1aafe839d25c9a939ffebf2b4b62b410de39498714f25a0a949",
+            "crates/libsparklink/tests/client_scope.rs": "6f15c094a7e9f5ec53f126010131c239dcd7ab9c0680c58491ec1deaae2a3abe",
+            "crates/libsparklink/tests/controller_client.rs": "bea22dd7a490fba2631bda82cdeea7063f99dbcd407b64b139c01223e3f522c8",
+            "crates/libsparklink/tests/local_staging_client.rs": "46425c48da1fe9a7d7b3ef114d05a5c37e655d6eb3084c2e075dad046ee5cf87",
+            "crates/libsparklink/tests/owned_client.rs": "36438c7eaf26280d14cb49c24c41875f6aabc8832fb06c725b40703b2eb2d6a3",
+            "crates/libsparklink/tests/peer_client.rs": "2c04cb8b0cbe209fd30bf0e97b0c3b88b52a4c51065bf337033e8fcf54b2df92",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "4c1c25bbbfa5dcef03b306cb0899259a3d7c5299321e87520a02b2fa46434e6d",
+            "crates/libsparklink/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/Cargo.toml": "f7589f3c0b47984ca6253879138adb1c2bb22901e1477d94a432e63b0c08af56",
+            "crates/slctl/examples/bus_policy_probe.rs": "3f6b3f92b89d364157b0a04285fede71fa8569b561d42bad28910d0abc3f1591",
+            "crates/slctl/examples/native_security_agent_probe.rs": "58d191fc9163d30a24c31fbf136ea8f2eb035158109284431d0d191f9b29de5f",
+            "crates/slctl/src/commands.rs": "c01a09ef217fe77b7009fd9c7cae11b2dc445d8a8a721279e25ae1ae5b0625d2",
+            "crates/slctl/src/main.rs": "dfcffdf74388b78389a4037f864bbfa308a65ae62d0d00b0f9301e09cc0e10b5",
+            "crates/slctl/src/security_agent.rs": "76dd1972113be126bf51ab607eb437aa54014604f21b8082195fe786d1ce6123",
+            "crates/slctl/src/ssap_server.rs": "d63113241dad6198c3186bc12800df9ee579a3e32c152867d5f4686a1c4e8948",
+            "crates/slctl/tests/application_ssap.rs": "597216ec4b1cde0ac77ec13a00d6309a17581fdf1ebe7872392fdb57d621ec63",
+            "crates/slctl/tests/local_staging.rs": "9b213cf27a2ad591fdb7862e2351d894af49e6acb597bc6f62fc6c66942d89ff",
+            "crates/slctl/tests/management_owner.rs": "0665f718e90bcfe578557ee8f1333db77a5f1f89ad0f8af2e95fdb9c868142de",
+            "crates/slctl/tests/owned_local.rs": "5352abd93f1f9e4c2cdb00184b3d4da4d689c49ec68227e5d5f30c585f229b1c",
+            "crates/slctl/tests/retired_security.rs": "7cdc2f39374460b5f2073e378d4d5179657f93a3be8d43f33f5986c7e1cdb845",
+            "crates/slctl/tests/scan_freshness.rs": "bd7deb97194f01c95c62b43c63ddd4ce4f9ade4a8d9649c1f9f3c9b392998a02",
+            "crates/slctl/tests/security_agent.rs": "5711568f02d3c1c864657b1b30ce4e7693d3c23387df21dfbb76feecc3ecb608",
+            "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+            "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+            "crates/slk-channel/Cargo.toml": "1852a9e066d9d9fb966e89be6810c3ab60841a68c081c46fc280f0e679616212",
+            "crates/slk-channel/src/lib.rs": "67cd996111b849076bb7e2393aef5e346bc9d8abe559b8bf3ba684d19870c3ae",
+            "crates/slk-channel/src/security.rs": "c44ee641485f6dafe06f7a7306dd25fde9ba53fcbdc4ad0e042cd6818a405480",
+            "crates/slk-contract/Cargo.toml": "a6c5fdf4de6e5a90cfc51c9bb91f8c6e9bff0c912bee47d0b7061a3453e0abb0",
+            "crates/slk-contract/src/lib.rs": "8fe91afd5eafec92e72428ca9b31f1cd6ed946ba7bfe558ee0244378e0076faa",
+            "crates/slk-contract/src/security.rs": "4a63aa6821844b784e061b73d59151c51c56cac18e8fdf2ef44eb3ddcb8f1054",
+            "crates/slk-experimental/Cargo.toml": "cb5b8a8f128ddc1b70da40582eecfd2f148679c5b594da8b50669dde15c07003",
+            "crates/slk-experimental/README.md": "febc95f37c0ed8e932d168ee199f4f0c602c0ea4ab5c718252029623fb8c3aa1",
+            "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+            "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+            "crates/slk-experimental/src/profile.rs": "658504ecd9499ed7cd086d7ec9f1705fb6883f387f3e2d165d17cf7c3b3177ea",
+            "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+            "crates/slk-native/Cargo.toml": "6b7291fadb49e0d6474c9d2cbc86e45ca5f9815708b1901538471f8e387cda7b",
+            "crates/slk-native/build.rs": "be3b6be28f5692fd1da3977b6ea6c6ff64349bf496f8798fbcda0222b8c5c98c",
+            "crates/slk-native/cbindgen.toml": "c772f0abb4563c75cdafbca6daf75f0ab2d7892d26d03dcbe00615c44b345504",
+            "crates/slk-native/include/sparklink_native.h": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+            "crates/slk-native/src/adapter.rs": "d0096de48a574a367b213710b50f320b90c3146bb075c54a6904eb64d6b4ea17",
+            "crates/slk-native/src/controller_events.rs": "5f0796edd8307b3da44eda56bff00428d842babf44524d3e8fe7247b80df931a",
+            "crates/slk-native/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+            "crates/slk-native/src/ffi.rs": "f96b55125dbfce1ad4a758616e2da3f97bb572b64baddaf83aa0ca2d87440dba",
+            "crates/slk-native/src/ffi_native.rs": "6c20c5b36739376c4af24ae7fedb51c198ed8a6e6269fedaddda3659a215cf7b",
+            "crates/slk-native/src/ioctl.rs": "849d9daa032491822632ca2014d4f167bcc0635e5de65f1681c5feb9e820836b",
+            "crates/slk-native/src/lib.rs": "74bb9dad38567fb772be4b83e56097cbdb6ff476df0b21134ceda3dd70b0306b",
+            "crates/slk-native/src/retired_event.rs": "399da4e4c6814435f6fa16c33fc10691316c8df0709202a912dbffa56b7e49dd",
+            "crates/slk-native/src/snoop.rs": "3cc3de4abf2d229b5ddb95bae676eacd0145d8c9bcb649a0b788d3c294304292",
+            "crates/slk-native/src/ws73_discovery.rs": "acdaac152c1590194683953896f853ffdae8ae88475f7a63a9622115e00a0a8f",
+            "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+            "crates/slk-protocol/src/advdata.rs": "46a3576b7c50b86aba933ba3045b7d3209698984b3d083b75c9e4ff1c19c76d6",
+            "crates/slk-protocol/src/channel.rs": "343a0ed2fc1e125c7cf7011970448613ea83dc9d733481c524d2d67adfd195c7",
+            "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+            "crates/slk-protocol/src/lib.rs": "d02ac33715bd05dc96dd8965f8729b71c6131c94b0c3c55f20641703493cbc9f",
+            "crates/slk-protocol/src/message_security.rs": "002108cc82f7b4e560b4d781ae067338bd1d8bb9451ea8ede4edf503117622d9",
+            "crates/slk-protocol/src/retired_types.rs": "727d3a70590115006823ec92012e1f8d00c538ef46d10894c2314fa723ef88b4",
+            "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+            "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+            "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+            "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+            "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+            "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+            "crates/slk-protocol/src/tests.rs": "624407534c5b9896bf97fdd0b80a4c80f2e20bd1b3bceb6a7a4501ac9e434d0d",
+            "crates/slk-protocol/src/types.rs": "ebcccd1368abcb2bf4a20022b1e0f6be92724085ae5dd50afed4a832971e9be2",
+            "crates/slkconfig/Cargo.toml": "f5c51129cccbbd10db446c4e18a7e725cad67cdd8e002741fd6e9d57deeab069",
+            "crates/slkconfig/src/main.rs": "603c7db900894bfc70282ef5be838a8495cbca2427ce1c9953b76402444ebd75",
+            "crates/slkd/Cargo.toml": "762675a8cddbb4297dc47841faee7b40966f6f3b4acb700ca8b839f70b2a354a",
+            "crates/slkd/src/adapters.rs": "a2c09a550eab96637ac680bf59d642edb7713ea0bf0a711a3c4a873151088d52",
+            "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+            "crates/slkd/src/channel.rs": "54a298d0b250921c3d8ea1a70ef562c8ecea19754569f67797594a19d8376b72",
+            "crates/slkd/src/config.rs": "bee373a36b82ff9432ca1f3c8aea854cb11d8a7caee62602bc65ba64556f4a78",
+            "crates/slkd/src/connection.rs": "76a2896c98cd3f26765598f39903cbe5909a83c1b03de944d239e51f810b6a82",
+            "crates/slkd/src/connection_object.rs": "1f95c69081d49371297e4b462ef61776215f29b0cecfb7978138ebb6ad8c4e05",
+            "crates/slkd/src/controller.rs": "93d075b1ad094990e7fee97c589e62ed2b7d01d1d94b31ffd8b2decb446cf569",
+            "crates/slkd/src/dbus_iface.rs": "b3815a9d93ed54a0216a9990349f695c23fcceb8f00abdd111193e2c09c725e3",
+            "crates/slkd/src/event_loop.rs": "40897923299bf566785e88074a5b2c9e19baba80b1902f1102ff5840dce0e7b1",
+            "crates/slkd/src/event_loop_tests.rs": "d738a24caf1d54b58d9e95e414291b0e8c30f5ee069f1a872fa90cbe60a019da",
+            "crates/slkd/src/kernel.rs": "21483ca487eb657e4666e414d51b862472186e34d34a7a0f46a1069e89eb3297",
+            "crates/slkd/src/main.rs": "af8da1e72b77ac49047232b3d89430f18759e85245fd3cc8f773027af7c70cac",
+            "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+            "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+            "crates/slkd/src/radio.rs": "1a438ca4edcf0bd4c11b733d3c1419c5287ca7ea20fcc1f6372a5994a8d29bcb",
+            "crates/slkd/src/registration.rs": "8ad85b9c2aad253ecd3ee4997feeeeb1cfd7e8cf166f2feb3625bd537a7ba3ca",
+            "crates/slkd/src/security.rs": "0310a37899df07ab594b61cf3e2317a510e66d70474b704695ff7c15720fb467",
+            "crates/slkd/src/security_policy.rs": "d90ea650bb6ada178ffbc756fedf064c5e79968b8aa6c9c1bf19f656dcb7482c",
+            "crates/slkd/src/security_policy_tests.rs": "65f6ea3ecbadfc80e970b5459cd13d2deb0bb20517eab85b2172f5f594f0da5e",
+            "crates/slkd/src/service.rs": "d22210adcc9d0212fe50bdeff581b803493464687b5e38cd710e6b41e2f5d6f1",
+            "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+            "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+            "crates/slkd/src/ssap_database.rs": "2422a8c6dfd3940595e70c27eac9b6f834d466deb4d18a3e413320fb4fd4e3e8",
+            "crates/slkd/src/ssap_engine.rs": "5c1d41cca4b2388c821b0fab776013e90890eb1b96d8741745f89c9091a5d327",
+            "crates/slkd/src/state.rs": "3c4ec48c0b04c89f33cbf118a05555d0c668563577e7bdc11b3ef0e5bbe39c08",
+            "crates/slkd/tests/config_startup.rs": "be6ebe8269e1c160844d91c31278c3306dbd117e8ae940fff8c3aa63359bcaa9",
+            "crates/slkdump/Cargo.toml": "cfa8a051c1f96f1ad16b99de57fc19aa47b99dc7f87d4382147ef5937d39ca64",
+            "crates/slkdump/src/main.rs": "6b4f7a3b271583a5b3d7fc2a3d489f9c6b822dc6f66bf127709373a2edcfe28a",
+            "crates/slkmon/Cargo.toml": "f9c218e1f1b5a0314c65e795cc89d529f271a44f245d5c3d9f7566b6679aa792",
+            "crates/slkmon/src/main.rs": "fe537266f8c5f80310709eb4247fb145cc3fb424137f6075b3123b37474c14b1",
+            "crates/slktest/Cargo.toml": "78656d09a49eb593c495d964a075a32e9911930eaf068cbfa5e6834e98491070",
+            "crates/slktest/src/benchmark.rs": "3fdade2e65655dc24cb4ccda431193beae34e5fa662f51e2d6ba72cc68507780",
+            "crates/slktest/src/benchmark/load.rs": "2d3e667b1dc9fa3c9ab1134997292990273347c288ab918e5221585c9c5dd5ff",
+            "crates/slktest/src/channel.rs": "dd76516470e1ea703b67a22b44596b94cf49edd5f5f7fbc9d98a9fee27aca0f1",
+            "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+            "crates/slktest/src/connection.rs": "614809d5a0af516d9bbd42425390ce3b123f5bc378744c068a7b1d86153fa3e6",
+            "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+            "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+            "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755",
+            "data/config/main.conf": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+            "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+            "data/dbus/sparklink.conf": "5b629a5da1be0cdf91a76787ad3229c7127e4776d9b87895ee1bba2b86fe1b66",
+            "data/man/man1/slctl.1": "dc3cf3c8adf56cf9483b57e532a99c627364893247c7118f59d9c090a91e8483",
+            "data/man/man1/slktest.1": "a60700e71e8c334bcdd84c1a4d57b9aebbe05320325100837e4b5e8bf0d2bcd6",
+            "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+            "data/man/man8/slkd.8": "55fac65b7c3093df366e6e3c7502e50f4cc84963882bba8288e0f8bbfd2c2b17",
+            "data/pkgconfig/sparklink-native.pc": "ff8cfc99e971b2a68ae293f5e284fcae8b04c973050644f4d73a54088a51a549",
+            "data/pkgconfig/sparklink.pc": "41d2d5e17ecf52bd64ff6d28b39bd2961bfeac65538d250064f645bf6eeb6b6c",
+            "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+            "data/sysusers/sparklink.conf": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+            "data/udev/99-sparklink.rules": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+            "debian/changelog": "e340f67723f1792748bfc55e1301f580163ffaca7c03693adf8205bf90f2542e",
+            "debian/control": "ac26212580fdd3d51e098c483565ae22ad6c1284f7aa8044e31a5ec6db7d21fa",
+            "debian/copyright": "e7544ea498a6a658ae32ff48960202001de0a1a50c259ad4e2d451d977eb6a89",
+            "debian/libsparklink-dev.docs": "bead537895379e59c408be85aebb08c2f3fc269a132c49ba961aa82a102daf5c",
+            "debian/libsparklink-dev.install": "ba78f35dcddc7d1ebcce08b93c7342ff5fff7db5855ae3e7f990c610617ebb4f",
+            "debian/libsparklink0.docs": "bead537895379e59c408be85aebb08c2f3fc269a132c49ba961aa82a102daf5c",
+            "debian/libsparklink0.install": "f836c9c42eb49bd29f285de130e33f37ae977c0b61e883abef3f43e815f77e8c",
+            "debian/rules": "196e8e074ba42312e9431a0fe91518076bf2a0d3ac39a74d757d684f1bfcf2e7",
+            "debian/sparklink.install": "2c738b0269bf3071e4f6c2a282bb1e6c6db7deef27fcf46301ed054612b1d4dd",
+            "project/build-resource-policy.json": "c10dfb10add9bfac7dc1001d89f8ec3dde2962e422f52d71aa94edb2a76541ba",
+            "tools/build_resources.py": "a4e2bc174be731d25e4410db3a4016954597e0bae0a3026789cab302cc9d375c",
+            "tools/install_layout.py": "267c7af6fe0dd2a83932e668b065b094a032066f43ce4fcc559737899261adc3",
+            "tools/testing/deployment/guest_probe.py": "a0e7e75399ac12e10807e21e46b9bc8f23fd46a4c2e070efa04ccb6ef71444a0"
+          }
+        },
+        "executed_guest_tools": {
+          "repo": "sparklink",
+          "commit": "db724e3e31949723e068c210aaa7aab18eb5725c",
+          "scopes": [
+            "tools/testing/deployment/debian_lifecycle_probe.py",
+            "tools/testing/deployment/guest_probe.py"
+          ],
+          "files": {
+            "tools/testing/deployment/debian_lifecycle_probe.py": "cafc2bd7acd90bdbf43255d2570e0bdec1ba925b877074458c3c3b7b09fd24bd",
+            "tools/testing/deployment/guest_probe.py": "a0e7e75399ac12e10807e21e46b9bc8f23fd46a4c2e070efa04ccb6ef71444a0"
+          }
+        }
+      },
+      "report_commit": "796cd118161685ac545d3366eb7ca2303a1259dc",
+      "artifact_materials": [
+        "debian-upgrade-rollback-r6c-m1",
+        "debian-upgrade-rollback-r6c-m2",
+        "debian-upgrade-rollback-r6c-m3",
+        "debian-upgrade-rollback-r6c-m4",
+        "debian-upgrade-rollback-r6c-m5",
+        "debian-upgrade-rollback-r6c-m6",
+        "debian-upgrade-rollback-r6c-m7",
+        "debian-upgrade-rollback-r6c-m8",
+        "debian-upgrade-rollback-r6c-m9",
+        "debian-upgrade-rollback-r6c-m10",
+        "debian-upgrade-rollback-r6c-m11",
+        "debian-upgrade-rollback-r6c-m12",
+        "debian-upgrade-rollback-r6c-m13",
+        "debian-upgrade-rollback-r6c-m14",
+        "debian-upgrade-rollback-r6c-m15",
+        "debian-upgrade-rollback-r6c-m16",
+        "debian-upgrade-rollback-r6c-m17",
+        "debian-upgrade-rollback-r6c-m18",
+        "debian-upgrade-rollback-r6c-m19",
+        "debian-upgrade-rollback-r6c-m20",
+        "debian-upgrade-rollback-r6c-m21",
+        "debian-upgrade-rollback-r6c-m22",
+        "debian-upgrade-rollback-r6c-m23",
+        "debian-upgrade-rollback-r6c-m24",
+        "debian-upgrade-rollback-r6c-m25",
+        "debian-upgrade-rollback-r6c-m26",
+        "debian-upgrade-rollback-r6c-m27",
+        "debian-upgrade-rollback-r6c-m28",
+        "debian-upgrade-rollback-r6c-m29",
+        "debian-upgrade-rollback-r6c-m30",
+        "debian-upgrade-rollback-r6c-m31",
+        "debian-upgrade-rollback-r6c-m32",
+        "debian-upgrade-rollback-r6c-m33",
+        "debian-upgrade-rollback-r6c-m34",
+        "debian-upgrade-rollback-r6c-m35",
+        "debian-upgrade-rollback-r6c-m36",
+        "debian-upgrade-rollback-r6c-m37",
+        "debian-upgrade-rollback-r6c-m38",
+        "debian-upgrade-rollback-r6c-m39",
+        "debian-upgrade-rollback-r6c-m40",
+        "debian-upgrade-rollback-r6c-m41",
+        "debian-upgrade-rollback-r6c-m42",
+        "debian-upgrade-rollback-r6c-m43",
+        "debian-upgrade-rollback-r6c-m44",
+        "debian-upgrade-rollback-r6c-m45",
+        "debian-upgrade-rollback-r6c-m46",
+        "debian-upgrade-rollback-r6c-m47",
+        "debian-upgrade-rollback-r6c-m48",
+        "debian-upgrade-rollback-r6c-m49",
+        "debian-upgrade-rollback-r6c-m50",
+        "debian-upgrade-rollback-r6c-m51",
+        "debian-upgrade-rollback-r6c-m52",
+        "debian-upgrade-rollback-r6c-m53",
+        "debian-upgrade-rollback-r6c-m54",
+        "debian-upgrade-rollback-r6c-m55",
+        "debian-upgrade-rollback-r6c-m56",
+        "debian-upgrade-rollback-r6c-m57",
+        "debian-upgrade-rollback-r6c-m58",
+        "debian-upgrade-rollback-r6c-m59",
+        "debian-upgrade-rollback-r6c-m60",
+        "debian-upgrade-rollback-r6c-m61",
+        "debian-upgrade-rollback-r6c-m62",
+        "debian-upgrade-rollback-r6c-m63",
+        "debian-upgrade-rollback-r6c-m64",
+        "debian-upgrade-rollback-r6c-m65",
+        "debian-upgrade-rollback-r6c-m66",
+        "debian-upgrade-rollback-r6c-m67",
+        "debian-upgrade-rollback-r6c-m68",
+        "debian-upgrade-rollback-r6c-m69",
+        "debian-upgrade-rollback-r6c-m70",
+        "debian-upgrade-rollback-r6c-m71",
+        "debian-upgrade-rollback-r6c-m72",
+        "debian-upgrade-rollback-r6c-m73",
+        "debian-upgrade-rollback-r6c-m74",
+        "debian-upgrade-rollback-r6c-m75",
+        "debian-upgrade-rollback-r6c-m76",
+        "debian-upgrade-rollback-r6c-m77",
+        "debian-upgrade-rollback-r6c-m78",
+        "debian-upgrade-rollback-r6c-m79",
+        "debian-upgrade-rollback-r6c-m80",
+        "debian-upgrade-rollback-r6c-m81",
+        "debian-upgrade-rollback-r6c-m82",
+        "debian-upgrade-rollback-r6c-m83",
+        "debian-upgrade-rollback-r6c-m84",
+        "debian-upgrade-rollback-r6c-m85",
+        "debian-upgrade-rollback-r6c-m86",
+        "debian-upgrade-rollback-r6c-m87",
+        "debian-upgrade-rollback-r6c-m88",
+        "debian-upgrade-rollback-r6c-m89",
+        "debian-upgrade-rollback-r6c-m90",
+        "debian-upgrade-rollback-r6c-m91",
+        "debian-upgrade-rollback-r6c-m92",
+        "debian-upgrade-rollback-r6c-m93",
+        "debian-upgrade-rollback-r6c-m94",
+        "debian-upgrade-rollback-r6c-m95",
+        "debian-upgrade-rollback-r6c-m96",
+        "debian-upgrade-rollback-r6c-m97",
+        "debian-upgrade-rollback-r6c-m98",
+        "debian-upgrade-rollback-r6c-m99",
+        "debian-upgrade-rollback-r6c-m100",
+        "debian-upgrade-rollback-r6c-m101",
+        "debian-upgrade-rollback-r6c-m102",
+        "debian-upgrade-rollback-r6c-m103",
+        "debian-upgrade-rollback-r6c-m104",
+        "debian-upgrade-rollback-r6c-m105",
+        "debian-upgrade-rollback-r6c-m106",
+        "debian-upgrade-rollback-r6c-m107",
+        "debian-upgrade-rollback-r6c-m108",
+        "debian-upgrade-rollback-r6c-m109",
+        "debian-upgrade-rollback-r6c-m110",
+        "debian-upgrade-rollback-r6c-m111",
+        "debian-upgrade-rollback-r6c-m112",
+        "debian-upgrade-rollback-r6c-m113",
+        "debian-upgrade-rollback-r6c-m114",
+        "debian-upgrade-rollback-r6c-m115",
+        "debian-upgrade-rollback-r6c-m116",
+        "debian-upgrade-rollback-r6c-m117",
+        "debian-upgrade-rollback-r6c-m118",
+        "debian-upgrade-rollback-r6c-m119",
+        "debian-upgrade-rollback-r6c-m120",
+        "debian-upgrade-rollback-r6c-m121",
+        "debian-upgrade-rollback-r6c-m122",
+        "debian-upgrade-rollback-r6c-m123",
+        "debian-upgrade-rollback-r6c-m124",
+        "debian-upgrade-rollback-r6c-m125",
+        "debian-upgrade-rollback-r6c-m126",
+        "debian-upgrade-rollback-r6c-m127",
+        "debian-upgrade-rollback-r6c-m128",
+        "debian-upgrade-rollback-r6c-m129",
+        "debian-upgrade-rollback-r6c-m130",
+        "debian-upgrade-rollback-r6c-m131",
+        "debian-upgrade-rollback-r6c-m132",
+        "debian-upgrade-rollback-r6c-m133",
+        "debian-upgrade-rollback-r6c-m134",
+        "debian-upgrade-rollback-r6c-m135",
+        "debian-upgrade-rollback-r6c-m136",
+        "debian-upgrade-rollback-r6c-m137",
+        "debian-upgrade-rollback-r6c-m138",
+        "debian-upgrade-rollback-r6c-m139",
+        "debian-upgrade-rollback-r6c-m140",
+        "debian-upgrade-rollback-r6c-m141",
+        "debian-upgrade-rollback-r6c-m142",
+        "debian-upgrade-rollback-r6c-m143",
+        "debian-upgrade-rollback-r6c-m144",
+        "debian-upgrade-rollback-r6c-m145",
+        "debian-upgrade-rollback-r6c-m146",
+        "debian-upgrade-rollback-r6c-m147",
+        "debian-upgrade-rollback-r6c-m148",
+        "debian-upgrade-rollback-r6c-m149",
+        "debian-upgrade-rollback-r6c-m150",
+        "debian-upgrade-rollback-r6c-m151",
+        "debian-upgrade-rollback-r6c-m152",
+        "debian-upgrade-rollback-r6c-m153",
+        "debian-upgrade-rollback-r6c-m154",
+        "debian-upgrade-rollback-r6c-m155",
+        "debian-upgrade-rollback-r6c-m156",
+        "debian-upgrade-rollback-r6c-m157",
+        "debian-upgrade-rollback-r6c-m158",
+        "debian-upgrade-rollback-r6c-m159",
+        "debian-upgrade-rollback-r6c-m160",
+        "debian-upgrade-rollback-r6c-m161",
+        "debian-upgrade-rollback-r6c-m162",
+        "debian-upgrade-rollback-r6c-m163",
+        "debian-upgrade-rollback-r6c-m164",
+        "debian-upgrade-rollback-r6c-m165",
+        "debian-upgrade-rollback-r6c-m166",
+        "debian-upgrade-rollback-r6c-m167",
+        "debian-upgrade-rollback-r6c-m168",
+        "debian-upgrade-rollback-r6c-m169",
+        "debian-upgrade-rollback-r6c-m170",
+        "debian-upgrade-rollback-r6c-m171",
+        "debian-upgrade-rollback-r6c-m172",
+        "debian-upgrade-rollback-r6c-m173",
+        "debian-upgrade-rollback-r6c-m174",
+        "debian-upgrade-rollback-r6c-m175",
+        "debian-upgrade-rollback-r6c-m176",
+        "debian-upgrade-rollback-r6c-m177",
+        "debian-upgrade-rollback-r6c-m178",
+        "debian-upgrade-rollback-r6c-m179",
+        "debian-upgrade-rollback-r6c-m180",
+        "debian-upgrade-rollback-r6c-m181",
+        "debian-upgrade-rollback-r6c-m182",
+        "debian-upgrade-rollback-r6c-m183",
+        "debian-upgrade-rollback-r6c-m184",
+        "debian-upgrade-rollback-r6c-m185",
+        "debian-upgrade-rollback-r6c-m186",
+        "debian-upgrade-rollback-r6c-m187",
+        "debian-upgrade-rollback-r6c-m188",
+        "debian-upgrade-rollback-r6c-m189",
+        "debian-upgrade-rollback-r6c-m190",
+        "debian-upgrade-rollback-r6c-m191",
+        "debian-upgrade-rollback-r6c-m192",
+        "debian-upgrade-rollback-r6c-m193",
+        "debian-upgrade-rollback-r6c-m194",
+        "debian-upgrade-rollback-r6c-m195",
+        "debian-upgrade-rollback-r6c-m196",
+        "debian-upgrade-rollback-r6c-m197",
+        "debian-upgrade-rollback-r6c-m198",
+        "debian-upgrade-rollback-r6c-m199",
+        "debian-upgrade-rollback-r6c-m200",
+        "debian-upgrade-rollback-r6c-m201",
+        "debian-upgrade-rollback-r6c-m202",
+        "debian-upgrade-rollback-r6c-m203",
+        "debian-upgrade-rollback-r6c-m204",
+        "debian-upgrade-rollback-r6c-m205",
+        "debian-upgrade-rollback-r6c-m206"
+      ],
+      "tool_materials": [
+        "debian-upgrade-rollback-r6c-m68",
+        "debian-upgrade-rollback-r6c-m78",
+        "debian-upgrade-rollback-r6c-m190",
+        "debian-upgrade-rollback-r6c-m203",
+        "debian-upgrade-rollback-r6c-m13",
+        "debian-upgrade-rollback-r6c-m83"
+      ],
+      "configuration_materials": [
+        "debian-upgrade-rollback-r6c-m70",
+        "debian-upgrade-rollback-r6c-m77",
+        "debian-upgrade-rollback-r6c-m193",
+        "debian-upgrade-rollback-r6c-m202"
+      ],
+      "report": {
+        "material": "debian-upgrade-rollback-r6c-m1",
+        "verdict_pointer": [
+          "result"
+        ],
+        "verdict_results": {
+          "PASS": "PASS"
+        },
+        "scope_pointer": [
+          "scope"
+        ],
+        "bounds_pointer": [
+          "bounds"
+        ],
+        "source_pointers": {
+          "compiled_userspace": [
+            "compiled_userspace"
+          ],
+          "previous_userspace": [
+            "previous_userspace"
+          ],
+          "executed_guest_tools": [
+            "executed_guest_tools"
+          ]
+        },
+        "gate_rows_pointer": [
+          "gates"
+        ]
+      },
+      "gates": [
+        {
+          "id": "apt-update",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m91"
+          ],
+          "report_pointer": [
+            "gates",
+            0
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "tools",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m153"
+          ],
+          "report_pointer": [
+            "gates",
+            1
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "version-order",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m186"
+          ],
+          "report_pointer": [
+            "gates",
+            2
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "source-old",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m152"
+          ],
+          "report_pointer": [
+            "gates",
+            3
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "source-new",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m151"
+          ],
+          "report_pointer": [
+            "gates",
+            4
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "user-observer",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m183"
+          ],
+          "report_pointer": [
+            "gates",
+            5
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "user-application",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m181"
+          ],
+          "report_pointer": [
+            "gates",
+            6
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "user-publisher",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m184"
+          ],
+          "report_pointer": [
+            "gates",
+            7
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "user-manager",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m182"
+          ],
+          "report_pointer": [
+            "gates",
+            8
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "venv",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m185"
+          ],
+          "report_pointer": [
+            "gates",
+            9
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-apt",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m92"
+          ],
+          "report_pointer": [
+            "gates",
+            10
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-package-status",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m102"
+          ],
+          "report_pointer": [
+            "gates",
+            11
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-service-active",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m112"
+          ],
+          "report_pointer": [
+            "gates",
+            12
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-service-identity",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m113"
+          ],
+          "report_pointer": [
+            "gates",
+            13
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-config-check",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m95"
+          ],
+          "report_pointer": [
+            "gates",
+            14
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-policy-observer",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m107"
+          ],
+          "report_pointer": [
+            "gates",
+            15
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-policy-application",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m105"
+          ],
+          "report_pointer": [
+            "gates",
+            16
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-policy-publisher",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m108"
+          ],
+          "report_pointer": [
+            "gates",
+            17
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-policy-manager",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m106"
+          ],
+          "report_pointer": [
+            "gates",
+            18
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-python-wheel",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m111"
+          ],
+          "report_pointer": [
+            "gates",
+            19
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-python-install",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m110"
+          ],
+          "report_pointer": [
+            "gates",
+            20
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-external-python",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m96"
+          ],
+          "report_pointer": [
+            "gates",
+            21
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-pkgconfig-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m104"
+          ],
+          "report_pointer": [
+            "gates",
+            22
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-compile-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m94"
+          ],
+          "report_pointer": [
+            "gates",
+            23
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-external-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m98"
+          ],
+          "report_pointer": [
+            "gates",
+            24
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-needed-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m101"
+          ],
+          "report_pointer": [
+            "gates",
+            25
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-pkgconfig-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m103"
+          ],
+          "report_pointer": [
+            "gates",
+            26
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-compile-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m93"
+          ],
+          "report_pointer": [
+            "gates",
+            27
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-external-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m97"
+          ],
+          "report_pointer": [
+            "gates",
+            28
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "install-needed-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m100"
+          ],
+          "report_pointer": [
+            "gates",
+            29
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-apt",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m154"
+          ],
+          "report_pointer": [
+            "gates",
+            30
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-package-status",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m164"
+          ],
+          "report_pointer": [
+            "gates",
+            31
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-service-active",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m174"
+          ],
+          "report_pointer": [
+            "gates",
+            32
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-service-identity",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m175"
+          ],
+          "report_pointer": [
+            "gates",
+            33
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-config-check",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m157"
+          ],
+          "report_pointer": [
+            "gates",
+            34
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-policy-observer",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m169"
+          ],
+          "report_pointer": [
+            "gates",
+            35
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-policy-application",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m167"
+          ],
+          "report_pointer": [
+            "gates",
+            36
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-policy-publisher",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m170"
+          ],
+          "report_pointer": [
+            "gates",
+            37
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-policy-manager",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m168"
+          ],
+          "report_pointer": [
+            "gates",
+            38
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-python-wheel",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m173"
+          ],
+          "report_pointer": [
+            "gates",
+            39
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-python-install",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m172"
+          ],
+          "report_pointer": [
+            "gates",
+            40
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-external-python",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m158"
+          ],
+          "report_pointer": [
+            "gates",
+            41
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-pkgconfig-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m166"
+          ],
+          "report_pointer": [
+            "gates",
+            42
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-compile-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m156"
+          ],
+          "report_pointer": [
+            "gates",
+            43
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-external-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m160"
+          ],
+          "report_pointer": [
+            "gates",
+            44
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-needed-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m163"
+          ],
+          "report_pointer": [
+            "gates",
+            45
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-pkgconfig-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m165"
+          ],
+          "report_pointer": [
+            "gates",
+            46
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-compile-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m155"
+          ],
+          "report_pointer": [
+            "gates",
+            47
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-external-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m159"
+          ],
+          "report_pointer": [
+            "gates",
+            48
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "upgrade-needed-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m162"
+          ],
+          "report_pointer": [
+            "gates",
+            49
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-apt",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m124"
+          ],
+          "report_pointer": [
+            "gates",
+            50
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-package-status",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m134"
+          ],
+          "report_pointer": [
+            "gates",
+            51
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-service-active",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m144"
+          ],
+          "report_pointer": [
+            "gates",
+            52
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-service-identity",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m145"
+          ],
+          "report_pointer": [
+            "gates",
+            53
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-config-check",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m127"
+          ],
+          "report_pointer": [
+            "gates",
+            54
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-policy-observer",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m139"
+          ],
+          "report_pointer": [
+            "gates",
+            55
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-policy-application",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m137"
+          ],
+          "report_pointer": [
+            "gates",
+            56
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-policy-publisher",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m140"
+          ],
+          "report_pointer": [
+            "gates",
+            57
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-policy-manager",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m138"
+          ],
+          "report_pointer": [
+            "gates",
+            58
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-python-wheel",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m143"
+          ],
+          "report_pointer": [
+            "gates",
+            59
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-python-install",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m142"
+          ],
+          "report_pointer": [
+            "gates",
+            60
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-external-python",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m128"
+          ],
+          "report_pointer": [
+            "gates",
+            61
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-pkgconfig-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m136"
+          ],
+          "report_pointer": [
+            "gates",
+            62
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-compile-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m126"
+          ],
+          "report_pointer": [
+            "gates",
+            63
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-external-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m130"
+          ],
+          "report_pointer": [
+            "gates",
+            64
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-needed-sparklink",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m133"
+          ],
+          "report_pointer": [
+            "gates",
+            65
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-pkgconfig-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m135"
+          ],
+          "report_pointer": [
+            "gates",
+            66
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-compile-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m125"
+          ],
+          "report_pointer": [
+            "gates",
+            67
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-external-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m129"
+          ],
+          "report_pointer": [
+            "gates",
+            68
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "rollback-needed-sparklink-native",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m132"
+          ],
+          "report_pointer": [
+            "gates",
+            69
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "remove",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m121"
+          ],
+          "report_pointer": [
+            "gates",
+            70
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "removed-state",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m122"
+          ],
+          "report_pointer": [
+            "gates",
+            71
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "journal",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m119"
+          ],
+          "report_pointer": [
+            "gates",
+            72
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "kernel-log",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m120"
+          ],
+          "report_pointer": [
+            "gates",
+            73
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "actual-pinned-build-and-default-workspace-tests",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m60"
+          ],
+          "report_pointer": [
+            "gates",
+            74
+          ],
+          "reported_status": "PASS"
+        },
+        {
+          "id": "independent-post-state-and-seventeen-negative-controls",
+          "result": "PASS",
+          "materials": [
+            "debian-upgrade-rollback-r6c-m1",
+            "debian-upgrade-rollback-r6c-m16"
+          ],
+          "report_pointer": [
+            "gates",
+            75
+          ],
+          "reported_status": "PASS"
+        }
+      ],
+      "required_gates": [
+        "apt-update",
+        "tools",
+        "version-order",
+        "source-old",
+        "source-new",
+        "user-observer",
+        "user-application",
+        "user-publisher",
+        "user-manager",
+        "venv",
+        "install-apt",
+        "install-package-status",
+        "install-service-active",
+        "install-service-identity",
+        "install-config-check",
+        "install-policy-observer",
+        "install-policy-application",
+        "install-policy-publisher",
+        "install-policy-manager",
+        "install-python-wheel",
+        "install-python-install",
+        "install-external-python",
+        "install-pkgconfig-sparklink",
+        "install-compile-sparklink",
+        "install-external-sparklink",
+        "install-needed-sparklink",
+        "install-pkgconfig-sparklink-native",
+        "install-compile-sparklink-native",
+        "install-external-sparklink-native",
+        "install-needed-sparklink-native",
+        "upgrade-apt",
+        "upgrade-package-status",
+        "upgrade-service-active",
+        "upgrade-service-identity",
+        "upgrade-config-check",
+        "upgrade-policy-observer",
+        "upgrade-policy-application",
+        "upgrade-policy-publisher",
+        "upgrade-policy-manager",
+        "upgrade-python-wheel",
+        "upgrade-python-install",
+        "upgrade-external-python",
+        "upgrade-pkgconfig-sparklink",
+        "upgrade-compile-sparklink",
+        "upgrade-external-sparklink",
+        "upgrade-needed-sparklink",
+        "upgrade-pkgconfig-sparklink-native",
+        "upgrade-compile-sparklink-native",
+        "upgrade-external-sparklink-native",
+        "upgrade-needed-sparklink-native",
+        "rollback-apt",
+        "rollback-package-status",
+        "rollback-service-active",
+        "rollback-service-identity",
+        "rollback-config-check",
+        "rollback-policy-observer",
+        "rollback-policy-application",
+        "rollback-policy-publisher",
+        "rollback-policy-manager",
+        "rollback-python-wheel",
+        "rollback-python-install",
+        "rollback-external-python",
+        "rollback-pkgconfig-sparklink",
+        "rollback-compile-sparklink",
+        "rollback-external-sparklink",
+        "rollback-needed-sparklink",
+        "rollback-pkgconfig-sparklink-native",
+        "rollback-compile-sparklink-native",
+        "rollback-external-sparklink-native",
+        "rollback-needed-sparklink-native",
+        "remove",
+        "removed-state",
+        "journal",
+        "kernel-log",
+        "actual-pinned-build-and-default-workspace-tests",
+        "independent-post-state-and-seventeen-negative-controls"
       ]
     }
   ],
@@ -498122,6 +499908,1654 @@
       "base": "workspace",
       "access": "private",
       "format": "json"
+    },
+    "debian-upgrade-rollback-r6c-m1": {
+      "path": "docs/evidence/debian-upgrade-rollback-20261018.json",
+      "sha256": "4f4d584a876abcd0dd376e1da6f9c1ec9473c50063855c71fe0c8d48c46a39d7",
+      "bytes": 67809,
+      "base": "repo",
+      "format": "json",
+      "access": "public"
+    },
+    "debian-upgrade-rollback-r6c-m2": {
+      "path": ".dev/architecture-r6b-package-v5/export/artifacts/libsparklink-dev_0.1.0-1_amd64.deb",
+      "sha256": "3f161028c1b48c11de134782201112ae04244bd17da21c8bc72f7c27eb22723d",
+      "bytes": 21116,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m3": {
+      "path": ".dev/architecture-r6b-package-v5/export/artifacts/libsparklink0_0.1.0-1_amd64.deb",
+      "sha256": "9afd8aa74aff5a8f17fd42d7d50677d7cb21c3ed5bf514e4775867a3c7e8415d",
+      "bytes": 271836,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m4": {
+      "path": ".dev/architecture-r6b-package-v5/export/artifacts/sparklink_0.1.0-1_amd64.deb",
+      "sha256": "4c4323597f8611159631d23e124b63231f7673c1339f5fe4117bf02f5130d946",
+      "bytes": 3789892,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m5": {
+      "path": ".dev/main-thread-01a120fe/allocation-r6c-wip-v1.json",
+      "sha256": "d510de12f5631f099576116d051d1ce63ece014a6a0afcf611e2bfcebe7b86b7",
+      "bytes": 1695,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m6": {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-build-v2.log",
+      "sha256": "028a052829e960c4dc055b3e9932a1a71c8b57e00e14543299b391bfc0acd8df",
+      "bytes": 921,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m7": {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-guards-v2.log",
+      "sha256": "d9fc1e930abc84ad545cecacccb0bc0f7da87115e826879eb081b65f0baae4e2",
+      "bytes": 1809,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m8": {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-refresh-v2.json",
+      "sha256": "d7c55413ee8a302b7ea37b6b1c22cf61a8f9a91c39040102138231349cfa4176",
+      "bytes": 4622,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m9": {
+      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-refresh-v2.py",
+      "sha256": "57cca314818a8f95a670f7db2f357f658dd08d9927930334ec433d43a1c147ca",
+      "bytes": 4152,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m10": {
+      "path": ".dev/main-thread-01a120fe/r6c-all-tools-v1.log",
+      "sha256": "333898f5bb4df91f41f80e5ba92944f81cef58031f3b23d94a6cfa5f14c595da",
+      "bytes": 8119,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m11": {
+      "path": ".dev/main-thread-01a120fe/r6c-all-tools-v2.log",
+      "sha256": "74ab750a5fe4d3028d4bf7ada6121d64471d371683db5914dde5dcd66a713f81",
+      "bytes": 1059,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m12": {
+      "path": ".dev/main-thread-01a120fe/r6c-audit-lifecycle-v1.py",
+      "sha256": "d450e6c80c3d8d05f3e69e826fd93117c1dab0749fde922b521d279d6432685a",
+      "bytes": 8339,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m13": {
+      "path": ".dev/main-thread-01a120fe/r6c-audit-lifecycle-v2.py",
+      "sha256": "fea262d868ba1e28036eb62029427093384188dfd7b0814a33eda5783c0e9cea",
+      "bytes": 8687,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m14": {
+      "path": ".dev/main-thread-01a120fe/r6c-existing-consumers-v1.log",
+      "sha256": "19adad5af73b431ffa205d9bed64876d6bd5ee815f58a6ef7ae0a08f1c851076",
+      "bytes": 406,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m15": {
+      "path": ".dev/main-thread-01a120fe/r6c-independent-audit-v1.log",
+      "sha256": "ef8c51f2ec57a467775f5a74bfcaf25460c022f21bda251ef758310f49073828",
+      "bytes": 711,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m16": {
+      "path": ".dev/main-thread-01a120fe/r6c-independent-audit-v2.json",
+      "sha256": "690ef7157456f87894b578b9418f309475bb9ce43d73805985f7a4dce55ac62c",
+      "bytes": 1054,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m17": {
+      "path": ".dev/main-thread-01a120fe/r6c-independent-audit-v2.log",
+      "sha256": "5ef92a92785ab0d88edd748cbf8ecfa75d1b63142aaeff52a415de81397e0a55",
+      "bytes": 906,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m18": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/10-slkr6.network",
+      "sha256": "3c0023ce4a077925e827c2af9af9a19a695d7df2d24d4cff73a1b0ea6a9105ee",
+      "bytes": 42,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m19": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/console.log",
+      "sha256": "e0708277ad12576fbe6c7d10330a02ce1935b72303e7da67e5383d95978b4c90",
+      "bytes": 69403,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m20": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/create-data.log",
+      "sha256": "f7baafc67dc5b52a24ad0749687279eb00bd513ef3097c80f01f9a3211c87da8",
+      "bytes": 347,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m21": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/create-overlay.log",
+      "sha256": "9fa62bc6bfced2434b88d392f5545db90402ca20b08bd7318023b331d7e78b80",
+      "bytes": 384,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m22": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/apt-install.log",
+      "sha256": "1ac10ea4e9bef13ef0b72abaf4f215f653458163ccac5c26bdfe0dd8de572620",
+      "bytes": 32931,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m23": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/apt-update.log",
+      "sha256": "526ac9740c5afc9032ab139b9c71602d2ce93e54b32cb1170731701842b83222",
+      "bytes": 1428,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m24": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/build-dependencies.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m25": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/package-build.log",
+      "sha256": "932be6fc9599e2aafdc2fdf2288948ee5950e979512306af05407c63d25d3dfc",
+      "bytes": 2025,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m26": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/real-package-files.log",
+      "sha256": "426f013e0e002bf4459e80c3f32674d5954684a7fcf75a74f1e3057abad09869",
+      "bytes": 283374,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m27": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/real-packaged-cargo.log",
+      "sha256": "b1e146f4c74466cbfc3f0c9ab7f510ec1c325df3538507bbd86a4433d57a8d3e",
+      "bytes": 337,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m28": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/real-packaged-rustc.log",
+      "sha256": "2af3376cb254e69564e00978cada767f05432a299af78300c47d14c103366c1e",
+      "bytes": 196,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m29": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/result.json",
+      "sha256": "091f9af35fa43ae9a56892cb8f6ce31bffc92bcf60ec502e96003720631fd3bc",
+      "bytes": 4048,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m30": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/source-extract.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m31": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/export/raw/toolchain-package-install.log",
+      "sha256": "56c794534ff1e7ebc1b7951432962b86ad52d49fb902cd9deb209a8ae3948f4c",
+      "bytes": 343,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m32": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/guest-marker",
+      "sha256": "12a38a849f7482da13835113e262858288f68b985388e22ba1be0323a6b368f4",
+      "bytes": 30,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m33": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/guest.py",
+      "sha256": "3815be081e8c6a552835b1e4801db0c4dbc744e086cb338733b3731719880b78",
+      "bytes": 3245,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m34": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/inject-test.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m35": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/input-manifest.json",
+      "sha256": "f2fd5ae9e43cb63c53911517ba717c0bd212b59475b7926ad66280787ae052bd",
+      "bytes": 948,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m36": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/populate-data.log",
+      "sha256": "2993687b06b48275efebae88ca7f572f7d8d768bee54ce13981e379f162aa312",
+      "bytes": 150,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m37": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/prepare-supervisor.log",
+      "sha256": "2bc5d3b40edd71a090994c61279f507e589090a6887a85e77de1bd11a1e4fe2a",
+      "bytes": 90,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m38": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/prepare.py",
+      "sha256": "0c987c0cc87df309d17b3887bde1213b7ec36dc09bdd446c5554b2c057f39548",
+      "bytes": 3148,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m39": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/prepared.json",
+      "sha256": "f78fa8d6297c5fe730a52aa55a94089d4cf72f78d9efad0dab525b5394b4b526",
+      "bytes": 172,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m40": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/qemu.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m41": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/resolv.conf",
+      "sha256": "cc002ee0eb2e8702c97d16f4ce628841cd5fe10195875a075432e92248741424",
+      "bytes": 20,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m42": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/run.json",
+      "sha256": "4c98f7101dbb674dbadbd4d866bd25190ba5a70240130b5fe76267325207ed68",
+      "bytes": 1522,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m43": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/run.py",
+      "sha256": "c9a284f2cf15871ff8fc8e56a40e8d36be3056278fc26213ef64087d9e8b1d49",
+      "bytes": 2101,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m44": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/slkr6.service",
+      "sha256": "0d59a0b43e532bc03cc085670f5f09bac39a27b7381ff5099a1e0fadd012eb04",
+      "bytes": 393,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m45": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v1/supervisor.log",
+      "sha256": "38411105fcaf209568815eac44d24eda630771ebe4d5ebf653785766a36a9ae5",
+      "bytes": 1352,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m46": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/10-slkr6.network",
+      "sha256": "3c0023ce4a077925e827c2af9af9a19a695d7df2d24d4cff73a1b0ea6a9105ee",
+      "bytes": 42,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m47": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/console.log",
+      "sha256": "8e5a0569300feb2fb65456dc06851c40ef20dfb9848988d97b4c16509b978d30",
+      "bytes": 64006,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m48": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/create-data.log",
+      "sha256": "49dd87ab53bc0b140c05bbfb7b5305d27ca65692d7a50e13b0c4e66bac00a0b4",
+      "bytes": 347,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m49": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/create-overlay.log",
+      "sha256": "674e99d61f85f56e3d843d54886305d087d9f82d2043e22294b6d5a0253ffebd",
+      "bytes": 384,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m50": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/libsparklink-dev_0.1.0-2_amd64.deb",
+      "sha256": "e17da902792ec036af6fb0ee7663b0ddca596e6fdd1239c132ca60e0f896cd1e",
+      "bytes": 23164,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m51": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/libsparklink0-dbgsym_0.1.0-2_amd64.deb",
+      "sha256": "e95d55292d55f780032e19a3b367d1e7dec996c7c4d07dc3e9c998b42553cc9c",
+      "bytes": 155444,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m52": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/libsparklink0_0.1.0-2_amd64.deb",
+      "sha256": "496d53f16888d7e854ccd0ca5e56e68e3a2126ed5789e01793960cb35ae189d2",
+      "bytes": 994456,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m53": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/sparklink-dbgsym_0.1.0-2_amd64.deb",
+      "sha256": "b3f9ad578be79bff178a3748fc40079f958d2d37ce26893e307bd624d9fd0f02",
+      "bytes": 575788,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m54": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/sparklink_0.1.0-2_amd64.buildinfo",
+      "sha256": "3443fdff0d1e4b9560cb3eca1f4a7a99cd19455cc24738a081c32ef6212fca8a",
+      "bytes": 6428,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m55": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/sparklink_0.1.0-2_amd64.changes",
+      "sha256": "7a29001b0766bba53969e6c775b3e40a56dfc13164e4d7dcb78e4b8527eb12b8",
+      "bytes": 2496,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m56": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/artifacts/sparklink_0.1.0-2_amd64.deb",
+      "sha256": "c814469fe73396675ca206f69541f8b84606141d420d3bcf5c16aafef8eef194",
+      "bytes": 3871208,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m57": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/apt-install.log",
+      "sha256": "0c163bcb5a4a541a11711608963ae9f6011895ffc07f90f9f8cbd36a477093ab",
+      "bytes": 32931,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m58": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/apt-update.log",
+      "sha256": "7b0cfbc6e452c61147c37bbd9a9b5302dd3ddaaec90e09e0758374be2c420c1c",
+      "bytes": 1427,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m59": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/build-dependencies.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m60": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/package-build.log",
+      "sha256": "3e67dab54dfe48d934641e5a522b5027b984e4d0154a525b1b6fe20e2638c084",
+      "bytes": 59995,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m61": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/real-package-files.log",
+      "sha256": "426f013e0e002bf4459e80c3f32674d5954684a7fcf75a74f1e3057abad09869",
+      "bytes": 283374,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m62": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/real-packaged-cargo.log",
+      "sha256": "b1e146f4c74466cbfc3f0c9ab7f510ec1c325df3538507bbd86a4433d57a8d3e",
+      "bytes": 337,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m63": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/real-packaged-rustc.log",
+      "sha256": "2af3376cb254e69564e00978cada767f05432a299af78300c47d14c103366c1e",
+      "bytes": 196,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m64": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/result.json",
+      "sha256": "e16ea7a48a2c86178adcd10812e28fb7ac3640867ddf8cf8ff6fac289108ef0f",
+      "bytes": 3285,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m65": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/source-extract.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m66": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/export/raw/toolchain-package-install.log",
+      "sha256": "56c794534ff1e7ebc1b7951432962b86ad52d49fb902cd9deb209a8ae3948f4c",
+      "bytes": 343,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m67": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/guest-marker",
+      "sha256": "12a38a849f7482da13835113e262858288f68b985388e22ba1be0323a6b368f4",
+      "bytes": 30,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m68": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/guest.py",
+      "sha256": "38283f1149b05a7cac7b292729b70b5668054a8fd04d4e97d4820bc7b45c5fef",
+      "bytes": 3245,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m69": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/inject-test.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m70": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/input-manifest.json",
+      "sha256": "32272580ce83b4cb4aaea6d3a62b1d99499eb5f5fcb526cfc561dacf27154f25",
+      "bytes": 1056,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m71": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/populate-data.log",
+      "sha256": "2993687b06b48275efebae88ca7f572f7d8d768bee54ce13981e379f162aa312",
+      "bytes": 150,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m72": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/prepare-supervisor.log",
+      "sha256": "2bc5d3b40edd71a090994c61279f507e589090a6887a85e77de1bd11a1e4fe2a",
+      "bytes": 90,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m73": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/prepare.py",
+      "sha256": "7155ea8042a6efc67a6002991010245bf8fd02b7761ee094b74a78319a9b3dbc",
+      "bytes": 3148,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m74": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/prepared.json",
+      "sha256": "52c51e60e9aa90cc32b348bc876aba40103cf71c5927a4e25080f2aec24dc4e6",
+      "bytes": 172,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m75": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/qemu.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m76": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/resolv.conf",
+      "sha256": "cc002ee0eb2e8702c97d16f4ce628841cd5fe10195875a075432e92248741424",
+      "bytes": 20,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m77": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/run.json",
+      "sha256": "53f4b31955bb38bb6e04d1d03db1b7e36aee053388c61961922518722a711e03",
+      "bytes": 1523,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m78": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/run.py",
+      "sha256": "1382cae4dae3ceaae4239588f2d9134e746e92ee2aa050a3f33b59e8d9d2819d",
+      "bytes": 2169,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m79": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/slkr6.service",
+      "sha256": "0d59a0b43e532bc03cc085670f5f09bac39a27b7381ff5099a1e0fadd012eb04",
+      "bytes": 393,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m80": {
+      "path": ".dev/main-thread-01a120fe/r6c-package-v2/supervisor.log",
+      "sha256": "586c965d943b50716704a8c196faddb6efd960daec4164b8022c41befc9ba1d3",
+      "bytes": 1353,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m81": {
+      "path": ".dev/main-thread-01a120fe/r6c-preparation-first-failure.json",
+      "sha256": "7a8d78891e99b26af0c0b76fb5cc43ade5fc92e9895f451fb59812e1f655da40",
+      "bytes": 437,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m82": {
+      "path": ".dev/main-thread-01a120fe/r6c-prepare-lifecycle-v1.py",
+      "sha256": "5b95c5062fd3bdc31bf251429dbd281e346b434fef85ffc25965c0c26f11cf94",
+      "bytes": 4224,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m83": {
+      "path": ".dev/main-thread-01a120fe/r6c-prepare-lifecycle-v2.py",
+      "sha256": "0367a173732d667c171e374d458293ffa4fde671e0570abbeafcec614de60c6d",
+      "bytes": 4619,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m84": {
+      "path": ".dev/main-thread-01a120fe/r6c-probe-offline-v1.log",
+      "sha256": "0f66f0568a90d5849a4430f09a0387059ffe58cec8162eef5466a5281dc40b08",
+      "bytes": 1902,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m85": {
+      "path": ".dev/main-thread-01a120fe/r6c-probe-offline-v2.log",
+      "sha256": "da2c8c8eada1d72010f4f88daff0995028faf3b5d8f63a425793f049fcd3bbc0",
+      "bytes": 768,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m86": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/10-slkr6.network",
+      "sha256": "3c0023ce4a077925e827c2af9af9a19a695d7df2d24d4cff73a1b0ea6a9105ee",
+      "bytes": 42,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m87": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/console.log",
+      "sha256": "de856f5b8231f853db28c0f9d4a930c6eed243c07b81d836dd30a9c412f6df32",
+      "bytes": 71616,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m88": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/create-data.log",
+      "sha256": "e1fc223d8e20db0edc73f5363757f4cc622f906c8e10d148ad076193b6ecd485",
+      "bytes": 355,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m89": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/create-overlay.log",
+      "sha256": "14d55f10c5a57fb2a5856788f524edd64933e8a0d6f8c8807c1708913076d8e6",
+      "bytes": 384,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m90": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/config.tar",
+      "sha256": "8694da21f608bbe52996f575875fe5f601710c066ccd5f1569ff1b15b9c10368",
+      "bytes": 10240,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m91": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/apt-update.log",
+      "sha256": "8e7b6427fa5e600a9be113f80fff1945115a372ca52667399fd995152893f6c7",
+      "bytes": 1428,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m92": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-apt.log",
+      "sha256": "3878c31308ba4572d637aa3c05f1de3dd6a41a479542dd6b023675e4f7cd630d",
+      "bytes": 2220,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m93": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-compile-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m94": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-compile-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m95": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-config-check.log",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m96": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-python.log",
+      "sha256": "b55f3f1d2faf6ef5734a7f1b71a239814834d2c95a1b42bf91eea8a68d2757a4",
+      "bytes": 62,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m97": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m98": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m99": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-external.py",
+      "sha256": "b3c957bebf4f636e0e1e664cc261c3c17f1d8216b46ef3f25264b28cdc143310",
+      "bytes": 617,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m100": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-needed-sparklink-native.log",
+      "sha256": "680077cd55946d4f034394180c79aa4cb6d8a5694fd91ed500b65f2e97989dca",
+      "bytes": 1463,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m101": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-needed-sparklink.log",
+      "sha256": "aae42ee0eb936e339ccf4baef65259f5ef379e290905d65d35c68263eca4b6f7",
+      "bytes": 1461,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m102": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-package-status.log",
+      "sha256": "15098cd84749849f07149c9aa323659fdd3042483d2dae8af088408d66dc6baa",
+      "bytes": 128,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m103": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-pkgconfig-sparklink-native.log",
+      "sha256": "7a044573c61fee16a833b857bfe59a6b0860a4c06d4b175f7ef8f4ac6f462370",
+      "bytes": 14,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m104": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-pkgconfig-sparklink.log",
+      "sha256": "2c4ca9e0081a9bd52c8bfa26f0d2d0931554e90b86e69105b742567e043ead30",
+      "bytes": 13,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m105": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-application.log",
+      "sha256": "c5db0a575fe75cf6f88d4e6d40ac5bb329bb72f8b1ffe7ef40a26215762ae063",
+      "bytes": 398,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m106": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-manager.log",
+      "sha256": "be6646366f59d07669d8b0bd0c233b8ff4d536b17aa386968aa99b6a5b50d109",
+      "bytes": 397,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m107": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-observer.log",
+      "sha256": "22bb0e6545babd3bfea849648d83f70d14c11a4fe99b1cbf4c16940c0491a56d",
+      "bytes": 389,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m108": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy-publisher.log",
+      "sha256": "8de6f4f04841cda351dd70001cd8dd633194365e2d25ca8cca0131810afa3fd7",
+      "bytes": 396,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m109": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-policy.py",
+      "sha256": "6df0b1c608b96d1b1013ca36200162ff4122336f38e258ed42d5726676c31804",
+      "bytes": 1751,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m110": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-python-install.log",
+      "sha256": "fd006ea489ca554bdf21b59f4686b05c4571ba8337c6217fe2b99236db38bc60",
+      "bytes": 167,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m111": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-python-wheel.log",
+      "sha256": "799b1709199181214c0c5b6880f5b7b49245e2b3d2996108ad6a4899aca9d778",
+      "bytes": 668,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m112": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-service-active.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m113": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-service-identity.log",
+      "sha256": "e214474d1569fef5f90d9cf0a9a2a18d4a1b77bf246fb1b3d4f3f5bc39a14693",
+      "bytes": 9,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m114": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-sparklink",
+      "sha256": "5285afebcf13edcf2d8329f93dae8d02f025223806e76bebb4d61d084e5e96a2",
+      "bytes": 16120,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m115": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-sparklink-native",
+      "sha256": "8496a00fcfe8525cf8ab6bb0445ea364f87e2dc7704cb32ecac899922ce60788",
+      "bytes": 16176,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m116": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-sparklink-native.c",
+      "sha256": "b9d48dc79d59d800d40248fb5a93c6d0dd46e8fedf6686d73f11f7003095d599",
+      "bytes": 302,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m117": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-sparklink.c",
+      "sha256": "a1acea86304b7266e5044b9beadbbdb4720f9a6e75b2ee652a0b4756651453f8",
+      "bytes": 248,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m118": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/install-wheel/sparklink-0.1.0-py3-none-any.whl",
+      "sha256": "d5416bab2bef33718fd15fdb8814b6b85901ce079bc92676c52bf05dd71aab56",
+      "bytes": 35534,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m119": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/journal.log",
+      "sha256": "ae24e0f9cfeea8319b296734071ff0914203fc10483df6b886dba86b1aec9bb2",
+      "bytes": 2010,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m120": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/kernel-log.log",
+      "sha256": "cce5f5305a5aa060bcdf2a2b60806c0db2a6e351d56f595bd71756fa4142f5cd",
+      "bytes": 40072,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m121": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/remove.log",
+      "sha256": "26349ac65647e4366fc4a622f2550da1860e94261eb1e38d750c0358f5778e5d",
+      "bytes": 1161,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m122": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/removed-state.log",
+      "sha256": "cb6f82a52d11c260ee6936511d22d5a7db55f8e7c5afe9f03ea847350ce860c5",
+      "bytes": 9,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m123": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/result.json",
+      "sha256": "d54b6ad185705782d629e3ae5c2994d93d4304ce3eea71478d63d65320d7c49d",
+      "bytes": 51750,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m124": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-apt.log",
+      "sha256": "0052c9b190dc602ebcce2a1362d346c0233f992380a37ad4f8ff1fce174886f5",
+      "bytes": 2016,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m125": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-compile-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m126": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-compile-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m127": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-config-check.log",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m128": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-python.log",
+      "sha256": "b55f3f1d2faf6ef5734a7f1b71a239814834d2c95a1b42bf91eea8a68d2757a4",
+      "bytes": 62,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m129": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m130": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m131": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-external.py",
+      "sha256": "b3c957bebf4f636e0e1e664cc261c3c17f1d8216b46ef3f25264b28cdc143310",
+      "bytes": 617,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m132": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-needed-sparklink-native.log",
+      "sha256": "680077cd55946d4f034394180c79aa4cb6d8a5694fd91ed500b65f2e97989dca",
+      "bytes": 1463,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m133": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-needed-sparklink.log",
+      "sha256": "aae42ee0eb936e339ccf4baef65259f5ef379e290905d65d35c68263eca4b6f7",
+      "bytes": 1461,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m134": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-package-status.log",
+      "sha256": "15098cd84749849f07149c9aa323659fdd3042483d2dae8af088408d66dc6baa",
+      "bytes": 128,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m135": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-pkgconfig-sparklink-native.log",
+      "sha256": "7a044573c61fee16a833b857bfe59a6b0860a4c06d4b175f7ef8f4ac6f462370",
+      "bytes": 14,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m136": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-pkgconfig-sparklink.log",
+      "sha256": "2c4ca9e0081a9bd52c8bfa26f0d2d0931554e90b86e69105b742567e043ead30",
+      "bytes": 13,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m137": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-application.log",
+      "sha256": "c5db0a575fe75cf6f88d4e6d40ac5bb329bb72f8b1ffe7ef40a26215762ae063",
+      "bytes": 398,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m138": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-manager.log",
+      "sha256": "be6646366f59d07669d8b0bd0c233b8ff4d536b17aa386968aa99b6a5b50d109",
+      "bytes": 397,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m139": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-observer.log",
+      "sha256": "22bb0e6545babd3bfea849648d83f70d14c11a4fe99b1cbf4c16940c0491a56d",
+      "bytes": 389,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m140": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy-publisher.log",
+      "sha256": "8de6f4f04841cda351dd70001cd8dd633194365e2d25ca8cca0131810afa3fd7",
+      "bytes": 396,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m141": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-policy.py",
+      "sha256": "6df0b1c608b96d1b1013ca36200162ff4122336f38e258ed42d5726676c31804",
+      "bytes": 1751,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m142": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-python-install.log",
+      "sha256": "65fce9743b610840b0a94d3d8d664900d4e821a789c26631b8e53a4807025cfa",
+      "bytes": 332,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m143": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-python-wheel.log",
+      "sha256": "36cac914f3ab59c94801ff1852c4d3969030db6c2f03ea13463cb26a1c917f84",
+      "bytes": 668,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m144": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-service-active.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m145": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-service-identity.log",
+      "sha256": "40d3e8e447264f2ea472ea4209a6ce81fd9c8aa52500a92d13686d8a12aa04a1",
+      "bytes": 10,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m146": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-sparklink",
+      "sha256": "88be6e5b849b25249de749c0cfc16f6b128a857dc1a1832488b24275ba4edc17",
+      "bytes": 16120,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m147": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-sparklink-native",
+      "sha256": "5c93b1aa86faa818e15f471ce7f2d6a38b3f528ed45e7026d91931c1b41e0696",
+      "bytes": 16176,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m148": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-sparklink-native.c",
+      "sha256": "b9d48dc79d59d800d40248fb5a93c6d0dd46e8fedf6686d73f11f7003095d599",
+      "bytes": 302,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m149": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-sparklink.c",
+      "sha256": "a1acea86304b7266e5044b9beadbbdb4720f9a6e75b2ee652a0b4756651453f8",
+      "bytes": 248,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m150": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/rollback-wheel/sparklink-0.1.0-py3-none-any.whl",
+      "sha256": "889a68bcae0be076d0702da6b7ba6adddbdad249e54ea15c1d0d19e151efff08",
+      "bytes": 65929,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m151": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/source-new.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m152": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/source-old.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m153": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/tools.log",
+      "sha256": "e0b91259b721970e6244ec076bc6e8f24b5c2894104e055ac99eb96f8decdad8",
+      "bytes": 25657,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m154": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-apt.log",
+      "sha256": "e26b232c896b6fa985bfc2645369e98c12a82c7a27c5b85b388207bf6f9ddcf6",
+      "bytes": 1858,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m155": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-compile-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m156": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-compile-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m157": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-config-check.log",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m158": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-python.log",
+      "sha256": "b55f3f1d2faf6ef5734a7f1b71a239814834d2c95a1b42bf91eea8a68d2757a4",
+      "bytes": 62,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m159": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-sparklink-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m160": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external-sparklink.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m161": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-external.py",
+      "sha256": "b3c957bebf4f636e0e1e664cc261c3c17f1d8216b46ef3f25264b28cdc143310",
+      "bytes": 617,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m162": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-needed-sparklink-native.log",
+      "sha256": "680077cd55946d4f034394180c79aa4cb6d8a5694fd91ed500b65f2e97989dca",
+      "bytes": 1463,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m163": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-needed-sparklink.log",
+      "sha256": "aae42ee0eb936e339ccf4baef65259f5ef379e290905d65d35c68263eca4b6f7",
+      "bytes": 1461,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m164": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-package-status.log",
+      "sha256": "e41a551269b24642f9a5d86d58aa34e82611a7d7383fc21b167d63ce47259e06",
+      "bytes": 128,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m165": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-pkgconfig-sparklink-native.log",
+      "sha256": "7a044573c61fee16a833b857bfe59a6b0860a4c06d4b175f7ef8f4ac6f462370",
+      "bytes": 14,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m166": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-pkgconfig-sparklink.log",
+      "sha256": "2c4ca9e0081a9bd52c8bfa26f0d2d0931554e90b86e69105b742567e043ead30",
+      "bytes": 13,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m167": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-application.log",
+      "sha256": "c5db0a575fe75cf6f88d4e6d40ac5bb329bb72f8b1ffe7ef40a26215762ae063",
+      "bytes": 398,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m168": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-manager.log",
+      "sha256": "be6646366f59d07669d8b0bd0c233b8ff4d536b17aa386968aa99b6a5b50d109",
+      "bytes": 397,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m169": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-observer.log",
+      "sha256": "22bb0e6545babd3bfea849648d83f70d14c11a4fe99b1cbf4c16940c0491a56d",
+      "bytes": 389,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m170": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy-publisher.log",
+      "sha256": "8de6f4f04841cda351dd70001cd8dd633194365e2d25ca8cca0131810afa3fd7",
+      "bytes": 396,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m171": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-policy.py",
+      "sha256": "6df0b1c608b96d1b1013ca36200162ff4122336f38e258ed42d5726676c31804",
+      "bytes": 1751,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m172": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-python-install.log",
+      "sha256": "ca3a9704922e388bc105f8dcad95a1c3a0338eebad3eaac511588ba8bfbbcfcb",
+      "bytes": 331,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m173": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-python-wheel.log",
+      "sha256": "7ad27f2407db2d7db3ec597932aca31500550bec25fd6e8fc40f00e9f9dbdb7a",
+      "bytes": 668,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m174": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-service-active.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m175": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-service-identity.log",
+      "sha256": "09debf726c5496f280165ee17887df36ab652c39df115e76405969d7ef8d26a6",
+      "bytes": 10,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m176": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-sparklink",
+      "sha256": "b57ce47e28cc1a853e7aedbd4bb794639d0ed9dbc69ad15deb3fbb47b15f890d",
+      "bytes": 16120,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m177": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-sparklink-native",
+      "sha256": "43a3cea4d41108bc1ba5159aed4d76950545c227d970125d23f51df41e3320bb",
+      "bytes": 16176,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m178": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-sparklink-native.c",
+      "sha256": "b9d48dc79d59d800d40248fb5a93c6d0dd46e8fedf6686d73f11f7003095d599",
+      "bytes": 302,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m179": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-sparklink.c",
+      "sha256": "a1acea86304b7266e5044b9beadbbdb4720f9a6e75b2ee652a0b4756651453f8",
+      "bytes": 248,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m180": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/upgrade-wheel/sparklink-0.1.0-py3-none-any.whl",
+      "sha256": "dabe82dd9a76502ad09946e496ca5c84a3057b3611cf6331d3dda76b7f931a9d",
+      "bytes": 43183,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m181": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-application.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m182": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-manager.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m183": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-observer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m184": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/user-publisher.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m185": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/venv.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m186": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/raw/version-order.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m187": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export/state.tar",
+      "sha256": "c0ca45285150358e454249939a191cd83f6641ae0da7715bd71a180d56015d3d",
+      "bytes": 10240,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m188": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/export-data.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m189": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/guest-marker",
+      "sha256": "12a38a849f7482da13835113e262858288f68b985388e22ba1be0323a6b368f4",
+      "bytes": 30,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m190": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/guest.py",
+      "sha256": "cafc2bd7acd90bdbf43255d2570e0bdec1ba925b877074458c3c3b7b09fd24bd",
+      "bytes": 15308,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m191": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/inject-test.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m192": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/input-manifest.json",
+      "sha256": "32272580ce83b4cb4aaea6d3a62b1d99499eb5f5fcb526cfc561dacf27154f25",
+      "bytes": 1056,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m193": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/lifecycle-inputs.json",
+      "sha256": "9af40020804d3d524c60dd16146d6bc2fac957bd0f949431472f1445c53c59f2",
+      "bytes": 12566,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m194": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/old-source.tar",
+      "sha256": "5081b0ca80e1551358747183ccb51824207445ff4ece4ca3a725c2f96e8ac252",
+      "bytes": 209623040,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m195": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/populate-data.log",
+      "sha256": "2993687b06b48275efebae88ca7f572f7d8d768bee54ce13981e379f162aa312",
+      "bytes": 150,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m196": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/post-removal-inspection.log",
+      "sha256": "23bd73f7b3b12056b95e064f855b78542fe42a372354c018a27ce95a9fe9d5af",
+      "bytes": 420,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m197": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/prepare-supervisor.log",
+      "sha256": "2bc5d3b40edd71a090994c61279f507e589090a6887a85e77de1bd11a1e4fe2a",
+      "bytes": 90,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m198": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/prepare.py",
+      "sha256": "7293ff526d3a01d83b6128623e57a8d620ed4bb23e608b4f5d98ede348b7cfdc",
+      "bytes": 3192,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m199": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/prepared.json",
+      "sha256": "440a947971af9a07f4702860995bca4eab3f326c942194b6048d5af8d2cfe6f7",
+      "bytes": 172,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m200": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/qemu.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m201": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/resolv.conf",
+      "sha256": "cc002ee0eb2e8702c97d16f4ce628841cd5fe10195875a075432e92248741424",
+      "bytes": 20,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m202": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/run.json",
+      "sha256": "428eb3b875905da0128265393f45f9f377fd3289d8bb6e2666f42a910e10f46b",
+      "bytes": 1563,
+      "base": "workspace",
+      "format": "json",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m203": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/run.py",
+      "sha256": "cc54508ce1503a88e5acb218f2673350463e792ba6fdbe52e37d7c75cb1cb0ca",
+      "bytes": 2050,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m204": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/slkr6.service",
+      "sha256": "8458c6fa08ee1d9aa46d18ff4f6c7c6a61785cdd0bdd63342d1fe8db35a23406",
+      "bytes": 417,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m205": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/source.tar",
+      "sha256": "2961244157ea42cefc93e832d944c64c397f555e64c1fc36c4e8c19a351f7612",
+      "bytes": 220190720,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
+    },
+    "debian-upgrade-rollback-r6c-m206": {
+      "path": ".dev/main-thread-01a120fe/r6c-runtime-v2/supervisor.log",
+      "sha256": "f2f66c5590a4ce90b2c026e80a6046f88ba456eca088f424c392f56c527a8814",
+      "bytes": 1391,
+      "base": "workspace",
+      "format": "bytes",
+      "access": "private"
     }
   },
   "baseline_record": "hcc-timed110-data",

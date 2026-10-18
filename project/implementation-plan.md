@@ -599,6 +599,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 26b十轮原路径实机保持：真实Native返回/parent屏障仍缺 | `real_device` | `PASS` |
 | 26b服务/ae40工具：四个真实Native返回/Connection退休切片及旧发布耦合反向FAIL | `real_device` | `PASS` |
 | 77服务/143工具：真实User返回跨controller退休两角色、新generation业务；原两FAIL保留 | `real_device` | `PASS` |
+| U247→Udb724→U247：实际开发Debian修订升级/回滚、匹配SDK和状态保留限定通过 | `virtual_integration` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1774,11 +1775,12 @@ FAIL、warm启动观察、复制审计摘要的旧source/count标注及封存器
 
 | 已实施范围 | 准确证据与限定 | 尚缺条件 |
 |---|---|---|
-| C/Python基本公共Client，复用Rust Client与Channel | [限定离线报告](../docs/evidence/application-language-client-offline-20261018.json)：40c生产／867工具，真实private bus、实际ELF/header及两个外部调用者；不是Kernel Grant或RF | 完整高阶broker／SSAP／Owned／Agent客户端，共享Operation／Deadline／Snapshot／EventStream及每应用发现会话 |
+| C/Python基本公共Client，复用Rust Client与Channel | [限定离线报告](../docs/evidence/application-language-client-offline-20261018.json)：40c生产／867工具，真实private bus、实际ELF/header及两个外部调用者；不是Kernel Grant或RF | 高阶SSAP／Owned／Agent等后续限定结果见下文；完整组合、公共Operation／Deadline／Snapshot／EventStream及每应用发现会话仍开放 |
 | 实际C/Python普通应用的授权fd业务 | [基本实机报告](../docs/evidence/application-client-basic-real-20261018.json)：编译服务3ff、guest/host004c、kernel2fc、显式SDK110-U；交换应用／连接角色，dup后关闭Client与原fd，真实随机请求／独立回复，最后关闭后同lifetime重绑拒绝；双端USB/HCC重算及八个证据负对照 | 完整权限、release／撤权／Down／原期限交错及同行隔离。原Agent及其他范围不转授 |
 | Native VM运行库及Python fd封装 | 复用canonical SONAME表；显式固定socket family/type/protocol，接收使用同一Channel上下文API；[维护](../docs/evidence/application-language-client-maintenance-20261018.json)及下面原失败均保留 | getname与Python地址型recvmsg等未支持；不能推导多通道、完整SDK或性能资格 |
 | 通用构建／安装／卸载布局 | [准确668干净VM限定资格](../docs/evidence/deployment-clean-vm-qualification-20261018.json)：统一Make清单、PREFIX渲染、两库SONAME、sysusers／udev／pc／头、实际system bus普通用户及基础外部C/Python、重装／卸载配置状态保留 | vendor内核／无USB，不是实际Kernel Grant、新WS73或跨版本升级回滚资格 |
 | 实际Debian分包基础路径 | [准确247限定资格](../docs/evidence/debian-package-base-qualification-20261018.json)：独立构建／新运行VM、真实helper创建组、普通角色、先运行包Python后开发包C、许可原文、同版本重装／remove；[原包构建回执](../docs/evidence/debian-package-build-receipt-20261018.json)另存 | 同版本重装不算升级；dwz／usrmerge警告、完整第三方许可／来源／SBOM、支持组合及CI发布汇总未闭合 |
+| 实际不同修订升级／回滚 | [247旧包／db724新包限定资格](../docs/evidence/debian-upgrade-rollback-20261018.json)：74实际门禁，三次实际加载owner、匹配SDK、配置／原始目录权限／状态及remove后35文件核对，17证据负对照；原失败保留 | 仅开发修订0.1.0-1→0.1.0-2→0.1.0-1及显式confold；任意迁移、可信Bond、debug／依赖／供应链／发布及新包Kernel/WS73另验 |
 
 第一批已验证的新真实行为是公共C/Python Client取得授权fd并完成独立业务回复。
 原路径保持使用**同一准确新镜像**另验，不能代替该新入口的正向证据；[七真实VM保持报告](../docs/evidence/application-client-preservation-real-20261018.json)
@@ -1795,13 +1797,11 @@ FAIL、warm启动观察、复制审计摘要的旧source/count标注及封存器
 3. 复用现有Client／Channel／唯一SSAP Engine，收敛高阶跨语言调用者与共享API；
    管理staging、Owned、ServiceAuthorizer和安全Agent职责不合并。不得由空类型、
    别名或NotSupported门面宣称API树完成，旧未发布入口迁移后删除，旧编号不复用。
-4. R6c首先验证真实开发Debian修订`0.1.0-1 → 0.1.0-2 → 0.1.0-1`：
-   旧包绑定247源码，新包绑定本批签名源码；实际加载daemon、system bus、逐阶段
-   匹配版本C/Python、管理员配置／状态／权限及remove均独立核验。显式confold，
-   不宣称任意版本兼容、可信Bond迁移、无人工恢复或正式发布；无USB/vendor内核。
-   复用既有guest消费者及VM设施，缺失／重复／非零门禁不得PASS。然后
-   收敛debug_info／dwz／动态
-   依赖、第三方许可证、来源／SBOM和CI发布汇总；准确新产物原生权限与WS73另验。
+4. R6c的[实际开发修订pair](../docs/evidence/debian-upgrade-rollback-20261018.json)
+   已按准确247／db724取得有限部署资格，保留原构建／环境／审计失败与警告。
+   同版本重装报告不改写；新结果仍不授任意版本兼容、可信Bond迁移、非人工恢复
+   或正式发布。继续收敛debug_info／dwz／动态依赖、第三方许可证、来源／SBOM
+   和CI发布汇总；准确新产物原生权限与WS73另验。
    部署、文档或离线通过不改变原功能资格。
 
 R5f3 [准确22cd限定离线报告](../docs/evidence/application-connection-ssap-clients-offline-20261018.json)

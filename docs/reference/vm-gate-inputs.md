@@ -392,3 +392,16 @@ SSAP 读应软件忙且不得上 USB；既有唯一 slktest CUTC pair 在提示�
 源码接线和离线通过不授实机资格；准确状态只见当前能力入口。
 当前取得的Service/User四切片、旧服务反向原始FAIL及仍缺条件，见
 [准确来源报告](../evidence/native-return-connection-retirement-20261018.json)。
+
+## 无硬件部署VM
+
+`tools/testing/deployment/debian_lifecycle_probe.py`属于独立的破坏性部署测试，
+要求显式disposable-guest参数、专用guest标记和QEMU/KVM；不能在宿主或有管理员
+数据的VM运行。它接收两份准确源码与实际Debian包的hash清单，逐阶段匹配SDK，
+执行真实system bus、升级、显式confold回滚和remove；不附加USB，不制造controller。
+这不是从零准备VM的教程，也不替代上述Kernel Grant和真实业务门禁。
+
+运行日志之外须独立检查最终磁盘文件和原始权限元数据；安全解包会舍弃目录
+权限，不能以解包目标目录的权限替代guest目录权限。仅某一开发修订pair通过，
+不能推导任意迁移、稳定SDK、可信Bond存储或正式发布；准确记录见
+[唯一资格入口](../../project/current-capabilities.md)。

@@ -686,7 +686,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-18T04:52:59.199292+00:00",
+  "updated_at_utc": "2026-10-18T14:13:08.540297+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -800,11 +800,11 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9H_USER_CONTROLLER_RETURN_TWO_ROLES_SCOPED",
+  "execution_phase": "ARCHITECTURE_FIRST_R6C_DISTINCT_REVISION_PAIR_VM_SCOPE_FULL_PLAN_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
-    "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
-    "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
+    "R6:finite0.1.0-1/db724-2/rollback pair qualified;broader migration/debug/dwz/usrmerge/dependencies/supportmatrix/license/SBOM/provenance/CI release remain. New package actual-kernel/WS73 gates separate.",
+    "Continue original full architecture andfeature scope;not allcontrol permutations as dataplane prerequisite."
   ],
   "issue_sync_status": "FiveexistingOPEN issues preserveoriginalbodiesandcommentprefixes;actualExchangeInfo finitequalification,auditno-opfailureandnextunpublishedownercompositionwork synchronized;no issueclosed.",
   "issue_sync_receipt": {
@@ -818,8 +818,8 @@
       "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6245731128"
     ]
   },
-  "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_R6A_EXACT_GENERIC_VM_LIMITED_QUALIFICATION_FULL_R5F_R6_OPEN",
-  "current_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
+  "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
+  "current_goal_turn_classification": "PROGRESS_SHARED_RESOURCE_ALLOCATION_RECHECK_AND_ACTUAL_DISTINCT_VERSION_DEPLOYMENT_SCOPE",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": ".dev/architecture-r6a-issue-receipts-v1.json",
@@ -1982,20 +1982,24 @@
       "native-controller-user-return-r5f9h": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "debian-upgrade-rollback-r6c": {
+        "level": "virtual_integration",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP17-WP18-R5f9h-user-controller-return",
-      "production_behavior": "No production Rust/Kernel change;77service/143testtools/2fcKernel/SDK110US. Exact direct original-owner retiring barrier, actual held SYS_bind return and old user fd refusal, real peer settlement before original survivor scan, same daemon/new generation/HCC and16actualappreplies/44radio/8072USBdrop0. First77 Core/owner conflation FAIL and second543 scan-before-peer-settlement EBUSY/cleanup0x0b FAIL preserved. 13targeted/879tools/36input negatives/116docs;zero newformalproof.",
-      "state": "TWO_REAL_USER_CONTROLLER_ROLES_POST_READD_BUSINESS_SCOPED_PASS_TWO_RAW_FAILS_RETAINED",
+      "id": "WP18-R6c-distinct-package-revisions",
+      "production_behavior": "Actual247old/db724new development packages and matching SDKs: install0.1.0-1/upgrade0.1.0-2/rollback0.1.0-1/remove in independent noUSB vendorVM;74 actual gates,35payloadfiles/stage,three loaded owners/config/state/modes. 368Rust/883tools/17evidence negatives;original failures/warnings retained. No new RF/formalproof or architecture/scope change.",
+      "state": "DISTINCT_DEVELOPMENT_REVISION_PAIR_SCOPED_VM_PASS_FULL_ARCHITECTURE_AND_RELEASE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Continue original dynamic Native creator/author cancel/release/last-fd/dup/SCM_RIGHTS/original deadline and Grant-credit-Ticket/late NOCP compositions with the same owner/Session. Two slot0 User controller roles do not complete service/dynamic/all device combinations or Kernel ref/callback/drain/UAF/firmware reuse proof. Keep real data/security/SSAP/multichannel/four-device vertical delivery parallel;not all control permutations as prerequisites. Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;UserHost P4;fullS0-S6/19WP/10FV/12DG/VM-only/strictports/SDK110/shared12or8unchanged."
+      "next": "Continue original lifecycle/dynamic/release/last-fd/dup/fd-transfer/deadline/credit-Ticket combinations with same owner/Session;bounded original gates,not all control permutations as prerequisites. R6 debug/dwz/usrmerge/dependency/supportmatrix/thirdpartylicense/SBOM/provenance/CI release and broader migration remain. Preserve actual data/security/SSAP/multichannel/four-device vertical delivery,all S0-S6/19WP/10FV/12DG/originalscopes/UserHostP4/VM-only/strictfourleaves/SDK110/shared12or8. E/mixed/coldROM andnaturalRCA/nonmanual recovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3297,8 +3301,7 @@
     "batch": "Current batch authority: qualification_view.current_batch;R4 raw retirement and R5b/R5c retained source-bound reports are history,not pending work",
     "qualification": "See generated qualification_view and source-bound report;no independent PASS authority here",
     "next": [
-      "Canonical WP18 R5f: basic C/Python and seven original VM gates finite qualified; actual public fullrole/release/revoke/Down/originaldeadline/peerisolation andhigherSDK/sharedAPI/perappdiscovery remain.",
-      "Canonical WP18 R6c: actualcrossversionupgrade/rollback,debug/dependency/thirdpartylicense/provenance andCI release gates remain. AlloriginalS0-S6/19WP/10FV/12DG/naturalRCA/nonmanualrecovery OPEN."
+      "Follow canonical qualification_view.current_batch.next and implementation-plan.md; bounded completed SDK/lifecycle/deployment cases do not close their complete work packages."
     ],
     "exit_reference": "Canonical WP18 R5f/R6c current exit,not historical R5d;full original scope unchanged",
     "qualification_reference": {
@@ -3523,9 +3526,9 @@
       "next": "Resumepreserved101rawAPI/types/callers/currenttestmigration thenfullR5SDK/R6deploy;alloriginalscopeOPEN"
     },
     "remaining_order": [
-      "R5f:close actualpublic/sharedAPI/supportboundaries,higherC-Pythonbroker/SSAPclients/commonOperation-Deadline-EventStream/perappdiscovery,usingexistingClient/Channel/uniqueEngine",
-      "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
-      "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
+      "Follow qualification_view.current_batch.next; do not maintain a parallel current-qualification list.",
+      "R6c finite development revision pair is source-bound; arbitrary migration, debug/dependency/supplychain/release and new package kernel/WS73 remain independently open.",
+      "Full S0-S6/19WP/10FV/12DG/original scopes, UserHost P4 and naturalRCA/nonmanualrecovery unchanged."
     ],
     "r5_remote_client_slice": {
       "state": "FINITE_SDK_CLI_FOUR_REAL_VM_AND_OFFLINE_QUALIFIED_FULL_R5_OPEN",
@@ -3651,7 +3654,7 @@
       "first_failure": ".dev/architecture-r6b-package-v1/export/package-outputs-v1/result.json",
       "first_failure_scope": "Harnessformatteddisposablechildoverlaylostinheritedinputs;no packagebuild. ParentR6aandWIPunmodified. V2 mountsonly/checksactualsourcehash/toolchain/cachebeforeboot.",
       "failure_report": "docs/evidence/debian-clean-dispatch-failure-20261018.json",
-      "next": "R5f higherSDK/sharedpubliccontracts;R6crossversionupgrade/rollback anddebug/dependency/license/provenance releasegates,newnativeWS73artifactmatrix. No wholescopeclosure.",
+      "next": "Finite actual package base report remains historical/source-bound. Distinct revision pair is in r6c qualification_record_ref; remaining gates follow canonical qualification_view.current_batch.next.",
       "root_fixture_failure_report": "docs/evidence/debian-root-config-fixture-failure-20261018.json",
       "clean_fix_in_actual_vm": "Actual9ce cleanandproductionbuild passed,wholepackagefailedatrootpermissionfixture;notpackagequalification",
       "additional_issue_receipt": ".dev/architecture-r6b-clean-fix-issues-v1.json",
@@ -4176,6 +4179,16 @@
           "next": "AddVM-onlycontrolledactualNative-return/parentretirementbarrierthroughsameNativecall/owner/Engine,thenrelease/finalfd/dup/SCM/Down/originaldeadline/reuseandGrant-credit-Ticket/lateComplete-NOCPcompositions. V5offline367and26btenfiniteVMpreservationarenotKernelNativeinternal/ref/callback/UAFdrainproof. Originalv4fdclosefailurecauseunattributed;originalccef253FAIL/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/UserHostP4/deployment/releaseOPEN. Data/SSAP/security/multichannel/fourdeviceparallel,nocontrol全集prerequisite. Strictallocatedleaves/SDK110/shared12or8unchanged."
         }
       }
+    },
+    "r6c": {
+      "qualification_record_ref": "debian-upgrade-rollback-r6c",
+      "report": "docs/evidence/debian-upgrade-rollback-20261018.json",
+      "scope": "Finite actual development revision pair, matching SDK and retained administrator data only; no RF/new native permissions, arbitrary migration or release. Original tool/build/audit failures and warnings retained.",
+      "remaining": [
+        "Only this actual development revision pair and explicit confold qualified;arbitrary schema/version/crash migration,debug/dwz/usrmerge dependencies,full thirdparty license/SBOM/provenance/CI release remain OPEN",
+        "No new package kernelGrant/RF qualification;all original architecture/lifecycle/control combinations,per-app discovery/common public flows,SSAP/security/Bond/multichannel/four/performance/PM still scoped independently",
+        "Full S0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8/UserHostP4 unchanged;natural fault RCA and nonmanual recovery OPEN"
+      ]
     }
   },
   "owned_ssap_c6_historical_batch": {

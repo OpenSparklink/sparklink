@@ -37,6 +37,14 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](../docs/decision
 该职责调整参考 [BlueZ l2test 的工具定位](https://github.com/bluez/bluez/blob/master/tools/l2test.c)，
 不采用其Bluetooth协议实现，不改变当前分层或支持范围。
 
+实验资源授权与功能资格分开：本线程物理访问范围由
+[端口策略](lab-resource-policy.json)限定，VM逐叶直通前和重枚举后复核拓扑、上级
+hub/PCI、序列号及占用；device number、VID/PID、历史端口或枚举顺序不授型号资格。
+共享控制器不允许整坞／整控制器操作。显式SDK110板型选择三份对应文件，再由实际
+HCC核对型号/总线；尚未合格的混合逐设备镜像流程不得下载。构建复用
+[共享预算与全局锁](build-resource-policy.json)，资格产物与增量目录分开封存。
+策略只是访问边界，不替代冷ROM识别、固件执行认证、同行隔离或恢复验收。
+
 ## 目标分层及架构决策
 
 ### 总体结构

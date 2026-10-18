@@ -1,5 +1,12 @@
 # 证据入口与取得限制
 
+- 稳定服务owner整改按层级和失败分别查看：
+  [生产函数／私有D-Bus／OS fd限定离线](native-service-owner-offline-20261018.json)、
+  [ccef三轮CMTC／ExchangeInfo／SSAP有限实机](native-service-owner-real-20261018.json)、
+  [同一产物七尺寸整体FAIL及六轮限定通过](native-service-owner-preservation-20261018.json)。
+  253轮对端Down迟于原共同期限，原FAIL不覆盖；完整RX配对与低负载重提交测量不能
+  升级为RF根因、通用性能或自然恢复资格。公开报告bb21073与编译/执行ccef身份分开。
+
 - [ExchangeInfo 等待期间撤权及实际请求／回复证据](ssap-initialization-exchange-revocation-20261018.json)：
   1cd2bfd guest/Host、DA服务、2fc内核，仅U两口；两端CMTC先决、请求TX/对端RX/响应TX、
   撤权后的原响应RX、fd收敛和后续8次应用回复/22次发现分别核对，4179USB记录／零丢包。

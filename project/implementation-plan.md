@@ -1,5 +1,30 @@
 # SparkLink / Linux 联合实施方案
 
+### R5f9c：稳定服务 owner 已接通，原253断链门禁失败保留
+
+`ccef310` 将唯一服务owner在Native创建前登记到controller资源表；D-Bus仅引用它，
+初始化／stop等待取消仍保留原task，发布失败/重试复用同一owner。active+retiring
+总预算16，未完成join/移除不释放预算；Unknown不启动新owner。物理状态仍来自
+Kernel canonical links，原Session／Grant／credit／Ticket及唯一Engine不变。
+
+[离线](../docs/evidence/native-service-owner-offline-20261018.json)与
+[三轮实机](../docs/evidence/native-service-owner-real-20261018.json)分别封存：360×2／
+Clippy／6项owner测试和实际CMTC／ExchangeInfo撤权／SSAP owner原期限，均限定范围。
+不是整批部分初始化、Native bind内部、task/ref/UAF/drain或全生命周期证明。
+
+同一ccef新artifact的[原七尺寸矩阵](../docs/evidence/native-service-owner-preservation-20261018.json)
+整体FAIL：253轮对端Down未进入原共同5秒期限；另六尺寸及其Owned/超限门禁分别通过。
+原失败、未完成第二角色及cleanup失败保留，不放宽期限、不改断言、不重跑覆盖。
+USBmon显示对端RX持续在途，低负载样本重提交max46µs；本次未见缺少已提交RX的
+五秒空窗。固件／RF／USB／QEMU／调度原因未证明，不能把重枚举或重提交优化当恢复。
+
+近期退出调整为：先以实际断链命令、双端原始事件／canonical快照和原期限定位该
+失败，再推进准确Native返回／parent退休屏障、任务与引用排空；本批有限结果不关闭
+整项。数据/credit/多通道/四设备/SSAP/安全并行，不追加控制面竞争全集前置条件。
+资格校验新增`result_binding_version:1`，独立绑定各门禁结果，防止整体FAIL内标签漂移；
+41项检查与20项本批负对照通过。历史记录、全S0–S6／19WP／10FV／12DG、VM-only、
+端口白名单、共享12/8预算、UserHost P4及自然RCA／非人工恢复范围保持不变。
+
 ### R5f9：部分初始化清理（有限 CMTC／ExchangeInfo 门禁通过，整批开放）
 
 R5f9b 的生产行为仍是同一 initializer/Engine，在实际 ExchangeInfo Response 尚被
@@ -41,9 +66,9 @@ D-Bus只引用它，发布失败/取消/重试统一收敛。保留唯一initial
 reconcile、ObjectServer、取消/重试、Unknown、预算保留、foreign owner 拒绝和实际
 Unix fd 关闭；Native 依赖/table fixture 显式标注。新编译 artifact 的 VM 门禁仍待执行，
 尤其 Native 同步 bind 内部交错与引用/UAF/drain 不由这些离线用例替代。
-离线有限退出已通过：default/all-features 各360项（含实际私有D-Bus/C/Python调用），
+上述实施顺序现由页首R5f9c结果接续，原审计与准备步骤保留。离线有限退出已通过：default/all-features 各360项（含实际私有D-Bus/C/Python调用），
 严格Clippy、架构检查、15资源守卫/构建预算用例及116文档严格HTML。原失败保留。
-继续封存同一源码的新服务artifact，并在白名单U双设备逐叶VM回归；不转授旧DA资格。
+同一源码新服务artifact已封存并执行白名单U双设备逐叶VM；有限通过和253原失败分开登记，不转授旧DA资格。
 
 本切片[实机记录](../docs/evidence/ssap-initialization-cmtc-revocation-20261018.json)已登记：
 准确7b90092工具、DA服务/应用、2fc内核；仅分配的U两口，六轮实机保留五个整体FAIL。
@@ -405,6 +430,9 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 同一新guest的原服务owner／五秒期限保持：限定通过；完整架构开放 | `real_device` | `PASS` |
 | CMTC等待期间撤权／原回复／daemon fd收敛：有限实机通过；完整部分初始化开放 | `real_device` | `PASS` |
 | ExchangeInfo等待期间撤权／原回复／daemon fd收敛：有限实机通过；完整部分初始化开放 | `real_device` | `PASS` |
+| 稳定服务owner及取消清理：生产函数/私有D-Bus/OSfd限定离线通过 | `offline` | `PASS` |
+| 稳定服务owner：CMTC/ExchangeInfo撤权及SSAP原期限有限实机保持 | `real_device` | `PASS` |
+| 稳定服务owner：原七尺寸整体FAIL，253迟到Down保留；六轮限定通过 | `real_device` | `FAIL` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

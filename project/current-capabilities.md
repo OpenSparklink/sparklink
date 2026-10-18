@@ -1,13 +1,23 @@
 # 当前能力与资格
 
-R5f9c 生产资源所有权整改已接通，default/all-features 各360项、严格Clippy、架构
-检查及116文档严格HTML通过，**新 artifact 实机尚未验收**。
-controller registration 在 Native 创建前持有唯一 SSAP owner；取消初始化或 stop 的
-等待不移出原 task，发布重试复用同一 owner，未完成退休仍占有限预算。离线私有
-D-Bus／OS fd 与显式 Native/table fixture 不授内核并发、USB drain 或自然恢复资格。
-初始缺D-Bus工具配置、非法snapshot fixture和Clippy风格失败均保留，未修改生产
-校验或放宽断言；通过范围只绑定最终测试的准确源码hash。
-下述 DA 服务的历史门禁仍只适用于各自准确 artifact，不转授本批代码。
+R5f9c 生产资源所有权整改在 `ccef310` 接通：controller registration 在 Native 创建前
+持有唯一 SSAP owner；取消等待不移出原 initializer／Engine task，发布重试复用原
+owner，未完成退休仍占有限预算。
+
+- [限定离线记录](../docs/evidence/native-service-owner-offline-20261018.json)：default/all-features 各360项、严格Clippy、实际私有D-Bus／OS fd与显式Native/table fixture。实际测试编译是旧base加dirty源码，已按字节映射到ccef；31个测试执行文件封存，不伪称干净提交编译。原环境／fixture／风格失败保留。
+- [三轮限定实机记录](../docs/evidence/native-service-owner-real-20261018.json)：ccef服务／guest／Host、2fc内核，本线程U两口、SDK110US；CMTC、ExchangeInfo撤权及SSAP owner／原期限分别通过，每轮后续8次应用校验回复／22次发现；75项证据负对照。不是完整2×2、Native bind内部、task/ref/USB drain或自然恢复证明。
+- [原七尺寸记录](../docs/evidence/native-service-owner-preservation-20261018.json)：**整体FAIL**。61／249／250／254／255／2042六轮各8次业务回复及22次发现通过，61含Owned SSAP，249含16次超限拒绝；253轮因对端Down未进入原5秒共同期限而整体失败，不计作该尺寸资格。后续只运行未执行尺寸，没有重跑或覆盖253失败。
+
+失败轮的对端Down在实际断链OUT后约5.08秒到达。完整USBmon配对显示其间RX请求
+在途，随后重提交空窗14／15µs；首个会话窗口532个成功完成／重提交样本P50=6µs、
+P99=26µs、max=46µs。它是低负载功能trace，不能据此宣称通用性能资格、固件/RF
+根因或多URB优化收益；也没有本次接收缺少已提交URB的证据。初版诊断只看Down
+最后一次提交的错误解释原样保留，v3/v4按完整流纠正。
+
+资格聚合新增版本化门禁结果绑定；整体FAIL也不能掩盖局部标签漂移。41项检查及
+本批20项源码／artifact／scope／失败升级负对照通过。新增形式化证明0。
+E／混合、冷ROM自动选择、原完整生命周期／长度稳定性及自然故障／非人工恢复继续开放。
+下述 DA 历史门禁仍只适用于各自准确 artifact，不转授本批或整个当前HEAD。
 
 部分初始化清理现有两份独立、准确 artifact 的有限实机记录；它们不授予整个HEAD资格：
 
@@ -21,9 +31,9 @@ D-Bus／OS fd 与显式 Native/table fixture 不授内核并发、USB drain 或�
 独立RX/Ready及同daemon后续业务分别核对。Nativebind内部、initializer task join、
 对象free、内核引用/UAF/worker drain、完整release/最终fd/dup/SCM/Down/原期限/复用仍缺。
 
-854项离线工具检查及每份6项资格记录负对照单独记录，新增形式化证明0。CMTC五次
+上述历史批的854项离线工具检查及每份6项资格记录负对照单独记录，新增形式化证明0。CMTC五次
 整体FAIL保留；ExchangeInfo的私有审计初版无效变异FAIL保留，修正后27项变异均确认
-实际改变输入。旧报告不回写。未新增生产Engine/Runtime/ABI，未重编服务或内核。
+实际改变输入。旧报告不回写。这两份DA记录当时未新增生产Engine/Runtime/ABI，未重编服务或内核；本批ccef服务产物另见上方。
 E/混合、冷ROM自动选择、自然故障根因及非人工恢复继续开放。
 
 R5f8 的[新独立记录](../docs/evidence/ssap-requester-drain-held-business-20261018.json)已登记：
@@ -343,6 +353,9 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 同一新guest的原服务owner／五秒期限保持：限定通过；完整架构开放 | `real_device` | `PASS` |
 | CMTC等待期间撤权／原回复／daemon fd收敛：有限实机通过；完整部分初始化开放 | `real_device` | `PASS` |
 | ExchangeInfo等待期间撤权／原回复／daemon fd收敛：有限实机通过；完整部分初始化开放 | `real_device` | `PASS` |
+| 稳定服务owner及取消清理：生产函数/私有D-Bus/OSfd限定离线通过 | `offline` | `PASS` |
+| 稳定服务owner：CMTC/ExchangeInfo撤权及SSAP原期限有限实机保持 | `real_device` | `PASS` |
+| 稳定服务owner：原七尺寸整体FAIL，253迟到Down保留；六轮限定通过 | `real_device` | `FAIL` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

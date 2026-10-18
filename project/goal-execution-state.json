@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9B_FINITE_EXCHANGE_PASS_R5F9C_UNPUBLISHED_OWNER_REMEDIATION_NEXT",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9C_STABLE_OWNER_FINITE_PASSES_ORIGINAL253_DOWN_FAILURE_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1942,20 +1942,32 @@
       "ssap-initialization-exchange-revocation-r5f9b": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "native-service-owner-offline-r5f9c": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "native-service-owner-real-r5f9c": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "native-service-owner-preservation-r5f9c": {
+        "level": "real_device",
+        "result": "FAIL"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP18-R5f9b-exchange-withdrawal",
-      "production_behavior": "Existingproductionsoleinitializer/Engine/Session exercised,notreimplemented:exact1cd2bfdtools/DAservice/2fckernel;actualCMTCbeforeSSAPrequestTX/peerRX/responseTX,heldresponse/Managedwithdrawal/EACCES/fdconvergence/pairedDown;then8actualpeerreplies/22discoveries. 4179USB/drop0/27effectiveinputnegatives;privateauditno-opcounterexamplekept,newformal0.",
-      "state": "R5F9B_EXCHANGE_PENDING_REQUEST_REPLY_AND_FD_CONVERGENCE_FINITE_REAL_PASS_FULL_ARCHITECTURE_OPEN",
+      "id": "WP03-WP06-WP08-WP18-R5f9c-stable-service-owner",
+      "production_behavior": "Signed ccef310 registers sole service owner beforeNative creation,independent ofD-Buspublication;originalinitializer/EngineJoinHandle retainedacrosscancellation;bounded16active+retiring registrations andforeign-owner-safe retry. Source-mapped default/allfeatures360each/Clippy,threeactualUVMCMTC/Exchange/SSAP gates finitePASS;originalsevenlengthmatrixFAILat253lateDown,sixscopedPASSrowsdonotoverridefailure. No newformalproof,E/mixed/naturalrecovery orwholearchitecture qualification.",
+      "state": "R5F9C_STABLE_OWNER_SCOPED_PASSES_ORIGINAL_LENGTH253_DOWN_FAILURE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4."
+      "next": "Investigateunchanged5s-peerDownfailureat253withoutdeadlineextension/retryoverwrite;preservecontinuousguestRXpendingand14/15usresubmitwitness,causeunproved. ActualNative-return/parentretirement barrier andtask/reference/callbackdrain,originalrelease/finalfd/dup/SCM/Down/deadline/reuse compositions remain;keepdata/credit/SSAP/security/multichannel/fourdevices parallel,noallcontrol prerequisite. FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,E/mixed/coldROMandarchitecture/deployment/releaseOPEN;VM-only/allocatedports/SDK110/UserHostP4unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -3783,7 +3795,7 @@
         "patch_application": "Historical helper-only replay before QEMU build. Actual builtfixture andfiniteVM results referenced separately;no transfer fromoffline test."
       },
       "build": "First two attempts refused shared lock before compile;v3 acquired same global lock,8job budget/oneactualcompileunit,compile/link0,baseline binary and930linkobjects unchanged. Not device qualification.",
-      "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4.",
+      "next": "Investigateunchanged5s-peerDownfailureat253withoutdeadlineextension/retryoverwrite;preservecontinuousguestRXpendingand14/15usresubmitwitness,causeunproved. ActualNative-return/parentretirement barrier andtask/reference/callbackdrain,originalrelease/finalfd/dup/SCM/Down/deadline/reuse compositions remain;keepdata/credit/SSAP/security/multichannel/fourdevices parallel,noallcontrol prerequisite. FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,E/mixed/coldROMandarchitecture/deployment/releaseOPEN;VM-only/allocatedports/SDK110/UserHostP4unchanged.",
       "remaining": [
         "Actual SSAPExchangeInfo-pending owner retirement,Native synchronous bind-inflight andrealinitializer taskjoin/objectremoval/refworkerdrain/UAF;full2x2 FD/revoke/lifetime interleavings remain.",
         "Fullrelease/finalfd/dup/SCM_RIGHTS/Down/originaldeadline andnecessarycontrolrace matrix not completedbythis CMTClease slice;oldsource-boundreportsretaintheirscope.",
@@ -3905,7 +3917,7 @@
           "Naturalstartup/reenumeration/disappearanceRCAandnonmanualrecoveryOPEN;warmretrylogsretainallattempts;QMP/hold/physicalplug/powernot substitutes.",
           "RemainingfullS0-S6/19WP/10FV/12DG,architecture/SSAP/security/Bond/data/multichannel/fourdevice/performance/deployment/releaseOPEN;UserHostP4."
         ],
-        "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4.",
+        "next": "Currentfollowupisqualification_view.current_batch andnative_owner_next_batch;thisExchangeInfoentryretainsitshistoricalartifact.",
         "audit_failure": {
           "path": ".dev/main-thread-01a120fe/exchange-audit-negative-noop-v1.json",
           "scope": "Auditfailedbecausecopy-filterremovednoinput;VMoriginalPASSunchanged;v2requiresactualmutation"
@@ -3939,11 +3951,11 @@
         "ssap-initialization-exchange-revocation-r5f9b"
       ],
       "native_owner_next_batch": {
-        "status": "PRODUCTION_CONNECTED_SOURCE_BOUND_OFFLINE_PASS_NEW_ARTIFACT_VM_NOT_RUN",
+        "status": "IMPLEMENTED_OFFLINE_AND_THREE_FINITE_REAL_PASS_ORIGINAL_SEVEN_MATRIX_FAIL_253_DOWN",
         "audit": "history/architecture/native-initialization-owner-audit-20261018.json",
         "sha256": "0af3bdf6ef2de9cdcbefe32cca00fb3c09e3dcc1e587e4abd65e3c5d022adacc",
         "scope": "Unpublishedinitializer ownership,parentdispatchcancel,publishretry;no claim ofactualleak/UAF/newReady",
-        "next": "R5f9c:stablepercontroller/fullphysical-lifetime serviceowner registeredbeforeNativecreation,independentofD-Buspublication;reuseexistinginitializer/Engine,uniformcancel/retire/join,publishfailure/retry,andnoArc-cycle/duplicateKernelstate. Currenteagerstart-before-at/parentcancel composition issource-audited risk,not provenrealleak/UAF. Exactnewartifactproduction/VMNative-return/ordinaryshort-length-SSAP-peerregression;keepdata/security/multi/fourparallel,fullS0-S6/19WP/10FV/12DG/RCA/nonmanualrecovery/E/mixedOPEN,UserHostP4.",
+        "next": "Investigateunchanged5s-peerDownfailureat253withoutdeadlineextension/retryoverwrite;preservecontinuousguestRXpendingand14/15usresubmitwitness,causeunproved. ActualNative-return/parentretirement barrier andtask/reference/callbackdrain,originalrelease/finalfd/dup/SCM/Down/deadline/reuse compositions remain;keepdata/credit/SSAP/security/multichannel/fourdevices parallel,noallcontrol prerequisite. FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,E/mixed/coldROMandarchitecture/deployment/releaseOPEN;VM-only/allocatedports/SDK110/UserHostP4unchanged.",
         "implemented": [
           "ExistingRegistration retainssameConnectionOwner beforeNativecreation;Weakcontext avoidsintroducedpermanentStatecycle;D-Busonlyreferencesresourceowner.",
           "Bound16active+retiringowners;Unknownadmitsnone;unfinishedretirementretainsbudget;actualjoin/removalbeforefreeingrecord.",
@@ -3952,15 +3964,84 @@
         ],
         "offline_report": ".dev/main-thread-01a120fe/native-owner-offline-v2.json",
         "offline_scope": "Actualproductionregistry/reconcile/ObjectServer/Tokio/OSUnixfd plusvisibleNative/tablefixtures;notexperimentalKernelconcurrency/USB/UAF/drain ornewformalproof.",
-        "real_device_qualified": false,
-        "exit_remaining": "Exactnewcompiledservice/tools VMCMTC/Exchange,ordinarydiscovery/connection/shortmessage/originallength/SSAPandpeerpreservation;actualNative-returnbarrier. Kernelrefs/UAF/callbackdrain/fullrole/fd/revoke/Down/deadline/reuse andoriginalfullscopeOPEN.",
+        "real_device_qualified": true,
+        "exit_remaining": "Investigateunchanged5s-peerDownfailureat253withoutdeadlineextension/retryoverwrite;preservecontinuousguestRXpendingand14/15usresubmitwitness,causeunproved. ActualNative-return/parentretirement barrier andtask/reference/callbackdrain,originalrelease/finalfd/dup/SCM/Down/deadline/reuse compositions remain;keepdata/credit/SSAP/security/multichannel/fourdevices parallel,noallcontrol prerequisite. FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,E/mixed/coldROMandarchitecture/deployment/releaseOPEN;VM-only/allocatedports/SDK110/UserHostP4unchanged.",
         "offline_sha256": "2c90aa906159c8bba00235824ad2d0cfe39f90f22ed330fad3f25f84b29d43b4",
         "offline_methods": {
           "default": 360,
           "all-features": 360,
           "clippy": 0
         },
-        "new_formal_proofs": 0
+        "new_formal_proofs": 0,
+        "id": "R5f9c",
+        "implementation_commit": "ccef31048111a87d721057cb28a058cde543b245",
+        "audit_status_historical": true,
+        "qualification_scope": "ThreeexactUCMTC/Exchange/SSAPVMgatesPASS;sevenoriginalsizesattempted,253entiregateFAILonlatepeerDown,otherssixscopedPASS;neverwholematrixPASS. Notfullpartialinit/2x2/Nativebind/taskjoin/kernelrefs/UAF/drain orE/mixed/naturalrecovery.",
+        "qualification_record_refs": [
+          "native-service-owner-offline-r5f9c",
+          "native-service-owner-real-r5f9c",
+          "native-service-owner-preservation-r5f9c"
+        ],
+        "report_refs": [
+          "docs/evidence/native-service-owner-offline-20261018.json",
+          "docs/evidence/native-service-owner-real-20261018.json",
+          "docs/evidence/native-service-owner-preservation-20261018.json"
+        ],
+        "qualification_guard_followup": {
+          "implementation_commit": "e2cdad86048c431e7993bc7890644bb46d8290c3",
+          "tests": {
+            "path": ".dev/main-thread-01a120fe/native-owner-verdict-binding-tests-v3.log",
+            "sha256": "9548e6e4b0e8ea84a6ef10458842a688385432c47957dfd4a1320f402468879c",
+            "bytes": 5827
+          },
+          "methods": 41,
+          "registration_preflight": {
+            "path": ".dev/main-thread-01a120fe/native-owner-qualification-preflight-v2.json",
+            "sha256": "af747f6bc2394a9584b380ac89fa64a46256da5b71401fd206b5f806bf375de8",
+            "bytes": 5345
+          },
+          "registration_qualifier_commit": "440212ca97d6aaa38c6d22040ceb38ad0cd4e332",
+          "registration_negatives": 20,
+          "retained_failures": [
+            {
+              "path": ".dev/main-thread-01a120fe/register-native-owner-v1.log",
+              "sha256": "23352fbd11b6a5e3aac4101310dd16f90d8c2233edc941eb880836b984c28ede",
+              "bytes": 1805
+            },
+            {
+              "path": ".dev/main-thread-01a120fe/register-native-owner-v1.py",
+              "sha256": "d827bd7ef2f5902892e26ec3d2ebcc6c3b04dfeb486de942b6f7b54975756fe3",
+              "bytes": 10310
+            },
+            {
+              "path": ".dev/main-thread-01a120fe/native-owner-docs-v3.log",
+              "sha256": "3f9f8c9839dd0b5de7b58e02c7ebeba5027106210a816f707d928eb46c9cd8a6",
+              "bytes": 1295269
+            }
+          ],
+          "scope": "Version1exactrowbinding;knownnonPASSmatrixresultscannotbeupgradedbyremovingoptionalpointer/version. HistoricalofflinePASSconservativelyloweredtointegrationUNPROVEDremainsunchanged. NoRuntime/firmware/RForformalqualificationadded."
+        },
+        "strict_docs": {
+          "path": ".dev/main-thread-01a120fe/native-owner-docs-v4.log",
+          "sha256": "eafc3ebae2337c9ca4aa33557fa3a56dc18f617026c8ba85899f273228ecaade",
+          "bytes": 1301033,
+          "scope": "116documentinventory,staticexamples,qualificationmetadata,warning-as-errorHTML;notbrowser/external-link/readerflow orfunctionalproof"
+        },
+        "issue_updates": {
+          "path": ".dev/main-thread-01a120fe/native-owner-issue-receipts-v1.json",
+          "sha256": "7a68862ee9ca0f78a28f96ae52147602d954f986b1c30dd7a7f6d577f23457ef",
+          "bytes": 2136
+        },
+        "production_source_preservation": {
+          "compiled_source": "ccef31048111a87d721057cb28a058cde543b245",
+          "unchanged_compiled_scope_files": 145,
+          "scope": "crates/data/Cargo.toml/Cargo.lock bytes identical;latermetadata-onlychangesdoNOTtransferwholeHEADqualification"
+        },
+        "original_wip_preserved": {
+          "path": ".dev/main-thread-01a120fe/native-owner-final-main-wip-preserved-v1.json",
+          "sha256": "5f27e02909de70b50a08d5db1149f647d31185b348a848b8a6db992387129c2b",
+          "bytes": 1559
+        }
       }
     }
   },
@@ -4054,19 +4135,24 @@
         "path": ".dev/main-thread-01a120fe/exchange-allocation-postflight-v1.json",
         "sha256": "586e65b96ef1977e1b0eaa42d5fb9df1737333f6c211d4e183475e24e8f7d5e4",
         "scope": "Fourallocatedserialpinsavailable,onlyUactualHCC/VM;E/mixednotrun,nototherthreadbusinessproof"
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v6/receipt.json",
+        "sha256": "22232f3cb68b35eebfd94dde7a723a66bcfc3faed62234a08ded5f54099f920a",
+        "scope": "Fourallowedserialpins/hubs/PCI unchanged;U runtime5endpoints,E ROM2endpoints;accessiblefd/driver/liveLibvirtXML noallocatedWS73/sharedPCIobserved. Rootfdvisibilitylimited. Readonly,noUSBio/claim/reset/power. E/mixed/coldROMNOT_RUN,noqualificationtransfer.",
+        "guard_tests": {
+          "path": ".dev/main-thread-01a120fe/allocation-guard-tests-v6.log",
+          "sha256": "6eae99d9e25a89db51f06b3a1db98d3a1829ee89443f8c52639aef87b01f1763",
+          "methods": 15,
+          "scope": "Existinghostguard/sharedbuildwrapper filesystem/fd/QMPfixtures only"
+        }
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v6/receipt.json",
-      "sha256": "22232f3cb68b35eebfd94dde7a723a66bcfc3faed62234a08ded5f54099f920a",
-      "scope": "Fourallowedserialpins/hubs/PCI unchanged;U runtime5endpoints,E ROM2endpoints;accessiblefd/driver/liveLibvirtXML noallocatedWS73/sharedPCIobserved. Rootfdvisibilitylimited. Readonly,noUSBio/claim/reset/power. E/mixed/coldROMNOT_RUN,noqualificationtransfer.",
-      "guard_tests": {
-        "path": ".dev/main-thread-01a120fe/allocation-guard-tests-v6.log",
-        "sha256": "6eae99d9e25a89db51f06b3a1db98d3a1829ee89443f8c52639aef87b01f1763",
-        "methods": 15,
-        "scope": "Existinghostguard/sharedbuildwrapper filesystem/fd/QMPfixtures only"
-      }
+      "path": ".dev/main-thread-01a120fe/native-owner-postflight-v1.json",
+      "sha256": "644e3c3108ab9e6797b1a63313a75e807ffd1fc5991f7088ead8eb58aa196a92",
+      "scope": "Fourallocatedserialpins/hubs/PCI stillmatchafterU-onlyVMs;noE/forbidden/hub/controlleroperations ornewE/mixed/coldROMqualification. Nototherthreadbusinessproof."
     },
-    "current_finite_gate_ref": "ssap-initialization-exchange-revocation-r5f9b"
+    "current_finite_gate_ref": "native-service-owner-real-r5f9c"
   }
 }

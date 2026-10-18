@@ -1068,27 +1068,32 @@
     {
       "name": "two-real-user-controller-roles",
       "result": "PASS",
-      "status": "TWO_REAL_ROLE_NATIVE_RETURN_NEW_GENERATION_APPLICATION_SCOPED_PASS"
+      "status": "PASS",
+      "detail": "TWO_REAL_ROLE_NATIVE_RETURN_NEW_GENERATION_APPLICATION_SCOPED_PASS"
     },
     {
       "name": "source-artifact-material-closure",
       "result": "PASS",
-      "status": "EXACT77_SERVICE_143_TOOLS_2FC_KERNEL_SDK110US_MATERIALS_CHECKED"
+      "status": "PASS",
+      "detail": "EXACT77_SERVICE_143_TOOLS_2FC_KERNEL_SDK110US_MATERIALS_CHECKED"
     },
     {
       "name": "input-negative-controls",
       "result": "PASS",
-      "status": "THIRTY_SIX_OFFLINE_INPUT_MUTATIONS_REJECTED"
+      "status": "PASS",
+      "detail": "THIRTY_SIX_OFFLINE_INPUT_MUTATIONS_REJECTED"
     },
     {
       "name": "tool-regression",
       "result": "PASS",
-      "status": "THIRTEEN_TARGETED_879_TOOL_METHODS_AND_116_DOCUMENTS_PASS"
+      "status": "PASS",
+      "detail": "THIRTEEN_TARGETED_879_TOOL_METHODS_AND_116_DOCUMENTS_PASS"
     },
     {
       "name": "retain-original-failures",
       "result": "PASS",
-      "status": "ORIGINAL77_AND543_VM_FAIL_BYTES_IDENTITIES_RETAINED_NOT_PASSED"
+      "status": "PASS",
+      "detail": "ORIGINAL77_AND543_VM_FAIL_BYTES_IDENTITIES_RETAINED_NOT_PASSED"
     }
   ],
   "goal_complete": false

@@ -427,7 +427,10 @@ def corroborate_guest(run, capture):
         if bytes.fromhex(target_up['params'])[3] != target_reference['role']:
             raise CaptureError('actual raw physical role must match withdrawn owner reference')
         directed = dict(phase, caller=phase['target'], peer=phase['other'])
-        cleanup = corroborate_wire_operation(run, directed, capture, 2, phase['cancel'], target_reference['handle'], handles, target_reference, reason=0x10)
+        # sle_workers::connection_cleanup_request uses 0x13. Public explicit
+        # Disconnect uses a different 0x10 contract; do not accept either code
+        # interchangeably or infer the expectation from the captured packet.
+        cleanup = corroborate_wire_operation(run, directed, capture, 2, phase['cancel'], target_reference['handle'], handles, target_reference, reason=0x13)
         caller = phase['target']
         same = lambda e: (e['bus'], e['device']) == (caller['bus'], caller['device'])
         withdrawal = phase['revocation_polls'][-1]['end_wall_ns']

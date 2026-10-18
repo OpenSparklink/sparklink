@@ -35,6 +35,10 @@ command collector 并继续准确校验非零退出及 EACCES；普通调用者�
 1e72 第三轮又明确暴露 ON beacon 不能重建（Host 准入要求 advertising OFF），保留
 `ssap-initialization-us-v4` 的真实 EBUSY。恢复必须包含实际 stop Complete，使保留的
 配置为 OFF beacon；禁止重试掩盖原 EBUSY 或弱化 Host 准入。
+90f0 第四轮完成双端撤权、8次后续业务和22次发现，但新核验器把 Managed 清理原因
+错写为公开主动 Disconnect 的 `0x10`，整轮仍 FAIL。准确内核 `sle_workers.rs:64`
+及两端原始 OUT 均为 `0x13`；仅此清理门禁改为严格 `0x13`，不接受两者任选。
+修正核验器对旧捕获重放通过也不回写旧 FAIL；必须以新 artifact 重验。
 单 bulk RX URB 持有 CMTC 时，后续同端 Down 也不能进入 guest，故使用真实 Managed
 lease Revoking 作原始屏障：原 lifetime 在该端规范快照中尚为 Up（Down仍被hold），
 旧 Engine 报当前 EACCES 并收敛 fd；

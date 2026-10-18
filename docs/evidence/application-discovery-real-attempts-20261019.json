@@ -1,0 +1,1452 @@
+{
+  "schema_version": 1,
+  "title": "R5f12 real discovery explicit release scoped positive;full preservation fails",
+  "source": {
+    "runtime": {
+      "commit": "c5c3989f318e6f54a1e265f3411f9cbbcfe61501",
+      "files": {
+        "Cargo.lock": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+        "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+        "crates/libsparklink/Cargo.toml": "110c2fd1a2b073e47ce69b7264d92981e4e87ad1c2333b9bd215a5a1c15c7a5f",
+        "crates/libsparklink/build.rs": "b3e8c5660d724b7ac271e62b4af8766aaf4da2543034480ca9d4f4890195c332",
+        "crates/libsparklink/cbindgen.toml": "43e20d719319ecbdc029e3f8ae57b136db3bf427888fc8f29033f08166493812",
+        "crates/libsparklink/include/sparklink.h": "24fa758b1d89676e1899314d663b7a08dff0b49d93f76596ec043bceb645aeb3",
+        "crates/libsparklink/src/agent.rs": "228eda84396aa941c602d6d68c0a46df919464ee3228e41dc4f1acbb541c606c",
+        "crates/libsparklink/src/client.rs": "166207439e36325fca0668115b64cabd1ab744539b593666be09e547d33c37a8",
+        "crates/libsparklink/src/controller.rs": "b2e118baa9e291499927f77ad499d61c82c9154b03c9ffb006ed69086d7e1c2b",
+        "crates/libsparklink/src/controller_events.rs": "ddbf0004d97ab25ebf55b70768513b7af1715ca8c0874a7b05a10e46bf120cf1",
+        "crates/libsparklink/src/discovery.rs": "3392770eca1217aa36cc8074235aa2b3f848497d4b5c0dcc639595b80ff72683",
+        "crates/libsparklink/src/discovery_tests.rs": "d39262d02b91303e11df3e4949a3e73e8adad9ebcf6f16d76364dab931349a6c",
+        "crates/libsparklink/src/ffi.rs": "3767df93edc688cf4a80c88d434e5816e06f76589101dcbafe9251780b9ed716",
+        "crates/libsparklink/src/ffi_client.rs": "82b3bdb9b689606e9ab5867d2ca86c6d783a8b696a67935d21dc823a65a9a1ec",
+        "crates/libsparklink/src/ffi_connection.rs": "eaf1c49974cbf3601c1f785e34766f88567eed639f58e7a35658559d434c7bc6",
+        "crates/libsparklink/src/ffi_controller_events.rs": "31b4b68b2f29967cdacf3adfe1f9af18b02d5cca18ab2e6a6a961ab2fa0c5521",
+        "crates/libsparklink/src/lib.rs": "17e02316a5cbf09a0c023b0df41b0db3f749fd801c5e9e6dc26a2cca3d62a40f",
+        "crates/libsparklink/src/peer.rs": "832620f318b104711cda8189ec743c0b3d61cf9bc934b24d5fffbe57e047a603",
+        "crates/libsparklink/src/security.rs": "e9f1b28e3126f737850caa8ee6c471b00cae73c1a4807d656a0aeb37abead0b6",
+        "crates/libsparklink/src/ssap.rs": "bb7fa9a98d1ac6fa4a0c4b4d1c4cbdbbdc68973513b938194ffb0945a871e085",
+        "crates/libsparklink/src/ssap/local.rs": "90513938236cdadf3303f0c1651711a89d771652bddb84c27bbfbb1b057c9842",
+        "crates/libsparklink/src/sync_client.rs": "9c649ea636bc57119c41dc07f02a07d33bcc098dc21ed9646815b320714ac410",
+        "crates/libsparklink/src/sync_client/controller_events_tests.rs": "4caadc4202c5f39adf917727392ff814c61fbab7ee6afc76d3ffbac89467973b",
+        "crates/libsparklink/src/sync_client/tests.rs": "6df518102c912afee82e7dbc54705d1b9138e4c6bb0769873875099d6128d2bb",
+        "crates/libsparklink/tests/application_broker.rs": "a3ae07a32d60c1aafe839d25c9a939ffebf2b4b62b410de39498714f25a0a949",
+        "crates/libsparklink/tests/application_ffi.rs": "b1017260518a0a54a4e50f63349babe17c1ecfe07f9688ccd0e2aa806344f6c3",
+        "crates/libsparklink/tests/client_scope.rs": "6f15c094a7e9f5ec53f126010131c239dcd7ab9c0680c58491ec1deaae2a3abe",
+        "crates/libsparklink/tests/controller_client.rs": "bea22dd7a490fba2631bda82cdeea7063f99dbcd407b64b139c01223e3f522c8",
+        "crates/libsparklink/tests/controller_events.rs": "5eb45c35abbda8fc35a23d98fcbad1cc9164fb1aaecbd5ca0ff59c85a2c185a5",
+        "crates/libsparklink/tests/fixtures/application_client.c": "6a83b654c54dde35364b56088d42b86813f483d98b8069307890a707db8fc913",
+        "crates/libsparklink/tests/fixtures/application_client.py": "520acf036b330ca1434b0e8eaa001bf2f4fec1cef02da22d9a3cd2ecef09d61f",
+        "crates/libsparklink/tests/local_staging_client.rs": "46425c48da1fe9a7d7b3ef114d05a5c37e655d6eb3084c2e075dad046ee5cf87",
+        "crates/libsparklink/tests/owned_client.rs": "36438c7eaf26280d14cb49c24c41875f6aabc8832fb06c725b40703b2eb2d6a3",
+        "crates/libsparklink/tests/peer_client.rs": "2c04cb8b0cbe209fd30bf0e97b0c3b88b52a4c51065bf337033e8fcf54b2df92",
+        "crates/libsparklink/tests/remote_ssap_client.rs": "bbc1e47bacde4137cc8961ccfd1def2a0cc172eeba244561e98457cafa8f07e7",
+        "crates/libsparklink/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+        "crates/slctl/Cargo.toml": "f7589f3c0b47984ca6253879138adb1c2bb22901e1477d94a432e63b0c08af56",
+        "crates/slctl/examples/bus_policy_probe.rs": "738aea7f795d823dbc2e0daf35140b42761a6dc90e1a0c0927846a4c88671351",
+        "crates/slctl/examples/native_security_agent_probe.rs": "58d191fc9163d30a24c31fbf136ea8f2eb035158109284431d0d191f9b29de5f",
+        "crates/slctl/src/commands.rs": "47b2ac2a7d7f0b66e619ac43797c6f7953a8f45ea46eada12f515e80bd6083db",
+        "crates/slctl/src/main.rs": "a483840f276275958c0e3fedf779eaff5d632bf692b6a3a3f464bacff75a3252",
+        "crates/slctl/src/security_agent.rs": "76dd1972113be126bf51ab607eb437aa54014604f21b8082195fe786d1ce6123",
+        "crates/slctl/src/ssap_server.rs": "d63113241dad6198c3186bc12800df9ee579a3e32c152867d5f4686a1c4e8948",
+        "crates/slctl/tests/application_ssap.rs": "dec7337ebf8308d36a001fa4011042ba2503569e462f868924026e0ba6dba370",
+        "crates/slctl/tests/local_staging.rs": "9b213cf27a2ad591fdb7862e2351d894af49e6acb597bc6f62fc6c66942d89ff",
+        "crates/slctl/tests/management_owner.rs": "0665f718e90bcfe578557ee8f1333db77a5f1f89ad0f8af2e95fdb9c868142de",
+        "crates/slctl/tests/owned_local.rs": "5352abd93f1f9e4c2cdb00184b3d4da4d689c49ec68227e5d5f30c585f229b1c",
+        "crates/slctl/tests/retired_security.rs": "7cdc2f39374460b5f2073e378d4d5179657f93a3be8d43f33f5986c7e1cdb845",
+        "crates/slctl/tests/scan_freshness.rs": "bd7deb97194f01c95c62b43c63ddd4ce4f9ade4a8d9649c1f9f3c9b392998a02",
+        "crates/slctl/tests/security_agent.rs": "5711568f02d3c1c864657b1b30ce4e7693d3c23387df21dfbb76feecc3ecb608",
+        "crates/slctl/tests/support/mod.rs": "5f738ee7074b06b9d3e8cd5c972da0059e3ced53545538667eb041ac48b2aaed",
+        "crates/slctl/tests/tool_boundary.rs": "caa0c85eb804553875c798b9ce9ef9a43e1be6cdd057e00a015680a218764c55",
+        "crates/slk-channel/Cargo.toml": "1852a9e066d9d9fb966e89be6810c3ab60841a68c081c46fc280f0e679616212",
+        "crates/slk-channel/src/deadline.rs": "6ec52823f48fcc2f2f7e64dd892b7a36f776e7b39be42cf21dd6c68da74e0102",
+        "crates/slk-channel/src/lib.rs": "ff663009b9a23d1e708a1335d31edb2e4fc485341b2201099ce345381e0e3853",
+        "crates/slk-channel/src/security.rs": "0952c100016f0876f9e16e5334006042db46a022937e295ba36633b61c8c5240",
+        "crates/slk-contract/Cargo.toml": "a6c5fdf4de6e5a90cfc51c9bb91f8c6e9bff0c912bee47d0b7061a3453e0abb0",
+        "crates/slk-contract/src/controller_events.rs": "299b13ff19f0bf02d96f795b6fd117bbd5299aab5dacb780595616b92a63128e",
+        "crates/slk-contract/src/discovery.rs": "fe6b86dd7b9800f1ccd77a9f4c24ffc92f85711419af64a37febdd1ec8aa2b3d",
+        "crates/slk-contract/src/lib.rs": "3f093bb2f921ac93e5dc367fc1ee9cdd29941cd13d6fe90b7f04ce2050110dcb",
+        "crates/slk-contract/src/security.rs": "4a63aa6821844b784e061b73d59151c51c56cac18e8fdf2ef44eb3ddcb8f1054",
+        "crates/slk-experimental/Cargo.toml": "cb5b8a8f128ddc1b70da40582eecfd2f148679c5b594da8b50669dde15c07003",
+        "crates/slk-experimental/README.md": "febc95f37c0ed8e932d168ee199f4f0c602c0ea4ab5c718252029623fb8c3aa1",
+        "crates/slk-experimental/src/hid.rs": "396cb3a30a718763344696e0a95d3eaaf27e1a185427d578c2649fe403124de5",
+        "crates/slk-experimental/src/lib.rs": "82dbbfa3f995aa0041beceac192a4273e1891a211326eef81bc2e10ea2befabf",
+        "crates/slk-experimental/src/profile.rs": "658504ecd9499ed7cd086d7ec9f1705fb6883f387f3e2d165d17cf7c3b3177ea",
+        "crates/slk-experimental/src/transport.rs": "d82412b919643578101675903ec6e63dc9dec9de3755187e8ff55c81a109c5a2",
+        "crates/slk-native/Cargo.toml": "6b7291fadb49e0d6474c9d2cbc86e45ca5f9815708b1901538471f8e387cda7b",
+        "crates/slk-native/build.rs": "be3b6be28f5692fd1da3977b6ea6c6ff64349bf496f8798fbcda0222b8c5c98c",
+        "crates/slk-native/cbindgen.toml": "c772f0abb4563c75cdafbca6daf75f0ab2d7892d26d03dcbe00615c44b345504",
+        "crates/slk-native/include/sparklink_native.h": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+        "crates/slk-native/src/adapter.rs": "d0096de48a574a367b213710b50f320b90c3146bb075c54a6904eb64d6b4ea17",
+        "crates/slk-native/src/channel.rs": "ca3906dc575d0b633af3f8fcc65591ce68e67a897ea81f1373e7aca8fbc7169c",
+        "crates/slk-native/src/controller_events.rs": "5f0796edd8307b3da44eda56bff00428d842babf44524d3e8fe7247b80df931a",
+        "crates/slk-native/src/error.rs": "6ece32337cabb26ef4a18eab009b43a8dbd73c83518ddf80bb240b82791514b4",
+        "crates/slk-native/src/ffi.rs": "f96b55125dbfce1ad4a758616e2da3f97bb572b64baddaf83aa0ca2d87440dba",
+        "crates/slk-native/src/ffi_native.rs": "6c20c5b36739376c4af24ae7fedb51c198ed8a6e6269fedaddda3659a215cf7b",
+        "crates/slk-native/src/ioctl.rs": "849d9daa032491822632ca2014d4f167bcc0635e5de65f1681c5feb9e820836b",
+        "crates/slk-native/src/lib.rs": "e0cbf35aa9abfaeea1ff6707fe8778a03503ee7b059d2ea23b30e9ec4ab69f8d",
+        "crates/slk-native/src/retired_event.rs": "399da4e4c6814435f6fa16c33fc10691316c8df0709202a912dbffa56b7e49dd",
+        "crates/slk-native/src/snoop.rs": "3cc3de4abf2d229b5ddb95bae676eacd0145d8c9bcb649a0b788d3c294304292",
+        "crates/slk-native/src/ws73_discovery.rs": "acdaac152c1590194683953896f853ffdae8ae88475f7a63a9622115e00a0a8f",
+        "crates/slk-protocol/Cargo.toml": "a05fa386376ccdd0ab2ccfec32f73c396a491d631d781495e35952792d4fb137",
+        "crates/slk-protocol/src/advdata.rs": "46a3576b7c50b86aba933ba3045b7d3209698984b3d083b75c9e4ff1c19c76d6",
+        "crates/slk-protocol/src/channel.rs": "343a0ed2fc1e125c7cf7011970448613ea83dc9d733481c524d2d67adfd195c7",
+        "crates/slk-protocol/src/deadline.rs": "bca13c2674cb585fd97a083741cd414f5a044dda3feab5ee558db80567cac732",
+        "crates/slk-protocol/src/genl.rs": "18b89130b03e7e0bdf86b3ed5a0dc6986108ff295be8b9e0ae57c2f38656aa70",
+        "crates/slk-protocol/src/lib.rs": "3a329fa6c4b385f6cc4ce24327b0188b16f781d22ee2c5a81fc2aaa0aa0815a9",
+        "crates/slk-protocol/src/message_security.rs": "002108cc82f7b4e560b4d781ae067338bd1d8bb9451ea8ede4edf503117622d9",
+        "crates/slk-protocol/src/retired_types.rs": "727d3a70590115006823ec92012e1f8d00c538ef46d10894c2314fa723ef88b4",
+        "crates/slk-protocol/src/service_hash.rs": "ba69741d720420dfecabdd249376e77e2044f991fd8e6c746005aef267b94ad3",
+        "crates/slk-protocol/src/ssap.rs": "9c40651497dacc8edc9e202a4379e9ec67116633415340d368cde872b38c1192",
+        "crates/slk-protocol/src/ssap/access.rs": "1a4569bad45465a630ade17ade1be1b7176b184c725f345685a4766e3ce6a325",
+        "crates/slk-protocol/src/ssap/discovery.rs": "630226903823b169141d509354d6c9c5dc937d65c15e823ec474b07d196289b9",
+        "crates/slk-protocol/src/ssap/exchange.rs": "f8399462301ff6f02258a6b669d9a469a1accde84831436b69b6e212e7d47d9e",
+        "crates/slk-protocol/src/ssap/read_uuid.rs": "f823bec489a9c539975fdf660288770a581390ba50164468b1c238c6e3973064",
+        "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+        "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+        "crates/slk-protocol/src/tests.rs": "624407534c5b9896bf97fdd0b80a4c80f2e20bd1b3bceb6a7a4501ac9e434d0d",
+        "crates/slk-protocol/src/types.rs": "ebcccd1368abcb2bf4a20022b1e0f6be92724085ae5dd50afed4a832971e9be2",
+        "crates/slkconfig/Cargo.toml": "f5c51129cccbbd10db446c4e18a7e725cad67cdd8e002741fd6e9d57deeab069",
+        "crates/slkconfig/src/main.rs": "603c7db900894bfc70282ef5be838a8495cbca2427ce1c9953b76402444ebd75",
+        "crates/slkd/Cargo.toml": "762675a8cddbb4297dc47841faee7b40966f6f3b4acb700ca8b839f70b2a354a",
+        "crates/slkd/src/adapters.rs": "e523d60e283ed841900976df75d0d2e4836ba987d37271d762fdbba1b408a96d",
+        "crates/slkd/src/bonding.rs": "351b79b2b0d3238d5d072b90f776e4db277d4a3af7f692939e5085c0b6519e1a",
+        "crates/slkd/src/config.rs": "bee373a36b82ff9432ca1f3c8aea854cb11d8a7caee62602bc65ba64556f4a78",
+        "crates/slkd/src/connection.rs": "76a2896c98cd3f26765598f39903cbe5909a83c1b03de944d239e51f810b6a82",
+        "crates/slkd/src/connection_object.rs": "c817547365ed6fe8706eb1c749c9d81c3018fd8dd5c5ba494623b3962dc775f7",
+        "crates/slkd/src/controller.rs": "93d075b1ad094990e7fee97c589e62ed2b7d01d1d94b31ffd8b2decb446cf569",
+        "crates/slkd/src/controller_events.rs": "3012c6ea2a2598a6adaabe4023fa085c2012e4fda2e83ddb99765632d380630f",
+        "crates/slkd/src/dbus_iface.rs": "5dc9f21af7c63ae999b0405648d38e1a0f515a95f40297478fbe47562c45fe8d",
+        "crates/slkd/src/discovery.rs": "39bb72b5838195c14916a60bd75ad627e7255605b371bd772bd137bf99f489c2",
+        "crates/slkd/src/discovery_fence.rs": "8c1bea25254e86bef3062e1debdc2f21b8e369c3c0e8bf34a69884751333149d",
+        "crates/slkd/src/discovery_tests.rs": "38aeeefca55677845119ae9f1fe859557aec9affe8fe36f5e158fb9b4c2bb923",
+        "crates/slkd/src/event_loop.rs": "fa9fde0ab4389b891f247d7e60c97d8f8a303775941f35cb54553d8f55fb451f",
+        "crates/slkd/src/event_loop_tests.rs": "8ca47947d44860bccee90bc665068a73e578a862ab7512480f52795235ef8cc5",
+        "crates/slkd/src/kernel.rs": "21483ca487eb657e4666e414d51b862472186e34d34a7a0f46a1069e89eb3297",
+        "crates/slkd/src/main.rs": "1605ff1f79ba43c41f37a36aa0fbc5d1d65d0aec977571ceede5fa74fdf01afb",
+        "crates/slkd/src/profile_runtime.rs": "68a35707350ec82d9aef75431c4c3c660761569b82962818d8506a1a036d3f9b",
+        "crates/slkd/src/profile_runtime_tests.rs": "d262cec10c3493b421b45a1e62dab43b96794bebe267b493af3e8b50686fc452",
+        "crates/slkd/src/radio.rs": "fdfb9e62e371041ab5efbc8bf1d3fd8f09299af62fff86081f43c326c1e6a329",
+        "crates/slkd/src/registration.rs": "2c3719883241c94a33e38f10a5a67d67b238fc902d47c6addcae81e8b7279eb1",
+        "crates/slkd/src/security.rs": "0310a37899df07ab594b61cf3e2317a510e66d70474b704695ff7c15720fb467",
+        "crates/slkd/src/security_policy.rs": "4d443f35f0de81384718be82f269569712ca55e8011e2f8f211d5bace671afcf",
+        "crates/slkd/src/security_policy_tests.rs": "65f6ea3ecbadfc80e970b5459cd13d2deb0bb20517eab85b2172f5f594f0da5e",
+        "crates/slkd/src/service.rs": "d22210adcc9d0212fe50bdeff581b803493464687b5e38cd710e6b41e2f5d6f1",
+        "crates/slkd/src/ssap_authorization.rs": "bccbe2267abc4a79f4b9fd87cd81e0fd0028f3ec261782bd56af952e89ff2498",
+        "crates/slkd/src/ssap_authorization_tests.rs": "c5489b5233999aa909246a9f890cc3b601356d9ed46ef550ec7972b55fcd9adf",
+        "crates/slkd/src/ssap_database.rs": "2422a8c6dfd3940595e70c27eac9b6f834d466deb4d18a3e413320fb4fd4e3e8",
+        "crates/slkd/src/ssap_engine.rs": "6b8e13dec64794929180b08a5753b7d60625bf366ac458a599f23f5869cf0824",
+        "crates/slkd/src/state.rs": "81c192075f2e2fe07ef2b29dd4e2353c90aa910f8b326f9b6fd21090d6f7fd46",
+        "crates/slkd/tests/config_startup.rs": "be6ebe8269e1c160844d91c31278c3306dbd117e8ae940fff8c3aa63359bcaa9",
+        "crates/slkdump/Cargo.toml": "cfa8a051c1f96f1ad16b99de57fc19aa47b99dc7f87d4382147ef5937d39ca64",
+        "crates/slkdump/src/main.rs": "6b4f7a3b271583a5b3d7fc2a3d489f9c6b822dc6f66bf127709373a2edcfe28a",
+        "crates/slkmon/Cargo.toml": "f9c218e1f1b5a0314c65e795cc89d529f271a44f245d5c3d9f7566b6679aa792",
+        "crates/slkmon/src/main.rs": "fe537266f8c5f80310709eb4247fb145cc3fb424137f6075b3123b37474c14b1",
+        "crates/slktest/Cargo.toml": "78656d09a49eb593c495d964a075a32e9911930eaf068cbfa5e6834e98491070",
+        "crates/slktest/src/benchmark.rs": "3fdade2e65655dc24cb4ccda431193beae34e5fa662f51e2d6ba72cc68507780",
+        "crates/slktest/src/benchmark/load.rs": "2d3e667b1dc9fa3c9ab1134997292990273347c288ab918e5221585c9c5dd5ff",
+        "crates/slktest/src/channel.rs": "dd76516470e1ea703b67a22b44596b94cf49edd5f5f7fbc9d98a9fee27aca0f1",
+        "crates/slktest/src/cli.rs": "3f435b8fe78cd957f3bb62e14e456a65f6ed089d08266454cd88eec13612ae71",
+        "crates/slktest/src/connection.rs": "614809d5a0af516d9bbd42425390ce3b123f5bc378744c068a7b1d86153fa3e6",
+        "crates/slktest/src/lib.rs": "ae0ae29c29b80adf75127a45c9c1b1300991d9e0868cd7f50c5d3314ba139aad",
+        "crates/slktest/src/main.rs": "a812cb91a487556706c1f550c423ab5ac98a82fc7f1d9e35ff33598d58ac710e",
+        "crates/slktest/tests/entrypoint.rs": "8cbe4072d213ae2d2723631b2e0eac59967d59486b5dde5a3f670bbb69a00755",
+        "data/config/main.conf": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+        "data/dbus/org.sparklink.service": "25ed4e16ddd90c9eacbd9b8ce51ae3ecdc97c8988ac22444d94d790daf978adb",
+        "data/dbus/sparklink.conf": "9f0528281791367d8dc4521b3e83c587db0becf91849cd2a39147a4fac9c9672",
+        "data/man/man1/slctl.1": "8c0c9054955a84eb8fbad74502fd70eb929adbfa71f992b16eac9c42e01e4ffc",
+        "data/man/man1/slktest.1": "a60700e71e8c334bcdd84c1a4d57b9aebbe05320325100837e4b5e8bf0d2bcd6",
+        "data/man/man5/sparklink.conf.5": "eed33d3d0e4b860c509a0e23c07f08f1d68d8fcd9db7573a3c7063cd309d1021",
+        "data/man/man8/slkd.8": "55fac65b7c3093df366e6e3c7502e50f4cc84963882bba8288e0f8bbfd2c2b17",
+        "data/pkgconfig/sparklink-native.pc": "ff8cfc99e971b2a68ae293f5e284fcae8b04c973050644f4d73a54088a51a549",
+        "data/pkgconfig/sparklink.pc": "41d2d5e17ecf52bd64ff6d28b39bd2961bfeac65538d250064f645bf6eeb6b6c",
+        "data/systemd/sparklink.service": "6522bfc2a09810633b98cbe9753c8f3ec860c4da980f30245e845ca892ad2a0e",
+        "data/sysusers/sparklink.conf": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+        "data/udev/99-sparklink.rules": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886"
+      },
+      "scopes": [
+        "crates",
+        "data",
+        "Cargo.toml",
+        "Cargo.lock"
+      ]
+    },
+    "kernel": {
+      "commit": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+      "latest_observed_head": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+      "whole_head_qualification_transferred": false
+    },
+    "executed_tools": "c5c3989f318e6f54a1e265f3411f9cbbcfe61501",
+    "validator": "c5c3989f318e6f54a1e265f3411f9cbbcfe61501",
+    "host_archive": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/source.json"
+  },
+  "hardware": {
+    "policy": "project/lab-resource-policy.json",
+    "host_ports": [
+      "1-1.1.1",
+      "1-1.1.2"
+    ],
+    "sdk": "1.10.110",
+    "variant": "us",
+    "firmware": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+    "hcc": [
+      {
+        "source": "HCC_GET_CHIP_TYPE",
+        "model": "U",
+        "bus": "USB",
+        "raw": "source=HCC_GET_CHIP_TYPE model=WS73U model_id=0 bus=USB bus_id=0"
+      },
+      {
+        "source": "HCC_GET_CHIP_TYPE",
+        "model": "U",
+        "bus": "USB",
+        "raw": "source=HCC_GET_CHIP_TYPE model=WS73U model_id=0 bus=USB bus_id=0"
+      }
+    ],
+    "E": "Only readonly placement/serial/2EP;not passed through,noHCC",
+    "forbidden_and_hubs": "Not operated;no reset/power/controller passthrough"
+  },
+  "qualification": {
+    "real": {
+      "result": "FAIL",
+      "scope": [
+        "Explicit-release discovery positive slice only;full VM FAIL. No caller-loss/TTL/manager-stop/original-deadline/partial-init qualification.",
+        "No new connection/business/length/SSAP preservation PASS;Status0 does not equal connection Outcome or peer application delivery.",
+        "Actual apps-only reads succeeded on guest system bus;complete deployment role/denial/udev/credential matrix remains missing.",
+        "No E/mixed/cold-ROM auto-selection,full memory/refinement proof,hardware authentication or natural/nonmanual recovery qualification."
+      ],
+      "bounds": {
+        "vm_attempts": 3,
+        "latest_compiled_userspace": "c5c3989f318e6f54a1e265f3411f9cbbcfe61501",
+        "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+        "ordinary_readers": 4,
+        "scanner_roles": 2,
+        "application_observations": 18,
+        "distinct_receiver_reports": 16,
+        "latest_whole_vm": "FAIL",
+        "business_round_trips": 0,
+        "length_preservation": "NOT_RUN_AFTER_CONNECTION_FAILURE",
+        "qualification_transferred": false
+      },
+      "gates": [
+        {
+          "name": "ordinary-two-callers-one-real-scanner-and-random-peer-data",
+          "result": "PASS",
+          "detail": "Four real UID1004 SDK readers,random payload/address/known RSSI,independent USB/HCC/DLI corroboration."
+        },
+        {
+          "name": "release-caller-loss-ttl-manager-stop-original-deadline",
+          "result": "MISSING",
+          "detail": "Explicit release slice only;other required exit/TTL/manager/deadline/partial-init cases not executed."
+        },
+        {
+          "name": "role-swap-native-usb-receipts-and-peer-isolation",
+          "result": "PASS",
+          "detail": "Two scanner roles;one START and final STOP each;one caller releases while survivor receives fresh marker. Not a live peer business isolation gate."
+        },
+        {
+          "name": "original-business-length-ssap-preservation-on-new-artifact",
+          "result": "FAIL",
+          "detail": "First Create Status0 then deadline without Outcome/handle,cleanup target failed;business/length/SSAP not reached."
+        },
+        {
+          "name": "actual-systembus-app-role-permissions",
+          "result": "MISSING",
+          "detail": "Apps-only success is not the full required permission/denial/deployment matrix."
+        }
+      ]
+    }
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "manifest": "vm1-manifest.json",
+      "status": "FAIL",
+      "error": "guest environment failed",
+      "compiled_userspace": "17ba92537964f21875b935a5ce3320de1b127955",
+      "discovery_phases": 0,
+      "preservation": "NOT_RUN",
+      "overall_exit": 1
+    },
+    {
+      "attempt": 2,
+      "manifest": "vm2-manifest.json",
+      "status": "FAIL",
+      "error": "connection requires OUT, Status and matching successful outcome",
+      "compiled_userspace": "42671054511dcf6030b054badf217c287d848497",
+      "discovery_phases": 0,
+      "preservation": "FAIL:Status0 recorded;no outcome/handle;original request deadline;cleanup target unconfirmed",
+      "overall_exit": 1
+    },
+    {
+      "attempt": 3,
+      "manifest": "vm3-manifest.json",
+      "status": "FAIL",
+      "error": "connection requires OUT, Status and matching successful outcome",
+      "compiled_userspace": "c5c3989f318e6f54a1e265f3411f9cbbcfe61501",
+      "discovery_phases": 2,
+      "preservation": "FAIL:Status0 recorded;no outcome/handle;original request deadline;cleanup target unconfirmed",
+      "overall_exit": 1
+    }
+  ],
+  "explicit_release_slice": {
+    "status": "SCOPED_EXPLICIT_RELEASE_USB_AND_ACTUAL_SDK_OUTPUT_PASS_FULL_RUN_FAILED",
+    "capture_packets": 555,
+    "proof": {
+      "status": "EXPLICIT_RELEASE_TWO_ROLE_USB_CORROBORATED",
+      "phases": [
+        {
+          "phase": 0,
+          "scanner": {
+            "port": "1-1",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+            "bus": 1,
+            "device": 2,
+            "index": 0,
+            "generation": 1,
+            "path": "/org/sparklink/slk0_g1",
+            "address": "00:01:09:32:54:CD",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=1 core_pending_ret=-2 core_phase=0 core_error=0",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<17<<<;29=0;69;7:0"
+            },
+            "observed_wall_ns": 1792346928365889447
+          },
+          "advertiser": {
+            "port": "1-2",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+            "bus": 1,
+            "device": 3,
+            "index": 1,
+            "generation": 2,
+            "path": "/org/sparklink/slk1_g2",
+            "address": "00:01:09:32:54:F9",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=1 pending_generation=2 core_pending_ret=-2 core_phase=0 core_error=0",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<1705:229=0;6516:0"
+            },
+            "observed_wall_ns": 1792346928374983256
+          },
+          "radio": [
+            {
+              "command": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792346928419611000,
+                "urb": 18446616821615791296,
+                "record": 398,
+                "file_offset": 42498,
+                "usb_sha256": "f57541443f299b3db6a20cf878d983491ecb7eed6e37e7789981bd6226210788",
+                "opcode": 4097,
+                "params": "0000010040062003",
+                "sequence": 20,
+                "completion": {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792346928419803000,
+                  "urb": 18446616821615791296,
+                  "record": 399,
+                  "file_offset": 42706
+                }
+              },
+              "reply": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792346928420143000,
+                "urb": 18446616822391474048,
+                "record": 400,
+                "file_offset": 42786,
+                "hcc_offset": 92,
+                "usb_sha256": "467502736f69a0f6728f460c23de32eb9011bc9731e1b959790b02e160ebb4cf",
+                "usb_length": 178,
+                "opcode": 4097,
+                "status": 0,
+                "value": ""
+              }
+            },
+            {
+              "command": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792346928420219000,
+                "urb": 18446616821722065152,
+                "record": 402,
+                "file_offset": 43124,
+                "usb_sha256": "8905aa42d0b08022d6cc7c7e2172915d5d1e199343b840fd8dd2f6ae4c321b9d",
+                "opcode": 4098,
+                "params": "0100",
+                "sequence": 21,
+                "completion": {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792346928420325000,
+                  "urb": 18446616821722065152,
+                  "record": 403,
+                  "file_offset": 43332
+                }
+              },
+              "reply": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792346928420545000,
+                "urb": 18446616822391474048,
+                "record": 404,
+                "file_offset": 43412,
+                "hcc_offset": 92,
+                "usb_sha256": "ec908894ef295b42ca8ea41830622ff777fcebeb993e84b4a8106c371d3471f9",
+                "usb_length": 178,
+                "opcode": 4098,
+                "status": 0,
+                "value": ""
+              }
+            },
+            {
+              "command": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792346930183094000,
+                "urb": 18446616821722070784,
+                "record": 450,
+                "file_offset": 50836,
+                "usb_sha256": "955dc91a8335d41223d97d10262bbab97eb78d70c6521b47b6f53b7cf5f4ff27",
+                "opcode": 4098,
+                "params": "0000",
+                "sequence": 22,
+                "completion": {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792346930183375000,
+                  "urb": 18446616821722070784,
+                  "record": 451,
+                  "file_offset": 51044
+                }
+              },
+              "reply": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792346930236852000,
+                "urb": 18446616822391474048,
+                "record": 452,
+                "file_offset": 51124,
+                "hcc_offset": 92,
+                "usb_sha256": "ec908894ef295b42ca8ea41830622ff777fcebeb993e84b4a8106c371d3471f9",
+                "usb_length": 178,
+                "opcode": 4098,
+                "status": 0,
+                "value": ""
+              }
+            }
+          ],
+          "reports": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346928489753000,
+              "urb": 18446616822391474048,
+              "record": 418,
+              "file_offset": 45628,
+              "hcc_offset": 92,
+              "usb_sha256": "133dc326a0daa6c62cb3692fb4be459787cd4879c128389db839fb8fe29c0b5b",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -4,
+              "header": "00000001093254f900000000000000000000000000fc2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373065303131393532323839656237346361"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346928489753000,
+              "urb": 18446616822391474048,
+              "record": 418,
+              "file_offset": 45628,
+              "hcc_offset": 92,
+              "usb_sha256": "133dc326a0daa6c62cb3692fb4be459787cd4879c128389db839fb8fe29c0b5b",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -4,
+              "header": "00000001093254f900000000000000000000000000fc2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373065303131393532323839656237346361"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346928681327000,
+              "urb": 18446616822391474048,
+              "record": 436,
+              "file_offset": 48470,
+              "hcc_offset": 92,
+              "usb_sha256": "41c0af65abdc15f3b4185b9a24c0d7038cadee33bbe8e6e6310192328fec4b44",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -3,
+              "header": "00000001093254f900000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346928831293000,
+              "urb": 18446616822391474048,
+              "record": 438,
+              "file_offset": 48808,
+              "hcc_offset": 92,
+              "usb_sha256": "09b331b7a8277868472299487f066adea084cf58c7092226b2cade1d3717511a",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -4,
+              "header": "00000001093254f900000000000000000000000000fc2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346929281263000,
+              "urb": 18446616822391474048,
+              "record": 440,
+              "file_offset": 49146,
+              "hcc_offset": 92,
+              "usb_sha256": "09b331b7a8277868472299487f066adea084cf58c7092226b2cade1d3717511a",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -4,
+              "header": "00000001093254f900000000000000000000000000fc2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346929431403000,
+              "urb": 18446616822391474048,
+              "record": 442,
+              "file_offset": 49484,
+              "hcc_offset": 92,
+              "usb_sha256": "09b331b7a8277868472299487f066adea084cf58c7092226b2cade1d3717511a",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -4,
+              "header": "00000001093254f900000000000000000000000000fc2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346929581432000,
+              "urb": 18446616822391474048,
+              "record": 444,
+              "file_offset": 49822,
+              "hcc_offset": 92,
+              "usb_sha256": "41c0af65abdc15f3b4185b9a24c0d7038cadee33bbe8e6e6310192328fec4b44",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -3,
+              "header": "00000001093254f900000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346930031461000,
+              "urb": 18446616822391474048,
+              "record": 446,
+              "file_offset": 50160,
+              "hcc_offset": 92,
+              "usb_sha256": "09b331b7a8277868472299487f066adea084cf58c7092226b2cade1d3717511a",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -4,
+              "header": "00000001093254f900000000000000000000000000fc2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966"
+            },
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792346930181296000,
+              "urb": 18446616822391474048,
+              "record": 448,
+              "file_offset": 50498,
+              "hcc_offset": 92,
+              "usb_sha256": "41c0af65abdc15f3b4185b9a24c0d7038cadee33bbe8e6e6310192328fec4b44",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:F9",
+              "rssi": -3,
+              "header": "00000001093254f900000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966"
+            }
+          ]
+        },
+        {
+          "phase": 1,
+          "scanner": {
+            "port": "1-2",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+            "bus": 1,
+            "device": 3,
+            "index": 1,
+            "generation": 2,
+            "path": "/org/sparklink/slk1_g2",
+            "address": "00:01:09:32:54:F9",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=1 pending_generation=2 core_pending_ret=-2 core_phase=0 core_error=0",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<1705:229=0;6516:0"
+            },
+            "observed_wall_ns": 1792346928374983256
+          },
+          "advertiser": {
+            "port": "1-1",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+            "bus": 1,
+            "device": 2,
+            "index": 0,
+            "generation": 1,
+            "path": "/org/sparklink/slk0_g1",
+            "address": "00:01:09:32:54:CD",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=1 core_pending_ret=-2 core_phase=0 core_error=0",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<17<<<;29=0;69;7:0"
+            },
+            "observed_wall_ns": 1792346928365889447
+          },
+          "radio": [
+            {
+              "command": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792346930330230000,
+                "urb": 18446616821604703232,
+                "record": 458,
+                "file_offset": 52088,
+                "usb_sha256": "9a651de5000d8487a6ab0a111755bbffa9276b95856e6c82f3faef86e50d5f0a",
+                "opcode": 4097,
+                "params": "0000010040062003",
+                "sequence": 28,
+                "completion": {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792346930330423000,
+                  "urb": 18446616821604703232,
+                  "record": 459,
+                  "file_offset": 52296
+                }
+              },
+              "reply": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792346930330552000,
+                "urb": 18446616821722072192,
+                "record": 460,
+                "file_offset": 52376,
+                "hcc_offset": 92,
+                "usb_sha256": "57e5575f15bcbbfb54b100d2af5d4b3699aef2ac0aa15339894620bdd3c66cb3",
+                "usb_length": 178,
+                "opcode": 4097,
+                "status": 0,
+                "value": ""
+              }
+            },
+            {
+              "command": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792346930330646000,
+                "urb": 18446616821832088960,
+                "record": 462,
+                "file_offset": 52714,
+                "usb_sha256": "3fc8980d7a9f52220ff0963bfd3b112fc78d3f6038eb302fa0fa5f5d63ecdf3f",
+                "opcode": 4098,
+                "params": "0100",
+                "sequence": 29,
+                "completion": {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792346930330791000,
+                  "urb": 18446616821832088960,
+                  "record": 463,
+                  "file_offset": 52922
+                }
+              },
+              "reply": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792346930331039000,
+                "urb": 18446616821722072192,
+                "record": 464,
+                "file_offset": 53002,
+                "hcc_offset": 92,
+                "usb_sha256": "fdb762079eae83376a448a1c7e925b5efcc5d856957c985f20c6f18c649f0563",
+                "usb_length": 178,
+                "opcode": 4098,
+                "status": 0,
+                "value": ""
+              }
+            },
+            {
+              "command": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792346932247618000,
+                "urb": 18446616821604703232,
+                "record": 510,
+                "file_offset": 60426,
+                "usb_sha256": "618e8997a83d21f71f804a8615b0e624288fbbbbad208a5a0a26730db6a98360",
+                "opcode": 4098,
+                "params": "0000",
+                "sequence": 30,
+                "completion": {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792346932247755000,
+                  "urb": 18446616821604703232,
+                  "record": 511,
+                  "file_offset": 60634
+                }
+              },
+              "reply": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792346932332810000,
+                "urb": 18446616821722072192,
+                "record": 512,
+                "file_offset": 60714,
+                "hcc_offset": 92,
+                "usb_sha256": "fdb762079eae83376a448a1c7e925b5efcc5d856957c985f20c6f18c649f0563",
+                "usb_length": 178,
+                "opcode": 4098,
+                "status": 0,
+                "value": ""
+              }
+            }
+          ],
+          "reports": [
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346930399250000,
+              "urb": 18446616821722072192,
+              "record": 478,
+              "file_offset": 55218,
+              "hcc_offset": 92,
+              "usb_sha256": "e59afcee954a3f5f5af813fe8882fa2a0219f0f3b79e15f7ea4addcc39149e1f",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -3,
+              "header": "00000001093254cd00000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393365653733616564316338363134613431"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346930399250000,
+              "urb": 18446616821722072192,
+              "record": 478,
+              "file_offset": 55218,
+              "hcc_offset": 92,
+              "usb_sha256": "e59afcee954a3f5f5af813fe8882fa2a0219f0f3b79e15f7ea4addcc39149e1f",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -3,
+              "header": "00000001093254cd00000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393365653733616564316338363134613431"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346930596242000,
+              "urb": 18446616821722072192,
+              "record": 496,
+              "file_offset": 58060,
+              "hcc_offset": 92,
+              "usb_sha256": "4d236f0b46674030870c22d74bc353c088378f091a28271eafc5a2238e858993",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -3,
+              "header": "00000001093254cd00000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346930746349000,
+              "urb": 18446616821722072192,
+              "record": 498,
+              "file_offset": 58398,
+              "hcc_offset": 92,
+              "usb_sha256": "4d236f0b46674030870c22d74bc353c088378f091a28271eafc5a2238e858993",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -3,
+              "header": "00000001093254cd00000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346931346330000,
+              "urb": 18446616821722072192,
+              "record": 500,
+              "file_offset": 58736,
+              "hcc_offset": 92,
+              "usb_sha256": "4d236f0b46674030870c22d74bc353c088378f091a28271eafc5a2238e858993",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -3,
+              "header": "00000001093254cd00000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346931496387000,
+              "urb": 18446616821722072192,
+              "record": 502,
+              "file_offset": 59074,
+              "hcc_offset": 92,
+              "usb_sha256": "4d236f0b46674030870c22d74bc353c088378f091a28271eafc5a2238e858993",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -3,
+              "header": "00000001093254cd00000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346931946589000,
+              "urb": 18446616821722072192,
+              "record": 504,
+              "file_offset": 59412,
+              "hcc_offset": 92,
+              "usb_sha256": "4d236f0b46674030870c22d74bc353c088378f091a28271eafc5a2238e858993",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -3,
+              "header": "00000001093254cd00000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346932096423000,
+              "urb": 18446616821722072192,
+              "record": 506,
+              "file_offset": 59750,
+              "hcc_offset": 92,
+              "usb_sha256": "4d236f0b46674030870c22d74bc353c088378f091a28271eafc5a2238e858993",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -3,
+              "header": "00000001093254cd00000000000000000000000000fd2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435"
+            },
+            {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792346932246360000,
+              "urb": 18446616821722072192,
+              "record": 508,
+              "file_offset": 60088,
+              "hcc_offset": 92,
+              "usb_sha256": "81709a7a36db0f89276cf9e5248783791818793cd04efb38f89f0328bf611695",
+              "usb_length": 178,
+              "address": "00:01:09:32:54:CD",
+              "rssi": -4,
+              "header": "00000001093254cd00000000000000000000000000fc2b",
+              "data": "ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435"
+            }
+          ]
+        }
+      ],
+      "limits": "Explicit release positive slice only; no TTL/owner-loss/manager-stop/partial-init/system-wide privilege or natural recovery qualification."
+    },
+    "actual_readers": [
+      {
+        "phase": 0,
+        "scanner": "/org/sparklink/slk0_g1",
+        "advertiser": "/org/sparklink/slk1_g2",
+        "markers": [
+          "887a965cb415a170e011952289eb74ca",
+          "887a965cb415a170d4479c75bcf7429f"
+        ],
+        "readers": [
+          {
+            "uid": 1004,
+            "gid": 1004,
+            "extra_groups": [],
+            "native_fds": [],
+            "exit": 0,
+            "start_wall_ns": 1792346928442925549,
+            "end_wall_ns": 1792346928493845139,
+            "stdout": "Selected /org/sparklink/slk0_g1\nDiscoverySession: id=2 path=/org/sparklink/slk0_g1 state=active source=broker\nDiscoveryReport: session=2 generation=1 sequence=1 address_type=0 address=0001093254f9 rssi=-4 data=ff290101010b24736c6b2d3838376139363563623431356131373065303131393532323839656237346361\nDiscoveryReleased: session=2 last_physical_stop_confirmed=false\n"
+          },
+          {
+            "uid": 1004,
+            "gid": 1004,
+            "extra_groups": [],
+            "native_fds": [],
+            "exit": 0,
+            "start_wall_ns": 1792346928414932109,
+            "end_wall_ns": 1792346930266111675,
+            "stdout": "Selected /org/sparklink/slk0_g1\nDiscoverySession: id=1 path=/org/sparklink/slk0_g1 state=active source=broker\nDiscoveryReport: session=1 generation=1 sequence=1 address_type=0 address=0001093254f9 rssi=-4 data=ff290101010b24736c6b2d3838376139363563623431356131373065303131393532323839656237346361\nDiscoveryReport: session=1 generation=1 sequence=2 address_type=0 address=0001093254f9 rssi=-3 data=ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966\nDiscoveryReport: session=1 generation=1 sequence=3 address_type=0 address=0001093254f9 rssi=-4 data=ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966\nDiscoveryReport: session=1 generation=1 sequence=4 address_type=0 address=0001093254f9 rssi=-4 data=ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966\nDiscoveryReport: session=1 generation=1 sequence=5 address_type=0 address=0001093254f9 rssi=-4 data=ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966\nDiscoveryReport: session=1 generation=1 sequence=6 address_type=0 address=0001093254f9 rssi=-3 data=ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966\nDiscoveryReport: session=1 generation=1 sequence=7 address_type=0 address=0001093254f9 rssi=-4 data=ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966\nDiscoveryReport: session=1 generation=1 sequence=8 address_type=0 address=0001093254f9 rssi=-3 data=ff290101010b24736c6b2d3838376139363563623431356131373064343437396337356263663734323966\nDiscoveryReleased: session=1 last_physical_stop_confirmed=true\n"
+          }
+        ],
+        "first_released": {
+          "phase": 0,
+          "first_end_wall_ns": 1792346928493845139,
+          "survivor_alive": true,
+          "observed_wall_ns": 1792346928493919459
+        }
+      },
+      {
+        "phase": 1,
+        "scanner": "/org/sparklink/slk1_g2",
+        "advertiser": "/org/sparklink/slk0_g1",
+        "markers": [
+          "bb5c5f2b90737b93ee73aed1c8614a41",
+          "bb5c5f2b90737b934da2ca54b51ae5d5"
+        ],
+        "readers": [
+          {
+            "uid": 1004,
+            "gid": 1004,
+            "extra_groups": [],
+            "native_fds": [],
+            "exit": 0,
+            "start_wall_ns": 1792346930354086855,
+            "end_wall_ns": 1792346930407961103,
+            "stdout": "Selected /org/sparklink/slk1_g2\nDiscoverySession: id=2 path=/org/sparklink/slk1_g2 state=active source=broker\nDiscoveryReport: session=2 generation=2 sequence=1 address_type=0 address=0001093254cd rssi=-3 data=ff290101010b24736c6b2d6262356335663262393037333762393365653733616564316338363134613431\nDiscoveryReleased: session=2 last_physical_stop_confirmed=false\n"
+          },
+          {
+            "uid": 1004,
+            "gid": 1004,
+            "extra_groups": [],
+            "native_fds": [],
+            "exit": 0,
+            "start_wall_ns": 1792346930325925177,
+            "end_wall_ns": 1792346932379606986,
+            "stdout": "Selected /org/sparklink/slk1_g2\nDiscoverySession: id=1 path=/org/sparklink/slk1_g2 state=active source=broker\nDiscoveryReport: session=1 generation=2 sequence=1 address_type=0 address=0001093254cd rssi=-3 data=ff290101010b24736c6b2d6262356335663262393037333762393365653733616564316338363134613431\nDiscoveryReport: session=1 generation=2 sequence=2 address_type=0 address=0001093254cd rssi=-3 data=ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435\nDiscoveryReport: session=1 generation=2 sequence=3 address_type=0 address=0001093254cd rssi=-3 data=ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435\nDiscoveryReport: session=1 generation=2 sequence=4 address_type=0 address=0001093254cd rssi=-3 data=ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435\nDiscoveryReport: session=1 generation=2 sequence=5 address_type=0 address=0001093254cd rssi=-3 data=ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435\nDiscoveryReport: session=1 generation=2 sequence=6 address_type=0 address=0001093254cd rssi=-3 data=ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435\nDiscoveryReport: session=1 generation=2 sequence=7 address_type=0 address=0001093254cd rssi=-3 data=ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435\nDiscoveryReport: session=1 generation=2 sequence=8 address_type=0 address=0001093254cd rssi=-4 data=ff290101010b24736c6b2d6262356335663262393037333762393334646132636135346235316165356435\nDiscoveryReleased: session=1 last_physical_stop_confirmed=true\n"
+          }
+        ],
+        "first_released": {
+          "phase": 1,
+          "first_end_wall_ns": 1792346930407961103,
+          "survivor_alive": true,
+          "observed_wall_ns": 1792346930408074818
+        }
+      }
+    ],
+    "overall_pass": false
+  },
+  "retained_counterexamples": [
+    "Preparation v1 passed manifest file to directory parameter:rejected,nohardware.",
+    "VM1:guest pair set after validator;fix4267105 and direct CLI regression.",
+    "Source review caught versioned absolute guest alias and Selected line;reuse existing staged_program,do not resolve guest absolute links in host root.",
+    "VM2/VM3:Status0 present,missing Outcome/handle and failed cleanup. Original v1 private interpretation incorrectly called flags1 an OUT flag;correction source2fc states1=Status,2=Outcome,4=handle. Both original and correction retained."
+  ],
+  "offline": {
+    "tool_methods": 908,
+    "fixture_scope": "CLI normalization,format/negative controls,source/binary alias binding;not kernel/USB concurrency proof",
+    "strict_html_inventory": 117,
+    "strict_html": "Earlier exact documentation snapshot passed;new report/registry sync requires its own strict build",
+    "new_formal_proofs": false,
+    "browser": "NOT_RUN"
+  },
+  "materials": {
+    "vm1-manifest.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v1/manifest.json",
+      "sha256": "e999ae75855fb5695f5c82e0d0f2978aac991d913fee9c5d99f5abfb21e8d3a6",
+      "bytes": 56445,
+      "format": "json",
+      "access": "private"
+    },
+    "vm1-console.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v1/console.log",
+      "sha256": "3447a38ebbb39f4ca4ebd6cd2bebcdc0ec8ef5663fcee50d961118e64e06586a",
+      "bytes": 62742,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm1-guest-output-ws73.pcap": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v1/guest-output/ws73.pcap",
+      "sha256": "c5b01e49884edfb3b7fc794d5d398a26279fc81f2be1fdf9c51a57cbe147d437",
+      "bytes": 42498,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm1-guest-output-capture-stats.txt": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v1/guest-output/capture-stats.txt",
+      "sha256": "9f5dc37dfe31cb03f8209ff0332be9b8a4905d6e0d35a7ff63a8096dc68822d6",
+      "bytes": 225,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm1-guest-output-kernel.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v1/guest-output/kernel.log",
+      "sha256": "b2cf22baab602b707b29fe89a787c950efbe7c9803c20bf3bfc6039824b685c6",
+      "bytes": 45217,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm1-guest-output-ready-0.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029,
+      "format": "json",
+      "access": "private"
+    },
+    "vm1-guest-output-ready-1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029,
+      "format": "json",
+      "access": "private"
+    },
+    "vm2-manifest.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v2/manifest.json",
+      "sha256": "7324612c98d79419a3fec3d9fba6c805e53a3f3ecf8d22c4cc161cd704424247",
+      "bytes": 56705,
+      "format": "json",
+      "access": "private"
+    },
+    "vm2-console.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v2/console.log",
+      "sha256": "1da2e8eba62827045f35fa659e402c59d475330c049664c1f07826b27f6e5598",
+      "bytes": 60120,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm2-guest-output-ws73.pcap": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v2/guest-output/ws73.pcap",
+      "sha256": "24a0bbd416fbd51e668194d1e70273e30afb14dd5c64ec3e9e73cdaf0d21844c",
+      "bytes": 48470,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm2-guest-output-capture-stats.txt": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v2/guest-output/capture-stats.txt",
+      "sha256": "95e18afaff8956806aee283a842291678aa05598d8c4afe33fb99fecfdfc13f0",
+      "bytes": 225,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm2-guest-output-kernel.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v2/guest-output/kernel.log",
+      "sha256": "0c49eebc4e3568dd0570993fa90d7a2132e992ceb6f5866d2e6f5f5f03a2cfca",
+      "bytes": 45286,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm2-guest-output-ready-0.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v2/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029,
+      "format": "json",
+      "access": "private"
+    },
+    "vm2-guest-output-ready-1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v2/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029,
+      "format": "json",
+      "access": "private"
+    },
+    "vm2-control": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "5942f95feaa991e7da11e604436355c16dda015f354fa95b1634c3d3026dea51",
+      "bytes": 21607,
+      "format": "json",
+      "access": "private"
+    },
+    "vm3-manifest.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/manifest.json",
+      "sha256": "34414e5b7026d003cc31be541e83d9f74adccfe109c2ed3e6c921a6dda120b04",
+      "bytes": 61567,
+      "format": "json",
+      "access": "private"
+    },
+    "vm3-console.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/console.log",
+      "sha256": "92a7d31e3aec01fef437821c2a52bc5b959ee99d6d19cca526e351f524fe043a",
+      "bytes": 59882,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm3-guest-output-ws73.pcap": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/ws73.pcap",
+      "sha256": "2ff00d114952dd712366e2a1670192d88858241135887b00d472586d03d6e7af",
+      "bytes": 67650,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm3-guest-output-capture-stats.txt": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/capture-stats.txt",
+      "sha256": "e03686ee1c30fadbf4a5d9d4163ce02a43a402553216292247df3fdd6195ddc7",
+      "bytes": 225,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm3-guest-output-kernel.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/kernel.log",
+      "sha256": "04710e953051603134024c7d431bf25484789b43d68d098c443cbf9d6b9c62ed",
+      "bytes": 45050,
+      "format": "bytes",
+      "access": "private"
+    },
+    "vm3-guest-output-ready-0.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029,
+      "format": "json",
+      "access": "private"
+    },
+    "vm3-guest-output-ready-1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029,
+      "format": "json",
+      "access": "private"
+    },
+    "vm3-control": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-release-v3/guest-output/application/passthrough-control/run.json",
+      "sha256": "8535b92b47f2def314c0c690625aafcdc459f26a71c8f4c6d854115d1e2de703",
+      "bytes": 57969,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-vm-counterexample-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-vm-counterexample-v1.json",
+      "sha256": "46044ca4c0bf740c8bf7b9852fb890131baf0d55d56bcac96f09a1ee70fda309",
+      "bytes": 2428,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-connection-timeout-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-connection-timeout-v1.json",
+      "sha256": "2e6b64256fe1da322a85eacfb9461ade98473065358d971f89e22252c477fd4d",
+      "bytes": 2642,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-connection-timeout-interpretation-v2.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-connection-timeout-interpretation-v2.json",
+      "sha256": "4ad42e88ddcc3bbdb8d11361410551c2d208a6da7822ec2cf770b02575c0d351",
+      "bytes": 917,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-explicit-release-usb-slice-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-explicit-release-usb-slice-v1.json",
+      "sha256": "df90caeb117be2324b716e8c9f993e72657c0863a1adb9e1ad0cdc168567ee1b",
+      "bytes": 25478,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-real-postflight-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-real-postflight-v1.json",
+      "sha256": "efe58242ec8c53a6ab9947a82b5835bd775af26a34fed73743d70cbb7d8c3e1a",
+      "bytes": 3530,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-vm-gate-tools-v7.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-vm-gate-tools-v7.log",
+      "sha256": "8531fc65b223af09d2a688127c21ac9330a67437463468537bfcf148bfac5f3d",
+      "bytes": 1084,
+      "format": "bytes",
+      "access": "private"
+    },
+    "discovery-active-vm-budget-v1.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-active-vm-budget-v1.json",
+      "sha256": "92782f050fb78b7b07517a2fa6f09c47743598e29e992c8e510157c246469d0b",
+      "bytes": 372,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-vm-gate-docs-v1.log": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-vm-gate-docs-v1.log",
+      "sha256": "28897c3b20cfb0abc4873a5d52e48b904e6d8ca0b637d881760e111fc7c4b746",
+      "bytes": 1445581,
+      "format": "bytes",
+      "access": "private"
+    },
+    "discovery-us-prepared-v1-manifest.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-prepared-v1/manifest.json",
+      "sha256": "4abd1ae9a86b7caed0f29eafd4b7d1413dcb5f3ab515c5641f03f22542eb6d39",
+      "bytes": 73107,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-us-bundle-v3-manifest.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-bundle-v3/manifest.json",
+      "sha256": "65db4016f5460380ef1e4c7207c6579f534f864df18a3ba3b927a0e937746347",
+      "bytes": 33265,
+      "format": "json",
+      "access": "private"
+    },
+    "discovery-us-prepared-v4-manifest.json": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-prepared-v4/manifest.json",
+      "sha256": "2ddb9cc473423a1c6959e99f48eb1a5b2fd6865e4efd93ed2dabcd9046302156",
+      "bytes": 315042,
+      "format": "json",
+      "access": "private"
+    },
+    "actual-slkd": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-prepared-v4/root/usr/libexec/opensparklink/native-lab/c5c3989f318e/slkd",
+      "sha256": "1c295f432fae02883641930c7d64ff46c176533d3e57a476ef0ac66e0d6cc1ad",
+      "bytes": 10506592,
+      "format": "bytes",
+      "access": "private"
+    },
+    "actual-slctl": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-us-prepared-v4/root/usr/libexec/opensparklink/native-lab/c5c3989f318e/slctl",
+      "sha256": "d0c8bb21e674dc15affbeee6b31146c1affa8af1400caacedf1896456555a5f3",
+      "bytes": 9094384,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_application_discovery.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_application_discovery.py",
+      "sha256": "ed9f4349e713b5f6861ed10154dfa8064a58c73b2f3447e15c1715e60145336f",
+      "bytes": 24071,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_application_role.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_application_role.py",
+      "sha256": "d72b58c02a2088cbf9e342ef6c4a5228e27ca20b74ec30aa39372e9c78b78de5",
+      "bytes": 12272,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_target.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_target.py",
+      "sha256": "2b19151d2149720846bf7f1435cf3156c46197e63912d2b37afd3acadc6ef82c",
+      "bytes": 200110,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_target_control.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_target_control.py",
+      "sha256": "e86c9e9d51629ce7d2cb26cb4ae6faba880a72a18632005828e39dc08d1b7da4",
+      "bytes": 17206,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_target_guest.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_target_guest.py",
+      "sha256": "56748ce55e71396791d5dc96c30bcf139ea234ba73a533e134c74b8a5aa6a7ff",
+      "bytes": 37583,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_target_init.sh": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_target_init.sh",
+      "sha256": "bec9899014e04e575a04667bf00289313585bb40d44b90e83e2c9b44560ad8d4",
+      "bytes": 40035,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_capture.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_capture.py",
+      "sha256": "58f057f4927cbb7cd428375b04ad284c630efe7438c46d08294e824c530d2677",
+      "bytes": 43066,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_rf_rounds.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_rf_rounds.py",
+      "sha256": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+      "bytes": 14088,
+      "format": "bytes",
+      "access": "private"
+    },
+    "tool-ws73_controller_directory.py": {
+      "base": "workspace",
+      "path": ".dev/main-thread-01a120fe/discovery-host-tools-c5-v1/tools/ws73_controller_directory.py",
+      "sha256": "438e844ddb2232821bf0c47d75d9d0985ac569cb4c22636f562c6176a1791ad2",
+      "bytes": 17885,
+      "format": "bytes",
+      "access": "private"
+    },
+    "firmware-ws73.bin": {
+      "base": "workspace",
+      "path": ".dev/firmware-1.10.110-us/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "format": "bytes",
+      "access": "private"
+    },
+    "firmware-wifi_cali.bin": {
+      "base": "workspace",
+      "path": ".dev/firmware-1.10.110-us/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "format": "bytes",
+      "access": "private"
+    },
+    "firmware-btc_cali.bin": {
+      "base": "workspace",
+      "path": ".dev/firmware-1.10.110-us/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "format": "bytes",
+      "access": "private"
+    },
+    "board-bsle_custom.bin": {
+      "base": "workspace",
+      "path": ".dev/board110-candidate-us-v1/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "format": "bytes",
+      "access": "private"
+    },
+    "board-pm_config.bin": {
+      "base": "workspace",
+      "path": ".dev/board110-candidate-us-v1/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "format": "bytes",
+      "access": "private"
+    },
+    "kernel-manifest": {
+      "base": "workspace",
+      "path": ".dev/architecture-r4f2e-kernel-artifacts-v1/manifest.json",
+      "sha256": "860aaf540a91bd36b1b0fd6590a5207e008e0a95fdf0326785cff0f5ab833a48",
+      "bytes": 228862,
+      "format": "json",
+      "access": "private"
+    },
+    "kernel-image": {
+      "base": "workspace",
+      "path": ".dev/architecture-r4f2e-kernel-artifacts-v1/artifacts/arch/x86/boot/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120,
+      "format": "bytes",
+      "access": "private"
+    },
+    "kernel-module": {
+      "base": "workspace",
+      "path": ".dev/architecture-r4f2e-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "f1000c9ad8fd3c0bfccb2a8411a83da8e75407fab2f8cbbc24ab9bdc2a1433d8",
+      "bytes": 145497,
+      "format": "bytes",
+      "access": "private"
+    }
+  },
+  "private_access": "Original files retained under workspace .dev/main-thread-01a120fe and pinned artifact directories,not uploaded to public site. Local operator access required. Hashes and exact runner/source identities permit replay;public metadata alone is not material verification.",
+  "replay": "Use existing ws73_target.py run --application-discovery-verify --qmp-hotplug --connection-verify --channel-socket-verify --channel-socket-boundaries with explicit owned U ports and freshly checked exact prepared SDK110US artifact. Supplemental slice:verify original supervisor files,read_capture/check_capture_stats/corroborate. Never turn failed overall manifest into PASS.",
+  "remaining": [
+    "Explicit-release discovery positive slice only;full VM FAIL. No caller-loss/TTL/manager-stop/original-deadline/partial-init qualification.",
+    "No new connection/business/length/SSAP preservation PASS;Status0 does not equal connection Outcome or peer application delivery.",
+    "Actual apps-only reads succeeded on guest system bus;complete deployment role/denial/udev/credential matrix remains missing.",
+    "No E/mixed/cold-ROM auto-selection,full memory/refinement proof,hardware authentication or natural/nonmanual recovery qualification.",
+    "Locate missing connection Outcome/handle without firmware/USB reset assumptions;retain failed cleanup and finite limits. Then accurate newartifact full preservation,app lifecycle/permission cases.",
+    "Complete originalS0-S6/19WP/10FV/12DG remains active;UserHostP4. No repeated unbounded hardware retry or nonmanual recovery claim."
+  ]
+}

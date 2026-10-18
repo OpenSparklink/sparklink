@@ -1,9 +1,16 @@
 # 证据入口与取得限制
 
+- [R5f12真实共享发现的限定正向与整轮失败](application-discovery-real-attempts-20261019.json)：
+  准确C5用户态/Host/guest、2fc内核、SDK110US；四名apps-only实际SDK调用者，两个
+  scanner方向的显式释放和新随机标识有独立USB核对。整轮FAIL：后续Create仅Status0，
+  无Outcome/handle而超时，业务/长度/SSAP保持未执行。原入口顺序错误、三次VM、
+  清理失败及flags解释更正均保留；不得把补充的正向切片改写成完整VM或恢复PASS。
+
 - [R5f12应用发现租约限定离线与生产Fence证明](application-discovery-offline-20261019.json)：
   2babea5 daemon／7547751 SDK与CLI／a8bf6a9证明工具；准确dirty输入映射到签名源码，
   封存实际测试artifact。私有bus、错误依赖、原Clippy/权限/工具失败及Kani unsupported
-  保留；三项Fence性质不覆盖整个协调器，真实双应用／双WS73与system bus仍MISSING。
+  保留；三项Fence性质不覆盖整个协调器。该历史离线报告的MISSING不改写，后续实机
+  的限定正向、整轮失败与剩余权限门禁见上方准确报告。
 
 - [共享硬件启动边界](shared-allocation-launch-guard-20261019.json)：准确527b工具、
   896项限定离线回归与真实只读libvirt/sysfs审计。仅资源边界；没有启动QEMU或访问USB，

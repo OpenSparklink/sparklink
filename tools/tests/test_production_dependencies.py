@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from check_production_dependencies import check_tree
+from check_production_dependencies import check_tree,check_native_creators
 
 
 class DependencyBoundary(unittest.TestCase):
@@ -14,7 +14,7 @@ class DependencyBoundary(unittest.TestCase):
         self.assertEqual(check_tree('slkd',output,self.internal),['slk-native','slk-protocol','slkd'])
 
     def test_test_backend_application_client_and_reverse_direction_fail(self):
-        for root,dependency in [('slktest','slk-native'),('slctl','slk-native'),('slkd','libsparklink'),('slkd','slk-experimental'),('slkd','slctl'),('slkd','slktest'),('libsparklink','slkd'),('libsparklink','slk-native'),('slk-protocol','libsparklink'),('slk-protocol','slk-channel'),('slk-channel','libsparklink'),('slk-channel','slkd'),('slk-channel','slk-native'),('slk-native','libsparklink'),('slk-native','slkd'),('slk-native','slk-channel'),('slk-contract','libsparklink'),('slk-contract','slkd'),('slk-contract','slk-native'),('slk-contract','slk-channel')]:
+        for root,dependency in [('slktest','slk-native'),('slctl','slk-native'),('slkd','libsparklink'),('slkd','slk-experimental'),('slkd','slctl'),('slkd','slktest'),('libsparklink','slkd'),('libsparklink','slk-native'),('slk-protocol','libsparklink'),('slk-protocol','slk-channel'),('slk-channel','libsparklink'),('slk-channel','slkd'),('slk-channel','slk-native'),('slk-native','libsparklink'),('slk-native','slkd'),('slk-native','slk-channel'),('slk-native','slk-contract'),('slk-contract','libsparklink'),('slk-contract','slkd'),('slk-contract','slk-native'),('slk-contract','slk-channel')]:
             with self.subTest(root=root,dependency=dependency),self.assertRaises(ValueError):
                 check_tree(root,f'{root} v0.1.0\n{dependency} v0.1.0\n',self.internal)
 
@@ -25,6 +25,11 @@ class DependencyBoundary(unittest.TestCase):
     def test_channel_has_only_protocol_not_management_authority(self):
         output='slk-channel v0.1.0\nslk-protocol v0.1.0\nnix v0.30.1\n'
         self.assertEqual(check_tree('slk-channel',output,self.internal),['slk-channel','slk-protocol'])
+
+    def test_named_native_creator_regression_guard_does_not_claim_alias_analysis(self):
+        check_native_creators([('policy.rs','slk_native::channel::open(args)'),('contract.rs','fn transport_info(v: Snapshot) { (v.controller,v.generation) }')])
+        for text in ['nix::libc::socket(46,0,0)','libc::bind(fd,p,n)','nix::libc::connect(fd,p,n)',"nix::ioctl_read!(request,b'S',4,Value)"]:
+            with self.subTest(text=text),self.assertRaises(ValueError):check_native_creators([('daemon.rs',text)])
 
     def test_missing_truncated_or_unrecognized_cargo_output_fails(self):
         for output in ['', 'cargo failed', 'slkd v0.1.0\ntruncated line', 'libsparklink v0.1.0\n']:

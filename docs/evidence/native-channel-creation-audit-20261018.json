@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "result": "CALL_AUDIT_BEFORE_NATIVE_CREATOR_MIGRATION",
+  "source": "2c9566e42b88a5cd77f39663481f35335b774ab4",
+  "file": "crates/slkd/src/channel.rs",
+  "sha256": "54a298d0b250921c3d8ea1a70ef562c8ecea19754569f67797594a19d8376b72",
+  "production_callers": [
+    "slkd/main.rs:mod channel",
+    "ConnectionIface.authorized_fd:validate/open_service/open/open_dynamic",
+    "ConnectionIface.prepare_dynamic_channel:DynamicConfig",
+    "ConnectionIface.get_transport_status:TransportInfo/transport_info"
+  ],
+  "actual_behavior": "Privileged AF_SPARKLINK socket/bind/connect and exact48/64byte Native ABI;pure transport observation tuple conversion is mixed into the same module. No new Host/Engine is needed.",
+  "triage": {
+    "immediate_delete": [
+      "Daemon privileged creator/address implementation and old module after all callers switch in same batch"
+    ],
+    "preserve_tests": [
+      "Existing address identity/security and invalid-input-before-socket regressions move with actual production functions to Native crate"
+    ],
+    "waiting_replacement": [
+      "Existing full public lifetime/originaldeadline/higher/common APIs andR6c remain explicit original tasks;not reason to keep a duplicate socket creator"
+    ]
+  },
+  "target": {
+    "native": "Existing slk-native creates privileged delegated fd;returns owned fd and kernel errors;no slk-channel/contract dependency",
+    "channel": "Existing slk-channel only operates already-authorized fds",
+    "contract": "Pure SleSessionTxStatus to TransportInfo mapping;no system calls or authority",
+    "daemon": "Policy,lease ownership,uniqueSSAP Engine and pure shared-contract consumption"
+  },
+  "regression": "Strictdefault/allfeatures,dependency/export/header/consumer guards,then exact newartifact SDK roles and originalreal discovery/connection/short/length/Owned gates inVM;no wholeissueclosure.",
+  "scope": "Architecture distribution only;no new protocol/ABI qualification. All S0-S6/19WP/10FV/12DG,VM-only,UserHostP4 and unresolvedENODATA/naturalRCA/nonmanualrecovery retained."
+}

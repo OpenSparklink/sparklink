@@ -47,6 +47,12 @@ query重试；Python一次分配有界结果缓冲，不截断。当前方法的
    不开放广播/扫描/断链/控制器操作、SSAP RPC 或 service 名称所有权。
    kernel 仍要求特权创建绑定，broker 传递 scoped fd，内核强制 epoch/方向/lifetime。
    分组是粗粒度准入，**不是完整逐应用/逐 Peer 策略**；固定通道机制要求按后文安全epoch决策；动态protected仍拒绝。
+
+   Native特权socket/bind/connect及Native地址编码由`slk-native`实现，daemon只在
+   原策略与租约锁下调用；不得在daemon或共享契约复制另一套创建器。共享契约只做
+   纯值/签名/路径与观察映射；授予fd的动作不把协商暂存当Ready。迁移保留原私有
+   Native输入和errno/所有权语义，不给普通SDK添加Native依赖。
+
 4. Peer 为身份/观察；ConnectionSession 为一次物理 lifetime、信令/能力/分流/安全；
    Channel 为 TCID/PI/模式/独立队列；SocketBinding 为 fd 引用、授予范围与关闭。
    已观察连接、协商、服务发现、配对、Bond、认证、加密、本地授权分别表达。

@@ -847,6 +847,15 @@ rustup的`+版本`参数。该清理修正的源码回归与[原失败](../evide
 
 `make uninstall`只删除明确版本的包拥有文件，保留管理员配置、状态、子目录/symlink
 与其他版本库。没有自动purge、组成员加入、服务启用或真实设备操作。
+Native Rust层的`slk_native::channel::{open,open_service,open_dynamic}`负责特权fd
+创建，使用现有controller/generation/lifetime/handle与Managed token；它们不是普通
+SDK入口，不决定D-Bus策略，也不返回Ready或业务完成。固定通道保留0..2机制要求，
+动态仅基础模式/无protected降级；`DynamicConfig`沿用非零端口/AID、MTU1..2042、
+MPS不超过2047且至少MTU+5的暂存限制。内核仍作最终准入和协商；active connect
+接受EINPROGRESS返回的fd继续暂存，必须用现有poll/info检查实际结果。
+这些Rust构造函数不新增C/Python管理导出。普通C/Python应用仍只通过broker取得fd。
+本批只是职责迁移；迁移后新artifact的实机资格另取，不继承fa310资格。
+
 三个既有角色组sparklink、sparklink-apps、sparklink-services用同一sysusers来源；
 普通应用从slkd取得授权fd，默认udev只配置Native字符设备，不授予raw USB绕过路径。
 实验USB直通是另行授权的实验室策略，不能由普通应用权限推导。

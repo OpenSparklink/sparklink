@@ -298,3 +298,24 @@ mod peer_identity_tests {
         }
     }
 }
+
+/// D-Bus mechanism observation, not an SSAP capability or a readiness grant.
+pub fn transport_info(v: slk_protocol::SleSessionTxStatus) -> TransportInfo {
+    (
+        v.controller,
+        v.generation,
+        v.lifetime,
+        v.handle,
+        v.capacity,
+        v.outstanding,
+        v.connection_debt,
+        v.queued,
+        v.active_pdus,
+        v.dynamic_open,
+        v.dynamic_pending,
+        v.dynamic_retired,
+        v.dynamic_failed,
+        v.dynamic_allocated,
+        v.flags,
+    )
+}

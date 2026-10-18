@@ -1493,6 +1493,13 @@ systemd/udev安装或完整逐应用策略资格。[同源七VM保持](../docs/e
 保留原权限/身份/地址编码回归，随同实际生产函数迁入Native测试；**等待替代**仅保留
 原高阶/common API、原期限和R6c等明确缺项，不保留第二套创建器或永久拒绝门面。
 本批生产行为不扩展；复用原实现并迁移全部调用者，在同一提交删除旧逻辑。
+[调用审计](../docs/evidence/native-channel-creation-audit-20261018.json)完成；实际创建器、
+private sockaddr与两项原生产函数测试已迁到Native，全部Connection调用者已接通，
+旧daemon模块删除。TransportInfo纯映射迁到既有contract，不让Native依赖contract。
+现有C/Rust地址契约工具同步读取新生产文件并比较真实C UAPI的48/64字节编码；
+依赖门禁补Native→contract反向依赖及daemon/contract显式Native syscall回归负对照。
+此源检查只覆盖命名模式，不能冒充Rust别名/宏分析或运行时证明。迁移代码已接通，
+严格构建与新artifact门禁继续执行；原fa310仅保留自己的实机资格。
 退出须严格default/all-features、依赖方向、跨语言契约及准确新artifact的实际SDK角色、
 发现/连接/业务/长度/适用Owned保持门禁通过。Kernel Session/Grant/credit/Ticket与
 唯一SSAP Engine不变，不新增Host或协议状态机；部分通过不关闭原issue。

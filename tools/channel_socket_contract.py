@@ -15,7 +15,7 @@ import tempfile
 
 def run(kernel, output=None):
     repo = Path(__file__).resolve().parents[1]
-    rust_path = repo / 'crates/slkd/src/channel.rs'
+    rust_path = repo / 'crates/slk-native/src/channel.rs'
     header = kernel / 'include/uapi/linux/sparklink_socket.h'
     source = rust_path.read_text()
     structure = re.search(r'#\[repr\(C\)\]\nstruct Address \{[^}]+\}', source)[0]
@@ -49,9 +49,9 @@ fn main() {
  for byte in bytes {print!("{byte:02x}");}
 }'''
     dynamic_structure = re.search(r'#\[repr\(C\)\]\nstruct DynamicAddress \{[^}]+\}', source)[0]
-    config_structure = re.search(r'pub\(crate\) struct DynamicConfig \{[^}]+\}', source)[0]
-    address_function = source[source.index('fn address('):source.index('pub(crate) fn open_service(')]
-    begin = source.index('    let mut base = address(', source.index('pub(crate) fn open_dynamic('))
+    config_structure = re.search(r'pub struct DynamicConfig \{[^}]+\}', source)[0]
+    address_function = source[source.index('fn address('):source.index('pub fn open_service(')]
+    begin = source.index('    let mut base = address(', source.index('pub fn open_dynamic('))
     dynamic_setup = source[begin:source.index('    open_raw_address(address, !config.passive)', begin)]
     dynamic_rust = structure + dynamic_structure + config_structure + address_function + '''
 fn main() {

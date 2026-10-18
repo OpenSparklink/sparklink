@@ -1,6 +1,7 @@
-//! Native default-channel fd delegation. The kernel validates the final lifetime
-//! and negotiates CMTC; basic datagrams do not promise reliable delivery.
-//! This broker never synthesizes channel readiness or data.
+//! Privileged Native creation of delegated fixed/service/staged dynamic fds.
+//! Policy stays in slkd; the kernel validates lease/lifetime and negotiates CMTC.
+//! This module never manufactures Ready, protocol replies or application delivery.
+//! Ordinary applications use libsparklink and slk-channel, not this creator.
 use std::os::fd::{FromRawFd, OwnedFd};
 
 #[repr(C)]
@@ -22,18 +23,20 @@ struct Address {
 }
 const _: () = assert!(std::mem::size_of::<Address>() == 48);
 
+/// Rust Native staging input; not a C ABI or protocol capability.
+/// cbindgen:ignore
 #[derive(Clone, Copy)]
-pub(crate) struct DynamicConfig {
-    pub(crate) source_port: u16,
-    pub(crate) destination_port: u16,
-    pub(crate) aid: u16,
-    pub(crate) mtu: u16,
-    pub(crate) mps: u16,
-    pub(crate) slqi: u8,
-    pub(crate) passive: bool,
+pub struct DynamicConfig {
+    pub source_port: u16,
+    pub destination_port: u16,
+    pub aid: u16,
+    pub mtu: u16,
+    pub mps: u16,
+    pub slqi: u8,
+    pub passive: bool,
 }
 impl DynamicConfig {
-    pub(crate) fn validate(&self) -> std::io::Result<()> {
+    pub fn validate(&self) -> std::io::Result<()> {
         let config = self;
         if config.source_port == 0
             || config.destination_port == 0
@@ -62,7 +65,7 @@ struct DynamicAddress {
 }
 const _: () = assert!(std::mem::size_of::<DynamicAddress>() == 64);
 
-pub(crate) fn open_dynamic(
+pub fn open_dynamic(
     controller: u16,
     generation: u64,
     lifetime: u64,
@@ -89,7 +92,7 @@ pub(crate) fn open_dynamic(
     open_raw_address(address, !config.passive)
 }
 
-pub(crate) fn open(
+pub fn open(
     controller: u16,
     generation: u64,
     lifetime: u64,
@@ -130,7 +133,7 @@ fn address(
         security,
     }
 }
-pub(crate) fn open_service(
+pub fn open_service(
     controller: u16,
     generation: u64,
     lifetime: u64,
@@ -194,7 +197,7 @@ fn open_raw_address<T>(address: T, active: bool) -> std::io::Result<OwnedFd> {
 
 /// Unpublished TX/RX and fixed-channel security requirements. The kernel
 /// mints a frozen security epoch; no userspace cached grade authorizes it.
-pub(crate) fn validate(directions: u32, security: u32) -> std::io::Result<()> {
+pub fn validate(directions: u32, security: u32) -> std::io::Result<()> {
     if directions == 0 || directions & !3 != 0 {
         return Err(std::io::Error::from_raw_os_error(nix::libc::EINVAL));
     }
@@ -202,27 +205,6 @@ pub(crate) fn validate(directions: u32, security: u32) -> std::io::Result<()> {
         return Err(std::io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP));
     }
     Ok(())
-}
-/// D-Bus mechanism observation, not an SSAP capability or a readiness grant.
-pub(crate) use slk_contract::TransportInfo;
-pub(crate) fn transport_info(v: slk_protocol::SleSessionTxStatus) -> TransportInfo {
-    (
-        v.controller,
-        v.generation,
-        v.lifetime,
-        v.handle,
-        v.capacity,
-        v.outstanding,
-        v.connection_debt,
-        v.queued,
-        v.active_pdus,
-        v.dynamic_open,
-        v.dynamic_pending,
-        v.dynamic_retired,
-        v.dynamic_failed,
-        v.dynamic_allocated,
-        v.flags,
-    )
 }
 
 #[cfg(test)]

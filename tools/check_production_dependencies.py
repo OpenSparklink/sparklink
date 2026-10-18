@@ -37,9 +37,21 @@ def check_tree(package,output,internal_names):
     return sorted(names&internal_names)
 
 
+def check_native_creators(files):
+    """Named source regression guard, not Rust alias/macro or runtime proof.
+
+    Privileged controller sockets/ioctls belong to Native. Ordinary authorized-fd
+    operations remain in Channel; D-Bus/daemon policy is not a second creator.
+    """
+    pattern=r'\b(?:nix::)?libc::(?:socket|bind|connect)\s*\(|\bnix::ioctl_(?:read|write)[a-z_]*\s*!'
+    for name,source in files:
+        if re.search(pattern,source):raise ValueError(f'{name}: direct Native creator/ioctl outside slk-native')
+
+
 def main():
     workspace=tomllib.loads((ROOT/'Cargo.toml').read_text())['workspace']['members']
     internal={tomllib.loads((ROOT/path/'Cargo.toml').read_text())['package']['name'] for path in workspace}
+    check_native_creators((str(p.relative_to(ROOT)),p.read_text())for directory in ['crates/slkd/src','crates/slk-contract/src']for p in (ROOT/directory).rglob('*.rs'))
     for mode in ['default','all-features']:
         for package in ALLOWED:
             # Dev fixtures remain excluded. Optional production features must

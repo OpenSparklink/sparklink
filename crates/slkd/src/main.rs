@@ -3,7 +3,6 @@ use slk_experimental::profile;
 mod adapters;
 #[cfg(test)]
 mod bonding;
-mod channel;
 mod config;
 mod connection;
 mod connection_object;

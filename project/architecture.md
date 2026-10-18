@@ -64,6 +64,12 @@ flowchart TB
     Core --> Observe
 ```
 
+Native管理系统调用和特权通道fd创建集中在`slk-native`；`slkd`决定策略并持有
+管理租约，传入现有身份/租约后由Native调用内核。`slk-channel`仅操作已授权fd，
+普通SDK不依赖Native。D-Bus tuple与纯ABI观察映射归`slk-contract`，不反向引入
+Native调用、状态缓存或协议Engine。创建fd只表示本地资源准入/暂存，实际协商、
+授权和业务交付分别由原Kernel/Session/Grant机制及真实对端结果决定。
+
 ### 唯一职责
 
 | 层 | 唯一所有者 | 禁止跨越 |

@@ -76,7 +76,7 @@ jobs/CPU affinity/可用内存/命令/配置/工具链/来源；资源记录不�
 
 ### Native ioctl 边界
 
-系统调用集中在slk-native内部；普通应用通过libsparklink申请授权fd，业务使用
+Native管理及特权fd创建系统调用集中在slk-native内部；普通应用通过libsparklink申请授权fd，业务使用
 slk-channel。不要恢复旧sl_start_adv/sl_stop_adv裸命令包装。显式Native管理者
 使用现有typed入口，例如adapter.controller_snapshot(generation)和
 adapter.diagnostic_submit(&mut request)。请求携带原generation、lease、request id

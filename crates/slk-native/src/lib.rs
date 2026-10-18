@@ -9,6 +9,7 @@
 //! use slk_native::Event;
 //! ```
 mod adapter;
+pub mod channel;
 mod controller_events;
 mod error;
 pub mod ioctl;

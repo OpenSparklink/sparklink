@@ -191,7 +191,7 @@ pub(crate) struct ConnectionIface {
 enum ChannelKind {
     User,
     Service,
-    Dynamic(crate::channel::DynamicConfig),
+    Dynamic(slk_native::channel::DynamicConfig),
 }
 impl ConnectionIface {
     pub(crate) fn new(
@@ -228,7 +228,7 @@ impl ConnectionIface {
         security: u32,
         kind: ChannelKind,
     ) -> zbus::fdo::Result<std::os::fd::OwnedFd> {
-        crate::channel::validate(directions, security).map_err(|error| {
+        slk_native::channel::validate(directions, security).map_err(|error| {
             if error.raw_os_error() == Some(nix::libc::EOPNOTSUPP) {
                 zbus::fdo::Error::NotSupported("unsupported channel security requirement".into())
             } else {
@@ -265,7 +265,7 @@ impl ConnectionIface {
             .token
             .ok_or_else(|| zbus::fdo::Error::Failed("management unavailable".into()))?;
         let fd = match kind {
-            ChannelKind::Service => crate::channel::open_service(
+            ChannelKind::Service => slk_native::channel::open_service(
                 index,
                 self.generation,
                 self.reference.lifetime,
@@ -273,7 +273,7 @@ impl ConnectionIface {
                 token,
                 security,
             ),
-            ChannelKind::User => crate::channel::open(
+            ChannelKind::User => slk_native::channel::open(
                 index,
                 self.generation,
                 self.reference.lifetime,
@@ -282,7 +282,7 @@ impl ConnectionIface {
                 directions,
                 security,
             ),
-            ChannelKind::Dynamic(config) => crate::channel::open_dynamic(
+            ChannelKind::Dynamic(config) => slk_native::channel::open_dynamic(
                 index,
                 self.generation,
                 self.reference.lifetime,
@@ -772,7 +772,7 @@ impl ConnectionIface {
     }
     /// Read-only native mechanism state via an existing owner. Do not start an
     /// SSAP Engine, open a channel, mutate credit or mint authorization here.
-    async fn get_transport_status(&self) -> zbus::fdo::Result<crate::channel::TransportInfo> {
+    async fn get_transport_status(&self) -> zbus::fdo::Result<slk_contract::TransportInfo> {
         let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(1);
         tokio::time::timeout_at(deadline, async {
             if self.observation().await != (true, true) {
@@ -812,7 +812,7 @@ impl ConnectionIface {
                     "transport observation lifetime changed".into(),
                 ));
             }
-            Ok(crate::channel::transport_info(value))
+            Ok(slk_contract::transport_info(value))
         })
         .await
         .map_err(|_| zbus::fdo::Error::Failed("transport observation original deadline".into()))?
@@ -847,7 +847,7 @@ impl ConnectionIface {
         request: DynamicRequest,
     ) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
         let (source_port, destination_port, aid, mtu, mps, slqi, passive) = request;
-        let config = crate::channel::DynamicConfig {
+        let config = slk_native::channel::DynamicConfig {
             source_port,
             destination_port,
             aid,

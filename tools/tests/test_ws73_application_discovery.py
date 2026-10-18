@@ -171,5 +171,19 @@ class DiscoveryGate(unittest.TestCase):
     def test_refuses_non_vm_launcher(self):
         with patch('ws73_application_role.os.geteuid',return_value=1000),self.assertRaises(CaptureError):supervise(42)
 
+    def test_real_cli_parser_assigns_guest_pair_before_discovery_validation(self):
+        # Only CLI normalization is under test. The final execute call is a
+        # visible fixture; no controller, D-Bus, VM or hardware PASS is inferred.
+        import ws73_target_control as control
+        arguments=['ws73_target_control.py','--slctl','/bin/slctl','--slkd-pid','42','--output','/unused',
+                   '--passthrough','--connection-verify','--application-discovery-verify',
+                   '--channel-socket-verify','--channel-socket-boundaries']
+        def inspect(instance):
+            self.assertEqual(instance.args.ports,['1-1','1-2'])
+            self.assertTrue(requested(instance.args))
+            return 73
+        with patch.object(sys,'argv',arguments),patch.object(control.ConnectionControlRun,'__init__',lambda instance,args:setattr(instance,'args',args)),patch.object(control.ConnectionControlRun,'execute',inspect):
+            self.assertEqual(control.main(),73)
+
 
 if __name__=='__main__':unittest.main()

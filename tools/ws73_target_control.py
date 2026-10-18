@@ -194,6 +194,9 @@ def main():
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
     parser.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t')
     args=parser.parse_args()
+    # Fixed guest xHCI slots, not host topology defaults or device selection.
+    # Establish them before any mode validator checks the selected pair.
+    args.ports=['1-1','1-2']
     from ws73_connection_control import requested_down_failure_observation
     try:requested_down_failure_observation(args)
     except ValueError as error:parser.error(str(error))
@@ -236,7 +239,7 @@ def main():
     if args.acb_transport_probe and (not args.connection_verify or args.daemon_link_resync):parser.error('ACB probe requires a separate explicit connection gate')
     if args.connection_advertising!='fixed-t' and not args.connection_verify:
         parser.error('connection advertising contrast requires explicit connection gate')
-    args.ports=['1-1','1-2'];args.artifact=['qmp_control='+str(Path(__file__).resolve())]
+    args.artifact=['qmp_control='+str(Path(__file__).resolve())]
     if args.connection_verify:
         args.artifact += ['registry_probe=/bin/native-bindings-probe','registry_cli=/bin/slkconfig','registry_tool='+str(Path(__file__).with_name('ws73_registry_metadata.py').resolve())]
     if args.daemon_cancel_remove:

@@ -190,7 +190,9 @@ def execute(run, phase):
                 raise CaptureError('actual registry-only netlink/retired mutation gate failed')
         row['status']='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING'
     except BaseException as error:
-        row.update(status='FAIL',error=str(error),error_type=type(error).__name__);raise
+        import traceback
+        row.update(status='FAIL',error=str(error),error_type=type(error).__name__,
+                   error_traceback=traceback.format_exc());raise
     finally:
         for proc,app in processes:
             if proc.poll() is None:proc.kill()

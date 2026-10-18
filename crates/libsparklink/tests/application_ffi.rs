@@ -15,6 +15,22 @@ const PATH: &str = "/org/sparklink/slk2_g7/peer_t01_010203040506/link_0000000000
 struct Manager;
 #[zbus::interface(name = "org.sparklink.Manager")]
 impl Manager {
+    async fn get_controller_changes(
+        &self,
+        after: u64,
+        wait: bool,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::controller_events::Batch> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        match (after, wait) {
+            (0, false) => Ok((1, 0, 0, false, vec![])),
+            (0, true) => Ok((1, 1, 2, false, vec![(1, 2, 7, 1), (2, 2, 7, 2)])),
+            _ => Err(zbus::fdo::Error::InvalidArgs(
+                "finite directory metadata fixture only".into(),
+            )),
+        }
+    }
     fn list_adapters(&self) -> Vec<String> {
         vec![BASE.into(), "/org/sparklink/slk3_g9".into()]
     }
@@ -287,6 +303,10 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         assert!(
             String::from_utf8_lossy(&output.stdout)
                 .contains("CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS")
+        );
+        assert!(
+            String::from_utf8_lossy(&output.stdout)
+                .contains("CURRENT_CONTROLLER_DIRECTORY_LANGUAGE_FIXTURE_PASS_NOT_RF")
         );
     }
     assert_eq!(

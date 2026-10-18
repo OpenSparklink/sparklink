@@ -54,6 +54,23 @@ int main(void) {
     assert(slk_client_controllers(client, ids, 2, &count, deadline()) == 0 && count == 2);
     assert(ids[0].index == 2 && ids[0].generation == 7 && ids[1].index == 3 && ids[1].generation == 9);
     for (unsigned i=0;i<6;i++) assert(ids[0].reserved[i] == 0);
+    _Static_assert(sizeof(struct SlkControllerEvent)==32,"directory event ABI");
+    _Static_assert(offsetof(struct SlkControllerEvent,kind)==24,"directory event offset");
+    struct SlkControllerEvents *observer=NULL;
+    assert(slk_client_controller_events(client,0,&observer)==-ETIMEDOUT && !observer);
+    assert(slk_client_controller_events(client,deadline(),&observer)==0 && observer);
+    struct SlkControllerEvent event,event_before;
+    struct SlkControllerId observed_ids[2];
+    uintptr_t observed_count=999;
+    memset(&event,0xa5,sizeof event);memcpy(&event_before,&event,sizeof event);
+    assert(slk_controller_events_next(observer,&event,NULL,0,&observed_count,0,deadline())==-ENOBUFS);
+    assert(observed_count==2 && !memcmp(&event,&event_before,sizeof event));
+    for (unsigned flags=1;;flags=0) {
+        assert(slk_controller_events_next(observer,&event,observed_ids,2,&observed_count,flags,deadline())==0);
+        assert(event.kind==1 && event.sequence==0 && observed_count==2 && !event.reserved);
+        assert(observed_ids[0].index==2 && observed_ids[0].generation==7);
+        if (!flags) break;
+    }
     const uint8_t path[] = "/org/sparklink/slk2_g7/peer_t01_010203040506/link_000000000000000b";
     int fd = 123456;
     assert(slk_client_open_channel(client, ids, path, sizeof path-1, 0, 0, deadline(), &fd) == -EINVAL && fd == 123456);
@@ -74,6 +91,15 @@ int main(void) {
     assert(slk_client_connection(client, ids, path, sizeof path-1, deadline(), &link) == 0 && link);
     slk_client_close(client);
     slk_client_close(NULL);
+    /* This observer survives parent close on the SAME caller/executor. */
+    for (unsigned kind=2;kind<=3;++kind) {
+        assert(slk_controller_events_next(observer,&event,observed_ids,2,&observed_count,0,deadline())==0);
+        assert(event.kind==kind && event.sequence==kind-1 && observed_count==1);
+        assert(observed_ids[0].index==2 && observed_ids[0].generation==7);
+    }
+    slk_controller_events_close(observer);slk_controller_events_close(NULL);
+    puts("CURRENT_CONTROLLER_DIRECTORY_LANGUAGE_FIXTURE_PASS_NOT_RF");
+
     /* A derived view retains the same broker caller, not a new client/Engine. */
     uint8_t output[8], original[8], value[] = {0x56,0x12};
     static const uint8_t oversized[65536] = {0}; /* Valid entire FFI input region. */

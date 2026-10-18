@@ -3030,3 +3030,23 @@ Root观察者复用现有pipe记录器，真实子进程、UID/GID/caps、实际
 新增journal通知的组合证明仍未证明；实际VM限定资格与离线结果分别记录，
 不补齐C/Python、扫描租约或完整状态流，也不以单测和旧实机结果升级新HEAD。
 WP03／WP18，关联U#6／U#8／K#19；不创建新goal或总跟踪，不修改19WP/10FV/12DG。
+
+##### R5f11：C／Python 复用目录观察（本批实现中，未授新资格）
+
+生产行为：复用同一 Rust ControllerEvents 和现有同步 Client executor，提供普通应用
+C／Python 观察入口；不另造事件 Engine、D-Bus dispatch、Native fd 或管理 lease。
+固定 ABI 区分 Snapshot／Published／Withdrawn／Gap，显式 peek、短缓冲、超时与关闭；
+保留单条待交付观察，防止 executor 回复与调用者超时交错导致静默丢失。
+
+相关不变量：同一 daemon owner／generation／cursor；原期限覆盖队列和实际等待；
+Gap 后不自动重快照；释放仅关闭自己的观察；Client 先关闭不销毁仍引用它的派生观察；
+fork 后拒绝使用继承句柄。C 指针有效性属于调用者契约，不伪装为内核 EFAULT 测试。
+
+离线门禁：直接调用生产 C 导出的私有 D-Bus 回归、超时／短缓冲／peek／owner 丢失／
+最终释放、独立 C 布局与导出检查、Python 实际共享库及错误回归、严格 workspace／
+Clippy 和文档。VM 门禁使用准确新 binary／library／Python，普通 observer 观察真实
+目录撤回和重新发布，保持原 daemon、同行及原业务；适用原长度和 SSAP 门禁另记。
+
+退出要求是新入口、调用者、绑定、测试和文档一致，并取得对应新产物证据；不是完整
+EventStream／DiscoverySession／形式化证明或全部架构完成。WP03／WP18 原 scope 不变，
+S0–S6／19WP／10FV／12DG、VM-only、严格四叶资源和 SDK110、UserHost P4 保持。

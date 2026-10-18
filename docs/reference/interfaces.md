@@ -45,7 +45,8 @@ daemon的Native通道创建在阻塞线程执行，实际工作持有同一管�
 进程故障域；准确实机范围仍以[资格入口](../../project/current-capabilities.md)为准。
 
 Rust的目录观察由`Client::controller_events(Deadline)`提供，实际`slctl controller-events`
-复用该接口。它只观察原daemon的Runtime adapter目录；C／Python暂未提供stream方法。
+复用该接口。它只观察原daemon的Runtime adapter目录；C／Python经同一Rust stream
+提供同步观察视图，新增入口的实机资格另验。
 Gap、原期限、owner退出及与Native事件的区别见[事件契约](controller-events.md)。
 这不表示应用发现租约、完整通用EventStream或新artifact实机资格已经完成。
 
@@ -67,7 +68,7 @@ index 和保留字节由绑定传递，不能代替权限。`slk_client_open_cha
 | `close(client)` | 释放一次，NULL 可接受；调用者须排除并发调用/close。派生Connection仍持有原caller，最后引用释放才停止并join同一执行器；不关闭已交付fd、不强制断链 |
 | `deadline_ns` | 原始绝对 `CLOCK_MONOTONIC` 纳秒，未来且至多30秒；覆盖本地排队与等待，不重置。到期 ETIMEDOUT，不保证取消远端操作，不自动重试 |
 
-每个 C caller有一个本地执行线程，Client及派生Connection共享至多8个排队请求及1个执行请求；队满 EAGAIN。
+每个 C caller有一个本地执行线程，Client及派生Connection/ControllerEvents共享至多8个排队请求及1个执行请求；队满 EAGAIN。
 它只桥接同步语言与现有异步 Client，owner 观察在调用间继续执行，不保存协议、
 授权或连接状态。不在调用线程嵌套 Tokio runtime，不使用全局执行器。内核的
 当前SDK链接的Tokio 1.51.0/full副本首次建立IO运行时会保留signal socketpair；

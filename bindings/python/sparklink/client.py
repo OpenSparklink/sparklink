@@ -117,6 +117,14 @@ class Client:
         if getattr(self, "_pid", None) == os.getpid() and hasattr(self, "_lock"):
             self.close()
 
+    def controller_events(self, *, deadline_ns):
+        """One directory observer on this caller; not Native state or readiness.
+
+        The derived view retains this Client executor after Client.close().
+        """
+        from .controller_events import ControllerEvents
+        return ControllerEvents._open(self, deadline_ns)
+
     def controllers(self, *, deadline_ns):
         """One bounded registration snapshot. Growth between calls can ENOBUFS.
 

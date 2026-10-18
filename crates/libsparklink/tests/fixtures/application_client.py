@@ -43,6 +43,11 @@ with Client(deadline_ns=deadline()) as client:
             pass
         else:
             raise AssertionError("invalid controller accepted")
+    observer = client.controller_events(deadline_ns=deadline())
+    snapshot = observer.next(deadline_ns=deadline(),peek=True)
+    assert snapshot.kind == 'snapshot' and snapshot.sequence == 0
+    assert snapshot.controllers == (ControllerId(2,7),ControllerId(3,9))
+    assert observer.next(deadline_ns=deadline()) == snapshot
     # Parent mutex held by a different thread: fork checks must precede locks.
     locked, release = threading.Event(), threading.Event()
     def hold():
@@ -73,6 +78,11 @@ with Client(deadline_ns=deadline()) as client:
     error(errno.ESTALE, lambda: client.connection(ControllerId(2, 8), PATH, deadline_ns=deadline()))
     connection = client.connection(ControllerId(2, 7), PATH, deadline_ns=deadline())
 client.close()
+for kind, sequence in [('published',1),('withdrawn',2)]:
+    event = observer.next(deadline_ns=deadline())
+    assert (event.kind,event.sequence,event.controllers) == (kind,sequence,(ControllerId(2,7),))
+observer.close()
+print("CURRENT_CONTROLLER_DIRECTORY_LANGUAGE_FIXTURE_PASS_NOT_RF")
 try:
     client.controllers(deadline_ns=deadline())
 except ValueError:

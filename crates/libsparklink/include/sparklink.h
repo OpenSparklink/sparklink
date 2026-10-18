@@ -34,6 +34,12 @@ typedef struct SlkClient SlkClient;
  */
 typedef struct SlkConnection SlkConnection;
 
+/**
+ * One pinned directory observer; retains its originating Client executor.
+ * Closing it never stops a controller or releases another application's work.
+ */
+typedef struct SlkControllerEvents SlkControllerEvents;
+
 typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
     uint16_t version;
     uint16_t size;
@@ -144,6 +150,20 @@ typedef struct SlkControllerId {
     uint16_t index;
     uint8_t reserved[6];
 } SlkControllerId;
+
+/**
+ * A directory observation, not Ready, Down, authorization or a drain barrier.
+ * kind:1 Snapshot,2 Published,3 Withdrawn,4 Gap. sequence: snapshot cursor,
+ * event sequence or Gap.after. oldest/current are nonzero only for Gap.
+ * Controller identities are returned separately; reserved is always zero.
+ */
+typedef struct SlkControllerEvent {
+    uint64_t sequence;
+    uint64_t oldest;
+    uint64_t current;
+    uint32_t kind;
+    uint32_t reserved;
+} SlkControllerEvent;
 
 #ifdef __cplusplus
 extern "C" {
@@ -346,6 +366,53 @@ int slk_connection_ssap_write(const struct SlkConnection *connection,
                               uintptr_t capacity,
                               uintptr_t *length,
                               uint64_t deadline_ns);
+
+/**
+ * Open the existing Rust directory stream on this Client's caller/owner scope.
+ * deadline_ns is original absolute CLOCK_MONOTONIC, future and <=30s away.
+ * Returns0/-errno; output unchanged on failure. Derived observer survives
+ * Client close; final reference joins the same bounded executor. No retry.
+ * # Safety
+ * client is a live immutable SlkClient through the call; output is an exclusive
+ * aligned writable pointer slot, nonaliasing. No concurrent Client close.
+ */
+int slk_client_controller_events(const struct SlkClient *client,
+                                 uint64_t deadline_ns,
+                                 struct SlkControllerEvents **output);
+
+/**
+ * Read the existing stream. flags=0 consumes on successful copy; flags=1 peeks.
+ * Buffer capacity is0..256, null only for0. ENOBUFS writes required count only;
+ * all other errors leave outputs unchanged. Timeout, peek and ENOBUFS retain
+ * the observation; no silent truncation or resnapshot. Gap must be consumed,
+ * then future calls return ESTALE until an explicit new observer is opened.
+ * Concurrent next/peek on one observer returns EAGAIN; this bounded executor
+ * also serializes other requests of the same Client. Waiting never extends the
+ * original <=30s deadline. Local cancellation does not cancel server waiting,
+ * whose own pending slot remains bounded. This is a directory hint only.
+ * # Safety
+ * observer is live through the call; output/count/buffer are exclusive aligned
+ * writable nonaliasing objects, capacity-sized buffer. No concurrent close.
+ * Rust cannot validate arbitrary C pointers; invalid/aliased regions are caller UB.
+ */
+int slk_controller_events_next(const struct SlkControllerEvents *observer,
+                               struct SlkControllerEvent *output,
+                               struct SlkControllerId *buffer,
+                               uintptr_t capacity,
+                               uintptr_t *count,
+                               uint32_t flags,
+                               uint64_t deadline_ns);
+
+/**
+ * Release this observer only. Null allowed. No controller stop, grant revocation
+ * or implicit resnapshot; retained observations are discarded. Derived views
+ * and Client keep their own references to the same executor. Do not use across
+ * fork: exec/spawn before opening a new Client. Final reference joins bounded work.
+ * # Safety
+ * observer is null or one live pointer returned by open, freed once. No
+ * concurrent call/close or subsequent use of that pointer.
+ */
+void slk_controller_events_close(struct SlkControllerEvents *observer);
 
 #ifdef __cplusplus
 }  // extern "C"

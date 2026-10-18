@@ -1,11 +1,10 @@
 //! Real Client and executor with a private D-Bus fixture, never a controller.
 use super::*;
+use crate::test_support as support;
 use std::sync::{
     Arc,
     atomic::{AtomicUsize, Ordering},
 };
-#[path = "../../tests/support/mod.rs"]
-mod support;
 
 struct Manager;
 #[zbus::interface(name = "org.sparklink.Manager")]

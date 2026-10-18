@@ -71,5 +71,38 @@ owner丢失会终止stream。取消等待／丢弃stream仅结束观察，不停
 `slctl`的count为1..512，默认1（初始Snapshot）；ms为每次next的1..30000ms，
 默认5000。输出`ControllerDirectorySnapshot`／`ControllerDirectoryEvent`；Gap、
 超时和错误非零退出。它复用普通Rust Client，既不取得管理lease，也不自动重连。
-C／Python尚未开放这个stream入口，没有同名NotSupported门面。本分项实机／形式化
-资格仍以[唯一能力入口](../../project/current-capabilities.md)的准确artifact记录为准。
+C／Python入口复用同一Rust stream，具体交付及释放契约见下文。本分项实机／形式化
+资格仍以[唯一能力入口](../../project/current-capabilities.md)的准确artifact记录为准；
+旧fd0产物的Rust/slctl资格不转授新增语言入口。
+
+### C／Python目录观察边界
+
+`slk_client_controller_events(client, deadline_ns, output)`产生opaque观察句柄，
+`slk_controller_events_next(observer, output, ids, capacity, count, flags, deadline_ns)`
+读取，`slk_controller_events_close`释放。它们复用原Client的caller和有界executor；
+先关闭Client不销毁仍被派生观察引用的caller。最终引用释放才join本地执行线程。
+关闭观察者不停止扫描、撤销Grant或清理controller。
+
+`SlkControllerEvent`为32字节：sequence／oldest／current为u64，kind／reserved为u32；
+kind在偏移24。kind为1 Snapshot、2 Published、3 Withdrawn、4 Gap，reserved为零。
+Snapshot的sequence是before游标，Gap的sequence是after；oldest/current仅Gap使用。
+身份数组使用原16字节`SlkControllerId`。它不是Native事件或可信状态编码。
+
+capacity为0..256，非零时buffer须为有效区域；flags=0成功复制后消费，flags=1为peek。
+ENOBUFS只写所需count，不改metadata或buffer，也不消费；其余错误输出不变。
+超时或peek保留已收到的单条观察；消费Gap后后续next为ESTALE，须显式新建观察。
+无静默截断、跳过缺口、重新连接或自动重快照。同一C观察句柄并发next为EAGAIN；
+所有同Client请求仍共用至多8个排队和1个执行请求，长等待读会延迟该caller的其他
+请求，不承诺独立进程故障域或异步dispatch。
+
+deadline_ns为原始绝对CLOCK_MONOTONIC，未来且至多30秒；本地队列、RPC和交付前
+检查沿用同一期限。C错误返回后不消费本地待交付观察；成功复制后调用者丢弃结果、
+信号中断后未处理或进程死亡，不等于重新交付承诺。观察到事件不等于应用已处理。
+C输出指针须有效、对齐、独占且不别名；无效指针属于调用者UB，不是内核EFAULT门禁。
+
+Python `Client.controller_events(deadline_ns=...)`返回`ControllerEvents`，
+`next(deadline_ns=..., peek=False)`返回不可变`ControllerEvent`，其kind为
+`snapshot`／`published`／`withdrawn`／`gap`，controllers为身份tuple。支持上下文管理器。
+调用和close串行；fork后在触碰继承mutex前拒绝使用，先exec／spawn再创建新Client。
+Python不自行调用D-Bus或解释另一套wire事件。畸形ABI输出明确报EPROTO并释放该
+观察，不自动重试。当前新增语言入口尚须各自准确artifact的实机门禁，离线不授RF资格。

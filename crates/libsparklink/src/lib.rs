@@ -7,10 +7,14 @@ pub mod controller_events;
 pub mod ffi;
 pub mod ffi_client;
 pub mod ffi_connection;
+pub mod ffi_controller_events;
 pub mod peer;
 pub mod security;
 pub mod ssap;
 mod sync_client;
+#[cfg(test)]
+#[path = "../tests/support/mod.rs"]
+mod test_support;
 pub use client::{ApplicationConnection, ApplicationError, Client};
 pub use slk_channel::Channel;
 pub use slk_channel::deadline::Deadline;

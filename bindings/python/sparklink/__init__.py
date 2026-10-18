@@ -5,5 +5,6 @@ independent library. No default Adapter, controller lease or local Host Engine.
 """
 from .ssap import SsapOperations, SsapAccess
 from .client import Client, Connection, ControllerId
+from .controller_events import ControllerEvents, ControllerEvent
 from .channel import channel_info, channel_tx_status, session_tx_status, channel_recv_security, channel_send_constrained, channel_prepare_tx
-__all__=["Client","Connection","ControllerId","SsapOperations","SsapAccess","channel_info","channel_tx_status","session_tx_status","channel_recv_security","channel_send_constrained","channel_prepare_tx"]
+__all__=["ControllerEvents","ControllerEvent","Client","Connection","ControllerId","SsapOperations","SsapAccess","channel_info","channel_tx_status","session_tx_status","channel_recv_security","channel_send_constrained","channel_prepare_tx"]

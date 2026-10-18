@@ -159,6 +159,45 @@ class QualificationTests(unittest.TestCase):
             self.assertIn('goal: independent architecture qualification_reference', q.sync_views(self.data, self.repo, write=True))
             self.assertEqual(json.loads(path.read_text())['architecture_retirement_current_batch']['qualification_reference'], invalid)
 
+    def test_allocated_lab_rejects_stale_operational_map_even_in_write_mode(self):
+        import copy
+        import ws73_lab_resources as resource
+        self.data['baseline'] = {'kernel': 'a', 'compiled_userspace': 'b', 'executed_tools': 'c'}
+        self.data['batch'] = {'id': 'fixture'}
+        self.data['records'][0]['title'] = 'fixture'
+        project = self.repo / 'project'
+        project.mkdir()
+        for name in ['current-capabilities.md', 'implementation-plan.md']:
+            (project / name).write_text(q.render(self.data))
+        policy = resource.policy()
+        state = {'qualification_view': q.summary(self.data),
+                 'hardware_resource_allocation': {
+                     'policy': 'project/lab-resource-policy.json', 'owner': policy['owner'],
+                     'allowed_U': ['1-1.1.1', '1-1.1.2'], 'allowed_E': ['1-2.1.1', '1-2.1.2'],
+                     'forbidden': policy['forbidden_ports'], 'runtime_directory': policy['run_root'],
+                     'source_worktree': policy['worktree']},
+                 'hardware_constraint': {'operational_scope_ref': 'hardware_resource_allocation.policy'}}
+        path = project / 'goal-execution-state.json'
+        path.write_text(json.dumps(state))
+        self.assertIn('goal: missing hardware allocation policy', q.sync_views(self.data, self.repo))
+        (project / 'lab-resource-policy.json').write_text(json.dumps(policy))
+        self.assertFalse(q.sync_views(self.data, self.repo))
+        for key, value in [('current_operational_scope', 'old E1/U234 map'),
+                           ('topology_revision', {'1-2.1.2': 'U'})]:
+            bad = copy.deepcopy(state)
+            bad['hardware_constraint'][key] = value
+            path.write_text(json.dumps(bad))
+            for write in [False, True]:
+                self.assertIn('goal: stale independent hardware authority: ' + key,
+                              q.sync_views(self.data, self.repo, write=write))
+                self.assertEqual(json.loads(path.read_text()), bad)
+        bad = copy.deepcopy(state)
+        bad['hardware_resource_allocation']['allowed_U'] = ['1-1.1.3']
+        path.write_text(json.dumps(bad))
+        self.assertIn('goal: hardware allocation differs from policy: allowed_U',
+                      q.sync_views(self.data, self.repo, write=True))
+        self.assertEqual(json.loads(path.read_text()), bad)
+
     def test_selected_record_is_versioned_and_cannot_reference_retired_or_unknown(self):
         self.data['selected_qualification'] = {'version': 1, 'record': 'one'}
         self.assertFalse(self.run_check()['errors'])

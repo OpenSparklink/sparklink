@@ -335,6 +335,16 @@ def sync_views(data, repo, write=False):
                      'scope': 'Selected retained artifact only;whole current tree not revalidated'}
         if architecture['qualification_reference'] != reference:
             errors.append('goal: independent architecture qualification_reference')
+    # Optional only for generic fixture/downstream checkouts without a physical
+    # allocation. An allocated lab has one current topology authority; old
+    # device qualifications must not remain an alternative operational map.
+    if 'hardware_resource_allocation' in state:
+        from ws73_lab_resources import execution_state_errors
+        allocation = repo / 'project/lab-resource-policy.json'
+        if not allocation.is_file():
+            errors.append('goal: missing hardware allocation policy')
+        else:
+            errors.extend(execution_state_errors(state, json.loads(allocation.read_text())))
     return errors
 
 

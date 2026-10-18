@@ -17,6 +17,34 @@ from ws73_target import usb_properties
 
 
 class AllocatedResources(unittest.TestCase):
+    def test_execution_state_has_one_current_topology_authority(self):
+        data = resource.policy()
+        state = {'hardware_resource_allocation': {
+            'policy': 'project/lab-resource-policy.json', 'owner': data['owner'],
+            'allowed_U': ['1-1.1.1', '1-1.1.2'],
+            'allowed_E': ['1-2.1.1', '1-2.1.2'],
+            'forbidden': data['forbidden_ports'],
+            'runtime_directory': data['run_root'], 'source_worktree': data['worktree'],
+        }, 'hardware_constraint': {
+            'operational_scope_ref': 'hardware_resource_allocation.policy',
+            'historical_topology_revision': {'models': {'1-2.1.2': 'U'}},
+        }}
+        self.assertEqual(resource.execution_state_errors(state, data), [])
+        for key, value in [('allowed_U', ['1-2.1.2']), ('allowed_E', ['1-1.1.1']),
+                           ('forbidden', []), ('source_worktree', 'sparklink'),
+                           ('runtime_directory', '.dev/shared'), ('owner', 'other-thread')]:
+            bad = copy.deepcopy(state)
+            bad['hardware_resource_allocation'][key] = value
+            self.assertTrue(resource.execution_state_errors(bad, data), key)
+        for key in ['current_operational_scope', 'topology_revision']:
+            bad = copy.deepcopy(state)
+            bad['hardware_constraint'][key] = 'historical map must not be operational'
+            self.assertTrue(resource.execution_state_errors(bad, data), key)
+        for bad in [{}, dict(state, hardware_constraint={}),
+                    dict(state, hardware_constraint=None),
+                    dict(state, hardware_resource_allocation=None)]:
+            self.assertTrue(resource.execution_state_errors(bad, data))
+
     def test_actual_cli_rejects_unallocated_port_before_artifact_or_usb_access(self):
         with tempfile.TemporaryDirectory() as tmp:
             out=Path(tmp)/'must-not-exist'

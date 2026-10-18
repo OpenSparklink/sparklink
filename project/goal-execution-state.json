@@ -77,9 +77,18 @@
     "manual_request_pending": false,
     "host_installation": false,
     "constraint": "VM-only; no activity on unrelated libvirt VMs",
-    "current_operational_scope": "VM-only actual110 RAMbytes+HCC E1/U234/DLISetup independentlyverified;E1/U4 andU2/3fourdatagates32realRT exactf887/836/e513. NotcoldROMautoselection/siliconattestation/naturalrecovery/fourparallelqualification.",
     "recovery_qualification": false,
-    "topology_revision": {
+    "historical_four_u_qualification": {
+      "qualification_record": "four-business80-d01aa82",
+      "controlled_disconnect_record": "four-disconnect48-ff13d8c",
+      "burst_record": "four-burst64-d42da67",
+      "evidence": "docs/evidence/four-device-business-20261016.json",
+      "scope": "Original fourU hardware only;does not transfer to replacementE module or currentmixedtopology"
+    },
+    "lifecycle_record": "lifecycle-u23-33f17a8",
+    "evidence": "docs/evidence/lifecycle-u23-hardware-change-20261017.json",
+    "historical_operational_scope_before_shared_allocation": "VM-only actual110 RAMbytes+HCC E1/U234/DLISetup independentlyverified;E1/U4 andU2/3fourdatagates32realRT exactf887/836/e513. NotcoldROMautoselection/siliconattestation/naturalrecovery/fourparallelqualification.",
+    "historical_topology_revision": {
       "date": "2026-10-17",
       "source": "User confirmed port1 replacement;remaining portsU",
       "models": {
@@ -92,15 +101,7 @@
       "board_firmware_qualified": false,
       "report": "docs/evidence/lifecycle-u23-hardware-change-20261017.json"
     },
-    "historical_four_u_qualification": {
-      "qualification_record": "four-business80-d01aa82",
-      "controlled_disconnect_record": "four-disconnect48-ff13d8c",
-      "burst_record": "four-burst64-d42da67",
-      "evidence": "docs/evidence/four-device-business-20261016.json",
-      "scope": "Original fourU hardware only;does not transfer to replacementE module or currentmixedtopology"
-    },
-    "lifecycle_record": "lifecycle-u23-33f17a8",
-    "evidence": "docs/evidence/lifecycle-u23-hardware-change-20261017.json"
+    "operational_scope_ref": "hardware_resource_allocation.policy"
   },
   "packages": [
     {
@@ -3817,6 +3818,14 @@
     "followup_tooling": {
       "commit": "a08fc5d",
       "scope": "Rejection before kernel-helper load andportableCIpath fixture only;14local guard/build resource methods PASS. Actual real gate stays bound tocd7guestHost;no transfer tofollowup."
+    },
+    "latest_readonly_recheck": {
+      "receipt": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v3/receipt.json",
+      "sha256": "75d7cda4228989b1549d8b1436578f0bed088907ac1371ca518b5cce2d1c7f0e",
+      "checks": ".dev/main-thread-01a120fe/allocation-checks-v3.json",
+      "checks_sha256": "f84104150c5f385c1dab9e6afbd7ca85c20c38811c98f1949a6cc7ef38ac0612",
+      "scope": "Allfourpinnedleaves present;U/runtime5endpoints,E/ROM2endpoints;nohostkernelbinding;twoexistinglibvirtVMs holdotherUSBdevices,noallocatedWS73/sharedPCIobserved;rootFDvisibilitylimited. NoUSBio/download/reset/power/claim. Offlineguard/view consistency only;new topology/E/mixed gain no new qualification.",
+      "current_authority": "project/lab-resource-policy.json;old hardware_constraint map marked historical;check_qualifications rejects stale/forbidden/currentmap drift"
     }
   }
 }

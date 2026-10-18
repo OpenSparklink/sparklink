@@ -15,6 +15,10 @@ B847 guest/Host、DA服务、2fc内核，两角色真实 requester 死亡后旧�
 E 两口仍仅按用户布置，尚未 HCC 复核；
 `1-2.1.2` 不再是旧 U。旧报告保留当时拓扑和准确 artifact，不能转授给新设备。
 [资源配置](lab-resource-policy.json)只限定执行权限，不授任何功能资格。
+只读复核四只的序列号 pin 与上游 hub/PCI 一致；U 为五端点、E 为两端点 ROM。
+已有两台 libvirt VM 的配置未占用这些设备或共享 PCI，部分 root fd 不可见；
+每次直通仍需重新核对并获取端口租约。旧操作映射已归为历史，一致性检查拒绝再次
+出现；本次无 USB I/O、固件下载或新实机验收。
 [新 U 双设备记录](../docs/evidence/shared-allocation-u-gate-20261018.json)独立绑定 DA 服务、
 cd7 guest/Host 与2fc内核：实际 HCC、两角色owner/原期限及8次业务回复；
 该有限资格不覆盖 E、混合、晚到成功/drain或挂起期间的并发同行业务。

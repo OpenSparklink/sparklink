@@ -26,6 +26,39 @@ def policy():
     return data
 
 
+
+def execution_state_errors(state, allocation):
+    """Validate current execution views only; historical evidence is immutable.
+
+    This is not a device/model/firmware qualification. Never repair an
+    authorization mismatch from an old status field or silently widen policy.
+    """
+    current = state.get('hardware_resource_allocation')
+    if not isinstance(current, dict):
+        return ['goal: missing hardware resource allocation']
+    expected = {
+        'policy': 'project/lab-resource-policy.json',
+        'owner': allocation['owner'],
+        'allowed_U': sorted(p for p, v in allocation['ports'].items() if v['expected_model'] == 'U'),
+        'allowed_E': sorted(p for p, v in allocation['ports'].items() if v['expected_model'] == 'E'),
+        'forbidden': allocation['forbidden_ports'],
+        'runtime_directory': allocation['run_root'],
+        'source_worktree': allocation['worktree'],
+    }
+    errors = ['goal: hardware allocation differs from policy: ' + key
+              for key, value in expected.items() if current.get(key) != value]
+    constraint = state.get('hardware_constraint', {})
+    if not isinstance(constraint, dict):
+        errors.append('goal: invalid hardware constraint')
+    else:
+        for key in ['current_operational_scope', 'topology_revision']:
+            if key in constraint:
+                errors.append('goal: stale independent hardware authority: ' + key)
+        if constraint.get('operational_scope_ref') != 'hardware_resource_allocation.policy':
+            errors.append('goal: hardware constraint must reference the current policy')
+    return errors
+
+
 def selected(ports, allocation=None):
     data = allocation if allocation is not None else policy()
     if not ports or len(ports) != len(set(ports)):

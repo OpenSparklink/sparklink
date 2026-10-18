@@ -1,9 +1,12 @@
 # 当前能力与资格
 
-R5f8 requester退出／旧成功回复排空／挂起期间同行业务门禁已接线，生产 Engine/Runtime
-未变；833项工具 fixtures 与既有调用者回归通过。首轮 e68 实机整体 FAIL 已保留：
-测试漏掉既有 `Selected` 行，已修正精确两行契约，**新 artifact 待重跑**。前批 cd7
-资格只保留原 artifact 范围，不能转授本批。退出与限制见[唯一计划](implementation-plan.md)。
+R5f8 的[新独立记录](../docs/evidence/ssap-requester-drain-held-business-20261018.json)已登记：
+B847 guest/Host、DA服务、2fc内核，两角色真实 requester 死亡后旧写回复排空、
+新读独立校验及提示挂起期间8次真实业务回复；32证据负对照、6资格负对照通过。
+首个e68整体FAIL原样保留，未回填升级。833工具fixtures及严格HTML只描述其离线范围，
+新增形式化证明0。完整取消/旧读新读/复用、部分Native初始化等仍缺，不能扩大为
+整个当前树的资格。前批cd7及各历史资格保持原artifact范围。
+
 
 2026-10-18 资源边界调整：本线程仅使用 U `1-1.1.1/.2`、E `1-2.1.1/.2`；
 两组 `.3/.4` 属于另一线程，禁止操作。U 两口已由新 guest 的实际 HCC 确认为 U/USB，
@@ -303,6 +306,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | e776 SSAP值期限/共享初始化：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | 服务owner/SDK原期限：offline限定通过；完整架构开放 | `offline` | `PASS` |
 | 服务owner/SDK原期限：real限定通过；完整架构开放 | `real_device` | `PASS` |
+| 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
 | 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。

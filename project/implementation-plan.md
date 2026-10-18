@@ -4,7 +4,9 @@
 
 首个 e68 实机整体 FAIL 原样保留：新测试漏掉既有 CLI 的 `Selected` 行，虽收到
 正确值仍错误拒绝。已改为精确校验选择身份及值的两行，额外/重复/错身份/错载荷
-继续拒绝；等待新 artifact 重跑，不修改原失败，不把局部观测升级完整资格。
+继续拒绝；第二份B847 artifact两角色独立通过，首轮失败不变。
+[准确限定记录](../docs/evidence/ssap-requester-drain-held-business-20261018.json)包含8次
+挂起期间真实回复、旧写回复实际排空、新读独立校验及32负对照；不是完整生命周期资格。
 
 本批先复用已存在的 `caller_scoped`、`ClientRequest` 和唯一 Engine，不新增协议路径。
 退出条件：真实对端 ask 提示之后 SIGKILL 普通公共 C/Python requester；旧回复未到时
@@ -273,6 +275,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | e776 SSAP值期限/共享初始化：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | 服务owner/SDK原期限：offline限定通过；完整架构开放 | `offline` | `PASS` |
 | 服务owner/SDK原期限：real限定通过；完整架构开放 | `real_device` | `PASS` |
+| 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
 | 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。

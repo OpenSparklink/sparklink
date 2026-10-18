@@ -685,7 +685,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-18T04:11:56.066169+00:00",
+  "updated_at_utc": "2026-10-18T04:40:34.165884+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -799,22 +799,22 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F8_REQUESTER_EXIT_AND_HELD_BUSINESS_GATE_IMPLEMENTED_REAL_PENDING",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F8_REQUESTER_WRITE_DRAIN_HELD_BUSINESS_FINITE_PASS_PARTIAL_INIT_NEXT",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
-  "issue_sync_status": "2026-10-18 shared allocation/new U finite gate: five existing issues OPEN and original bodies unchanged;no partial closure.",
+  "issue_sync_status": "R5f8 finite requester/oldreply/heldbusiness verified:fiveexistingissuesOPEN,originalbodiesunchanged;fulloriginalscopeactive.",
   "issue_sync_receipt": {
-    "path": ".dev/main-thread-01a120fe/issue-receipts-v1.json",
-    "sha256": "d1802b6b1342aff7580b4b907b596e4bd9460ffa340a2f4dff229ab94a17608c",
+    "path": ".dev/main-thread-01a120fe/requester-issue-receipts-v1.json",
+    "sha256": "0743fad0bd2a46af24eceddee63972ab56672415c5c94db50c50dd4fe5f74d0f",
     "comments": [
-      "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245522093",
-      "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245522468",
-      "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6245522884",
-      "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6245523163",
-      "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6245523462"
+      "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245729849",
+      "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245730189",
+      "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6245730503",
+      "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6245730823",
+      "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6245731128"
     ]
   },
   "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_R6A_EXACT_GENERIC_VM_LIMITED_QUALIFICATION_FULL_R5F_R6_OPEN",
@@ -1925,20 +1925,24 @@
       "shared-allocation-u-hcc-owner-deadline-r5f7": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "ssap-requester-drain-held-business-r5f8": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP03-WP06-WP08-WP18-R5f8-requester-exit-held-business",
-      "production_behavior": "Tools reuse actual caller_scoped/ClientRequest andshared single CUTC helper;one killed publicC/Python writer,observed busy/no-wire beforeoldresponse,actual peerwrite/oldreplydrain/newread andheldprompt business. No production Engine/Runtime/ABI change;not precise internal cancel-linearization orfullreuse proof.",
-      "state": "R5F8_FIRST_REAL_FAIL_RETAINED_CLI_OUTPUT_ORACLE_CORRECTED_NEW_ARTIFACT_PENDING",
+      "production_behavior": "Existing production caller/physicalslot invariants exercised byactual killedC/Python requesters,old verifiedwrite reply,new independentread and8CUTC peerreplies whilepromptheld. B847guestHost/DAservice/2fckernel;32evidence negativecontrols;original e68overallFAIL retained. No newEngine/Runtime/ABI orformal proof.",
+      "state": "R5F8_B847_REAL_REQUESTER_WRITE_DRAIN_AND_HELD_BUSINESS_FINITE_PASS_FULL_ARCHITECTURE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Keep first e68 real overallFAIL;CLIactually printed correct SelectedandpeerValue lines,oldtest wronglyrequired singleline. Correct exacttwo-line identity/value contract,seal newtools/artifact andrerun bothroles;no production defect proven. All originalscope andremainingconditions unchanged."
+      "next": "Next actual partialNativeinitialization/owner retirement gate with existing native factory andcallback barriers;then remaining lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c architecture work. New finite verifiedwrite requester/drain/heldbusiness doesnot close late-read/new-read,duplicate/reuse/NOCP orfullmatrix. Keep originalS0-S6/19WP/10FV/12DG/allissues,strictallocatedU/SDK110/VM-only,UserHostP4,naturalRCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3700,13 +3704,15 @@
       "qualification": "Historical offline/real andnewUreal are separatelyregistered;newU DAservice/cd7guestHost/2fckernel only,not currentfulltree orE/mixed."
     },
     "r5f8": {
-      "state": "R5F8_FIRST_REAL_FAIL_RETAINED_CLI_OUTPUT_ORACLE_CORRECTED_NEW_ARTIFACT_PENDING",
+      "state": "R5F8_B847_REAL_REQUESTER_WRITE_DRAIN_AND_HELD_BUSINESS_FINITE_PASS_FULL_ARCHITECTURE_OPEN",
       "scope": "tools/callers only unless actual existing production defect is reproduced",
       "exit_reference": "project/implementation-plan.md#r5f8真实-requester-退出旧回复排空与挂起期间同行业务本批",
       "constraints": "strictallocatedU/SDK110/VM-only;original5s;soleEngine/Session;oldcd7qualification historical only",
-      "remaining": "actualkilledC/Pythonrequester,busy/no-wire,newpeerwriteandoldresponse drain,CUTCactualbusiness insideheldprompt;partialinit next",
+      "remaining": "Next actual partialNativeinitialization/owner retirement gate with existing native factory andcallback barriers;then remaining lifecycle/Grant/fd-transfer/common/higherSDK/perappDiscovery/R6c architecture work. New finite verifiedwrite requester/drain/heldbusiness doesnot close late-read/new-read,duplicate/reuse/NOCP orfullmatrix. Keep originalS0-S6/19WP/10FV/12DG/allissues,strictallocatedU/SDK110/VM-only,UserHostP4,naturalRCA/nonmanualrecovery OPEN.",
       "retained_failure": ".dev/main-thread-01a120fe/requester-exit-us-v1/manifest.json",
-      "failure_scope": "wholeFAIL;existingCLISelectedline omitted innewfixture oracle;no retrospective promotion;actual firstcase CUTCwhileheld andnewreadobservations remain incomplete scope only"
+      "failure_scope": "wholeFAIL;existingCLISelectedline omitted innewfixture oracle;no retrospective promotion;actual firstcase CUTCwhileheld andnewreadobservations remain incomplete scope only",
+      "report": "docs/evidence/ssap-requester-drain-held-business-20261018.json",
+      "qualification": "Only accurate B847guestHost/DAservice/2fckernel,2roles,2killedC-Pythonwriters,8actualpeerreplies duringheldprompt;firste68wholeFAIL retained. Not fullcancel/reuse/partialinit/recovery."
     }
   },
   "owned_ssap_c6_historical_batch": {

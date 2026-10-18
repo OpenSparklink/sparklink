@@ -221,6 +221,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | U3ff/工具004c:C/Python真实授权fd与双端业务限定通过；完整矩阵仍缺 | `real_device` | `PASS` |
 | U3ff/工具004c:七真实VM原短包与七尺寸保持，完整架构未退出 | `real_device` | `PASS` |
 | 22cd C/Python固定Connection与SSAP读短写：实际private-bus限定通过，实机与权限仍缺 | `offline` | `PASS` |
+| 17b4:公共C/Python真实通道与16组SSAP32字节限定通过，原矩阵/权限/完整架构仍开放 | `real_device` | `PASS` |
+| 17b4:八真实VM长度与独立Owned有限保持；ENODATA根因及完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1434,9 +1436,14 @@ R5f3 当前有限批：C/Python的`Connection`沿用原Client caller、固定dae
 过期排队、超时、旧lifetime拒绝、输出不变、ENOBUFS及有界内存、错误与无echo；
 独立header/ELF、严格default/all-features、绑定、文档及相关退休边界一致。随后封存
 准确新artifact，在VM验证新C/Python SSAP入口的实际对端结果及原路径保持。
-候选Native服务包已在同一增量目录以12路完成构建／文件封存：实际编译HEAD为f7c5c68
-（生产源码字节来自22cd，后续为报告提交）、kernel2fc、显式SDK110-U；这仅是候选
-artifact，不是新VM／实机资格。实际新C/Python SSAP消费者与双端证据门禁继续接通。
+新门禁使用[准确17b4限定实机报告](../docs/evidence/application-connection-ssap-clients-real-20261018.json)：
+编译服务及guest/host工具17b4、kernel2fc、显式SDK110-U，原始应用和双端USB/HCC
+由冻结guest工具重算；16组32字节SSAP读／短写／读、48次SDK业务调用及对端本地
+反查，另有2次CUTC独立随机回复。管理组普通UID/caps0，非apps-only权限资格。
+此前f7候选只构建，新增测试scope后未绕过source-hash门禁，重新封存17b4；首轮
+module-tree父路径预检FAIL保留，正确release路径新镜像通过。原length/Owned现由[八VM限定保持报告](../docs/evidence/application-connection-preservation-real-20261018.json)
+分别核对：编译服务17b4，长度工具17b4、Owned诊断工具071ea；完整角色／撤权／
+原期限／同行隔离仍未完成。
 private bus仅序列化／身份fixture，不是协议、权限或RF资格。现有apps组没有SSAP
 RPC权利，不能把管理组调用门禁写成普通应用策略完成；对应授权继续单独整改。
 完整Owned／Agent／
@@ -1449,7 +1456,15 @@ C/Python Connection。两连接角色共16组、48次SDK调用；UUID发现与�
 现有Rust CLI，不能据此宣称完整跨语言高级API。每次子进程在Client关闭后等待显式
 启动屏障，使用原5s本地期限；错误载荷必须以明确的比较失败退出，不能用崩溃替代。
 新版最终判定要求全部SSAP证据，不能降级为仅旧basic通过；历史报告保留004c工具
-身份，须用原工具重放。当前仅离线消费者/704执行器检查通过，新VM门禁仍待执行。
+身份，须用原工具重放。离线消费者/704执行器检查及上述新SDK有限VM门禁已通过；原保持门禁另以八VM／64次业务回复、七尺寸及Owned通过，冻结工具和双端捕获独立重算后登记。
+
+[原Owned保持失败](../docs/evidence/application-owned-preservation-counterexample-20261018.json)
+独立保留：最初七轮漏启Owned被审计拒绝；补跑在四次SSAP成功及owner输出正确值后
+返回ENODATA，未记录原抛出帧，根因未明。只增加原异常调用栈的诊断后新轮通过，
+不能据此推导已修复或长期稳定性；预检路径错误与独立审计自身字段错误也保留原日志。
+下一权限批先修apps-only的GetInfo预检缺口，不能靠管理组调用冒充应用组资格；
+只准入不修改状态的连接身份观察，其余管理与SSAP权限不扩大。公共入口的实际角色、
+原期限与撤权仍须单列VM验收。
 
 C同步入口继续保持每客户端独立执行器、有界8请求队列及一个在途请求，不持有
 controller管理lease。绝对CLOCK_MONOTONIC原期限覆盖本地排队和等待；超时不

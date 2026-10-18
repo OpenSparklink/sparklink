@@ -124,7 +124,9 @@ Python `Client.connection(ControllerId, full_connection_path, deadline_ns=...)`
 这些入口的deadline仍是覆盖**本地**排队／等待的原始绝对单调时钟期限；当前D-Bus
 方法没有新增跨进程deadline字段，不能宣称已经实现端到端原期限传递。超时、取消
 本地等待或写后输出失败均不撤销已发生的远端副作用。协议结果也不等于对端应用
-已经处理业务。当前新入口的实机资格另取，不继承旧CLI SSAP或基本C/Python通道资格；
+已经处理业务。新入口的[17b4限定实机报告](../evidence/application-connection-ssap-clients-real-20261018.json)
+单列管理组普通UID的32字节SSAP协议结果与对端本地反查，不继承旧CLI或basic资格。
+它不授予apps-only权限，也不等于Owned／ServiceAuthorizer或独立应用语义ACK验收。
 完整高阶发现、Owned、Agent及通用API仍待整改，不能由这些方法推导已支持。
 
 这些是当前源码接口，不把私有 bus 的拒绝/错误 fd 回归升级成实际部署权限或

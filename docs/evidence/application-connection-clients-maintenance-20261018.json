@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "result": "FINITE_EVIDENCE_AND_CANONICAL_STATE_SYNCHRONIZED",
+  "report_commit": "133497b",
+  "implemented_sdk": "22cd8cb9794d5880ba43da417f243b77085e8603",
+  "compiled_artifact": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+  "finite_real_records": [
+    "application-connection-ssap-clients-real-r5f3",
+    "application-connection-preservation-real-r5f3"
+  ],
+  "registry_negative_controls": 12,
+  "strict_docs": "PASS inventory116;onlyfourreaderquadrantsbuilt",
+  "ci": [
+    {
+      "id": 39081379287,
+      "name": "Production codec bounded fuzz",
+      "head_sha": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+      "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/39081379287",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 39081379369,
+      "name": "Qualification integrity",
+      "head_sha": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+      "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/39081379369",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 39081379326,
+      "name": "Documentation",
+      "head_sha": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+      "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/39081379326",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 39081379636,
+      "name": "CI",
+      "head_sha": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+      "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/39081379636",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 39081373229,
+      "name": "Qualification integrity",
+      "head_sha": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+      "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/39081373229",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 39081373237,
+      "name": "Documentation",
+      "head_sha": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+      "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/39081373237",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "ci_scope": "Only reported17b4 CI source;not transfer to later metadata/test commits, hardware qualification or required-check protection audit",
+  "goal": "Existing active full S0-S6 retained;no new goal or whole issue closure",
+  "remaining": [
+    "Apps-only SDK GetInfo policy hole;role/public lifecycle/originaldeadline/higherSDK/commonAPI/perappDiscovery/R6c remain.",
+    "ENODATA root cause, natural device fault RCA and nonmanual recovery remain OPEN."
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f3-preservation-registry-preflight-v1.json",
+      "sha256": "0456757d01542625023ba8ba56d2f36f5c5a9228268b3b95bdddc18ca1092d77",
+      "bytes": 1348
+    },
+    {
+      "path": ".dev/architecture-r5f3-real-registry-preflight-v1.json",
+      "sha256": "87788a17bb9976a89dd4f6ca8215b0520311c32da88f0cc2344e6aeabe0ced06",
+      "bytes": 1350
+    },
+    {
+      "path": ".dev/architecture-r5f3-final-html-v1.log",
+      "sha256": "7244b15d6267109ecc5e25ba1a0e51fa8d367648580102645d44aaa6a0c46384",
+      "bytes": 1113236
+    },
+    {
+      "path": ".dev/architecture-r5f3-latest-ci-v2.json",
+      "sha256": "6ffee70721eff586f6c9924193faa6e51665cb144dffa99ff675157c28479d6b",
+      "bytes": 108550
+    }
+  ]
+}

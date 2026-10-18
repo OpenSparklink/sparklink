@@ -1,0 +1,779 @@
+{
+  "schema_version": 1,
+  "implementation_commit": "6dc4c4b946e12e0d2519f293f469626b65da8bae",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "result": "PASS",
+  "architecture_complete": false,
+  "new_formal_proofs": 0,
+  "remaining": [
+    "仍需用生产入口反例和屏障核对所有 Native 创建工作的 Connection 退休排空。Service initializer 已被跟踪，User/dynamic offload 不属于 Initialization；controller 等待实际 lease guard，不能据此证明连接级全部工作已排空。目前不是已观察到的 UAF、串包或泄漏。",
+    "物理 Connection 发布仍等待 eager Native 服务初始化。需核对并以现有唯一有界 owner 分离物理连接观察与 SSAP readiness，不能新增 Engine。Native syscall 内部/返回、父任务取消及 callback/ref/UAF/drain 组合仍未验收。",
+    "完整 2×2、release、最终 fd、dup/SCM_RIGHTS、Down、原期限、复用及 Grant/credit/Ticket/晚到 Complete/NOCP 组合继续开放；有限保持回归不证明这些组合或实现 refinement。",
+    "原 ccef 的 253 字节共同五秒 Down FAIL 继续是不可改写的必需记录。新 artifact 的 PASS 不覆盖它，也不证明根因或稳定性。自然启动、重枚举、设备消失根因及非人工恢复开放；QMP、拔插、切电和注入不能替代。",
+    "E 单独启动、混合型号逐设备固件流程和冷 ROM 有效读取/自动选择仍未验收。本批 SDK110US 是 warm/software ROM lineage，不能称为真正冷启动或固件/芯片身份认证。",
+    "保留完整 S0–S6、19 WP、10 FV、12 DG 和所有 issue 原范围；安全/Bond、数据 credit、公平性、四设备、性能、部署与发布继续开放。UserHost 仅 P4 规划，不把控制面全集设为数据/SSAP/安全交付前置。"
+  ],
+  "access_policy": "仅公开元数据和 hash。SDK、固件、原始捕获、测试执行文件、日志和 VM 镜像保留在记录的私有工作区路径；重放需所有者授权、固定 SDK110 文件及原工具/artifact。编译、执行和报告提交分别记录；未在宿主操作实验驱动或固件。",
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
+  },
+  "level": "offline",
+  "tested_source": "6dc4c4b946e12e0d2519f293f469626b65da8bae",
+  "kernel_abi": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "actual_test_compile_base": "97e46ad962433a64985a2bc91d255f328ee55962",
+  "actual_test_compile_dirty_diff_sha256": "96bfed47c469b43cdcbe0c0c9c2efa4411f0e0431f8f3cd4d92fbff4f47e045f",
+  "compilation_identity": "实际测试编译自 97e46ad 加准确 dirty 字节，生产/工具字节映射到签名 6dc 提交，不称为干净提交编译。使用固定增量 Cargo 目录和全局构建锁，保留实际 12 路记录，并在同锁下私有封存 33 个测试执行文件。",
+  "bounds": {
+    "default_workspace_methods": 363,
+    "allfeatures_workspace_methods": 363,
+    "new_production_bind_cases": 3,
+    "sealed_test_executables": 33,
+    "strict_document_inventory": 116,
+    "new_real_device_runs": 0,
+    "new_formal_proofs": 0,
+    "offline_tool_methods": 866
+  },
+  "scope": [
+    "直接测试生产 bind_off_worker、OwnedMutexGuard、原 retiring flag、Tokio 单线程 runtime 和 Unix fd；Native 阻塞调用是明确的有限 fixture。取消等待保留实际 guard，退休后返回的 fd 被关闭，已退休排队工作及 Native 错误被拒绝；同时运行原 workspace/private bus/C-Python 回归。",
+    "不证明实际 Native kernel bind 交错、父对象/连接全部工作/task/ref/USB drain/UAF、system bus 部署、RF 或形式化性质。Offload 不是独立进程故障域，也不是新授权状态机、Engine 或 Session。",
+    "通用终态工具修复另映射 d538；866 项工具检查只属离线，不授新 Host VM 资格。Rust 测试编译仍映射原 6dc。"
+  ],
+  "gates": [
+    {
+      "name": "targeted",
+      "result": "PASS",
+      "methods": 3,
+      "status": "PASS"
+    },
+    {
+      "name": "default",
+      "result": "PASS",
+      "methods": 363,
+      "status": "PASS"
+    },
+    {
+      "name": "all-features",
+      "result": "PASS",
+      "methods": 363,
+      "status": "PASS"
+    },
+    {
+      "name": "clippy",
+      "result": "PASS",
+      "methods": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "strict-document-build",
+      "result": "PASS",
+      "documents": 116,
+      "status": "PASS"
+    },
+    {
+      "name": "global-terminal-exit-tool-tests",
+      "result": "PASS",
+      "methods": 866,
+      "status": "PASS"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/native-bind-targeted-v2.log",
+      "sha256": "f0dd894e7a749311951dcc2fa806fdbf9a77b7cbab8696996ba438107ad8c66b",
+      "bytes": 1415
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/native-bind-default-v2.log",
+      "sha256": "e39e8358b48ac295b48e8589915bf9fa8194a80e1988bda34e53ecb1b9846019",
+      "bytes": 39519
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/native-bind-all-features-v2.log",
+      "sha256": "dc2b2c192e4e4df615f4fd473685251d30eb841c73522d475bb6631992171b14",
+      "bytes": 38450
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/native-bind-clippy-v2.log",
+      "sha256": "150ba2ed7f58050b30f5d5c101bd5d9ecea1d58879c445a3c8c87c686cc2ae34",
+      "bytes": 566
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/application_broker-436eb7280a162504",
+      "sha256": "b5286acc8ab5e69e495763192891e9ff4c13a26b305992f58efc9a6a40d24b67",
+      "bytes": 62741560
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/application_ffi-bde94cc6f810f893",
+      "sha256": "53b71946e770add423fd786e156f3d8d81bc0333794b1e2acd45081d266bfd4d",
+      "bytes": 55255136
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/application_ssap-c98e35f0aa8a8fbf",
+      "sha256": "b78595c3698275f032d45d1af175bd57da573a41e4f63290a9bac731a7754bbd",
+      "bytes": 61657992
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/client_scope-6415e6e5cb824fbd",
+      "sha256": "b9d571e732be37c2ebeaddc53cda639d377d33fe92fd76469c9bfa4bcd724910",
+      "bytes": 64399656
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/config_startup-0118be4614bf2ab5",
+      "sha256": "b3a7248afd6c84f57d4a98cb0dc2a32b66c4ae34b90c4e377363f072b1f8afa1",
+      "bytes": 7550456
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/config_startup-95becc7ff2176486",
+      "sha256": "a86581f9e4a10fd7afabd3668ee4db68cbe99492de7ad5a2fa41fb39914c84f1",
+      "bytes": 7550456
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/controller_client-486f8d9267e42ec1",
+      "sha256": "a342517c6c7845c4dd8d04691d85289061fdc8efd8adf327cc345f11ea8e34cc",
+      "bytes": 64812432
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/entrypoint-986f70f4c6e9b30f",
+      "sha256": "99bc38c8a05fbcc77a798852c6a791129539248d7df261c21496e13f0c79a2e9",
+      "bytes": 7414648
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/libsparklink-37a3804d1d0bec37",
+      "sha256": "7ca53ef51a8df42cb064650be901eb2b2aefa784fb6b16eb15273ab82902c3f4",
+      "bytes": 65412920
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/local_staging-aa17959ddd872e70",
+      "sha256": "7803b5fdfdaf33d0e17b4e6cb973be8fca00da4373717607b6e701297471dac9",
+      "bytes": 52771712
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/local_staging_client-1e50c217e705b3dd",
+      "sha256": "d0d194aafbbacda55028e408c19ae30dd71a605069832b1c491f1ca1268c5722",
+      "bytes": 66213104
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/management_owner-7ffdd0adaa7659c1",
+      "sha256": "725f4179053b0dc922fc51c743d1cd34c6832b94c2fa21cccfe40ffcbf05e250",
+      "bytes": 53436016
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/owned_client-33e550af30da0580",
+      "sha256": "c811481e2874b9b735ec83759f5eac73ca049fcad5c93f3c01028f02cd54a264",
+      "bytes": 65398704
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/owned_local-458996ee3a54bc53",
+      "sha256": "88010f7f6c3fd61704477dad0f0a48305e09513a5ded50eb7cccee1478ffb4f8",
+      "bytes": 52761064
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/peer_client-528d89ecbf7058d7",
+      "sha256": "18235cf81e769a66742c1d35e75ba18992b6c6de8b1581c46d0af0c209288165",
+      "bytes": 63510992
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/remote_ssap_client-f021d03a6dc85d55",
+      "sha256": "03d2dbba49f2180eb57154f2e6ed6745f8537f0b29357f1f20094c3b7a1f1728",
+      "bytes": 65457608
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/retired_security-93e67fd87599e3e0",
+      "sha256": "dcef5066d52c0bf4f48ebe4329d54cdf00c978c72027d10f6821a8cf0b4bcec6",
+      "bytes": 7525576
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/scan_freshness-5a708a68d5401942",
+      "sha256": "2428876ed676483fe94ef7771ee59eb8bca40b805d2066c6711aae7578fd73ef",
+      "bytes": 53967472
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/security_agent-c47a132382d1e7e2",
+      "sha256": "47af8c78e1348c13bce667d959d6365f369c39332196514da6be45f62fc49042",
+      "bytes": 56445400
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slctl-edc8f2051ef0b75c",
+      "sha256": "3dd6042a83fee1e1e7beb0f0dba1ac0addabefbc55f8a584ca06993909d37102",
+      "bytes": 67811136
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slk_channel-e33630fa725ef720",
+      "sha256": "a05a54849d83f4c0833be7946defc7ce1cab670a5b222fdd379fdb517caf63d8",
+      "bytes": 9587408
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slk_contract-269e028873639091",
+      "sha256": "4978f34807ae54b759c354d53a95e3171f9a91517a61212d24429fe5c746c940",
+      "bytes": 18895736
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slk_experimental-c46a0fc7dd3c0aa3",
+      "sha256": "e2525968310b763e50485335864997b124c5e1f1e753acdf3f667c5881e2334e",
+      "bytes": 19649512
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slk_native-bdcfe92dbe3340ff",
+      "sha256": "16efbc6cbdebef5a627e4a7baf6e9076b99b67e18abea1aaf8dd62e4f414f885",
+      "bytes": 21549312
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slk_protocol-d6226b5ec5715618",
+      "sha256": "d48026255b7fce2a7021b6c5acd0bb0e68e698b9be8ce70624caf1cfa99159fe",
+      "bytes": 10292848
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slkconfig-755ebc5ccd0ca65b",
+      "sha256": "bf18980163dd5449b02a518aa46c5ee2e882f3389af97d138d5458f74f1b6bf8",
+      "bytes": 29318312
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slkd-1b41efa1dd248a9f",
+      "sha256": "2a8ed81b3486f266830dd3426850bc09abd1fda810feceecde016aa9da6cf68d",
+      "bytes": 154406792
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slkd-d75fe32529fb42dd",
+      "sha256": "a7ec25b2178b7b88dd473b165831b3d713b6b0e4cc950906d42ba1c4b07a3c43",
+      "bytes": 154998640
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slkdump-bdfaba434ddef545",
+      "sha256": "1857acfd49d1707b2d6e306b73962f88fda145a0b16e635ac39eaa5dfd72c144",
+      "bytes": 18651056
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slkmon-d89c8fdb13f78669",
+      "sha256": "adb0f68c2714a057ff408a1b0ec63dba30b3648a49c33d0cb61200c32d93c04a",
+      "bytes": 18651048
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slktest-3bf69d8e25921b73",
+      "sha256": "57ad57f9133f768516e8512fdfb28e7a4833f2720f522767a3e13e5410582c63",
+      "bytes": 68578152
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/slktest-96bc2885fd7aef22",
+      "sha256": "f144d7cd978f2604a5becf73feeccaf40b8e58dff14ad9381a58dcd2da4c0db4",
+      "bytes": 51834320
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/test-binaries/tool_boundary-7f786ef157458341",
+      "sha256": "c6be27182db70cce79a6692943435f2b8af1f8082bc7c4f82a25df39ac5b6fc5",
+      "bytes": 7447944
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-offline-v1.json",
+      "sha256": "fa4b28330b85fdc8a84b50e61db547eadc6d74c3b4e6d16da74d61e571daffe7",
+      "bytes": 48381
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-offline-v2.json",
+      "sha256": "65fc4faa04ecf7eadf999c892088d76cffe24895cf12051f1b13d9be7ed29812",
+      "bytes": 59093
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-candidate-v1.patch",
+      "sha256": "ffa6c0954721284d15cdd6590d80bb45386542d54926e7c28891914a17fbe8a3",
+      "bytes": 14411
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-candidate-v2.patch",
+      "sha256": "96bfed47c469b43cdcbe0c0c9c2efa4411f0e0431f8f3cd4d92fbff4f47e045f",
+      "bytes": 14403
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-offline-supervisor-v1.log",
+      "sha256": "809dc6f7b10377f12c97b34f5105a3fbee5ed25ba6b967bba87334ba5c611477",
+      "bytes": 274
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-offline-supervisor-v2.log",
+      "sha256": "858e4de23c3ecb68ec294f9afeb939d36aa64e23c6bd1fce96b02ff9095d7326",
+      "bytes": 49
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-fmt-v1.log",
+      "sha256": "b0b03ceac324cccb668e7a43c4f138e3e6a8aecafe2814be252c5e1a69df4a59",
+      "bytes": 682
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/build-environment.txt",
+      "sha256": "216f23b815cae1c9d7b579f141c7a48a7a3a8d3d533b075f31464e1c5a6857d0",
+      "bytes": 615
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/libsparklink.so.0",
+      "sha256": "6183efd4add2a28897aa5d1578ce9928e9d7d51252219de6e24b276a491ab700",
+      "bytes": 58871000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/materials.sha256",
+      "sha256": "8839e3367c8aa16dc8041c06d0360f722de074fa09e0f95b0e28c70c102b02d1",
+      "bytes": 1733
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/python.stderr",
+      "sha256": "22c2bee4db200701510b33c15bb16da66ac7315a7bafb76fa419a11d05e1c6eb",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-timeout-read.stdout",
+      "sha256": "62fd613080e375a81da67fb911075119da20354fbf066809fbec3a6a83b58f9a",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-timeout-write.stdout",
+      "sha256": "37c9bd1d2c26f92b0855f161cda85a560a276cae916ea5408183552784bd091d",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-unexpected-success.stdout",
+      "sha256": "9b4b8c0a1cff8eb66ae67494fc48bf8435492446af2090f816f1317bdff93717",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-c-wrong-errno.stdout",
+      "sha256": "9692fedc028fe9fe77799ac3657cfc5a756b8083a6ff8f75fe2a095dcb71b665",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-timeout-read.stdout",
+      "sha256": "58cf6df4d298e21de6e5cf8d967292fe1546f92da98b7c5f39aa92ccaed33543",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-timeout-write.stdout",
+      "sha256": "bf33f86cdd1d120567fa0e28f8aeee8ce478f4994fe0ea6e31bf7fdc0ec2bbe1",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-unexpected-success.stdout",
+      "sha256": "2620227aa332bcab2eb681f5c5ef0b8780f8c40229d80d00caa2853ddab744e5",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-wrong-errno.stderr",
+      "sha256": "2ac7b9c33f93ceb564e2cfe190a20d55bc43b77a63fd921ca351bbd369466674",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-python-wrong-errno.stdout",
+      "sha256": "aada86bc44333a5671e711eb9c6afc9ed929a2137888e2b28f0eb54741e7b516",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-all-features-v2/sdk-ssap-probe",
+      "sha256": "319718c351044208c690c8a218266001740a268d6dfc2586a8718cf72f3e7a89",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/build-environment.txt",
+      "sha256": "001e8a4fb7f81a2c88054ba17cfa3d093b691b751bfe798c8ef04e425bcf6b2b",
+      "bytes": 610
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/libsparklink.so.0",
+      "sha256": "6183efd4add2a28897aa5d1578ce9928e9d7d51252219de6e24b276a491ab700",
+      "bytes": 58871000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/materials.sha256",
+      "sha256": "87b3e37a1802ecd1a99fdbd5a671a9baa3b176469ccc2ad00891b04fd3564722",
+      "bytes": 1718
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/python.stderr",
+      "sha256": "ce35916ba4881b7573c7f3b4050927f7d2f71177f94668f9eef7312c080b2768",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-timeout-read.stdout",
+      "sha256": "410df9bce8b38f6077c35c298db239bc789ebcc7dd3a508039e4a026b3ec836a",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-timeout-write.stdout",
+      "sha256": "f0c564f3be2ba9051de5a558bea89ffd908a370485d1ab77e6c5419cd755a521",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-unexpected-success.stdout",
+      "sha256": "e3eee5799f49e394ce9e580e0d37233ec54b68986b6fb38563bb7a85fe8db515",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-c-wrong-errno.stdout",
+      "sha256": "0bf66939fcf3f00e9241f64bd97137f9f0de9a96c7ea14b82f16f816db057a55",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-timeout-read.stdout",
+      "sha256": "85eced460777ea5d36e5a0ccb736d1a4bb58cb299090fbead1b7d9b837e74b7b",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-timeout-write.stdout",
+      "sha256": "a6662d3aea46dd40fd5ac79f9ba82c7d7eed053756ad4b4e72f9454d9070b4be",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-unexpected-success.stdout",
+      "sha256": "1bff421e55195313935eb9490750a1984d1a8c5dc7f42f232b4ea12c4a902e2c",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-wrong-errno.stderr",
+      "sha256": "2ac7b9c33f93ceb564e2cfe190a20d55bc43b77a63fd921ca351bbd369466674",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-python-wrong-errno.stdout",
+      "sha256": "354dbfa76e1896675384f14147a3734341e950da070ac08f291bce52c2a0cfb7",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/external-consumers/native-bind-cross-language-default-v2/sdk-ssap-probe",
+      "sha256": "319718c351044208c690c8a218266001740a268d6dfc2586a8718cf72f3e7a89",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-all-features-v2-build.json",
+      "sha256": "f86ae0a7abf77c11564ebec64d7799d4ccc441bcbb01650702724f5efafe3021",
+      "bytes": 934
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-clippy-v2-build.json",
+      "sha256": "f44c1b9ed1dcec3685d118092f91b9d53436b56df1b3c55e870d10fd4f6032ba",
+      "bytes": 993
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-default-v2-build.json",
+      "sha256": "7b9f71a9ca69d70552868d6c97d7e59b2fcb27e7540a0640a355e627e5281e9f",
+      "bytes": 912
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/records/native-bind-targeted-v2-build.json",
+      "sha256": "54b548ee8ee3dca89a8736d96df200f27927695ff319fef91b602a28bcf77e67",
+      "bytes": 934
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-terminal-tools-v2.json",
+      "sha256": "4fad6b63ceee1e28847a08707c4375fe2ef418ee0fa0fb7fc6be47c9f9fb5f8e",
+      "bytes": 32011
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-terminal-tools-v2.py",
+      "sha256": "32d42f8e75de16f2f19a497ac34d45f5e89019628a6ae67e55805500e1efabb0",
+      "bytes": 1938
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-terminal-tools-v2.patch",
+      "sha256": "fbb7403604e9f11b804ae69d403bec9ec92abfa201ed12f37bac2ae4252806dc",
+      "bytes": 26045
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-tools-v2.log",
+      "sha256": "89c256409630dc25f2188828df6d2412cf854882226ad82ca2e02fb842dbf358",
+      "bytes": 142864
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-tools-v1.log",
+      "sha256": "4071f34d42ef95bd2b2e21367b2aab89187ce1dbe18eb2211f70805132537b7e",
+      "bytes": 143593
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-terminal-tools-v1.patch",
+      "sha256": "fbb7403604e9f11b804ae69d403bec9ec92abfa201ed12f37bac2ae4252806dc",
+      "bytes": 26045
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-terminal-fixture-v1.py",
+      "sha256": "6fefbfab8fea64f6d97362353df2b39f868d8d5390d059fec0d22adc7e9427e9",
+      "bytes": 2006
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-terminal-docs-v1.log",
+      "sha256": "bd8dc431467889f4d72d89a39378bcc044516a5cea0054d2772b28d4723d0545",
+      "bytes": 1308456
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-sealed-v1/report.json",
+      "sha256": "a18a576940a8e2bc1e4184ab912791439974ce69ca6b10c2397eecb5ee7b639d",
+      "bytes": 89684
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-offline-v2.py",
+      "sha256": "69ba95212453e068d299abd164df91aabe9f71178862d579f0a6f066d8eac7f0",
+      "bytes": 3524
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/seal-native-bind-offline-v1.py",
+      "sha256": "8e34a25418e655c4b220be9ae093c1e5d6f6652141f98e30743aa1395e61baba",
+      "bytes": 2856
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-docs-v1.log",
+      "sha256": "750ee8ee894352de101e23818b871701f69b8a9b3ec0deb51990c41d5ce6bf36",
+      "bytes": 1308456
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-followup-source-audit-v1.json",
+      "sha256": "d15ef67cdbd69ec84704f09db0fca3674f2987df367e68f925810f5d871059a9",
+      "bytes": 2180
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-bind-terminal-offline-sealed-v1.json",
+      "sha256": "a0c25a64357c113057647c22fc2f1ed0d36ca0891958a73e1820e02aed7bcae5",
+      "bytes": 33885
+    }
+  ],
+  "retained_failures": [
+    "首次 targeted 选择器只匹配两项，计数门禁拒绝并停止；修正第三项测试名后，预期计数及生产断言保持不变。原 v1 patch/log/report 已封存。格式化 wrapper 不支持该命令的失败也保留，随后直接运行 rustfmt，不是重构建。",
+    "动态原件的篡改 supervisor_exit=1 被原6dc解析器接受；原审计FAIL保留，新d538离线检查拒绝。首次工具fixture迁移误补一个故意缺失字段，断言失败保留，撤销补值后866项通过，未放宽断言。"
+  ],
+  "replay": "Use native-bind-offline-v2.py withfixedRust1.96.1/Cargo--locked--offline andrecordedexplicitdbus/CC/UAPIinputs;freshoutputs. Originaldirtysourcepatch/sealed33executables/sourcebytesmapsrequired. Do not upgradefixturestoactualkernelproof.",
+  "tested_tools": "d5380bfd7bb7d797d99d0eb845dbd420ce9df69c"
+}

@@ -26,6 +26,7 @@ class Monitor:
             row.update({init.SELECTOR: False, 'test-runtime-in-skip-requested': 0,
                         'test-runtime-in-skip-remaining': 0, 'test-runtime-in-skipped': 0,
                         'test-enumeration-reset-once': False, 'attached': True})
+            row[init.profile('exchange')['selector']] = False
             row.update(dict.fromkeys(['host-reset', 'kernel-driver-detach', 'guest-reset', 'guest-resets-all'], False))
         self.mutations = []
 
@@ -36,7 +37,7 @@ class Monitor:
         if command == 'qom-get':
             return row[key]
         self.mutations.append((number, key, args['value']))
-        if key in [init.SELECTOR, PROPERTIES[0]]:
+        if key in [init.SELECTOR, init.profile('exchange')['selector'], PROPERTIES[0]]:
             row[key] = args['value']
         elif key == 'test-runtime-in-release':
             row.update({PROPERTIES[1]: False, PROPERTIES[3]: 1})
@@ -85,6 +86,47 @@ def fixture():
 
 
 class InitializationGate(unittest.TestCase):
+    def test_exchange_profile_is_explicit_and_uses_only_its_original_hold(self):
+        args=SimpleNamespace(ssap_initialization_verify=True,ssap_initialization_stage='exchange',
+            passthrough=True,connection_verify=True,channel_socket_verify=True)
+        self.assertTrue(init.requested(args))
+        for field,value in [('ssap_initialization_verify',False),('ssap_initialization_stage','unknown')]:
+            bad=copy.copy(args);setattr(bad,field,value)
+            with self.assertRaises(ValueError):init.requested(bad)
+        spec=init.profile('exchange')
+        with tempfile.TemporaryDirectory()as tmp,patch.object(init,'validate_qemu'):
+            c=init.Coordinator(tmp,{},'fixture','exchange');m=Monitor();p=c.root/'phase-0';p.mkdir(parents=True)
+            write_marker(p/'selection.json',dict(phase=0,slot=0,index=5,generation=7,controller_path='/org/sparklink/slk5_g7',role=0))
+            write_marker(p/'hold-arm_ready.json',dict(hold_phase='arm_ready',wall_ns=1))
+            c.poll(m,lambda i:dict(bus=1,address=2))
+            self.assertTrue(m.state[0][spec['selector']]);self.assertFalse(m.state[0][init.SELECTOR])
+            m.state[0][init.SELECTOR]=True
+            with self.assertRaises(ValueError):c.child.snapshot(m)
+        record=fixture();record['ssap_initialization'].update(stage='exchange',mode=spec['method'],status=spec['pending'])
+        init.verify_guest(record)  # guest receipts only, not a wire proof
+        record['ssap_initialization']['mode']=init.METHOD
+        with self.assertRaises(ValueError):init.verify_guest(record)
+
+    def test_exchange_witnesses_require_actual_cmtc_request_peer_and_late_response(self):
+        # Decoder-output fixtures, not captured devices. Exercise the actual
+        # independent evidence oracle, including each causal negative.
+        a=dict(bus=1,device=2);b=dict(bus=1,device=3)
+        phase=dict(target=a,other=b,cancel=dict(start_wall_ns=50),end_wall_ns=90)
+        create=dict(command=dict(wall_ns=10),outcomes=[dict(**o,params='000700')for o in [a,b]])
+        def row(owner,direction,data,stamp):return dict(**owner,direction=direction,data=data,wall_ns=stamp,handle=7,boundary=0)
+        request='0a0006000203fa070102';response=init.profile('exchange')['response']
+        events=[row(a,'in',init.RESPONSE,11),row(b,'in',init.RESPONSE,12),row(a,'out',request,20),
+                row(b,'in',request,21),row(b,'out',response,30),row(a,'in',response,80)]
+        cap=dict(acb_packets=events);late=events[-1]
+        self.assertEqual(init.exchange_witnesses(cap,phase,create,late)['response_rx'],late)
+        changes=[lambda e:e.pop(3),lambda e:e[0].update(wall_ns=22),lambda e:e[1].update(wall_ns=31),
+                 lambda e:e[4].update(wall_ns=51),lambda e:e[2].update(handle=8),lambda e:e[3].update(boundary=1),
+                 lambda e:e.append(dict(e[-1],data='0a000600030380000102',wall_ns=35)),
+                 lambda e:e.append(copy.deepcopy(e[-1]))]
+        for change in changes:
+            bad=copy.deepcopy(cap);change(bad['acb_packets'])
+            with self.assertRaises(ValueError):init.exchange_witnesses(bad,phase,create,late)
+
     def test_expected_error_uses_actual_nonzero_child_without_success_wrapper(self):
         import os
         from ws73_north_star import Run, daemon_identity
@@ -190,6 +232,8 @@ class InitializationGate(unittest.TestCase):
             self.assertEqual(run_exit_code(bad,supervisor_pending=True),1)
         r['supervisor_exit']=0
         self.assertEqual(run_exit_code(r),0)
+        r['ssap_initialization_stage']='exchange'
+        self.assertEqual(run_exit_code(r),1)  # cannot relabel an old CMTC proof
         r.pop('ssap_initialization_corroboration')
         self.assertEqual(run_exit_code(r,supervisor_pending=True),1)
 
@@ -253,5 +297,20 @@ class InitializationGate(unittest.TestCase):
                                    ('ws73.ssap_initialization=2',''),('unrelated=1','')]:
                 cmdline.write_text(content+'\n')
                 program='connection_arg=""; '+line.replace('/proc/cmdline','"$test_cmdline"')+'; printf \'%s\' "$connection_arg"'
+                result=subprocess.run(['sh','-c',program],env=os.environ|{'test_cmdline':str(cmdline)},capture_output=True,text=True)
+                self.assertEqual((result.returncode,result.stdout,result.stderr),(0,wanted,''))
+
+    def test_actual_init_shell_forwards_exchange_stage_to_the_shared_guest_entry(self):
+        import os
+        source=(Path(__file__).resolve().parents[1]/'ws73_target_init.sh').read_text()
+        lines=[s.strip()for s in source.splitlines()if 'connection_arg="$connection_arg --ssap-initialization-'in s]
+        self.assertEqual(len(lines),2)
+        with tempfile.TemporaryDirectory()as tmp:
+            cmdline=Path(tmp)/'cmdline'
+            for content,wanted in [('ws73.ssap_initialization=1 ws73.ssap_initialization_stage=exchange',
+                ' --ssap-initialization-verify --ssap-initialization-stage exchange'),
+                ('ws73.ssap_initialization=1 ws73.ssap_initialization_stage=cmtc',' --ssap-initialization-verify')]:
+                cmdline.write_text(content+'\n')
+                program='connection_arg=""; '+'; '.join(s.replace('/proc/cmdline','"$test_cmdline"')for s in lines)+'; printf \'%s\' "$connection_arg"'
                 result=subprocess.run(['sh','-c',program],env=os.environ|{'test_cmdline':str(cmdline)},capture_output=True,text=True)
                 self.assertEqual((result.returncode,result.stdout,result.stderr),(0,wanted,''))

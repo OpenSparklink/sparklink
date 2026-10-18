@@ -35,7 +35,9 @@ class CmtcHoldSelector(unittest.TestCase):
         source = Path(cls.tmp.name) / 'selector.c'
         source.write_text('#include "ws73_cmtc_hold_selector.h"\n'
                           'bool select_reply(const unsigned char *p, size_t n) {\n'
-                          'return ws73_test_is_cmtc_capability_reply(p,n);\n}\n')
+                          'return ws73_test_is_cmtc_capability_reply(p,n);\n}\n'
+                          'bool select_exchange(const unsigned char *p, size_t n) {\n'
+                          'return ws73_test_is_ssap_exchange_reply(p,n);\n}\n')
         lib = source.with_suffix('.so')
         subprocess.run(['/usr/bin/gcc', '-std=c11', '-Wall', '-Wextra', '-Werror',
                         '-pedantic', '-shared', '-fPIC', '-I',
@@ -44,9 +46,25 @@ class CmtcHoldSelector(unittest.TestCase):
         cls.lib = ctypes.CDLL(str(lib))
         cls.lib.select_reply.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
         cls.lib.select_reply.restype = ctypes.c_bool
+        cls.lib.select_exchange.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
+        cls.lib.select_exchange.restype = ctypes.c_bool
 
     def selected(self, raw):
         return self.lib.select_reply(ctypes.create_string_buffer(raw), len(raw))
+
+    def test_exchange_requires_response_and_never_matches_cmtc_or_request(self):
+        response=bytes.fromhex('0a0006000303fa070102')
+        def selected(raw):return self.lib.select_exchange(ctypes.create_string_buffer(raw),len(raw))
+        for handle in [0,1,0xfff]:
+            raw=aggregate(frame(handle,response));self.assertTrue(selected(raw));self.assertFalse(self.selected(raw))
+        for raw in [aggregate(frame()),aggregate(frame(response=bytes.fromhex('0a0006000203fa070102'))),
+                    aggregate(frame(0x1000,response)),aggregate(frame(response=response),queue=9)]:
+            self.assertFalse(selected(raw))
+        raw=aggregate(frame(response=response))
+        for n in range(len(raw)):self.assertFalse(selected(raw[:n]),n)
+        for offset in [0,4,12,94,96,99,100,*range(101,len(raw))]:
+            bad=bytearray(raw);bad[offset]^=0x40;self.assertFalse(selected(bytes(bad)),offset)
+        self.assertEqual(raw,aggregate(frame(response=response)))
 
     def test_only_complete_actual_profile_not_identity_authentication(self):
         for handle in [0, 1, 0xfff]:

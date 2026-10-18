@@ -2,6 +2,24 @@
 
 ### R5f9：部分初始化清理（有限 CMTC 门禁通过，整批开放）
 
+R5f9b 的生产行为仍是同一 initializer/Engine，在实际 ExchangeInfo Response 尚被
+保留时撤权，不创建另一套 Engine。本批只将既有 gate 参数化为 `--ssap-initialization-stage
+exchange`，CMTC旧记录及其准确工具不变。原始请求TX、对端RX、对端Response TX与
+CMTC先决完成必须在捕获中成立；目标不可先收到另一份响应。仍使用原2秒hold及
+原5秒协议期限，随后原8次业务/22次发现作为保持回归。两个角色切片不冒充完整2×2。
+
+测试 QEMU 的独立 ExchangeInfo 选择器与CMTC共用一份有界HCC解析，不改原始字节；
+互斥选择、skip/error/reset禁用、callback/drain沿用既有机制。新二进制hash
+`2063f9913aeafd9103fc43a87f199bf4757ae3a3b618e5b7d4970beff9731ea2`，共享锁内预算8、
+实际单编译单元；无USB根启动通过。1220个旧成功RX重放匹配CMTC8/Exchange4，72变异拒绝，
+854工具离线检查通过；**尚无本阶段新实机资格或形式化证明**。
+
+固定 NearLink Host f087 的 `ssap_pkt.h`/`SSAPC_ExchangeInfoReq` 采用旧版packed控制位，
+开启fragment/multiProcessing，版本为1.3；本项目当前基本模式仅MTU/版本1.2，未声明
+这些能力。只参考请求/回复职责及生命周期，不复制不适用的封装或升级为互通资格。
+本批退出仍须新artifact两端实测、原回复/清理/fd收敛、同行RX/Ready及后续真实回复。
+task join、Nativebind内部、内核引用/UAF/drain、E/混合与自然恢复保持开放。
+
 本切片[实机记录](../docs/evidence/ssap-initialization-cmtc-revocation-20261018.json)已登记：
 准确7b90092工具、DA服务/应用、2fc内核；仅分配的U两口，六轮实机保留五个整体FAIL。
 最终双端撤权、原回复、fd收敛、后续8次业务/22次发现及21证据负对照通过；850离线

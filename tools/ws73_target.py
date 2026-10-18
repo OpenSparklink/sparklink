@@ -539,6 +539,7 @@ def _run(args):
     requester_lifecycle=bool(getattr(args,'ssap_requester_lifecycle_verify',False))
     from ws73_ssap_initialization import requested as initialization_requested
     ssap_initialization=initialization_requested(args,passthrough=passthrough)
+    initialization_stage=getattr(args,'ssap_initialization_stage','cmtc')
     if requester_lifecycle and (not channel_socket or not passthrough or owner_lifecycle or ssap_owned or agent_mode or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness or parallel):raise ValueError('requester lifecycle requires separate ordinary basic socket baseline')
     if owner_lifecycle and (not channel_socket or not passthrough or agent_mode or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owner lifecycle requires separate ordinary basic socket baseline')
     if ssap_owned and (not channel_socket or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owned SSAP requires separate ordinary socket baseline')
@@ -746,6 +747,7 @@ def _run(args):
     m['ssap_owned_verification_requested']=ssap_owned
     m['ssap_owned_acceptance']=False
     m['ssap_initialization_requested']=ssap_initialization
+    m['ssap_initialization_stage']=initialization_stage if ssap_initialization else None
     m['ssap_initialization_acceptance']=False
     m['ssap_requester_lifecycle_requested']=requester_lifecycle
     m['ssap_requester_lifecycle_acceptance']=False
@@ -842,7 +844,7 @@ def _run(args):
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
         if ssap_initialization:
             from ws73_ssap_initialization import validate_qemu
-            validate_qemu(package['qemu']['path'])
+            validate_qemu(package['qemu']['path'], initialization_stage)
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if agent_mode and ('native_vm' not in package or 'native_security_agent_probe' not in package):raise ValueError('Agent requires native VM and staged real witness')
@@ -945,6 +947,7 @@ def _run(args):
                      (' ws73.ssap_owner_lifecycle=1' if owner_lifecycle else '')+
                      (' ws73.ssap_requester_lifecycle=1' if requester_lifecycle else '')+
                      (' ws73.ssap_initialization=1' if ssap_initialization else '')+
+                     (' ws73.ssap_initialization_stage='+initialization_stage if ssap_initialization else '')+
                      (' ws73.ssap_service_policy=1' if service_policy else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
                      (' ws73.channel_fairness=1' if fairness else '')+
@@ -1028,7 +1031,7 @@ def _run(args):
                 initialization_hold=None
                 if ssap_initialization:
                     from ws73_ssap_initialization import Coordinator
-                    initialization_hold=Coordinator(share,m.setdefault('ssap_initialization_hold',{}),package['qemu']['path'])
+                    initialization_hold=Coordinator(share,m.setdefault('ssap_initialization_hold',{}),package['qemu']['path'],initialization_stage)
                 if agent_mode=='install-cancel':
                     from ws73_security_install_hold import InstallCoordinator
                     install_hold=InstallCoordinator(share,m.setdefault('security_install_hold',{}),package['qemu']['path'])
@@ -1676,7 +1679,9 @@ def run_exit_code(record, *, supervisor_pending=False):
     initialization=record.get('ssap_initialization_requested',False)
     if type(initialization)is not bool:return 1
     if initialization:
-        from ws73_ssap_initialization import valid_summary, QEMU_SHA256, METHOD
+        from ws73_ssap_initialization import valid_summary, profile
+        try:spec=profile(record.get('ssap_initialization_stage','cmtc'))
+        except ValueError:return 1
         ordinary=record.get('channel_socket_corroboration',{})
         held=record.get('ssap_initialization_hold',{})
         if (record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('ssap_initialization_acceptance')is not True
@@ -1684,7 +1689,9 @@ def run_exit_code(record, *, supervisor_pending=False):
                 or record.get('channel_socket_verification_requested')is not True
                 or ordinary.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
                 or type(ordinary.get('round_trips'))is not int or ordinary['round_trips']!=8
-                or held.get('method')!=METHOD or held.get('qemu_sha256')!=QEMU_SHA256 or held.get('complete')is not True
+                or held.get('method')!=spec['method'] or held.get('qemu_sha256')!=spec['qemu'] or held.get('complete')is not True
+                or held.get('stage','cmtc')!=spec['stage']
+                or record.get('ssap_initialization_corroboration',{}).get('stage','cmtc')!=spec['stage']
                 or not valid_summary(record.get('ssap_initialization_corroboration',{}))
                 or type(record.get('qemu_exit'))is not int or record['qemu_exit']!=0
                 or ('supervisor_exit' in record and (type(record['supervisor_exit'])is not int or record['supervisor_exit']!=0))
@@ -1980,7 +1987,8 @@ def main():
             cmd.add_argument('--channel-benchmark-xhci',choices=['on','off'],default='on',help='VM-only xHCI trace comparison;usbmon remains enabled')
             cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate bounded real application benchmark in both connection roles;not performance qualification')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
-            cmd.add_argument('--ssap-initialization-verify',action='store_true',help='real CMTC-pending lease revoke/fd convergence then ordinary same-artifact connection/socket preservation')
+            cmd.add_argument('--ssap-initialization-verify',action='store_true',help='real negotiation-stage lease revoke/fd convergence then ordinary same-artifact connection/socket preservation')
+            cmd.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
             cmd.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester death/old reply drain and ordinary CUTC while real owner prompt held')
             cmd.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')

@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9_CMTC_FINITE_REAL_PASS_PARTIAL_INITIALIZATION_STILL_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9B_EXCHANGE_GATE_OFFLINE_READY_REAL_VM_PENDING",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -3864,6 +3864,33 @@
         "inventory_report": ".dev/main-thread-01a120fe/ssap-init-documentation-audit-v2.json",
         "inventory_sha256": "c9c7fe692f4dbc59e52d77b3eba97c114a63cb4153db59557500c0380372d768",
         "scope": "116documentinventory/example/metadata/nitpickyWerrorHTMLonly;no newreaderflow/browser/external-linkorhardwarequalification"
+      },
+      "exchange_stage": {
+        "status": "OFFLINE_READY_VM_PENDING_NOT_QUALIFIED",
+        "method": "REAL_EXCHANGE_PENDING_MANAGED_WITHDRAWAL",
+        "source": "Shared ws73_ssap_initialization gate;sole production Engine unchanged",
+        "binary_sha256": "2063f9913aeafd9103fc43a87f199bf4757ae3a3b618e5b7d4970beff9731ea2",
+        "build_manifest": {
+          "path": ".dev/main-thread-01a120fe/ssap-exchange-qemu-v1/build-manifest.json",
+          "sha256": "fa01f31b475bdec1f2cfb56840b2b8c268a8640b995ecd8ba94f7739afa643ff"
+        },
+        "offline_tools": {
+          "path": ".dev/main-thread-01a120fe/ssap-exchange-tools-v1.log",
+          "sha256": "6097c43260f803465916e97c5b7b6adea8a91d3b42c6b75290e2dda63e0b1693"
+        },
+        "methods": 854,
+        "selector_replay": {
+          "path": ".dev/main-thread-01a120fe/exchange-selector-capture-audit-v1.json",
+          "sha256": "8391c55af47bf313ab023178c9caa50ff9e4061d1bc9e82b8c101667b75db81c"
+        },
+        "boot_smoke": {
+          "path": ".dev/main-thread-01a120fe/ssap-exchange-root-smoke-v1/manifest.json",
+          "sha256": "2b6bddab03c68771970146c55a36be0f66f5f2cbcaa7eb6a8c63b2ac048dfb52"
+        },
+        "production_changed": false,
+        "new_formal_proofs": 0,
+        "real_device_qualified": false,
+        "exit": "ActualpostCMTC requestTX/peerRX/responseTX beforeheldresponse;original withdrawal/fdcleanup/twopairedDown/peerRXandReady;then8ordinaryreplies/22discoveries;not fullrole/bind/taskjoin/kernelrefs/naturalrecovery"
       }
     }
   },

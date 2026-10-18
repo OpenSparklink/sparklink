@@ -2,23 +2,29 @@
 +++ b/hw/usb/host-libusb.c
 @@ -36,0 +37 @@
 +#include "ws73_cmtc_hold_selector.h"
-@@ -107,0 +109 @@
+@@ -107,0 +109,2 @@
 +    bool                             test_runtime_cmtc_capability;
-@@ -555,0 +558,4 @@
-+        if (s->test_runtime_cmtc_capability &&
-+            !ws73_test_is_cmtc_capability_reply(r->buffer, xfer->actual_length)) {
++    bool                             test_runtime_ssap_exchange;
+@@ -555,0 +559,6 @@
++        if ((s->test_runtime_cmtc_capability &&
++             !ws73_test_is_cmtc_capability_reply(r->buffer, xfer->actual_length)) ||
++            (s->test_runtime_ssap_exchange &&
++             !ws73_test_is_ssap_exchange_reply(r->buffer, xfer->actual_length))) {
 +            goto deliver_original;
 +        }
-@@ -1237,0 +1244 @@
+@@ -1237,0 +1247,2 @@
 +    s->test_runtime_cmtc_capability = false;
-@@ -1440 +1447 @@
++    s->test_runtime_ssap_exchange = false;
+@@ -1440 +1451,2 @@
 -                  s->test_runtime_in_error_once ||
 +                  s->test_runtime_in_error_once || s->test_runtime_cmtc_capability ||
-@@ -1483 +1490,2 @@
++                  s->test_runtime_ssap_exchange ||
+@@ -1483 +1495,3 @@
 -    if (count > 2 || !s->dh || !USB_DEVICE(s)->attached ||
-+    if (count > 2 || (count && s->test_runtime_cmtc_capability) ||
++    if (count > 2 || (count && (s->test_runtime_cmtc_capability ||
++                              s->test_runtime_ssap_exchange)) ||
 +        !s->dh || !USB_DEVICE(s)->attached ||
-@@ -1540,0 +1549,23 @@
+@@ -1540,0 +1555,43 @@
 +}
 +
 +static bool usb_host_get_test_cmtc_capability(Object *obj, Error **errp)
@@ -26,8 +32,8 @@
 +    return USB_HOST_DEVICE(obj)->test_runtime_cmtc_capability;
 +}
 +
-+static void usb_host_set_test_cmtc_capability(Object *obj, bool value,
-+                                             Error **errp)
++static void usb_host_set_test_reply_selector(Object *obj, bool value,
++                                              bool exchange, Error **errp)
 +{
 +    USBHostDevice *s = USB_HOST_DEVICE(obj);
 +    if (!s->dh || !USB_DEVICE(s)->attached ||
@@ -36,13 +42,36 @@
 +        s->allow_one_guest_reset || s->allow_all_guest_resets ||
 +        s->test_enum_reset_once || s->test_runtime_in_error_once ||
 +        s->test_runtime_hold_once || s->test_runtime_held ||
-+        s->test_runtime_skip_requested) {
-+        error_setg(errp, "test CMTC selector requires idle attached WS73, "
-+                   "reset/detach opt-outs and no frame-skip/error selector");
++        s->test_runtime_skip_requested ||
++        (exchange ? s->test_runtime_cmtc_capability : s->test_runtime_ssap_exchange)) {
++        error_setg(errp, "test reply selector requires idle attached WS73, "
++                   "reset/detach opt-outs and no other reply/skip/error selector");
 +        return;
 +    }
-+    s->test_runtime_cmtc_capability = value;
-@@ -1568,0 +1600,3 @@
++    if (exchange) {
++        s->test_runtime_ssap_exchange = value;
++    } else {
++        s->test_runtime_cmtc_capability = value;
++    }
++}
++
++static void usb_host_set_test_cmtc_capability(Object *obj, bool value, Error **errp)
++{
++    usb_host_set_test_reply_selector(obj, value, false, errp);
++}
++
++static bool usb_host_get_test_ssap_exchange(Object *obj, Error **errp)
++{
++    return USB_HOST_DEVICE(obj)->test_runtime_ssap_exchange;
++}
++
++static void usb_host_set_test_ssap_exchange(Object *obj, bool value, Error **errp)
++{
++    usb_host_set_test_reply_selector(obj, value, true, errp);
+@@ -1568,0 +1626,6 @@
 +    object_property_add_bool(obj, "test-runtime-cmtc-capability",
 +                             usb_host_get_test_cmtc_capability,
 +                             usb_host_set_test_cmtc_capability);
++    object_property_add_bool(obj, "test-runtime-ssap-exchange",
++                             usb_host_get_test_ssap_exchange,
++                             usb_host_set_test_ssap_exchange);

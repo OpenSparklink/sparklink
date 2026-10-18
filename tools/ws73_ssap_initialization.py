@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
-"""Real CMTC-pending lease withdrawal; sole production initializer/Engine.
+"""Real CMTC/ExchangeInfo-pending withdrawal; sole production initializer/Engine.
 
 The test retains an original IN81 aggregate, not a fabricated protocol result.
 FD inode observations are daemon-fd convergence, not kernel reference/UAF proof.
@@ -22,8 +22,24 @@ SELECTOR = 'test-runtime-cmtc-capability'
 RESPONSE = '0200100002000c00e20000000000fa07ff070101'
 
 
+def profile(stage='cmtc'):
+    if stage == 'cmtc':
+        return dict(stage=stage, qemu=QEMU_SHA256, method=METHOD, selector=SELECTOR,
+                    response=RESPONSE, pending='CMTC_REVOCATION_EVIDENCE_PENDING',
+                    status='REAL_CMTC_REVOKE_LATE_REPLY_DAEMON_FD_CONVERGENCE')
+    if stage == 'exchange':
+        return dict(stage=stage, qemu='2063f9913aeafd9103fc43a87f199bf4757ae3a3b618e5b7d4970beff9731ea2',
+                    method='REAL_EXCHANGE_PENDING_MANAGED_WITHDRAWAL', selector='test-runtime-ssap-exchange',
+                    response='0a0006000303fa070102', pending='EXCHANGE_REVOCATION_EVIDENCE_PENDING',
+                    status='REAL_EXCHANGE_REVOKE_LATE_REPLY_DAEMON_FD_CONVERGENCE')
+    raise ValueError('explicit cmtc/exchange initialization stage required')
+
+
 def requested(args, *, passthrough=None):
     enabled = bool(getattr(args, 'ssap_initialization_verify', False))
+    spec = profile(getattr(args, 'ssap_initialization_stage', 'cmtc'))
+    if not enabled and spec['stage'] != 'cmtc':
+        raise ValueError('nondefault initialization stage requires explicit verification')
     physical = getattr(args, 'passthrough', False) if passthrough is None else passthrough
     if enabled and (physical is not True or not getattr(args, 'connection_verify', False)
             or not getattr(args, 'channel_socket_verify', False)
@@ -36,28 +52,36 @@ def requested(args, *, passthrough=None):
     return enabled
 
 
-def validate_qemu(path):
-    if hashlib.sha256(Path(path).read_bytes()).hexdigest() != QEMU_SHA256:
-        raise ValueError('exact reviewed bounded2s CMTC-selector QEMU required')
+def validate_qemu(path, stage='cmtc'):
+    if hashlib.sha256(Path(path).read_bytes()).hexdigest() != profile(stage)['qemu']:
+        raise ValueError('exact reviewed bounded2s stage-specific selector QEMU required')
 
 
 class SelectedHold(HoldCoordinator):
+    def __init__(self, folder, record, stage='cmtc'):
+        super().__init__(folder, record)
+        self.spec = profile(stage)
+
     def snapshot(self, monitor):
-        for name, expected in [(SELECTOR, True), ('test-runtime-in-skip-requested', 0),
+        expected_state = [(self.spec['selector'], True), ('test-runtime-in-skip-requested', 0),
                                ('test-runtime-in-skip-remaining', 0), ('test-runtime-in-skipped', 0),
-                               ('test-enumeration-reset-once', False)]:
+                               ('test-enumeration-reset-once', False)]
+        if self.spec['stage'] == 'exchange':
+            expected_state.append((SELECTOR, False))
+        for name, expected in expected_state:
             value = monitor.execute('qom-get', {'path': self.path, 'property': name})
             if type(value) is not type(expected) or value != expected:
-                raise ValueError('exact CMTC-only selector without reset/skip required')
+                raise ValueError('exact single stage selector without reset/skip required')
         return super().snapshot(monitor)
 
 
 class Coordinator:
-    def __init__(self, share, record, qemu):
-        validate_qemu(qemu)
+    def __init__(self, share, record, qemu, stage='cmtc'):
+        self.spec = profile(stage)
+        validate_qemu(qemu, stage)
         self.root = Path(share)/'application/passthrough-control/ssap-initialization'
         self.record = record
-        record.update(method=METHOD, qemu_sha256=QEMU_SHA256, hold_budget_ms=2000,
+        record.update(stage=stage, method=self.spec['method'], qemu_sha256=self.spec['qemu'], hold_budget_ms=2000,
                       phases=[], complete=False, physical_acceptance=False,
                       automatic_fault_recovery_acceptance=False)
         self.child = None
@@ -82,13 +106,15 @@ class Coordinator:
                     or type(selection['generation']) is not int or selection['generation'] < 1
                     or selection['controller_path'] != f"/org/sparklink/slk{index}_g{selection['generation']}"):
                 raise ValueError('fresh exact two-role controller selection required')
-            child = SelectedHold(folder, {})
+            child = SelectedHold(folder, {}, self.spec['stage'])
             child.folder = folder
             child.path = f'/machine/peripheral/ws73_{slot}'
-            if monitor.execute('qom-get', {'path': child.path, 'property': SELECTOR}) is not False:
-                raise ValueError('fresh disabled CMTC selector required')
+            if monitor.execute('qom-get', {'path': child.path, 'property': self.spec['selector']}) is not False:
+                raise ValueError('fresh disabled stage selector required')
+            if self.spec['stage'] == 'exchange' and monitor.execute('qom-get', {'path': child.path, 'property': SELECTOR}) is not False:
+                raise ValueError('another reply selector is already active')
             identity = owner(slot)
-            monitor.execute('qom-set', {'path': child.path, 'property': SELECTOR, 'value': True})
+            monitor.execute('qom-set', {'path': child.path, 'property': self.spec['selector'], 'value': True})
             child.record.update(selection=selection, host_identity_at_arm=identity)
             self.record['phases'].append(child.record)
             self.child = child
@@ -186,7 +212,8 @@ def execute(run, a, b):
     from ws73_connection_control import connect_phase, observe_phase_down
     from ws73_connection_objects import info
     from ws73_application_client import process_identity
-    record = dict(status='RUNNING', mode=METHOD, phases=[], new_engine=False,
+    spec = profile(getattr(run.args, 'ssap_initialization_stage', 'cmtc'))
+    record = dict(status='RUNNING', stage=spec['stage'], mode=spec['method'], phases=[], new_engine=False,
                   physical_acceptance=False, automatic_recovery_acceptance=False)
     run.data['ssap_initialization'] = record
     previous = []
@@ -272,7 +299,7 @@ def execute(run, a, b):
         phase['end_wall_ns'] = time.time_ns()
         previous = phase['typed_objects']
         run.save()
-    record['status'] = 'CMTC_REVOCATION_EVIDENCE_PENDING'
+    record['status'] = spec['pending']
     verify_guest(run.data)
     run.save()
 
@@ -327,7 +354,8 @@ def cancellation(row, owner):
 def verify_guest(run):
     from ws73_connection_objects import info
     record = run['ssap_initialization']
-    if (record.get('mode') != METHOD or record.get('status') != 'CMTC_REVOCATION_EVIDENCE_PENDING'
+    spec = profile(record.get('stage', 'cmtc'))  # historical CMTC records have no stage field
+    if (record.get('mode') != spec['method'] or record.get('status') != spec['pending']
             or len(record.get('phases', [])) != 2 or record.get('new_engine') is not False
             or record.get('physical_acceptance') is not False or record.get('automatic_recovery_acceptance') is not False):
         raise CaptureError('both bounded actual CMTC role phases required')
@@ -408,9 +436,47 @@ def verify_fd_supervisor(run, root):
             raise CaptureError('original root supervisor snapshot differs from caller evidence')
 
 
+def exchange_witnesses(capture, phase, create, late):
+    """Actual request TX/peer RX/peer response TX before held response RX.
+
+    Reuse the independent ACB decoder. This observes a bounded basic exchange,
+    not a replacement codec/Engine or a general late-response reuse proof.
+    """
+    target, other = phase['target'], phase['other']
+    start = create['command']['wall_ns']
+    end = phase['end_wall_ns']
+    def matches(owner, direction, data):
+        up = next(e for e in create['outcomes'] if (e['bus'], e['device']) == (owner['bus'], owner['device']))
+        handle = int.from_bytes(bytes.fromhex(up['params'])[1:3], 'little')
+        rows = [e for e in capture['acb_packets'] if (e['bus'], e['device']) == (owner['bus'], owner['device'])
+                and e['direction'] == direction and e['data'] == data and start <= e['wall_ns'] <= end]
+        if len(rows) != 1 or rows[0]['handle'] != handle or rows[0]['boundary'] != 0:
+            raise CaptureError('one exact original basic exchange leg/handle required')
+        return rows[0]
+    request = '0a0006000203fa070102'
+    target_cap = matches(target, 'in', RESPONSE)
+    other_cap = matches(other, 'in', RESPONSE)
+    tx = matches(target, 'out', request)
+    rx = matches(other, 'in', request)
+    response = matches(other, 'out', profile('exchange')['response'])
+    replies = [e for e in capture['acb_packets'] if (e['bus'], e['device']) == (target['bus'], target['device'])
+               and e['direction'] == 'in' and start <= e['wall_ns'] <= end
+               and bytes.fromhex(e['data'])[:2] == b'\x0a\0'
+               and bytes.fromhex(e['data'])[4:5] == b'\x03']
+    if replies != [late]:
+        raise CaptureError('no earlier/different/duplicate target ExchangeInfo Response permitted')
+    if not (target_cap['wall_ns'] < tx['wall_ns'] <= rx['wall_ns'] <= response['wall_ns']
+            < phase['cancel']['start_wall_ns'] < late['wall_ns']
+            and other_cap['wall_ns'] < response['wall_ns']):
+        raise CaptureError('actual CMTC ready/request delivery/response submit must precede withdrawal and late RX')
+    return dict(target_capability=target_cap, peer_capability=other_cap,
+                request_tx=tx, request_rx=rx, response_tx=response, response_rx=late)
+
+
 def corroborate_guest(run, capture):
     from ws73_connection_control import corroborate_wire_operation, result, link_reference
     verify_guest(run)
+    spec = profile(run['ssap_initialization'].get('stage', 'cmtc'))
     proofs = []
     for phase in run['ssap_initialization']['phases']:
         handles = {}
@@ -435,7 +501,7 @@ def corroborate_guest(run, capture):
         same = lambda e: (e['bus'], e['device']) == (caller['bus'], caller['device'])
         withdrawal = phase['revocation_polls'][-1]['end_wall_ns']
         release = phase['hold']['markers'][2]['wall_ns']
-        held = [e for e in capture['acb_packets'] if same(e) and e['direction'] == 'in' and e['data'] == RESPONSE
+        held = [e for e in capture['acb_packets'] if same(e) and e['direction'] == 'in' and e['data'] == spec['response']
                 and release <= e['wall_ns'] <= phase['end_wall_ns']]
         if len(held) != 1 or held[0]['handle'] != target_reference['handle'] or held[0]['boundary'] != 0:
             raise CaptureError('one original capability response after revoke/failure/release required')
@@ -448,7 +514,9 @@ def corroborate_guest(run, capture):
             raise CaptureError('unheld peer must process its real Down while target RX remains retained')
         proofs.append(dict(selection=phase['selection'], create=create, cleanup=cleanup, late_capability=held[0],
                            peer_rx_progress_during_hold=peer_down))
-    return dict(status='REAL_CMTC_REVOKE_LATE_REPLY_DAEMON_FD_CONVERGENCE', proofs=proofs,
+        if spec['stage'] == 'exchange':
+            proofs[-1]['exchange_witnesses'] = exchange_witnesses(capture, phase, create, held[0])
+    return dict(stage=spec['stage'], status=spec['status'], proofs=proofs,
                 kernel_reference_or_uaf_proof=False, native_bind_inflight_proof=False,
                 initializer_task_join_proof=False, connection_object_removal_proof=False,
                 natural_recovery_acceptance=False)
@@ -456,7 +524,9 @@ def corroborate_guest(run, capture):
 
 def corroborate(run, capture, record, stderr):
     proof = corroborate_guest(run, capture)
-    if (record.get('method') != METHOD or record.get('qemu_sha256') != QEMU_SHA256
+    spec = profile(proof['stage'])
+    if (record.get('method') != spec['method'] or record.get('qemu_sha256') != spec['qemu']
+            or record.get('stage', 'cmtc') != spec['stage']
             or record.get('complete') is not True or len(record.get('phases', [])) != 2
             or record.get('hold_budget_ms') != 2000):
         raise CaptureError('exact two-phase pinned bounded2s host fixture required')
@@ -473,13 +543,23 @@ def corroborate(run, capture, record, stderr):
 
 
 def valid_summary(value):
-    return (value.get('status') == 'REAL_CMTC_REVOKE_LATE_REPLY_DAEMON_FD_CONVERGENCE'
+    if not isinstance(value, dict):
+        return False
+    try:
+        spec = profile(value.get('stage', 'cmtc'))
+    except ValueError:
+        return False
+    return (value.get('status') == spec['status']
             and len(value.get('proofs', [])) == 2
             and {v.get('selection', {}).get('slot') for v in value['proofs']} == {0, 1}
             and {v.get('selection', {}).get('role') for v in value['proofs']} == {0, 1}
             and all(v.get('host_hold', {}).get('status') == 'ACTUAL_HOST_HOLD_CORROBORATED' for v in value['proofs'])
-            and all(v.get('late_capability', {}).get('data') == RESPONSE
+            and all(v.get('late_capability', {}).get('data') == spec['response']
                     and v.get('peer_rx_progress_during_hold') in v.get('cleanup', {}).get('outcomes', []) for v in value['proofs'])
+            and (spec['stage'] != 'exchange' or all(
+                v.get('exchange_witnesses', {}).get('response_rx') == v.get('late_capability')
+                and set(v.get('exchange_witnesses', {})) == {'target_capability', 'peer_capability', 'request_tx', 'request_rx', 'response_tx', 'response_rx'}
+                for v in value['proofs']))
             and value.get('kernel_reference_or_uaf_proof') is False
             and value.get('native_bind_inflight_proof') is False
             and value.get('initializer_task_join_proof') is False

@@ -368,7 +368,10 @@ def verify_passthrough():
     initialization_requested='ws73.ssap_initialization=1' in Path('/proc/cmdline').read_text().split()
     if initialization_requested != ('ssap_initialization' in run):raise ValueError('initialization request/evidence mismatch')
     if initialization_requested:
-        from ws73_ssap_initialization import corroborate_guest, verify_fd_supervisor
+        from ws73_ssap_initialization import corroborate_guest, verify_fd_supervisor, profile
+        stages=[v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.ssap_initialization_stage=')]
+        if len(stages)>1 or run['ssap_initialization'].get('stage','cmtc')!=profile(stages[0] if stages else 'cmtc')['stage']:
+            raise ValueError('actual VM command line and guest initialization stage differ')
         verify_fd_supervisor(run,EVIDENCE)
         proofs.append({'ssap_initialization':corroborate_guest(run,capture)})
     requester_requested='ws73.ssap_requester_lifecycle=1' in Path('/proc/cmdline').read_text().split()

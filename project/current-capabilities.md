@@ -1,5 +1,9 @@
 # 当前能力与资格
 
+R5f9b ExchangeInfo 等待退休门禁已接入共享工具，854项离线检查、旧捕获选择器重放
+与新测试QEMU无USB启动通过；当前只有离线/基础设施范围，尚未新增实机或形式化资格。
+CMTC历史记录保留原7b90092工具及原artifact，不能转授本批工具。
+
 R5f9 新增[准确 artifact 的有限实机记录](../docs/evidence/ssap-initialization-cmtc-revocation-20261018.json)：
 7b90092 guest/Host、DA编译服务/应用、2fc内核，**仅本线程 U 两口**。发起端与接收端
 CMTC等待期间实际 Managed 撤权，原能力回复完整保留/释放，真实 Status/双端 Down、

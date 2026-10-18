@@ -1,0 +1,837 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "level": "offline",
+  "implementation_commit": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
+  "tested_source": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
+  "tested_tools": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
+  "kernel_abi": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "actual_compile_base": "0ccfaaca1b6217a24cb61c9954931bb37069bb31",
+  "actual_compile_dirty_diff_sha256": "d1c2d5445890bcd7b2ff02b1fbea5c65026daf689fb79a013160408b809d2a3d",
+  "architecture_complete": false,
+  "new_formal_proofs": 0,
+  "compilation_identity": "实际测试由0ccfaaca加保留dirty字节编译，生产与测试/工具字节逐项映射到26b654b；不是干净提交编译。固定Rust1.96.1/locked/offline、共享Cargo目录与全局锁，实际12路；33个测试执行文件封存。",
+  "bounds": {
+    "targeted_methods": 5,
+    "default_workspace_methods": 367,
+    "allfeatures_workspace_methods": 367,
+    "sealed_test_executables": 33,
+    "resource_guard_methods": 15,
+    "strict_documents": 116,
+    "new_real_device_runs": 0,
+    "new_formal_proofs": 0
+  },
+  "scope": [
+    "直接运行生产owner/创建guard/未消费fd结果/原期限/惰性factory/物理投影与实际私有D-Bus。Native/table/blocking依赖是有限fixture；相关OS fd检查在exec后隔离进程创建，原join/关闭断言不变。",
+    "覆盖原初始化任务与同一Engine的取消/退休等待、初次Service预留和应用明确busy；不新增Host、Engine、Session、Kernel/UAPI或授权状态来源。",
+    "15项端口/固件/构建锁离线检查和只读拓扑快照不授型号/固件/实机资格。没有Kani/TLC/LKMM新证明、实际Kernel Native-return/parent屏障或USB/ref/UAF/drain资格。"
+  ],
+  "remaining": [
+    "准确新artifact的实际双设备发现/连接/短消息、七尺寸/OwnedSSAP/动态/CMTC-Exchange保持需分别记录；本离线报告不授任何实机资格。",
+    "真实Native返回与parent退休受控屏障、release/最后fd/dup/fork/SCM_RIGHTS/断链/原期限/复用及Grant-credit-Ticket/晚到Complete-NOCP组合仍开放。",
+    "原v4 all-features fd关闭失败的实际持有者/原因未归因；受控CLOEXEC/fork反例只证明测试需要隔离，不能自动解释原失败。原253共同五秒Down FAIL、自然故障根因及非人工恢复保留。",
+    "E/HCC及单独启动、混合逐设备固件、真正冷ROM读取/自动选择未验收；VM-only/严格四口白名单/SDK110完整三文件/共享12或8路保持。",
+    "完整S0-S6/19WP/10FV/12DG、所有issue原范围、安全/Bond、数据/多通道/四设备、部署/发布均不缩减；UserHost仅P4规划。"
+  ],
+  "gates": [
+    {
+      "name": "targeted",
+      "status": "PASS",
+      "result": "PASS",
+      "methods": 5
+    },
+    {
+      "name": "default",
+      "status": "PASS",
+      "result": "PASS",
+      "methods": 367
+    },
+    {
+      "name": "all-features",
+      "status": "PASS",
+      "result": "PASS",
+      "methods": 367
+    },
+    {
+      "name": "clippy",
+      "status": "PASS",
+      "result": "PASS",
+      "methods": 0
+    },
+    {
+      "name": "resource-guards",
+      "status": "PASS",
+      "result": "PASS",
+      "methods": 15
+    },
+    {
+      "name": "strict-documents",
+      "status": "PASS",
+      "result": "PASS",
+      "documents": 116
+    }
+  ],
+  "retained_failures": [
+    "原两项生产函数/私有bus反例与Service预留顺序反例保留，不能描述为实际UAF/串包。",
+    "v2输出编号冲突在测试前拒绝；v3 Rust2024 future捕获编译失败保留，改为拥有Arc；v4 all-features原fd关闭失败保留且未归因。v5只隔离fixture，不放宽原断言。"
+  ],
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/logs/native-drain-targeted-v5.log",
+      "sha256": "e1d2554726a8c62d9620ad52f43d087aac9ca24a2dc9d4132338d1f5020dcef8",
+      "bytes": 1613
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/logs/native-drain-default-v5.log",
+      "sha256": "11dd4d8cdb3dc6bc69e022796c82b6fa1de73555992adb6e5d9ab6f6082eccdf",
+      "bytes": 39007
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/logs/native-drain-all-features-v5.log",
+      "sha256": "a4d4196c720eb88c5c28e240306a2480c473fa0d8ebc5fd60d2d49a45c7ef17b",
+      "bytes": 38882
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/logs/native-drain-clippy-v5.log",
+      "sha256": "a6277f1a9a32eeb91cc3bb4316f36802c03dd0c8aedf5256d4a60449fb545dfa",
+      "bytes": 566
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/application_broker-436eb7280a162504",
+      "sha256": "b5286acc8ab5e69e495763192891e9ff4c13a26b305992f58efc9a6a40d24b67",
+      "bytes": 62741560
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/application_ffi-bde94cc6f810f893",
+      "sha256": "53b71946e770add423fd786e156f3d8d81bc0333794b1e2acd45081d266bfd4d",
+      "bytes": 55255136
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/application_ssap-c98e35f0aa8a8fbf",
+      "sha256": "b78595c3698275f032d45d1af175bd57da573a41e4f63290a9bac731a7754bbd",
+      "bytes": 61657992
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/client_scope-6415e6e5cb824fbd",
+      "sha256": "b9d571e732be37c2ebeaddc53cda639d377d33fe92fd76469c9bfa4bcd724910",
+      "bytes": 64399656
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/config_startup-0118be4614bf2ab5",
+      "sha256": "b3a7248afd6c84f57d4a98cb0dc2a32b66c4ae34b90c4e377363f072b1f8afa1",
+      "bytes": 7550456
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/config_startup-95becc7ff2176486",
+      "sha256": "a86581f9e4a10fd7afabd3668ee4db68cbe99492de7ad5a2fa41fb39914c84f1",
+      "bytes": 7550456
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/controller_client-486f8d9267e42ec1",
+      "sha256": "a342517c6c7845c4dd8d04691d85289061fdc8efd8adf327cc345f11ea8e34cc",
+      "bytes": 64812432
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/entrypoint-986f70f4c6e9b30f",
+      "sha256": "99bc38c8a05fbcc77a798852c6a791129539248d7df261c21496e13f0c79a2e9",
+      "bytes": 7414648
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/libsparklink-37a3804d1d0bec37",
+      "sha256": "7ca53ef51a8df42cb064650be901eb2b2aefa784fb6b16eb15273ab82902c3f4",
+      "bytes": 65412920
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/local_staging-aa17959ddd872e70",
+      "sha256": "7803b5fdfdaf33d0e17b4e6cb973be8fca00da4373717607b6e701297471dac9",
+      "bytes": 52771712
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/local_staging_client-1e50c217e705b3dd",
+      "sha256": "d0d194aafbbacda55028e408c19ae30dd71a605069832b1c491f1ca1268c5722",
+      "bytes": 66213104
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/management_owner-7ffdd0adaa7659c1",
+      "sha256": "725f4179053b0dc922fc51c743d1cd34c6832b94c2fa21cccfe40ffcbf05e250",
+      "bytes": 53436016
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/owned_client-33e550af30da0580",
+      "sha256": "c811481e2874b9b735ec83759f5eac73ca049fcad5c93f3c01028f02cd54a264",
+      "bytes": 65398704
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/owned_local-458996ee3a54bc53",
+      "sha256": "88010f7f6c3fd61704477dad0f0a48305e09513a5ded50eb7cccee1478ffb4f8",
+      "bytes": 52761064
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/peer_client-528d89ecbf7058d7",
+      "sha256": "18235cf81e769a66742c1d35e75ba18992b6c6de8b1581c46d0af0c209288165",
+      "bytes": 63510992
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/remote_ssap_client-f021d03a6dc85d55",
+      "sha256": "03d2dbba49f2180eb57154f2e6ed6745f8537f0b29357f1f20094c3b7a1f1728",
+      "bytes": 65457608
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/retired_security-93e67fd87599e3e0",
+      "sha256": "dcef5066d52c0bf4f48ebe4329d54cdf00c978c72027d10f6821a8cf0b4bcec6",
+      "bytes": 7525576
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/scan_freshness-5a708a68d5401942",
+      "sha256": "2428876ed676483fe94ef7771ee59eb8bca40b805d2066c6711aae7578fd73ef",
+      "bytes": 53967472
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/security_agent-c47a132382d1e7e2",
+      "sha256": "47af8c78e1348c13bce667d959d6365f369c39332196514da6be45f62fc49042",
+      "bytes": 56445400
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slctl-edc8f2051ef0b75c",
+      "sha256": "3dd6042a83fee1e1e7beb0f0dba1ac0addabefbc55f8a584ca06993909d37102",
+      "bytes": 67811136
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slk_channel-e33630fa725ef720",
+      "sha256": "a05a54849d83f4c0833be7946defc7ce1cab670a5b222fdd379fdb517caf63d8",
+      "bytes": 9587408
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slk_contract-269e028873639091",
+      "sha256": "4978f34807ae54b759c354d53a95e3171f9a91517a61212d24429fe5c746c940",
+      "bytes": 18895736
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slk_experimental-c46a0fc7dd3c0aa3",
+      "sha256": "e2525968310b763e50485335864997b124c5e1f1e753acdf3f667c5881e2334e",
+      "bytes": 19649512
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slk_native-bdcfe92dbe3340ff",
+      "sha256": "16efbc6cbdebef5a627e4a7baf6e9076b99b67e18abea1aaf8dd62e4f414f885",
+      "bytes": 21549312
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slk_protocol-d6226b5ec5715618",
+      "sha256": "d48026255b7fce2a7021b6c5acd0bb0e68e698b9be8ce70624caf1cfa99159fe",
+      "bytes": 10292848
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slkconfig-755ebc5ccd0ca65b",
+      "sha256": "bf18980163dd5449b02a518aa46c5ee2e882f3389af97d138d5458f74f1b6bf8",
+      "bytes": 29318312
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slkd-1b41efa1dd248a9f",
+      "sha256": "518c572e9e645fd0b4b84451c476c595b292ee26ec7bb6221ff65ddbb65485d7",
+      "bytes": 158664696
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slkd-d75fe32529fb42dd",
+      "sha256": "9569f1479871de2fe72fcb483c31eb726ecf74abcba8cd4b32bff1dbd3d2c866",
+      "bytes": 159263664
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slkdump-bdfaba434ddef545",
+      "sha256": "1857acfd49d1707b2d6e306b73962f88fda145a0b16e635ac39eaa5dfd72c144",
+      "bytes": 18651056
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slkmon-d89c8fdb13f78669",
+      "sha256": "adb0f68c2714a057ff408a1b0ec63dba30b3648a49c33d0cb61200c32d93c04a",
+      "bytes": 18651048
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slktest-3bf69d8e25921b73",
+      "sha256": "57ad57f9133f768516e8512fdfb28e7a4833f2720f522767a3e13e5410582c63",
+      "bytes": 68578152
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/slktest-96bc2885fd7aef22",
+      "sha256": "f144d7cd978f2604a5becf73feeccaf40b8e58dff14ad9381a58dcd2da4c0db4",
+      "bytes": 51834320
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/test-binaries/tool_boundary-7f786ef157458341",
+      "sha256": "c6be27182db70cce79a6692943435f2b8af1f8082bc7c4f82a25df39ac5b6fc5",
+      "bytes": 7447944
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/allocation-native-drain-readonly-v1.json",
+      "sha256": "7c8b3e5fb056e3e1ae3c597a1fe053ce5a07aaeb2d0e8bf42bbee3058040ab92",
+      "bytes": 4622
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/allocation-native-drain-tool-tests-v1.log",
+      "sha256": "44cc0d13a184262ba809440e75443b59262adab66b482a30c1b853f5361b101b",
+      "bytes": 114
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/fd-cloexec-fork-counterexample-v1.json",
+      "sha256": "aa330bdb3b94c6799f6c1321aed5474e94b4a8127042d365cd9abe274a6e8bdf",
+      "bytes": 519
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/fd-cloexec-fork-counterexample-v1.py",
+      "sha256": "19113955c4e878c1ca54f1de347d8db251cffdef47e8f153ae84b5e98eb67898",
+      "bytes": 1170
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-all-features-v4-build.json",
+      "sha256": "dd031d8213dc8a04ec26fd681053e999fccff0c9e4239bf1a4840a7d8cae4a71",
+      "bytes": 936
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-all-features-v4.log",
+      "sha256": "038c26504e56e78ca6c75296377390bb95592c2ea3b6467947bc11c35217f9d2",
+      "bytes": 33216
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-all-features-v5-build.json",
+      "sha256": "5305abc245b0e8f4c81ed646698765098c04aec8ad0bef9f1f5895c9ff1604cc",
+      "bytes": 934
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-candidate-v1.patch",
+      "sha256": "1ed3211ce73e3d78ca6f23992925b2d6bd88757015b69e74c86f14e104bdb09c",
+      "bytes": 34743
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-candidate-v2.patch",
+      "sha256": "19650fe92bb10f050d029812cffe3f3ce63d14f041b88a0e1c5d7b4a19833590",
+      "bytes": 44538
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-candidate-v3.patch",
+      "sha256": "19650fe92bb10f050d029812cffe3f3ce63d14f041b88a0e1c5d7b4a19833590",
+      "bytes": 44538
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-candidate-v4.patch",
+      "sha256": "70665b0272967864a0d498686a9dbf9e94ca155e409dc58df5b0f33309ff923f",
+      "bytes": 44529
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-candidate-v5.patch",
+      "sha256": "d1c2d5445890bcd7b2ff02b1fbea5c65026daf689fb79a013160408b809d2a3d",
+      "bytes": 47654
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-clippy-v5-build.json",
+      "sha256": "c835363bcdf9c5c3ffedf8488590fd82e63777f6f91e96bc95d58d73241c3df2",
+      "bytes": 993
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-counterexamples-v1-build.json",
+      "sha256": "f27ff5af427b2b5fb30a7d7b0042b6de1ee69ad8b1c7d31449825ae06de9172a",
+      "bytes": 926
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-counterexamples-v1-result.json",
+      "sha256": "766f636911e32e6513d5f45156b5d1ec65ebc57578c0bc76f9551cbf18dc6a8f",
+      "bytes": 522
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-counterexamples-v1-source.json",
+      "sha256": "db0d051576751c4b301d5a632752451a3ae2b75b8354e00727baeb61cf713a64",
+      "bytes": 384
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-counterexamples-v1.log",
+      "sha256": "4b4e5a8118d3a4c1e852fe36370ff9a28886f0a9dcd69d51c8eb14e7910efa68",
+      "bytes": 2408
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-counterexamples-v1.patch",
+      "sha256": "95b7ba9d6a724d5a7a849455570c6f99a6b6110944d864bb35530d47e573fa3b",
+      "bytes": 7903
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-default-v4-build.json",
+      "sha256": "e79d8a3148c4ad044907878e41fa6a05274417057f8917516d064823e5db8927",
+      "bytes": 912
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-default-v5-build.json",
+      "sha256": "f048fce2cbe4057e05ce2eead1b199e5eca802c3a286cdcbddd129d7fa516fed",
+      "bytes": 912
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-offline-v1.json",
+      "sha256": "b3c60421dd217cdf51326a27ef3d14ca238222c455631d0c914af4bbeb8cbdca",
+      "bytes": 59189
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-offline-v2.json",
+      "sha256": "8be81a57530218e76408b717c14ca54c0e01c1855efa60231e63a7621c0d91e4",
+      "bytes": 47530
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-offline-v3.json",
+      "sha256": "7553f6fad7f1c4f9d7c35c646eb04e5f19779c6ef70a252fad8fb14b91d472c1",
+      "bytes": 48260
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-offline-v4.json",
+      "sha256": "830920a14a1bf01cd16d9965d3c48e14daa0a273d251bf6dc9460d2d80095368",
+      "bytes": 56925
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-offline-v5.json",
+      "sha256": "81229268c28b7a539fb438624ed7d1bfb09c25cf3a96f9c8a8590a4caf817910",
+      "bytes": 59189
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-priority-counterexample-v1-build.json",
+      "sha256": "245c5ed1dc862a5366065d96715391768cd0df09d27e08f44e50f7936e490dc5",
+      "bytes": 944
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-priority-counterexample-v1-result.json",
+      "sha256": "2575d8ca2f7b9db95f86620613f089d5d0f833e515b7ab29a5bfe62da7dba8a4",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-priority-counterexample-v1.log",
+      "sha256": "88d1b5e8cfea5ba21b1afc76b511bdb66880f8519d433a79866022e025448e4e",
+      "bytes": 1574
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-priority-counterexample-v1.patch",
+      "sha256": "eefbfb5e84d4544bd7b61735ad2601c804f9dfe402cc8992d2997fcc7a6a5d09",
+      "bytes": 36405
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-targeted-v3.log",
+      "sha256": "3d974fa58417b799c18f7cc7ee3d9b9d277c28e2d32eb460cfb9da07c636ed7e",
+      "bytes": 2753
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-targeted-v4-build.json",
+      "sha256": "987aa1b5959f68919fabfd081101a35a5ee9cad2a1de4cb6121bd8fd16d7a955",
+      "bytes": 928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/records/native-drain-targeted-v5-build.json",
+      "sha256": "d7cfcd56a6b0a64c3b09d5b4431aef0d9db670c5fa3189111667f805fa15b864",
+      "bytes": 928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/build-environment.txt",
+      "sha256": "c1fa1174d76ceb933b8658bd6bea3517aae58409b192748eba5f627de8921e64",
+      "bytes": 616
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/libsparklink.so.0",
+      "sha256": "6183efd4add2a28897aa5d1578ce9928e9d7d51252219de6e24b276a491ab700",
+      "bytes": 58871000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/materials.sha256",
+      "sha256": "7fce3e595ee2bb1183d2b07b21c0df566ac4449c3d9b7547c4d2b095522eb62a",
+      "bytes": 1736
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/python.stderr",
+      "sha256": "84acefb7be4287a0a2ef8e9c881bcf27a72face7086d4118b78a222d105b519d",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-timeout-read.stdout",
+      "sha256": "e045bd00121b1183fdfa56257f8f95be18e9ee806621e73e8c991142aba349df",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-timeout-write.stdout",
+      "sha256": "ba885f41c1ff099ca7eeefc9d7a08c58842939aaa9c1b6f9a851f2dbf02b8198",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-unexpected-success.stdout",
+      "sha256": "3ce9ea30edb38d85b2af3e89ede59994b702120be9e6d0aa06da1667904c7c63",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-c-wrong-errno.stdout",
+      "sha256": "12eef795ab1d6392f44d068583dafa0f6a0b36725484118c3cc64a89a4092647",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-timeout-read.stdout",
+      "sha256": "bfb6c1642bd0986933ce4a8b01297e06d5a4b03668933c9dc4bc0bbd2f91f78d",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-timeout-write.stdout",
+      "sha256": "f4dab2ac6aee3a06091a1c6f09986fa3af269ce9f85691e6db1bd6f1b0f5e93d",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-unexpected-success.stdout",
+      "sha256": "4ad20af62538bdcaa849da3c24ee2f5ff2a4375278697201c6dee134dec5052b",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-wrong-errno.stderr",
+      "sha256": "2ac7b9c33f93ceb564e2cfe190a20d55bc43b77a63fd921ca351bbd369466674",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-python-wrong-errno.stdout",
+      "sha256": "1d7a54427a0ca70408aff3fe5769562e965df5122b3775d1025c6fc3e5dad152",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-all-features-v5/sdk-ssap-probe",
+      "sha256": "319718c351044208c690c8a218266001740a268d6dfc2586a8718cf72f3e7a89",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/build-environment.txt",
+      "sha256": "c11869711c06f3b851edc8d954b6a16da14bd2051b5b326b13937ee4a95729e7",
+      "bytes": 611
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/libsparklink.so.0",
+      "sha256": "6183efd4add2a28897aa5d1578ce9928e9d7d51252219de6e24b276a491ab700",
+      "bytes": 58871000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/materials.sha256",
+      "sha256": "0a2f998be74f0159a653414840724c58061412ca16a2b978a711eb052eab5978",
+      "bytes": 1721
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/python.stderr",
+      "sha256": "f3d32ff56a48388eb035753f9dbd8727322b88b839edf01571d563281fa0e15a",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-invalid-errno.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-timeout-read.stdout",
+      "sha256": "c18d0ea8b88d0272bc8307d2b4bda596985b847f7bc3a071d4ea6cf57aabaa7f",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-timeout-write.stdout",
+      "sha256": "2c008f06c15ad4b7b6cf3c2cceecfd8b98472e37ce6fb5e9340b1a893ecb40e3",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-unexpected-success.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-unexpected-success.stdout",
+      "sha256": "940ecca2b41b5f88854d7ca2f3f20e241bc26b70924388d1e20abc06c0bcf4d4",
+      "bytes": 237
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-wrong-errno.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-c-wrong-errno.stdout",
+      "sha256": "43fac2741db6bf173ab239ac7a0be7c04bf888524c5170c5193884f64966b6e5",
+      "bytes": 240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-invalid-errno.stderr",
+      "sha256": "3400c0651a3615d3f87758b243fcd65b7580751d6050e119a21a64f520f13936",
+      "bytes": 971
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-invalid-errno.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-negative.stderr",
+      "sha256": "f79f8e0290f177cd6a4b90331d48eb5bcfee93b1ad49f85cee734832d500fdc4",
+      "bytes": 1000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-timeout-read.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-timeout-read.stdout",
+      "sha256": "2ada3cbf464a0f1efeff4ff2d3db6d14a25d28da7d03ada0986c1a9938fa4bcf",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-timeout-write.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-timeout-write.stdout",
+      "sha256": "1b1a9b8f8d47611b5b7679acbe94cf2fa5b2cfb74b6cdfabbe545bbcfff188ed",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-unexpected-success.stderr",
+      "sha256": "7779f4345a62245c0eb867ebcd4c173b7bda27e301a4252627f59c8af971402b",
+      "bytes": 988
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-unexpected-success.stdout",
+      "sha256": "f141ec65b6cbd9554ca6d293586171ecc2993ef013f22ddb9c0be29465e49721",
+      "bytes": 123
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-wrong-errno.stderr",
+      "sha256": "2ac7b9c33f93ceb564e2cfe190a20d55bc43b77a63fd921ca351bbd369466674",
+      "bytes": 1658
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-python-wrong-errno.stdout",
+      "sha256": "6d40a43f00478cc476c418dc5adf1b48a9962b42d55cfc5235bf95574b6c493f",
+      "bytes": 270
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/external-consumers/native-drain-cross-language-default-v5/sdk-ssap-probe",
+      "sha256": "319718c351044208c690c8a218266001740a268d6dfc2586a8718cf72f3e7a89",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-sealed-v1/report.json",
+      "sha256": "37f8ee4e93aa48a354fce025e0fd59e328b61e7e2db25a967656138d2e368f3d",
+      "bytes": 94758
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-offline-v5.py",
+      "sha256": "3950aa7ca84d816071be9518349486261ccaa40577913c96e9b0090f6f8a8bfb",
+      "bytes": 3503
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/seal-native-drain-offline-v2.py",
+      "sha256": "5145edf3eda325bcc4d963d8374f787ea328ab3a634a3ffe8d5180b22b00601f",
+      "bytes": 3040
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-drain-docs-v1.log",
+      "sha256": "90e18aa457f5dce7b895cd64ec138014345d90c31899fa17af1bfa720224d6dc",
+      "bytes": 1342261
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-native-drain-wip-preserved-v1.json",
+      "sha256": "a569a1609e99a365b94f70a55a21ef245f22d211463d7c8bba8fbe4cf08c3041",
+      "bytes": 1980
+    }
+  ],
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
+  },
+  "access_policy": "仅公开来源/限定结果/hash；原日志、执行文件、SDK及捕获在私有工作区，需所有者授权和固定原件重放。编译、执行及报告提交分开。",
+  "replay": "native-drain-offline-v5.py withfreshoutputnames,exactretaineddirtysource/Rust1.96.1/explicitUAPI,CCandprivatebus;scopeisofflineonly. Originalfailuresandpatchesretained;neveroverwriteorupgradetohardware/formalproof."
+}

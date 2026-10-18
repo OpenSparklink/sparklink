@@ -1,5 +1,6 @@
 """Negative controls for the provenance checker, not protocol/hardware tests."""
 import json
+import copy
 from pathlib import Path
 import subprocess
 import tempfile
@@ -72,6 +73,46 @@ class QualificationTests(unittest.TestCase):
         result = self.run_check(require_current=True)
         self.assertEqual(result['errors'], [])
         self.assertEqual(result['verification'], 'RETAINED_BYTES_VERIFIED_NOT_REPLAYED')
+
+    def typed_material_manifest(self, private=False):
+        if private:
+            self.data['materials']['artifact']['access'] = 'private'
+        self.report.update(evidence_manifest_version=1,
+                           materials={'artifact': copy.deepcopy(self.data['materials']['artifact'])})
+        self.data['records'][0]['report'].update(material_binding_version=1,
+                                                material_bindings={'artifact': 'artifact'})
+        self.update_report()
+        self.assertEqual(self.run_check()['errors'], [])
+
+    def test_material_rehash_and_path_rebind_does_not_change_frozen_report_identity(self):
+        self.typed_material_manifest()
+        replacement = self.repo / 'replacement'
+        replacement.write_bytes(b'a different freshly hashed artifact')
+        self.data['materials']['artifact'].update(path='replacement', sha256=q.sha(replacement),
+                                                  bytes=replacement.stat().st_size)
+        self.assertIn('one: material/report binding mismatch artifact', self.run_check()['errors'])
+
+    def test_material_binding_applies_to_private_metadata_without_claiming_bytes(self):
+        self.typed_material_manifest(private=True)
+        positive = self.run_check(mode='metadata')
+        self.assertEqual(positive['errors'], [])
+        self.assertEqual(positive['verification'], 'METADATA_ONLY_NOT_REVERIFIED')
+        self.data['materials']['artifact']['sha256'] = 'f' * 64
+        self.assertIn('one: material/report binding mismatch artifact', self.run_check(mode='metadata')['errors'])
+
+    def test_declared_manifest_cannot_downgrade_to_legacy_or_omit_materials(self):
+        self.typed_material_manifest()
+        original = copy.deepcopy(self.data['records'][0]['report'])
+        for change in [{'material_binding_version': 0}, {'material_binding_version': True},
+                       {'material_binding_version': '1'}, {'material_bindings': {}},
+                       {'material_bindings': {'another': 'artifact'}},
+                       {'material_bindings': {'artifact': 'missing'}}]:
+            self.data['records'][0]['report'] = dict(original, **change)
+            with self.subTest(change=change):
+                self.assertTrue(self.run_check()['errors'])
+        self.data['records'][0]['report'] = {k:v for k,v in original.items()
+                                           if k not in ['material_binding_version','material_bindings']}
+        self.assertIn('one: invalid report material binding', self.run_check()['errors'])
 
     def typed_failed_matrix(self):
         record = self.data['records'][0]

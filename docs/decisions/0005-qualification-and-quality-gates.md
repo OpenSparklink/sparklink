@@ -41,6 +41,18 @@ supervisor退出凭据。只有producer内部计算尚未写出的supervisor结�
 
 ## 材料与信任边界
 
+新报告可声明 `evidence_manifest_version: 1`，冻结其 `materials` 元数据。
+对应registry必须提供 `material_binding_version: 1` 和完整的 `material_bindings`
+映射：每个材料的路径、hash、大小、访问方式及来源元数据必须与报告一致，不能
+仅重算registry里的新文件指纹就接替原材料。声明版本后不得删除绑定或退回legacy，
+未知版本、缺映射、替换路径或已重新计算的不同hash均拒绝。metadata也检查这项
+关联，仍不宣称私有字节已取得；旧报告不因迁移自动升级或改变原资格。
+
+广告模式等配置也是资格身份的一部分。相同内核、固件和二进制不等于相同试验：
+CLI请求与实际DLI字段须同时绑定。SDK110已封存Negotiable-T条件不能由Fixed-T
+默认值代替，发现成功或Status0也不补足连接Outcome。独立对照失败保留，不自动
+fallback，也不把改正测试配置称为已证明固件／自然故障的根因或恢复。
+
 公开 CI 的 metadata 模式检查公开报告、scope、门禁身份、生成摘要和可取得的
 源码映射；缺私有材料或兄弟仓库只得到 METADATA_ONLY_NOT_REVERIFIED，不能
 授予当前实机 PASS。本地 local 模式核对全部原件的大小/hash/记录断言；缺失或

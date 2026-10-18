@@ -50,6 +50,37 @@ def _scoped_files(repo, commit, paths):
             for name in names}
 
 
+def material_binding_errors(record, report, materials):
+    """Bind retained bytes to the producer's frozen names/locations/hashes.
+
+    A newly rehashed registry entry is not evidence for the old report. This
+    comparison also runs in metadata mode; private bytes remain unverified.
+    Legacy reports stay legacy unless the producer or registry declares v1.
+    """
+    binding = record['report']
+    if ('evidence_manifest_version' not in report
+            and 'material_binding_version' not in binding
+            and 'material_bindings' not in binding):
+        return []
+    ident = record['id']
+    named = report.get('materials')
+    links = binding.get('material_bindings')
+    if (type(report.get('evidence_manifest_version')) is not int
+            or report['evidence_manifest_version'] != 1
+            or type(binding.get('material_binding_version')) is not int
+            or binding['material_binding_version'] != 1
+            or not isinstance(named, dict) or not named
+            or not isinstance(links, dict) or set(named) != set(links)):
+        return [f'{ident}: invalid report material binding']
+    errors = []
+    for name, key in links.items():
+        if not isinstance(key, str) or key not in materials:
+            errors.append(f'{ident}: unknown bound material {name}')
+        elif named[name] != materials[key]:
+            errors.append(f'{ident}: material/report binding mismatch {name}')
+    return errors
+
+
 def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=False):
     workspace = workspace or repo.parent
     errors, unavailable, changed, unavailable_sources = [], [], [], []
@@ -126,6 +157,7 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
         if binding:
             report = documents.get(binding['material'])
             if report is not None:
+                errors.extend(material_binding_errors(record, report, materials))
                 if binding['verdict_results'].get(select(report, binding['verdict_pointer'])) != record['result']:
                     errors.append(f'{ident}: report/result mismatch')
                 if select(report, binding['scope_pointer']) != record['excluded']:

@@ -19,6 +19,25 @@ pub enum ApplicationError {
 }
 type Result<T> = std::result::Result<T, ApplicationError>;
 
+pub(crate) async fn bounded<T>(
+    client: &Client,
+    deadline: slk_channel::deadline::Deadline,
+    work: impl std::future::Future<Output = Result<T>>,
+) -> Result<T> {
+    deadline.remaining()?;
+    if client.daemon_lost() {
+        return Err(ApplicationError::Identity("daemon owner replaced"));
+    }
+    let mut lost = client.owner_loss();
+    tokio::select! {
+        biased;
+        _ = lost.changed() => Err(ApplicationError::Identity("daemon owner replaced")),
+        result = tokio::time::timeout_at(deadline.instant().into(), work) => {
+            result.map_err(|_| std::io::Error::from_raw_os_error(nix::libc::ETIMEDOUT))?
+        },
+    }
+}
+
 /// Holds one D-Bus caller identity and pins the unique daemon owner. It never
 /// silently follows a replacement daemon or opens the Native control device.
 #[derive(Clone)]

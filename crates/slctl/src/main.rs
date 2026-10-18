@@ -116,6 +116,7 @@ Commands:
   daemon                        Show the bus-authenticated slkd owner/PID/UID
   list                          List adapters
   controller-events [count] [ms] Observe bounded daemon-directory changes (not Native Ready/Down)
+  discover [prefix|-] [count] [ms] [RSSI] Caller-owned bounded passive scan; release only own lease
   select <path>                 Select a live adapter registration
   reports                       Show exact native discovery reports
   show                          Show adapter details

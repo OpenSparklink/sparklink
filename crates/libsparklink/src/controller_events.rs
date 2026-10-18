@@ -1,9 +1,9 @@
 //! Cursor-based directory observations through the pinned daemon. The stream
 //! has no background task, Native fd, permission grant, or hardware state cache.
-use crate::{ApplicationError, Client};
+use crate::{ApplicationError, Client, client::bounded};
 use slk_channel::deadline::Deadline;
 use slk_contract::{ControllerId, controller_events as wire};
-use std::{collections::VecDeque, future::Future};
+use std::collections::VecDeque;
 
 type Result<T> = std::result::Result<T, ApplicationError>;
 
@@ -38,25 +38,6 @@ pub struct ControllerEvents {
     cursor: u64,
     pending: VecDeque<ControllerEvent>,
     terminal: bool,
-}
-
-async fn bounded<T>(
-    client: &Client,
-    deadline: Deadline,
-    work: impl Future<Output = Result<T>>,
-) -> Result<T> {
-    deadline.remaining()?;
-    if client.daemon_lost() {
-        return Err(ApplicationError::Identity("daemon owner replaced"));
-    }
-    let mut lost = client.owner_loss();
-    tokio::select! {
-        biased;
-        _ = lost.changed() => Err(ApplicationError::Identity("daemon owner replaced")),
-        result = tokio::time::timeout_at(deadline.instant().into(), work) => {
-            result.map_err(|_| std::io::Error::from_raw_os_error(nix::libc::ETIMEDOUT))?
-        },
-    }
 }
 
 impl Client {

@@ -283,6 +283,88 @@ impl Context {
                 self.cmd_ssap_info(args[1]).await
             }
 
+            "discover" if args.len() <= 5 => {
+                let prefix = match args.get(1).copied().unwrap_or("-") {
+                    "-" => Vec::new(),
+                    value => parse_hex_bytes(value)?,
+                };
+                let count: usize = args.get(2).map(|s| s.parse()).transpose()?.unwrap_or(1);
+                let duration: u32 = args
+                    .get(3)
+                    .map(|s| s.parse())
+                    .transpose()?
+                    .unwrap_or(10_000);
+                let rssi: i16 = args.get(4).map(|s| s.parse()).transpose()?.unwrap_or(-128);
+                if !(1..=1024).contains(&count)
+                    || duration > 30_000
+                    || !slk_contract::discovery::valid_filter(&prefix, rssi, duration)
+                {
+                    anyhow::bail!(
+                        "discover [raw-prefix-hex|-] [count1..1024] [duration250..30000ms] [minimumRSSI -128..20]"
+                    );
+                }
+                let path = self.selected_path().await?;
+                let controller = slk_contract::ControllerId::from_path(&path)
+                    .ok_or_else(|| anyhow::anyhow!("immutable controller path required"))?;
+                let client = self.application().await?;
+                let mut session = client
+                    .discover(
+                        controller,
+                        prefix,
+                        rssi,
+                        duration,
+                        libsparklink::Deadline::after(std::time::Duration::from_secs(5))?,
+                    )
+                    .await?;
+                println!(
+                    "DiscoverySession: id={} path={} state=active source=broker",
+                    session.id(),
+                    path
+                );
+                let original = libsparklink::Deadline::after(std::time::Duration::from_millis(
+                    duration.into(),
+                ))?;
+                let outcome = async {
+                    let mut received = 0;
+                    while received < count {
+                        let batch = match session.read(true, original).await {
+                            Ok(batch) => batch,
+                            Err(libsparklink::ApplicationError::Bus(zbus::Error::MethodError(name, _, _)))
+                                if name.as_str() == "org.freedesktop.DBus.Error.Timeout" && original.remaining().is_ok() => continue,
+                            Err(error) => return Err(error.into()),
+                        };
+                        if batch.dropped != 0 || batch.kernel_lost != 0 {
+                            anyhow::bail!("discovery observation gap: dropped={} kernel_lost={}",batch.dropped,batch.kernel_lost);
+                        }
+                        for report in batch.reports.into_iter().take(count-received) {
+                            println!("DiscoveryReport: session={} generation={} sequence={} address_type={} address={} rssi={} data={}",
+                                session.id(),controller.generation,report.sequence,report.address_type,hex_bytes(&report.address),
+                                if report.rssi_known {report.rssi.to_string()} else {"unknown".into()},hex_bytes(&report.data));
+                            received += 1;
+                        }
+                    }
+                    Ok::<_,anyhow::Error>(())
+                }.await;
+                let cleanup = session
+                    .close(libsparklink::Deadline::after(
+                        std::time::Duration::from_secs(5),
+                    )?)
+                    .await;
+                match (outcome, cleanup) {
+                    (Err(first), Err(cleanup)) => {
+                        Err(first.context(format!("discovery close also unconfirmed: {cleanup}")))
+                    }
+                    (Err(first), Ok(_)) => Err(first),
+                    (Ok(()), Err(cleanup)) => Err(cleanup.into()),
+                    (Ok(()), Ok(stopped)) => {
+                        println!(
+                            "DiscoveryReleased: session={} last_physical_stop_confirmed={stopped}",
+                            session.id()
+                        );
+                        Ok(())
+                    }
+                }
+            }
             "controller-events" if args.len() <= 3 => {
                 let count: usize = args.get(1).map(|s| s.parse()).transpose()?.unwrap_or(1);
                 let timeout: u64 = args.get(2).map(|s| s.parse()).transpose()?.unwrap_or(5000);

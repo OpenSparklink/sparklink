@@ -3763,7 +3763,7 @@
       },
       "patch": {
         "path": "tools/lab/qemu_cmtc_capability_hold.patch",
-        "sha256": "691d3d398cc381414c0a30b9ff5cfe425059fb4ee3d09c27514752eb78aaf040"
+        "sha256": "1b1eff5f719126f81b214c4ecc4ebe3672fafd57fa7e00c03b9da34e16d582cc"
       },
       "offline_audit": {
         "path": ".dev/main-thread-01a120fe/ssap-init-selector-capture-audit-v2.json",

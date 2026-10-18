@@ -93,4 +93,3 @@ class CmtcHoldSelector(unittest.TestCase):
             self.assertFalse(self.selected(raw))
         request = bytes.fromhex('0200080001000400e2000000')
         self.assertFalse(self.selected(aggregate(frame(response=request))))
-

@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9_PARTIAL_INIT_SELECTOR_OFFLINE_ONLY_SHARED_BUILD_WAIT",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9_EXACT_CMTC_FIXTURE_BUILT_GATE_WIRED_VM_PENDING",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -3754,7 +3754,7 @@
       "next": "Choose actual per-stage controlledVM barrier beforeimplementing/refactoring. Requireoriginaldeadline,no secondinitializer,retiring prevents latepublish,real fd/guard/work references converge,peercontroller stays independentlyReady. Distinguish physicalDown effects onthe sharedlink fromothercontroller retirement. Preservefullscope andnotallcontrolcombinations asprerequisite."
     },
     "r5f9": {
-      "status": "TEST_SELECTOR_OFFLINE_ONLY_NOT_NEW_VM_OR_PRODUCTION_PROOF",
+      "status": "PINNED_TEST_QEMU_BUILT_CMTC_GATE_WIRED_OFFLINE_ONLY_VM_NOT_RUN",
       "exit_reference": "project/implementation-plan.md / R5f9 partial initialization",
       "scope": "Existing bounded2s original real IN81 hold with narrow SDK110 CMTC CapabilityRsp selector;sole actual Engine/Session/initializer unchanged. No new protocol implementation.",
       "selector_source": {
@@ -3771,9 +3771,9 @@
         "scope": "1171 retained actual RX transfers;4 exact CMTC aggregates;24 mutation refusals;4 C helper tests. Not new physical qualification.",
         "patch_application": "Actual patch applied to a private copy of exact reviewed base; reproduced candidate source01461648;baselinehash4443a201 unchanged. No QEMU compile or VM qualification."
       },
-      "build": "Notbuilt: shared lock held by other-thread ws73-upstream run-kunit.py --jobs4. No compile/link begun,no bypass or interruption. .dev/main-thread-01a120fe/ssap-init-qemu-v1/build-manifest.json retains lock-conflict status.",
-      "next": "Build exact fixture under existing global lock,wire existing runner/coordinator,then actual allocatedU SDK110 VM CMTC/ExchangeInfo wait-retire-cleanup and current-path preservation. Native synchronousbind-inflight needs separate actual barrier,not old Managed initializer or abstract futurefixture.",
-      "remaining": "All originalS0-S6/19WP/10FV/12DG,fullR5f9initcleanup,otherarchitecture,lifetimes,RCA/nonmanual recovery OPEN;goal active;E/mixed qualification notinherited.",
+      "build": "First two attempts refused shared lock before compile;v3 acquired same global lock,8job budget/oneactualcompileunit,compile/link0,baseline binary and930linkobjects unchanged. Not device qualification.",
+      "next": "Freeze exact new source/guesttools;allocatedU SDK110 VM two-role real Managedwithdrawal while actual CMTC held,observe failedoldowner/fd convergence,releaseoldreply,actual cleanup/Down/reacquire;then ordinary two-role8peer replies sameVM. FDobserver VMroot read-only/fixeddaemon8requests,no duplicates/ioctls. Nativebind/ExchangeInfo-stage/kernelrefs/drain and full original remaining scope stay OPEN.",
+      "remaining": "Actual root fd observation is limited,not task join/object removal/kernel reference or UAF proof. Nativebind/SSAPExchangeInfo-stage/full2x2role matrix and alloriginalS0-S6/19WP/10FV/12DG remain OPEN;VM gate not yet run;no natural recovery qualification.",
       "production_changed": false,
       "new_formal_proofs": 0,
       "new_device_qualifications": 0,
@@ -3783,7 +3783,19 @@
         "sha256": "1ebd3a9d10b8019974772df5de2a8b5224b2e68ae2cc397d94982b4c12e5d965",
         "scope": "116-document inventory,example/static checks,nitpicky warning-as-error HTML only;no new reader/device/browser/external-link qualification"
       },
-      "latest_shared_build_observation": "Other-thread ws73-upstream run-kunit.py --jobs4 now holds same global lock;no local QEMU compile begun. Continue independent work and recheck before build;do not bypass/interrupt."
+      "latest_shared_build_observation": "Exact same shared global nonblocking lock acquired for v3 and released after actual compilation;budget8/oneunit. Recheck every further build/VM launch,no bypass or task interruption.",
+      "build_manifest": {
+        "path": ".dev/main-thread-01a120fe/ssap-init-qemu-v3/build-manifest.json",
+        "sha256": "31923eb6ac000abbd8087c956bae518d08e51c89b20ff918bace3ba7c5dd2241",
+        "binary_sha256": "1622d935beca86ed20d6413e569c4e8ff676c7d262ec768b5e8d1191067cd832"
+      },
+      "tool_checks": {
+        "log": ".dev/main-thread-01a120fe/ssap-init-tools-v3.log",
+        "sha256": "871978f60adf8843d0567a36d13b93963a5a8d5d0cfb3418be1de036dd5e05ad",
+        "methods": 847,
+        "scope": "Offline fixtures/localsyscalls,actual helper/exact oldwire preservation only;not new physical or implementation formal proof"
+      },
+      "pending_gate_cases": "Explicit original guestport/physical QMPslot0 owner role0 andslot1 owner role1;notfull2x2. Nativecontroller index isidentity only,neverQMPslot selection. Then normal two-role actualbusiness8RT sameVM."
     }
   },
   "owned_ssap_c6_historical_batch": {

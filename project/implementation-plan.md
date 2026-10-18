@@ -15,12 +15,28 @@ CapabilityRsp 选择器。它只识别完整有界 aggregate 中的当前基本�
 这是新测试 helper 对旧证据的映射检查，**不是新 VM、固件或初始化清理资格**。
 
 第一步退出：选择器/回调补丁可审查、真实旧捕获匹配且不改字节、失败拒绝、
-准确测试 QEMU 构建身份封存。共享构建锁当前由另一线程 KUnit jobs4 持有，
-本线程编译被锁拒绝且未开始；不抢占、不绕锁、不把未构建状态写成通过。
-构建就绪后接现有逐叶直通 runner，在指定 U 双设备取得受控 CMTC/协商等待、
+准确测试 QEMU 构建身份封存。初始两次共享锁拒绝保留，第三次在同一锁下完成
+单编译单元/预算8构建，原二进制及930链接对象不变；新测试 QEMU SHA256 为
+`1622d935beca86ed20d6413e569c4e8ff676c7d262ec768b5e8d1191067cd832`，
+仅构建完成，不授予设备资格。现有逐叶直通 runner 已接入 opt-in 门禁，在指定 U 双设备取得受控 CMTC/协商等待、
 退休/Down、旧回复及新 lifetime 的真实证据，并单独保留普通业务和长度资格回归。
 物理 Down 会结束同一条链路两端，不将其解释为同行 controller 故障；另一只
 controller 的独立 Ready/管理推进与后续实际业务需分别检查。E/混合不授旧 PASS。
+
+已接入的首个实测切片是 `--ssap-initialization-verify`，尚待新 artifact 执行。
+单 bulk RX URB 持有 CMTC 时，后续同端 Down 也不能进入 guest，故使用真实 Managed
+lease Revoking 作原始屏障：原 lifetime 在该端规范快照中尚为 Up（Down仍被hold），
+旧 Engine 报当前 EACCES 并收敛 fd；
+再明确释放原回复，要求真实 Disconnect/Status/两端 Down、清理及重新取得管理权。
+复用唯一连接发现/Create/Down及抓包函数，不生成取消作者的 Disconnect 成功结果。
+有限切片为显式 slot0 发起侧撤权、slot1 接受侧撤权各一次；不是完整2×2矩阵。
+QMP slot来自固定 guest端口/原始输入映射，不能由 Native controller index或USB枚举号推断。
+随后同 VM 运行原普通用户连接的实际角色交换、SSAP协商及8次随机业务回复。
+
+VM root 只读取固定 daemon 的八个 `/proc/PID/fd` 快照，普通用户不因此获得 root
+权限、fd 副本或 ioctl 旁路。固定请求顺序/原 PID start_ticks/实际 inode/根收据分别
+核对；这只说明 daemon fd 收敛，不是内核引用、worker/drain、UAF 或 bind 内部证明。
+847项工具fixtures及重构后原 B847 双端连接证据复算通过，均为离线限定范围。
 
 本批门禁仅约束这条初始化纵向链路；Native bind 内部竞争、全部引用/回收组合、
 全复用屏障、SSAP 原期限和其他剩余生命周期范围仍开放，不能因 helper 通过关闭整项。

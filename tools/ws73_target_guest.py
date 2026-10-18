@@ -365,6 +365,12 @@ def verify_passthrough():
         proofs.append({'application_clients':client_corroborate(run,capture)})
     if requested_connection != ('connection_control' in run):
         raise ValueError('explicit connection request and evidence must agree')
+    initialization_requested='ws73.ssap_initialization=1' in Path('/proc/cmdline').read_text().split()
+    if initialization_requested != ('ssap_initialization' in run):raise ValueError('initialization request/evidence mismatch')
+    if initialization_requested:
+        from ws73_ssap_initialization import corroborate_guest, verify_fd_supervisor
+        verify_fd_supervisor(run,EVIDENCE)
+        proofs.append({'ssap_initialization':corroborate_guest(run,capture)})
     requester_requested='ws73.ssap_requester_lifecycle=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_requester_lifecycle_required',False))!=requester_requested for row in run.get('channel_socket',[])) or(requester_requested and not run.get('channel_socket')):raise ValueError('requester lifecycle request/evidence mismatch')
     lifecycle_requested='ws73.ssap_owner_lifecycle=1' in Path('/proc/cmdline').read_text().split()
@@ -427,6 +433,10 @@ def verify_passthrough():
 
 if __name__=='__main__':
     action=sys.argv[1]
+    if action=='ssap-init-fds':
+        from ws73_ssap_initialization import observe_fds
+        observe_fds(EVIDENCE,int(sys.argv[2]))
+        raise SystemExit(0)
     if action=='daemon-crash':
         from ws73_daemon_crash import record_phase
         record_phase(application,[registration('1-1'),registration('1-2')],sys.argv[2],int(sys.argv[3]),int(sys.argv[4]) if len(sys.argv)>4 else None)

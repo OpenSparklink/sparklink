@@ -117,7 +117,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -267,7 +267,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -537,6 +537,8 @@ def _run(args):
     ssap_owned=bool(getattr(args,'ssap_owned_verify',False))
     owner_lifecycle=bool(getattr(args,'ssap_owner_lifecycle_verify',False))
     requester_lifecycle=bool(getattr(args,'ssap_requester_lifecycle_verify',False))
+    from ws73_ssap_initialization import requested as initialization_requested
+    ssap_initialization=initialization_requested(args)
     if requester_lifecycle and (not channel_socket or not passthrough or owner_lifecycle or ssap_owned or agent_mode or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness or parallel):raise ValueError('requester lifecycle requires separate ordinary basic socket baseline')
     if owner_lifecycle and (not channel_socket or not passthrough or agent_mode or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owner lifecycle requires separate ordinary basic socket baseline')
     if ssap_owned and (not channel_socket or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owned SSAP requires separate ordinary socket baseline')
@@ -690,6 +692,7 @@ def _run(args):
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
     m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py')]
+    if ssap_initialization:m['runner_inputs'] += [file_record(HERE/name) for name in ('ws73_ssap_initialization.py','ws73_diagnostic_hold.py','ws73_channel_prefix_hold.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_daemon_hold.py') ]
     m['early_bootstrap_fault_requested']=early_fault
     if early_fault:m['early_bootstrap_verifier']=file_record(HERE/'ws73_early_fault.py')
     m['four_device_parallel_rf']=parallel and not business
@@ -742,6 +745,8 @@ def _run(args):
     m['ssap_access_acceptance']=False
     m['ssap_owned_verification_requested']=ssap_owned
     m['ssap_owned_acceptance']=False
+    m['ssap_initialization_requested']=ssap_initialization
+    m['ssap_initialization_acceptance']=False
     m['ssap_requester_lifecycle_requested']=requester_lifecycle
     m['ssap_requester_lifecycle_acceptance']=False
     m['ssap_owner_lifecycle_requested']=owner_lifecycle
@@ -835,6 +840,9 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if ssap_initialization:
+            from ws73_ssap_initialization import validate_qemu
+            validate_qemu(package['qemu']['path'])
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if agent_mode and ('native_vm' not in package or 'native_security_agent_probe' not in package):raise ValueError('Agent requires native VM and staged real witness')
@@ -936,6 +944,7 @@ def _run(args):
                      (' ws73.application_clients=1' if application_clients else '')+
                      (' ws73.ssap_owner_lifecycle=1' if owner_lifecycle else '')+
                      (' ws73.ssap_requester_lifecycle=1' if requester_lifecycle else '')+
+                     (' ws73.ssap_initialization=1' if ssap_initialization else '')+
                      (' ws73.ssap_service_policy=1' if service_policy else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
                      (' ws73.channel_fairness=1' if fairness else '')+
@@ -1016,6 +1025,10 @@ def _run(args):
                     monitor=physical_boundary.monitor(monitor)
                 hold=None
                 install_hold=None
+                initialization_hold=None
+                if ssap_initialization:
+                    from ws73_ssap_initialization import Coordinator
+                    initialization_hold=Coordinator(share,m.setdefault('ssap_initialization_hold',{}),package['qemu']['path'])
                 if agent_mode=='install-cancel':
                     from ws73_security_install_hold import InstallCoordinator
                     install_hold=InstallCoordinator(share,m.setdefault('security_install_hold',{}),package['qemu']['path'])
@@ -1079,6 +1092,8 @@ def _run(args):
                             hold.record['host_identity_at_arm'] = live_runtime_owner(
                                 args.ports[connected_index if connected_reply or channel_revoke_prefix else 0], process.pid, lab.inventory())
                         hold.poll(monitor)
+                    if initialization_hold:
+                        initialization_hold.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if install_hold:
                         install_hold.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if recovery and hotplug_phase==0 and 'WS73_TARGET_RECOVERY_INJECT_READY' in text:
@@ -1284,6 +1299,12 @@ def _run(args):
                     if link_resync:
                         from ws73_link_resync import corroborate as resync_corroborate
                         m['link_resync_corroboration']=resync_corroborate(control,capture)
+                if ssap_initialization != ('ssap_initialization' in control):raise ValueError('SSAP initialization request/evidence mismatch')
+                if ssap_initialization:
+                    from ws73_ssap_initialization import corroborate as initialize_corroborate, verify_fd_supervisor
+                    verify_fd_supervisor(control,share)
+                    m['ssap_initialization_corroboration']=initialize_corroborate(control,capture,m['ssap_initialization_hold'],(output/'qemu-stderr.log').read_text())
+                    m['ssap_initialization_acceptance']=True
                 if bool(agent_mode) != ('security_agent' in control):raise ValueError('Agent request/evidence mismatch')
                 if agent_mode:
                     from ws73_security_agent import corroborate as agent_corroborate
@@ -1652,6 +1673,22 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record):
+    initialization=record.get('ssap_initialization_requested',False)
+    if type(initialization)is not bool:return 1
+    if initialization:
+        from ws73_ssap_initialization import valid_summary, QEMU_SHA256, METHOD
+        ordinary=record.get('channel_socket_corroboration',{})
+        held=record.get('ssap_initialization_hold',{})
+        if (record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('ssap_initialization_acceptance')is not True
+                or record.get('ordinary_channel_socket_acceptance')is not True
+                or record.get('channel_socket_verification_requested')is not True
+                or ordinary.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
+                or type(ordinary.get('round_trips'))is not int or ordinary['round_trips']!=8
+                or held.get('method')!=METHOD or held.get('qemu_sha256')!=QEMU_SHA256 or held.get('complete')is not True
+                or not valid_summary(record.get('ssap_initialization_corroboration',{}))
+                or type(record.get('qemu_exit'))is not int or record['qemu_exit']!=0
+                or type(record.get('supervisor_exit'))is not int or record['supervisor_exit']!=0):return 1
+    elif record.get('ssap_initialization_acceptance')or record.get('ssap_initialization_corroboration'):return 1
     lifecycle=record.get('ssap_owner_lifecycle_requested',False)
     if type(lifecycle)is not bool:return 1
     channel_proof=record.get('channel_socket_corroboration',{})
@@ -1942,6 +1979,7 @@ def main():
             cmd.add_argument('--channel-benchmark-xhci',choices=['on','off'],default='on',help='VM-only xHCI trace comparison;usbmon remains enabled')
             cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate bounded real application benchmark in both connection roles;not performance qualification')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
+            cmd.add_argument('--ssap-initialization-verify',action='store_true',help='real CMTC-pending lease revoke/fd convergence then ordinary same-artifact connection/socket preservation')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
             cmd.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester death/old reply drain and ordinary CUTC while real owner prompt held')
             cmd.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')

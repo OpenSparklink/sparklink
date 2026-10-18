@@ -375,6 +375,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             channel_rounds=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_rounds=/){sub(/^ws73.channel_rounds=/,"",$i);print $i}}' /proc/cmdline)
             channel_bytes=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_bytes=/){sub(/^ws73.channel_bytes=/,"",$i);print $i}}' /proc/cmdline)
             connection_arg="$connection_arg --channel-socket-verify --channel-socket-rounds ${channel_rounds:-4} --channel-socket-bytes ${channel_bytes:-61}"
+            if grep -qw ws73.ssap_initialization=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-initialization-verify"; fi
             if grep -qw ws73.ssap_owner_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owner-lifecycle-verify"; fi
             if grep -qw ws73.ssap_requester_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-requester-lifecycle-verify"; fi
             if grep -qw ws73.ssap_owned=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owned-verify"; fi
@@ -418,7 +419,11 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     fi
     initializer_arg=''
     if grep -q 'ws73.initializer_lifecycle=1' /proc/cmdline; then initializer_arg='--initializer-lifecycle'; fi
+    if grep -qw ws73.ssap_initialization=1 /proc/cmdline; then
+        /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ssap-init-fds "$daemon" > /evidence/ssap-initialization-fds.log 2>&1 & initialization_fds=$!
+    fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg $initializer_arg $connection_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
+    if grep -qw ws73.ssap_initialization=1 /proc/cmdline; then wait "$initialization_fds" || fail 'partial initialization fd observer'; fi
     if grep -qw ws73.link_resync=1 /proc/cmdline; then wait "$resync_supervisor" || fail 'real subscriber overflow supervisor'; fi
     if grep -qw ws73.acb_probe=1 /proc/cmdline; then wait "$acb_supervisor" || fail 'real ACB transport supervisor'; fi
 else

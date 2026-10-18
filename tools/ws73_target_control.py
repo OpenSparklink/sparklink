@@ -61,6 +61,9 @@ class PassthroughControlRun(Run):
 class ConnectionControlRun(PassthroughControlRun):
     def phase(self, a, b, count, label):
         if label == 'initial':
+            if getattr(self.args, 'ssap_initialization_verify', False):
+                from ws73_ssap_initialization import execute as initialize
+                initialize(self, a, b)
             from ws73_connection_control import execute
             execute(self, a, b)
             from ws73_registry_metadata import execute as registry_metadata
@@ -144,6 +147,7 @@ def main():
     parser.add_argument('--channel-benchmark-count',type=int,default=20)
     parser.add_argument('--channel-benchmark-bytes',type=int,default=61)
     parser.add_argument('--channel-benchmark-interval-us',type=int)
+    parser.add_argument('--ssap-initialization-verify',action='store_true',help='actual CMTC-pending lease revoke, old owner fd convergence and ordinary new lifetime preservation')
     parser.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
     parser.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester exit/physical reply drain and CUTC while owner prompt held')
     parser.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
@@ -154,6 +158,9 @@ def main():
     args=parser.parse_args()
     if args.application_client_verify and (not args.passthrough or not args.connection_verify or any(getattr(args,key,False) for key in ['channel_socket_verify','acb_transport_probe','security_agent','daemon_link_resync','channel_benchmark','dynamic_channel_verify','channel_fairness_verify'])):parser.error('application clients require a dedicated real connection gate')
     if args.application_client_verify and any(value for key,value in vars(args).items() if type(value) is bool and key not in ['passthrough','connection_verify','application_client_verify']):parser.error('application clients cannot combine independent lifecycle/fault gates')
+    from ws73_ssap_initialization import requested
+    try:requested(args)
+    except ValueError as error:parser.error(str(error))
     if args.ssap_requester_lifecycle_verify and (not args.channel_socket_verify or not args.passthrough or args.ssap_owner_lifecycle_verify or args.ssap_owned_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('requester lifecycle requires separate ordinary basic socket baseline')
     if args.ssap_owner_lifecycle_verify and (not args.channel_socket_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owner lifecycle requires separate ordinary basic socket baseline')
     if args.ssap_owned_verify and (not args.channel_socket_verify or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owned SSAP requires separate ordinary socket baseline')

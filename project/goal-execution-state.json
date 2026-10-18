@@ -4300,12 +4300,39 @@
         "path": ".dev/main-thread-01a120fe/allocation-native-drain-readonly-v4.json",
         "sha256": "6e8009dec5f8f3201b81ed88377aae427b57183f16743bdb3e8a047879b218a7",
         "scope": "Allfourpins/parents/PCI/visiblefds/liveVMhostdevsafter10U-onlyVMs;U5EP/E2EP. NoE/forbidden/hub/controlleroperation;rootfdvisibilitylimited,noproofofotherthreadbusiness."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/allocation-native-return-readonly-v3.json",
+        "sha256": "52b7b62a2be91f9c240d49da6fc1d7e5f9bbb7f9016418cf8a58dad2b0e5efa1",
+        "scope": "Fourpins/parents/PCIstillmatchafterpositiveandnegativeU-onlyVMs,no visibleWS73occupancy;E2EP/noHCC,rootfdvisibilitylimited,nototherthreadbusinessproof."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-native-return-readonly-v3.json",
-      "sha256": "52b7b62a2be91f9c240d49da6fc1d7e5f9bbb7f9016418cf8a58dad2b0e5efa1",
-      "scope": "Fourpins/parents/PCIstillmatchafterpositiveandnegativeU-onlyVMs,no visibleWS73occupancy;E2EP/noHCC,rootfdvisibilitylimited,nototherthreadbusinessproof."
+      "path": ".dev/main-thread-01a120fe/allocation-thread-resource-refresh-v1.json",
+      "sha256": "548c0b9cfd4ff3d1a972e3f170ab5489bbb23d98b8b4f7d15a04b0faf503eb54",
+      "bytes": 4622,
+      "scope": "Four current user-allocated serial pins/hubs/shared PCI match; U5EP/E2EP; live libvirt XML and visible driver/fds show no allocated WS73/shared PCI occupancy; root fd visibility incomplete. All four cooperative port leases/build lock free. No USB open/download/reset/power/unbind/VM termination; no E/mixed/cold-ROM qualification or historical PASS transfer.",
+      "guard_tests": [
+        {
+          "path": ".dev/main-thread-01a120fe/allocation-thread-resource-guards-v1.log",
+          "sha256": "ff7f421153748c5c8fcbe92d884349e9bb1fb1521860a09c91e4760ae7a0ae84",
+          "bytes": 1809,
+          "methods": 10
+        },
+        {
+          "path": ".dev/main-thread-01a120fe/allocation-thread-build-guards-v1.log",
+          "sha256": "94b67c077419e2cd10580c6413cb45e29f92ed71d86c096da2e3849aed0f0746",
+          "bytes": 921,
+          "methods": 5
+        }
+      ],
+      "preserved_wip": {
+        "path": ".dev/main-thread-01a120fe/allocation-thread-resource-wip-v1.json",
+        "sha256": "6123ab48bb11556158ea3012f4f42ec0fe2971d2aa3c2b66a6edcc3db730051d",
+        "bytes": 1643
+      },
+      "configuration_change": "No operational policy change: existing strict allocation and callers already match the requested four leaves. Do not replace current model mapping with historical U234.",
+      "continuation": "R5f9g followed by original controller/dynamic creation retirement and related fd/deadline gates; use homogeneous U pair first, explicit E guest separately; mixed download refused until qualified per-device image routing exists."
     },
     "current_finite_gate_ref": "native-return-connection-retirement-r5f9g"
   },

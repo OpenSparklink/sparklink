@@ -287,8 +287,12 @@ E 同型号另建 E guest，先核对 HCC/启动，再验证业务；现有驱�
 [准确新 U guest 的独立门禁](../docs/evidence/shared-allocation-u-gate-20261018.json)确认 HCC、
 两角色owner/原五秒期限、8次实际回复及27证据负对照。完整生命周期退出仍缺。
 R5f8 requester退出/晚到物理回复排空及挂起期间业务已取得准确 B847 限定记录；
-当前继续 R5f9 部分初始化的分阶段屏障和清理，不把 E/混合资格或全部控制面组合
-设为新前置。E/混合与恢复继续单列开放。重复只读核对确认四个序列号 pin 未变；
+近期 Native 返回门禁与剩余 controller/dynamic 创建排空范围见本页 R5f9g；
+不把 E/混合资格或全部控制面组合设为新前置。E/混合与恢复继续单列开放。
+本次重新只读核对四个序列号 pin、父 hub/PCI、live VM hostdev、可见 fd 和共享锁，
+与既有白名单一致，不修改已封存资格或覆盖原10个未提交文件。15项现有端口/构建
+守卫检查通过；特权 fd 可见性限制保留，未执行设备 I/O，不授新 E 或混合资格。
+准确核对记录及 hash 仅维护于 goal 的 `hardware_resource_allocation.latest_readonly_recheck`；
 goal 中旧 E1/U234 的操作映射已标为历史，当前只引用本白名单。
 资格一致性检查拒绝旧操作映射、跨线程端口、E/U 对调及独立运行目录漂移；
 这些检查不授予新设备或新 artifact 的实机资格。

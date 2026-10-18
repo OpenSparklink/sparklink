@@ -82,6 +82,9 @@ impl Link {
                 tokio::time::sleep(std::time::Duration::from_millis(500)).await;
                 Ok(vec![0xfe])
             }
+            (21, 0) => Err(zbus::fdo::Error::Timeout(
+                "explicit immediate error fixture; not an elapsed deadline".into(),
+            )),
             _ => Err(zbus::fdo::Error::NotSupported(
                 "unmatched fixture read".into(),
             )),
@@ -100,6 +103,9 @@ impl Link {
         match (handle, minimum, value.as_slice()) {
             (17, 1, [0x56, 0x12]) => Ok(vec![0x90]),
             (17, 0, []) => Ok(vec![0x91]),
+            (21, 0, [0x56, 0x12]) => Err(zbus::fdo::Error::Timeout(
+                "explicit immediate error fixture; not an elapsed deadline".into(),
+            )),
             _ => Err(zbus::fdo::Error::InvalidArgs(
                 "unmatched fixture write".into(),
             )),
@@ -373,6 +379,69 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         }
     }
     assert_eq!(ssap_calls.load(Ordering::SeqCst), 18);
+    // Actual C/Python VM consumers, including their new negative-result mode.
+    // An immediate FDO Timeout tests errno mapping only: it must never qualify
+    // the hardware gate's original five-second elapsed-time requirement.
+    for language in ["c", "python"] {
+        for (label, operation, handle, expected, success) in [
+            ("timeout-read", "ssap-read", "21", "110", true),
+            ("timeout-write", "ssap-write", "21", "110", true),
+            ("wrong-errno", "ssap-read", "21", "5", false),
+            ("unexpected-success", "ssap-read", "17", "110", false),
+            ("invalid-errno", "ssap-read", "21", "0", false),
+        ] {
+            let mut command = Command::new("timeout");
+            command.arg("20s");
+            if language == "c" {
+                command.arg(&sdk_probe);
+            } else {
+                command
+                    .arg("python3")
+                    .arg(root.join("tools/testing/application_client/client.py"));
+            }
+            command.args(["ssap-error", "2", "7", PATH, operation, handle, expected]);
+            if operation == "ssap-write" {
+                command.arg("5612");
+            }
+            let output = command
+                .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+                .env("LIBSPARKLINK_PATH", &runtime_library)
+                .env("PYTHONPATH", root.join("bindings/python"))
+                .env("LD_LIBRARY_PATH", &directory)
+                .output()?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-{label}.stdout")),
+                &output.stdout,
+            )?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-{label}.stderr")),
+                &output.stderr,
+            )?;
+            assert_eq!(output.status.success(), success, "{language}/{label}");
+            let text = std::str::from_utf8(&output.stdout)?.replace(' ', "");
+            if success || label == "wrong-errno" {
+                assert_eq!(text.lines().count(), 2);
+                assert!(text.contains(r#""stage":"ssap_error""#));
+                assert!(text.contains(r#""errno":110,"operation_success":false"#));
+                if success {
+                    assert!(output.stderr.is_empty());
+                }
+            } else if label == "unexpected-success" {
+                if language == "c" {
+                    assert!(text.contains(r#""errno":0,"operation_success":true"#));
+                } else {
+                    assert!(!text.contains(r#""stage":"ssap_error""#));
+                }
+            } else {
+                assert!(text.is_empty(), "invalid expectation cannot reach the API");
+            }
+        }
+    }
+    assert_eq!(
+        ssap_calls.load(Ordering::SeqCst),
+        26,
+        "eight added actual value calls; invalid expectations rejected before RPC"
+    );
     let unchanged = Command::new("sha256sum")
         .arg("--check")
         .arg(directory.join("materials.sha256"))

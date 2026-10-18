@@ -799,7 +799,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F6_SCOPED_POSITIVE_PRESERVATION_PASS_CONTROLLED_LIFETIME_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F7_REAL_OWNER_EXIT_AND_ORIGINAL_DEADLINE_GATE_ACTIVE",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1907,16 +1907,16 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP18-R5f6-ssap-value-original-deadline-active",
-      "production_behavior": "Exact e776 existing SDK/contract/Connection/Query shares original value deadline;Connection-owned initializer and separate author/physical drain. Four finite source-bound records;no new Host/Engine or full deadline/lifetime/architecture qualification.",
-      "state": "R5F6_SCOPED_OFFLINE_POSITIVE_AND_PRESERVATION_PASS_CONTROLLED_LIFETIME_GATES_OPEN",
+      "id": "WP03-WP06-WP08-WP18-R5f7-owner-exit-typed-deadline-gate-active",
+      "production_behavior": "Reuse preserved owner/prompt/wire regression and sole existing SDK/recorder;typed C/Python errno plus originalfive-second guard,not diagnostic string. No production Engine/Runtime or publicABI change;old e776 records retain their ownscope.",
+      "state": "R5F7_EXISTING_DRAFT_AND_ACTUAL_SDK_ERROR_GATE_IMPLEMENTED_NEW_ARTIFACT_REAL_PENDING",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Wire preserved owner/caller originaldeadline cases through the sole recorder after832aece barrier/output fix (16 local methods PASS;no new controlledVM qualification). Validate actual callback/callerexit/partialNativeinit/latephysicalreply and concurrent real peer-business with accurate tools. Then other public-method/common deadlines/full lifecycle/Grant/fd-transfer/higherSDK/per-appDiscovery/R6c. All originalS0-S6/19WP/10FV/12DG/UserHostP4/VM-only/naturalRCA/nonmanualrecovery remain OPEN."
+      "next": "Seal accurate newsource,strict locked/offline tests andbuild/prepared artifacts;VM verify ordinary ownerexit/stale/late approvals/actual SDK originaldeadline in both connectionroles andbothUSBends. Then request-caller exit/latephysicalreply,concurrent realpeerbusiness andpartialNativeinit;all fullarchitecture/common/higherAPI/perappDiscovery/R6c andnaturalRCA/nonmanualrecovery remain OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3663,6 +3663,13 @@
         "scope": "16actual local subprocess regression methods PASS;original twofailures and main tenWIP bytes retained;no new controlled VM or device qualification",
         "next": "Wire current owner/caller and originaldeadline cases;other actual peer-business and partialNativeinit obligations remain required."
       }
+    },
+    "r5f7": {
+      "state": "R5F7_EXISTING_DRAFT_AND_ACTUAL_SDK_ERROR_GATE_IMPLEMENTED_NEW_ARTIFACT_REAL_PENDING",
+      "audit": "docs/evidence/ssap-owner-deadline-gate-audit-20261018.json",
+      "source_parent": "0fdeed5c9abcd5fb0d5e9824c5b40c9cf005ee78",
+      "scope": "Test tools/fixtures only;reuse existing production implementations",
+      "remaining": "Seal accurate newsource,strict locked/offline tests andbuild/prepared artifacts;VM verify ordinary ownerexit/stale/late approvals/actual SDK originaldeadline in both connectionroles andbothUSBends. Then request-caller exit/latephysicalreply,concurrent realpeerbusiness andpartialNativeinit;all fullarchitecture/common/higherAPI/perappDiscovery/R6c andnaturalRCA/nonmanualrecovery remain OPEN."
     }
   },
   "owned_ssap_c6_historical_batch": {

@@ -13,16 +13,16 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP03-WP06-WP08-WP18-R5f6-ssap-value-original-deadline-active",
-    "production_behavior": "Exact e776 existing SDK/contract/Connection/Query shares original value deadline;Connection-owned initializer and separate author/physical drain. Four finite source-bound records;no new Host/Engine or full deadline/lifetime/architecture qualification.",
-    "state": "R5F6_SCOPED_OFFLINE_POSITIVE_AND_PRESERVATION_PASS_CONTROLLED_LIFETIME_GATES_OPEN",
+    "id": "WP03-WP06-WP08-WP18-R5f7-owner-exit-typed-deadline-gate-active",
+    "production_behavior": "Reuse preserved owner/prompt/wire regression and sole existing SDK/recorder;typed C/Python errno plus originalfive-second guard,not diagnostic string. No production Engine/Runtime or publicABI change;old e776 records retain their ownscope.",
+    "state": "R5F7_EXISTING_DRAFT_AND_ACTUAL_SDK_ERROR_GATE_IMPLEMENTED_NEW_ARTIFACT_REAL_PENDING",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "Wire preserved owner/caller originaldeadline cases through the sole recorder after832aece barrier/output fix (16 local methods PASS;no new controlledVM qualification). Validate actual callback/callerexit/partialNativeinit/latephysicalreply and concurrent real peer-business with accurate tools. Then other public-method/common deadlines/full lifecycle/Grant/fd-transfer/higherSDK/per-appDiscovery/R6c. All originalS0-S6/19WP/10FV/12DG/UserHostP4/VM-only/naturalRCA/nonmanualrecovery remain OPEN."
+    "next": "Seal accurate newsource,strict locked/offline tests andbuild/prepared artifacts;VM verify ordinary ownerexit/stale/late approvals/actual SDK originaldeadline in both connectionroles andbothUSBends. Then request-caller exit/latephysicalreply,concurrent realpeerbusiness andpartialNativeinit;all fullarchitecture/common/higherAPI/perappDiscovery/R6c andnaturalRCA/nonmanualrecovery remain OPEN."
   },
   "overall_required_records": [
     "deadline-real21",

@@ -223,11 +223,13 @@ class Run:
             raise ValueError('provided PID disagrees with bus-authenticated slkd owner')
         return {'owner':match[1], 'pid':int(match[2]), 'uid':int(match[3])}
 
-    def command(self, command, timeout, *, collection=None, field=None, on_started=None):
+    def command(self, command, timeout, *, collection=None, field=None, on_started=None, environment=None):
         if (collection is None) == (field is None):
             raise ValueError('one evidence location required for a command')
         original_deadline=time.monotonic()+timeout
         record = {'args': command, 'start_wall_ns': time.time_ns(), 'start_monotonic_ns': time.monotonic_ns(), 'start_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)}
+        if environment is not None:
+            record['environment'] = dict(environment) # Explicit overrides only; never dump parent secrets.
         if collection is not None:
             self.data.setdefault(collection, []).append(record)
         else:
@@ -236,7 +238,8 @@ class Run:
         p = None
         try:
             try:
-                p = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                     env=None if environment is None else dict(os.environ, **environment))
             except OSError as error:
                 record.update({'exit': 'launch_error', 'errno': error.errno,
                                'error': str(error), 'stdout': '', 'stderr': ''})

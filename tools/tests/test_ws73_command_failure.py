@@ -143,6 +143,16 @@ class CommandFailureTests(unittest.TestCase):
         self.assertEqual(waits[0], 0)
         self.assert_record(run, 'timeout')
 
+    def test_explicit_consumer_environment_is_applied_without_recording_parent(self):
+        run = self.run_object()
+        command = [sys.executable, '-c', 'import os;print(os.environ["SPARKLINK_FIXTURE_VALUE"])']
+        record = run.command(command, 2, collection='commands',
+                             environment={'SPARKLINK_FIXTURE_VALUE': 'bounded-fixture'})
+        self.assertEqual(record['exit'], 0)
+        self.assertEqual(record['stdout'], 'bounded-fixture\n')
+        self.assertEqual(record['stderr'], '')
+        self.assertEqual(record['environment'], {'SPARKLINK_FIXTURE_VALUE': 'bounded-fixture'})
+
     def test_interrupt_reaps_cli_and_preserves_complete_output(self):
         run = self.run_object()
         with self.interrupted_communicate(KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):

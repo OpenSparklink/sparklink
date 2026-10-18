@@ -62,8 +62,11 @@ static int ssap_mode(int argc,char **argv) {
     if ((!writing && strcmp(argv[5],"ssap-read")) || argc!=(writing?9:8)) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[6]);
     if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX) return 2;
+    int error_mode=!strcmp(argv[1],"ssap-error");
+    uint64_t expected_errno=error_mode?number(argv[7]):0;
+    if (error_mode && (!expected_errno || expected_errno>4095)) return 2;
     uint8_t expected[2042],value[2042],received[2042];
-    size_t expected_n=bytes(argv[7],expected),value_n=writing?bytes(argv[8],value):0;
+    size_t expected_n=error_mode?0:bytes(argv[7],expected),value_n=writing?bytes(argv[8],value):0;
     const uint64_t deadline=now_ns()+5000000000ULL;
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkConnection *link=NULL;int status=1;
@@ -72,12 +75,21 @@ static int ssap_mode(int argc,char **argv) {
     error=slk_client_connection(client,&id,(const uint8_t *)argv[4],strlen(argv[4]),deadline,&link);
     if (error) { errno=-error;goto done; }
     slk_client_close(client);client=NULL;
-    printf("{\"stage\":\"ssap_start_barrier\",\"api\":\"c\",\"client_closed\":true}\n");fflush(stdout);
-    char start[6];
-    if (wait_fd(STDIN_FILENO,POLLIN,deadline) || read(STDIN_FILENO,start,sizeof start)!=(ssize_t)sizeof start || memcmp(start,"start\n",sizeof start)) { errno=EPROTO;goto done; }
+    if (error_mode) {
+        printf("{\"stage\":\"ssap_call\",\"api\":\"c\",\"deadline_ns\":%"PRIu64",\"call_ns\":%"PRIu64",\"client_closed\":true}\n",deadline,now_ns());fflush(stdout);
+    } else {
+        printf("{\"stage\":\"ssap_start_barrier\",\"api\":\"c\",\"client_closed\":true}\n");fflush(stdout);
+        char start[6];
+        if (wait_fd(STDIN_FILENO,POLLIN,deadline) || read(STDIN_FILENO,start,sizeof start)!=(ssize_t)sizeof start || memcmp(start,"start\n",sizeof start)) { errno=EPROTO;goto done; }
+    }
     uintptr_t length=0;
     if (writing) error=slk_connection_ssap_write(link,(uint16_t)handle,0,value,value_n,received,sizeof received,&length,deadline);
     else error=slk_connection_ssap_read(link,(uint16_t)handle,0,received,sizeof received,&length,deadline);
+    if (error_mode) {
+        printf("{\"stage\":\"ssap_error\",\"api\":\"c\",\"errno\":%d,\"operation_success\":%s,\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",-error,error==0?"true":"false",deadline,now_ns());fflush(stdout);
+        if (error!=-(int)expected_errno) { errno=EPROTO;goto done; }
+        status=0;goto done;
+    }
     if (error) { errno=-error;goto done; }
     if (length!=expected_n || memcmp(received,expected,expected_n)) { errno=EPROTO;goto done; }
     printf("SsapPeerValue: operation=%s path=%s handle=%"PRIu64" value=",argv[5],argv[4],handle);hex_print(received,length);printf("\n");fflush(stdout);
@@ -87,7 +99,7 @@ done:
     slk_connection_close(link);slk_client_close(client);return status;
 }
 int main(int argc,char **argv) {
-    if (argc>1 && !strcmp(argv[1],"ssap")) return ssap_mode(argc,argv);
+    if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);
     if (argc!=7 || strlen(argv[3])>256) return 2;
     uint64_t index=number(argv[1]),generation=number(argv[2]),role=number(argv[4]);
     if (index>UINT16_MAX || !generation || role>1) return 2;

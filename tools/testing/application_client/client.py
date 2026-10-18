@@ -23,7 +23,7 @@ def wait(fd, event, deadline):
 
 
 def main():
-    if sys.argv[1:2]==['ssap']:return ssap_mode()
+    if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
     if len(sys.argv)!=7:raise ValueError("index generation connection role request reply required")
     index,generation=int(sys.argv[1]),int(sys.argv[2]);path=sys.argv[3];role=int(sys.argv[4])
     request,reply=bytes.fromhex(sys.argv[5]),bytes.fromhex(sys.argv[6])
@@ -70,18 +70,32 @@ def ssap_mode():
     index,generation=int(sys.argv[2]),int(sys.argv[3]);path,operation=sys.argv[4:6];handle=int(sys.argv[6])
     writing=operation=='ssap-write'
     if operation not in ('ssap-read','ssap-write') or len(sys.argv)!=(9 if writing else 8):raise ValueError('one exact read/short write required')
-    if not 1<=len(sys.argv[7])<=4084 or writing and not 1<=len(sys.argv[8])<=4084:raise ValueError('bounded test hex required')
-    expected=bytes.fromhex(sys.argv[7]);value=bytes.fromhex(sys.argv[8]) if writing else None
-    if not 1<=len(expected)<=2042 or writing and not 1<=len(value)<=2042:raise ValueError('bounded nonempty test value required')
+    error_mode=sys.argv[1]=='ssap-error'
+    if not 1<=len(sys.argv[7])<=4084 or writing and not 1<=len(sys.argv[8])<=4084:raise ValueError('bounded test value required')
+    expected_errno=int(sys.argv[7]) if error_mode else None
+    if error_mode and not 1<=expected_errno<=4095:raise ValueError('nonzero expected errno required')
+    expected=None if error_mode else bytes.fromhex(sys.argv[7]);value=bytes.fromhex(sys.argv[8]) if writing else None
+    if not error_mode and not 1<=len(expected)<=2042 or writing and not 1<=len(value)<=2042:raise ValueError('bounded nonempty test value required')
     deadline=time.monotonic_ns()+5_000_000_000
     with Client(deadline_ns=deadline) as client:
         link=client.connection(ControllerId(index,generation),path,deadline_ns=deadline)
     with link:
-        print(json.dumps(dict(stage='ssap_start_barrier',api='python',client_closed=True)),flush=True)
-        wait(0,select.POLLIN,deadline)
-        if os.read(0,6)!=b'start\n':raise ValueError('explicit original start barrier required')
+        if error_mode:
+            # The actual remote owner prompt is the controlled arrival barrier.
+            print(json.dumps(dict(stage='ssap_call',api='python',deadline_ns=deadline,call_ns=time.monotonic_ns(),client_closed=True)),flush=True)
+        else:
+            print(json.dumps(dict(stage='ssap_start_barrier',api='python',client_closed=True)),flush=True)
+            wait(0,select.POLLIN,deadline)
+            if os.read(0,6)!=b'start\n':raise ValueError('explicit original start barrier required')
         remote=link.ssap()
-        actual=remote.write(handle,value,deadline_ns=deadline) if writing else remote.read(handle,deadline_ns=deadline)
+        try:
+            actual=remote.write(handle,value,deadline_ns=deadline) if writing else remote.read(handle,deadline_ns=deadline)
+        except OSError as error:
+            if not error_mode:raise
+            print(json.dumps(dict(stage='ssap_error',api='python',errno=error.errno,operation_success=False,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
+            if error.errno!=expected_errno:raise
+            return
+        if error_mode:raise AssertionError('negative scenario unexpectedly completed the operation')
         if actual!=expected:raise ValueError('actual peer SSAP result differs from expected random value')
         print(f'SsapPeerValue: operation={operation} path={path} handle={handle} value={actual.hex()}',flush=True)
 

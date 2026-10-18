@@ -119,6 +119,9 @@ def execute(run, phase):
         if getattr(run.args,'ssap_owned_verify',False):
             from ws73_ssap_owned import execute as owned_execute
             owned_execute(run,row)
+        if getattr(run.args,'ssap_owner_lifecycle_verify',False):
+            from ws73_ssap_owner_lifecycle import execute as owner_lifecycle_execute
+            owner_lifecycle_execute(run,row)
         if hasattr(run, 'channel_barrier'):
             run.channel_barrier(row)
         # Both binds must occur during the same live connection. Never synthesize RX.
@@ -547,6 +550,11 @@ def corroborate(run,capture):
                 from ws73_ssap_owned import corroborate as owned_corroborate
                 ssap_owned,owned_credit=owned_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=owned_credit[key]
+            ssap_owner_lifecycle=[]
+            if row.get('ssap_owner_lifecycle_required',False):
+                from ws73_ssap_owner_lifecycle import corroborate as owner_lifecycle_corroborate
+                ssap_owner_lifecycle,lifecycle_credit=owner_lifecycle_corroborate(row,value_matched,sdus)
+                for key in ssap_credit:ssap_credit[key]+=lifecycle_credit[key]
             if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in ((1,4,5,6,7,8,9,10,11,13,14) if row.get('ssap_access_required',False) else (1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False) else (8,9,13,14)) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
         legs=[]
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
@@ -621,6 +629,7 @@ def corroborate(run,capture):
         if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
+        if row.get('ssap_owner_lifecycle_required',False):entry['ssap_owner_lifecycle']=ssap_owner_lifecycle
         if protected is not None:entry['protected_ssap']=protected
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows if not row.get('close_prefix',False)),proofs=proofs,

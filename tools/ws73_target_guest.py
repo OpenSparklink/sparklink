@@ -359,6 +359,8 @@ def verify_passthrough():
         proofs.append({'application_clients':client_corroborate(run,capture)})
     if requested_connection != ('connection_control' in run):
         raise ValueError('explicit connection request and evidence must agree')
+    lifecycle_requested='ws73.ssap_owner_lifecycle=1' in Path('/proc/cmdline').read_text().split()
+    if any(bool(row.get('ssap_owner_lifecycle_required',False))!=lifecycle_requested for row in run.get('channel_socket',[])) or (lifecycle_requested and not run.get('channel_socket')):raise ValueError('owner lifecycle request/evidence mismatch')
     owned_requested='ws73.ssap_owned=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_owned_required',False))!=owned_requested for row in run.get('channel_socket',[])) or (owned_requested and not run.get('channel_socket')):
         raise ValueError('explicit owned SSAP request and evidence must agree')

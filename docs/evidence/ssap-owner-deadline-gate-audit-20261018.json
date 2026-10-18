@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "result": "IMPLEMENTED_TEST_GATE_CANDIDATE_NOT_DEVICE_QUALIFIED",
+  "source_parent": "0fdeed5c9abcd5fb0d5e9824c5b40c9cf005ee78",
+  "prior_compiled_and_real_tools": "e776f3623830c31909a879cdddf8d90f8e1e0d21",
+  "current_kernel_source": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+  "reused_compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "triage": {
+    "immediate_retire": [
+      "Draft expiry diagnostic substring oracle replaced by actual public SDK errno plus same4500..5500ms guard,original local deadline and opposite unchanged DB checks. No assertion weakened."
+    ],
+    "reuse_tests": [
+      "Original main draft publisher/callback barrier/owner-exit and wire expectations adopted;main tenWIP bytes untouched.",
+      "Existing default C/Python consumer modes unchanged;negative mode shares same public SSAP invocation,not another Engine or wire loop.",
+      "Real subprocess recorder and existing library error mapping reused;only explicit child environment overrides recorded."
+    ],
+    "remaining": [
+      "Real newartifact owner-exit,stale/late policy and C/Python originaldeadline gates;previous e776 artifact qualification not transferred.",
+      "Concurrent peer business while held,request-caller exit,partialNativeinit and late successful response/drain;management show is only management observation.",
+      "All original public lifecycle/common/higherSDK/perappDiscovery/R6c/naturalRCA/nonmanualrecovery and fullS0-S6/19WP/10FV/12DG remain OPEN."
+    ]
+  },
+  "production_boundary": "No production Runtime,Session,Grant,credit,Ticket,SSAP Engine or public ABI change. Test harness/consumer/fixture integration only;controller driver actions VM-only. UserHost remains P4.",
+  "gate_cases": [
+    "Actual foreground ServiceAuthorizer prompt identifies original controller generation/physical lifetime/handle/epoch/property and budget.",
+    "Owner killed after actual prompt;original peer refusal and same-controller removal verified;independent owned service remains usable.",
+    "Current token deny crosses real wire;stale token before new deadline and late token after peer deadline must not authorize or change the actual DB.",
+    "Actual C/Python public SDK value operation returns errno110 with operation_success=false around the original five-second deadline. An immediate FDO Timeout fixture cannot satisfy the RF elapsed-time gate.",
+    "Existing ordinary socket business afterwards remains separately corroborated;not concurrent-business qualification."
+  ],
+  "offline_snapshot": {
+    "tool_test_methods": 815,
+    "tool_result": "PASS;actual production verifier fixtures andlocalprocesses,not hardware",
+    "actual_C_Python_consumer_test": "Private-bus v2 retained ten new process scenarios/eight added valueRPC calls,old18call assertion retained;not elapseddeadline or firmware proof",
+    "wire_fixture": "Five methods,independent exact golden PDU matching in both roles,with optional owed late denial;missing/changed inputs refused",
+    "new_formal_proofs": 0,
+    "new_real_device_runs": 0
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+    "libws73": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "scope": "Retain existing request/response correlation and SDK110 explicitUS framing;no reference implementation is treated as a standard oracle."
+  },
+  "exit": "Accurate signedsource offline gates,new bundle/prepared identities andreal dualU VM gate with both-end original USB/actual applications/failclosed negative controls. Wholearchitecture/fullcontrolledmatrix not closed by this slice.",
+  "private_evidence": "Authorized local .dev materials;source-bound final runs and realqualification will be separate reports. No SDK/firmware/standards/fullcapture copied publicly."
+}

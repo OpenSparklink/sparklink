@@ -291,3 +291,16 @@ root guest监督器只切换测试进程凭据，不实现业务或安全回复�
 发布者的真实远端业务交付、完整多应用竞争、发行版systemd安装或sandbox验收。
 必须保存准确probe ELF、生产程序、策略/账号文件和全部原始结果；缺失角色、拒绝、
 凭据、正向登记/读回/清理或错误身份不得通过。原始WS73业务仍由普通用户实际校验。
+
+## 受控 SSAP owner／原期限入口（开发门禁）
+
+`--ssap-owner-lifecycle-verify` 要求独立的双设备 passthrough、connection 和普通
+`--channel-socket-verify` 模式，不能混入 Agent、burst、关闭前缀、边界或动态通道。
+旧prepared不含该新工具时不能使用；本段描述输入，不代表新artifact已经通过。
+
+协调器使用真实ServiceAuthorizer提示作为到达屏障，再测试owner退出、旧token及
+期限后批准；不会模拟远端回复。超时场景通过同一公共C/Python SDK取得实际errno，
+原4500..5500ms进程门槛、绝对期限和对端数据库不变检查同时成立才可通过。
+负向用例程序退出0只表示预期错误已被核对，`operation_success`必须为false；
+提前出现的Timeout、错误errno或意外成功都不能通过。普通通道随后实际回复另验，
+不能据此宣称挂起期间的并发隔离、部分初始化或完整取消清理已通过。

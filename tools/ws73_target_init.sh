@@ -375,6 +375,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             channel_rounds=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_rounds=/){sub(/^ws73.channel_rounds=/,"",$i);print $i}}' /proc/cmdline)
             channel_bytes=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_bytes=/){sub(/^ws73.channel_bytes=/,"",$i);print $i}}' /proc/cmdline)
             connection_arg="$connection_arg --channel-socket-verify --channel-socket-rounds ${channel_rounds:-4} --channel-socket-bytes ${channel_bytes:-61}"
+            if grep -qw ws73.ssap_owner_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owner-lifecycle-verify"; fi
             if grep -qw ws73.ssap_owned=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owned-verify"; fi
             if grep -qw ws73.channel_fairness=1 /proc/cmdline; then connection_arg="$connection_arg --channel-fairness-verify"; fi
             if grep -qw ws73.dynamic_channels=1 /proc/cmdline; then connection_arg="$connection_arg --dynamic-channel-verify"; fi

@@ -1534,6 +1534,12 @@ starter再join实际初始化。初始化与ExchangeInfo共用独立原期限，
 完整输出和原监督预算。原finally本已回收子进程，未误报进程泄漏；新的受控VM门禁
 仍未完成。管理show可达不能充当同行业务交付。
 
+R5f7开始接入保留的owner/原期限草稿，三类去向及退出条件见
+[本批审计](../docs/evidence/ssap-owner-deadline-gate-audit-20261018.json)。默认Runtime/Engine
+不变；超时改为实际公共C/Python errno与同一五秒门槛，不能因新输出文字而放宽
+时间、token、数据库或双端USB断言。现有普通CUTC在失败请求后的交付仍另验；
+尚不声明挂起期间的并发业务。签名新工具、原发布artifact与报告提交分别标识。
+
 未知C诊断、proc/signature首轮失败与全部历史证据保留；后续PASS不推导其根因已
 修复。随后收敛其他方法的公共期限、lifecycle/Grant/fd传递、higher/common API、
 每应用DiscoverySession和R6c。不等待全部控制面竞争组合；自然RCA/非人工恢复及

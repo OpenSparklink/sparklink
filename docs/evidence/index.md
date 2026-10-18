@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+- [CMTC 等待期间撤权、旧回复与 daemon fd 收敛](ssap-initialization-cmtc-revocation-20261018.json)：
+  7b90092 guest/Host、DA服务、2fc内核，仅新分配 U 两口；两个实际角色切片、后续8次
+  应用回复、22次发现，4143USB包／零丢包、21负对照。五个整体FAIL原样保留。
+  fd收敛不等于内核引用/UAF、task join、bind内部、完整2x2或自然恢复通过。
+
 - [同一新guest的原owner／五秒期限保持](ssap-requester-owner-preservation-20261018.json)：
   B847 guest、1f15 Host、DA服务、2fc内核；独立回归原C/Python errno110、两角色和8次
   后续真实回复，27负对照。它是保持回归，不是另一份新能力或恢复资格。

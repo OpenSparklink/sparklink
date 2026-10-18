@@ -21,6 +21,14 @@ User 在途创建需返回退休错误；新的普通 SDK 调用按自身 live �
 最初旧版准备被source/bundle一致性guard拒绝；保留失败，以旧生产/新tools-only
 隔离目录复核，未放宽guard。四切片通过后继续controller/dynamic及相关fd/期限
 纵向链路，不重设所有竞争组合为数据面前置。原S0–S6与整项issues仍开放。
+后续 controller 父级退休新增两类限定离线切片：未发布 active root、已发布 retiring
+root；直接执行生产 `Node::remove` 与同一 owner/shutdown，作者取消后仍等待原
+initializer，保留资源根、拒绝新初始化，并保持另一 controller 的本地接口。定向1项、
+default/all-features各368及严格Clippy通过，源码hash/编译测试文件/日志已封存于
+goal 的 `native_return_controlled_gate.controller_offline_followup`。`/dev/null`、
+缺少 lease/event 和有限失败依赖均明确记录；另一接口是本地ObjectServer检查，
+不当作真实总线调用、Native/USB、callback排空或新实机/形式化资格。controller
+实际拔出/返回与重接、动态creator及相关fd/期限仍按原门禁推进。
 本批不新增协议 Engine，不改变完整 S0–S6/19WP/10FV/12DG；数据/安全/SSAP/
 多通道/四设备与自然故障根因/非人工恢复仍并行，不把全部控制面设为前置。
 

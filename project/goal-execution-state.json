@@ -4349,6 +4349,28 @@
     "fixture_commit": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
     "report": "docs/evidence/native-return-connection-retirement-20261018.json",
     "qualification_record": "native-return-connection-retirement-r5f9g",
-    "next": "Continueactualcontrollerretirement/dynamicNativecreatorandrelatedauthorcancel/release/finalfd/dup/SCM/originaldeadline/reusecompositionsusingsoleowner/tasks/Session/Grant-credit-Ticket. CurrentfourConnectionDownslicesandknown6dcpublicationcounterexamplearenotKernelref/callback/UAFdrain,controllerremoval,directbrokernewadmissionorfullfdproof. Keepdata/SSAP/security/multichannel/fourdeviceparallel,nofullcontrolprerequisite;old253FAIL/v4fdunattributed/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/deployment/releaseOPEN,UserHostP4,VM-only/strictports/SDK110/shared12or8unchanged."
+    "next": "Continueactualcontrollerretirement/dynamicNativecreatorandrelatedauthorcancel/release/finalfd/dup/SCM/originaldeadline/reusecompositionsusingsoleowner/tasks/Session/Grant-credit-Ticket. CurrentfourConnectionDownslicesandknown6dcpublicationcounterexamplearenotKernelref/callback/UAFdrain,controllerremoval,directbrokernewadmissionorfullfdproof. Keepdata/SSAP/security/multichannel/fourdeviceparallel,nofullcontrolprerequisite;old253FAIL/v4fdunattributed/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/deployment/releaseOPEN,UserHostP4,VM-only/strictports/SDK110/shared12or8unchanged.",
+    "controller_offline_followup": {
+      "status": "SOURCE_BOUND_OFFLINE_ONLY_CONTROLLER_VM_STILL_NOT_RUN",
+      "report": {
+        "path": ".dev/main-thread-01a120fe/controller-parent-drain-offline-sealed-v1/report.json",
+        "sha256": "36bba05dc988a89461c707bcca0e8c37db900e28608787827df5a265b8e79a16",
+        "bytes": 53020
+      },
+      "source_base": "1effb605b60a745e29c6bae3e8f6bbf537a09f70",
+      "tested_source_sha256": "81a9b6ded6fc6b7e31699f73b6b696ecfcd89fcf26b9a2b769e66435d4525e1b",
+      "entry": "adapters::retired_interface_tests::controller_retirement_joins_unpublished_and_retiring_initializers",
+      "scope": "Actual Node::remove, same owner initializer/shutdown, controller resource-root retention and rejection after author cancellation; unpublished-active and published-retiring roots, plus other controller directory/generation/local ObjectServer interface. /dev/null, no management lease/event task, finite failed dependency; not actual Native/USB or deployed-bus peer business.",
+      "results": {
+        "targeted_methods": 1,
+        "slices": 2,
+        "default_workspace": 368,
+        "all_features_workspace": 368,
+        "strict_clippy": "PASS",
+        "new_real_device_runs": 0,
+        "new_formal_proofs": 0
+      },
+      "remaining": "Actual controller removal while Native return is held, same-daemon/new-generation reattach, other real controller operation, dynamic creator and fd/deadline/Grant-credit-Ticket combinations remain OPEN; no new qualification inherited from old device tests."
+    }
   }
 }

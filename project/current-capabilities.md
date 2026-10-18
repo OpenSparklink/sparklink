@@ -19,6 +19,10 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
 接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
 
+Controller 父级退休现有[补充离线检查](implementation-plan.md)
+仅覆盖生产调用链的有限依赖；尚无新的 controller 实机拔出/Native 返回排空资格，
+不将本地接口仍存在写成另一只设备业务通过。
+
 下一批继续controller/dynamic返回及相关取消、fd引用、撤权/原期限纵向组合；
 四个Connection切片不替代这些验收，不新增Engine或状态来源。
 数据／SSAP／安全／多通道和四设备继续并行，完整S0–S6及所有原始验收范围不变。

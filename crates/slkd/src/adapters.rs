@@ -700,6 +700,199 @@ fn experimental_profiles(_adapter: &Adapter, _profile: u32) -> ProfileRegistry {
 #[cfg(test)]
 mod retired_interface_tests {
     use super::*;
+
+    /// Actual Node::remove and connection-owned initializer on a private bus.
+    /// /dev/null, no lease/event task, and a finite failed initializer are
+    /// explicit dependencies: this is not Native/USB or callback-drain proof.
+    #[tokio::test]
+    async fn controller_retirement_joins_unpublished_and_retiring_initializers() {
+        use crate::connection_object::{ConnectionIface, ConnectionOwner, Registration};
+        use std::sync::atomic::{AtomicBool, Ordering};
+
+        for already_retiring in [false, true] {
+            let bus = crate::event_loop::tests::PrivateBus::start();
+            let server = zbus::connection::Builder::address(bus.address.as_str())
+                .unwrap()
+                .build()
+                .await
+                .unwrap();
+            let directory = AdapterDirectory::default();
+            let mut states = Vec::new();
+            for (index, generation) in [(2, 7), (3, 8)] {
+                let mut state = AdapterState::new(
+                    Adapter::open("/dev/null").unwrap(),
+                    DaemonConfig::default(),
+                    crate::bonding::BondingStore::new(
+                        &std::env::temp_dir(),
+                        "controller-retirement-fixture",
+                    ),
+                    ProfileRegistry::new(),
+                );
+                state.controller.dev_index = index;
+                state.controller.generation = generation;
+                state.object_path = format!("/org/sparklink/slk{index}_g{generation}");
+                let state = Arc::new(Mutex::new(state));
+                let (path, adapter) = {
+                    let state = state.lock().await;
+                    (state.object_path.clone(), state.adapter.clone())
+                };
+                publish(&server, &path, &state).await.unwrap();
+                directory.lock().await.insert(
+                    path,
+                    AdapterRegistration {
+                        adapter,
+                        generation,
+                    },
+                );
+                states.push(state);
+            }
+            let state = states[0].clone();
+            let path = state.lock().await.object_path.clone();
+            let other_path = states[1].lock().await.object_path.clone();
+            let reference = slk_protocol::SleLinkInfo {
+                lifetime: 11,
+                handle: 4,
+                ..Default::default()
+            };
+            let owner = ConnectionOwner::new(&state, 7, reference, 0);
+            let entry = Registration {
+                reference,
+                path: crate::connection_object::path(&path, reference),
+                published: already_retiring,
+                owner: owner.clone(),
+            };
+            if already_retiring {
+                server
+                    .object_server()
+                    .at(
+                        entry.path.as_str(),
+                        ConnectionIface::from_owner(state.clone(), owner.clone()).unwrap(),
+                    )
+                    .await
+                    .unwrap();
+            } else {
+                state
+                    .lock()
+                    .await
+                    .native_connection_objects
+                    .insert(reference.lifetime, entry.clone());
+            }
+            let (entered, started) = tokio::sync::oneshot::channel();
+            let (release, released) = tokio::sync::oneshot::channel();
+            let caller = tokio::spawn({
+                let owner = owner.clone();
+                async move {
+                    owner
+                        .initialize_with_fixture(async move {
+                            entered.send(()).unwrap();
+                            tokio::time::timeout(Duration::from_secs(3), released)
+                                .await
+                                .expect("finite dependency release")
+                                .unwrap();
+                            Err("finite Native dependency failure; no Engine installed".into())
+                        })
+                        .await
+                }
+            });
+            tokio::time::timeout(Duration::from_secs(1), started)
+                .await
+                .unwrap()
+                .unwrap();
+            caller.abort();
+            assert!(caller.await.unwrap_err().is_cancelled());
+            if already_retiring {
+                owner.retire();
+                state
+                    .lock()
+                    .await
+                    .retiring_connection_objects
+                    .insert(entry.path.clone(), entry.clone());
+            }
+            let (cancel, mut cancelled) = watch::channel(false);
+            let node = Node {
+                path: path.clone(),
+                state: state.clone(),
+                control: state.lock().await.adapter.clone(),
+                lease: None,
+                connection: server.clone(),
+                event: None,
+                init: tokio::spawn(async move { cancelled.changed().await.unwrap() }),
+                cancel,
+            };
+            let mut retirement = tokio::spawn({
+                let server = server.clone();
+                let directory = directory.clone();
+                async move { node.remove(&server, &directory).await }
+            });
+            assert!(
+                tokio::time::timeout(Duration::from_millis(100), &mut retirement)
+                    .await
+                    .is_err(),
+                "controller teardown must join the original owned initializer"
+            );
+            assert!(owner.is_retiring());
+            assert!(!state.lock().await.present);
+            assert!(!directory.lock().await.contains_key(&path));
+            assert!(directory.lock().await.contains_key(&other_path));
+            assert!(states[1].lock().await.present);
+            assert_eq!(states[1].lock().await.controller.generation, 8);
+            {
+                let state = state.lock().await;
+                assert_eq!(
+                    state.native_connection_objects.len() + state.retiring_connection_objects.len(),
+                    1,
+                    "unjoined work must retain its controller resource root"
+                );
+            }
+            let admitted = Arc::new(AtomicBool::new(false));
+            let attempted = admitted.clone();
+            assert!(
+                owner
+                    .initialize_with_fixture(async move {
+                        attempted.store(true, Ordering::SeqCst);
+                        Err("retired dependency must not run".into())
+                    })
+                    .await
+                    .is_err()
+            );
+            assert!(!admitted.load(Ordering::SeqCst));
+            assert!(
+                tokio::time::timeout(
+                    Duration::from_secs(1),
+                    server
+                        .object_server()
+                        .interface::<_, AdapterIface>(other_path.as_str()),
+                )
+                .await
+                .unwrap()
+                .is_ok(),
+                "one controller's held teardown cannot remove the other's interface"
+            );
+            release.send(()).unwrap();
+            tokio::time::timeout(Duration::from_secs(1), retirement)
+                .await
+                .unwrap()
+                .unwrap();
+            assert!(state.lock().await.native_connection_objects.is_empty());
+            assert!(state.lock().await.retiring_connection_objects.is_empty());
+            assert!(
+                server
+                    .object_server()
+                    .interface::<_, AdapterIface>(path.as_str())
+                    .await
+                    .is_err()
+            );
+            assert!(
+                server
+                    .object_server()
+                    .interface::<_, ConnectionIface>(entry.path.as_str())
+                    .await
+                    .is_err()
+            );
+            remove_interfaces(&server, &other_path).await;
+        }
+    }
+
     #[tokio::test]
     async fn actual_factory_publishes_only_current_interfaces() {
         let bus = crate::event_loop::tests::PrivateBus::start();

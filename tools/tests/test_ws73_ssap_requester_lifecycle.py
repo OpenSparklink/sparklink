@@ -11,7 +11,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from ws73_capture import CaptureError
-from ws73_ssap_requester_lifecycle import STATUS,corroborate,killed_receipt,valid_summary
+from ws73_ssap_requester_lifecycle import STATUS,corroborate,killed_receipt,valid_summary,read_reply
 from ws73_application_client import application_environment
 from ws73_target import _run,run_exit_code
 
@@ -51,7 +51,7 @@ def fixture(phase=0):
     i['stdout']+='SsapAuthorizationDecision: request=7 property=19 write=true security=0 approved=true; local policy only\n'
     args=['/bin/slctl','--adapter',owners[s]['owner']['path'],'ssap-read',owners[s]['object']['path'],'17','0']
     i['busy_read']=dict(args=args,exit=1,stdout='',stderr='SSAP busy/not-ready/expired',**command(1.4,1.5))
-    i['next_read_attempts']=[dict(args=args,exit=0,stderr='',stdout=f'SsapPeerValue: operation=ssap-read path={owners[s]["object"]["path"]} handle=17 value={g["secret"]}\n',**command(2.2,2.4))]
+    i['next_read_attempts']=[dict(args=args,exit=0,stderr='',stdout=f'Selected {owners[s]["owner"]["path"]}\nSsapPeerValue: operation=ssap-read path={owners[s]["object"]["path"]} handle=17 value={g["secret"]}\n',**command(2.2,2.4))]
     row['applications']=[dict(exit=0,**command(1.61,1.9)),dict(exit=0,**command(1.62,1.91))]
     def snapshot(item,n,at,value):
         item.setdefault('value_snapshots',[]).append(dict(ordinal=n,handle=item['handle'],value=value,**command(at,at+.01)))
@@ -84,6 +84,14 @@ def check(row,sdus):
 
 
 class RequesterLifecycle(unittest.TestCase):
+    def test_actual_cli_selection_line_is_required_and_cannot_hide_wrong_identity_or_payload(self):
+        row,_=fixture();g,i=row['ssap_requester_lifecycle'];source=row['owners'][0];c=i['next_read_attempts'][-1]
+        read_reply(c,source,g,'/bin/slctl')
+        for output in [c['stdout'].split('\n',1)[1],c['stdout'].replace('Selected /a0','Selected /other'),
+                       c['stdout'].replace(g['secret'],'00'*32),c['stdout']+'extra\n',c['stdout']+c['stdout']]:
+            wrong=dict(c,stdout=output)
+            with self.assertRaises(CaptureError):read_reply(wrong,source,g,'/bin/slctl')
+
     def test_both_roles_use_actual_validator_with_independent_wire_bytes(self):
         phases=[]
         for phase in (0,1):

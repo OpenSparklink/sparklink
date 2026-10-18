@@ -1931,14 +1931,14 @@
     "current_batch": {
       "id": "WP03-WP06-WP08-WP18-R5f8-requester-exit-held-business",
       "production_behavior": "Tools reuse actual caller_scoped/ClientRequest andshared single CUTC helper;one killed publicC/Python writer,observed busy/no-wire beforeoldresponse,actual peerwrite/oldreplydrain/newread andheldprompt business. No production Engine/Runtime/ABI change;not precise internal cancel-linearization orfullreuse proof.",
-      "state": "R5F8_EXISTING_REQUESTER_DEBT_PATH_GATE_OFFLINE_LIMITED_PASS_REAL_PENDING",
+      "state": "R5F8_FIRST_REAL_FAIL_RETAINED_CLI_OUTPUT_ORACLE_CORRECTED_NEW_ARTIFACT_PENDING",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Seal new guest/Host,explicitSDK110US on allocated1-1.1.1/.2 andVM realbothroles;independentlyreplay originalbothendcapture andnegativecontrols. Fix soleproductionimplementation onlyif actualdefect. Then partialNativeinit/remainingarchitecture. Alloriginalscope,naturalRCA/nonmanualrecovery OPEN."
+      "next": "Keep first e68 real overallFAIL;CLIactually printed correct SelectedandpeerValue lines,oldtest wronglyrequired singleline. Correct exacttwo-line identity/value contract,seal newtools/artifact andrerun bothroles;no production defect proven. All originalscope andremainingconditions unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -3700,11 +3700,13 @@
       "qualification": "Historical offline/real andnewUreal are separatelyregistered;newU DAservice/cd7guestHost/2fckernel only,not currentfulltree orE/mixed."
     },
     "r5f8": {
-      "state": "R5F8_EXISTING_REQUESTER_DEBT_PATH_GATE_OFFLINE_LIMITED_PASS_REAL_PENDING",
+      "state": "R5F8_FIRST_REAL_FAIL_RETAINED_CLI_OUTPUT_ORACLE_CORRECTED_NEW_ARTIFACT_PENDING",
       "scope": "tools/callers only unless actual existing production defect is reproduced",
       "exit_reference": "project/implementation-plan.md#r5f8真实-requester-退出旧回复排空与挂起期间同行业务本批",
       "constraints": "strictallocatedU/SDK110/VM-only;original5s;soleEngine/Session;oldcd7qualification historical only",
-      "remaining": "actualkilledC/Pythonrequester,busy/no-wire,newpeerwriteandoldresponse drain,CUTCactualbusiness insideheldprompt;partialinit next"
+      "remaining": "actualkilledC/Pythonrequester,busy/no-wire,newpeerwriteandoldresponse drain,CUTCactualbusiness insideheldprompt;partialinit next",
+      "retained_failure": ".dev/main-thread-01a120fe/requester-exit-us-v1/manifest.json",
+      "failure_scope": "wholeFAIL;existingCLISelectedline omitted innewfixture oracle;no retrospective promotion;actual firstcase CUTCwhileheld andnewreadobservations remain incomplete scope only"
     }
   },
   "owned_ssap_c6_historical_batch": {

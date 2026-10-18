@@ -15,14 +15,14 @@
   "batch": {
     "id": "WP03-WP06-WP08-WP18-R5f8-requester-exit-held-business",
     "production_behavior": "Tools reuse actual caller_scoped/ClientRequest andshared single CUTC helper;one killed publicC/Python writer,observed busy/no-wire beforeoldresponse,actual peerwrite/oldreplydrain/newread andheldprompt business. No production Engine/Runtime/ABI change;not precise internal cancel-linearization orfullreuse proof.",
-    "state": "R5F8_EXISTING_REQUESTER_DEBT_PATH_GATE_OFFLINE_LIMITED_PASS_REAL_PENDING",
+    "state": "R5F8_FIRST_REAL_FAIL_RETAINED_CLI_OUTPUT_ORACLE_CORRECTED_NEW_ARTIFACT_PENDING",
     "exit": [
       "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
       "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
       "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
       "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
     ],
-    "next": "Seal new guest/Host,explicitSDK110US on allocated1-1.1.1/.2 andVM realbothroles;independentlyreplay originalbothendcapture andnegativecontrols. Fix soleproductionimplementation onlyif actualdefect. Then partialNativeinit/remainingarchitecture. Alloriginalscope,naturalRCA/nonmanualrecovery OPEN."
+    "next": "Keep first e68 real overallFAIL;CLIactually printed correct SelectedandpeerValue lines,oldtest wronglyrequired singleline. Correct exacttwo-line identity/value contract,seal newtools/artifact andrerun bothroles;no production defect proven. All originalscope andremainingconditions unchanged."
   },
   "overall_required_records": [
     "deadline-real21",

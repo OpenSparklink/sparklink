@@ -42,6 +42,15 @@ def killed_receipt(command, api, source, item):
     return call
 
 
+def read_reply(command,source,guard,program):
+    """Current real CLI selects the adapter before printing the peer value."""
+    args=[program,'--adapter',source['owner']['path'],'ssap-read',source['object']['path'],str(guard['handle']),'0']
+    expected=[f'Selected {source["owner"]["path"]}',
+        f'SsapPeerValue: operation=ssap-read path={source["object"]["path"]} handle={guard["handle"]} value={guard["secret"]}']
+    if command['args']!=args or command['exit'] or command['stderr'] or command['stdout'].splitlines()!=expected:
+        raise CaptureError('exact CLI selected identity and independently validated other-owner value required')
+
+
 def execute(run, row, business):
     row['ssap_requester_lifecycle_required'] = True
     row['ssap_requester_lifecycle'] = []
@@ -58,6 +67,7 @@ def execute(run, row, business):
                     max(.001,min(2,observation_deadline-time.monotonic())),collection='ssap_requester_commands')
             def barrier(process, record):
                 nonlocal observation_deadline
+                i['killed_write']=record  # Retain the call even if its barrier fails.
                 record['credentials'],record['process_status'] = process_identity(process.pid)
                 event = prompt(owner,i,target,1)
                 checked = check_prompt(event,target,i)
@@ -91,9 +101,7 @@ def execute(run, row, business):
                         raise CaptureError('old physical reply/new request observation deadline')
                     read = read_guard();i['next_read_attempts'].append(read);run.save()
                     if not read['exit']:
-                        expected = f'SsapPeerValue: operation=ssap-read path={source["object"]["path"]} handle={g["handle"]} value={g["secret"]}'
-                        if read['stderr'] or read['stdout'].splitlines() != [expected]:
-                            raise CaptureError('new request must independently validate the other owner value')
+                        read_reply(read,source,g,str(run.args.slctl))
                         break
                     if BUSY not in read['stderr']:
                         raise CaptureError('new requester failed after old physical reply')
@@ -171,8 +179,8 @@ def corroborate(row, matched, sdus):
     if not i['requester_exit_wall_ns']<=i['busy_read']['start_wall_ns']<=i['busy_read']['end_wall_ns']<window['start_wall_ns']:
         raise CaptureError('busy old obligation must be observed after actual process death andbefore business')
     last=attempts[-1]
-    expected=f'SsapPeerValue: operation=ssap-read path={source["object"]["path"]} handle={g["handle"]} value={g["secret"]}'
-    if last['exit'] or last['stderr'] or last['stdout'].splitlines()!=[expected] or last['start_wall_ns']<a['wall_ns']:
+    read_reply(last,source,g,row['ssap_receipts'][0]['args'][0])
+    if last['start_wall_ns']<a['wall_ns']:
         raise CaptureError('independent new-request peer value validation required')
     snapshots=i.get('value_snapshots',[])
     if (len(snapshots)!=2 or [x['value'] for x in snapshots]!=[i['secret'],i['value']]

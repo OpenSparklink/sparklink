@@ -43,6 +43,25 @@ def requested(args):
     return True
 
 
+def validate_tool(tool,root=None,guest_files=None):
+    if (set(tool) != {'path','sha256'} or
+            not re.fullmatch(r'/bin/slctl|/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}/slctl',tool['path']) or
+            not re.fullmatch('[0-9a-f]{64}',tool['sha256'])):
+        raise CaptureError('fixed actual slctl artifact only; no arbitrary command')
+    if root is not None:
+        root=Path(root).resolve(strict=True)
+        if (root/'bin/slctl').is_symlink():
+            # Reuse the qualified directory gate's absolute guest-alias
+            # mapping; resolving /bin's absolute link in the host is wrong.
+            from ws73_controller_directory import staged_program
+            if staged_program(root,guest_files)!=tool:
+                raise CaptureError('actual slctl differs from sealed prepared image')
+        else:
+            from ws73_security_cli import validate_binary
+            if tool['path']!='/bin/slctl':raise CaptureError('slctl alias differs from actual executed bundle binary')
+            validate_binary(tool,root,guest_files)
+
+
 def validate_request(row, phase):
     if (set(row) != {'phase', 'scanner', 'advertiser', 'markers', 'tool', 'status'} or
             type(phase) is not int or phase not in (0, 1) or row['phase'] != phase or
@@ -62,9 +81,7 @@ def validate_request(row, phase):
             any(not isinstance(m, str) or not re.fullmatch('[0-9a-f]{32}', m) for m in markers) or
             markers[0] == markers[1] or markers[0][:16] != markers[1][:16]):
         raise CaptureError('independent marker suffixes with one original random prefix required')
-    if (set(row['tool']) != {'path', 'sha256'} or row['tool']['path'] != '/bin/slctl' or
-            not re.fullmatch('[0-9a-f]{64}', row['tool']['sha256'])):
-        raise CaptureError('fixed slctl artifact only; no arbitrary command')
+    validate_tool(row['tool'])
 
 
 def reader_args(row, number):
@@ -73,25 +90,37 @@ def reader_args(row, number):
             str(1 if number == 0 else 8), '20000', '-128']
 
 
+def active_session(text,path):
+    # slctl --adapter prints its actual selection before the command result.
+    lines=text.splitlines()
+    if text and not text.endswith('\n'):lines=lines[:-1]
+    if not lines:return None
+    if lines[0]!='Selected '+path:raise CaptureError('actual CLI selection must match the original controller')
+    if len(lines)<2:return None
+    match=SESSION.fullmatch(lines[1])
+    if match and match[2]!=path:raise CaptureError('active session selected another controller')
+    return match
+
+
 def receipt(row, number):
     """Parse actual output independently of SDK codec and shared D-Bus types."""
     app = row['readers'][number]
     identity = app['credentials']
-    if (app['args'] != reader_args(row, number) or app['exit'] != 0 or app['stderr'] or
+    if (app['args'] != reader_args(row, number) or app['exit'] != 0 or app['stderr'] or not app['stdout'].endswith('\n') or
             identity['uids'] != [1004]*4 or identity['gids'] != [1004]*4 or identity['groups'] or
             set(identity['capabilities']) != {'CapEff','CapPrm','CapAmb','CapInh'} or
             any(int(v,16) for v in identity['capabilities'].values()) or app['native_fds']):
         raise CaptureError('successful cap-zero apps-only actual SDK reader required')
     lines = app['stdout'].splitlines()
-    session = SESSION.fullmatch(lines[0]) if lines else None
+    session = active_session(app['stdout'],row['scanner']['path'])
     release = RELEASE.fullmatch(lines[-1]) if lines else None
     count = 1 if number == 0 else 8
     if (not session or not release or session[2] != row['scanner']['path'] or
             session[1] != release[1] or release[2] != ('false' if number == 0 else 'true') or
-            len(lines) != count + 2):
+            len(lines) != count + 3):
         raise CaptureError('original active identity/count and explicit release receipt required')
     reports = []
-    for line in lines[1:-1]:
+    for line in lines[2:-1]:
         match = REPORT.fullmatch(line)
         if (not match or match[1] != session[1] or int(match[2]) != row['scanner']['generation'] or
                 int(match[4]) != 0 or match[5] != row['advertiser']['address'].replace(':','').lower() or
@@ -197,8 +226,7 @@ def supervise(daemon_pid):
                                          if fd.exists() and os.readlink(fd) == '/dev/sparklink']
                     deadline = time.monotonic()+6
                     while True:
-                        lines = out.read_text().splitlines()
-                        if lines and SESSION.fullmatch(lines[0]):break
+                        if active_session(out.read_text(),source['scanner']['path']):break
                         if process.poll() is not None or time.monotonic() >= deadline:
                             raise CaptureError('actual SDK AcquireDiscovery readiness failed')
                         time.sleep(.01)
@@ -206,7 +234,7 @@ def supervise(daemon_pid):
                     if daemon_identity(daemon_pid) != daemon:raise CaptureError('original daemon changed')
                     write_record(folder/'progress.json',row)
                 ready = dict(phase=phase,scanner=source['scanner']['path'],active_wall_ns=time.time_ns(),
-                             sessions=[SESSION.fullmatch(Path(app['output_files'][0]).read_text().splitlines()[0])[1] for app in row['readers']])
+                             sessions=[active_session(Path(app['output_files'][0]).read_text(),source['scanner']['path'])[1] for app in row['readers']])
                 if len(set(ready['sessions'])) != 2:raise CaptureError('distinct caller sessions required')
                 row['ready'] = ready;write_record(folder/'ready.json',ready)
                 for number in (0,1):

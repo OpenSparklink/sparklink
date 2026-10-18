@@ -1461,9 +1461,8 @@ def _run(args):
                     if file_record(HERE/'ws73_application_discovery.py')!=verifier:raise ValueError('discovery verifier changed during run')
                     staged=args.prepared/'root/usr/share/sparklink/tools/ws73_application_discovery.py'
                     if file_record(staged)['sha256']!=verifier['sha256']:raise ValueError('staged discovery verifier differs from host')
-                    staged_slctl=args.prepared/'root/bin/slctl'
-                    matches=[x for x in package['guest_files'] if x['path']==str(staged_slctl)]
-                    if control['slctl']['path']!='/bin/slctl' or len(matches)!=1 or matches[0]['sha256']!=control['slctl']['sha256'] or file_record(staged_slctl)['sha256']!=control['slctl']['sha256']:raise ValueError('actual discovery slctl differs from sealed image')
+                    from ws73_application_discovery import validate_tool
+                    validate_tool(control['slctl'],args.prepared/'root',package['guest_files'])
                     expected=dict(path='/usr/share/sparklink/tools/ws73_application_discovery.py',sha256=verifier['sha256'])
                     m['application_discovery_supervision']=verify_supervisor_artifacts(control,share,expected)
                     m['application_discovery_corroboration']=discovery_corroborate(control,capture)

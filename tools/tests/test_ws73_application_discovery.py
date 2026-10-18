@@ -16,7 +16,7 @@ from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 
 from ws73_application_discovery import (corroborate, reader_args, receipt, requested,
-    supervise, validate_request, valid_summary, verify_supervisor_artifacts)
+    active_session, supervise, validate_request, validate_tool, valid_summary, verify_supervisor_artifacts)
 from ws73_capture import CaptureError, marker_data
 from ws73_target import run_exit_code
 
@@ -42,7 +42,7 @@ def fixture():
         row['first_released']=dict(phase=phase,first_end_wall_ns=offset+100,survivor_alive=True,observed_wall_ns=offset+110)
         row['readers']=[]
         for n in (0,1):
-            lines=[f"DiscoverySession: id={n+1} path={scanner['path']} state=active source=broker"]
+            lines=['Selected '+scanner['path'],f"DiscoverySession: id={n+1} path={scanner['path']} state=active source=broker"]
             for j in range(1 if n==0 else 8):
                 marker=markers[0] if j<4 or n==0 else markers[1]
                 lines.append(f"DiscoveryReport: session={n+1} generation={scanner['generation']} sequence={j+1} address_type=0 address={advertiser['address'].replace(':','')} rssi=-40 data={marker_data(marker).hex()}")
@@ -91,9 +91,32 @@ class DiscoveryGate(unittest.TestCase):
         run,capture=fixture();proof=corroborate(run,capture)
         self.assertTrue(valid_summary(proof));self.assertEqual(len(proof['phases'][0]['reports']),9)
 
+    def test_cli_barrier_waits_for_complete_selected_and_session_lines(self):
+        run,_=fixture();row=run['application_discovery'][0]['supervision'];text=row['readers'][0]['stdout'];path=row['scanner']['path']
+        selected,session=text.splitlines()[:2]
+        for prefix in ['',selected[:12],selected+'\n',selected+'\n'+session[:-1]]:
+            self.assertIsNone(active_session(prefix,path))
+        self.assertEqual(active_session(selected+'\n'+session+'\n',path)[1],'1')
+
+    def test_versioned_actual_bundle_identity_and_alias(self):
+        name='/usr/libexec/opensparklink/native-lab/42671054511d/slctl'
+        tool=dict(path=name,sha256=hashlib.sha256(b'ELF-fixture').hexdigest())
+        validate_tool(tool)
+        with tempfile.TemporaryDirectory()as temp:
+            root=Path(temp);binary=root/name.lstrip('/');binary.parent.mkdir(parents=True);binary.write_bytes(b'ELF-fixture')
+            alias=root/'bin/slctl';alias.parent.mkdir();alias.symlink_to(name)
+            manifest=[dict(path=str(binary),sha256=tool['sha256'])]
+            validate_tool(tool,root,manifest)
+            with self.assertRaises(CaptureError):validate_tool(tool,root,[])
+            with self.assertRaises(CaptureError):validate_tool(tool|dict(sha256='0'*64),root,manifest)
+            alias.unlink();alias.write_bytes(b'another binary')
+            with self.assertRaises(CaptureError):validate_tool(tool,root,manifest)
+        for path in ['/bin/sh','/usr/libexec/opensparklink/native-lab/../slctl','/tmp/slctl']:
+            with self.assertRaises(CaptureError):validate_tool(tool|dict(path=path))
+
     def test_output_needs_real_role_identity_new_payload_and_last_stop(self):
         run,_=fixture();row=run['application_discovery'][0]['supervision']
-        for kind in ['uid','group','caps','native','exit','stderr','firststop','laststop','marker','sequence','generation','rssi','truncate','args']:
+        for kind in ['uid','group','caps','native','exit','stderr','firststop','laststop','marker','sequence','generation','rssi','truncate','args','selection','unterminated']:
             bad=copy.deepcopy(row);a=bad['readers'][0];b=bad['readers'][1]
             if kind=='uid':a['credentials']['uids']=[0]*4
             elif kind=='group':a['credentials']['groups']=[1000]
@@ -109,6 +132,8 @@ class DiscoveryGate(unittest.TestCase):
             elif kind=='rssi':a['stdout']=a['stdout'].replace('rssi=-40','rssi=unknown')
             elif kind=='truncate':a['stdout']=a['stdout'].splitlines()[0]
             elif kind=='args':a['args'][-1]='-20'
+            elif kind=='selection':a['stdout']=a['stdout'].replace('Selected /org/sparklink/slk0_g11','Selected /org/sparklink/slk1_g12')
+            elif kind=='unterminated':a['stdout']=a['stdout'].rstrip('\n')
             with self.subTest(kind=kind),self.assertRaises(CaptureError):
                 receipt(bad,0);receipt(bad,1)
 

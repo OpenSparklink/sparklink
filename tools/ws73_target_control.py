@@ -78,13 +78,13 @@ class ConnectionControlRun(PassthroughControlRun):
             if getattr(self.args, 'ssap_initialization_verify', False):
                 from ws73_ssap_initialization import execute as initialize
                 initialize(self, a, b)
+            if getattr(self.args,'application_discovery_verify',False):
+                from ws73_application_discovery import execute as application_discovery
+                application_discovery(self,a,b)
             from ws73_connection_control import execute
             execute(self, a, b)
             from ws73_registry_metadata import execute as registry_metadata
             registry_metadata(self, a, b)
-            if getattr(self.args,'application_discovery_verify',False):
-                from ws73_application_discovery import execute as application_discovery
-                application_discovery(self,a,b)
         return super().phase(a, b, count, label)
 
     def confirm(self, message):

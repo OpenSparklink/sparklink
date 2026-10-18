@@ -140,7 +140,7 @@ class ServiceTrace(unittest.TestCase):
 
     def test_runner_never_promotes_trace_over_original_gate(self):
         from ws73_target import run_exit_code
-        good=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,
+        good=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,
                   session_service_observation_requested=True,session_service_acceptance=True,
                   session_service_observation=dict(status='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED',
                                                    services=2,attempts=2,accepted_usb_packets=2,operations=2))

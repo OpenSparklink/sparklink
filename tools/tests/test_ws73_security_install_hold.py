@@ -114,7 +114,7 @@ class InstallationHoldTests(unittest.TestCase):
         with self.assertRaises(ValueError):witness(bad,phase,daemon)
 
     def test_new_exit_verdict_requires_its_two_actual_hold_proofs(self):
-        record=dict(status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS',live_security_agent_requested='install-cancel',security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=[dict(mode='install-cancel')]*2,business_round_trips=8),channel_socket_corroboration=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8),ordinary_channel_socket_acceptance=True,qemu_exit=0)
+        record=dict(supervisor_exit=0,status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS',live_security_agent_requested='install-cancel',security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=[dict(mode='install-cancel')]*2,business_round_trips=8),channel_socket_corroboration=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8),ordinary_channel_socket_acceptance=True,qemu_exit=0)
         self.assertEqual(run_exit_code(record),1)
         record['security_install_hold']=dict(complete=True,qemu_sha256=QEMU_SHA256,corroboration=dict(status='TWO_ROLE_ACTUAL_INSTALL_WITHDRAWAL_LATE_REPLY_SCOPED_PASS',phases=[{},{}]))
         self.assertEqual(run_exit_code(record),0)

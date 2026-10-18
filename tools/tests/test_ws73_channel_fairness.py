@@ -77,7 +77,7 @@ class ConcurrentGate(unittest.TestCase):
         run,capture=fixture();proof=corroborate(run,capture)
         self.assertEqual(proof['round_trips'],72);self.assertFalse(proof['full_fairness_acceptance'])
         self.assertFalse(proof['performance_qualified']);self.assertEqual(len(proof['proofs']),2)
-        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,channel_fairness_requested=True,channel_fairness_acceptance=True,channel_fairness_corroboration=proof)
+        record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,channel_fairness_requested=True,channel_fairness_acceptance=True,channel_fairness_corroboration=proof)
         self.assertEqual(run_exit_code(record),0)
         for change in [dict(status='FAIL'),dict(qemu_exit=1),dict(channel_fairness_requested=False),dict(channel_fairness_acceptance=False)]:self.assertEqual(run_exit_code(record|change),1)
 

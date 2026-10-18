@@ -100,7 +100,7 @@ class RequesterLifecycle(unittest.TestCase):
             phases.append(dict(phase=phase,ssap_requester_lifecycle=proof))
         summary=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8,proofs=phases)
         self.assertTrue(valid_summary(summary))
-        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,ssap_requester_lifecycle_requested=True,
+        record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,ssap_requester_lifecycle_requested=True,
             ssap_requester_lifecycle_acceptance=True,ordinary_channel_socket_acceptance=True,channel_socket_corroboration=summary)
         self.assertEqual(run_exit_code(record),0)
         for mutate in [lambda d:d.update(ssap_requester_lifecycle_requested=False),lambda d:d.update(ssap_requester_lifecycle_acceptance=False),

@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9E_NATIVE_BIND_OFF_WORKER_OFFLINE_PASS_NEW_ARTIFACT_PENDING",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9E_TEN_RAW_VM_PASS_GLOBAL_TERMINAL_GUARD_FIX_AUDIT_PENDING",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -4072,6 +4072,12 @@
             "path": ".dev/main-thread-01a120fe/native-bind-offline-v2.json",
             "sha256": "65fc4faa04ecf7eadf999c892088d76cffe24895cf12051f1b13d9be7ed29812",
             "scope": "Actualtested97e46ad+dirtybytes;Nativeblockingdependencyfixture,actualproductionhelper/OSfd/OwnedMutexGuard/currentthread;notNativeKernel/USB/refdrain/formalqualification. FirstselectorFAILretained."
+          },
+          "verdict_guard_followup": {
+            "status": "GLOBAL_INTEGER_ZERO_EXIT_GUARD_866_TOOLS_STRICT_DOCS_PASS_REPLAY_PENDING",
+            "counterexample": ".dev/main-thread-01a120fe/native-bind-dynamic-audit-v1.log",
+            "scope": "Frozen6dcdynamicverdictacceptedmutatedsupervisor_exit1;actualrawsupervisor/qemu0. Newguardrejectsfailed/missing/invalidreceiptsallmodes;explicitinternalpendingonly. Oldrawexecuted6dcidentityandcounterexampleretained;newHostVMnotqualifiedbyofflinereplay.",
+            "tools_test_receipt": ".dev/main-thread-01a120fe/native-bind-terminal-tools-v2.json"
           }
         }
       }

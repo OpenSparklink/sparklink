@@ -66,7 +66,7 @@ class NativeBenchmarkEvidence(unittest.TestCase):
                 proof=gate.corroborate(run,capture,directory)
                 self.assertEqual(proof['round_trips'],count)
                 self.assertIs(proof['performance_qualified'],False)
-                record=dict(status='PASSTHROUGH_SUPPORT_PASS',socket_benchmark_requested=mode,socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,qemu_exit=0)
+                record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',socket_benchmark_requested=mode,socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,qemu_exit=0)
                 self.assertEqual(run_exit_code(record),0)
                 record['socket_benchmark_corroboration']['round_trips']-=1
                 self.assertEqual(run_exit_code(record),1)
@@ -102,7 +102,7 @@ class NativeBenchmarkEvidence(unittest.TestCase):
                 run,capture=fixture(Path(directory),window=window)
                 proof=gate.corroborate(run,capture,directory)
                 self.assertEqual(proof.get('window',4),window)
-                record=dict(status='PASSTHROUGH_SUPPORT_PASS',socket_benchmark_requested='window',socket_benchmark_window_requested=window,socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,qemu_exit=0)
+                record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',socket_benchmark_requested='window',socket_benchmark_window_requested=window,socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,qemu_exit=0)
                 self.assertEqual(run_exit_code(record),0)
                 record['socket_benchmark_window_requested']=4 if window==1 else 1
                 self.assertEqual(run_exit_code(record),1)
@@ -116,7 +116,7 @@ class NativeBenchmarkEvidence(unittest.TestCase):
             with tempfile.TemporaryDirectory() as directory:
                 run,capture=fixture(Path(directory),mode,window=3,count=7)
                 proof=gate.corroborate(run,capture,directory)
-                record=dict(status='PASSTHROUGH_SUPPORT_PASS',socket_benchmark_requested=mode,socket_benchmark_window_requested=3,socket_benchmark_config_requested=gate.configuration(mode,3,count=7),socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,qemu_exit=0)
+                record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',socket_benchmark_requested=mode,socket_benchmark_window_requested=3,socket_benchmark_config_requested=gate.configuration(mode,3,count=7),socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,qemu_exit=0)
                 self.assertEqual(proof['config'],record['socket_benchmark_config_requested'])
                 self.assertEqual(run_exit_code(record),0)
                 proof['config']=proof['config'].copy()
@@ -152,4 +152,4 @@ class NativeBenchmarkEvidence(unittest.TestCase):
 
     def test_request_without_corroboration_and_performance_upgrades_are_rejected(self):
         for mode in ['window','rate','duplex']:
-            self.assertEqual(run_exit_code(dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,socket_benchmark_requested=mode)),1)
+            self.assertEqual(run_exit_code(dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,socket_benchmark_requested=mode)),1)

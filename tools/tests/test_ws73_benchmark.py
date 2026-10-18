@@ -154,7 +154,7 @@ class VmSelectedArtifacts(unittest.TestCase):
         b=dict(compiled_source='a'*40,test_count=1,test_listing=listing,
                compiler_artifact=dict(reason='compiler-artifact',target=dict(name='slktest',kind=['lib']),profile=dict(test=True),executable='/build/current-tests'),
                artifacts=dict(slktest=dict(sha256='b'*64,bytes=100,path='/build/slktest'),tests=dict(sha256='c'*64,bytes=200,path='/build/current-tests')))
-        v=dict(status='PASS_ISOLATED_NATIVE_ROOT_SMOKE',qemu_exit=0,physical_acceptance=False,native_acceptance=False,application_tests=1,application_test_listing_sha256=hashlib.sha256(listing.encode()).hexdigest(),inputs={'slktest':dict(sha256='b'*64),'slktest-tests':dict(sha256='c'*64)})
+        v=dict(supervisor_exit=0,status='PASS_ISOLATED_NATIVE_ROOT_SMOKE',qemu_exit=0,physical_acceptance=False,native_acceptance=False,application_tests=1,application_test_listing_sha256=hashlib.sha256(listing.encode()).hexdigest(),inputs={'slktest':dict(sha256='b'*64),'slktest-tests':dict(sha256='c'*64)})
         return v,b
     def test_generic_vm_pass_cannot_upgrade_old_or_missing_selected_artifact(self):
         v,b=self.pair();self.assertEqual(gate.verify_vm_build(v,b)['tests'],1)

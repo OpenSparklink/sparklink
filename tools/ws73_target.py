@@ -1691,6 +1691,18 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record, *, supervisor_pending=False):
+    # One finalization contract for every mode, not just SSAP lifecycle gates.
+    # _run alone computes its result before writing supervisor_exit. A saved
+    # record without that receipt cannot be interpreted as a completed PASS.
+    if type(supervisor_pending) is not bool:
+        return 1
+    if 'supervisor_exit' in record:
+        if type(record['supervisor_exit']) is not int or record['supervisor_exit'] != 0:
+            return 1
+    elif not supervisor_pending:
+        return 1
+    if type(record.get('qemu_exit')) is not int or record['qemu_exit'] != 0:
+        return 1
     initialization=record.get('ssap_initialization_requested',False)
     if type(initialization)is not bool:return 1
     if initialization:
@@ -1707,10 +1719,7 @@ def run_exit_code(record, *, supervisor_pending=False):
                 or held.get('method')!=spec['method'] or held.get('qemu_sha256')!=spec['qemu'] or held.get('complete')is not True
                 or held.get('stage','cmtc')!=spec['stage']
                 or record.get('ssap_initialization_corroboration',{}).get('stage','cmtc')!=spec['stage']
-                or not valid_summary(record.get('ssap_initialization_corroboration',{}))
-                or type(record.get('qemu_exit'))is not int or record['qemu_exit']!=0
-                or ('supervisor_exit' in record and (type(record['supervisor_exit'])is not int or record['supervisor_exit']!=0))
-                or ('supervisor_exit' not in record and not supervisor_pending)):return 1
+                or not valid_summary(record.get('ssap_initialization_corroboration',{}))):return 1
     elif record.get('ssap_initialization_acceptance')or record.get('ssap_initialization_corroboration'):return 1
     lifecycle=record.get('ssap_owner_lifecycle_requested',False)
     if type(lifecycle)is not bool:return 1
@@ -1718,10 +1727,7 @@ def run_exit_code(record, *, supervisor_pending=False):
     if not isinstance(channel_proof,dict):return 1
     if lifecycle:
         from ws73_ssap_owner_lifecycle import valid_summary
-        # _run computes this verdict before publishing supervisor_exit. Reject
-        # an explicitly failed result,but do not require our unwritten output.
         if (record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0
-                or ('supervisor_exit'in record and (type(record['supervisor_exit'])is not int or record['supervisor_exit']!=0))
                 or record.get('ssap_owner_lifecycle_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or not valid_summary(channel_proof)):return 1
     elif record.get('ssap_owner_lifecycle_acceptance') or any(p.get('ssap_owner_lifecycle')for p in channel_proof.get('proofs',[])):return 1
     requester=record.get('ssap_requester_lifecycle_requested',False)
@@ -1729,7 +1735,6 @@ def run_exit_code(record, *, supervisor_pending=False):
     if requester:
         from ws73_ssap_requester_lifecycle import valid_summary as valid_requester
         if (lifecycle or record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0
-                or ('supervisor_exit'in record and(type(record['supervisor_exit'])is not int or record['supervisor_exit']!=0))
                 or record.get('ssap_requester_lifecycle_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or not valid_requester(channel_proof)):return 1
     elif record.get('ssap_requester_lifecycle_acceptance')or any(p.get('ssap_requester_lifecycle')for p in channel_proof.get('proofs',[])):return 1
     clients=record.get('application_client_verification_requested',False)

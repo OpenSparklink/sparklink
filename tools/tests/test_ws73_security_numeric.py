@@ -61,7 +61,7 @@ class NumericWitness(unittest.TestCase):
             self.assertEqual(proof['numeric']['code'],759201)
             self.assertEqual(len(proof['business_legs']),16)
             self.assertEqual(len(proof['installations']),2 if mode=='numeric-approve' else 0)
-            manifest=dict(status='REAL_NUMERIC_COMPARISON_MECHANISM_PASS',live_security_numeric_requested=mode,connected_file_corroboration=proof,qemu_exit=0)
+            manifest=dict(supervisor_exit=0,status='REAL_NUMERIC_COMPARISON_MECHANISM_PASS',live_security_numeric_requested=mode,connected_file_corroboration=proof,qemu_exit=0)
             self.assertEqual(run_exit_code(manifest),0)
             for key in ('connected_file_corroboration','live_security_numeric_requested','qemu_exit'):
                 bad=manifest.copy();bad.pop(key);self.assertEqual(run_exit_code(bad),1)

@@ -58,7 +58,7 @@ class ProtectedSsapEvidence(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises(CaptureError):protected_ssap_wire(r,c,p)
 
     def test_parent_cannot_strip_protected_ssap_business(self):
-        record=dict(status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS',live_security_agent_requested='numeric-approve',live_ssap_security_requirement=2,
+        record=dict(supervisor_exit=0,status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS',live_security_agent_requested='numeric-approve',live_ssap_security_requirement=2,
             security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=[dict(mode='numeric-approve',ssap_security_requirement=2) for _ in range(2)],business_round_trips=8),
             channel_socket_corroboration=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8,proofs=[dict(protected_ssap=dict(required=2,controllers=[{},{}]),ssap_values=[{}],ssap_discovery=[{}]) for _ in range(2)]),ordinary_channel_socket_acceptance=True,qemu_exit=0)
         self.assertEqual(run_exit_code(record),0)

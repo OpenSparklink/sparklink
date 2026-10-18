@@ -100,7 +100,7 @@ class ApplicationClientEvidence(unittest.TestCase):
         with patch('ws73_application_client.reassemble_acb',return_value=sdus):proof=corroborate(run,{})
         self.assertTrue(valid_summary(proof))
         supervision=dict(status='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED',uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,daemon=dict(pid=1,start_ticks=1),supervisor=dict(pid=2,start_ticks=2))
-        record=dict(application_role_supervision=supervision,application_client_verification_requested=True,application_client_acceptance=True,application_client_corroboration=proof,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0)
+        record=dict(supervisor_exit=0,application_role_supervision=supervision,application_client_verification_requested=True,application_client_acceptance=True,application_client_corroboration=proof,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0)
         self.assertEqual(run_exit_code(record),0)
         for key in ['application_client_verification_requested','application_client_acceptance','application_client_corroboration','application_role_supervision']:
             bad=copy.deepcopy(record);bad.pop(key)

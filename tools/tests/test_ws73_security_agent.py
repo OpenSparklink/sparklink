@@ -48,7 +48,7 @@ def fixture(mode='approve'):
 
 class AgentEvidenceTests(unittest.TestCase):
     def test_new_success_status_requires_both_proofs_and_zero_supervisor_exit(self):
-        record=dict(status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS', live_security_agent_requested='approve',
+        record=dict(supervisor_exit=0,status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS', live_security_agent_requested='approve',
             security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=[dict(mode='approve'),dict(mode='approve')],business_round_trips=8),
             channel_socket_corroboration=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8),ordinary_channel_socket_acceptance=True,qemu_exit=0)
         self.assertEqual(run_exit_code(record),0)

@@ -111,7 +111,7 @@ def burst_summary_fixture():
         fault_isolation_acceptance=False,dynamic_channel_acceptance=False,automatic_fault_recovery_acceptance=False,
         protected_ssap_acceptance=False,full_goal_complete=False,pairs=pairs,
         overlaps=[dict(role_phase=n,overlap_wall_ns=[1,2]) for n in range(2)])
-    return dict(status='FOUR_DEVICE_PARALLEL_BURST_PASS',four_device_burst_requested=True,
+    return dict(supervisor_exit=0,status='FOUR_DEVICE_PARALLEL_BURST_PASS',four_device_burst_requested=True,
         four_device_parallel_business=True,four_device_parallel_rf=False,qemu_exit=0,parallel_corroboration=proof)
 
 
@@ -227,7 +227,7 @@ class DisconnectEvidenceTests(unittest.TestCase):
             overlaps=[dict(role_phase=n,overlap_wall_ns=[1,2]) for n in range(2)],
             pairs=[dict(connections=[{},{}],channel=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=24,
                 proofs=[dict(legs=[{}]*(8 if n==pair else 40)) for n in range(2)])) for pair in range(2)])
-        r=dict(status='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS',four_device_disconnect_requested=True,
+        r=dict(supervisor_exit=0,status='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS',four_device_disconnect_requested=True,
             four_device_parallel_business=True,four_device_parallel_rf=False,qemu_exit=0,parallel_corroboration=proof)
         self.assertEqual(run_exit_code(r),0)
         for change in ['flag','proof','post-count','wrong-victim','status','count']:
@@ -309,7 +309,7 @@ class BusinessEvidenceTests(unittest.TestCase):
             pairs=[dict(connections=[{},{}],channel=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=40,proofs=[dict(legs=[{}]*40) for _ in range(2)])) for _ in range(2)],overlaps=[dict(role_phase=n,overlap_wall_ns=[1,2]) for n in range(2)],
             fault_isolation_acceptance=False,dynamic_channel_acceptance=False,
             automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False)
-        record=dict(status='FOUR_DEVICE_PARALLEL_BUSINESS_PASS',four_device_parallel_business=True,
+        record=dict(supervisor_exit=0,status='FOUR_DEVICE_PARALLEL_BUSINESS_PASS',four_device_parallel_business=True,
             four_device_parallel_rf=False,qemu_exit=0,parallel_corroboration=proof)
         self.assertEqual(run_exit_code(record),0)
         for key in record:

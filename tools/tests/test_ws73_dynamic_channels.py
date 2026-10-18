@@ -138,7 +138,7 @@ class DynamicVerifier(unittest.TestCase):
             with self.subTest(change=change),self.assertRaises(CaptureError):self.check(run,packets)
     def test_long_manifest_cannot_downgrade_workload_or_drop_gate(self):
         run,packets=fixture(2042);proof=self.check(run,packets)
-        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,dynamic_channel_verification_requested=True,dynamic_channel_long_bytes_requested=2042,dynamic_channel_acceptance=True,ordinary_channel_socket_acceptance=True,dynamic_channel_corroboration=proof)
+        record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,dynamic_channel_verification_requested=True,dynamic_channel_long_bytes_requested=2042,dynamic_channel_acceptance=True,ordinary_channel_socket_acceptance=True,dynamic_channel_corroboration=proof)
         self.assertEqual(run_exit_code(record),0)
         import copy
         for change in ['flag','type','size','channel','business','phase','baseline']:
@@ -176,7 +176,7 @@ class DynamicVerifier(unittest.TestCase):
         proof=self.check(run,packets,capture)
         self.assertEqual(proof['round_trips'],80)
         self.assertTrue(all(p['credit']['endpoints'][0]['wire_peak']==5 for p in proof['proofs']))
-        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,dynamic_channel_burst_requested=True,dynamic_channel_verification_requested=True,dynamic_channel_long_bytes_requested=2042,dynamic_channel_acceptance=True,ordinary_channel_socket_acceptance=True,dynamic_channel_corroboration=proof)
+        record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,dynamic_channel_burst_requested=True,dynamic_channel_verification_requested=True,dynamic_channel_long_bytes_requested=2042,dynamic_channel_acceptance=True,ordinary_channel_socket_acceptance=True,dynamic_channel_corroboration=proof)
         self.assertEqual(run_exit_code(record),0)
         import copy
         for change in ['flag','rounds','credit','debt','completion','identity','resume','baseline','bad-credit-type','bad-endpoints-type']:
@@ -196,7 +196,7 @@ class DynamicVerifier(unittest.TestCase):
         with self.assertRaises(CaptureError):self.check(run,packets,capture)
 
     def test_dynamic_request_cannot_pass_with_legacy_status_only(self):
-        self.assertEqual(run_exit_code(dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,dynamic_channel_verification_requested=True)),1)
+        self.assertEqual(run_exit_code(dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,dynamic_channel_verification_requested=True)),1)
 
 
 if __name__=='__main__':unittest.main()

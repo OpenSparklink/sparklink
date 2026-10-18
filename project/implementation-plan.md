@@ -14,6 +14,13 @@ fixture不能证明真实Native syscall内部交错、parent退休或kernel引�
 漏选第三项被计数门禁拒绝，原失败保留。实际测试源码为97e46ad基线加本批dirty
 字节，后续映射准确签名提交，不冒充干净提交编译。构建按共享锁单独12路执行。
 
+本批动态门禁的原始 `supervisor_exit` 为0，但独立篡改负对照发现旧通用verdict在
+该模式接受 `supervisor_exit=1`。原审计FAIL保留；统一终态检查要求QEMU和supervisor
+都有整数0，只有producer内部明确pending可暂缺尚未写出的supervisor凭据。
+866项工具检查通过，完整fixture补明确终态字段，故意缺失用例继续拒绝；首轮
+fixture迁移误补故意缺失字段的失败也保留。新verdict仅离线重放旧VM，不改写其
+6dc执行身份，也不通过重跑硬件取得另一个“成功”来覆盖原反例。
+
 ### R5f9d：被动诊断已接通，四轮未复现；根因仍开放
 
 原253 FAIL保持必需失败。它的peerDown约在断链OUT后5.08秒、清理广告命令之后

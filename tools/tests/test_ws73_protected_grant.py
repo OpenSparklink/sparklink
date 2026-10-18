@@ -78,7 +78,7 @@ class ProtectedPrelude(unittest.TestCase):
     def test_supervisor_requires_the_requested_grade_and_complete_proof(self):
         from ws73_target import run_exit_code
         for level in (1,2):
-            base=dict(status='REAL_CHANNEL_GRANT_PASS',qemu_exit=0,live_channel_security_required=level,
+            base=dict(supervisor_exit=0,status='REAL_CHANNEL_GRANT_PASS',qemu_exit=0,live_channel_security_required=level,
                 connected_file_corroboration=dict(protected_security=dict(requirement=level,
                     status='ACTUAL_PROTECTED_PRELUDE_AND_LIFECYCLE_SCOPE',
                     wire=dict(status='REAL_POSITIVE_EXCHANGE_ONLY_CORROBORATED'))))

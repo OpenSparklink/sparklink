@@ -91,7 +91,8 @@ class LifecycleReceipts(unittest.TestCase):
                ordinary_channel_socket_acceptance=True,channel_socket_corroboration=summary())
         # This is the actual _run finalizer's input state. It writes the
         # supervisor result only after calling this production verdict function.
-        self.assertEqual(run_exit_code(d),0)
+        self.assertEqual(run_exit_code(d),1)  # saved record lacks final receipt
+        self.assertEqual(run_exit_code(d,supervisor_pending=True),0)
         d['supervisor_exit']=0
         self.assertEqual(run_exit_code(d),0)
         for invalid in(1,None,False):

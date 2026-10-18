@@ -1,5 +1,11 @@
 # 证据入口与取得限制
 
+- [Rust／C／Python真实目录观察与原路径保持](controller-language-observer-20261019.json)：
+  编译服务/SDK 3bd、实际Host/guest工具80e、编译内核2fc；校验器修复d912仅离线重放。
+  两角色实际普通观察者及映射库、七尺寸/Owned保持分别核对；原参数、审计路径及
+  缺失proof异常反例保留，不以修复后的工具提交替换真实运行身份。范围仍为目录观察，
+  非Native Ready/Down/drain、完整SDK/状态流、形式化或自然恢复资格。
+
 - [C／Python目录视图限定离线](controller-language-offline-20261018.json)：
   实际C导出、生产交付槽、原Client/executor及真实共享库消费者；编译身份为准确
   dirty字节，不能称为干净提交编译。原环境与Clippy失败保留，新增语言实机及形式化

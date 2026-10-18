@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "status": "ROM_CANDIDATE_AND_110_PROTECTED_SSAP_CANONICAL_ISSUES_GOAL_SYNCED_FULL_SCOPE_OPEN",
+  "reports": {
+    "protected_report": "35cae0c228d0ec19acbe9c5285fa0877a9fe0be4",
+    "rom_report": "0eddfaf44225a7156d1de54cf3e9dbc4f79b84a5",
+    "retention_incident": "70c25434c38f47b17cc437ce89093d0d44a8f018",
+    "retirement_direct_test": "0317cc492a8fdbb3e40ee204a344f95a1141f6ed",
+    "format_only_fix": "24c91494aafc0fe4231af89498b3e148b1f8992a"
+  },
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+  "kernel_rebuilt_this_batch": false,
+  "native_userspace_rebuilt_this_batch": false,
+  "selected_runtime_artifact_not_latest_head_qualification": true,
+  "local_verification": {
+    "errors": [],
+    "unavailable_private_materials": [],
+    "unavailable_source_checkouts": [],
+    "verification": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED",
+    "retired_evidence_unavailable": [
+      "hcc110-document-retention-incident"
+    ],
+    "current": "NOT_CHECKED",
+    "overall": "INCOMPLETE",
+    "completed": true
+  },
+  "scope": [
+    "FoursoftwareROMcomparisons/12READM/explicitE/Uuploadsareboundedobservations,cold/accessvalidity/automaticselectionunproved;productionfirmwareselectionunchanged.",
+    "Two110protectedSSAPgates16realRT/24attributecases,andtwoindependentpostROMdatagates16RTremainexactsourced;notlocalattributeauthorization/CPCD/Eprotected/fullAgent/naturalrecovery/concurrentresetpeerisolation.",
+    "OriginalHCC110docloglost;fiveoldrecordsandoldexpectedhashpreservedfromgitinretirementwithrequiredUNPROVEDincident. Currentactivebyteverificationexcludesunavailablehistoricalbundleandcannotdeclareallhistoryintact.",
+    "Strictdocs/test/provenancemetadataarenotrealdeviceorformalproof. Allnewlogsuseexclusivecreation/contenthashreadonlyretention;signaturedoesnotreplacetesting."
+  ],
+  "strict_html": {
+    "status": "PASS",
+    "documents": 115,
+    "browser_or_external_links_rerun": false
+  },
+  "tool_regression": {
+    "tests": 743,
+    "status": "PASS",
+    "retirement_checker_tests": 29,
+    "negative_mutations": [
+      "remove-required-incident",
+      "promote-incident-PASS",
+      "rewrite-original-hash",
+      "rewrite-original-record",
+      "missing-original-git",
+      "mix-retired-record-active"
+    ],
+    "root_suite_source_snapshot": "70c25434c38f47b17cc437ce89093d0d44a8f018",
+    "root_suite_existing_dirty_files": {
+      "tools/ws73_dynamic_channels.py": "7becfe0f3d0130d6af76d0e68dcef5e16ee43e1fe636afbf9fecbc9cdbababaa",
+      "tools/ws73_parallel_data.py": "f358ec380d96753b7d734ffa09ed9bedd561252e21b12a1207d606faf9463870"
+    },
+    "frozen_clean_diagnostic_suite": {
+      "source": "d4b681cf3af073a697e89619ba9dc663d97c8648",
+      "tests": 739,
+      "log": ".dev/rom-chip-frozen-tools-v3.log"
+    },
+    "scope": "Root743 suite includes preserved user WIP listed byhash;not a clean full-tree native qualification. Frozen739 diagnostic suite separatelyclean. Actual offline ROM observer dependency bytes match0ab;neither suite is formal/concurrency/RF proof."
+  },
+  "provenance_negative_controls": [
+    {
+      "source": "ssap110-protected-registry-local-v1.json",
+      "negative_controls": [
+        {
+          "kind": "stale-source",
+          "result": "REJECTED",
+          "errors": [
+            "ssap110-protected-offline: report/source mismatch compiled_userspace",
+            "ssap110-protected-offline/compiled_userspace: source object unavailable"
+          ]
+        },
+        {
+          "kind": "missing-artifact",
+          "result": "REJECTED",
+          "errors": [
+            "ssap110-protected-m52: missing material"
+          ]
+        },
+        {
+          "kind": "scope-upgrade",
+          "result": "REJECTED",
+          "errors": [
+            "ssap110-protected-data: scope mismatch"
+          ]
+        },
+        {
+          "kind": "missing-case",
+          "result": "REJECTED",
+          "errors": [
+            "ssap110-protected-data: missing/extra/duplicate gate"
+          ]
+        },
+        {
+          "kind": "remaining-upgraded",
+          "result": "REJECTED",
+          "errors": [
+            "ssap110-protected-remaining: PASS hides a required non-PASS gate"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "rom-chip-registry-local-v1.json",
+      "negative_controls": [
+        {
+          "kind": "stale-source",
+          "result": "REJECTED",
+          "errors": [
+            "rom-chip-candidate-offline: report/source mismatch compiled_userspace",
+            "rom-chip-candidate-offline/compiled_userspace: source object unavailable"
+          ]
+        },
+        {
+          "kind": "missing-artifact",
+          "result": "REJECTED",
+          "errors": [
+            "rom-chip-candidate-m32: missing material"
+          ]
+        },
+        {
+          "kind": "scope-upgrade",
+          "result": "REJECTED",
+          "errors": [
+            "rom-chip-candidate-data: scope mismatch"
+          ]
+        },
+        {
+          "kind": "missing-case",
+          "result": "REJECTED",
+          "errors": [
+            "rom-chip-candidate-data: missing/extra/duplicate gate"
+          ]
+        },
+        {
+          "kind": "remaining-upgraded",
+          "result": "REJECTED",
+          "errors": [
+            "rom-chip-candidate-remaining: PASS hides a required non-PASS gate"
+          ]
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 7,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6230243773",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "scope_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 13,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/13#issuecomment-6230244190",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "scope_sha256": "89dbdb6edb813dce57310ca59d0a80a0319444700124bb765913f6d84c26bfb9"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 14,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6230244592",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "scope_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 15,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/15#issuecomment-6230245072",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "scope_sha256": "fcfadf365ca6970d0211aac18233cfeefdcf0b66849eb91e11dbcadfd9a2f0c5"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6230245518",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6230246057",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6230246642",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+    }
+  ],
+  "retention_issue_followup": {
+    "repo": "OpenSparklink/sparklink",
+    "number": 8,
+    "state": "OPEN",
+    "readback_exact": true,
+    "original_scope_unchanged": true,
+    "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6230320976"
+  },
+  "goal": {
+    "status": "active",
+    "full_scope": "S0-S6/19WP/10FV/12DG unchanged",
+    "budget": "originalunbudgeted",
+    "duplicate_goal_created": false,
+    "full_goal_complete": false
+  },
+  "ci": {
+    "snapshot": ".dev/rom-chip-ci-snapshot-v1.json",
+    "observed_source": "0eddfaf44225a7156d1de54cf3e9dbc4f79b84a5",
+    "failed_run": 39006706360,
+    "failure": "rustfmt const assertions",
+    "local_fix": "24c91494aafc0fe4231af89498b3e148b1f8992a",
+    "local_rustfmt_check": "PASS",
+    "new_head_ci": "NOT_YET_QUALIFIED;do not inherit old successes"
+  },
+  "materials": [
+    {
+      "path": ".dev/rom-chip-full-local-v1.json",
+      "sha256": "4056008846bc16a6033695abbbe649a9446c2d5fd009a13e8711755ca5ff5870",
+      "bytes": 398,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-full-local-v2.json",
+      "sha256": "a5439bb3437dfdfa614642048785450e69a1066acc83d604225d6f3744d35aff",
+      "bytes": 339,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-register-v1.py",
+      "sha256": "79c06de448f6ba8e9ce5d34b8b3126ede4c26c9233c843509fbf2917cbf6e400",
+      "bytes": 6428,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-registry-local-v1.json",
+      "sha256": "80bd5d6930a0990a5f43c82b562921662644ea6d807bb91b2fff73346233351f",
+      "bytes": 1285,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/ssap110-protected-register-v1.py",
+      "sha256": "703e3f360ae59a800c56106dd7d8eaf6d47c7feeebed216392fd69f58cc59460",
+      "bytes": 6116,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/ssap110-protected-registry-local-v1.json",
+      "sha256": "d711161f35d06904064019bf9320815ab68ab720399a569ad34fb3762bb1ceb2",
+      "bytes": 1278,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-issue-receipts-v1.json",
+      "sha256": "72fd3daa9e36a179f1a50c9b1d7ae052f7f8ed1269605f9c9ea7673ac6fe888c",
+      "bytes": 2563,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-retention-issue-receipt-v1.json",
+      "sha256": "87c35cd9d77adba0b516fe7a05babc6a9ff705922010e3896a00de89eeeddbd2",
+      "bytes": 232,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-strict-docs-v1.log",
+      "sha256": "498845793a5af3c4389f9f8019798b7d2cd4f1e2111508d660df8178f4178217",
+      "bytes": 362813,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-final-tools-v1.log",
+      "sha256": "4c28632a44fa3e8ed3d60884f9f6bee1386185bcbf3d3b0501ef2193a47f52f4",
+      "bytes": 879,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-retirement-unit-v2.log",
+      "sha256": "804bc01ab5f949cbe4c2c3fa315635f72f1623e319fe3f36fa1c1aaf555acd1a",
+      "bytes": 128,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-retirement-direct-v1.log",
+      "sha256": "f89c0c903f67d3f5f48e7de63597abca28aaf1c88ae614683cf64d3fcf5d8679",
+      "bytes": 128,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-ci-snapshot-v1.json",
+      "sha256": "e3015388dd48ee33c33d1c0b98c6342e752fc805f4dcab8c320039105ea3d961",
+      "bytes": 746,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-ci-failure-v1.json",
+      "sha256": "2df652acbd092eaa77205dae0f29f7f67a8b544e234516b8bb4380c3e4cc7b3a",
+      "bytes": 18753,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-ci-failure-v1.log",
+      "sha256": "fbd4c9027be68deac632e30893baf7b975cc74ecc9efdfc361d791f6740b3370",
+      "bytes": 5230,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-rustfmt-baseline-v1.log",
+      "sha256": "6fa625ba9a23463e946cd3d42d6c496dc16fbc7a63d7b3621556a030fd8a468f",
+      "bytes": 2038,
+      "access": "private authorized original workspace only"
+    },
+    {
+      "path": ".dev/rom-chip-rustfmt-fixed-v1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private authorized original workspace only"
+    }
+  ],
+  "next": "ExistingsoleEngineboundedlocalauthorizer/ownership/CPCDsecureupdatesanddata/multi/four/performanceparallel;ROMindependentvalidity/truecold/perdevicevariantidentityandnaturalRCA/nonmanualrecoveryOPEN. Fullscope/VM-only/UserHostP4unchanged.",
+  "wall_ns": 1792215926652643764,
+  "sdk_source": {
+    "commit": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+    "tracked_tree_clean": true,
+    "firmware_identity": "IndividualfullimageandpayloadhashesinROMreport;gitignoredoesnotattestfirmwarebytes"
+  }
+}

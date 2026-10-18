@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "production_kernel": "a0e1ad7b3a1c4397f1c187b5875b88a9efcc26bd",
+  "production_files": {
+    "net/sparklink/sle_sessions.rs": "d167483e42118abbefcdf88c896267944f19fac637f7d59dbfaff1597ab2e472",
+    "net/sparklink/sle_native.rs": "e81e1e293717b45d3dc13281f07550892300f4970a2c0cdad63d84f71ae4f769",
+    "net/sparklink/sle_workers.rs": "14cbaffd8906243f9b91c4da540e7698cdfccc3936ab92104d09b57af506e0b9",
+    "net/sparklink/sle_channel_socket.c": "c7aa7ebbfd46aa9d9b25ecfe78193487e021c52496aa5f6909712c06e7adac2e",
+    "net/sparklink/sparklink_core.rs": "ebda0544019292148a8ed50f4aa058a393d6b6aff84ec12505249f658f9bbc3b"
+  },
+  "scope": "Targeted immediate notification/Session reference abstraction,not implementation refinement or whole Session/data proof",
+  "bounds": {
+    "controllers": 2,
+    "physical_sessions_per_controller": 1,
+    "physical_lifetimes": 1,
+    "external_events_per_controller": 2,
+    "worker_stages": 6,
+    "session_pending": 1,
+    "session_running": 1,
+    "temporary_refs_per_controller": 1
+  },
+  "source_mapping": {
+    "Publish": "sle_native.rs ACB/NOCP after Host/data/gate unlock -> sle_sessions.rs kick_session_data Release flag + existing Runtime schedule_rx(0)",
+    "RuntimeBegin/RuntimeFinish": "sle_workers.rs WorkItem<0> existing serialized workqueue;queue-while-running semantics assumed from mod_delayed_work RawWorkItem contract,not verified by this model",
+    "TakeHint": "sle_sessions.rs notify_session_data AtomicBool swap(false,AcqRel)",
+    "TakeReference": "same function Session table Mutex;get distinct kref for unstopped object;table lock released before callback",
+    "Notify": "sle_channel_socket.c sl_connection_session_kick Session spinlock,active check,mod_delayed_work(...,0),queue kref settlement",
+    "PutReference": "sle_sessions.rs sl_connection_session_put for each collected target after C kick",
+    "SessionBegin/SessionFinish": "sle_channel_socket.c sl_work serialized callback,state recheck and final kref put;observed means worker recheck,not packet consumption/delivery",
+    "Close/Cancel/DropTable": "sl_connection_session_stop closes under Session lock,cancel_delayed_work_sync outside locks;reconcile/stop_sessions table removal/drop after required join"
+  },
+  "properties": [
+    "TypeOK",
+    "Ledger",
+    "LiveReference",
+    "NoClosedAdmission",
+    "EventWake",
+    "ClosedDrain"
+  ],
+  "assumptions": [
+    "Actual Linux workqueue/kref/lock API behavior is trusted here;model does not verify their implementation or memory reclamation.",
+    "Weak fairness for enabled Runtime stages and Session worker/cancel/table-drop actions;no fairness imposed on Publish or Close,no bounded scheduling latency guarantee.",
+    "One physical Session/lifetime per controller,already authorized/registered;no grant creation,identity reuse,protocol credit,USB or hardware model.",
+    "Session retirement closes admission before cancel/join andtable owner drop;actual callback/drain correctness still needs VM/concurrency/refinement evidence.",
+    "Periodic10ms Session and500ms Runtime fallback deliberately excluded tocheck immediate chain independently;model isnot complete scheduling implementation.",
+    "Epoch is an abstract bounded notification version;observed is state recheck,not application delivery or NOCP truth.",
+    "The selected Session is already active;first-binding negotiation andfd ownership are outside this notification model. Existing separate lifecycle models are not automatically composed proofs."
+  ],
+  "negative_control": {
+    "config": "SessionNotificationWeak.cfg",
+    "change": "QueueWhileRunning=FALSE deliberately loses Runtime requeue whilecallback alreadyrunning",
+    "expected": "EventWake temporal counterexample;late Publish afterSession recheck/beforeRuntime exit leaves flagtrue butRuntime unqueued",
+    "regression": "Kernel selftests now inject actual ACB ingress during the real Rust notify_session_data callback after swap;the scheduler call is an explicit receipt dependency,not a real kernel queue/noLostWake proof. C fixture separately checks running+pending references."
+  },
+  "remaining": [
+    "Actual LLVM/Rust compile andrealVM composition/ref/drain/credit/close/peer gates",
+    "LKMM andKCSAN/lockdep memory/publication/wakeup evidence",
+    "Separate original-deadline timer/removefallback,boundedTXfairness andalloriginalS0-S6conditions"
+  ],
+  "reference_accounting": "refs is the table/notification subledger only: table + borrowed + pending + running. SocketBinding/security/other external references are not modeled;zero here never asserts actual object Free or absence of all references."
+}

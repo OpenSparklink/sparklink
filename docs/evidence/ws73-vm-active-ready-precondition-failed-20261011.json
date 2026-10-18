@@ -1,0 +1,46 @@
+{
+  "status": "FAILED_PRECONDITION_NO_ACTIVE_HOLD_QUALIFICATION",
+  "kernel_head": "016aa7ee68130076d692366eceaafeb815003099",
+  "compiled_userspace_head": "52184a164e6117028d6b7799b81758e2cb4ac331",
+  "started_at": "2026-10-11T01:50:23.610761+00:00",
+  "finished_at": "2026-10-11T01:52:13.139611+00:00",
+  "runner_status": "FAIL",
+  "runner_error": "guest environment failed",
+  "probe": {
+    "format_version": 1,
+    "status": "FAIL",
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "daemon_running_during_hold": false,
+    "host_hold_acknowledgements": [],
+    "guest_ack_receipts": [],
+    "markers": [],
+    "peer_queries": [],
+    "peer_snapshots": [],
+    "error": "independent metadata availability"
+  },
+  "hold": {
+    "method": "QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT",
+    "observations": [],
+    "complete": false,
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false
+  },
+  "scope": "Failed probe waited for Ready before acquiring/releasing any initialization lease; no hold armed, no active command or RF acceptance. Source review shows fresh Runtime publishes Setup and requires actual initialization stop barriers. Runtime snapshot bytes were not retained by this failed loop.",
+  "console_warning": "DRM vblank timeout/warning at99.847606s during failed shutdown; preserved, not classified as historical physical xHCI warning",
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "active_usb_deadline_live_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "host_installation": false,
+  "manual_replug_used": false,
+  "artifact_sha256": {
+    "manifest.json": "9d8ee021d4dc098430132362786d102e2d01086a995d0e71242525ff17f05d18",
+    "console.log": "766c7a7920e04b76c1ce497a771d3109bf5d62f08b8b877c3a635507fec007e5",
+    "qemu-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qmp.jsonl": "35090110e55363afe2379e3af7ae0293bca4729e0f4224d2b7977e45be5281b0",
+    "guest-output/active-deadline-supervisor.log": "0ee68a05481ae106043b0aeabcaab96b314179c795136df3b5386ac2084ecb4f",
+    "guest-output/kernel.log": "5da474ef0b3bb463bf235e73e26b07d38704a825646fccbd111407bcc60df2a3",
+    "guest-output/ws73.pcap": "7bccf53ae316a847db3dffac2a2579b6eac97357f1d061261a6ef979dcd9afa1"
+  }
+}

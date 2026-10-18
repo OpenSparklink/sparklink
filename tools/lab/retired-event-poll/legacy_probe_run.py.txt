@@ -1,0 +1,89 @@
+def run(args):
+    if (os.getuid() != 0 or os.geteuid() != 0 or not Path('/scratch-root-uuid').is_file()
+            or 'ws73.diagnostic=1' not in Path('/proc/cmdline').read_text().split()):
+        raise ValueError('privileged opt-in scratch-root VM required')
+    output = args.output.resolve(); output.mkdir(mode=0o700)
+    cancellation = 'ws73.diagnostic_cancel=1' in Path('/proc/cmdline').read_text().split()
+    deadline_test = 'ws73.diagnostic_deadline=1' in Path('/proc/cmdline').read_text().split()
+    autonomous_test = 'ws73.diagnostic_autonomous=1' in Path('/proc/cmdline').read_text().split()
+    if autonomous_test and not deadline_test:raise ValueError('autonomous requires original deadline mode')
+    if deadline_test and not cancellation:raise ValueError('deadline requires cancellation hold mode')
+    record = {'format_version': 7 if autonomous_test else 6 if deadline_test else 5 if cancellation else 4,
+              'deadline_requested':deadline_test,'autonomous_requested':autonomous_test,
+              'cancellation_requested':cancellation, 'host_hold_acknowledgements':[],
+              'admission_copyout_requested': True, 'admission_eviction_requested': True,
+              'legacy_poll_copy_requested': True, 'status': 'STARTING', 'scope': 'live real WS73 diagnostic syscall gate in isolated VM',
+              'physical_acceptance': False, 'automatic_fault_recovery_acceptance': False,
+              'probe': file_record(args.probe), 'sources': [file_record(Path(__file__))],
+              'index': args.index, 'records': [], 'cli_queries': [], 'uid': os.getuid(), 'euid': os.geteuid()}
+    child = None
+    def save(): (output / 'run.json').write_text(json.dumps(record, indent=2) + '\n')
+    try:
+        save()
+        with (output / 'probe-stderr.txt').open('xb') as error, (output / 'probe.jsonl').open('xb') as transcript:
+            child = subprocess.Popen([str(args.probe), str(args.index)]+(['autonomous'] if autonomous_test else ['deadline'] if deadline_test else ['cancel'] if cancellation else []), stdin=subprocess.PIPE,
+                                     stdout=subprocess.PIPE, stderr=error)
+            selector = selectors.DefaultSelector(); selector.register(child.stdout, selectors.EVENT_READ)
+            pending = b''; deadline = time.monotonic() + 120; acknowledged = False; hold_pending=None
+            while True:
+                if time.monotonic() >= deadline: raise ValueError('diagnostic probe deadline')
+                if not acknowledged and (output / 'before-daemon.json').is_file() and args.retired_marker.is_file():
+                    child.stdin.write(b'retired\n'); child.stdin.flush(); acknowledged = True
+                if hold_pending is not None:
+                    ack={'arm_ready':'armed','wait_held':'held','release_ready':'released'}[hold_pending]
+                    path=output/f'hold-{ack}-ack.json'
+                    if path.exists():
+                        response=json.loads(path.read_text())
+                        if response.get('stage') != ack or response.get('request') != record['records'][-1]:
+                            raise ValueError('hold acknowledgment does not match pending phase')
+                        record['host_hold_acknowledgements'].append(response);save()
+                        child.stdin.write((ack+'\n').encode());child.stdin.flush();hold_pending=None
+                for key, _ in selector.select(0.1):
+                    data = os.read(key.fileobj.fileno(), 65536)
+                    if not data:
+                        selector.unregister(key.fileobj); continue
+                    transcript.write(data); transcript.flush(); pending += data
+                    while b'\n' in pending:
+                        line, pending = pending.split(b'\n', 1); item = json.loads(line)
+                        record['records'].append(item); save()
+                        if 'hold_phase' in item:
+                            if not cancellation or hold_pending is not None or item['hold_phase'] not in ('arm_ready','wait_held','release_ready'):
+                                raise ValueError('unexpected/duplicate hold coordination phase')
+                            hold_pending=item['hold_phase']
+                            from ws73_diagnostic_hold import write_marker
+                            write_marker(output/f'hold-{hold_pending}.json',item)
+                        if item.get('phase') == 'BEFORE_DAEMON_PASS':
+                            verify_records(record['records'], final=False, admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_test,autonomous=autonomous_test)
+                            for name, opcode, _ in QUERIES:
+                                generation = record['records'][0]['generation']
+                                command = [str(args.slkconfig), '--adapter', str(args.index), '--generation', str(generation), 'query', name]
+                                start = time.time_ns(); completed = subprocess.run(command, capture_output=True, text=True, timeout=15)
+                                row = {'args': command, 'exit': completed.returncode, 'stdout': completed.stdout,
+                                       'stderr': completed.stderr, 'start_wall_ns': start, 'end_wall_ns': time.time_ns()}
+                                matches = re.findall(r'^NativeDiagnosticQuery: index=(\d+) generation=(\d+) opcode=0x([0-9a-f]+) admission_seq=(\d+) status=0x00 data=([0-9a-f]+)$', completed.stdout, re.M)
+                                expected = next(r['data'] for r in record['records'] if r.get('opcode') == opcode)
+                                if completed.returncode or len(matches) != 1 or matches[0][:3] != (str(args.index), str(generation), f'{opcode:04x}') or int(matches[0][3]) <= 0 or matches[0][4] != expected:
+                                    raise ValueError('actual slkconfig metadata query mismatch')
+                                record['cli_queries'].append(row); save()
+                            record['status'] = 'BEFORE_DAEMON_PASS'; save()
+                            (output / 'before-daemon.json').write_text(json.dumps({'status': record['status']}) + '\n')
+                            deadline = time.monotonic() + 180
+                if child.poll() is not None and not selector.get_map(): break
+            selector.close()
+            record['probe_exit'] = child.wait(timeout=5)
+            if record['probe_exit'] or pending or not acknowledged: raise ValueError('probe exit or retirement handshake')
+        verify_records(record['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_test,autonomous=autonomous_test)
+        record['status'] = 'DIAGNOSTIC_RESULT_LIVE_PASS'; save()
+    except BaseException as error:
+        record.update(status='FAIL', error=str(error)); save(); raise
+    finally:
+        if child is not None and child.poll() is None:
+            child.kill(); child.wait(timeout=5)
+
+
+if __name__ == '__main__':
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--probe', required=True, type=Path); p.add_argument('--slkconfig', required=True, type=Path)
+    p.add_argument('--output', required=True, type=Path); p.add_argument('--index', type=int, default=0)
+    p.add_argument('--retired-marker', type=Path, default=Path('/run/diagnostic-retired'))
+    run(p.parse_args())

@@ -1,0 +1,63 @@
+name: Production codec bounded fuzz
+
+on:
+  push:
+    branches: [master, codex/sparklink-ws73]
+    paths: ['.github/workflows/codec-fuzz.yml']
+  pull_request:
+    paths: ['.github/workflows/codec-fuzz.yml']
+  schedule:
+    - cron: '41 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ws73-codec:
+    name: WS73 production C corpus and bounded sanitizer exploration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CC: clang-18
+      LLVM_PROFDATA: llvm-profdata-18
+      LLVM_COV: llvm-cov-18
+      FUZZ_RUNS: ${{ github.event_name == 'schedule' && '100000' || '20000' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: OpenSparklink/linux
+          # Review/bump with changes to these production codecs or the harness.
+          # This is an explicit source pin; it does not silently follow a branch.
+          ref: 400bd6812608935e2845d6d2b80ec58e7a6a6415
+          path: kernel
+          sparse-checkout: |
+            drivers/sparklink/ws73/wire.c
+            drivers/sparklink/ws73/wire.h
+            drivers/sparklink/ws73/dli.c
+            drivers/sparklink/ws73/dli.h
+            drivers/sparklink/ws73/bsle.h
+            net/sparklink/sle_channel_wire.c
+            net/sparklink/sle_channel_wire.h
+            tools/testing/selftests/sparklink/channel
+            tools/testing/selftests/sparklink/run_ws73_codec_fuzz.py
+            tools/testing/selftests/sparklink/fuzz
+          sparse-checkout-cone-mode: false
+      - name: Install named compiler and matching coverage/sanitizer tools
+        run: sudo apt-get update && sudo apt-get install -y clang-18 llvm-18 libclang-rt-18-dev binutils
+      - name: Check supervisor negative controls
+        run: python3 kernel/tools/testing/selftests/sparklink/fuzz/test_ws73_codec_verdict.py
+      - name: Replay fixed corpus and explore (not a proof or hardware qualification)
+        run: python3 kernel/tools/testing/selftests/sparklink/run_ws73_codec_fuzz.py --output fuzz-result --runs "$FUZZ_RUNS" --seed 730111
+      - name: Replay and explore actual dynamic CMTC codec
+        run: python3 kernel/tools/testing/selftests/sparklink/run_ws73_codec_fuzz.py --contract cmtc --output cmtc-fuzz-result --runs "$FUZZ_RUNS" --seed 730111
+      - name: Preserve all results, failures, corpus and coverage
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bounded-codec-fuzz-not-hardware-qualification
+          path: |
+            fuzz-result/
+            cmtc-fuzz-result/
+          if-no-files-found: error
+          retention-days: 14

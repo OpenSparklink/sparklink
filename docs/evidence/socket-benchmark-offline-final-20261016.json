@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "status": "APPLICATION_MEASUREMENT_AND_REPORT_CHECKS_OFFLINE_SCOPED_PASS",
+  "compiled_cli_source": "56e9f4596e39d4c077e9d8bea833d02578f637c3",
+  "report_tool_source": "e9cfda93464c10177f04c8cf96ff9e83d0cc4eab",
+  "scope": [
+    "Final13actualCLI unit tests plus2scan and3Agent private-D-Bus tests at compiledCLI56e9f45 source;real localAF_UNIX datagrams and localbus only",
+    "Existing application-evidence module validates two report JSONs,local per-message timestamp ordering,random peer frames,all samples/attempts and recomputed nearest-rank percentiles;20targetedPython tests including30synthetic negative mutations",
+    "No Native ioctl/Grant/kernel/USB/WS73 execution;no performancebaseline,formalproof,RFdelivery,artifact/captureclosure orresourcequalification"
+  ],
+  "sources": {
+    "cli": {
+      "crates/slctl/src/benchmark.rs": "680a3214de4a38528d789135c37ab520415bb3d908809fdf3a7b0a2b66487f50",
+      "crates/slctl/src/channel.rs": "b8244b54e544f4f21d97f241eb823ea18286ed02d074c8c9933e867abda92369",
+      "crates/slctl/src/commands.rs": "2d16908bf9057ddf36a0d1cf1eab79e7e3d663e20f67b9fc82a53fce4950bec3",
+      "crates/slctl/src/main.rs": "71cbc3c3a0d39f8941a991d88bcfcd5ad4dcc7b7dd74d65cf5984fc24b0fad18",
+      "crates/slctl/Cargo.toml": "f390b61589443d09280049b720b1650111b5698a2cc55ca41a7aa5f6dab9f363",
+      "Cargo.lock": "0a35344ae1e0461fede247c2aa1016f03cccb9b941ad74ccd922ce917610afc2",
+      "Cargo.toml": "074d922eba4ac31a421942c95ed84e1ac6e778e2a3baaf7260a0929d6c9d1244"
+    },
+    "report_tools": {
+      "tools/ws73_channel_socket.py": "95bb666475f0327fb6407706cc9eb88bc7d53a991ca1c4278d4abf2512f9284a",
+      "tools/tests/test_ws73_channel_socket.py": "b9f49e4a0d813a1c7463e81dfe71c2938d8c5751207f920bf6ef359661c811a4"
+    }
+  },
+  "tests": {
+    "unit": 13,
+    "private_dbus_scan": 2,
+    "private_dbus_agent": 3,
+    "report_parser": 20,
+    "metadata_negative_classes": [
+      "missing-peer",
+      "incomplete",
+      "qualified",
+      "clock",
+      "origin",
+      "unit-method",
+      "empty",
+      "count",
+      "count-bool",
+      "missing-row",
+      "duplicate",
+      "payload",
+      "nonce",
+      "timeout",
+      "lost-timeout",
+      "errno",
+      "order",
+      "batch-origin",
+      "elapsed",
+      "percentile",
+      "small-p999",
+      "peer-frame",
+      "same-controller",
+      "stale-lifetime",
+      "attempts",
+      "bad-capability",
+      "missing-error",
+      "missing-errno",
+      "float-percentile",
+      "float-peer-config"
+    ],
+    "strict_clippy": "PASS",
+    "docs": "inventory114 and strictHTML;notbrowserorcontentqualification"
+  },
+  "negative_scope": "SyntheticJSON mutation rejection checks metadata consistency,not falsifiedphysicalclocksorRF/hardware;originalsource/firmware/capture/supervisor closure remainsunimplemented",
+  "formal_proven": false,
+  "vm_real_tested": false,
+  "performance_qualified": false,
+  "retained_original_report": "docs/evidence/socket-benchmark-ping-pong-offline-20261016.json",
+  "retained_failures": [
+    "SandboxdatagramsEPERM",
+    "PrivateDBus executable missing inearlieroveralltestcommand"
+  ],
+  "materials": [
+    {
+      "path": ".dev/performance-baseline/ping-pong-build-v1.log",
+      "sha256": "dfc8f0685a779f5d5f314764c3840c76236fa6a8a70b6a4e793f3dd153f9a795",
+      "bytes": 166,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-build-v2.log",
+      "sha256": "01c357246975593f225cd2d11c6a36b979af97231dffc62f9af4085e0fb29d16",
+      "bytes": 166,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-cli-help-v1.txt",
+      "sha256": "899fc4daf7178969e8ecfde8de5da5f23c16a925a0996e57ba86896cfdc25622",
+      "bytes": 5173,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-cli-help-v2.txt",
+      "sha256": "899fc4daf7178969e8ecfde8de5da5f23c16a925a0996e57ba86896cfdc25622",
+      "bytes": 5173,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-clippy-v1.log",
+      "sha256": "e5e21d120d535f5a180bbfcabb9ef60dded7ff4baa3d13557a64cf113e295f24",
+      "bytes": 166,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-clippy-v2.log",
+      "sha256": "cfbc6393970e34fc55e9543d9ea1d791194c00e1730714e18449d452c058abd5",
+      "bytes": 166,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-clippy-v3.log",
+      "sha256": "2414be58234ed7b5d944b5b8e8ccc4b09538cdfe48ce0e64472774050db0af3a",
+      "bytes": 166,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-docs-v1.log",
+      "sha256": "e2be870678cd4d5f0a0f9cd8fa149129edf8564722b8a5cc0538a250b796a6cb",
+      "bytes": 175621,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-report-tests-v1.log",
+      "sha256": "07814966c4a5a6fb41b93e0a9aedfe3126714138ef5ecc8f3548919f6a1f87ed",
+      "bytes": 119,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-report-tests-v2.log",
+      "sha256": "f2e68ff5eaca5112c86f24c4ad0c9d0d26001ccbe752852d8d57a9abf2564f99",
+      "bytes": 119,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-tests-sandbox-v1.log",
+      "sha256": "952d4711ed6aff501e4a2f324c53011c777b3ac7d9f38a1a6175cda805e47b5a",
+      "bytes": 1558,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-tests-v2.log",
+      "sha256": "5791ca6d08ab69918559355335dbdb9ba8fa6155caf9ed3fe5f64fb75c8d225f",
+      "bytes": 2433,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-tests-v3.log",
+      "sha256": "e9b4eb229ad7f5e8a43ed7ff21e1131d271154b228588e58ef5a4d2fadfeb34f",
+      "bytes": 2549,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-tests-v4.log",
+      "sha256": "62634d6eb9583cb1635c0a25e0b0354cd82dadb055e74afbdfd2fdb1a0780700",
+      "bytes": 1489,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/ping-pong-tests-v5-final.log",
+      "sha256": "9dcbe1e0930378a956e892933db154fbfb57934ec552d059f6f26880a368f885",
+      "bytes": 2455,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/slctl-56e9f45-debug",
+      "sha256": "3c98da6dcb9a263bf07b700bbbd4852743c74cc456a49b28a113f30b44e914ae",
+      "bytes": 81514680,
+      "access": "private"
+    },
+    {
+      "path": ".dev/performance-baseline/slctl-56e9f45-unit-tests",
+      "sha256": "831dd9d98b418ba211ef48afd604ba03b2e49eb9da18b105a4611da9052d0790",
+      "bytes": 56535592,
+      "access": "private"
+    }
+  ],
+  "remaining": [
+    "P1wholeopen:fixedrate,windowbidirectional,realordinaryNativeVMbaseline/roles,exactbuild/peer/captureclosure/negativecontrols,resource/timeline/traceoverhead",
+    "P2eventdriven aftercredibleoldbaseline;P3boundedcontinuousTX;P4multichannel/fourdevices;P5measuredsingleRXgapandUSBoptimization;P6longterm/RCA/nonhumanrecovery"
+  ],
+  "whole_goal_complete": false
+}

@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "status": "SELECTED_REAL_INSTALL_CANCEL_BATCH_EXIT_MET_MAINTENANCE_FULL_GOAL_ACTIVE",
+  "source_report": "docs/evidence/security-install-cancel-real-20261017.json",
+  "report_commit": "494db779c3b86d362edbbb2203ed3b26c6405fe8",
+  "registry_commit": "c9994a2c901663a46e5b8c787e1fb7d4ddeef482",
+  "signatures": {
+    "7fd330c5eaa14b7079f81262749124c432cac469": "G",
+    "c0509cc563e9d42ea3a4ebc1bafba4daf8618766": "G",
+    "6166b9129375eda825f020a9c3dc50998c86e269": "G",
+    "494db779c3b86d362edbbb2203ed3b26c6405fe8": "G",
+    "c9994a2c901663a46e5b8c787e1fb7d4ddeef482": "G"
+  },
+  "checks": {
+    "selected_successful_real_vms": 4,
+    "original_failed_real_attempts_retained": 2,
+    "new_G_original_request_cancellations": 2,
+    "total_real_peer_round_trips": 32,
+    "boundary_refusals": 16,
+    "evidence_negative_controls": 15,
+    "frozen_tools": 681,
+    "rust_example_tests": 2,
+    "strict_clippy": "PASS",
+    "local_materials_checked": 100,
+    "registry_negative_controls": 5,
+    "local_bytes": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "metadata": "METADATA_ONLY_NOT_REVERIFIED",
+    "overall": "INCOMPLETE",
+    "strict_locked_html": "PASS inventory115",
+    "html_source_revision": "494db779c3b86d362edbbb2203ed3b26c6405fe8",
+    "html_source_working_tree_changes": [
+      " M project/current-capabilities.md",
+      " M project/goal-execution-state.json",
+      " M project/implementation-plan.md",
+      " M project/qualification-records.json",
+      " M tools/ws73_dynamic_channels.py",
+      " M tools/ws73_parallel_data.py"
+    ],
+    "html_is_not_future_maintenance_head_qualification": true,
+    "browser_gate_executed": false,
+    "new_formal_proof": false
+  },
+  "issues": {
+    "status": "FOUR_EXISTING_ISSUES_UPDATED_READBACK_OPEN_ORIGINAL_SCOPE",
+    "rows": [
+      {
+        "repo": "linux",
+        "issue": 7,
+        "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6224420515",
+        "state": "open",
+        "original_body_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95",
+        "readback_original_body_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95",
+        "comment_sha256": "589d1ee0d48f8ee924655b85c0f64cf6600c3945ae657abf109a8d106756d91e",
+        "readback_comment_sha256": "589d1ee0d48f8ee924655b85c0f64cf6600c3945ae657abf109a8d106756d91e",
+        "original_scope_preserved": true,
+        "precision_note": "Per-relay proof checked; no extra global remote-Complete-before-Ginstall ordering claimed."
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6224421349",
+        "state": "open",
+        "original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+        "readback_original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+        "comment_sha256": "eb1f7ed89813ec60e6a75f36a247e152c1bfe73dc1393c0571dd28a6ad86c355",
+        "readback_comment_sha256": "eb1f7ed89813ec60e6a75f36a247e152c1bfe73dc1393c0571dd28a6ad86c355",
+        "original_scope_preserved": true,
+        "precision_note": "Per-relay proof checked; no extra global remote-Complete-before-Ginstall ordering claimed."
+      },
+      {
+        "repo": "sparklink",
+        "issue": 5,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6224422361",
+        "state": "open",
+        "original_body_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+        "readback_original_body_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+        "comment_sha256": "0bca58d041b9ac9da1fd6bffd57f6f614655212253298b61c5f0cf65a1e6414a",
+        "readback_comment_sha256": "0bca58d041b9ac9da1fd6bffd57f6f614655212253298b61c5f0cf65a1e6414a",
+        "original_scope_preserved": true,
+        "precision_note": "Per-relay proof checked; no extra global remote-Complete-before-Ginstall ordering claimed."
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6224423177",
+        "state": "open",
+        "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+        "readback_original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+        "comment_sha256": "09a20976ffd0bca78effb6208846db1ea2002a61c4c0c4452f39b0eade251a41",
+        "readback_comment_sha256": "09a20976ffd0bca78effb6208846db1ea2002a61c4c0c4452f39b0eade251a41",
+        "original_scope_preserved": true,
+        "precision_note": "Per-relay proof checked; no extra global remote-Complete-before-Ginstall ordering claimed."
+      }
+    ],
+    "complete": true,
+    "wall_ns": 1792183756740147567
+  },
+  "ci_6166_snapshot": [
+    {
+      "conclusion": "success",
+      "headSha": "6166b9129375eda825f020a9c3dc50998c86e269",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38963612207",
+      "workflowName": "Qualification integrity"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "6166b9129375eda825f020a9c3dc50998c86e269",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38963612355",
+      "workflowName": "Documentation"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "6166b9129375eda825f020a9c3dc50998c86e269",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38963612229",
+      "workflowName": "Production codec bounded fuzz"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "6166b9129375eda825f020a9c3dc50998c86e269",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38963612223",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "6166b9129375eda825f020a9c3dc50998c86e269",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38963601406",
+      "workflowName": "Documentation"
+    }
+  ],
+  "materials": {
+    "install-cancel-registry-local-v1.json": {
+      "path": ".dev/install-cancel-registry-local-v1.json",
+      "sha256": "d96378e296dcc0dd346cfd45829a6885536e563ff6894764d577b58f17ab4f1c",
+      "bytes": 1272,
+      "access": "private owner retained workspace; no offsite retention guarantee"
+    },
+    "install-cancel-final-views-v1.json": {
+      "path": ".dev/install-cancel-final-views-v1.json",
+      "sha256": "c162b667421e39c9c251fa415a925108d646b017562f118aacd3e931f7574988",
+      "bytes": 287118,
+      "access": "private owner retained workspace; no offsite retention guarantee"
+    },
+    "install-cancel-docs-v2.log": {
+      "path": ".dev/install-cancel-docs-v2.log",
+      "sha256": "6bed9b8810d0b93905218e980087da8879f2df8fae982280457d548435b4f017",
+      "bytes": 294731,
+      "access": "private owner retained workspace; no offsite retention guarantee"
+    },
+    "install-cancel-documentation-audit-v2.json": {
+      "path": ".dev/install-cancel-documentation-audit-v2.json",
+      "sha256": "5a2f361863bd1d55eab3d208c8f49ae3f9cae3bad80e4ce833856ae9dc898625",
+      "bytes": 132089,
+      "access": "private owner retained workspace; no offsite retention guarantee"
+    },
+    "install-cancel-issue-receipts-v1.json": {
+      "path": ".dev/install-cancel-issue-receipts-v1.json",
+      "sha256": "88548acc611972a663816c621a04e51840962c6562518226d428c9eeabd55283",
+      "bytes": 3044,
+      "access": "private owner retained workspace; no offsite retention guarantee"
+    },
+    "install-cancel-ci-6166-v1.json": {
+      "path": ".dev/install-cancel-ci-6166-v1.json",
+      "sha256": "abe08e8533a3bb04b80b6b570115f776681c5f631fa5c00d184c7f5a165a64a2",
+      "bytes": 1047,
+      "access": "private owner retained workspace; no offsite retention guarantee"
+    },
+    "install-cancel-production-equivalence-v1.json": {
+      "path": ".dev/install-cancel-production-equivalence-v1.json",
+      "sha256": "a376468bc3200e607a98dbe04b6dd0a540b9abc2a5da4e25e0d7283bfe7dbc7a",
+      "bytes": 1206,
+      "access": "private owner retained workspace; no offsite retention guarantee"
+    },
+    "install-cancel-final-qualification-tests-v1.log": {
+      "path": ".dev/install-cancel-final-qualification-tests-v1.log",
+      "sha256": "6f03381fa345d7e738c98df7795037fdfa0888cee93d43a0a25ea5297240cc36",
+      "bytes": 126,
+      "access": "private owner retained workspace; no offsite retention guarantee"
+    }
+  },
+  "limitations": [
+    "Original native cancellation snapshot whileheld and immutable daemon cache afterlate delivery are distinct; no fresh postrelease nativequery/debt/ref/callbackdrain/keywipe/reuse proof.",
+    "NoMITM initialencryption/Agentapproval isnot authentication/trustedGrant/Bond; complete security anddeployment stillopen.",
+    "Selected newU6166basicCUTC slices only; oldU42alllength/lifecycle/performance andoldfourU qualifications retainoriginal identities, no transfer toE1/mixedhardware.",
+    "Only disposabletestexample changed inproduction source scopes, libraryhash same but threebinaries differ; actualsource/artifactidentities separate, no binaryequivalence or completeoldmatrix inheritance claimed.",
+    "Naturalstartup/reenumeration/disappearance RCA/nonmanualrecovery, NOCPtruth/duplicate/late/reuse andfullS0-S6/19WP/10FV/12DG stillOPEN; UserHostP4,alltestVM-only."
+  ],
+  "next": "Advance actualauthenticatedsecurity/localauthorization andsoleuserspaceSSAP vertical; complete directpostterminalphysicalobligation andfulllease/fd/Down/deadline installgates inparallel withdata/multichannel/fourdevices/performance. Noallcontrolraces prerequisite.",
+  "wall_ns": 1792183845838417692
+}

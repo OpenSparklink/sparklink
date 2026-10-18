@@ -1,0 +1,20 @@
+{
+  "status": "TWO_CI_FAILURES_DIAGNOSED_FIX_PENDING_ONLINE",
+  "baseline": "9f2b5d37e75a0889189633e05ba348960b96eba0",
+  "run": "https://github.com/OpenSparklink/sparklink/actions/runs/39050859484",
+  "failures": [
+    "rustfmt orders cfg(test) private modules/imports and removes empty gaps left by retired layouts",
+    "Ubuntu Clang -m32 UAPI compiler witness cannot find asm/types.h without multilib development headers in the containment job"
+  ],
+  "fix": [
+    "Apply actual pinned rustfmt to the three affected protocol files,not production semantics",
+    "Install gcc-multilib in existing isolated CI job beside clang;retain both real -m64 and -m32 compilation and all numeric/mutation assertions"
+  ],
+  "private_log": {
+    "path": ".dev/architecture-r4f2e-ci-failure-v1.log",
+    "sha256": "a3cbaaf66d7264090956c673decc653f6cd803b22d812f47ade83fd7d2c70a05",
+    "bytes": 239208,
+    "access": "private owner workspace"
+  },
+  "scope": "CI/tool environment repair only. Original failed run retained. Other qualification/docs/codec success is not full CI success. No new RF/formal qualification or architecture completion."
+}

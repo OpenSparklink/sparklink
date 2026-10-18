@@ -1,0 +1,955 @@
+{
+  "schema_version": 1,
+  "status": "SESSION_TRACE_BURST_SCOPED_PASS_ORIGINAL_OVERRUN_FAIL_RETAINED",
+  "real_result": "PASS",
+  "retained_result": "FAIL",
+  "full_exit_result": "UNPROVED",
+  "compiled_kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+  "compiled_userspace": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+  "executed_tools": "e08a22861b1266e999082acee864f5e382559ecc",
+  "scope": [
+    "VM-only U2/3;C4 actualcompiledkernel andstaged2c23runtime unchanged,executed e08tools with2MiB/CPU default-off independenttracing. NoHost/Engine,protocol,USB ordeadlinechange.",
+    "New2042burst two connectionroles32ordinaryrandompayload peer-validatedRT andoriginaltwoUSB oracle pass BEFORESessioncorroboration. Workerbegin/end,queueadmit/dequeue/retire,Nativebegin/atomicacceptance/joinedreturn areseparate.",
+    "Original1MiB short8RT with8a7tools independentlyPASS,not e08compiled/runtimequalification. Subsequent1MiBburst traceoverrun remainswholeFAIL evenifapplicationfinished.2MiBselection based onactual25188records;zero-loss and8MiBtext boundunchanged.",
+    "Sessionctl/gen/life fromactualapplicationreceipts;Managedepoch checked onlywhenreceiptavailable,fixedchannel epochconsistency notGrantproof. PB/offset/length/order andUSBactualsubmit intervals checkedagainstboundedguestmono/realtimeanchorintersection.",
+    "Samefrozen productionverifier offline replay and20copiedevidence negatives eachoriginalshort/newburst;not independentdecoder,formal,credittruth,callbackdrain,RF orperformancequalification.",
+    "DynamicCMTC/Agent/prefix-close/idle excluded fromthistracecombinedmode;existingrealpaths preservedseparately. Hardwaremodels userreportedU2/3,userconfirmedE1 excluded."
+  ],
+  "remaining": [
+    "CompleteP2d stillUNPROVED:tracecost/observeroverhead,relatedlengthmatrix,multichannel PDUfairness,pairedsameU2/3configuration benchmark/resources.",
+    "TennewC4lifecycle gates qualifiedseparately;neither oldbfaa nornewtracealone proves allcontrolinterleavings,NOCPaccuracy/late/duplicate/reusebarriers orcallbackdrain.",
+    "FullS0-S6/19WP/10FV/12DG,Agent/SSAP,multichannel/fourdevice/safety/Bond/PM/release continueOPEN andparallel;UserHostlowpriority.",
+    "Naturalstartup/re-enumeration/disappearance rootcauses andnonmanualautomaticrecovery OPEN;manual/hub/QMP/injection notnaturalrecovery."
+  ],
+  "real_gates": [
+    {
+      "name": "e08-2042-burst-trace-and-original-business",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-service-burst-2m-v1/manifest.json",
+        "sha256": "a07470d4f8696b8caf05fef48bf6488084f7990ac7bc1f18f3897dcb1f6010de",
+        "bytes": 5682304,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+      },
+      "round_trips": 32,
+      "proof": {
+        "status": "REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED",
+        "events": 25076,
+        "quantum_ns": 1000,
+        "offset_ns": [
+          1792173413184005789,
+          1792173413184006971
+        ],
+        "interval_ns": [
+          3791317000,
+          78113034000
+        ],
+        "services": 6484,
+        "attempts": 4935,
+        "accepted_usb_packets": 824,
+        "operations": 304,
+        "complete_transport_operations": 304,
+        "partial_retired_operations": 0,
+        "credit_waits": 4111,
+        "uncertain_acceptances": 0,
+        "scope": "Default-off C4 Session observations plus original USB submits;no credit truth,callback drain,peer delivery,RF,performance or concurrency proof;dynamic CMTC consent excluded"
+      },
+      "replay": {
+        "path": ".dev/session-service-burst-2m-replay-negatives-v1.json",
+        "sha256": "7592cc9137efb28e89f81404ad5422761ab5ecc582fefadb19ac8dacfaa6dafa",
+        "bytes": 3833,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+      }
+    }
+  ],
+  "retained_failure": {
+    "executed_tools": "8a7f11f5d77df85c961c66709756af09e9721f22",
+    "error": "missing/nonzero trace loss counters",
+    "cpu_stats": {
+      "cpu0": "entries: 11808\noverrun: 9147\ncommit overrun: 0\nbytes: 1049340\noldest event ts:    31.922170\nnow ts:    77.934317\ndropped events: 0\nread events: 0\n",
+      "cpu1": "entries: 4233\noverrun: 0\ncommit overrun: 0\nbytes: 375344\noldest event ts:     3.901117\nnow ts:    77.935811\ndropped events: 0\nread events: 0\n"
+    },
+    "application_finished_not_whole_qualified": true
+  },
+  "retained_gates": [
+    {
+      "name": "8a7-1MiB-burst-trace-overrun",
+      "result": "FAIL",
+      "status": "FAIL",
+      "manifest": {
+        "path": ".dev/session-service-burst-v1/manifest.json",
+        "sha256": "b3167202efa230b8c81e44c8ca8b394f4e9bcece583638a9b2267f89869d04a4",
+        "bytes": 50912,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+      }
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "ObservationCostAndPairedResources",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_TRACE_BATCH"
+    },
+    {
+      "name": "RelatedLengthsAndPduFairness",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_TRACE_BATCH"
+    },
+    {
+      "name": "FullP2dExit",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_TRACE_BATCH"
+    }
+  ],
+  "historical_short": {
+    "executed_tools": "8a7f11f5d77df85c961c66709756af09e9721f22",
+    "round_trips": 8,
+    "manifest": {
+      "path": ".dev/session-service-short-v2/manifest.json",
+      "sha256": "90fc4378abea24e2a71b6d1c74753b4c8e1ebfa450ceb3241db2250122df817c",
+      "bytes": 1179290,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    "proof": {
+      "status": "REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED",
+      "events": 3394,
+      "quantum_ns": 1000,
+      "offset_ns": [
+        1792173152222823693,
+        1792173152222824244
+      ],
+      "interval_ns": [
+        3455646000,
+        59896279000
+      ],
+      "services": 917,
+      "attempts": 264,
+      "accepted_usb_packets": 264,
+      "operations": 256,
+      "complete_transport_operations": 256,
+      "partial_retired_operations": 0,
+      "credit_waits": 0,
+      "uncertain_acceptances": 0,
+      "scope": "Default-off C4 Session observations plus original USB submits;no credit truth,callback drain,peer delivery,RF,performance or concurrency proof;dynamic CMTC consent excluded"
+    },
+    "replay": {
+      "path": ".dev/session-service-short-replay-negatives-v2.json",
+      "sha256": "31448de532134a7a183ab7415354745cb287d00771d22cee66f25b5f972bdd7d",
+      "bytes": 3826,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    }
+  },
+  "counts": {
+    "new_burst_round_trips": 32,
+    "historical_short_round_trips": 8,
+    "offline_tools_tests": 666,
+    "copied_evidence_negatives": 40,
+    "strict_html_documents": 115
+  },
+  "observed_burst_service": {
+    "services": 6484,
+    "maximum_attempts": 6,
+    "maximum_attempted_bytes": 1524,
+    "stop_histogram": {
+      "0": 6484
+    },
+    "maximum_whole_worker_elapsed_ns": 1818327,
+    "not_wcet_or_performance": true
+  },
+  "firmware": {
+    "sdk": "1.10.111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "board_qualified": false
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+    "mapping": "Host DTAP_SendCompleteCbk→SchedulerRun isreferenceonly;global/saturatingcredit notadopted;libws73 pool5/max254 wire observations notgeneration/lifetime proof."
+  },
+  "build": {
+    "kernel_rebuilt": false,
+    "prepare_jobs": 12,
+    "with_vm_budget": 8,
+    "heavy_build_during_real_tests": false,
+    "host_installation": false
+  },
+  "materials": [
+    {
+      "path": ".dev/session-service-burst-2m-v1/manifest.json",
+      "sha256": "a07470d4f8696b8caf05fef48bf6488084f7990ac7bc1f18f3897dcb1f6010de",
+      "bytes": 5682304,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/qmp.jsonl",
+      "sha256": "511aa46fc95e90beb4ff194056a796235c7644460c35df5fa880ffc0b978f999",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/console.log",
+      "sha256": "d20aefde1fbb6210ad3538040a99060ec6682b9993aa467b48eede713fc3e79d",
+      "bytes": 16258,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/ws73.pcap",
+      "sha256": "218076cc110e2b5c5cef44c8b97ab39ef49d6c897c24f892dd892e9f9813703a",
+      "bytes": 2677964,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/capture-stats.txt",
+      "sha256": "6e6bca4bbbd93ebaa9c0fee46a73f78cde55bf2685ad225ccb11c3d2fc9b1c31",
+      "bytes": 229,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/kernel.log",
+      "sha256": "02d20a7e1325efc9fa31fedfd7c2ff918475a6bb2e03d3383e5707efabef4949",
+      "bytes": 49193,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "6c46452f7ce354d6b73b395b45f9b6a26299cb5b395b9bcc1e3eb535249210a2",
+      "bytes": 1193072,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service-start.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service-finish.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service/sparklink_session_work.format",
+      "sha256": "2a6c24cee62b479f7ab695174b1b5002e736205ce1c5905d58093fd10cb355b8",
+      "bytes": 1241,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service/sparklink_session_queue.format",
+      "sha256": "aee2f5f87b4b307e98f98923ef7504e76e5a9c20c9f5324c7fbfc3f72c95d984",
+      "bytes": 984,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service/sparklink_session_tx.format",
+      "sha256": "7f2ca44e5a204d503fb0133ed8dbbddad4226fd3240b6cad8f7eaaa46bd2287e",
+      "bytes": 1195,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service/header_page.txt",
+      "sha256": "8b80aaa7994ab59557854dcbcca9a75746b53a0e3b20cfab462ad75e29259ee2",
+      "bytes": 205,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service/trace.txt",
+      "sha256": "6e4d730cb8181069c8a6a1dda1d34d7ef25a60091e7bcfbef70629d94fd64bcc",
+      "bytes": 4693946,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service/cpu0-stats.txt",
+      "sha256": "9162f72db291e9d63ed02b3cdabbf7eb44c77e93e1b06ffc591b0684db5ee25d",
+      "bytes": 143,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service/cpu1-stats.txt",
+      "sha256": "6b097694ca9a8e9e9bd7c27116a974cc1bdfcb276ae3fbc5e36cb82932643172",
+      "bytes": 141,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-v1/guest-output/session-service/run.json",
+      "sha256": "c5c55aaa75b84e31ff78bb94aac78be6145c2490b375ba44d6c8307427936d19",
+      "bytes": 2464,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/manifest.json",
+      "sha256": "90fc4378abea24e2a71b6d1c74753b4c8e1ebfa450ceb3241db2250122df817c",
+      "bytes": 1179290,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/qmp.jsonl",
+      "sha256": "9fea4547c2d2ea9e7b38fb2329e798d968ff0e92def18b21fde2a8ae20cfd9b7",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/console.log",
+      "sha256": "db7aa435343205ac504579f53c16a36f23051ba37d9e85ecda276cedfc63856f",
+      "bytes": 16424,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/ws73.pcap",
+      "sha256": "75c470ab0a6f94912fb70c0c37097fac13077d03a43ff3db56068d2d26976f76",
+      "bytes": 489724,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/kernel.log",
+      "sha256": "e00998d32eb5f30f1a4589559214befdd03f760b15522b5ea9d9f48072da348e",
+      "bytes": 49110,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "53b937ffbce6aa721f45364a8fe8d18c18a25315ea091bc567fb59deba7805c2",
+      "bytes": 664811,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service-start.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service-finish.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service/sparklink_session_work.format",
+      "sha256": "2a6c24cee62b479f7ab695174b1b5002e736205ce1c5905d58093fd10cb355b8",
+      "bytes": 1241,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service/sparklink_session_queue.format",
+      "sha256": "aee2f5f87b4b307e98f98923ef7504e76e5a9c20c9f5324c7fbfc3f72c95d984",
+      "bytes": 984,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service/sparklink_session_tx.format",
+      "sha256": "7f2ca44e5a204d503fb0133ed8dbbddad4226fd3240b6cad8f7eaaa46bd2287e",
+      "bytes": 1195,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service/header_page.txt",
+      "sha256": "8b80aaa7994ab59557854dcbcca9a75746b53a0e3b20cfab462ad75e29259ee2",
+      "bytes": 205,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service/trace.txt",
+      "sha256": "0ba1946fa1d7ee45a8cdea177f35cc3694d11f63e6f0e1019f37485f0dbc5258",
+      "bytes": 632569,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service/cpu0-stats.txt",
+      "sha256": "53bb7aae31420d14d5c01d038c4b7fe44270d9ef0bbb8031868b16b75f6adc83",
+      "bytes": 141,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service/cpu1-stats.txt",
+      "sha256": "5a255cb7d1842f52718a801baca59e6bd133c2c7bd8a767b06aa8eefd9c4640d",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v2/guest-output/session-service/run.json",
+      "sha256": "a2ec521e4f039fa4e5da4831dc72405a62c0f0b31b69a51762ded0a9b730b1ef",
+      "bytes": 2460,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/manifest.json",
+      "sha256": "b3167202efa230b8c81e44c8ca8b394f4e9bcece583638a9b2267f89869d04a4",
+      "bytes": 50912,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/qmp.jsonl",
+      "sha256": "2fb10339feea61d2ef5e26733b140bb858849217c9bc32a681fa6932826df58a",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/console.log",
+      "sha256": "d0a24bd81bd12e9c37396692f58f77988c4b01270790753793d767fe9fae1895",
+      "bytes": 66510,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/ws73.pcap",
+      "sha256": "ee15b2b9489e5d7b999f315928d09488e5a8a9ff7cc53b3f4f5b539f44622130",
+      "bytes": 2677964,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/capture-stats.txt",
+      "sha256": "6e6bca4bbbd93ebaa9c0fee46a73f78cde55bf2685ad225ccb11c3d2fc9b1c31",
+      "bytes": 229,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/kernel.log",
+      "sha256": "b7bfd735e0a44f901aaa297acd55bef3e7105c01f088770890fb4d38d65bb74d",
+      "bytes": 49406,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "52e9eb54aafa2a46199be174b7896f124520211445bfe59e596468f0a75f7da1",
+      "bytes": 1193012,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service-start.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service-finish.log",
+      "sha256": "08ba9b38f651b0f66bcb1fa318afbe45c1024bbc1351d5089e93fa8cb0fa0388",
+      "bytes": 487,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service/sparklink_session_work.format",
+      "sha256": "2a6c24cee62b479f7ab695174b1b5002e736205ce1c5905d58093fd10cb355b8",
+      "bytes": 1241,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service/sparklink_session_queue.format",
+      "sha256": "aee2f5f87b4b307e98f98923ef7504e76e5a9c20c9f5324c7fbfc3f72c95d984",
+      "bytes": 984,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service/sparklink_session_tx.format",
+      "sha256": "7f2ca44e5a204d503fb0133ed8dbbddad4226fd3240b6cad8f7eaaa46bd2287e",
+      "bytes": 1195,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service/header_page.txt",
+      "sha256": "8b80aaa7994ab59557854dcbcca9a75746b53a0e3b20cfab462ad75e29259ee2",
+      "bytes": 205,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service/trace.txt",
+      "sha256": "b5408e8777cde3977346376b5c81cb9806998d0765bf46a5968b5707698510a4",
+      "bytes": 3018124,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service/cpu0-stats.txt",
+      "sha256": "04ca86fdf4c499b5ffbce6b1b001924880131ce334906a14ad2902dcfde045a7",
+      "bytes": 146,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service/cpu1-stats.txt",
+      "sha256": "e3e3c2f1b7a63b21b4064996dbd4019f9d31ebd7f2bf8c90060b0a756a5b0ff5",
+      "bytes": 141,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-v1/guest-output/session-service/run.json",
+      "sha256": "4fdc58c069ced1bf49f4a48b16465db2e02c23744cb5dfe04d3dff07f52d0ace",
+      "bytes": 2303,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-burst-2m-replay-negatives-v1.json",
+      "sha256": "7592cc9137efb28e89f81404ad5422761ab5ecc582fefadb19ac8dacfaa6dafa",
+      "bytes": 3833,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-replay-negatives-v2.json",
+      "sha256": "31448de532134a7a183ab7415354745cb287d00771d22cee66f25b5f972bdd7d",
+      "bytes": 3826,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-replay-negatives-v1.py",
+      "sha256": "c648c3c8ac7e9678ae66af3e4b714ebdcffab7ef1a277e2f90e063a369d95fa2",
+      "bytes": 4575,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-replay-negatives-v2.py",
+      "sha256": "7b88fd4cfe090bf69ef17d934639889dd4095480c09364120efea969bc75a298",
+      "bytes": 4661,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-replay-negatives-2m-v1.py",
+      "sha256": "e0fe7b65650a980e50ee3e57a9938c46084e9c3d3f96fdf7bfe14c8f2faa50ec",
+      "bytes": 4720,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-replay-negatives-v1.log",
+      "sha256": "87420b5701b3158b3b9b9c3d1aa382f268a50a678613d426e7fe3621032c5f3f",
+      "bytes": 1156,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-short-v1.log",
+      "sha256": "fbdc112d76433ccd8f554862aade5fead86877add0d9291755260d823fc5a26f",
+      "bytes": 1240,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-all-tools-v2.log",
+      "sha256": "8a94e13fc85a3da25ed5edd033d8d686368573582bfcb9c549188d4baedaf72f",
+      "bytes": 801,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-all-tools-2m-v1.log",
+      "sha256": "8925eb31073113fbff23959fa348f4b142e8d9f66da7f20271a2dfa4b6d90d6e",
+      "bytes": 801,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-docs-v1.log",
+      "sha256": "fc06d494520dd122ac9186d80ebf044b71edef4d38f40c0a85d57b01628aa04c",
+      "bytes": 253098,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/c4-lifecycle-docs-v1.log",
+      "sha256": "ed6069026ec15bd8f5f531a936c7fae1208ef19fec55025fff61cd359d3308ae",
+      "bytes": 257188,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-prepare-2m-v1.py",
+      "sha256": "8ba0e46bfe419fb10e8f255ac07af712f7524812c55485ed7598a4dbcf219555",
+      "bytes": 1146,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-ci-8a7f11f-v2.json",
+      "sha256": "1bdfd2f09b186900e56ef329512636e7f8f220cf0940abc7826014bef9fb282f",
+      "bytes": 765,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-ci-e08a228-v1.json",
+      "sha256": "855335c31eceac895256fde6662a016cc3269534b5ad5c353fbb93858d80b5fc",
+      "bytes": 750,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/manifest.json",
+      "sha256": "0bec251e9f9fe496d9411df839575017600c3abd41ca37ef5216fb779bf27e64",
+      "bytes": 274045,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/bzImage",
+      "sha256": "03f08bbabd513913620dce0625860fd23df53deb3d6d8d6e61977887c016d3ba",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/root.btrfs",
+      "sha256": "9f30ee9d4cfad5a08eae2f4f53c6bef30b99be5d184a7d8c64dc98a4b9be038a",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "9d7bd90c52d7cb2382bc3b8ce6fa4e20a2ac258189b6e8a17244950a8c98d2ee",
+      "bytes": 138049,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/manifest.json",
+      "sha256": "fa31002ea6c8eb90d804bfd512142f4be023bb2b5681e7536977a25c82826a57",
+      "bytes": 26103,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkd",
+      "sha256": "254f268b6251a82a760ee92c3f6f531247c9fec984e62dde9108a9bcd049e7a5",
+      "bytes": 10476632,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slctl",
+      "sha256": "76ca0d1690ed5b9d1cccc693c825b922a46cc92695f892ea42491fb0b8b44f05",
+      "bytes": 7804536,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slktest",
+      "sha256": "9c5ecf97cd0afe2d8d288b5cc82bca978e01eee55795026a4912c817578cb2cf",
+      "bytes": 5233016,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkconfig",
+      "sha256": "64a136d8b035453bdb15a5649a199af238770353bead5ed2553eb8e92a7a31d3",
+      "bytes": 1403944,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkmon",
+      "sha256": "dcac45cb127a41c434158c345a01eeb96e5b2ae6e8accb04cd9571a5b989d5ba",
+      "bytes": 1662136,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkdump",
+      "sha256": "6d5fa01fe056050475b635f7f6539be68c671e2e410b301b6f70a97221653674",
+      "bytes": 1662008,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/liblibsparklink.so",
+      "sha256": "de262e57b01e321d03c613115ffb1d19c2a29ab6a75edab771680c92b34274d7",
+      "bytes": 545432,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "237b7631cdf6990ac5d6c1f45b24d0af6dd026f026ae8e149b946020f95d2f81",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "0084c9bab8fca034a4e3ad8ced53307f8e218579d11a2c28a99ea7601f026dd5",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-v1/tools/ws73_target.py",
+      "sha256": "0ebffddd63d423b2f924f31b2648ebab58f0bd2f605dca8678ffd1863e456f43",
+      "bytes": 152099,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-v1/tools/ws73_target_init.sh",
+      "sha256": "993cfc8ad7c2c1aeff229fa3d4c78cf502a90aab02c3b5e7be52d7a792fd648f",
+      "bytes": 33712,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-v1/tools/ws73_session_service.py",
+      "sha256": "9f59e077c0cfdb4c8f336a6c183b28bc86c766ca84b92bede24f265a11497a85",
+      "bytes": 24518,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-v1/tools/ws73_trace_layout.py",
+      "sha256": "1220dd5d01e5f748585bfc0dd5646196fd0f10365d2ec791d0a065eada74633d",
+      "bytes": 929,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-v1/tools/ws73_channel_socket.py",
+      "sha256": "06e08a1170071f95cd5bad3d8c158f39d525f0e05a2556242df5274c4bf1eea5",
+      "bytes": 46060,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-v1/tools/ws73_capture.py",
+      "sha256": "80590536783292b2f020b6c065c04a95a6e809af6f7098e77fcc2dc9080c562a",
+      "bytes": 42628,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_target.py",
+      "sha256": "0ebffddd63d423b2f924f31b2648ebab58f0bd2f605dca8678ffd1863e456f43",
+      "bytes": 152099,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_target_init.sh",
+      "sha256": "993cfc8ad7c2c1aeff229fa3d4c78cf502a90aab02c3b5e7be52d7a792fd648f",
+      "bytes": 33712,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_session_service.py",
+      "sha256": "db7d79925dc36d80141beadc76ed06e3924de55b85523dff0332be8776983694",
+      "bytes": 24624,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_trace_layout.py",
+      "sha256": "1220dd5d01e5f748585bfc0dd5646196fd0f10365d2ec791d0a065eada74633d",
+      "bytes": 929,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_channel_socket.py",
+      "sha256": "06e08a1170071f95cd5bad3d8c158f39d525f0e05a2556242df5274c4bf1eea5",
+      "bytes": 46060,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_capture.py",
+      "sha256": "80590536783292b2f020b6c065c04a95a6e809af6f7098e77fcc2dc9080c562a",
+      "bytes": 42628,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers only. Raw USB andSDK firmware require original access rights,notpublic downloads. Replay exactfrozen tools againstlistedcaptures/receipts."
+    }
+  ]
+}

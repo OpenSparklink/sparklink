@@ -1,3 +1,8 @@
+> **历史初稿，非当前设计、能力或安装指南。** 下文的接口数量、命令、内核完成状态及
+> API草图属于原始规划，不能推导当前实现或资格。唯一现行方案是
+> [实施计划](project/implementation-plan.md)，目标见[架构](project/architecture.md)，
+> 实际范围见[能力与限制](project/current-capabilities.md)。原文保留用于历史追溯。
+
 # SparkLink 用户态基础设施规划
 
 ## 一、当前内核态已实现功能

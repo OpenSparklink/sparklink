@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_LENGTH_CONCURRENT_QUALIFICATION_AND_FIVE_ISSUE_READBACKS_PASS_FULL_GOAL_OPEN",
+  "qualification_state_commit": "2bfad445e2c77426abf6c9d0e8aa7c031153ef7f",
+  "lengths_report_commit": "1f0f628d8d2cec9d5c12191fd1448c3ddefcbf10",
+  "concurrent_report_commit": "14539846efadb9da7794126e4caa7e7483a6ce7a",
+  "reports": [
+    "session-c4-dynamic-lengths-20261017.json",
+    "session-concurrent-progress-20261017.json",
+    "session-concurrent-offline-source-20261017.json"
+  ],
+  "scope": [
+    "188newmaterials locallyhashchecked;not allhistoricalprivateinputs orindependentdecoder.",
+    "Sevenoldruntime lengthgates448RT scopedPASS,whole8attemptmatrix7PASS/1FAIL retained(finalphysicaldrain predicate). New9cdcompiledruntime72concurrent+8baseline realRT scopedPASS,notfullfairness.",
+    "Allfourordinaryendpoints actualnegotiatedbeforeboundedstart,actualTCID/PB/peerdata/twoUSB matching. ExistingsoleSession/Runtime/credit/Grant/Ticket unchanged.",
+    "27exactfrozenRustexecutedELFs/strictclippy/669exactfrozen tools/strictHTML115;72copiedactualevidence negatives and5registry negatives. No newformal,Kernelconcurrency,performance orrecovery qualification.",
+    "Firstfrozenhelperpatherror,firstnegativegenerator no-op andoriginalburstFAIL remaininrawrecords;correctenvironment/role-selection neverrelaxproductionassertions.",
+    "FiveoriginalissuesOPEN/body/scope unchanged;fullactivegoal/S0-S6/19WP/10FV/12DG andVM-only retained,UserHostlowpriority.",
+    "OriginaltwoWIPfiles preservedoutsidecommits/actualnewVMtooltree;E1excluded,notinheritUqualification."
+  ],
+  "checks": {
+    "materials": 188,
+    "registry_negative_controls": 5,
+    "copied_evidence_negative_controls": 72,
+    "exact_frozen_rust_tests": 27,
+    "exact_frozen_tools_tests": 669,
+    "strict_html_documents": 115,
+    "overall": "INCOMPLETE",
+    "whole_dynamic_matrix": "FAIL",
+    "full_fairness": "UNPROVED",
+    "new_performance_qualification": false,
+    "new_formal_proof": false
+  },
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6222039838",
+      "comment_id": 6222039838,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "5b782a528f0aa6324cce8c0f9a5cdecdcc811ae077e351076195a387e7e453c5"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 6,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6222040941",
+      "comment_id": 6222040941,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "5b782a528f0aa6324cce8c0f9a5cdecdcc811ae077e351076195a387e7e453c5"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6222042235",
+      "comment_id": 6222042235,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "5b782a528f0aa6324cce8c0f9a5cdecdcc811ae077e351076195a387e7e453c5"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6222043764",
+      "comment_id": 6222043764,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "5b782a528f0aa6324cce8c0f9a5cdecdcc811ae077e351076195a387e7e453c5"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6222045130",
+      "comment_id": 6222045130,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "5b782a528f0aa6324cce8c0f9a5cdecdcc811ae077e351076195a387e7e453c5"
+    }
+  ],
+  "ci": {
+    "commit": "9cd53fe3053b8b7dd19645042fc7c29d06b1ee34",
+    "observations": [
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38945262971",
+        "name": "Documentation",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38945262981",
+        "name": "Qualification integrity",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38945263057",
+        "name": "Production codec bounded fuzz",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38945262738",
+        "name": "CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38945188949",
+        "name": "Documentation",
+        "status": "completed"
+      }
+    ],
+    "does_not_qualify_new_documentation_heads": true
+  },
+  "next": [
+    "Explicitpost-close physicalobligation/drain observationbarrier withoriginalidentity/deadline;retainedFAILandzero-debtpredicate,notarbitrarysleep/windowextension.",
+    "AlladmittedqueuePDUfairness/dynamicactualconsenttrace,matchedU2/3observercost/resources/performance.",
+    "Agent/SSAP/multichannel/fourdevice andfulloriginalscope parallel;noallcontrolraceprecondition.",
+    "NaturalRCA/nonmanualrecovery,NOCPaccuracy/duplicate/late/reusebarriers,callbackdrain andfullimplementationrefinement remainOPEN."
+  ],
+  "materials": [
+    {
+      "path": ".dev/concurrent-channel-issue-receipts-v1.json",
+      "sha256": "b0a3f6eab64b725786e7aa3cf06e93fb38c098fdb19c0e6f9d4aea4d14ed1fab",
+      "bytes": 2201,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Raw proofs require listed captures/artifacts,notpublicdownload."
+    },
+    {
+      "path": ".dev/concurrent-channel-update-issues-v1.py",
+      "sha256": "29c4661a9a402820fb5d97eb229cb28bda7729d0472d96a59a129f06a9f4c96c",
+      "bytes": 6531,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Raw proofs require listed captures/artifacts,notpublicdownload."
+    },
+    {
+      "path": ".dev/concurrent-channel-registry-local-v2.json",
+      "sha256": "3b03b0852ee9a3ab62671dda4ecba3890f5836b725304f7c938fa92e4755ccdb",
+      "bytes": 1263,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Raw proofs require listed captures/artifacts,notpublicdownload."
+    },
+    {
+      "path": ".dev/concurrent-channel-final-docs-v1.log",
+      "sha256": "0168961e06f344a6d0fd2d7104e66c7a93488aff8634f7928b1e1bca007d46aa",
+      "bytes": 265214,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Raw proofs require listed captures/artifacts,notpublicdownload."
+    },
+    {
+      "path": ".dev/concurrent-channel-metadata-v2.json",
+      "sha256": "0e4b582fabaa58bd07d02bc6358c5a3b1b6cf6f4865e693b8f8e86a863d96c20",
+      "bytes": 257601,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Raw proofs require listed captures/artifacts,notpublicdownload."
+    },
+    {
+      "path": ".dev/concurrent-channel-ci-9cd53fe-v3.json",
+      "sha256": "5233e0c3868f9b5f8a1174832b17ce8823e74eba23d89ca5d2ad3f1441a03347",
+      "bytes": 765,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Raw proofs require listed captures/artifacts,notpublicdownload."
+    }
+  ]
+}

@@ -4,7 +4,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
 Name: sparklink
-Description: SparkLink userspace library for device and connection management
+Description: SparkLink authorized application channel API (no Native controller lease)
 Version: 0.1.0
 Libs: -L${libdir} -lsparklink
-Cflags: -I${includedir}/sparklink
+Cflags: -I${includedir}

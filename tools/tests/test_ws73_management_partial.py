@@ -1,0 +1,368 @@
+# SPDX-License-Identifier: GPL-2.0-only
+from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+import errno
+import unittest
+from unittest.mock import patch
+from ws73_management_partial import verify_records, standby, corroborate
+from ws73_diagnostic_hold import PROPERTIES
+from sparklink.structs import SleControllerSnapshot, SleManagementQuery, SleDiscoveryResult, SleDiagnosticSubmit, SleDiagnosticResult
+
+
+def fixture(case='release',domain='advertising'):
+    snapshots=[SleControllerSnapshot(version=1,generation=i+1,dev_index=i,flags=2,profile=1,valid_fields=1) for i in [0,1]]
+    snapshots[1].address[:]=b'123456'
+    markers=[dict(hold_phase=phase,wall_ns=t) for phase,t in [('arm_ready',100),('wait_held',200),('release_ready',400)]]
+    ready=SleControllerSnapshot.from_buffer_copy(bytes(snapshots[0]));ready.flags=1
+    q=lambda state,mode:bytes(SleManagementQuery(version=1,generation=1,state=state,mode=mode)).hex()
+    record=dict(format_version=3,status='MANAGED_PARTIAL_HELD_REPLY_PASS',synthetic_support=False,case=case,domain=domain,preparation=[],
+        physical_acceptance=False,automatic_fault_recovery_acceptance=False,daemon_running_during_hold=False,
+        initial_snapshots=[bytes(s).hex() for s in snapshots],input=bytes(standby(snapshots[0],1,domain)).hex(),
+        before_management=q(1,1),revoking=q(2,0),final_management=q(0,0),final_snapshot=bytes(ready).hex(),
+        peer_after=bytes(snapshots[1]).hex(),original_fd=5,duplicate_fd=6 if case=='dup' else -1,lease=1,
+        submit_before_wall_ns=150,submit_after_wall_ns=160,release_before_wall_ns=300,release_after_wall_ns=310,
+        markers=markers,peer_queries=[],hold_acknowledgements=[])
+    peer=bytes(SleManagementQuery(version=1,generation=2,state=1,mode=2)).hex()
+    record.update(peer_management_before=peer,peer_management_after=peer)
+    if domain=='scanning':
+        preparation=SleDiscoveryResult(version=1,generation=1,request_id=2,profile=1,
+            operation=5,state=3,count=2,step=1,opcode=0xc05,radio_adv=1,power_valid=1,selected_power=6)
+        record['preparation']=[dict(input=bytes(standby(snapshots[0],2,'advertising')).hex(),
+            result=bytes(preparation).hex(),start_wall_ns=50,end_wall_ns=90)]
+    if case!='release':record['original_fd_errno']=errno.EBADF
+    if case=='dup':record.update(duplicate_fd_errno=errno.EBADF,after_first_management=q(1,1))
+    record['management_observations']=[dict(wall_ns=401,raw=q(2,0)),dict(wall_ns=405,raw=q(0,0))]
+    opcode=0xc02 if domain=='advertising' else 0x1001
+    for key,state,error in [('pending',2,0),('cancelled',5,-errno.ECANCELED),('final_result',5,-errno.ECANCELED)]:
+        record[key]=bytes(SleDiscoveryResult(version=1,generation=1,request_id=1,profile=1,operation=5 if opcode==0xc02 else 6,
+            count=2 if opcode==0xc02 else 3,opcode=opcode,state=state,error=error,
+            radio_adv=1 if key=='final_result' or domain=='scanning' else 0,
+            radio_scan=1 if key=='final_result' else 0)).hex()
+    for i,m in enumerate(markers):
+        record['hold_acknowledgements'].append(dict(stage=['armed','held','released'][i],request=m,
+            host_wall_ns=m['wall_ns']+1,state=dict(zip(PROPERTIES,[i==0,i==1,int(i>0),int(i==2),0,0,False,0]))))
+    for i in range(3):
+        command=SleDiagnosticSubmit(version=1,generation=2,request_id=i+1,seq=i+1,timeout_ms=5000,opcode=0x406,action=1)
+        result=SleDiagnosticResult(version=1,generation=2,seq=i+1,state=2,opcode=0x406,data_len=6);result.data[:6]=snapshots[1].address
+        record['peer_queries'].append(dict(input=bytes(command).hex(),result=bytes(result).hex(),start_wall_ns=10+i*200,end_wall_ns=20+i*200))
+    return record
+
+
+class PartialTests(unittest.TestCase):
+    def test_scan_parameter_cancel_requires_unknown_and_no_ready(self):
+        for case in ['release','close','dup']:
+            record=fixture(case,'scanning');record.update(format_version=6,selected_domain_cleanup=True,scan_parameter_cleanup=True)
+            snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));snapshot.flags=2
+            record['final_snapshot']=bytes(snapshot).hex()
+            result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.radio_scan=0
+            record['final_result']=bytes(result).hex();verify_records(record)
+            for change in ['false-ready','false-off','old-format','wrong-domain','missing-selection','boolean']:
+                import copy
+                bad=copy.deepcopy(record)
+                if change=='false-ready':snapshot.flags=1;bad['final_snapshot']=bytes(snapshot).hex()
+                if change=='false-off':result.radio_scan=1;bad['final_result']=bytes(result).hex()
+                if change=='old-format':bad['format_version']=5
+                if change=='wrong-domain':bad['domain']='advertising'
+                if change=='missing-selection':bad.pop('selected_domain_cleanup')
+                if change=='boolean':bad['scan_parameter_cleanup']=1
+                with self.subTest(case=case,change=change),self.assertRaises(ValueError):verify_records(bad)
+
+    def test_scan_parameter_capture_retains_adv_off_without_unselected_start_or_stop(self):
+        record=fixture(domain='scanning');record.update(format_version=6,selected_domain_cleanup=True,scan_parameter_cleanup=True)
+        snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));snapshot.flags=2
+        record['final_snapshot']=bytes(snapshot).hex()
+        result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.radio_scan=0
+        record['final_result']=bytes(result).hex()
+        record['management_observations'][-1]['wall_ns']=450;record['peer_queries'][2].update(start_wall_ns=490,end_wall_ns=500)
+        def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
+        def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0)
+        capture=dict(commands=[command(0xc02,55,'00'*49),command(0xc05,75,'00'*5),command(0x1001,155,'0000010040062003')],
+            complete=[reply(0xc02,65,'06'),reply(0xc05,85),reply(0x1001,410)])
+        for row in record['peer_queries']:
+            capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
+            capture['complete'].append(reply(0x406,row['end_wall_ns'],'313233343536',device=3))
+        with patch('ws73_diagnostic_hold.corroborate_host_hold',return_value={}):
+            proof=corroborate(record,{},capture,'',{})
+            self.assertEqual([v['opcode'] for v in proof['commands']],[0x1001])
+            self.assertEqual(proof['retained_advertising_off']['reply']['opcode'],0xc05)
+            for change in ['unselected-start','unnecessary-stop','extra-config','missing-config-reply','missing-adv-off']:
+                import copy
+                bad=copy.deepcopy(capture)
+                if change in ['unselected-start','unnecessary-stop']:
+                    bad['commands'].insert(3,command(0x1002,420,'0100' if change=='unselected-start' else '0000'))
+                if change=='extra-config':bad['commands'].insert(3,command(0x1001,420,'0000010040062003'))
+                if change=='missing-config-reply':bad['complete'].pop(2)
+                if change=='missing-adv-off':bad['complete'].pop(1)
+                with self.subTest(change=change),self.assertRaises(ValueError):corroborate(record,{},bad,'',{})
+
+    def test_partial_metadata_bounds_preserve_bootstrap_and_reject_extra_queries(self):
+        from ws73_capture import partial_metadata_bounds,CaptureError
+        record=fixture()
+        identities=[dict(port=f'1-{i+1}',index=i,generation=i+1,bus=1,device=i+2,
+            observed_wall_ns=600) for i in [0,1]]
+        for identity,raw in zip(identities,record['initial_snapshots']):
+            snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(raw))
+            identity['address']=':'.join(f'{v:02x}' for v in snapshot.address)
+        capture=dict(commands=[],complete=[])
+        for i,row in enumerate(record['peer_queries']):
+            capture['commands'].append(dict(bus=1,device=3,opcode=0x406,params='',wall_ns=row['start_wall_ns'],
+                completion=dict(wall_ns=row['start_wall_ns']+1),record=i*2))
+            capture['complete'].append(dict(bus=1,device=3,opcode=0x406,status=0,value='313233343536',wall_ns=row['end_wall_ns'],record=i*2+1))
+        bounds,proofs=partial_metadata_bounds(dict(initial=identities),capture,record)
+        self.assertEqual(list(bounds.values()),[10,10]);self.assertEqual(len(proofs),3)
+        for change in ['duplicate-probe','unrecorded-later','wrong-peer','after-ready','model']:
+            import copy
+            bad=copy.deepcopy(capture);ids=copy.deepcopy(identities);r=copy.deepcopy(record)
+            if change=='duplicate-probe':bad['commands'].append(copy.deepcopy(bad['commands'][0]))
+            if change=='unrecorded-later':bad['commands'].append(dict(bad['commands'][0],wall_ns=550,completion=dict(wall_ns=551)))
+            if change=='wrong-peer':ids[1]['generation']=3
+            if change=='after-ready':ids[1]['observed_wall_ns']=410
+            if change=='model':r.update(synthetic_support=True,status='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS')
+            with self.subTest(change=change),self.assertRaises(CaptureError):partial_metadata_bounds(dict(initial=ids),bad,r)
+
+    def test_selected_cleanup_preserves_untouched_unknown_without_false_ready(self):
+        for case in ['release','close','dup']:
+            record=fixture(case)
+            record.update(format_version=5,selected_domain_cleanup=True)
+            snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));snapshot.flags=2
+            record['final_snapshot']=bytes(snapshot).hex()
+            result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.radio_scan=0
+            record['final_result']=bytes(result).hex()
+            verify_records(record)
+            for change in ['false-ready','false-off','old-format','model','later-step']:
+                import copy
+                bad=copy.deepcopy(record)
+                if change=='false-ready':snapshot.flags=1;bad['final_snapshot']=bytes(snapshot).hex()
+                if change=='false-off':result.radio_scan=1;bad['final_result']=bytes(result).hex()
+                if change=='old-format':bad['format_version']=3
+                if change=='model':bad['synthetic_support']=True
+                if change=='later-step':bad['initialization_step']=1
+                with self.subTest(case=case,change=change),self.assertRaises(ValueError):verify_records(bad)
+        # Scan preparation really touched both domains; it still requires Off.
+        record=fixture(domain='scanning');record.update(format_version=5,selected_domain_cleanup=True)
+        verify_records(record)
+
+    def test_selected_cleanup_typed_host_reply_and_exact_wire_scope(self):
+        record=fixture();record.update(format_version=5,selected_domain_cleanup=True)
+        snapshot=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));snapshot.flags=2
+        record['final_snapshot']=bytes(snapshot).hex()
+        result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.radio_scan=0
+        record['final_result']=bytes(result).hex()
+        record['management_observations'][-1]['wall_ns']=450
+        record['peer_queries'][2].update(start_wall_ns=490,end_wall_ns=500)
+        def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
+        def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0)
+        original=dict(reply(0xc02,410,'06'),usb_length=178,usb_sha256='a'*64,record=8)
+        capture=dict(commands=[command(0xc02,155,'00'*49),command(0xc05,420,'00'*5)],
+            complete=[original,reply(0xc05,430)])
+        for row in record['peer_queries']:
+            capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
+            capture['complete'].append(reply(0x406,row['end_wall_ns'],'313233343536',device=3))
+        host=dict(method='QMP_HOLD_ACTUAL_SUCCESSFUL_IN81',complete=True,physical_acceptance=False,
+            automatic_fault_recovery_acceptance=False,observations=record['hold_acknowledgements'])
+        stderr='WS73_TEST_RUNTIME_HOLD: dev 1:124 bytes=178 host_status=0 holds=1 sha256='+ 'a'*64+'\nWS73_TEST_RUNTIME_HOLD_RELEASE: dev 1:124 bytes=178 bounded=0 releases=1\n'
+        proof=corroborate(record,host,capture,stderr,dict(bus=1,address=124))
+        self.assertTrue(proof['selected_domain_cleanup'])
+        self.assertEqual(proof['host_hold']['delivered_usb_record'],8)
+        self.assertEqual([v['opcode'] for v in proof['commands']],[0xc02,0xc05])
+        for change in ['unnecessary-scan-stop','wrong-frame','wrong-owner','lost-adv-stop']:
+            import copy
+            bad=copy.deepcopy(capture);expected=dict(bus=1,address=124)
+            if change=='unnecessary-scan-stop':bad['commands'].insert(2,command(0x1002,440,'0000'))
+            if change=='wrong-frame':bad['complete'][0]['usb_sha256']='b'*64
+            if change=='wrong-owner':expected['address']=123
+            if change=='lost-adv-stop':bad['complete'].pop(1)
+            with self.subTest(change=change),self.assertRaises(ValueError):corroborate(record,host,bad,stderr,expected)
+
+    def test_exact_model_stop_refusal_keeps_blocked_faulted_and_cancelled(self):
+        for domain in ['advertising','scanning']:
+            for case in ['release','close','dup']:
+                record=fixture(case,domain);record.update(synthetic_support=True,status='FAIL',
+                    error='actual cleanup failed; preserve raw controller outcome',error_type='ValueError',errno=None)
+                q=SleManagementQuery(version=1,generation=1,state=3,flags=2,error=-errno.EIO,status=11,opcode=0x1002)
+                record['final_management']=bytes(q).hex();record['management_observations'][-1]['raw']=bytes(q).hex()
+                s=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(record['final_snapshot']));s.flags=4;s.error=-errno.EIO;s.command_credits=0
+                record['final_snapshot']=bytes(s).hex()
+                result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['final_result']));result.flags=1;result.radio_adv=result.radio_scan=0
+                record['final_result']=bytes(result).hex()
+                with self.subTest(domain=domain,case=case):verify_records(record,True)
+                # A refused STOP cannot become Ready/Free or a normal pass.
+                with self.assertRaises(ValueError):verify_records(record)
+                for change in ['live','arbitrary-error','free','no-status','success-result']:
+                    import copy
+                    bad=copy.deepcopy(record)
+                    if change=='live':bad['synthetic_support']=False
+                    if change=='arbitrary-error':bad['error']='VM socket startup failed'
+                    if change=='free':bad['final_management']=bytes(SleManagementQuery(version=1,generation=1)).hex()
+                    if change=='no-status':
+                        state=SleManagementQuery.from_buffer_copy(bytes.fromhex(bad['final_management']));state.status=0;bad['final_management']=bytes(state).hex()
+                    if change=='success-result':
+                        value=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(bad['final_result']));value.state=3;value.error=0;bad['final_result']=bytes(value).hex()
+                    with self.subTest(domain=domain,case=case,change=change),self.assertRaises(ValueError):verify_records(bad,True)
+
+    def test_scan_cleanup_retains_only_previously_proven_off(self):
+        record=fixture(domain='scanning')
+        record['management_observations']=[dict(wall_ns=440,raw=record['revoking']),dict(wall_ns=450,raw=record['final_management'])]
+        record['peer_queries'][2].update(start_wall_ns=490,end_wall_ns=500)
+        def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
+        def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0)
+        capture=dict(commands=[command(0xc02,55,'00'*49),command(0xc05,75,'00'*5),
+            command(0x1001,155,'0000010040062003'),command(0x1002,420,'0000')],
+            complete=[reply(0xc02,65,'06'),reply(0xc05,85),reply(0x1001,410),reply(0x1002,430)])
+        for row in record['peer_queries']:
+            capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
+            capture['complete'].append(reply(0x406,row['end_wall_ns'],'313233343536',device=3))
+        # The host hold contract is tested independently. Here exercise exact
+        # target capture ordering and refusal to replace prior OFF evidence.
+        with patch('ws73_diagnostic_hold.corroborate_host_hold',return_value={}):
+            proof=corroborate(record,{},capture,'',{})
+            self.assertEqual(proof['retained_advertising_off']['reply']['opcode'],0xc05)
+            self.assertEqual([v['opcode'] for v in proof['commands']],[0x1001,0x1002])
+            for change in ['missing-off','failed-off','extra-stop','intervening-enable']:
+                import copy
+                bad=copy.deepcopy(capture)
+                if change=='missing-off':bad['complete'].pop(1)
+                if change=='failed-off':bad['complete'][1]['status']=30
+                if change=='extra-stop':bad['commands'].insert(3,command(0xc05,415,'00'*5))
+                if change=='intervening-enable':bad['commands'].insert(2,command(0xc05,120,'0100000000'))
+                with self.subTest(change=change),self.assertRaises(ValueError):corroborate(record,{},bad,'',{})
+
+    def test_scan_requires_real_prior_advertising_off_and_no_false_unknown(self):
+        for change in ['missing','failed','unknown','wrong-request','reserved','no-power','bad-power','late','bool','pending-radio']:
+            record=fixture(domain='scanning');row=record['preparation'][0]
+            result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(row['result']))
+            if change=='missing':record['preparation']=[]
+            if change=='failed':result.state=4;result.error=-errno.EIO;result.status=30
+            if change=='unknown':result.radio_adv=0
+            if change=='wrong-request':result.request_id=1
+            if change=='reserved':result.reserved[0]=1
+            if change=='no-power':result.power_valid=0
+            if change=='bad-power':result.selected_power=128
+            if change=='late':row['end_wall_ns']=100
+            if change=='bool':row['start_wall_ns']=True
+            if change=='pending-radio':
+                pending=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record['pending']))
+                pending.radio_adv=0;record['pending']=bytes(pending).hex()
+            row['result']=bytes(result).hex()
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
+    def test_advertising_first_step_cannot_hide_a_prepared_or_old_format_gate(self):
+        record=fixture();record['preparation']=fixture(domain='scanning')['preparation']
+        with self.assertRaises(ValueError):verify_records(record)
+        record=fixture();record['format_version']=1
+        with self.assertRaises(ValueError):verify_records(record)
+
+    def test_peer_canonical_result_and_causal_intervals(self):
+        for change in ['reserved','tail','repeat-sequence','before-only','during-too-late','after-too-early','boolean']:
+            record=fixture();row=record['peer_queries'][1]
+            if change in ('reserved','tail'):
+                result=SleDiagnosticResult.from_buffer_copy(bytes.fromhex(row['result']))
+                if change=='reserved':result._reserved[0]=1
+                else:result.data[6]=1
+                row['result']=bytes(result).hex()
+            if change=='repeat-sequence':row.update(input=record['peer_queries'][0]['input'],result=record['peer_queries'][0]['result'])
+            if change=='before-only':row.update(start_wall_ns=10,end_wall_ns=20)
+            if change=='during-too-late':row['end_wall_ns']=301
+            if change=='after-too-early':record['peer_queries'][2]['start_wall_ns']=405
+            if change=='boolean':row['start_wall_ns']=True
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
+    def test_unknown_or_incomplete_cleanup_observations(self):
+        for change in ['missing','premature-free','wrong-generation','reversed-time','error']:
+            record=fixture();rows=record['management_observations']
+            if change=='missing':record['management_observations']=[]
+            if change=='premature-free':rows[0]['raw']=record['final_management']
+            if change=='wrong-generation':rows[0]['raw']=record['peer_management_before']
+            if change=='reversed-time':rows[1]['wall_ns']=399
+            if change=='error':
+                q=SleManagementQuery.from_buffer_copy(bytes.fromhex(rows[0]['raw']));q.error=-errno.EIO;rows[0]['raw']=bytes(q).hex()
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
+    def test_six_canonical_partial_cases(self):
+        for case in ['release','close','dup']:
+            for domain in ['advertising','scanning']:
+                with self.subTest(case=case,domain=domain):verify_records(fixture(case,domain))
+
+    def test_fake_success_or_wrong_step_rejected(self):
+        for key in ['pending','cancelled','final_result']:
+            for field,value in [('state',3),('status',30),('step',1),('opcode',0x406),('power_valid',1)]:
+                record=fixture();result=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record[key]));setattr(result,field,value);record[key]=bytes(result).hex()
+                with self.subTest(key=key,field=field),self.assertRaises(ValueError):verify_records(record)
+
+    def test_failure_cleanup_not_normalized(self):
+        record=fixture();q=SleManagementQuery.from_buffer_copy(bytes.fromhex(record['final_management']))
+        q.state=3;q.error=-errno.EIO;q.status=30;q.opcode=0xc05;q.flags=2;record['final_management']=bytes(q).hex()
+        with self.assertRaises(ValueError):verify_records(record)
+
+    def test_dup_and_peer_isolation_rejected(self):
+        for change in ['first-close','fd','peer','lease']:
+            record=fixture('dup')
+            if change=='first-close':record['after_first_management']=record['final_management']
+            if change=='fd':record['duplicate_fd']=record['original_fd']
+            if change=='peer':record['peer_after']=record['initial_snapshots'][0]
+            if change=='lease':record['peer_management_after']=record['final_management']
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
+    def test_wrong_ack_and_late_release_rejected(self):
+        for change in ['ack','late','inverted','boolean']:
+            record=fixture()
+            if change=='ack':record['hold_acknowledgements'][1]['stage']='released'
+            if change=='late':record['release_after_wall_ns']=400_000_151
+            if change=='inverted':record['release_after_wall_ns']=250
+            if change=='boolean':record['submit_before_wall_ns']=True
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(record)
+
+    def test_later_original_start_stop_and_no_duplicate_stop(self):
+        import copy
+        from ws73_model_hold import PROPERTIES as MODEL_PROPERTIES, SELECTOR_PROPERTIES
+        for domain,step in [('advertising',1),('scanning',1),('scanning',2)]:
+            for case in ['release','close','dup']:
+                record=fixture(case,domain)
+                record.update(format_version=4,initialization_step=step,synthetic_support=True,status='MANAGED_PARTIAL_HELD_REPLY_SYNTHETIC_SUPPORT_PASS')
+                if domain=='advertising':record['early_selected_power']=6
+                for key in ['pending','cancelled','final_result']:
+                    value=SleDiscoveryResult.from_buffer_copy(bytes.fromhex(record[key]));value.step=step;value.opcode=0xc05 if domain=='advertising' else 0x1002
+                    if domain=='advertising':value.power_valid=1;value.selected_power=6
+                    record[key]=bytes(value).hex()
+                record['management_observations']=[dict(wall_ns=440,raw=record['revoking']),dict(wall_ns=450,raw=record['final_management'])]
+                record['peer_queries'][2].update(start_wall_ns=490,end_wall_ns=500)
+                for i,row in enumerate(record['hold_acknowledgements']):
+                    row['state']=dict(zip(MODEL_PROPERTIES+SELECTOR_PROPERTIES,[i==0,i==1,int(i>0),int(i==2),0,0,step,0 if i==0 else step]))
+                host=dict(method='QMP_RETAIN_SIMULATED_TERMINAL_FRAME',complete=True,physical_acceptance=False,automatic_fault_recovery_acceptance=False,initialization_step=step,observations=record['hold_acknowledgements'])
+                def command(opcode,t,params='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,params=params)
+                def reply(opcode,t,value='',device=2):return dict(bus=1,device=device,opcode=opcode,wall_ns=t,value=value,status=0,usb_length=156,usb_sha256=str(opcode%10)*64,record=t)
+                opcodes=[0xc02,0xc05,0x1002] if domain=='advertising' else [0x1001,0x1002,0x1002]
+                commands=[];replies=[]
+                for i,opcode in enumerate(opcodes):
+                    params='00'*49 if opcode==0xc02 else '00'*5 if opcode==0xc05 else '0000010040062003' if opcode==0x1001 else '0100' if i==1 else '0000'
+                    commands.append(command(opcode,155+i*20 if i<=step else 420,params))
+                    replies.append(reply(opcode,165+i*20 if i<step else 410 if i==step else 430,'06' if opcode==0xc02 else ''))
+                preparation_commands=[];preparation_replies=[]
+                if domain=='scanning':
+                    preparation_commands=[command(0xc02,55,'00'*49),command(0xc05,75,'00'*5)]
+                    preparation_replies=[reply(0xc02,65,'06'),reply(0xc05,85)]
+                capture=dict(commands=preparation_commands+commands,complete=preparation_replies+replies)
+                for row in record['peer_queries']:
+                    capture['commands'].append(command(0x406,row['start_wall_ns'],device=3))
+                    capture['complete'].append(reply(0x406,row['end_wall_ns'],'313233343536',device=3))
+                stderr=''.join(f"WS73_MODEL_TERMINAL_SKIP: serial=1 bytes=156 skipped={i+1} sha256={v['usb_sha256']}\n" for i,v in enumerate(replies[:step]))
+                stderr+=f"WS73_MODEL_TERMINAL_HOLD: serial=1 bytes=156 sha256={replies[step]['usb_sha256']}\nWS73_MODEL_TERMINAL_RELEASE: serial=1 bytes=156 bounded=0 sha256={replies[step]['usb_sha256']}\n"
+                proof=corroborate(record,host,capture,stderr,{})
+                self.assertEqual(proof['initialization_step'],step)
+                self.assertEqual(proof['retained_original_final_stop'] is not None,domain=='advertising' or step==2)
+                for change in ['early-hash','missing-early','duplicate-stop','bad-start','late-early','extra-complete','format','physical','bool-step','power']:
+                    bad=copy.deepcopy(record);wire=copy.deepcopy(capture);log=stderr
+                    if change=='early-hash':log=log.replace(replies[0]['usb_sha256'],'a'*64,1)
+                    if change=='missing-early':wire['complete'].remove(replies[0])
+                    if change=='duplicate-stop':wire['commands'].insert(len(preparation_commands)+step+1,command(0x1002,415,'0000'))
+                    if change=='bad-start':wire['commands'][len(preparation_commands)+1]['params']='0200'
+                    if change=='late-early':wire['complete'][len(preparation_replies)]['wall_ns']=320
+                    if change=='extra-complete':wire['complete'].insert(len(preparation_replies)+1,reply(0x406,166))
+                    if change=='format':bad['format_version']=3
+                    if change=='physical':bad['synthetic_support']=False
+                    if change=='bool-step':bad['initialization_step']=True
+                    if change=='power':
+                        if domain!='advertising':continue
+                        bad['early_selected_power']=7
+                    with self.subTest(domain=domain,step=step,case=case,change=change),self.assertRaises(ValueError):corroborate(bad,host,wire,log,{})

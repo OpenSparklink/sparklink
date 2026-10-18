@@ -1,0 +1,1006 @@
+{
+  "schema_version": 1,
+  "status": "ALL6_AGENT_MODES_TWO_ROLE_REAL_SCOPED_PASS",
+  "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+  "compiled_userspace": "85cdf627d70bd239609ab0e74124b787279f139f",
+  "guest_tools": "85cdf627d70bd239609ab0e74124b787279f139f",
+  "executed_host_tools": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
+  "vm_only": true,
+  "ports": [
+    "1-2.1.2",
+    "1-2.1.3"
+  ],
+  "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "runs": [
+    {
+      "name": "approve",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "capture_drops": 0,
+      "business_round_trips": 8,
+      "rf_rounds": 22,
+      "phases": [
+        {
+          "phase": 0,
+          "generation_lifetime_handle_roles": [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            4,
+            4
+          ],
+          "native_admitted": [
+            true,
+            true
+          ],
+          "kernel_states": [
+            9,
+            9
+          ],
+          "original_deadline_ns": [
+            33801550838,
+            33802403024
+          ],
+          "wire": {
+            "relay_indices": [
+              308,
+              310,
+              313,
+              321,
+              309,
+              311,
+              312,
+              314,
+              322
+            ],
+            "opposite_receipts": 9,
+            "installations": [
+              {
+                "role": 0,
+                "opcode": 7171,
+                "key_redacted": true,
+                "command_record": 520,
+                "event_record": 532,
+                "wall_ns": 1792077563086778000
+              },
+              {
+                "role": 1,
+                "opcode": 7173,
+                "key_redacted": true,
+                "command_record": 526,
+                "event_record": 530,
+                "wall_ns": 1792077563085376000
+              }
+            ]
+          },
+          "caller_exit_scope": null
+        },
+        {
+          "phase": 1,
+          "generation_lifetime_handle_roles": [
+            [
+              2,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              3,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            4,
+            4
+          ],
+          "native_admitted": [
+            true,
+            true
+          ],
+          "kernel_states": [
+            9,
+            9
+          ],
+          "original_deadline_ns": [
+            37635263746,
+            37636110823
+          ],
+          "wire": {
+            "relay_indices": [
+              308,
+              310,
+              313,
+              321,
+              309,
+              311,
+              312,
+              314,
+              322
+            ],
+            "opposite_receipts": 9,
+            "installations": [
+              {
+                "role": 0,
+                "opcode": 7171,
+                "key_redacted": true,
+                "command_record": 1640,
+                "event_record": 1652,
+                "wall_ns": 1792077566920231000
+              },
+              {
+                "role": 1,
+                "opcode": 7173,
+                "key_redacted": true,
+                "command_record": 1646,
+                "event_record": 1650,
+                "wall_ns": 1792077566918753000
+              }
+            ]
+          },
+          "caller_exit_scope": null
+        }
+      ],
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-approve/manifest.json",
+          "sha256": "dbc6d7138e50915ee853f05714cfdfcc5de529694cbc5988b3e25da3a5758fd6",
+          "bytes": 1221448,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "status"
+              ],
+              "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+            },
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-approve/guest-output/ws73.pcap",
+          "sha256": "6cbc7472d75285ab06b0cb9eb392253e77b584031c11b9b153372ca69f34e9b6",
+          "bytes": 534660,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-approve/guest-output/capture-stats.txt",
+          "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-approve/guest-output/application/passthrough-control/run.json",
+          "sha256": "4695dda7d8fd8f1f886b6583e9df66da7148455514bee070f1b0b29a8088be0e",
+          "bytes": 695923,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-approve/guest-output/kernel.log",
+          "sha256": "9e55c1a149caed1ffc8531c118c542daeb3d21836c8d7562008771102f6fd69c",
+          "bytes": 49158,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "reject",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "capture_drops": 0,
+      "business_round_trips": 8,
+      "rf_rounds": 22,
+      "phases": [
+        {
+          "phase": 0,
+          "generation_lifetime_handle_roles": [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            5,
+            5
+          ],
+          "native_admitted": [
+            false,
+            false
+          ],
+          "kernel_states": [
+            0,
+            0
+          ],
+          "original_deadline_ns": [
+            33318603751,
+            33319386746
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": null
+        },
+        {
+          "phase": 1,
+          "generation_lifetime_handle_roles": [
+            [
+              2,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              3,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            5,
+            5
+          ],
+          "native_admitted": [
+            false,
+            false
+          ],
+          "kernel_states": [
+            0,
+            0
+          ],
+          "original_deadline_ns": [
+            37333239781,
+            37334077210
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": null
+        }
+      ],
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-reject/manifest.json",
+          "sha256": "0492abd0e76be01fc6795f484e6c628d5fc6ebe34d9d7956bcd2dd0eff1550d1",
+          "bytes": 1175989,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "status"
+              ],
+              "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+            },
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-reject/guest-output/ws73.pcap",
+          "sha256": "2f986dbca733447868b3a7f7730cbf9ac9e97293b45c8605aa9bfc00c633fc2f",
+          "bytes": 489724,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-reject/guest-output/capture-stats.txt",
+          "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-reject/guest-output/application/passthrough-control/run.json",
+          "sha256": "47bc39bd1f0f8e8293fcc4e02330baf1dbf8441bc51b5b89e58e4a29824c946d",
+          "bytes": 696007,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-reject/guest-output/kernel.log",
+          "sha256": "1e4c56d4adfd1201bce47e68a9376eaadd3c5442178d0cd6a54b8ef23c0abb0b",
+          "bytes": 49282,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "timeout",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "capture_drops": 0,
+      "business_round_trips": 8,
+      "rf_rounds": 22,
+      "phases": [
+        {
+          "phase": 0,
+          "generation_lifetime_handle_roles": [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            7,
+            7
+          ],
+          "native_admitted": [
+            false,
+            false
+          ],
+          "kernel_states": [
+            0,
+            0
+          ],
+          "original_deadline_ns": [
+            28577783219,
+            28578597304
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": null
+        },
+        {
+          "phase": 1,
+          "generation_lifetime_handle_roles": [
+            [
+              2,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              3,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            7,
+            7
+          ],
+          "native_admitted": [
+            false,
+            false
+          ],
+          "kernel_states": [
+            0,
+            0
+          ],
+          "original_deadline_ns": [
+            34380189987,
+            34381026523
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": null
+        }
+      ],
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-timeout/manifest.json",
+          "sha256": "e9bdd0dee636bc4a2c97a8fad8c76168902c8c2db9d90bd4025e521baf5c425e",
+          "bytes": 1176033,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "status"
+              ],
+              "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+            },
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-timeout/guest-output/ws73.pcap",
+          "sha256": "4f5470c743e19dddf00923805201e5dd05a30483480bc9f1b23c7c09812876a9",
+          "bytes": 489724,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-timeout/guest-output/capture-stats.txt",
+          "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-timeout/guest-output/application/passthrough-control/run.json",
+          "sha256": "0d7754bd367ddf37138fdf0280a1a93018c7d36558b96b38452b8dd687487695",
+          "bytes": 696031,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-timeout/guest-output/kernel.log",
+          "sha256": "2a06f2c9e00c197761e3fae58faa7cca0de12e42a6e3b177aef24fb7c714615d",
+          "bytes": 49173,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "cancel",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "capture_drops": 0,
+      "business_round_trips": 8,
+      "rf_rounds": 22,
+      "phases": [
+        {
+          "phase": 0,
+          "generation_lifetime_handle_roles": [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            6,
+            6
+          ],
+          "native_admitted": [
+            false,
+            false
+          ],
+          "kernel_states": [
+            0,
+            0
+          ],
+          "original_deadline_ns": [
+            33555358440,
+            33556219673
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": null
+        },
+        {
+          "phase": 1,
+          "generation_lifetime_handle_roles": [
+            [
+              2,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              3,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            6,
+            6
+          ],
+          "native_admitted": [
+            false,
+            false
+          ],
+          "kernel_states": [
+            0,
+            0
+          ],
+          "original_deadline_ns": [
+            38809466398,
+            38810320759
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": null
+        }
+      ],
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-cancel/manifest.json",
+          "sha256": "6cf2e96bbfa8c21e0056147590e19990c8ce0ea3b625149f9d7a669230cc636c",
+          "bytes": 1175989,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "status"
+              ],
+              "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+            },
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-cancel/guest-output/ws73.pcap",
+          "sha256": "f8a0a8a472561326ccd78d97d34bfd0738589f9c371ade36fc877154478dae82",
+          "bytes": 489724,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-cancel/guest-output/capture-stats.txt",
+          "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-cancel/guest-output/application/passthrough-control/run.json",
+          "sha256": "f39e098c34dff8cbe24b7ffd2f0ee094b53fa331b5504e35e1e002f250b928fd",
+          "bytes": 696186,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-cancel/guest-output/kernel.log",
+          "sha256": "e1e31c349149540a13ab550059b407f555cef59566d002abedaf0acb77ea86f8",
+          "bytes": 49210,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "agent-exit",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "capture_drops": 0,
+      "business_round_trips": 8,
+      "rf_rounds": 22,
+      "phases": [
+        {
+          "phase": 0,
+          "generation_lifetime_handle_roles": [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            10,
+            10
+          ],
+          "native_admitted": [
+            false,
+            false
+          ],
+          "kernel_states": [
+            0,
+            0
+          ],
+          "original_deadline_ns": [
+            33332482715,
+            33333329271
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": null
+        },
+        {
+          "phase": 1,
+          "generation_lifetime_handle_roles": [
+            [
+              2,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              3,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [
+            10,
+            10
+          ],
+          "native_admitted": [
+            false,
+            false
+          ],
+          "kernel_states": [
+            0,
+            0
+          ],
+          "original_deadline_ns": [
+            37471654974,
+            37472455543
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": null
+        }
+      ],
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-agent-exit/manifest.json",
+          "sha256": "6911f1d90e7d082fbc108243dc7f917e4b057a0ff940d286a73334f373195b29",
+          "bytes": 1176165,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "status"
+              ],
+              "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+            },
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-agent-exit/guest-output/ws73.pcap",
+          "sha256": "555fd11433ce36ba706659d1b6fb57b1cfa52710b862be3fd69b5ff028482c99",
+          "bytes": 489724,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-agent-exit/guest-output/capture-stats.txt",
+          "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-agent-exit/guest-output/application/passthrough-control/run.json",
+          "sha256": "7c8fab53dc37f1d2604371edb7f2b7f748fd271ebab3c89ab3891951b25d8670",
+          "bytes": 696232,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-agent-exit/guest-output/kernel.log",
+          "sha256": "19c367c07cb4330992a11c0c074484d50b39e11fee11c395c9188f9269dcdc9f",
+          "bytes": 49179,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "caller-exit",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "capture_drops": 0,
+      "business_round_trips": 8,
+      "rf_rounds": 22,
+      "phases": [
+        {
+          "phase": 0,
+          "generation_lifetime_handle_roles": [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [],
+          "native_admitted": [],
+          "kernel_states": [],
+          "original_deadline_ns": [
+            33733679646,
+            33734444187
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": "Old private terminal not exposed; fresh ID cancellation + old ID AccessDenied + no security wire + subsequent business"
+        },
+        {
+          "phase": 1,
+          "generation_lifetime_handle_roles": [
+            [
+              2,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              3,
+              0,
+              1
+            ]
+          ],
+          "policy_phases": [],
+          "native_admitted": [],
+          "kernel_states": [],
+          "original_deadline_ns": [
+            37538690028,
+            37539512618
+          ],
+          "wire": {
+            "no_security_commands_or_events": true
+          },
+          "caller_exit_scope": "Old private terminal not exposed; fresh ID cancellation + old ID AccessDenied + no security wire + subsequent business"
+        }
+      ],
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-caller-exit/manifest.json",
+          "sha256": "c2b9d69a5b0c8bb8cfd93f82e5000db0967118de2851aed7b6690b6c3e67efb7",
+          "bytes": 1176209,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "status"
+              ],
+              "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+            },
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-caller-exit/guest-output/ws73.pcap",
+          "sha256": "05276f2f70d58e90936bab74ca029b7cca9dfa29ca56eee4bd648b290f036e11",
+          "bytes": 489724,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-caller-exit/guest-output/capture-stats.txt",
+          "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-caller-exit/guest-output/application/passthrough-control/run.json",
+          "sha256": "82b687d0bb491c053b0bf76604a4a5bcfc064cd55822cf78322f49815b0bcba8",
+          "bytes": 693949,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-agent-policy-v3-caller-exit/guest-output/kernel.log",
+          "sha256": "24705d24812c00bd05b97a1fd8dfad7a9155add14ace9e5d491053a8e08de5ae",
+          "bytes": 49128,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    }
+  ],
+  "totals": {
+    "modes": 6,
+    "physical_connection_role_phases": 12,
+    "business_round_trips": 48,
+    "actual_approve_relays": 18,
+    "approve_opposite_receipts": 18,
+    "approve_role_installations_and_initial_events": 4,
+    "negative_policy_native_submissions": 0,
+    "rf_rounds": 132
+  },
+  "limits": [
+    "Only explicit SDK111 no-MITM reference method, two controllers and the named six policy modes; not general authentication/trusted Grant/Bond or third-party interoperability.",
+    "Controller-reported initial encryption and actual peer business are distinct; no independent air-cipher attestation or full key-wipe/reuse proof.",
+    "Negative paths precede native submission; actual in-flight installation/Status/0011/revoke/Down/USB/NOCP composition remains incomplete.",
+    "Isolated guest actual system-type bus, EXTERNAL identity and installed XML/group policy; no full distribution systemd/udev/install/upgrade qualification.",
+    "Caller-exit gate cannot observe the dead caller private terminal; it checks fresh identity admission/cancel, old-query denial, no security wire and actual subsequent app replies.",
+    "Both previous real attempts remain overall failures: path-parser before consent; then valid wire observations but mismatched PASS manifest/exit1. No retroactivePASS.",
+    "Natural startup/reenumeration/disappearance RCA and nonhuman recovery remain open; QMP/manual/hub/injection are not natural recovery.",
+    "No new formal proof; earlier math scope and unsupported composition unchanged. Other fullS0-S6/19WP/10FV/12DG remain open.",
+    "Raw captures/install inputs contain key material; private original machine only, fingerprints/public redacted summaries; no validated public/offsite archive."
+  ],
+  "supervisor_material": {
+    "base": "workspace",
+    "path": ".dev/security-agent-policy-real-matrix-v1.json",
+    "sha256": "764a5a26aea55157cf85c237a16315f6907b68b1184d48539d12e962d1f28ef5",
+    "bytes": 7701,
+    "access": "private",
+    "format": "json",
+    "assertions": [
+      {
+        "pointer": [
+          "status"
+        ],
+        "equals": "ALL6_AGENT_MODES_TWO_ROLE_REAL_SCOPED_PASS"
+      }
+    ]
+  },
+  "prior_failures": [
+    {
+      "classification": "OVERALL_FAIL: obsolete canonical-object parser, before Agent consent",
+      "manifest": {
+        "base": "workspace",
+        "path": ".dev/native-agent-policy-v1-approve/manifest.json",
+        "sha256": "ec8112bc76fc3f8a6b762a017984f181b206d5ba36f66364fa04d3f75be24af7",
+        "bytes": 45524,
+        "access": "private",
+        "format": "json"
+      }
+    },
+    {
+      "classification": "OVERALL_FAIL: valid realwire/app observations but old supervisor exit1 and PASSmanifest conflict; not retroactively qualified",
+      "manifest": {
+        "base": "workspace",
+        "path": ".dev/native-agent-policy-v2-approve/manifest.json",
+        "sha256": "bc35899d19355d74eae57027082d6c5f2ca429f1aed2605a79fdf650532c1063",
+        "bytes": 1221421,
+        "access": "private",
+        "format": "json"
+      }
+    }
+  ],
+  "retained_data_regression": "Separate data gate/report; no retained length/fd/credit qualification is inferred from these six policy cases."
+}

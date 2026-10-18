@@ -1,0 +1,1204 @@
+{
+  "schema_version": 1,
+  "status": "SEVEN_NEW_C4_LENGTH_GATES_PASS_ORIGINAL_BURST_MATRIX_FAIL_RETAINED",
+  "real_result": "PASS",
+  "matrix_result": "FAIL",
+  "full_exit_result": "UNPROVED",
+  "compiled_kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+  "compiled_userspace": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+  "executed_tools": "e08a22861b1266e999082acee864f5e382559ecc",
+  "scope": [
+    "ExactC4 compiledkernel,staged2c23runtime,frozene08tools;VM-only U2/3. Sevenfreshdynamic249/250/253/254/255/1024/2042,eachbothroles actualCMTC/asymmetricTCID/peer-validation/twoUSB/PB/ENOSPC/closeisolation andfixedSSAPbaseline.",
+    "Sevenselectedlengthgates448peerRT:392dynamic+56fixed. App249 mapsPDU254 unfragmentedTX,app250 mapsPDU255 fragmentedTX;otherlayer sizes separatelydeclared. No newEngine,protocol orUSB change.",
+    "Sevenexactfrozenreplays and56copiedactualevidence negatives;notindependentdecoder orhardwarefault/proof.",
+    "Originaleighthdynamic16x2042burst wholeFAIL retained;bothapplicationphasesfinished butfinaldrain predicate failed. Exactproductionverifierlocals showdebt2/1 atCwindowend,realNOCP0.34-4.85mslater;no sourceledgerbug,NOCPtruth orrecovery asserted fromthisdiagnostic.",
+    "No arbitrarysleep/windowextension orweakenedzero-debt assertion;needs explicitpost-close physicalobligation/observationbarrier. Independentconcurrentprogress gate isnotblockedbyallcredit/controlcombinations.",
+    "UserconfirmedE1 excluded;oldfourU andU1/4 qualifications do nottransfer tocurrenthardware. Firmwarefiles selectedSDK111,notboard/execution attestation."
+  ],
+  "remaining": [
+    "Repair explicitcloseprotocol/creditdrain observationbarrier andnewburstgate;retainoriginalwholematrixFAIL andoriginalpredicates.",
+    "Newconcurrentprogress,fairnessbounds,sameU2/3pairedperformance/observercost/resources andfullP2d stillOPEN.",
+    "FullS0-S6/19WP/10FV/12DG,Agent/SSAP/multichannel/fourdevice/security/Bond/PM/release remainparallel;UserHostlowpriority.",
+    "NaturalRCA/nonmanualrecovery,NOCPaccuracy/late/duplicate/reusebarriers,callbackdrain andkernelconcurrency/refinement remainOPEN."
+  ],
+  "real_gates": [
+    {
+      "name": "length249",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "message_bytes": 249,
+      "pdu_bytes": 254,
+      "baseline_round_trips": 8,
+      "dynamic_round_trips": 56,
+      "manifest": {
+        "path": ".dev/c4-dynamic-length249-v1/manifest.json",
+        "sha256": "ff3aec4a051b8ce8a7be6e88e7b9424ef411a825d7b93c8021374eeb88572ca3",
+        "bytes": 1958313,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "replay": {
+        "path": ".dev/c4-dynamic-length249-v1-replay-v1.json",
+        "sha256": "cb56570eeb2f7a23efd1f35a35176d7eac1b164b7814ea08eb950b4ddecd8c00",
+        "bytes": 1939786,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "negative": {
+        "path": ".dev/c4-dynamic-length249-negative-v1.json",
+        "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+        "bytes": 1632,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "proof_sha256": "e27f5f257d624f9b40542441bbb68e21728fe146a0841a4d2a14d758abbfbb9f"
+    },
+    {
+      "name": "length250",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "message_bytes": 250,
+      "pdu_bytes": 255,
+      "baseline_round_trips": 8,
+      "dynamic_round_trips": 56,
+      "manifest": {
+        "path": ".dev/c4-dynamic-length250-v1/manifest.json",
+        "sha256": "14b798c3b1f51985949d3091bc921a26972fbd7f40707d2f2813e3d66eac2446",
+        "bytes": 1982590,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "replay": {
+        "path": ".dev/c4-dynamic-length250-v1-replay-v1.json",
+        "sha256": "429caaed6d36a5602384dd8cea4dbc2d50550d69e3e85b74a449448d12901e72",
+        "bytes": 1965215,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "negative": {
+        "path": ".dev/c4-dynamic-length250-negative-v1.json",
+        "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+        "bytes": 1632,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "proof_sha256": "ffd67a02541f30d3ccebc736b2abde5ac5e224d24e912e21659cb094db27b1d4"
+    },
+    {
+      "name": "length253",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "message_bytes": 253,
+      "pdu_bytes": 258,
+      "baseline_round_trips": 8,
+      "dynamic_round_trips": 56,
+      "manifest": {
+        "path": ".dev/c4-dynamic-length253-v1/manifest.json",
+        "sha256": "6472adaf0ebc467be9d1ec7845e178898687f73f5e5601fa9bc5b7cab50b8a65",
+        "bytes": 1982974,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "replay": {
+        "path": ".dev/c4-dynamic-length253-v1-replay-v1.json",
+        "sha256": "a2c0fc9cbf6f56b0521d224119432fc2ef0c915e7f00ce06d7c37ecf0ca68dba",
+        "bytes": 1965599,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "negative": {
+        "path": ".dev/c4-dynamic-length253-negative-v1.json",
+        "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+        "bytes": 1632,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "proof_sha256": "2d9bd6126186037f614f3c07c6a7b6a90a005508c2e7f284b7ee4556d6424c8c"
+    },
+    {
+      "name": "length254",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "message_bytes": 254,
+      "pdu_bytes": 259,
+      "baseline_round_trips": 8,
+      "dynamic_round_trips": 56,
+      "manifest": {
+        "path": ".dev/c4-dynamic-length254-v1/manifest.json",
+        "sha256": "5b14269a85d686a9f5c33c210f16268515bad73b4bb6db4564f1866872ab3f83",
+        "bytes": 1983102,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "replay": {
+        "path": ".dev/c4-dynamic-length254-v1-replay-v1.json",
+        "sha256": "bfa4b6f1d353d61503519ea510cf9d139a2fd4596a8599c6d331b39d320d03b7",
+        "bytes": 1965727,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "negative": {
+        "path": ".dev/c4-dynamic-length254-negative-v1.json",
+        "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+        "bytes": 1632,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "proof_sha256": "91d5c266f3528e64c0aaae54623894407a5062c8d086d8fa67d70160c352d47e"
+    },
+    {
+      "name": "length255",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "message_bytes": 255,
+      "pdu_bytes": 260,
+      "baseline_round_trips": 8,
+      "dynamic_round_trips": 56,
+      "manifest": {
+        "path": ".dev/c4-dynamic-length255-v1/manifest.json",
+        "sha256": "2fa56958cd97051fd7ca3ea6d56ce24f0afe10c4fa7fb0fa1b711972aed0d270",
+        "bytes": 1983230,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "replay": {
+        "path": ".dev/c4-dynamic-length255-v1-replay-v1.json",
+        "sha256": "748ca97da50a26e75790502cf0bb5b72440e06f795319dfb430795acb5d896a6",
+        "bytes": 1965855,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "negative": {
+        "path": ".dev/c4-dynamic-length255-negative-v1.json",
+        "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+        "bytes": 1632,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "proof_sha256": "4956dda0239aebc8bfebcfc841ae173fcbae71d91c73f5610954b40ceca8b63a"
+    },
+    {
+      "name": "length1024",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "message_bytes": 1024,
+      "pdu_bytes": 1029,
+      "baseline_round_trips": 8,
+      "dynamic_round_trips": 56,
+      "manifest": {
+        "path": ".dev/c4-dynamic-length1024-v1/manifest.json",
+        "sha256": "6fcaf5446603e26f458c6eeb5d7c9d322566abade5fa4a42a954ffa1daa55c1d",
+        "bytes": 2426857,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "replay": {
+        "path": ".dev/c4-dynamic-length1024-v1-replay-v1.json",
+        "sha256": "b2d4262263898592527dc25e680e2bd3ae8df73dfd6d7dcb6339f8ad65579ed8",
+        "bytes": 2425834,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "negative": {
+        "path": ".dev/c4-dynamic-length1024-negative-v1.json",
+        "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+        "bytes": 1632,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "proof_sha256": "325695892ab8dde229ff4267175c7f0472bf4221407b94fddda43aa1d023332c"
+    },
+    {
+      "name": "length2042",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "message_bytes": 2042,
+      "pdu_bytes": 2047,
+      "baseline_round_trips": 8,
+      "dynamic_round_trips": 56,
+      "manifest": {
+        "path": ".dev/c4-dynamic-length2042-v1/manifest.json",
+        "sha256": "55ec9916e8e02573f3d74481bc9df0aaa947f48ada678831baa86562481ae30e",
+        "bytes": 3017657,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "replay": {
+        "path": ".dev/c4-dynamic-length2042-v1-replay-v1.json",
+        "sha256": "f671421fd97ed91f264e9e1ff174dd30c6af18fbdffec65142a67a9cef40bc9f",
+        "bytes": 3038518,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "negative": {
+        "path": ".dev/c4-dynamic-length2042-negative-v1.json",
+        "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+        "bytes": 1632,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "proof_sha256": "8259e9af432d4056aeb078f1c227fd160d089ee52a672243b07ff5ef159c05d7"
+    }
+  ],
+  "retained_gates": [
+    {
+      "name": "dynamic-burst2042-original-final-drain",
+      "result": "FAIL",
+      "status": "FAIL",
+      "manifest": {
+        "path": ".dev/c4-dynamic-burst2042-v1/manifest.json",
+        "sha256": "5a5f7a97bd077906632d305d3f7ba3183b31043349f925deb1bf327ba4dd370c",
+        "bytes": 1183184,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+      },
+      "error": "real pool full, NOCP and later submission with final drain required"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "PostClosePhysicalDrainBarrier",
+      "result": "UNPROVED",
+      "status": "REQUIRES_SEPARATE_EXACT_EVIDENCE"
+    },
+    {
+      "name": "PduFairnessBoundsAndPairedResources",
+      "result": "UNPROVED",
+      "status": "REQUIRES_SEPARATE_EXACT_EVIDENCE"
+    }
+  ],
+  "counts": {
+    "selected_length_gates": 7,
+    "selected_peer_round_trips": 448,
+    "dynamic_round_trips": 392,
+    "fixed_baseline_round_trips": 56,
+    "copied_evidence_negatives": 56,
+    "whole_attempts": 8,
+    "whole_passed": 7,
+    "whole_failed": 1
+  },
+  "original_diagnostic": {
+    "status": "ORIGINAL_REAL_BURST_FAIL_VERIFIER_LOCALS_DIAGNOSTIC_ONLY",
+    "overall_result": "FAIL",
+    "method": "Pythontrace observes exactfrozen productionobserve_phase failurelocals;not independentproof ornewverdict",
+    "phases": [
+      {
+        "phase": 0,
+        "verdict": "FAIL",
+        "error": "real pool full, NOCP and later submission with final drain required"
+      },
+      {
+        "phase": 1,
+        "verdict": "FAIL",
+        "error": "real pool full, NOCP and later submission with final drain required"
+      }
+    ],
+    "failures": [
+      {
+        "error": "real pool full, NOCP and later submission with final drain required",
+        "source_line": 75,
+        "phase": 0,
+        "owner_index": 0,
+        "window_end_ns": 1792174346682449167,
+        "debt": 2,
+        "peak": 5,
+        "capacity": 5,
+        "submits": 244,
+        "returns": 242,
+        "resumed": 140,
+        "full_points": 140,
+        "following_100ms_nocp": [
+          {
+            "record": 8278,
+            "delta_ns": 2279833,
+            "params": "000001"
+          },
+          {
+            "record": 8284,
+            "delta_ns": 4846833,
+            "params": "000001"
+          }
+        ]
+      },
+      {
+        "error": "real pool full, NOCP and later submission with final drain required",
+        "source_line": 75,
+        "phase": 1,
+        "owner_index": 1,
+        "window_end_ns": 1792174354975160182,
+        "debt": 1,
+        "peak": 5,
+        "capacity": 5,
+        "submits": 243,
+        "returns": 242,
+        "resumed": 140,
+        "full_points": 140,
+        "following_100ms_nocp": [
+          {
+            "record": 16190,
+            "delta_ns": 339818,
+            "params": "000001"
+          },
+          {
+            "record": 16202,
+            "delta_ns": 4837818,
+            "params": "000001"
+          }
+        ]
+      }
+    ]
+  },
+  "firmware": {
+    "sdk": "1.10.111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "board_qualified": false
+  },
+  "build": {
+    "newkernelbuild": false,
+    "stable_kernel_output": ".dev/session-wake-kernel-build-v1",
+    "heavy_build_policy": "8withphysicalVM/sharedlock,12solo",
+    "host_installation": false
+  },
+  "materials": [
+    {
+      "path": ".dev/c4-dynamic-length249-v1/manifest.json",
+      "sha256": "ff3aec4a051b8ce8a7be6e88e7b9424ef411a825d7b93c8021374eeb88572ca3",
+      "bytes": 1958313,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-v1/qmp.jsonl",
+      "sha256": "fe45d0f2e36fcd98c22d7e1a3a072cc1cea6f5e645f78e1eefcfae120a1ec2af",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-v1/console.log",
+      "sha256": "6e975b4d3a98b2e7d6a8addcfa20dd6202689552a9cbd813a990c0edc8d16888",
+      "bytes": 16257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-v1/guest-output/ws73.pcap",
+      "sha256": "549b132d39109b2d2e4663701948ae7b82210caf23919393c7459fc9c8a69229",
+      "bytes": 754060,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-v1/guest-output/capture-stats.txt",
+      "sha256": "f9b12f1e5849dfa58689da269f8bed44503b73a220939bffcca5295ad84ed5e3",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-v1/guest-output/kernel.log",
+      "sha256": "20bd829203b952172ea86daf8114da8056e71cfff8081e178c55a3fc1756c27e",
+      "bytes": 49106,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "01cdb1b8cc7bdb6e66e7435cf1f0cc2c8abbf7316d2596b3ba0413c64b28273e",
+      "bytes": 816526,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-v1-replay-v1.json",
+      "sha256": "cb56570eeb2f7a23efd1f35a35176d7eac1b164b7814ea08eb950b4ddecd8c00",
+      "bytes": 1939786,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length249-negative-v1.json",
+      "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1/manifest.json",
+      "sha256": "14b798c3b1f51985949d3091bc921a26972fbd7f40707d2f2813e3d66eac2446",
+      "bytes": 1982590,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1/qmp.jsonl",
+      "sha256": "92e1cad76ac12879923f89658a60e99d180d0de9dda3b335f5c6260b59f331a8",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1/console.log",
+      "sha256": "b223694cdd59c9b806f12d8c340040d1f1cfd7e80ed1babd6f3c183f2b302aa2",
+      "bytes": 16447,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1/guest-output/ws73.pcap",
+      "sha256": "da25094311f875b65c4717ea8ee982d2d87a6e2838a69fe1d2f0cbb64fb1b2e9",
+      "bytes": 769484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1/guest-output/capture-stats.txt",
+      "sha256": "27bf4a7143d8648cabe2e20bc58964d70f3c2118ee5bae62378cc664738941a4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1/guest-output/kernel.log",
+      "sha256": "3df75efc12c76669b39d98d2cbbac34b9165cb7110667f3e6b6f1fff9770c920",
+      "bytes": 49068,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "aa7101f317f1963e02bd98baf8fd71eba3093519061db281e9b1a79158fee766",
+      "bytes": 816608,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-v1-replay-v1.json",
+      "sha256": "429caaed6d36a5602384dd8cea4dbc2d50550d69e3e85b74a449448d12901e72",
+      "bytes": 1965215,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length250-negative-v1.json",
+      "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1/manifest.json",
+      "sha256": "6472adaf0ebc467be9d1ec7845e178898687f73f5e5601fa9bc5b7cab50b8a65",
+      "bytes": 1982974,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1/qmp.jsonl",
+      "sha256": "f0ea3b90d1fbf993240f29dc2e4929c3e1e2b26d1dc3e96efef6cc703bc51831",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1/console.log",
+      "sha256": "666909dc8304bfd925a7a44d80338cff72957b49d67aa006c18aaaed3007c13f",
+      "bytes": 16257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1/guest-output/ws73.pcap",
+      "sha256": "1c7ede0a6803c09ef8c0e04ccde0d779c74a3a52c43556e5b5411319c885f80a",
+      "bytes": 769484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1/guest-output/capture-stats.txt",
+      "sha256": "27bf4a7143d8648cabe2e20bc58964d70f3c2118ee5bae62378cc664738941a4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1/guest-output/kernel.log",
+      "sha256": "e435314eb71d410042839ddd59cb8d5b329ebcc211e5b6588dbdc34aa3d65c4d",
+      "bytes": 49068,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "068491f9d937e9039ea21d789cc9cde608a45be6c57d1b37e9f0c222809a718e",
+      "bytes": 816797,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-v1-replay-v1.json",
+      "sha256": "a2c0fc9cbf6f56b0521d224119432fc2ef0c915e7f00ce06d7c37ecf0ca68dba",
+      "bytes": 1965599,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length253-negative-v1.json",
+      "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1/manifest.json",
+      "sha256": "5b14269a85d686a9f5c33c210f16268515bad73b4bb6db4564f1866872ab3f83",
+      "bytes": 1983102,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1/qmp.jsonl",
+      "sha256": "9318a19976160c97545af226b040124fb6362bd2e9524e6e28cb08ffc9a80439",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1/console.log",
+      "sha256": "164e11de0238a04c922b39de8f3ac3d319d2b303af80864e3715afa148949256",
+      "bytes": 16257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1/guest-output/ws73.pcap",
+      "sha256": "1ba63df8808d6e1ba2241ed032a510283b290266cc3039a00f5310e0ee6f6328",
+      "bytes": 769484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1/guest-output/capture-stats.txt",
+      "sha256": "27bf4a7143d8648cabe2e20bc58964d70f3c2118ee5bae62378cc664738941a4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1/guest-output/kernel.log",
+      "sha256": "ef485df55c035933e0d438b4a01267a3a04656a883a204cc1a2812d9fa2e3348",
+      "bytes": 49241,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "abfc526fc31e6ac00f9e470ea64c7de3590f7a548ba56cf5208acf1948345d50",
+      "bytes": 816870,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-v1-replay-v1.json",
+      "sha256": "bfa4b6f1d353d61503519ea510cf9d139a2fd4596a8599c6d331b39d320d03b7",
+      "bytes": 1965727,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length254-negative-v1.json",
+      "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1/manifest.json",
+      "sha256": "2fa56958cd97051fd7ca3ea6d56ce24f0afe10c4fa7fb0fa1b711972aed0d270",
+      "bytes": 1983230,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1/qmp.jsonl",
+      "sha256": "f40c4aaf667a7308da80568456ad2d931104160ea9c1b4740e356f3215a46933",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1/console.log",
+      "sha256": "4b6a80db5a18eac663f862d82d1894422459e02942187ade5546522eb0a2b96d",
+      "bytes": 16257,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1/guest-output/ws73.pcap",
+      "sha256": "b7433835d8ddbad2bdd3ab4eba8bbe43e614e437f731d53247948cbdb51aa935",
+      "bytes": 769484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1/guest-output/capture-stats.txt",
+      "sha256": "27bf4a7143d8648cabe2e20bc58964d70f3c2118ee5bae62378cc664738941a4",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1/guest-output/kernel.log",
+      "sha256": "b2903752bdca6162428d4f09437b84419ea80baf1362e8c7199ee836b952adda",
+      "bytes": 49156,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "c61361a63e33bc30a07770c39f962c2d60eb4375c43dde28a2faba89d03f037d",
+      "bytes": 816945,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-v1-replay-v1.json",
+      "sha256": "748ca97da50a26e75790502cf0bb5b72440e06f795319dfb430795acb5d896a6",
+      "bytes": 1965855,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length255-negative-v1.json",
+      "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1/manifest.json",
+      "sha256": "6fcaf5446603e26f458c6eeb5d7c9d322566abade5fa4a42a954ffa1daa55c1d",
+      "bytes": 2426857,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1/qmp.jsonl",
+      "sha256": "b8b155faedf14ebf6877e5a78e618ee94b23e1fa5b7e0c90ab7acd8eaa7cffc3",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1/console.log",
+      "sha256": "30a467eb14e15f184ef2d25558d4843ec68f30ae0f56f898e0f8d0986e3ca11e",
+      "bytes": 16258,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1/guest-output/ws73.pcap",
+      "sha256": "ed05e9bb838d2a3621593b1c78d68c1fc4ec402bb7c2bc13178a7e96c26cbeea",
+      "bytes": 971324,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1/guest-output/capture-stats.txt",
+      "sha256": "2fc7e14c01738afae845bfc9bfb5b1bd15ce06ceb2fc5577480d2bc68a275280",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1/guest-output/kernel.log",
+      "sha256": "909d5320907bbad33a9f3db2b6829a7c9899060713b55cf97999578469c5997d",
+      "bytes": 49284,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "b420380fbd87615fbfae11c32afdb9305d5f4238abb152a20dda425605d292bf",
+      "bytes": 866213,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-v1-replay-v1.json",
+      "sha256": "b2d4262263898592527dc25e680e2bd3ae8df73dfd6d7dcb6339f8ad65579ed8",
+      "bytes": 2425834,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length1024-negative-v1.json",
+      "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1/manifest.json",
+      "sha256": "55ec9916e8e02573f3d74481bc9df0aaa947f48ada678831baa86562481ae30e",
+      "bytes": 3017657,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1/qmp.jsonl",
+      "sha256": "cce7ff9f59f09fa4a9845c742694104e6f5f72d0c1501f471e7e402b70c40f93",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1/console.log",
+      "sha256": "7f95231cff00cc435340d651469ecc3b524c5b9399bceebc17783da74ab70abf",
+      "bytes": 16258,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1/guest-output/ws73.pcap",
+      "sha256": "4e53a59a6497c40245cfaa8381ebbacb3fb67a1bac1f364fade7451bbae6d783",
+      "bytes": 1240444,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1/guest-output/capture-stats.txt",
+      "sha256": "4061ede20de601d9b3282055a3e6b3d16c6a216f628e7fdaaa85056f81d5f2a8",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1/guest-output/kernel.log",
+      "sha256": "a1c9832ec3247948ed5f14b0561da5c1b15f37cc78db82ed810ce1f5c9ef4e5d",
+      "bytes": 49395,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "2664366493f85518c97f71e33b3779e466ef393aeac279afce73a4b5efa898ff",
+      "bytes": 931361,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-v1-replay-v1.json",
+      "sha256": "f671421fd97ed91f264e9e1ff174dd30c6af18fbdffec65142a67a9cef40bc9f",
+      "bytes": 3038518,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-length2042-negative-v1.json",
+      "sha256": "5002cf8b3de138265a10752b7a7d7a3473bbb8f4f34cafb1255390b97ad36211",
+      "bytes": 1632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/manifest.json",
+      "sha256": "5a5f7a97bd077906632d305d3f7ba3183b31043349f925deb1bf327ba4dd370c",
+      "bytes": 1183184,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/qmp.jsonl",
+      "sha256": "f6f7fda3b79d9fdb4f051540a6fdc9ffca5f9d793aab2f4e1226a64f5a9d1d29",
+      "bytes": 1756,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/console.log",
+      "sha256": "bd4c123f1e4d1e9e831748239cbe7e38c46c247ff0ea5c1716c43cf443498811",
+      "bytes": 16469,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/guest-output/ws73.pcap",
+      "sha256": "abc9bdca39ee3bed1bef14917900d76d6e2b5a748c9298e5e0483df3b0d5acc2",
+      "bytes": 2901436,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/guest-output/capture-stats.txt",
+      "sha256": "2dc9e6435cc4df8a901041184122df25006540bb5a5cc6d4fcd351a4a2a4c85a",
+      "bytes": 229,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/guest-output/kernel.log",
+      "sha256": "6f21c330924264e58bbbb27392666718d7b6f0c959241300261b5fb569200167",
+      "bytes": 49200,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "de3ce547a6610009701214f78338c5faad3ccd0805fa2901c038a50c06f9b0c4",
+      "bytes": 1332538,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/manifest.json",
+      "sha256": "0bec251e9f9fe496d9411df839575017600c3abd41ca37ef5216fb779bf27e64",
+      "bytes": 274045,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/bzImage",
+      "sha256": "03f08bbabd513913620dce0625860fd23df53deb3d6d8d6e61977887c016d3ba",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-normal-prepared-2m-v1/root.btrfs",
+      "sha256": "9f30ee9d4cfad5a08eae2f4f53c6bef30b99be5d184a7d8c64dc98a4b9be038a",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "9d7bd90c52d7cb2382bc3b8ce6fa4e20a2ac258189b6e8a17244950a8c98d2ee",
+      "bytes": 138049,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/manifest.json",
+      "sha256": "fa31002ea6c8eb90d804bfd512142f4be023bb2b5681e7536977a25c82826a57",
+      "bytes": 26103,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkd",
+      "sha256": "254f268b6251a82a760ee92c3f6f531247c9fec984e62dde9108a9bcd049e7a5",
+      "bytes": 10476632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slctl",
+      "sha256": "76ca0d1690ed5b9d1cccc693c825b922a46cc92695f892ea42491fb0b8b44f05",
+      "bytes": 7804536,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slktest",
+      "sha256": "9c5ecf97cd0afe2d8d288b5cc82bca978e01eee55795026a4912c817578cb2cf",
+      "bytes": 5233016,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkconfig",
+      "sha256": "64a136d8b035453bdb15a5649a199af238770353bead5ed2553eb8e92a7a31d3",
+      "bytes": 1403944,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkmon",
+      "sha256": "dcac45cb127a41c434158c345a01eeb96e5b2ae6e8accb04cd9571a5b989d5ba",
+      "bytes": 1662136,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkdump",
+      "sha256": "6d5fa01fe056050475b635f7f6539be68c671e2e410b301b6f70a97221653674",
+      "bytes": 1662008,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/liblibsparklink.so",
+      "sha256": "de262e57b01e321d03c613115ffb1d19c2a29ab6a75edab771680c92b34274d7",
+      "bytes": 545432,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "237b7631cdf6990ac5d6c1f45b24d0af6dd026f026ae8e149b946020f95d2f81",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "0084c9bab8fca034a4e3ad8ced53307f8e218579d11a2c28a99ea7601f026dd5",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-lengths-v1.json",
+      "sha256": "fba50fd1552d8934f030aeb9a45b82059d038b2947d80df203f95d52e8497584",
+      "bytes": 9997,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-lengths-v1.py",
+      "sha256": "1226465a40480d9f17979ab3561abf6f4c688d822bb8c796c3ac490fa6a18c8d",
+      "bytes": 2491,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-replay-available-v1.py",
+      "sha256": "0f0df196cfd3773f4ca6f4449faa86687cc7d2620d724d9b0f4d916ef7b00156",
+      "bytes": 972,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-evidence-negatives-v1.py",
+      "sha256": "834d9d73e4ff597e11d8a71ade86c242b4c3dae7a425a0f90d6c4a685c287f58",
+      "bytes": 2604,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst-diagnostic-v1.py",
+      "sha256": "2650bf8a4b89e82256203302e0f3ed751f7ba1281eeee0f6f2c5ae802ec01fa4",
+      "bytes": 2419,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst-failure-diagnostic-v1.json",
+      "sha256": "ed0b82c01a03f7e19b23fe785b4aced4ea488e57e8324ba3aa32a86fb6904574",
+      "bytes": 1764,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-event-replay-case-v2.py",
+      "sha256": "12e4ad6d265c4d582aef4485fa42b6d4d171ebcb34a7b91a3daafd61c01b25b3",
+      "bytes": 3031,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_target.py",
+      "sha256": "0ebffddd63d423b2f924f31b2648ebab58f0bd2f605dca8678ffd1863e456f43",
+      "bytes": 152099,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_channel_socket.py",
+      "sha256": "06e08a1170071f95cd5bad3d8c158f39d525f0e05a2556242df5274c4bf1eea5",
+      "bytes": 46060,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_dynamic_channels.py",
+      "sha256": "2437bdf202d46fbd76cc3479149d98615dbd83302e05640be2b504b5e0673fb7",
+      "bytes": 29008,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_credit_observation.py",
+      "sha256": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+      "bytes": 7067,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    },
+    {
+      "path": ".dev/session-service-tools-2m-v1/tools/ws73_capture.py",
+      "sha256": "80590536783292b2f020b6c065c04a95a6e809af6f7098e77fcc2dc9080c562a",
+      "bytes": 42628,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw USB/SDK files are not publicdownloads. Replay frozen tools using listed receipts/capture/statistics."
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "status": "BINDING_GRANT_SOURCE_SCOPED_PASS_REAL_VM_SEPARATE",
+  "kernel_head": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+  "userspace_head": "dfb8636d4aa95fa24693b8d7e59730759032f34c",
+  "actual_c": {
+    "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+    "scope": "actual single-consumer route/local TCID+PI/finite RX, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+    "physical_acceptance": false,
+    "whole_session_proof": false,
+    "bodies_sha256": "ad7e9fec0e915ab26c98fd5be9d89e9b229b8aae0679941a330db8c192e2d855",
+    "sources": {
+      "net/sparklink/sle_channel_socket.c": "43ac04c57d70916fc3377e6a444fe3ccd08d11ff375ee9e71b3d778778873188",
+      "net/sparklink/sle_channel_state.h": "3cf939ce87b914f9cee06391029a73f8cc2b1b0cf4a793293354ad4d11221612",
+      "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+      "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+      "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+      "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "a1697db692f98bcec854fcf32de9fe8648ef0425fa2c22ad2085f2baea522dd5"
+    }
+  },
+  "full_kernel_build": {
+    "status": "BUILD_PASSED",
+    "source_head": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-grant-irq-safe-kernel-build.log",
+      "sha256": "14c612e65d44f464a261850a68b6e3e5022bae2a94966915fb3984e6e6cb83fc"
+    }
+  },
+  "cross_language_contract": {
+    "status": "ACTUAL_C_RUST_SOCKET_V2_LAYOUT_PASS",
+    "size": 48,
+    "scope": "actual broker struct/initializer and C UAPI; no kernel admission/VFS/RF proof",
+    "sources": {
+      "/home/sanchuanhehe/Documents/opensparklink/sparklink/crates/slkd/src/channel.rs": "f9bff6f4793fb87f123d1adb6e84e9119b50b6d03497db73318ffc4206d363b3",
+      "/home/sanchuanhehe/Documents/opensparklink/linux/include/uapi/linux/sparklink_socket.h": "34c95c8878aa1efc7f559d7723f5e05591ce15e67b2639ebdbed5a0125c5b4c3"
+    }
+  },
+  "strict_clippy": "PASS",
+  "actual_broker_reject_tests": "socket-open early rejection and scoped D-Bus handler with held business lock PASS",
+  "tooling_tests": 428,
+  "formal": "binding-grant-formal-20261013/manifest.json",
+  "cbmc_properties": 43,
+  "cbmc_scope": "production pure grant ctor and identity/direction predicate, arbitrary u64/u32; not VFS/Host/refinement/security trust/hardware proof",
+  "excluded_prior_pipeline": {
+    "status": "EXCLUDED_PENDING_BINDING_IRQ_CONTRACT_FIX",
+    "pipeline_terminal": {
+      "status": "REAL_SOCKET_PIPELINE_TERMINAL_PASS",
+      "vm_only": true,
+      "steps": [
+        {
+          "name": "artifacts",
+          "command": [
+            "python3",
+            "sparklink/tools/ws73_native_build_check.py",
+            "--build",
+            ".dev/native-data-kernel-build",
+            "--source",
+            "linux",
+            "--source-head",
+            "ac9144e60012a632004b9bc53d19fa9888fabf96",
+            "--build-record",
+            ".dev/native-grant-published-build-record.json",
+            "--output",
+            ".dev/native-grant-published-artifacts"
+          ],
+          "status": "PASS",
+          "start_ns": 1791841679551495747,
+          "exit": 0,
+          "end_ns": 1791841680864569527
+        },
+        {
+          "name": "empty-usb-smoke",
+          "command": [
+            "python3",
+            ".dev/stage_native_grant_published.py"
+          ],
+          "status": "PASS",
+          "start_ns": 1791841680864828040,
+          "exit": 0,
+          "end_ns": 1791841686714575226
+        },
+        {
+          "name": "service-bundle",
+          "command": [
+            "python3",
+            "sparklink/tools/ws73_native_service_bundle.py",
+            "--source",
+            "sparklink",
+            "--kernel-manifest",
+            ".dev/native-grant-published-artifacts/manifest.json",
+            "--firmware-dir",
+            ".dev/firmware-1.10.111",
+            "--runtime-config-dir",
+            ".dev/ws73-sdk-default-candidate",
+            "--combined-sha256",
+            "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+            "--output",
+            ".dev/native-grant-published-service-bundle"
+          ],
+          "status": "PASS",
+          "start_ns": 1791841686714950161,
+          "exit": 0,
+          "end_ns": 1791841762390873744
+        },
+        {
+          "name": "prepare",
+          "command": [
+            "python3",
+            "sparklink/tools/ws73_target.py",
+            "prepare",
+            "--kernel-build",
+            ".dev/native-data-kernel-build",
+            "--qemu",
+            ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+            "--busybox",
+            ".dev/tools/qemu-deps/root/usr/bin/busybox",
+            "--dbus-daemon",
+            ".dev/tools/dbus/usr/bin/dbus-daemon",
+            "--firmware-dir",
+            ".dev/firmware-1.10.111",
+            "--runtime-config-dir",
+            ".dev/ws73-sdk-default-candidate",
+            "--native-module-tree",
+            ".dev/native-grant-published-modules/lib/modules/7.0.0-rc6-opensparklink-native-lab+",
+            "--native-boot-smoke",
+            ".dev/native-grant-published-root-smoke/manifest.json",
+            "--native-service-bundle",
+            ".dev/native-grant-published-service-bundle",
+            "--output",
+            ".dev/native-grant-published-prepared"
+          ],
+          "status": "PASS",
+          "start_ns": 1791841762391192502,
+          "exit": 0,
+          "end_ns": 1791841772559425012
+        },
+        {
+          "name": "real-socket",
+          "command": [
+            "python3",
+            "sparklink/tools/ws73_target.py",
+            "run",
+            "--prepared",
+            ".dev/native-grant-published-prepared",
+            "--output",
+            ".dev/native-grant-published-daemon-real",
+            "--ports",
+            "1-2.1.1",
+            "1-2.1.4",
+            "--qmp-hotplug",
+            "--connection-verify",
+            "--connection-advertising",
+            "negotiable-t",
+            "--channel-socket-verify",
+            "--channel-socket-rounds",
+            "4",
+            "--channel-socket-bytes",
+            "249",
+            "--channel-socket-boundaries",
+            "--timeout",
+            "600"
+          ],
+          "status": "PASS",
+          "start_ns": 1791841772559613482,
+          "exit": 0,
+          "end_ns": 1791841835253054534
+        }
+      ],
+      "kernel_head": "ac9144e60012a632004b9bc53d19fa9888fabf96",
+      "userspace_head": "c3fd5dce5bcb47a5663b134882693d98a5961593"
+    },
+    "reason": "BH unlock under IRQ-disabled Host callback violates kernel contract; no current qualification inherited",
+    "interruption_attempts": "No signals sent: first stage assertion failed after advancement; second owned-process lookup found no live parent after terminal completion",
+    "hardware_recovery_acceptance": false
+  },
+  "remaining": [
+    "Trusted security state/downgrade and S5",
+    "SCM_RIGHTS and daemon owner death",
+    "Full VFS/kref/lockdep/KCSAN/inflight/NOCP proof",
+    "Natural faults/non-manual recovery and full S0-S6"
+  ],
+  "full_goal_complete": false,
+  "ci": {
+    "head": "dfb8636d4aa95fa24693b8d7e59730759032f34c",
+    "run_id": 38313320751,
+    "jobs": 9,
+    "conclusion": "success"
+  },
+  "normal_real_evidence": [
+    "ws73-binding-grant-short-repeat-20261013.json",
+    "ws73-binding-grant-249-boundary-20261013.json"
+  ],
+  "scoped_real_evidence": "ws73-binding-scope-20261013.json"
+}

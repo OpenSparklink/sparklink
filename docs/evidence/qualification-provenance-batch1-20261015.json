@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "status": "BATCH1_LOCAL_CHECKS_PASS_NOT_NEW_RUNTIME_QUALIFICATION",
+  "review_baseline": {
+    "linux": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "userspace": "eaea7067db4d6747c0a5fde344f941c513f320e1"
+  },
+  "dirty_agent_preserved": {
+    "main.rs": "d8f38c3d33b4e1c4b7747cfe1f63af0b8d04733346add6230338971ec779af0b",
+    "security.rs": "80acd72f152fc013f77d740461488ba64ebd795ec39defebafe86cb2e92b0256",
+    "state.rs": "275aef0b12f4f8a2bdc24c587c44f02ec138ed06b3a03fa4ed1397c09c32b38d",
+    "connection_object.rs": "e5d9173e60177d30004cce521aa70b2d35386a96169a9ba06a3caf008c31b3c4",
+    "security_policy.rs": "57192bb4dc095cc4c14ba93545b6bc54f634644397f4cdc4b5fd422481b17254"
+  },
+  "behavior": "versioned provenance registry, generated canonical views, metadata/local/current-source modes, negative controls; no production protocol modifications",
+  "contract_registry": "../../project/qualification-records.json",
+  "records": 6,
+  "materials_checked": 154,
+  "tests": {
+    "negative_controls": 20,
+    "tools": 542,
+    "strict_document_inventory": 104,
+    "strict_html": "PASS",
+    "current_source_inheritance": "EXPECTED_REJECTION: compiled userspace Agent source changed",
+    "private_materials": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "metadata": "METADATA_ONLY_NOT_REVERIFIED"
+  },
+  "logs": [
+    {
+      "path": ".dev/quality-provenance-local.json",
+      "sha256": "434b875b8ca60e034025c8cd465aa5a8d8583381b90184e0ffaed5850130f113",
+      "bytes": 209,
+      "access": "private original machine"
+    },
+    {
+      "path": ".dev/quality-provenance-current-negative.json",
+      "sha256": "c2dea3ac2305db15bb5907ac86d74d11a0e19785b92efba905ca224711343b7c",
+      "bytes": 262,
+      "access": "private original machine"
+    },
+    {
+      "path": ".dev/quality-provenance-metadata.json",
+      "sha256": "f22f0b2eefea8ae7ef8fbdaecd6fe323e7fd8644fae1a91e3e155cac5c1a1143",
+      "bytes": 4071,
+      "access": "private original machine"
+    },
+    {
+      "path": ".dev/quality-provenance-all-tools-normal-user.log",
+      "sha256": "8dc7fc9b8019e41d2220bbe7bee28f45c6c19bb6a50f2caa6621c50fefeeb3fc",
+      "bytes": 677,
+      "access": "private original machine"
+    },
+    {
+      "path": ".dev/quality-provenance-docs.log",
+      "sha256": "0c3cce2a80612849157f28b69e639d6dd3982102398e8c99d6d3b34b0e02c812",
+      "bytes": 11501,
+      "access": "private original machine"
+    }
+  ],
+  "retained_failures": [
+    {
+      "material": {
+        "path": ".dev/quality-provenance-all-tools.log",
+        "sha256": "8d8e651e96f9275f83a13cd09eab3f167f489bb50dcc9e7d27f3fd77d982236f",
+        "bytes": 1376,
+        "access": "private original machine"
+      },
+      "classification": "SANDBOX_ENVIRONMENT_REJECTION SO_PASSCRED; full542 ordinary-user rerun passed; test unchanged"
+    }
+  ],
+  "online_observations": {
+    "userspace_ci": {
+      "commit": "eaea7067db4d6747c0a5fde344f941c513f320e1",
+      "ci_run": 38744121598,
+      "docs_run": 38744121539,
+      "result": "success",
+      "scope": "old committed source only; does not cover Agent dirty or this batch"
+    },
+    "linux_branch_ci": "gh run list codex/sparklink-ws73-runtime returned empty; no latest CI claim",
+    "master_classic_protection": "both Branch not protected HTTP404",
+    "rulesets": "both empty list; required checks not asserted",
+    "governance_changed": false,
+    "hardware_runner_isolation": "NOT_VERIFIED"
+  },
+  "limits": [
+    "No new real-device test, protocol capability, security approval/Bond, fuzz campaign or debug VM qualification.",
+    "Record migration initially covers21 real gates and2 formal reports; old reports retain their exact identity, not all historical reports migrated.",
+    "Integrity validation trusts frozen reports; not independent capture decoding, build reproducibility or implementation refinement.",
+    "Private corpus/capture access and retention remain on original machine; no validated offsite backup/public download.",
+    "Full S0-S6/19WP/10FV/12DG and original issues remain OPEN, UserHost P4, VM-only.",
+    "Natural fault RCA/nonhuman recovery unresolved; manual/hub/QMP/injection not acceptance."
+  ],
+  "tool_sources": {
+    "tools/check_qualifications.py": "4e250b03cde7ce6c17b79caa5be2e00520887bb1014f34a0faba7046dadab2f3",
+    "tools/tests/test_qualifications.py": "e9bd319411490464488aa4448e115b8cc2ca361e22b967a1889a2a21651eca2b",
+    ".github/workflows/quality.yml": "6a2b3d229cd76c3ca43c89651178ec2c8a3eb1ea17fec8f78a9d5462aa2f23a6"
+  }
+}

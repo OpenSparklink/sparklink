@@ -1,0 +1,678 @@
+{
+  "schema_version": 1,
+  "status": "FOUR_DEVICE_BUSINESS80_SCOPED_PASS",
+  "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+  "compiled_userspace": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
+  "guest_tools": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
+  "executed_tools": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
+  "vm_only": true,
+  "host_installation": false,
+  "attempts": [
+    {
+      "name": "first-positive",
+      "result": "PASS",
+      "reported_status": "FOUR_DEVICE_PARALLEL_BUSINESS_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "round_trips": 80,
+      "controllers": 4,
+      "roles_per_pair": 2,
+      "rounds_per_role": 20,
+      "application_bytes": 61,
+      "capture_packets": 5949,
+      "capture_drops": 0,
+      "kernel_taint": 0,
+      "overlaps": [
+        {
+          "role_phase": 0,
+          "business_windows": [
+            [
+              1792114519686437000,
+              1792114520569395000
+            ],
+            [
+              1792114519693432000,
+              1792114520663897000
+            ]
+          ],
+          "overlap_wall_ns": [
+            1792114519693432000,
+            1792114520569395000
+          ],
+          "overlap_ns": 875963000
+        },
+        {
+          "role_phase": 1,
+          "business_windows": [
+            [
+              1792114525251431000,
+              1792114526138692000
+            ],
+            [
+              1792114525248438000,
+              1792114526120047000
+            ]
+          ],
+          "overlap_wall_ns": [
+            1792114525251431000,
+            1792114526120047000
+          ],
+          "overlap_ns": 868616000
+        }
+      ]
+    }
+  ],
+  "actual_owners": [
+    {
+      "port": "1-1",
+      "index": 0,
+      "generation": 1,
+      "address": "00:01:09:32:54:CD",
+      "bus": 1,
+      "device": 2
+    },
+    {
+      "port": "1-2",
+      "index": 1,
+      "generation": 2,
+      "address": "00:01:09:30:D1:AC",
+      "bus": 1,
+      "device": 3
+    },
+    {
+      "port": "1-3",
+      "index": 2,
+      "generation": 3,
+      "address": "00:01:09:30:CE:85",
+      "bus": 1,
+      "device": 4
+    },
+    {
+      "port": "1-4",
+      "index": 3,
+      "generation": 4,
+      "address": "00:01:09:32:54:F9",
+      "bus": 1,
+      "device": 5
+    }
+  ],
+  "warm_start_observations": [
+    [
+      "13.973541",
+      "1-1",
+      "attempt=1 cause=-110"
+    ],
+    [
+      "15.099779",
+      "1-1",
+      "result=0 elapsed_ms=1126"
+    ],
+    [
+      "26.037737",
+      "1-2",
+      "attempt=1 cause=-110"
+    ],
+    [
+      "27.195411",
+      "1-2",
+      "result=0 elapsed_ms=1158"
+    ],
+    [
+      "38.205406",
+      "1-3",
+      "attempt=1 cause=-110"
+    ],
+    [
+      "39.354385",
+      "1-3",
+      "result=0 elapsed_ms=1149"
+    ],
+    [
+      "50.157658",
+      "1-4",
+      "attempt=1 cause=-110"
+    ],
+    [
+      "51.322516",
+      "1-4",
+      "result=0 elapsed_ms=1165"
+    ]
+  ],
+  "negative_controls": [
+    {
+      "name": "missing-peer-acb",
+      "status": "REJECTED"
+    },
+    {
+      "name": "one-end-payload-changed",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-live-barrier",
+      "status": "REJECTED"
+    },
+    {
+      "name": "same-controller",
+      "status": "REJECTED"
+    },
+    {
+      "name": "no-overlap",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-status-proof",
+      "status": "REJECTED"
+    }
+  ],
+  "formal_result": "NO_NEW_PROOF",
+  "limits": [
+    "Only first positive fixed basic CUTC31/PI241 four-controller business slice:61 bytes, two physical pairs,2 connection role phases,20 replies/pair/phase=80. Not complete WP07 or DG11.",
+    "Pair business and physical-connection intervals overlap in each role phase; no simultaneous-radio or protocol fairness/throughput guarantee.",
+    "Dynamic multichannel, four-controller long payload/credit stress/fairness and one-pair failure with surviving peer business still missing.",
+    "SSAP read/write/UUID/discovery receipts reuse the existing actor/channel path; CPCD/notify/indicate still require authenticated security and authorization. No protected SSAP, trusted Grant or Bond claim.",
+    "All four warm-start paths observed -110 then one warm recovery result0 before Ready. Kept as observations; natural-fault root cause, firmware-clear barriers and general nonhuman automatic recovery remain OPEN.",
+    "No manual unplug,hub power,QMP removal or injected recovery used in this attempt. No physical-unplug or failure-isolation qualification.",
+    "Same production verifier re-decodes the saved capture in a fresh process; this is not an independently implemented decoder or formal proof. Six corrupted-evidence controls rejected.",
+    "Private raw materials retained only on original workspace. SHA256/path/access and replay given; no public/offsite archive or clean-room workflow guarantee.",
+    "87 offline fixture/parser/real-pipe checks and strict docs are distinct from actual VM application/USB scope. No new formal proof, KASAN/KCSAN/lockdep or full permissions/deployment qualification.",
+    "Previously qualified 11-gate length/burst/lastfd matrix stays bound to6385/300a. New slkd/slctl ELF bytes equal that bundle, but this does not relabel the old executions as new tests. Full original S0-S6 scopes and incomplete issues remain open."
+  ],
+  "materials": {
+    "manifest": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/manifest.json",
+      "sha256": "ae22dd980ba185c75cd7de69d11efc0175bef7798bf2f520883c3a3356601d20",
+      "bytes": 3317923,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "FOUR_DEVICE_PARALLEL_BUSINESS_PASS"
+        },
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "capture": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ws73.pcap",
+      "sha256": "bf651b6264bdca504c7e0310061b9fdb016d348a3fe0063e8ff6827034dc3021",
+      "bytes": 927622,
+      "access": "private",
+      "format": "bytes"
+    },
+    "capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/capture-stats.txt",
+      "sha256": "6b8cca9cf0f36506de34a9bb97520057be48d1832295b5a8585d01d3cbdacd6a",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/kernel.log",
+      "sha256": "945e289ceb6f1c25b7ad02356c5017c8e67fcb84f3cef5dec1eb2d85b7eff6b0",
+      "bytes": 53323,
+      "access": "private",
+      "format": "bytes"
+    },
+    "control": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/run.json",
+      "sha256": "457091993ae176c327585bf4e3a95d6daeef1fbdca0582bb247641b14cc7084a",
+      "bytes": 1033000,
+      "access": "private",
+      "format": "json"
+    },
+    "guest_proof": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/parallel-business-proofs.json",
+      "sha256": "cb4134daf0136d02816080fe5bff7de8bbe782455bb5972eadd4c5f30d60ee2a",
+      "bytes": 3128460,
+      "access": "private",
+      "format": "json"
+    },
+    "recheck": {
+      "base": "workspace",
+      "path": ".dev/four-business-v1-independent-recheck.json",
+      "sha256": "ef135b5d201fb5dafefddc447a3b997bbde998fc3671412afd982942e47e4c3e",
+      "bytes": 686,
+      "access": "private",
+      "format": "json"
+    },
+    "build": {
+      "base": "workspace",
+      "path": ".dev/four-business-v1-build-and-prepare.json",
+      "sha256": "45179f4407898477980fe7ea7212d4e5cb6a647d58d70075933617b6c9d85953",
+      "bytes": 2785,
+      "access": "private",
+      "format": "json"
+    },
+    "bundle": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-service-bundle/manifest.json",
+      "sha256": "04ab9cb20aefdecfee88b65108f811de2c606d143b68c8e028c7d000cd125f5f",
+      "bytes": 22927,
+      "access": "private",
+      "format": "json"
+    },
+    "prepared": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-prepared/manifest.json",
+      "sha256": "61f12e4cfec823b59007e45997893914d9f634e8780ff292bdd67ba6dd951312",
+      "bytes": 258475,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-application-parallel-business-pair-0-channel-0-initiator.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-0-initiator.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/channel-0-initiator.stdout",
+      "sha256": "4a3a30b727bbd9dba95f64ad140b29c4fa705b430408952918c9d51a9d1e717f",
+      "bytes": 7351,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-0-peer.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-0-peer.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/channel-0-peer.stdout",
+      "sha256": "3cb5c0339c9f6aded70eb61ddc9fe56604626aeed7e75c9d51c2cf7578092c15",
+      "bytes": 7066,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-1-initiator.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-1-initiator.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/channel-1-initiator.stdout",
+      "sha256": "c65ee1844d51552f9493bfcdb3a12e6703825038253e802e87b64a7bfff503b1",
+      "bytes": 7351,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-1-peer.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-1-peer.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/channel-1-peer.stdout",
+      "sha256": "05518f14d27340d24fe0b8139492b032bf9023e92222ac7b1dd7ff766cae7240",
+      "bytes": 7066,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-run.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-0/run.json",
+      "sha256": "8174cee002edf5b67bc394c488d43e0264f9203aa621b89bed8105e22476435c",
+      "bytes": 447069,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-application-parallel-business-pair-1-channel-0-initiator.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-0-initiator.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/channel-0-initiator.stdout",
+      "sha256": "5f6fe662c1d4ec75109f05fcb0981547dfa20223d5a7f16fd197a028b6d57761",
+      "bytes": 7351,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-0-peer.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-0-peer.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/channel-0-peer.stdout",
+      "sha256": "c7fc51bb8ade0ef6b43ee938172d2304de4bf259f950246eb1fdc5dda1f71df8",
+      "bytes": 7066,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-1-initiator.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-1-initiator.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/channel-1-initiator.stdout",
+      "sha256": "53f3be6aeecc58f5eb738887990dd698042f26ff780f6088e5bc6db9d3a0e359",
+      "bytes": 7351,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-1-peer.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-1-peer.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/channel-1-peer.stdout",
+      "sha256": "c4c3b943a11e6f151a9e5286a52b27be51da3b7a1fc31acf754982b06813d59b",
+      "bytes": 7066,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-run.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/pair-1/run.json",
+      "sha256": "dbc94209f1c22a9bf461811f2f6641f9c2a68f5b1eaad861c2661fd4a84d7b57",
+      "bytes": 447064,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-application-parallel-business-run.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/parallel-business/run.json",
+      "sha256": "457091993ae176c327585bf4e3a95d6daeef1fbdca0582bb247641b14cc7084a",
+      "bytes": 1033000,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-application-socket-type-ordinary.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-ssap-removed-uapi-ordinary.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-capture-process-status.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/capture-process-status.txt",
+      "sha256": "8763f1f3a2588062a6ccfcdded42d967c8d92187ce070e0ba1ff8dc5f27b5184",
+      "bytes": 1486,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-capture-stats.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/capture-stats.txt",
+      "sha256": "6b8cca9cf0f36506de34a9bb97520057be48d1832295b5a8585d01d3cbdacd6a",
+      "bytes": 227,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-capture-stdout.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-dbus.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-discovery-config-validation.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-kernel.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/kernel.log",
+      "sha256": "945e289ceb6f1c25b7ad02356c5017c8e67fcb84f3cef5dec1eb2d85b7eff6b0",
+      "bytes": 53323,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-parallel-business-proofs.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/parallel-business-proofs.json",
+      "sha256": "cb4134daf0136d02816080fe5bff7de8bbe782455bb5972eadd4c5f30d60ee2a",
+      "bytes": 3128460,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-pending-observations-0.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/pending-observations-0.json",
+      "sha256": "3187c5a29df2ad59831f28c5e15e49c8acedc344fcc4fe1acacc9dcb58de4792",
+      "bytes": 1126,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-pending-observations-1.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/pending-observations-1.json",
+      "sha256": "8b7290fcf8a667e54932fe19535e8c7e6bcd6f9ba67e30ca37d771d349f82024",
+      "bytes": 1126,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-pending-observations-2.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/pending-observations-2.json",
+      "sha256": "98378d370719bf228478fbaea55a723c962109971b7561bd65a954b0edd162dd",
+      "bytes": 1126,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-pending-observations-3.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/pending-observations-3.json",
+      "sha256": "3fb1a87b54e2306f9037dde225c449a3c16a9f5a5c26e7e499712c428281dbd2",
+      "bytes": 1126,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-0.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-1.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ready-1.json",
+      "sha256": "5d3b2a32399cab5bf891486ce8686182401ab92bdac871d5af3d4d1e5d417ef7",
+      "bytes": 882,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-2.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ready-2.json",
+      "sha256": "b0f0e3fcafc29a9ef0cce85d396e02c155fb7b1e1e17fdec32c3afe430977fe2",
+      "bytes": 882,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-3.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ready-3.json",
+      "sha256": "e351a8406c9ec5c9ccbb142eef12515ee429e361ff9ce39a6a2667c7e8fdbba9",
+      "bytes": 882,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-progress-0.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ready-progress-0.json",
+      "sha256": "0f92e4f888252bd993963b5351d1765bdf407ba70248c37054885e6f54ae8ed1",
+      "bytes": 1119,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-progress-1.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ready-progress-1.json",
+      "sha256": "5ee3d45d8e06cbac198aadad9191221652b174ad1eee63da295cc33ad484d921",
+      "bytes": 1119,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-progress-2.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ready-progress-2.json",
+      "sha256": "dfee57e6e7b3c1e743bd5572999b93344d809335fe2dea971d01b5624fdc0ad1",
+      "bytes": 1119,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-progress-3.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ready-progress-3.json",
+      "sha256": "c25f89c422be228355538065912e23bea81b14c9255b926864fdc7afef77b3f9",
+      "bytes": 1119,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-slkd-config.conf": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-slkd-process-status.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/slkd-process-status.txt",
+      "sha256": "58163dda4544e00cb3fc9ba1a00cc3817808d3f8e3ebf9639dfea70ab2dabb88",
+      "bytes": 1455,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-slkd.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/slkd.log",
+      "sha256": "76cd44db3fc87907e22d1be67205d690d3881c57684e2e202ffa543bcb19d4f4",
+      "bytes": 7344,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-socket-type-root.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-ssap-removed-uapi-root.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-ws73.pcap": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/ws73.pcap",
+      "sha256": "bf651b6264bdca504c7e0310061b9fdb016d348a3fe0063e8ff6827034dc3021",
+      "bytes": 927622,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-xhci-trace-stats.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/xhci-trace-stats.txt",
+      "sha256": "4f74ef0457603d4d7716005728ffe1d1171a354811b81d9f1f9abfdf494eaad3",
+      "bytes": 282,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-xhci-trace.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-run/guest-output/xhci-trace.log",
+      "sha256": "abedfd59634992bd9b0b19935ffc4756938d1369cfe0b9433cc599c3bea6e930",
+      "bytes": 3245253,
+      "access": "private",
+      "format": "bytes"
+    }
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "firmware": "SDK111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3"
+  },
+  "replay": {
+    "build": "Checkout d01aa82; locked offline service bundle and native target preparation, qualified8cbf kernel; see hashed private build report for exact argv.",
+    "run": "python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN --ports 1-2.1.1 1-2.1.2 1-2.1.3 1-2.1.4 --four-device-business --timeout 600",
+    "capture": "read_capture(saved pcap, original bus/device set),check_capture_stats,ws73_parallel_data.corroborate(saved control,capture); compare normalized JSON to guest+host proof.",
+    "access": "Original machine owner required for .dev private raw artifacts/firmware. Never copy keys/SDK/standards to public site."
+  }
+}

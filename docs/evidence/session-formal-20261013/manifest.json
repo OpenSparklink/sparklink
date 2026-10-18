@@ -1,0 +1,14 @@
+{
+  "status": "PRODUCTION_BINDING_SCOPED_CBMC_AND_ABSTRACT_SESSION_TLC_PASS",
+  "kernel_head": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
+  "userspace_head": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972",
+  "TLC_controllers": 2,
+  "TLC_lifetimes_each": 2,
+  "TLC_fd_aliases": "0..2",
+  "TLC_pending_running_each": "0..1",
+  "TLC_distinct_states": 777924,
+  "TLC_depth": 31,
+  "C_Rust_VFS_refinement_proved": false,
+  "generation_Grant_NOCP_hardware_proved": false,
+  "full_goal_complete": false
+}

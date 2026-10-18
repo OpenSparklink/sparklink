@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL_TARGET_STATE_MIGRATION_WITH_UNQUALIFIED_POWER_MODEL_REMOVED",
+  "recorded_at_utc": "2026-10-13T18:31:10.776419+00:00",
+  "compiled_kernel": "43e55d59fe9559b08da9404da7051272a84a3acc",
+  "compiled_service_and_runner": "1dedbad3d41eff5d66e6fffbc8b5291e0b785187",
+  "audit": "docs/evidence/power-model-retirement-audit-20261014.json",
+  "deleted_default": [
+    "PowerInner/default sle_power module and model state/counters",
+    "global power_mode atomic, protected-operation synchronization and cross-device Native admission policy",
+    "daemon GetStats old model DTO/CLI presentation"
+  ],
+  "explicitly_unsupported": [
+    "six PM ioctls; permission enforced before EOPNOTSUPP",
+    "global configfs power_mode show/root store; normal writes EPERM",
+    "D-Bus PM info/state/force-active NotSupported; invalid state InvalidArgs"
+  ],
+  "retained": [
+    "actual driver board PM inputs/USB resource lifecycle",
+    "Native Runtime/Host/Session/Channel/Grant/data/events",
+    "legacy mixed kernel SubsysStats awaiting retirement; power=Unknown255/transitions unavailable, not measured zero",
+    "exact historical model/semantic tests only under retired-power"
+  ],
+  "replacement": "GetLinkSummary/slctl stats uses actual identity-bound validated LinkSnapshot, daemon mutex released before syscall. Legal Unknown representation explicitly fails; known empty remains valid. No Ready/PM/channel count/ACK claim.",
+  "offline": {
+    "all_features_strict_clippy": "PASS",
+    "actual_Rust_regression": "PASS",
+    "python_cross_language_actual_layout": 35,
+    "tools": 459,
+    "authorization_contract": 4,
+    "daemon_lifecycle_offline": 78,
+    "historical_exact_model_tests": 3,
+    "actual_unknown_and_known_empty_production_conversion_tests": 2,
+    "unknown_scope": "actual Rust conversion unit tests, not whole kernel memory order/hardware proof",
+    "C_virtual_probe_compile": "PASS",
+    "cbindgen_header": "unchanged; actual0.29.4 compared",
+    "initial_kernel_object_failure": {
+      "workspace_relative_path": ".dev/power-retirement-kernel-object.log",
+      "sha256": "bfd0036991920fcf1c8795837fd439d306bef07f2e1b678b11f59a38bd050fb6",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "corrected_kernel_object": {
+      "workspace_relative_path": ".dev/power-retirement-kernel-object-v2.log",
+      "sha256": "587109c710c448494af95f38783866ada6d778f5c7a6176d583c457eac376461",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "first_user_positive_only": {
+      "userspace": "6c955650db26ebc9880ddf607e96bd0da63694a8",
+      "private_pipeline": {
+        "workspace_relative_path": ".dev/power-retirement-pipeline.json",
+        "sha256": "71361611d2c350d7197ca04221a4756a119eeea92c1772f4fd409fc2b93d12e4",
+        "availability": "workspace-private original; not uploaded to public site"
+      },
+      "not_claimed": "unknown-state handling was missing; positive pass retained but not transferred to corrected source"
+    },
+    "new_formal_proof": false
+  },
+  "build": {
+    "workspace_relative_path": ".dev/native-power-retirement-build-record.json",
+    "sha256": "33685a46d28ed2d01c6b09eb579aeadff9f9affdbdf21065d385b3c34687c03e",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "config_sha256": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7",
+  "vm": {
+    "actual_virtual": {
+      "workspace_relative_path": ".dev/native-power-retirement-virtual-vm/manifest.json",
+      "sha256": "81921cf8f6c01f855afab2e0aa3e680f900c22a50e7e6ff19c98196440392549",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "kernel_unchanged_between_user_runs": true,
+    "module_rounds": 2,
+    "query_results": [
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1",
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1"
+    ],
+    "actual_power_results": [
+      "VIRTUAL_POWER_UNSUPPORTED_PASS: uid=0 commands=6 unchanged=6",
+      "VIRTUAL_GLOBAL_POWER_POLICY_PASS: show=EOPNOTSUPP store=EOPNOTSUPP",
+      "VIRTUAL_POWER_UNSUPPORTED_PASS: uid=1000 commands=6 unchanged=6",
+      "VIRTUAL_POWER_UNSUPPORTED_PASS: uid=0 commands=6 unchanged=6",
+      "VIRTUAL_GLOBAL_POWER_POLICY_PASS: show=EOPNOTSUPP store=EOPNOTSUPP",
+      "VIRTUAL_POWER_UNSUPPORTED_PASS: uid=1000 commands=6 unchanged=6"
+    ],
+    "actual_registry_results": [
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=1000 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=1 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=0 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=1000 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=1 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=0 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1"
+    ],
+    "root_pm_unsupported": 12,
+    "ordinary_pm_observe_unsupported": 2,
+    "ordinary_pm_mutation_denied": 10,
+    "root_global_policy_show_store_unsupported": 4,
+    "unchanged_buffers": 24,
+    "scope": "actual VFS/netlink/configfs/Runtime; not real hardware PM/suspend/resume or comprehensive callback proof"
+  },
+  "real_reports": [
+    "docs/evidence/power-retirement-real-short-20261014.json",
+    "docs/evidence/power-retirement-real-boundary-20261014.json",
+    "docs/evidence/power-retirement-fault-real-20261014.json"
+  ],
+  "normal_total": {
+    "round_trips": 48,
+    "boundary_rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "actual_link_summaries": 8,
+    "ordinary_genl_receipts": 4,
+    "actual_current_guarded_copy_faults": 32,
+    "capture_drops": 0
+  },
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38446551381",
+    "head": "1dedbad3d41eff5d66e6fffbc8b5291e0b785187",
+    "kernel_pin": "43e55d59fe9559b08da9404da7051272a84a3acc",
+    "jobs_success": 9
+  },
+  "still_open": [
+    "remaining normalized conn/adv/security/RPA/local_role and ioctl/debugfs default route",
+    "mixed legacy kernel stats final retirement",
+    "canonical loss/resync/topology/owner-death full scopes and complete IRQ/module/PM/callback",
+    "real controller PM/PHY/Bond/security and per-controller policy",
+    "mixed real/Virtual and actual standard typed/data",
+    "long PDU/credit exhaustion/backpressure/multiple channels/four pairs/unique SSAP/S5/S6",
+    "natural timeout/reenumeration/disappearance RCA and non-human automatic recovery"
+  ],
+  "not_claimed": "No full goal completion, real PM operation, comprehensive formal proof or natural recovery. NOCP is not peer receipt. Artificial/QMP/manual/hub interventions not natural recovery.",
+  "goal": "fullS0-S6 active; UserHost P4 planning only; no whole issue closed",
+  "actual_taint_check": "Both corrected-source normal consoles explicitly contain WS73_TARGET_NATIVE_VM_TAINT: 0",
+  "issues": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "id": 6152506600,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6152506600",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "id": 6152507739,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6152507739",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 10,
+      "id": 6152508835,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6152508835",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "id": 6152510034,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6152510034",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 4,
+      "id": 6152511077,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/4#issuecomment-6152511077",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "id": 6152512033,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6152512033",
+      "state": "OPEN",
+      "body_sha256": "72d9b18bddcc51b4b157efdc95d8fd0853e872dbbf4ef046312911b58e233491",
+      "readback_exact": true
+    }
+  ]
+}

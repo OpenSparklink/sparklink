@@ -1,0 +1,48 @@
+{
+  "status": "PLANNING_ONLY_NOT_IMPLEMENTED_NOT_PROVEN",
+  "date": "2026-10-13T12:02:15.020221+00:00",
+  "kernel_head": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
+  "userspace_head_at_audit": "b967674dede65884ac7fe0248fe6195bc082badd",
+  "clean_at_audit": true,
+  "source_sha256": {
+    "linux/net/bluetooth/hci_sock.c": "dd8d18d72eb80eee7b36c50744f3b9fc08c9a4387dd73485ad9255005a14353a",
+    "linux/net/bluetooth/hci_core.c": "d098d7dea58dcd50d0564b323f6aab19af2ebcf748ba98b54de3bbb45b10aebe",
+    "linux/net/sparklink/sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+    "linux/net/sparklink/sparklink_core.rs": "02152195e39581a8758390cd4e96000d40584fb7872d922f2d131efe44ad2373",
+    "linux/include/linux/sparklink_backend.h": "178e59f0e1ca18f5e9e0e9743c5c727fb02fd4bca80d3b46a7bb4d2a1bca2e15",
+    "sparklink/Cargo.toml": "074d922eba4ac31a421942c95ed84e1ac6e778e2a3baaf7260a0929d6c9d1244"
+  },
+  "source_mapping": {
+    "hci_sock.c": [
+      "hci_sock_bind HCI_CHANNEL_USER privilege/state/exclusivity",
+      "hci_sock_release close/exclusive release",
+      "hci_sock_sendmsg permitted packet type",
+      "hci_send_to_sock copy/packet selection"
+    ],
+    "hci_core.c": [
+      "hci_rx_work monitor copy then bypass Host under user ownership; HCI_INIT setup exception"
+    ]
+  },
+  "implemented_present": [
+    "Common Native Backend/driver retained context and Runtime Host/Session/Grant/socket foundations only; exact qualifications remain CURRENT_CAPABILITIES."
+  ],
+  "not_present": [
+    "slk-vendord crate/service",
+    "BackendProxy UAPI/UserspaceProxyBackend implementation",
+    "UserHost socket/takeover interface",
+    "Shared DeviceRuntime/NativeHostRuntime split",
+    "vendor full Host adapter or compatibility evidence"
+  ],
+  "not_proxy": "zbus::Proxy is D-Bus client; no vendor Host implementation inferred.",
+  "priority": "P4 low; not prerequisite of current WS73/lifecycle/SSAP work",
+  "scope_amendment": "Replace fixed vendord/kernel-Host Proxy plan with optional exclusive UserHost and separately audited vendor Host adaptation; preserve original security/isolation/fault/performance requirements, no issue closure.",
+  "future_proofs_and_gates_only": true,
+  "userhost_code_changes": false,
+  "code_deleted": false,
+  "active_work_not_cancelled": {
+    "kernel_build_live_handle": 44756,
+    "scope": "Restored qualification config plus optional Virtual module, VM-only; unrelated to UserHost implementation."
+  },
+  "issues_snapshot_sha256": "300ec10f7f50292c1fa604e84500ced272c1160df561213873ff8814d47d1c7b",
+  "canonical_decision": "docs/decisions/0003-optional-exclusive-user-host.md"
+}

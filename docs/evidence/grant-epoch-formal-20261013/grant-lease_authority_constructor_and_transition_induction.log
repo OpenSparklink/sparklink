@@ -1,0 +1,383 @@
+Kani Rust Verifier 0.68.0 (cargo plugin)
+CBMC 6.11.0
+warning: use of an unstable feature
+ --> <crate attribute>:1:12
+  |
+1 | #![feature(register_tool)]
+  |            ^^^^^^^^^^^^^
+  |
+  = note: requested on the command line with `--force-warn unstable-features`
+
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+Checking harness authority::proofs::lease_authority_constructor_and_transition_induction...
+CBMC 6.11.0 (cbmc-6.11.0)
+CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/sanchuanhehe/Documents/opensparklink/.dev/formal-credit-system-target/kani/x86_64-unknown-linux-gnu/debug/build/sparklink-production-grant-proof/dee04a728750392e/out/sparklink_production_grant_proof__RNvNtNtCscvDlDBQzRCC_32sparklink_production_grant_proof9authority6proofs52lease_authority_constructor_and_transition_induction.out
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Running with 16 object bits, 48 offset bits (user-specified)
+Starting Bounded Model Checking
+Runtime Symex: 0.00767439s
+size of program expression: 980 steps
+slicing removed 470 assignments
+Generated 70 VCC(s), 15 remaining after simplification
+Runtime Postprocess Equation: 6.5805e-05s
+Passing problem to propositional reduction
+converting SSA
+Runtime Convert SSA: 0.00115212s
+Running propositional reduction
+Post-processing
+Runtime Post-process: 3.968e-06s
+Solving with CaDiCaL 3.0.0
+1960 variables, 5629 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 9.1154e-05s
+Runtime decision procedure: 0.00130015s
+Running propositional reduction
+Solving with CaDiCaL 3.0.0
+1961 variables, 5630 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 0.00410511s
+Runtime decision procedure: 0.00412831s
+Running propositional reduction
+Solving with CaDiCaL 3.0.0
+1962 variables, 5631 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 0.0108153s
+Runtime decision procedure: 0.0108538s
+Running propositional reduction
+Solving with CaDiCaL 3.0.0
+1963 variables, 5632 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 0.000172379s
+Runtime decision procedure: 0.000213307s
+Running propositional reduction
+Solving with CaDiCaL 3.0.0
+1964 variables, 5633 clauses
+SAT checker: instance is UNSATISFIABLE
+Runtime Solver: 0.00278183s
+Runtime decision procedure: 0.00279577s
+
+RESULTS:
+Check 1: authority::proofs::lease_authority_constructor_and_transition_induction.assertion.1
+	 - Status: SUCCESS
+	 - Description: "assertion failed: !initial.permits(kani::any())"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:47:9 in function authority::proofs::lease_authority_constructor_and_transition_induction
+
+Check 2: authority::proofs::lease_authority_constructor_and_transition_induction.assertion.2
+	 - Status: SUCCESS
+	 - Description: "assertion failed: accepted == (epoch != 0 && epoch > before.last)"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:57:13 in function authority::proofs::lease_authority_constructor_and_transition_induction
+
+Check 3: authority::proofs::lease_authority_constructor_and_transition_induction.assertion.3
+	 - Status: SUCCESS
+	 - Description: "assertion failed: authority.last == epoch"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:59:20 in function authority::proofs::lease_authority_constructor_and_transition_induction
+
+Check 4: authority::proofs::lease_authority_constructor_and_transition_induction.assertion.4
+	 - Status: SUCCESS
+	 - Description: "assertion failed: authority.active == if managed {epoch} else {0}"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:59:54 in function authority::proofs::lease_authority_constructor_and_transition_induction
+
+Check 5: authority::proofs::lease_authority_constructor_and_transition_induction.assertion.5
+	 - Status: SUCCESS
+	 - Description: "assertion failed: authority == before"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:58:28 in function authority::proofs::lease_authority_constructor_and_transition_induction
+
+Check 6: authority::proofs::lease_authority_constructor_and_transition_induction.assertion.6
+	 - Status: SUCCESS
+	 - Description: "assertion failed: authority.active == 0"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:60:38 in function authority::proofs::lease_authority_constructor_and_transition_induction
+
+Check 7: authority::proofs::lease_authority_constructor_and_transition_induction.assertion.7
+	 - Status: SUCCESS
+	 - Description: "assertion failed: authority.last >= before.last"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:61:9 in function authority::proofs::lease_authority_constructor_and_transition_induction
+
+Check 8: authority::proofs::lease_authority_constructor_and_transition_induction.assertion.8
+	 - Status: SUCCESS
+	 - Description: "assertion failed: authority.active == 0 ||
+(authority.last != 0 && authority.active == authority.last)"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:62:9 in function authority::proofs::lease_authority_constructor_and_transition_induction
+
+Check 9: authority::LeaseAuthority::revoke.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:16:39 in function authority::LeaseAuthority::revoke
+
+Check 10: authority::LeaseAuthority::revoke.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:16:39 in function authority::LeaseAuthority::revoke
+
+Check 11: authority::LeaseAuthority::revoke.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:16:39 in function authority::LeaseAuthority::revoke
+
+Check 12: authority::LeaseAuthority::revoke.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:16:39 in function authority::LeaseAuthority::revoke
+
+Check 13: authority::LeaseAuthority::revoke.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:16:39 in function authority::LeaseAuthority::revoke
+
+Check 14: authority::LeaseAuthority::revoke.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:16:39 in function authority::LeaseAuthority::revoke
+
+Check 15: authority::LeaseAuthority::accepts.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:9:78 in function authority::LeaseAuthority::accepts
+
+Check 16: authority::LeaseAuthority::accepts.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:9:78 in function authority::LeaseAuthority::accepts
+
+Check 17: authority::LeaseAuthority::accepts.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:9:78 in function authority::LeaseAuthority::accepts
+
+Check 18: authority::LeaseAuthority::accepts.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:9:78 in function authority::LeaseAuthority::accepts
+
+Check 19: authority::LeaseAuthority::accepts.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:9:78 in function authority::LeaseAuthority::accepts
+
+Check 20: authority::LeaseAuthority::accepts.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:9:78 in function authority::LeaseAuthority::accepts
+
+Check 21: authority::LeaseAuthority::permits.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:17:70 in function authority::LeaseAuthority::permits
+
+Check 22: authority::LeaseAuthority::permits.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:17:70 in function authority::LeaseAuthority::permits
+
+Check 23: authority::LeaseAuthority::permits.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:17:70 in function authority::LeaseAuthority::permits
+
+Check 24: authority::LeaseAuthority::permits.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:17:70 in function authority::LeaseAuthority::permits
+
+Check 25: authority::LeaseAuthority::permits.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:17:70 in function authority::LeaseAuthority::permits
+
+Check 26: authority::LeaseAuthority::permits.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:17:70 in function authority::LeaseAuthority::permits
+
+Check 27: authority::LeaseAuthority::activate.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:12:9 in function authority::LeaseAuthority::activate
+
+Check 28: authority::LeaseAuthority::activate.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:12:9 in function authority::LeaseAuthority::activate
+
+Check 29: authority::LeaseAuthority::activate.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:12:9 in function authority::LeaseAuthority::activate
+
+Check 30: authority::LeaseAuthority::activate.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:12:9 in function authority::LeaseAuthority::activate
+
+Check 31: authority::LeaseAuthority::activate.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:12:9 in function authority::LeaseAuthority::activate
+
+Check 32: authority::LeaseAuthority::activate.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:12:9 in function authority::LeaseAuthority::activate
+
+Check 33: authority::LeaseAuthority::activate.pointer_dereference.7
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:13:9 in function authority::LeaseAuthority::activate
+
+Check 34: authority::LeaseAuthority::activate.pointer_dereference.8
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:13:9 in function authority::LeaseAuthority::activate
+
+Check 35: authority::LeaseAuthority::activate.pointer_dereference.9
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:13:9 in function authority::LeaseAuthority::activate
+
+Check 36: authority::LeaseAuthority::activate.pointer_dereference.10
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:13:9 in function authority::LeaseAuthority::activate
+
+Check 37: authority::LeaseAuthority::activate.pointer_dereference.11
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:13:9 in function authority::LeaseAuthority::activate
+
+Check 38: authority::LeaseAuthority::activate.pointer_dereference.12
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:13:9 in function authority::LeaseAuthority::activate
+
+Check 39: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 40: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 41: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 42: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 43: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 44: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 45: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.7
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 46: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.8
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 47: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.9
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 48: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.10
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 49: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.11
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 50: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.12
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:36 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 51: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.13
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 52: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.14
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 53: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.15
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 54: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.16
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 55: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.17
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 56: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.18
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 57: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.19
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 58: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.20
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 59: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.21
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 60: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.22
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 61: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.23
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+Check 62: <authority::LeaseAuthority as std::cmp::PartialEq>::eq.pointer_dereference.24
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_grant.rs:6:47 in function <authority::LeaseAuthority as std::cmp::PartialEq>::eq
+
+
+SUMMARY:
+ ** 0 of 62 failed
+
+VERIFICATION:- SUCCESSFUL
+Verification Time: 0.068831585s
+
+Manual Harness Summary:
+Complete - 1 successfully verified harnesses, 0 failures, 1 total.

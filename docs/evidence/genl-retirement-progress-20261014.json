@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL_CANONICAL_STATE_MIGRATION_WITH_GENL_RETIREMENT",
+  "recorded_at_utc": "2026-10-13T17:39:56.954935+00:00",
+  "compiled_kernel": "7c6d530ffe2e94bb44b55e0ba9712f61093a7f3e",
+  "compiled_service_and_runner": "ffc0945dfdacf57b98a962938272019854a28b0b",
+  "audit": "docs/evidence/genl-retirement-audit-20261014.json",
+  "deleted_default": [
+    "global controller genl FFI role/connection/PM/DLI snapshots",
+    "global genl radio/role mutations",
+    "three simplified worker multicast notifications and event group",
+    "legacy command/attribute SDK declarations; unreleased ABI no compatibility period"
+  ],
+  "retained": [
+    "registry-only genl v2 count/software version; no attributes or Ready/firmware promise",
+    "identity-bound Native Host/management/events/diagnostic/snoop/connection/socket mechanisms",
+    "historical source and worthwhile regressions isolated to retired-genl"
+  ],
+  "offline": {
+    "default_and_all_features_strict_clippy": "PASS",
+    "default_and_all_features_actual_Rust_tests": "PASS",
+    "python_cross_language_actual_layout": 35,
+    "tools": 459,
+    "authorization_source_contract": 4,
+    "daemon_lifecycle_offline": 78,
+    "C_probe_and_full_selftest_compile": "PASS",
+    "cbindgen_current_header": "unchanged; actual0.29.4 generation compared",
+    "initial_environment_failures": [
+      "cargo tests missing dbus-daemon executable; corrected private daemon path",
+      "bindings missing PYTHONPATH; corrected package path",
+      "old selftest proto/binding_count no longer exist; migrated to pending/runtime_count"
+    ],
+    "new_full_formal_proof": false,
+    "failure_records": {
+      "genl-retirement-cargo-tests.log": {
+        "workspace_relative_path": ".dev/genl-retirement-cargo-tests.log",
+        "sha256": "6e5243e15aecb0642028337b4707b5ad05c7d0445bea41c8405d9ae3462cb81d",
+        "availability": "workspace-private original; not hardware failure"
+      },
+      "genl-retirement-bindings-tests.log": {
+        "workspace_relative_path": ".dev/genl-retirement-bindings-tests.log",
+        "sha256": "d25a787294b942e77c1717d088821ce05891bbb062549b78e63237f8d0130c5b",
+        "availability": "workspace-private original; not hardware failure"
+      }
+    }
+  },
+  "build": {
+    "workspace_relative_path": ".dev/native-genl-retirement-build-record.json",
+    "sha256": "b0c7898c4ed6953122c1dd6e95e8fba27ee0cb9b37460a4082c6e6a00621d283",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "config_sha256": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7",
+  "vm": {
+    "actual_virtual": {
+      "workspace_relative_path": ".dev/native-genl-retirement-virtual-vm/manifest.json",
+      "sha256": "b2b4a036ceee794e09e377d8e7bc7a8d5136ae9fbef3dc3c36307394179d379d",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "module_rounds": 2,
+    "query_results": [
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1",
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1"
+    ],
+    "actual_registry_results": [
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=1000 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=1 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=0 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=1000 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=1 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=0 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1"
+    ],
+    "retired_command_rejections": 310,
+    "extra_attribute_rejections": 10,
+    "no_multicast": true,
+    "registry_counts": [
+      2,
+      2,
+      1,
+      2,
+      0,
+      2,
+      2,
+      1,
+      2,
+      0
+    ],
+    "scope": "actual VFS/netlink/module/Runtime; not RF or comprehensive callback proof"
+  },
+  "real_reports": [
+    "docs/evidence/genl-retirement-real-short-20261014.json",
+    "docs/evidence/genl-retirement-real-boundary-20261014.json",
+    "docs/evidence/genl-retirement-fault-real-20261014.json"
+  ],
+  "normal_total": {
+    "round_trips": 48,
+    "boundary_rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "ordinary_genl_receipts": 4,
+    "actual_current_guarded_copy_faults": 32,
+    "capture_drops": 0
+  },
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38439496407",
+    "head": "ffc0945dfdacf57b98a962938272019854a28b0b",
+    "kernel_pin": "7c6d530ffe2e94bb44b55e0ba9712f61093a7f3e",
+    "jobs_success": 9
+  },
+  "still_open": [
+    "remaining normalized ControllerState and legacy ioctl/debugfs defaults; individually audit and replace",
+    "canonical loss/resync/topology/owner-death scopes and optional identity-bound future genl frontend",
+    "complete callback/IRQ/PM/module lifetime and mixed real/Virtual gates",
+    "standard real hardware typed/data and ticketed protocol completion assumptions",
+    "natural timeout/reenumeration/disappearance RCA and non-human automatic recovery",
+    "long PDU/multiple channels/four independent devices/unique userspace SSAP/S5/S6"
+  ],
+  "not_claimed": "No full goal completion, no comprehensive formal proof, no natural recovery. NOCP does not prove peer received; actual peer random sequence/payload validation and reply checked independently.",
+  "goal": "full S0-S6 active; no whole issue closed; UserHost remains P4 planning only",
+  "issues": [
+    {
+      "repo": "linux",
+      "issue": 3,
+      "id": 6151623502,
+      "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6151623502",
+      "state": "OPEN",
+      "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 4,
+      "id": 6151624589,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6151624589",
+      "state": "OPEN",
+      "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "id": 6151625872,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6151625872",
+      "state": "OPEN",
+      "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "id": 6151626851,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6151626851",
+      "state": "OPEN",
+      "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 2,
+      "id": 6151627820,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/2#issuecomment-6151627820",
+      "state": "OPEN",
+      "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "id": 6151628960,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6151628960",
+      "state": "OPEN",
+      "body_sha256": "dc8ed3cd59f927c997c4b2c4fbe2b848973a2063e65c725deb37a6f7bd2a1964",
+      "readback_exact": true
+    }
+  ],
+  "actual_taint_check": "Both current normal consoles contain WS73_TARGET_NATIVE_VM_TAINT: 0"
+}

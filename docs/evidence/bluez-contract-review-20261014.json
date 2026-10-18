@@ -1,0 +1,90 @@
+{
+  "scope": "Current code audit; new relay/permission changes not relabeled as radio/formal qualification",
+  "bluez": {
+    "head": "9dc7e40962f11d1d9a5568f8a7633a695288329c",
+    "sources": [
+      {
+        "path": "doc/org.bluez.Adapter.rst",
+        "sha256": "3f9ed0e7f837ce8b00cf6e3ef814c21a3beb1999fd30c4f28225aa6b2246b196",
+        "url": "https://github.com/bluez/bluez/blob/9dc7e40962f11d1d9a5568f8a7633a695288329c/doc/org.bluez.Adapter.rst"
+      },
+      {
+        "path": "doc/org.bluez.Device.rst",
+        "sha256": "1c18ffb33c4539e9873382b795d61b85b70c621b5cb8db7e4887733c8223d92c",
+        "url": "https://github.com/bluez/bluez/blob/9dc7e40962f11d1d9a5568f8a7633a695288329c/doc/org.bluez.Device.rst"
+      },
+      {
+        "path": "doc/org.bluez.GattCharacteristic.rst",
+        "sha256": "3fb3cf4b511a9048751b2c296a188457f7a03c10d6bad845f8ce63e8a69bf39c",
+        "url": "https://github.com/bluez/bluez/blob/9dc7e40962f11d1d9a5568f8a7633a695288329c/doc/org.bluez.GattCharacteristic.rst"
+      },
+      {
+        "path": "doc/org.bluez.Profile.rst",
+        "sha256": "d39edd4a20b2d33d8a2e75bdb6acaea41590631991c65258c092d35691e6b9ba",
+        "url": "https://github.com/bluez/bluez/blob/9dc7e40962f11d1d9a5568f8a7633a695288329c/doc/org.bluez.Profile.rst"
+      },
+      {
+        "path": "src/main.c",
+        "sha256": "d3dbb11efd2fe9dca0150181a8dd36815a01c0e6d38e60d0543d599a6d7da205",
+        "url": "https://github.com/bluez/bluez/blob/9dc7e40962f11d1d9a5568f8a7633a695288329c/src/main.c"
+      }
+    ]
+  },
+  "repositories": {
+    "linux": {
+      "head": "9806e333a07230567fe79b76810b184bdf7a0988",
+      "dirty": "",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "cc068d4e34648512d1391cbf30877c705cbd13d1d45fafcde7a536daf44e33a1",
+        "net/sparklink/sle_host.rs": "e68978dde4069e0c17ed21e3ae475ac3309159b5eb002431aa1a2aee66736a09",
+        "net/sparklink/sle_sessions.rs": "60eb079226523984104fc9602ce55f1aaa238cda3f298bfb2306bc6c3ea32342",
+        "net/sparklink/sle_security_relay.rs": "e9da4efb80234639fad4f01ec2ef4a6ca5034892423fd211112d672813e37622",
+        "net/sparklink/sle_native.rs": "f3c3971896787c2a283de55448352ce58ba5b9778ffe104772d5f812fc873f1c"
+      }
+    },
+    "sparklink": {
+      "head": "a0f93e7b6bedd99d35b61904daa803a56593aa58",
+      "dirty": "",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sources": {
+        "crates/slkd/src/dbus_iface.rs": "862a7b76b523bdb9988e4af812a62da5aa19db59a950794ed6e58639ccbc1e12",
+        "crates/slkd/src/radio.rs": "60fd41e9830cea2f8a1599f0b5c404b42050816eeb5ffd46d1d1863dfef7cb9f",
+        "crates/slkd/src/connection_object.rs": "c384a7b52298532a6ee7643744f10fa0cbd2777a954a41a6871452aa17ee01f5",
+        "crates/slkd/src/ssap_engine.rs": "1cd34eb739e423c18eabafdf987874891aecbce3ef9da618cb33f734d4ea4ce8",
+        "data/dbus/sparklink.conf": "12028a8989c9d3b8473d4ef3011a5ed251123ce1364fb968ba1ccb25c5ca6a00"
+      }
+    }
+  },
+  "prior_radio": {
+    "linux": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
+    "userspace": "006e424b49449a87a4e204be60f5292adc28f6c4",
+    "evidence": "controller-data-boundary-20261014.json"
+  },
+  "categories": {
+    "implemented": [
+      "Per-controller Runtime/Host/worker and current link snapshots",
+      "Session sole RX/fixed two channels, Binding scopes/revocation/fd references",
+      "Brokered caps0 business fd and unique userspace SSAP actor",
+      "Current change: real typed relay/Session ledger and denial producer, not crypto",
+      "Current change: explicit manager scan names and optional channel-only group"
+    ],
+    "not_yet_qualified": [
+      "New relay branch radio and whole concurrent/formal properties",
+      "Pure apps-group (no controller-management group) live fd and two-end business/denial matrix",
+      "Positive updates/CCC/Profile and full daemon restart/multi-app socket matrix"
+    ],
+    "missing": [
+      "Client-owned shared scan leases/filter/author budgets/cancel",
+      "Full per-app/per-Peer policy and protected grants/Agent",
+      "Complete Session authorization separation and verified handle reuse/NOCP barrier",
+      "Long/credit exhaustion/multi-channel/four-device complete business",
+      "Security pairing/real installation/Bond/Profile and natural RCA/nonmanual recovery"
+    ]
+  },
+  "latest_observed_heads": {
+    "linux": "c7c61af6e84e1b3cd76851fdf2a740fabe156a17",
+    "userspace": "0610519c66a9a3684689d508da772c4a1689c26f",
+    "difference": "Diagnostic fixtures and CI pin only; same production source hashes"
+  }
+}

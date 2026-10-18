@@ -1,0 +1,1134 @@
+[
+  {
+    "program": "CBMC 6.11.0 (cbmc-6.11.0)"
+  },
+  {
+    "messageText": "CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Type-checking binding_cbmc",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generating GOTO Program",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Adding CPROVER library (x86_64)",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Removal of function pointers and virtual functions",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generic Property Instrumentation",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Starting Bounded Model Checking",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Passing problem to propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "converting SSA",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Running propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "SAT checker: instance is UNSATISFIABLE",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "result": [
+      {
+        "description": "assertion invariant(initial)",
+        "property": "main.assertion.1",
+        "sourceLocation": {
+          "comment": "assertion invariant(initial)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "13",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion sl_binding_attach(&initial)",
+        "property": "main.assertion.2",
+        "sourceLocation": {
+          "comment": "assertion sl_binding_attach(&initial)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "14",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion sl_binding_start_tx(&initial)",
+        "property": "main.assertion.3",
+        "sourceLocation": {
+          "comment": "assertion sl_binding_start_tx(&initial)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "15",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion initial.busy == 1 && !sl_binding_live(initial)",
+        "property": "main.assertion.4",
+        "sourceLocation": {
+          "comment": "assertion initial.busy == 1 && !sl_binding_live(initial)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "17",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion !sl_binding_attach(&initial)",
+        "property": "main.assertion.5",
+        "sourceLocation": {
+          "comment": "assertion !sl_binding_attach(&initial)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion invariant(initial) && !initial.busy",
+        "property": "main.assertion.6",
+        "sourceLocation": {
+          "comment": "assertion invariant(initial) && !initial.busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "20",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion invariant(b)",
+        "property": "main.assertion.7",
+        "sourceLocation": {
+          "comment": "assertion invariant(b)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "32",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion b.retired && !b.bound",
+        "property": "main.assertion.8",
+        "sourceLocation": {
+          "comment": "assertion b.retired && !b.bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "33",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion sl_binding_live(b)",
+        "property": "main.assertion.9",
+        "sourceLocation": {
+          "comment": "assertion sl_binding_live(b)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "36",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on unsigned - in limit - queued",
+        "property": "main.overflow.1",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on unsigned - in limit - queued",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "main.overflow.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion queued < limit && b.busy < limit - queued",
+        "property": "main.assertion.10",
+        "sourceLocation": {
+          "comment": "assertion queued < limit && b.busy < limit - queued",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on unsigned + in queued + b.busy",
+        "property": "main.overflow.2",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on unsigned + in queued + b.busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "38",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "main.overflow.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion queued + b.busy < limit",
+        "property": "main.assertion.11",
+        "sourceLocation": {
+          "comment": "assertion queued + b.busy < limit",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/binding_cbmc.c",
+          "function": "main",
+          "line": "38",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->retired",
+        "property": "sl_binding_attach.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->retired",
+        "property": "sl_binding_attach.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->retired",
+        "property": "sl_binding_attach.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->retired",
+        "property": "sl_binding_attach.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->retired",
+        "property": "sl_binding_attach.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->retired",
+        "property": "sl_binding_attach.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "18",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.13",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "19",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.13",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.14",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "19",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.14",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.15",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "19",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.15",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.16",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "19",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.16",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.17",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "19",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.17",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->bound",
+        "property": "sl_binding_attach.pointer_dereference.18",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_attach",
+          "line": "19",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_attach.pointer_dereference.18",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->busy",
+        "property": "sl_binding_finish_tx.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_finish_tx",
+          "line": "34",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_finish_tx.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->busy",
+        "property": "sl_binding_finish_tx.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_finish_tx",
+          "line": "34",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_finish_tx.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->busy",
+        "property": "sl_binding_finish_tx.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_finish_tx",
+          "line": "34",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_finish_tx.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->busy",
+        "property": "sl_binding_finish_tx.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_finish_tx",
+          "line": "34",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_finish_tx.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->busy",
+        "property": "sl_binding_finish_tx.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_finish_tx",
+          "line": "34",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_finish_tx.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->busy",
+        "property": "sl_binding_finish_tx.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_finish_tx",
+          "line": "34",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_finish_tx.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->bound",
+        "property": "sl_binding_retire.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "38",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->bound",
+        "property": "sl_binding_retire.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "38",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->bound",
+        "property": "sl_binding_retire.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "38",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->bound",
+        "property": "sl_binding_retire.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "38",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->bound",
+        "property": "sl_binding_retire.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "38",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->bound",
+        "property": "sl_binding_retire.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->bound",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "38",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->retired",
+        "property": "sl_binding_retire.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->retired",
+        "property": "sl_binding_retire.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->retired",
+        "property": "sl_binding_retire.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->retired",
+        "property": "sl_binding_retire.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->retired",
+        "property": "sl_binding_retire.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->retired",
+        "property": "sl_binding_retire.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->retired",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_retire",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_retire.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on unsigned - in limit - queued",
+        "property": "sl_binding_space.overflow.1",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on unsigned - in limit - queued",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_space",
+          "line": "24",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "sl_binding_space.overflow.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in *s",
+        "property": "sl_binding_start_tx.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in *s",
+        "property": "sl_binding_start_tx.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in *s",
+        "property": "sl_binding_start_tx.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in *s",
+        "property": "sl_binding_start_tx.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in *s",
+        "property": "sl_binding_start_tx.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in *s",
+        "property": "sl_binding_start_tx.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.13",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.13",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.14",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.14",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.15",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.15",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.16",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.16",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.17",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.17",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->busy",
+        "property": "sl_binding_start_tx.pointer_dereference.18",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->busy",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_binding_start_tx",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_binding_start_tx.pointer_dereference.18",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "messageText": "VERIFICATION SUCCESSFUL",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "cProverStatus": "success"
+  }
+]

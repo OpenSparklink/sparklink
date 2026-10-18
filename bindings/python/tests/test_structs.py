@@ -6,19 +6,11 @@ Sizes must match Rust repr(C) structs verified in slk-protocol tests.
 import ctypes
 import unittest
 
+from retired_structs import SleScanParams, SleConnectParams, SleConnInfo, SleDliInfo, SlePhyInfo
+
 from sparklink.structs import (
     SciDevInfo,
     SleAddr,
-    SleConnInfo,
-    SleConnectParams,
-    SleDliEvent,
-    SleDliInfo,
-    SlePairParams,
-    SlePhyInfo,
-    SleScanParams,
-    SleSecInfo,
-    SsapReadWrite,
-    SsapSummary,
 )
 
 
@@ -37,20 +29,7 @@ class TestStructSizes(unittest.TestCase):
     def test_sle_conn_info(self):
         self.assertEqual(ctypes.sizeof(SleConnInfo), 56)
 
-    def test_sle_sec_info(self):
-        self.assertEqual(ctypes.sizeof(SleSecInfo), 16)
 
-    def test_sle_pair_params(self):
-        self.assertEqual(ctypes.sizeof(SlePairParams), 4)
-
-    def test_ssap_summary(self):
-        self.assertEqual(ctypes.sizeof(SsapSummary), 16)
-
-    def test_ssap_read_write(self):
-        self.assertEqual(ctypes.sizeof(SsapReadWrite), 256)
-
-    def test_sle_dli_event(self):
-        self.assertEqual(ctypes.sizeof(SleDliEvent), 256)
 
     def test_sci_dev_info(self):
         self.assertEqual(ctypes.sizeof(SciDevInfo), 66)
@@ -86,23 +65,6 @@ class TestSciDevInfo(unittest.TestCase):
     def test_device_name_empty(self):
         info = SciDevInfo()
         self.assertEqual(info.device_name, "")
-
-
-class TestSsapReadWrite(unittest.TestCase):
-    def test_data_capacity(self):
-        rw = SsapReadWrite()
-        self.assertEqual(len(rw.data), 252)
-
-    def test_write_read(self):
-        rw = SsapReadWrite()
-        rw.handle = 0x42
-        rw.length = 3
-        rw.data[0] = 0xDE
-        rw.data[1] = 0xAD
-        rw.data[2] = 0xBE
-        self.assertEqual(rw.handle, 0x42)
-        self.assertEqual(rw.length, 3)
-        self.assertEqual(bytes(rw.data[:3]), b"\xDE\xAD\xBE")
 
 
 class TestSleConnInfo(unittest.TestCase):

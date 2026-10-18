@@ -1,0 +1,59 @@
+{
+  "status": "VIRTUAL_VM_FAIL_DIAGNOSTIC_ADMISSION",
+  "kernel": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
+  "run_tools": "c996123501e5f6682a2c73a5d1832567cd5b1f76",
+  "corrected_build": {
+    "status": "BUILD_PASSED",
+    "source_head": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
+    "normalized_config_sha256": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-virtual-provider-v2-kernel-build.log",
+      "sha256": "3ecdad2783f2ad22028427262d3a6a2d757b24b1b188ef58d51240bd25a018dd"
+    }
+  },
+  "configuration_scope": "Previous qualified configuration differs only by optional Virtual=m, independently checked before rebuild.",
+  "empty_module_vm": {
+    "root-smoke": {
+      "status": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+      "manifest_sha256": "86c4f3b109a22d23c34d61981b8dcecf95f48867e990d0cca337dbdabb68d2bd",
+      "scope": "One empty USB VM,2 module load/unload,3 empty registry checks; not RF/PM/lifetime qualification."
+    },
+    "standard-root-smoke": {
+      "status": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+      "manifest_sha256": "0aa1bd497db12f13d38d600ba6f4f98eb8cfcce2574045e1ccf8f0fb3d68bb95",
+      "scope": "One empty USB VM,2 module load/unload,3 empty registry checks; not RF/PM/lifetime qualification."
+    }
+  },
+  "virtual_vm": {
+    "status": "FAIL",
+    "failure": "virtual_runtime_test.c line50 Diagnostic Management acquire on standard profile0 returned EOPNOTSUPP; no query/lifecycle gate pass claimed.",
+    "console_sha256": "8c9965447956f9d530356e23c19e5c172ed5d9780eaf909941bf9994650f5206"
+  },
+  "no_real_ws73_run": true,
+  "no_userhost_implementation": true,
+  "next": "Audit standard/query Diagnostic admission versus Native profile1-only Managed policy; fix actual seam or test based on contract, then exact VM and WS73 regressions. Do not weaken error checking or mark full Virtual complete.",
+  "first_failure_preserved": "Invalid compiler probes changed hardening and old initramfs modules failed; invalid-config images/logs retained; corrected baseline gate added.",
+  "whole_package_complete": false
+}

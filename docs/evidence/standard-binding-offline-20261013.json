@@ -1,0 +1,236 @@
+{
+  "schema": 1,
+  "status": "STANDARD_USB_BINDING_CLEANUP_SCOPED_PASS",
+  "kernel_head": "6db8a530f9c69df1fe09060dd3f09220a55ea946",
+  "compiled_service_tools_head": "24849321435d962b3a0e0d1bc4a4c866613c45f8",
+  "implemented": [
+    "standard EP0 four-byte commands, no UART marker",
+    "interrupt Complete bootstrap, no bulk reply stealing",
+    "descriptor-selected device/interface target and class IDs",
+    "explicit event/bulk RX lanes, bounded65539-byte event URB",
+    "default invented firmware protocol removed to historical selftests",
+    "unqualified handle-only data and typed standard mutations explicitly unsupported"
+  ],
+  "offline": {
+    "standard-binding-ingress.json": {
+      "status": "ACTUAL_RUNTIME_INGRESS_PASS",
+      "tests": 9,
+      "scope": "production route/queue functions and identity; std Mutex/Arc with ranked guard checks, Host admission/receive and event/queue dependency fixtures; not kernel IRQ/workqueue/module/Host or hardware refinement",
+      "sources": {
+        "net/sparklink/sle_ingress.rs": "c372709252f304fc03d1725a1c03c3e52681c776ba0632698ee57a66fa82d00f",
+        "net/sparklink/sle_native.rs": "61eff2d00f811284eda49b2c50dad1a2f063ff6e22b439af0155913be6b1ad0d",
+        "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+        "tools/testing/selftests/sparklink/ingress/fixture.rs": "e6c828bb79a36cc9c1e0195a596014df374b0b3e25bdefd993812dcd48ee4beb"
+      },
+      "actual_function_sha256": "1cf0e540c1fb6e648ca2ee717fc4d0a782285bc7416934cc1bac1047275c5b77",
+      "hardware_acceptance": false
+    },
+    "standard-binding-registration.json": {
+      "status": "ACTUAL_USB_PENDING_RESERVATION_PASS",
+      "tests": 15,
+      "pending_allocator_tests": 9,
+      "open_adoption_tests": 6,
+      "sources": {
+        "sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+        "sle_dli.rs": "3a992c002c18a4b75b99f6b384ea4d5ec48c16de2208ddf02491ee211e43991e",
+        "sparklink_core.rs": "03b18fccb2804566cc09ce586bc2c2874ae1561477d09ba5db80602727a2843e",
+        "sle_usb.rs": "aa3cda136e0352353771a7492437311c07dfe2dec8e8d4944d26ae684c81f6dc",
+        "sle_native.rs": "61eff2d00f811284eda49b2c50dad1a2f063ff6e22b439af0155913be6b1ad0d"
+      },
+      "scope": "actual constructor/pending allocator/generation/get/unregister/common reservation/cancel and Native wrapper/exact two-phase detach and USB listener/open adoption; logging/Mutex/info types/stats dependencies, not concurrent registry or callbacks/kernel/physical USB qualification",
+      "hardware_acceptance": false
+    },
+    "standard-binding-port.json": {
+      "status": "ACTUAL_RETAINED_COMMAND_PORT_PASS",
+      "tests": 5,
+      "sources": {
+        "sle_backend.rs": "751072b684206c563a7bf69c6aef783dad2c396406ad81a4f22421176ebc4784",
+        "sle_dli.rs": "8c2b1fea499609d617d3c8eb5ae70bd9a5613f1caa40a1409ba5acea7e8cdbea",
+        "sle_native.rs": "61eff2d00f811284eda49b2c50dad1a2f063ff6e22b439af0155913be6b1ad0d",
+        "sle_usb.rs": "8ecf365957fafaae56744a57fa5e5ead4561c6ccbddd2607a6e5be6d40fe599d",
+        "sle_workers.rs": "087411a13536ab9c2de7ccc1df398f79fe9e8cc91c79d788a122ad42ed5c86bc"
+      },
+      "scope": "Actual selector and provider impls, allocator/std Arc/USB transport dependencies; KBox allocation adapted only to fallible Box fixture. Static worker release-before-submit order check, not actual workqueue/lockdep/IRQ/module/callback or USB proof.",
+      "physical_acceptance": false
+    },
+    "standard-binding-metadata.json": {
+      "status": "ACTUAL_USB_BOOTSTRAP_TUPLE_PASS",
+      "cases": 44,
+      "header_sha256": "c614de9aadb015b5ee5ec1a11a6b50dff287c2cccaf40d5c5ae090e97be9ef9f",
+      "source_sha256": "6fd29ef984003f56c732f78f54994b303506baaf89a8192e4b38b383d10feb7c",
+      "scope": "Actual standard bootstrap, strict reply validator and locked tuple getter; synchronous response/USB/context dependencies are controlled fixtures. Fifth version byte preserved; failed requery invalidates observations, no partial commit/output overwrite. Actual command/buffer/features validation and coherent locked snapshot getter, standard 0406 address-type query. Not hardware, common provider migration or Ready proof.",
+      "physical_acceptance": false
+    },
+    "standard-binding-writer.json": {
+      "status": "ACTUAL_STANDARD_USB_BINDING_PASS",
+      "cases": 25,
+      "rust_tests": 8,
+      "rust_sha256": "8ecf365957fafaae56744a57fa5e5ead4561c6ccbddd2607a6e5be6d40fe599d",
+      "source_sha256": "6fd29ef984003f56c732f78f54994b303506baaf89a8192e4b38b383d10feb7c",
+      "scope": "Actual EP0 writer/control setup/four-byte framing/interrupt bootstrap read/unsupported data stub, and Rust prepare/endpoint lane callback; decoder/ingress ownership are controlled fixture dependencies, not protocol/lifetime proof; USB, allocation and retained active context dependencies controlled. Includes u16 wLength boundary and uncertain/short transfers. No hardware, class discovery, async listener, lifetime, Ready or firmware proof.",
+      "physical_acceptance": false
+    },
+    "standard-binding-connection.json": {
+      "status": "CONNECTION_TX_SUBMISSION_BOUNDARY_PASS",
+      "scope": "actual sender/ioctl/legacy USB bodies with dependency fixtures; not socket/protocol/RF qualification",
+      "physical_acceptance": false,
+      "socket_acceptance": false,
+      "rust_tests": 11,
+      "usb_boundaries": [
+        "range",
+        "allocation",
+        "errno",
+        "all short completions",
+        "exact completion",
+        "max length"
+      ],
+      "retired_c_data_only_sha256": "2a3f8a90cb79651932816ac98172277a70bb4d3f843c2f8c75a9823ddc1d7bcc",
+      "sources": {
+        "sle_conn.rs": "7b625a362843ec43283e773d0d8d315ab25b74cd7388c86a0c820b85f052fe70",
+        "sparklink_core.rs": "03b18fccb2804566cc09ce586bc2c2874ae1561477d09ba5db80602727a2843e",
+        "sle_usb_ffi.c": "6fd29ef984003f56c732f78f54994b303506baaf89a8192e4b38b383d10feb7c"
+      }
+    },
+    "standard-binding-retired-fw.json": {
+      "status": "RETIRED_GENERIC_USB_FIRMWARE_REGRESSION_PASS",
+      "c_cases": 74,
+      "rust_tests": 12,
+      "scope": "retired archived experimental C download/sync/validator and Rust loader/prepare/probe bodies; never compiled into production; fixture USB, allocation, request_firmware and registry dependencies; C static linkage only lifted for extraction",
+      "generic_firmware_wire_acceptance": false,
+      "native_ws73_firmware_acceptance": false,
+      "natural_fault_root_cause_closed": false,
+      "sources": {
+        "sle_usb_ffi.c": "10387666cefeb5b8007e275dd95fbcade9e9f2b0003ad2288a6f55993e941e38",
+        "sle_fw.rs": "83d0f8db5f22260d28545d4d3a1546f6c6e22edbf6be8f0bd7905baa183550b5",
+        "bootstrap_and_probe.rs": "f23e9bcaf59193a23d538092ea3ae8c0eaa38472c58af1aa39391b2576af6141"
+      }
+    },
+    "standard-binding-discovery.json": {
+      "status": "GENERIC_USB_DESCRIPTOR_CAPABILITY_SOURCE_BOUNDARIES_PASS",
+      "c_cases": 19,
+      "rust_tests": 11,
+      "scope": "actual C register/unregister; actual Rust info structs/default, USB info/pending reservation metadata, archived attach and serdev info; descriptor lookup/allocation/URB/types/firmware getters are dependency fixtures",
+      "physical_acceptance": false,
+      "generic_dialect_acceptance": false,
+      "full_capability_provenance_contract": false,
+      "natural_fault_root_cause_closed": false,
+      "sources": {
+        "sle_usb_ffi.c": "6fd29ef984003f56c732f78f54994b303506baaf89a8192e4b38b383d10feb7c",
+        "sle_usb.rs": "20fc43d875392150d5cb3ae03c6306d034049cb8fbc55f5f0810b5434022cd5d",
+        "sle_dli.rs": "3a992c002c18a4b75b99f6b384ea4d5ec48c16de2208ddf02491ee211e43991e",
+        "sparklink_core.rs": "03b18fccb2804566cc09ce586bc2c2874ae1561477d09ba5db80602727a2843e"
+      },
+      "archived_attach_sha256": "2225b51f8cec3f5f33c31f053b10d8321bd81fbbe5bb41486ae681e471451626",
+      "archived_serdev_info_sha256": "12e851cef7fbda7b92409752f36690d3c2d1d579a50cd1bff3eed3c98fd80ad7"
+    }
+  },
+  "build": {
+    "status": "BUILD_PASSED",
+    "source_head": "6db8a530f9c69df1fe09060dd3f09220a55ea946",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-standard-binding-kernel-build.log",
+      "sha256": "b68daa324d77faede9b8a0a4371d1ab8132d919d643a80aeecbd06bf1d4fe656"
+    }
+  },
+  "ci": "standard-binding-ci-20261013.json",
+  "new_tool_tests": {
+    "tests": 456,
+    "status": "PASS",
+    "log_sha256": "9b31426827662b18fe51b97a8a95b8d09a07e09c9f74f88dd5edf82c64c17735"
+  },
+  "formal": {
+    "metadata": {
+      "status": "MODEL_CHECKED_SCOPED",
+      "properties": 314,
+      "report": "standard-binding-formal-20261013/metadata/production/report.json"
+    },
+    "writer": {
+      "status": "MODEL_CHECKED_SCOPED",
+      "properties": 116,
+      "report": "standard-binding-formal-20261013/writer/production/report.json",
+      "negative": "standard-binding-formal-20261013/writer/negative-control.json",
+      "payload_copy_provenance_proved": false
+    },
+    "no_lifetime_or_hardware_proof": true
+  },
+  "real_regression": [
+    "ws73-standard-binding-fault-isolation-20261013.json",
+    "ws73-standard-binding-short-repeat-20261013.json",
+    "ws73-standard-binding-249-boundary-20261013.json"
+  ],
+  "standard_reference": {
+    "source": "T-XS-10003-2025_V1.1.0 provided locally",
+    "sections": [
+      "6.2.1",
+      "6.2.2.1",
+      "6.2.2.2",
+      "6.2.3",
+      "6.2.6",
+      "7.2",
+      "7.3"
+    ],
+    "full_standard_not_uploaded": true
+  },
+  "remaining": [
+    "common standard profile0 descriptor/provider/Host/RX-open-close registration migration",
+    "static Usb/core USB dependence removal",
+    "standard lifetime-aware/ticketed ACB and typed policy, genuine Virtual/physical qualification",
+    "event/legacy ring/coreUSB n-m/moduleIRQPM/full cancellation and recovery gates"
+  ],
+  "failure_history": [
+    "initial binding runner indentation failure corrected",
+    "fixture unused DiscoveryIntent import removed, no allow(dead_code)",
+    "weak USB wLength guard counterexample; no production failure reclassified",
+    "prior compiler/panic/lastclose/hardware recovery evidence kept"
+  ],
+  "private_seals": [
+    {
+      "path": ".dev/native-standard-binding-build-record.json",
+      "sha256": "24d246638b74489cde333591f76988ee17efbad16e851886c61a98462d8fda61"
+    },
+    {
+      "path": ".dev/native-standard-binding-kernel-build.log",
+      "sha256": "b68daa324d77faede9b8a0a4371d1ab8132d919d643a80aeecbd06bf1d4fe656"
+    },
+    {
+      "path": ".dev/native-standard-binding-artifacts/manifest.json",
+      "sha256": "66316ac2bb3f6e1d87a6284ca005225c132399e4554e04a1d97a4f28def2ca36"
+    },
+    {
+      "path": ".dev/native-standard-binding-root-smoke/manifest.json",
+      "sha256": "26c9da414b2fda4d47acb17238db6f2fa9c81c8c234f8370285ccc87334cd1a6"
+    },
+    {
+      "path": ".dev/standard-binding-pipeline.json",
+      "sha256": "a4a24597a2b4fdac611819e142bf9a320479bdafeeff985781a8f2024ec1a579"
+    }
+  ],
+  "standard_physical_acceptance": false,
+  "full_architecture_complete": false,
+  "natural_fault_root_cause_closed": false,
+  "automatic_recovery_acceptance": false,
+  "whole_package_closed": false
+}

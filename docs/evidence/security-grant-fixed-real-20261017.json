@@ -1,0 +1,2032 @@
+{
+  "schema_version": 1,
+  "status": "FIXED_PROTECTED_GRANT_POSITIVE_SCOPED_REAL_PASS_FULL_EXIT_OPEN",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "73a2898b05e662afb1bb768fecc9e6eefce5c3f8",
+  "executed_tools": "73a2898b05e662afb1bb768fecc9e6eefce5c3f8",
+  "post_processing_tools": "02ac76347d42bebaddca60d54447779b368e5fc0",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "formal_helper_result": "PASS",
+  "formal_combination_result": "UNPROVED",
+  "full_exit_result": "UNPROVED",
+  "original_failures_result": "FAIL",
+  "scope": [
+    "VM-only SDK111 Hi3873U ports2/3;user confirms Hi3873E port1 excluded. FullS0-S6/19WP/10FV/12DG retained;UserHostP4.",
+    "Reuse original physical Session/Runtime/Grant/command and data credit/Ticket;no new Engine. Fixed CUTC protected fds use ordinary slktest, slkd broker and original system-bus policy.",
+    "Kernel freezes current receipt epoch at final bind;current Session grade and epoch rechecked at software admission,poll,RX dequeue/status and actual USB consent. ACB RX stores ingress revision;cross-epoch PB rejects;old RX cannot enter later protected binding. Per-binding retirement does not refund existing physical debt.",
+    "Numeric positive security2 and noMITM positive security1 each exchange both connection roles,8 actual random peer-validated replies per scenario. 20 grade refusals:both requirements before security;numeric requirement2 also refused after noMITM. No silent plain fallback.",
+    "Separate numeric rejection and original-deadline late scenario retain plain business only;they are not positive protected tests. Selected249/2042 are unprotected regression. Full protected lifecycle/length/multi/fourdevice/performance/SSAP security consumers not inherited.",
+    "Mechanism level2 is local explicit numeric confirmation plus peer proof/install/0011;not named authenticated identity,Bond,arbitrary Trusted policy or independent RF cipher attestation. Current snapshot is not future send authorization.",
+    "CBMC verifies actual production pure Grant helper with arbitrary32/64bit inputs,one mint/one scope or epoch change,79properties and7expected contract assertions;not long-run or actual Host/Owner locks/refs/USB/cancellation refinement. Runtime supplied grade/revision and kernel pointers are trusted inputs.",
+    "Actual C dispatch sanitizer and Rust ingress tests use explicit alloc/lock/registry/USB/wait/copy/Owner dependencies. They are not actual kernel concurrent or firmware qualification. Prior Kani unsupported/combined temporal/NOCP firmware assumptions remain UNPROVED.",
+    "Rawcaptures contain actual key-install bytes;private retained workspace only. Same-decoder replay/mutants are fail-closed evidence checks,not independent decoding/new radio experiments. Hashes/build records do not prove independent reproducible builds.",
+    "Natural startup/re-enum/disappearance root cause and nonmanual recovery remainOPEN. QMP detach/readd and held real replies are controlled tests,never natural recovery."
+  ],
+  "real_gates": [
+    {
+      "name": "numeric-approve",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/security-grant-real-numeric-approve-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 8,
+      "protected_grant_refusals": 8,
+      "application_requirements": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "numeric-reject",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/security-grant-real-numeric-reject-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 8,
+      "protected_grant_refusals": 0,
+      "application_requirements": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "numeric-late",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/security-grant-real-numeric-late-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 8,
+      "protected_grant_refusals": 0,
+      "application_requirements": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "retained-approve",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/security-grant-real-retained-approve-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 8,
+      "protected_grant_refusals": 12,
+      "application_requirements": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "retained-boundary249",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/security-grant-real-retained-boundary249-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 16,
+      "current_security_snapshots": 0,
+      "protected_grant_refusals": 0,
+      "application_requirements": []
+    },
+    {
+      "name": "retained-long2042",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/security-grant-real-retained-long2042-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0,
+      "current_security_snapshots": 0,
+      "protected_grant_refusals": 0,
+      "application_requirements": []
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "53-actual-native-ACB-credit-queue-and-revision-tests",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "actual-C-Session-route-admission-dequeue-poll-submit-sanitizer-with-explicit-dependencies",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "exact-source-input-mapping-to-clean619",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "279-workspace-and2-Agent-example-tests-strict-clippy",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "694-executed-tools-695-post-tools",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "42-sealed-C-library-Python-CABI-including32bit-layout-compile-only",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "actual-numeric-capture-replay-39-mutants-rejected",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "115-strict-documents",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "accurate73-online-CI-observed-success",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "formal_helper_gates": [
+    {
+      "name": "production-pure-Grant-factory-scope-security-epoch",
+      "status": "BOUNDED_HELPER_79PROPERTIES_THREE_NEGATIVES_PASS",
+      "result": "PASS",
+      "manifest": ".dev/security-grant-cbmc-v4/report.json"
+    }
+  ],
+  "formal_combination_gates": [
+    {
+      "name": "actual-Owner-Host-ref-USB-credit-revoke-deadline-late-reuse-combination",
+      "status": "UNPROVED",
+      "result": "UNPROVED"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "protected-live-release-finalfd-dup-Down-original-deadline-native-authority-and-peer-isolation",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "combined-reserve-revoke-submit-late-NOCP-reuse-and-actual-lock-reference-drain",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "soleSSAP-engine-security-authorization-CPCD-consumers",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "full-new-sevenlength-tenlifecycle-multichannel-fourdevice-fairness-performance",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "numeric-human-policy-Bond-credentials-deployment-PM-release",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "naturalRCA-nonmanualrecovery-firmware-NOCP-reuse-barriers",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "original_failed_checks": [
+    {
+      "name": "strict-lifecycle-fixture-and-postprocess-callers",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "Original lifecycle QEMU property rejection and publication/replay schema mismatch retained;correct test dependencies/serialization,never weaken original physical gate."
+    },
+    {
+      "name": "slktest-default-constructor",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "New security field omitted;compiler rejected. Fixed explicit0,original workspace v1 retained."
+    },
+    {
+      "name": "explicit-test-source-environment",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "Frozen tool invocations omitted SPARKLINK_KERNEL_SOURCE and Python invocation omitted PYTHONPATH. Original errors retained;rerun explicit sources without changing assertions."
+    },
+    {
+      "name": "C-fixture-and-extraction",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "Fixture prototype/order/unused probe errors and clang-format split signature extractor failure retained. Fixed dependencies/extractor;no production assertion weakened."
+    },
+    {
+      "name": "fixture-counter-interference",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "First new test changed global submission counter and triggered original assertion;placed last to preserve original invariant,original v3 retained."
+    },
+    {
+      "name": "sandbox-LSan",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "Original ptrace restriction fatal retained;ASan/UBSan dispatch rerun in permitted environment."
+    },
+    {
+      "name": "CBMC-wrapper-v1-v2",
+      "status": "FAIL",
+      "result": "FAIL",
+      "reason": "v1 rejected terminal spelling;v2 negative found unreachable retained properties. Both NOT_PROVEN retained. v3/v4 explicitly drop unused functions and require expected inventory,targeted counterexamples,diagnostics and terminal."
+    }
+  ],
+  "bounds": {
+    "real_vm_success": 6,
+    "connection_role_phases": 12,
+    "security_role_phases": 8,
+    "current_security_snapshots": 32,
+    "protected_positive_round_trips": 16,
+    "protected_grade_refusals": 20,
+    "peer_business_round_trips": 48,
+    "boundary_rejections": 16,
+    "relay_submits": 58,
+    "opposite_receipts": 58,
+    "actual_installations": 8,
+    "workspace_tests": 279,
+    "executed_tool_tests": 694,
+    "post_tool_tests": 695,
+    "python_CABI_tests": 42,
+    "copied_actual_evidence_negatives": 39,
+    "bounded_helper_properties": 79
+  },
+  "current_mechanism_snapshots": [
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        1,
+        0,
+        2,
+        1,
+        2,
+        15,
+        4,
+        16
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        1,
+        0,
+        3,
+        1,
+        2,
+        15,
+        4,
+        16
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        3,
+        0,
+        2,
+        1,
+        2,
+        15,
+        4,
+        16
+      ]
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        3,
+        0,
+        3,
+        1,
+        2,
+        15,
+        4,
+        16
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        1,
+        0,
+        2,
+        1,
+        1,
+        13,
+        3,
+        16
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        1,
+        0,
+        3,
+        1,
+        1,
+        13,
+        3,
+        16
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        2,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "stage": "current_security_before",
+      "snapshot": [
+        1,
+        3,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        2,
+        3,
+        0,
+        2,
+        1,
+        1,
+        13,
+        3,
+        16
+      ]
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "stage": "current_security_after",
+      "snapshot": [
+        1,
+        3,
+        0,
+        3,
+        1,
+        1,
+        13,
+        3,
+        16
+      ]
+    }
+  ],
+  "security_wire_phases": [
+    {
+      "mode": "numeric-approve",
+      "phase": 0,
+      "relay_pdus": 8,
+      "opposite_receipts": 8,
+      "installations": 2
+    },
+    {
+      "mode": "numeric-approve",
+      "phase": 1,
+      "relay_pdus": 8,
+      "opposite_receipts": 8,
+      "installations": 2
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 0,
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-reject",
+      "phase": 1,
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 0,
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "numeric-late",
+      "phase": 1,
+      "relay_pdus": 6,
+      "opposite_receipts": 6,
+      "installations": 0
+    },
+    {
+      "mode": "approve",
+      "phase": 0,
+      "relay_pdus": 9,
+      "opposite_receipts": 9,
+      "installations": 2
+    },
+    {
+      "mode": "approve",
+      "phase": 1,
+      "relay_pdus": 9,
+      "opposite_receipts": 9,
+      "installations": 2
+    }
+  ],
+  "formal": {
+    "status": "BOUNDED_PRODUCTION_GRANT_HELPER_AND_THREE_NEGATIVES_PASS",
+    "source_head": "61905139ff8c3ed2937ccdba697d880880582234",
+    "source_tree_clean": true,
+    "sources": {
+      "net/sparklink/sle_channel_grant.h": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+      "tools/testing/selftests/sparklink/session/security_grant_cbmc.c": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "tools/testing/selftests/sparklink/run_security_grant.py": "a8a7df82342e1348b58953a9d72726ed390bb3ced5d87c5260e01be4ca5ed267"
+    },
+    "tool": "6.11.0 (cbmc-6.11.0)",
+    "scope": "Actual production pure factory/scope/security checks; arbitrary 32/64bit scalar inputs, one mint and one scope/epoch change; not long-running invariants, actual Owner/Host lock/ref/USB/credit/RF or firmware proof",
+    "assumptions": [
+      "Valid kernel-owned pointers",
+      "Runtime supplies current level/revision from the original physical Session under its locks"
+    ],
+    "expected": [
+      "failed mint leaves grant unchanged",
+      "foreign lifetime lease or channel cannot use grant",
+      "minted exact scope permits granted direction",
+      "no protected authorization without current mechanism",
+      "old security epoch never authorizes current submit",
+      "only supported requirements and directions mint",
+      "protected mint requires actual sufficient facts"
+    ],
+    "runs": [
+      {
+        "kind": "production",
+        "command": [
+          "cbmc",
+          "../.dev/security-grant-cbmc-v4/production/harness.c",
+          "-I",
+          "../.dev/security-grant-cbmc-v4/production",
+          "--function",
+          "verify_grant_policy",
+          "--drop-unused-functions",
+          "--unwind",
+          "3",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--pointer-overflow-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--json-ui",
+          "--trace"
+        ],
+        "exit": 0,
+        "raw_sha256": "d29ee2d8089f9043e996c396eff79116a87dbe66aa432de20f9333aefe95a144",
+        "status": "BOUNDED_HELPER_PASS",
+        "properties": 79,
+        "complete_inventory": true,
+        "terminal": [
+          "success"
+        ],
+        "diagnostics": [],
+        "failed": []
+      },
+      {
+        "kind": "missing-epoch-negative",
+        "command": [
+          "cbmc",
+          "../.dev/security-grant-cbmc-v4/missing-epoch-negative/harness.c",
+          "-I",
+          "../.dev/security-grant-cbmc-v4/missing-epoch-negative",
+          "--function",
+          "verify_grant_policy",
+          "--drop-unused-functions",
+          "--unwind",
+          "3",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--pointer-overflow-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--json-ui",
+          "--trace"
+        ],
+        "exit": 10,
+        "raw_sha256": "dc76843a8d53f123f9880ffb9a69703e5b3c3a9a9642fb03ada1bcbfe3548b5d",
+        "status": "NOT_PROVEN",
+        "properties": 73,
+        "complete_inventory": true,
+        "terminal": [
+          "failure"
+        ],
+        "diagnostics": [],
+        "failed": [
+          "old security epoch never authorizes current submit"
+        ]
+      },
+      {
+        "kind": "missing-level-negative",
+        "command": [
+          "cbmc",
+          "../.dev/security-grant-cbmc-v4/missing-level-negative/harness.c",
+          "-I",
+          "../.dev/security-grant-cbmc-v4/missing-level-negative",
+          "--function",
+          "verify_grant_policy",
+          "--drop-unused-functions",
+          "--unwind",
+          "3",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--pointer-overflow-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--json-ui",
+          "--trace"
+        ],
+        "exit": 10,
+        "raw_sha256": "c0345715099760c4b8e04f91f8207fd55d6a2745e59006cf313bf5bd37db2616",
+        "status": "NOT_PROVEN",
+        "properties": 79,
+        "complete_inventory": true,
+        "terminal": [
+          "failure"
+        ],
+        "diagnostics": [],
+        "failed": [
+          "protected mint requires actual sufficient facts"
+        ]
+      },
+      {
+        "kind": "missing-properties-negative",
+        "command": [
+          "cbmc",
+          "../.dev/security-grant-cbmc-v4/missing-properties-negative/harness.c",
+          "-I",
+          "../.dev/security-grant-cbmc-v4/missing-properties-negative",
+          "--function",
+          "empty_check",
+          "--drop-unused-functions",
+          "--unwind",
+          "3",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--pointer-overflow-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--json-ui",
+          "--trace"
+        ],
+        "exit": 0,
+        "raw_sha256": "cbcdfb9202befd63a060d5ae2f8283319e0fd0e4101b84ad06cec537d9b82d03",
+        "status": "NOT_PROVEN",
+        "properties": 1,
+        "complete_inventory": false,
+        "terminal": [
+          "success"
+        ],
+        "diagnostics": [],
+        "failed": []
+      }
+    ],
+    "end_wall_ns": 1792193471635432384
+  },
+  "materials": [
+    {
+      "path": ".dev/security-grant-real-numeric-approve-v1/manifest.json",
+      "sha256": "04984d74db8f01c2d2d4d39f2517b7baf21bdf3ef7a7b5b2d56e1e1fdbd15ec1",
+      "bytes": 1222503,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-approve-v1/console.log",
+      "sha256": "5a73625d3d1c5981b3ce0ffc363eb7582ba2cd25721a655d0a6c9ced38c80d70",
+      "bytes": 16247,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-approve-v1/guest-output/ws73.pcap",
+      "sha256": "b07c6d469da90997a6e652c1353faa9f944eb90f07eaed8965c6fce77fc1e81f",
+      "bytes": 532732,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-approve-v1/guest-output/capture-stats.txt",
+      "sha256": "798730e9c9f533387c50ca93d2823ff8118fb865f8d005f3fadd6e4d074e8a45",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "044f44e215cf7335f1fc8ead5244f6386fffb87bed547c8923236a095ba1c8bc",
+      "bytes": 721568,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-reject-v1/manifest.json",
+      "sha256": "79e52a709f78f54c455cae819611a8bf34378c1a93ee4fac90c8742a3066b530",
+      "bytes": 1177469,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-reject-v1/console.log",
+      "sha256": "8bde2487cc1b594663cea46e35d591f567633282b07b0feb84555f39fa3685f7",
+      "bytes": 16247,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-reject-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-reject-v1/guest-output/ws73.pcap",
+      "sha256": "1ce69f97f4709c7061609b990c99385125c67c4af82410c21c57868c4b5800b2",
+      "bytes": 501360,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-reject-v1/guest-output/capture-stats.txt",
+      "sha256": "bce94a4a00f24c14faa7c379bb5c6c358f2450c1cace706262f46261e7cad2ed",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-reject-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "dae5bab05ed6bc6d643f8bc1038f5f6ad1b043c7aa22f9033b25f29eab7b5199",
+      "bytes": 712335,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-late-v1/manifest.json",
+      "sha256": "55a5c0f9bed1efaebb5d11ace9058919e9d141946a37c72b61288556d4b6f21d",
+      "bytes": 1177380,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-late-v1/console.log",
+      "sha256": "8f331204e5c23507053dc6d57a28ca4456f2d587024c7e7e7767654bb57a0e77",
+      "bytes": 16055,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-late-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-late-v1/guest-output/ws73.pcap",
+      "sha256": "959beefecef7bd189ba2a8c5de1e4e9b1e556df6b19cbd80a884510906a37dfa",
+      "bytes": 501360,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-late-v1/guest-output/capture-stats.txt",
+      "sha256": "bce94a4a00f24c14faa7c379bb5c6c358f2450c1cace706262f46261e7cad2ed",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-numeric-late-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "0afc07ef71df7b5490123eaef05876e83056a392236f7f4a25ec2d13d14f7d9e",
+      "bytes": 712319,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-approve-v1/manifest.json",
+      "sha256": "58495e5d44e7f0cb9561304578a71c9cddfd0578d04fa780a5d6de9cfe4eedf8",
+      "bytes": 1222556,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-approve-v1/console.log",
+      "sha256": "4252c37caf64ccb38934047572e4a5c50e4530f29ddb79fc3257ca6c5d0a747c",
+      "bytes": 16430,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-approve-v1/guest-output/ws73.pcap",
+      "sha256": "70c42998f4ce9f6ff2588de61bdcb77a6cc10354dd767c7e818804e8344c1ca0",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-approve-v1/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "55988af037993f23205f9f1be349cff0fe16c71a7ab01cbda7beda1fd0108d10",
+      "bytes": 717109,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-boundary249-v1/manifest.json",
+      "sha256": "1a9796a86311c81e3827226657ad1051fb1ab91d355aff1414609d147064db1f",
+      "bytes": 1264172,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-boundary249-v1/console.log",
+      "sha256": "afea79d6a3c4a0a317078f608d461b9276622c16b7e05576bd36617c3a002c5a",
+      "bytes": 16238,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-boundary249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-boundary249-v1/guest-output/ws73.pcap",
+      "sha256": "8fc690cf0fdf98aef5b00bcc142e6fbd2eb545cfbea340894c20dc3908be0833",
+      "bytes": 530588,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-boundary249-v1/guest-output/capture-stats.txt",
+      "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-boundary249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "8334423464af1f2cd811844b12678a0b6267f47db3a5cb5c9bdef661c33493cc",
+      "bytes": 743461,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-long2042-v1/manifest.json",
+      "sha256": "f48aeeae5870e8c2ecd30f75854164b651cbd79fbb561837779a75ddba0e6e42",
+      "bytes": 2243980,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-long2042-v1/console.log",
+      "sha256": "a959a00e445854f138c9cb42de24a173e5401e1ed4397b70f808c6e8c01938e8",
+      "bytes": 16213,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-long2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-long2042-v1/guest-output/ws73.pcap",
+      "sha256": "4483210673917b8615ae065e70b678036b25f6a101fbc32215731556c7ac5c16",
+      "bytes": 1016972,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-long2042-v1/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-retained-long2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "f27ce4fd56e8b05743347c979af3913c30211c9205ef04a659e9e1e6e61812e5",
+      "bytes": 791700,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-matrix-v1.json",
+      "sha256": "84b80364db28e510bc1e3c58aca3fe52af63d75da17d9cae9bf5d57d0d9a0f46",
+      "bytes": 8265,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-matrix-v1.py",
+      "sha256": "a1ab2be5f1da8a8a36bc850de5567afa133c617c802af110d37468ba9f92e20c",
+      "bytes": 3121,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-v1.json",
+      "sha256": "70a60e35f98694501f20870dec59e1918e609f603b977577c901bd7d446741c8",
+      "bytes": 1274,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-real-v1.py",
+      "sha256": "a2a87aac36f79b7757041e03682833a950de3b5177c6d15b00fcef40e3408a01",
+      "bytes": 2217,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-build-prepare-v1.json",
+      "sha256": "de68df0afebe888cbaca3d603900bb40c5ef942584284d94e1b06177f1ea1c40",
+      "bytes": 4405,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-build-prepare-v1.py",
+      "sha256": "2d5431bdc1998fb69e40369ed4919dccc307d3f92979b0096a3d62f1fad77793",
+      "bytes": 3227,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-build-v1.json",
+      "sha256": "afee7f94b15265c7212774b078b8966390abe5578997974e718ebe072ab53baf",
+      "bytes": 1648,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-build-v1.py",
+      "sha256": "2de1ad24be194dd93d58f8831a38c492eff186dfc2688964690ee8ade8ffb536",
+      "bytes": 2641,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-build-v1.log",
+      "sha256": "edf45e632cfc179ac5302453e2fd287681b077a2122062ae119476da4a9be06b",
+      "bytes": 3465,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-budget-v1.json",
+      "sha256": "e763e1243f5176158d89efaba7ba033e2c6ebf49438654ee5cd88e1949e121d5",
+      "bytes": 1070,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-build-check-input-v1.json",
+      "sha256": "068cbfd2016799abda0ffe54b9b01ac5ec41a45f6243e4a2b3b65bfadc2bacd6",
+      "bytes": 716,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-artifacts-v1/manifest.json",
+      "sha256": "1ccf3d01364acb2fb673d837fd41e3e42cddaed629d4d7b4bfa9446477e7cbb7",
+      "bytes": 229023,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-modules-v1/manifest.json",
+      "sha256": "ff09ea1cac0c96aea94c04f5f9031cb2f252508e97f31005d473301e28b4e079",
+      "bytes": 2381,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/manifest.json",
+      "sha256": "ae898585fac92a8f9c6294129a4717e28550ba1956a6e565cdb4b313f861103d",
+      "bytes": 26493,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-prepared-v1/manifest.json",
+      "sha256": "e02cd9151a26d958ca64d6f161a7c0d8442c914b956031e262d1d6c9795e359d",
+      "bytes": 265190,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-root-smoke-v1/manifest.json",
+      "sha256": "04331e346e578497c09de1253c4431f6c6367ce11145f23c27b715331be0fdea",
+      "bytes": 36982,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-workspace-tests-v1.log",
+      "sha256": "0aba4f653d1369e0e7049b1b36ce7c85d9a04a54d44b73fb98f70c126a249ab8",
+      "bytes": 1590,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-workspace-tests-v2.log",
+      "sha256": "3cd74776b10b63142b1aa0ac8e4cd30f470b91a12636ab0b3c45b4617ed3acc5",
+      "bytes": 25642,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-workspace-budget-v2.json",
+      "sha256": "6aa2f2f1e2dc623686e83c0e16eddbcadcea85f4ada39015974d6f8f2b899814",
+      "bytes": 819,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-clippy-v1.log",
+      "sha256": "e8f4bc46e69ab4293e7ed1ceaa870166f415edc9b16837c1469545e02c03481a",
+      "bytes": 690,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-example-tests-v1.log",
+      "sha256": "eacb1af5180212b73271393c08d188b5a74d49045a8bd741ff3448d3fb2678c7",
+      "bytes": 1069,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-docs-v1.log",
+      "sha256": "87cb88b8a157c2ff85331f7ae94e9b012c359579084d8052fcc78041fb8ef19f",
+      "bytes": 303710,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-abi-python-v1.log",
+      "sha256": "9d4a3329fe42e39f93ee74482cc0277e276ff97aa12907799dfda9a9b287015f",
+      "bytes": 4498,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-abi-python-v2.log",
+      "sha256": "1cb112daeead727e0023efa5352e13bcc626c44a7cabd62a3d37aaa68a1c0ef6",
+      "bytes": 5470,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-frozen-tools-tests-v1.log",
+      "sha256": "2c97ec2b96b0b972810688c86fa9643e680a6414c2ea5f745a5e4b93c35f9f98",
+      "bytes": 6275,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-frozen-tools-tests-v2.log",
+      "sha256": "33791e42b88ddaee264c04f40ccc0e47e27580feaadb2e12aba7949752a2a787",
+      "bytes": 829,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-post-tools-tests-v2.log",
+      "sha256": "daa6bf4d8fc34ee802aff25e8000d05bc42d5c02faf70a71d23961ed0d98ff9d",
+      "bytes": 6309,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-post-tools-tests-v3.log",
+      "sha256": "c97767c2298a25427d7ed318f3fb090c82e9dbf627305cfbb4aea200fb0374c1",
+      "bytes": 831,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-replay-v1.py",
+      "sha256": "ff9b04c389c77364f9f28270fd5bc2ddd1cdddffef5e323781df0d5ab63dc11b",
+      "bytes": 6141,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-replay-v1.json",
+      "sha256": "865358c11e2f20acfe5c0696dd57cd17e6f0f8c99133821b88f82b0f079bbd7f",
+      "bytes": 8598,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-replay-all-v2.json",
+      "sha256": "d460d6ea15a163e2b8238fc3d255783a3582e66b9ccf695ddf8a8eeb5424e403",
+      "bytes": 1323,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-postprocess-failures-v1.json",
+      "sha256": "0647f3cf67617fcab3f453f68afaa8e9be27383ff075f15813f071f54264926e",
+      "bytes": 777,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-publish-v1.py",
+      "sha256": "8cf65333a71a258f56d9ff73b168885deb0639261cae5e21ca48d4a244b8f8bc",
+      "bytes": 12591,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-ci73-v1.json",
+      "sha256": "2e019d7a5e721af4aec5b1a61ff8373d723489ba4b8b0a78acfdeb3ae630d2aa",
+      "bytes": 909,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-ci619-v1.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-source-mapping-v1.json",
+      "sha256": "2a4aaa6b6b627adde52c23927e27d59e0d0dd14053d5ae30fb2a640291f904a9",
+      "bytes": 1858,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-ingress-v3.json",
+      "sha256": "6bc5ac5572debec78c38176e993af3a056a2f3f44af7211860a1ee22c4433c96",
+      "bytes": 2208,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-ingress-v3.log",
+      "sha256": "87ba23217c90bdcac483cebd79e9c65896c7553fb01131963528e91d32b0a295",
+      "bytes": 11342,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-dispatch-v7.json",
+      "sha256": "24419660dfefbd4de6387eeae3195250cb88576f228712832c8e63d060d3b475",
+      "bytes": 2561,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-dispatch-v7.log",
+      "sha256": "b2360cf935eb9b08601816c9a3a6fe8218bd92d5ede560d10e2a9e4f127d2c42",
+      "bytes": 2631,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/report.json",
+      "sha256": "f20a8bd274881afb540e79ac69add3e551de68a5ea4dd716ad16f356a78bccbc",
+      "bytes": 5109,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/report.json",
+      "sha256": "1ef13071794f9630a1012dddfbb82bc7b67fcaba226313c138583e3fef75a879",
+      "bytes": 5430,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/report.json",
+      "sha256": "a0ae5ac8ef9382062f382e38588b2b2961c351a9c87496201913cc98359069aa",
+      "bytes": 4301,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v1/report.json",
+      "sha256": "debbcb89d7b7436b40e0007d8d6fb2fc6ae79dc6291359e360c2eabd2f4fc60e",
+      "bytes": 3012,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-dispatch-v1.log",
+      "sha256": "cca94a8360725db9df35950d8165a5a0008e84a75eeb59bc5c19d230c7b36e55",
+      "bytes": 4771,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-dispatch-v2.log",
+      "sha256": "3c1a7c9247ea89d4f90457ced140bd76704864849b43f3902b8eb55dd9d18518",
+      "bytes": 2022,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-dispatch-v3.log",
+      "sha256": "66e7fda17f884c126690ebca2103967cec217d25c4e4eab75b37899e7f65b12a",
+      "bytes": 1343,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-dispatch-v5.log",
+      "sha256": "fb3b8ba3cc77f376f48d36f2e194e3facea49b3efa8019e1516e92d28e85b815",
+      "bytes": 2372,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-dispatch-v6.log",
+      "sha256": "f28bd52d5563e2f9bd8246893deb85d6dd8126bd4d63b2914ca4a26fe27f67ee",
+      "bytes": 1383,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-ingress-v1.log",
+      "sha256": "84d4b7437c7cd39bc2f97e2849701d0837328925de7d606de34c624ee482348f",
+      "bytes": 8498,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/build-manifest.json",
+      "sha256": "eb125bad7e5ff3608e46ebb85dc12d80eb6b834694ba4467ae59da7549a502d2",
+      "bytes": 313707,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/qemu-system-x86_64",
+      "sha256": "dea80cfc383881b83b16744904be1fff82a8e4d523dfa65f2d96d5268e885e68",
+      "bytes": 30099216,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-prepared-v1/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-prepared-v1/root.btrfs",
+      "sha256": "26eb4d5152168a52ccc8198ccdb26bc7e2682c3dd9c9f72ad4efe33e941e9c46",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slkd",
+      "sha256": "246e3ae2f71cd96a5378b753d0cc902f2b3ba9bd1964911dc458e7d0fcb68946",
+      "bytes": 10579552,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slctl",
+      "sha256": "a6c0c7432f2f85cd8473a1639603b464208dc9a38dbbdfee2c3d34f21826deef",
+      "bytes": 7828432,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slktest",
+      "sha256": "5bb2e137ac1139f528ec0ccfa06e2285fb6f99a72e089792ca717c3a88c42dab",
+      "bytes": 5264304,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slkconfig",
+      "sha256": "09560f3e0b4263d08b220ee0dad8a0bf0fd84532cf244bf92bce9dac92acea3d",
+      "bytes": 1404136,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slkmon",
+      "sha256": "b29f1cf8f8e81a3c87d253911b93dfe79d916fcf8fa0c24384d6537c9a14e4ae",
+      "bytes": 1662328,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/slkdump",
+      "sha256": "93929b9aaa903d2039077a59a399b978266c461889a5f9251be42f776a40e744",
+      "bytes": 1662200,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/73a2898b05e6/liblibsparklink.so",
+      "sha256": "3126822aa5dc51cb00a823d0f9641c33ce22cdbe7fb4e95fd1ecc81fb74460bd",
+      "bytes": 548536,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "fba79776015c968128a87d0d76ba07b6d1f3bb906507bb4207d2633c9993a467",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "4d14f24a6bf039defa65290cf6332c6e96f1a520c83ef2b945b86e6f7dbaea41",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v1/production/sle_channel_grant.h",
+      "sha256": "4800a84aee059cda7978e9b56951d44eb6ea8e4e3f22f5ec24ded130f11ef6e5",
+      "bytes": 2887,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v1/production/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v1/production/raw.json",
+      "sha256": "5df3ece8131f703d878652d00c4b2480073728857c86522c83a77c5260f1a99c",
+      "bytes": 97090,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/production/sle_channel_grant.h",
+      "sha256": "4800a84aee059cda7978e9b56951d44eb6ea8e4e3f22f5ec24ded130f11ef6e5",
+      "bytes": 2887,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/production/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/production/raw.json",
+      "sha256": "cebc873244557fd9d9e5cce826ac2a1b8b4f83ba7162d76f0c1118404b6995e8",
+      "bytes": 97090,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/missing-epoch-negative/sle_channel_grant.h",
+      "sha256": "954173c7f6842a93aa898dc1a8f739ec41ce54303ec65826a3e0b680b4524642",
+      "bytes": 2858,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/missing-epoch-negative/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/missing-epoch-negative/raw.json",
+      "sha256": "37d822718b17db2c8bfe32024e030cddd6ade1873f7366153e8e3b99eaa805f7",
+      "bytes": 285057,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/missing-properties-negative/sle_channel_grant.h",
+      "sha256": "4800a84aee059cda7978e9b56951d44eb6ea8e4e3f22f5ec24ded130f11ef6e5",
+      "bytes": 2887,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/missing-properties-negative/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v2/missing-properties-negative/raw.json",
+      "sha256": "62eec45461e1f7c9bfd11a368ced6a6202bc2265a05ec321791299701168f1e1",
+      "bytes": 98053,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/production/sle_channel_grant.h",
+      "sha256": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+      "bytes": 2965,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/production/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/production/raw.json",
+      "sha256": "a9eb58837ff374933b481385c8c8e49f82f6ab52b611c710487099ea53022819",
+      "bytes": 96292,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-epoch-negative/sle_channel_grant.h",
+      "sha256": "417f2388e15fb37f8db3af3c947ad3b83fae65dbd1c1dc62b58d6361b3104c79",
+      "bytes": 2936,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-epoch-negative/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-epoch-negative/raw.json",
+      "sha256": "d89472ebdc0e381f8fa4c57a212114760670edffcb0455254fc838810598af2b",
+      "bytes": 284247,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-level-negative/sle_channel_grant.h",
+      "sha256": "6f9c43f5c577c5636eb68be9c9f7e3670e33c580708d3562c9425ae50531cb6b",
+      "bytes": 2937,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-level-negative/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-level-negative/raw.json",
+      "sha256": "ee3152a2aa003851c0ebb42851c550dd1d4fc183c9909fbfad5f23f82cb8a7a7",
+      "bytes": 234266,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-properties-negative/sle_channel_grant.h",
+      "sha256": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+      "bytes": 2965,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-properties-negative/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v3/missing-properties-negative/raw.json",
+      "sha256": "bee71842f348a83304de090a991a9e51b61eaaad9dc6fe6a40c3ee884f741b57",
+      "bytes": 1934,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/production/sle_channel_grant.h",
+      "sha256": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+      "bytes": 2965,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/production/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/production/raw.json",
+      "sha256": "d29ee2d8089f9043e996c396eff79116a87dbe66aa432de20f9333aefe95a144",
+      "bytes": 93132,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-epoch-negative/sle_channel_grant.h",
+      "sha256": "417f2388e15fb37f8db3af3c947ad3b83fae65dbd1c1dc62b58d6361b3104c79",
+      "bytes": 2936,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-epoch-negative/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-epoch-negative/raw.json",
+      "sha256": "dc76843a8d53f123f9880ffb9a69703e5b3c3a9a9642fb03ada1bcbfe3548b5d",
+      "bytes": 274527,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-level-negative/sle_channel_grant.h",
+      "sha256": "6f9c43f5c577c5636eb68be9c9f7e3670e33c580708d3562c9425ae50531cb6b",
+      "bytes": 2937,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-level-negative/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-level-negative/raw.json",
+      "sha256": "c0345715099760c4b8e04f91f8207fd55d6a2745e59006cf313bf5bd37db2616",
+      "bytes": 226506,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-properties-negative/sle_channel_grant.h",
+      "sha256": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+      "bytes": 2965,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-properties-negative/harness.c",
+      "sha256": "4c8bbb39c5deb159cbc9ada384b6800afc3c252a760aceedd5a2d1867bf39552",
+      "bytes": 2167,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-cbmc-v4/missing-properties-negative/raw.json",
+      "sha256": "cbcdfb9202befd63a060d5ae2f8283319e0fd0e4101b84ad06cec537d9b82d03",
+      "bytes": 1894,
+      "access": "private",
+      "retention": "Owner workspace originals;no verified offsite archive. Install captures contain actual key material and stay private. Missing/hash-mismatched originals cannot verify PASS."
+    }
+  ],
+  "remaining": [
+    "protected-live-release-finalfd-dup-Down-original-deadline-native-authority-and-peer-isolation",
+    "combined-reserve-revoke-submit-late-NOCP-reuse-and-actual-lock-reference-drain",
+    "soleSSAP-engine-security-authorization-CPCD-consumers",
+    "full-new-sevenlength-tenlifecycle-multichannel-fourdevice-fairness-performance",
+    "numeric-human-policy-Bond-credentials-deployment-PM-release",
+    "naturalRCA-nonmanualrecovery-firmware-NOCP-reuse-barriers"
+  ],
+  "replay": [
+    "Frozen executed73 and post02;read_capture exact guest identities,check_capture_stats,then ws73_security_agent.corroborate or ws73_channel_socket.corroborate and compare exact sealed manifest proof.",
+    "SDK111 7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3;NearLinkHost f0872dfaac33ffa99b80b352f6c05fba2df6414e,libws73 f4d85d0e95af2d0043432e1301fd2f6b660a4906,SDK d5e68a58fe38c2b04a16769c69de1e8a80e86d74;references are not standard or firmware truth oracles."
+  ],
+  "created_wall_ns": 1792193842000352416
+}

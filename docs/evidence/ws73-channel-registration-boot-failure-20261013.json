@@ -1,0 +1,24 @@
+{
+  "scope": "empty USB VM boot failure; no actual WS73 attached; not data acceptance",
+  "failed_kernel_head": "c7d5868113c8357815f21b56c546a9cd9dfc4d02",
+  "kernel_sha256": "9644e30630e517107ae3713b5ca2925245719cba273c139993f13aa95df75a6f",
+  "config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+  "console_sha256": "4d132c2e5ddb922ddc57f2c6a2a1f0bfd1b280c1b50f6f812560c67c9488c879",
+  "observed": [
+    "UBSAN array-index-out-of-bounds net/socket.c:3230",
+    "sock_register -> sl_channel_socket_init -> __sparklink_init",
+    "general protection fault in string/vsnprintf printk",
+    "Fatal exception panic before root/service/real-device attachment"
+  ],
+  "root_cause": "AF_SPARKLINK=46 registration indexed an inferred pf_family_names table ending at PF_MCTP=45",
+  "fix_kernel_head": "21e0600c82efd88d8a29d483d61aeac04ad17930",
+  "fix_scope": [
+    "PF_SPARKLINK registration name",
+    "AF_SPARKLINK lockdep name",
+    "compile-time inferred registration and lockdep table length checks"
+  ],
+  "fix_real_socket_acceptance": false,
+  "failed_evidence_retained": true,
+  "host_installation": false,
+  "physical_recovery_acceptance": false
+}

@@ -1,0 +1,98 @@
+{
+  "recorded_at_utc": "2026-10-15T02:44:50.431620+00:00",
+  "documentation_commit": "79ed6c321d7934676390435090c720ed3a3e7cea",
+  "status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "receipts": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6183192449",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+      "comment_sha256": "a83ca186651a26c4435b8581d7b7945d83e19e530e859d3e0d132b3f324ff976"
+    },
+    {
+      "repo": "linux",
+      "issue": 14,
+      "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6183193298",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+      "comment_sha256": "d011e6af8e67ab3e1fac57989aa36e43ed18462307d20ce6743d3a6ebc4d7059"
+    },
+    {
+      "repo": "linux",
+      "issue": 16,
+      "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6183194082",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "f7160a379be1e38f4e8ed9c4ca04901ff66a85fd13f7f9fd40fecfd9fb13f8fc",
+      "comment_sha256": "5487658501e5927be34c4ce797aa306572dc3cea340c40a56ecc177dfba5c886"
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6183195135",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "comment_sha256": "5efde403d2bd96781e823dde34ee27c54f07ea42c61ff1967d391917fb081cfa"
+    },
+    {
+      "repo": "linux",
+      "issue": 18,
+      "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6183195976",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "5c2dbee1928dff3ce3caecac72d05f6c37a8509549022002c7911376ed40132b",
+      "comment_sha256": "081b43f9b4a30c461a46ec9ab70ca19210b1d3bff4d5697209c0683a4da7407d"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6183196748",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "comment_sha256": "b626a4ec2eebe52ea9b6e9ce4ba27649aacff2f372d06b01abc8f7a296927ec3"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6183197590",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41",
+      "comment_sha256": "8fe18a59b43ceb4b83846db8c839f6650cc35cd8f097fcc525736c758c014bbe"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 5,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6183198457",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+      "comment_sha256": "10163d28ae3a67747352431406b7fa6d80c2ba873633b725da3cf2360a2e58fb"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6183199663",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "comment_sha256": "7b1e86a6214bea5a57b56bc0f7f04ffb445d2b083cc0d5fa6aecc0e48988a437"
+    }
+  ],
+  "issue_closure_allowed": false
+}

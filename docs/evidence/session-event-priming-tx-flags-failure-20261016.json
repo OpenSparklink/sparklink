@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "FAIL",
+  "compiled_kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+  "executed_tools": "2451a83",
+  "finding": "Test misinterpreted TX_ACTIVE bit1 as snapshot validity;actual producer sets flags0 when no active PDU. Four primers reached peer andsource had4 unpaid credits,emptyqueue/noactivePDU;predicate incorrectly waited forflags1.",
+  "actual_source_snapshot": "010040000000000001000000000000000100000000000000fe000500040004000400000008000000000000000000000000000000000000000000000000000000",
+  "contract_sources": [
+    "linux/include/uapi/linux/sparklink_socket.h:SPARKLINK_CHANNEL_TX_ACTIVE=1,BEGUN=2",
+    "linux/net/sparklink/sle_channel_socket.c:sl_read_tx_status",
+    "linux/tools/testing/selftests/sparklink/session/dispatch_fixture.c:tx_status_tests already asserts zero idle flags and3 begun flags"
+  ],
+  "fix": "Test-only flags0 for idle/priming,existing exactlength UAPI decoder,actual captured64byte fixed regression;no kernel contract or prefix assertion change",
+  "not_qualified": [
+    "Long PDU never admitted or Disconnect submitted in this failed case",
+    "Peer primer receipts do not make wholecase PASS",
+    "QEMUbounded2srelease1 is failed explicit-hold contract,not recovery acceptance",
+    "New idletrace andremaining32 cases notyet revalidated"
+  ],
+  "materials": [
+    {
+      "path": ".dev/session-event-qualification-v2.json",
+      "sha256": "1dc396e8637b51c889fbfad6bc4c35dfd229fa947991b6499d5690cb87b67563",
+      "bytes": 13239,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-v2-down0/manifest.json",
+      "sha256": "1d9be73a49a101dee56c95e1e3ee26fc927e74cb6e057c0692c8a443828f5f72",
+      "bytes": 47687,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-v2-down0/guest-output/connected-file/run.json",
+      "sha256": "d214ac701d3da6c99298216f592ab47dcfba05a8c0f24478275713b217b29420",
+      "bytes": 42258,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-v2-down0/guest-output/ws73.pcap",
+      "sha256": "11a9e6cfe711f50e84fa4db8e27f76a7fc7b7260b4f7346013b5cf5d06873299",
+      "bytes": 64072,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-v2-down0/qemu-stderr.log",
+      "sha256": "309f2b1cb339e7657e3c60f8bc9e09b50a0804604213c7fa59401021a6701a4c",
+      "bytes": 305,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-tx-flags-regression-v1.log",
+      "sha256": "2864de66aa7929d314f5ae20ab3c4d3c161c438643904c6253a9e81f803b3e14",
+      "bytes": 1975,
+      "access": "private"
+    }
+  ]
+}

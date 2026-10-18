@@ -1,0 +1,369 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "compiled_userspace": "81bd754073ae9cc3b3bb6b66bb0987cd24193cc9",
+  "executed_tools": "81bd754073ae9cc3b3bb6b66bb0987cd24193cc9",
+  "kernel_abi": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+  "scope": [
+    "Exact signed-source test/debug artifact only; actual workspace, private D-Bus and external C/Python consumers. No driver/device action, formal proof or hardware permission qualification in this record.",
+    "Ten identical function bodies and C/Rust48/64byte comparison are bounded source/ABI checks, not semantic refinement, kernel concurrency or USB proof.",
+    "Named Native syscall source guard covers explicit patterns only; aliases/macros and runtime behavior are not proved.",
+    "Real WS73 preservation uses separately sealed release artifacts and reports; prior fa310 qualifications stay under their own identities."
+  ],
+  "bounds": {
+    "default_workspace_tests": 342,
+    "allfeatures_workspace_tests": 342,
+    "python_binding_checks": 57,
+    "dependency_guard_test_methods": 6,
+    "unchanged_function_bodies": 10,
+    "fixed_address_bytes": 48,
+    "dynamic_address_bytes": 64,
+    "new_formal_proofs": 0,
+    "new_real_device_runs": 0
+  },
+  "production_behavior": "Existing privileged AF_SPARKLINK creator/Native sockaddr and original tests moved from daemon to existing slk-native; all callers switched and old module removed. Pure TransportInfo observation mapping moved to existing contract. Channel/SDK remain delegated-fd only; no second Host, Engine, policy or ABI.",
+  "gates": [
+    {
+      "name": "Actual default/allfeatures workspace and private-bus external consumers",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual Python binding calls against sealed current library",
+      "status": "PASS"
+    },
+    {
+      "name": "Independent current C header/export and Native address checks",
+      "status": "PASS"
+    },
+    {
+      "name": "Default/allfeatures dependency direction and retirement guards",
+      "status": "PASS"
+    },
+    {
+      "name": "Strict clippy and strict four-quadrant HTML",
+      "status": "PASS"
+    }
+  ],
+  "limitations": [
+    "cbindgen raw warnings for anonymous private constant assertions and unsupported DEFAULT_DEV_PATH string are retained; shipped Native header bytes match. This is not a warning-free all-Rust-export proof.",
+    "Python first sandboxed attempt failed on SO_DOMAIN EPERM interception. Original failed output retained; separate ordinary-user run passed57 unchanged checks.",
+    "Current normal UBSAN/real-device artifacts and prior bounded formal reports confer no new KASAN/KCSAN/lockdep or formal proof here."
+  ],
+  "remaining": [
+    "Exact new release artifact actual SDK roles, original radio/connection/short/length/Owned and moved dynamic/protected factory gates must pass separately.",
+    "Full public lifecycle, end-to-end original deadline, higher/common APIs, per-application discovery and R6c remain required.",
+    "ENODATA counterexample, natural failure RCA and nonmanual recovery OPEN; full S0-S6/19WP/10FV/12DG unchanged."
+  ],
+  "provenance": {
+    "source_check": "Scoped production files byte-checked before and after both actual offline runs against81bd754.",
+    "environment": "Rust1.96.1 Cargo--locked--offline fixed incremental target;12solo shared build lock/testthreads8; no device VM during build; exact artifacts/stdout/stderr retained.",
+    "public_raw": "Only hashes/limited metadata are public. Private .dev material requires authorized local workspace access; rerun source-bound script with same toolchain/cache and private bus, not a claim of byte-reproducible binaries."
+  },
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f5-source-bound-offline-v1.py",
+      "sha256": "e2223251c825d9389f8eae7781f4a71df207a64d7dfca61e8ef77bfa2d320d5d",
+      "bytes": 3023
+    },
+    {
+      "path": ".dev/architecture-r5f5-source-bound-offline-v1.json",
+      "sha256": "bbdec16f3a7fe84b8855a99b651904ca7d625b0c76166f77042d4c4be0b14e31",
+      "bytes": 26594
+    },
+    {
+      "path": ".dev/architecture-r5f5-source-bound-offline-v1.log",
+      "sha256": "36809708f4c11d0b783c7f7d8adf58f6112c43de85097c00dd733779fd98e38d",
+      "bytes": 153
+    },
+    {
+      "path": ".dev/architecture-r5f5-source-move-check-v1.json",
+      "sha256": "21a7017632c80bff100884c605bdcdd09699e5a3e31fb989479074cb75b6f207",
+      "bytes": 1818
+    },
+    {
+      "path": ".dev/architecture-r5f5-socket-layout-v1.json",
+      "sha256": "67b11f6ca0a146eb7e5ceedc37b7ec4a5cda18aac04f43cf303f9c6bfa849a2e",
+      "bytes": 591
+    },
+    {
+      "path": ".dev/architecture-r5f5-socket-layout-v1.log",
+      "sha256": "67b11f6ca0a146eb7e5ceedc37b7ec4a5cda18aac04f43cf303f9c6bfa849a2e",
+      "bytes": 591
+    },
+    {
+      "path": ".dev/architecture-r5f5-exports-v1.json",
+      "sha256": "0a1b7b4c8fbab5632a2fd35841443b01adc6e65bd71193fcc23ff7b0fcd0555e",
+      "bytes": 3623
+    },
+    {
+      "path": ".dev/architecture-r5f5-exports-v1.log",
+      "sha256": "67b3c246875695fa36a65835ef3ce8b6a3fed1b8ed60ccefa6d0b3d181cd4a38",
+      "bytes": 94
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-header-v1.h",
+      "sha256": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+      "bytes": 24050
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-header-v1.log",
+      "sha256": "075e3752779f36620d203273817b9f8ac531e444e9cdb101dda240bf0c4496aa",
+      "bytes": 793
+    },
+    {
+      "path": ".dev/architecture-r5f5-boundary-v1.log",
+      "sha256": "aaa57004ae775b4baa0f563dffa39d6ecf250b372df3a99f6e2581d7a7cfb9cd",
+      "bytes": 1628
+    },
+    {
+      "path": ".dev/architecture-r5f5-boundary-fixtures-v1.log",
+      "sha256": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371",
+      "bytes": 104
+    },
+    {
+      "path": ".dev/architecture-r5f5-clippy-v1.log",
+      "sha256": "576a172ea1b44f09a49fcd800c6f1414d2b00f8ec11824c2d6d5e746e30281e0",
+      "bytes": 1752
+    },
+    {
+      "path": ".dev/architecture-r5f5-clippy-v2.log",
+      "sha256": "d88a9cfbbd4897d589ed33e71de9ebcc89dd0797a7afc518a0b58bbfce010e2b",
+      "bytes": 406
+    },
+    {
+      "path": ".dev/architecture-r5f5-retired-guard-v1.log",
+      "sha256": "49c803b52abca48125e1252a88874682a4801052fe563fcbc7dc5394072abdf6",
+      "bytes": 81
+    },
+    {
+      "path": ".dev/architecture-r5f5-python-bindings-v1.log",
+      "sha256": "1e44fe5a7436ac3044a283acbb8008cb483aad7a461fa722d9b760ef658f6c38",
+      "bytes": 4731
+    },
+    {
+      "path": ".dev/architecture-r5f5-python-bindings-v2.log",
+      "sha256": "f59a77eb4b273bb1c25dbe733218bd3a74614899ee6ebed48d214b369ec5ccc4",
+      "bytes": 156
+    },
+    {
+      "path": ".dev/architecture-r5f5-html-v1.log",
+      "sha256": "ade5ec65241dd777b999929add159a13c6dafe7ff2d48c30c7c1a7fd37542986",
+      "bytes": 1134915
+    },
+    {
+      "path": ".dev/architecture-r5f5-workspace-default-v1.log",
+      "sha256": "596bcdb168bdcbd4d705b82aecd1814642a6403117f59495134a7fe90caa43f2",
+      "bytes": 37560
+    },
+    {
+      "path": ".dev/architecture-r5f5-workspace-all-features-v1.log",
+      "sha256": "ca706f841f671ef75cb17aa8fa02bdfac5c64955867084004b744b828b1c8c36",
+      "bytes": 36213
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/libsparklink.so.0",
+      "sha256": "e8402a45c4c2627e026f17251b8d531700cbbcb8d525fd1e55e91a6edd497efa",
+      "bytes": 58544664
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/client",
+      "sha256": "0e0d674716ce9e54997585225255bfcee71277f53b408904860e744b2636ef01",
+      "bytes": 87360
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-ssap-probe",
+      "sha256": "0ef247f756788d0111481b25456b97a10faead857f51eb64871b84e108ef6a9d",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/materials.sha256",
+      "sha256": "d3cb2ab9051d4e57f9030c7ea353eb95edee87271293e4a25ec8a720d11e0df3",
+      "bytes": 1673
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/python.stderr",
+      "sha256": "58e96f4c7ea2d5620a4d7bcec13202c0caf65596b08594072568b8bbf5293d6b",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/sdk-python-negative.stderr",
+      "sha256": "38f7eb0fc989ca2b7531b0e8d2f221e2006972164e1757c6eb825a686e912e39",
+      "bytes": 959
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-default-v1/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/libsparklink.so.0",
+      "sha256": "e8402a45c4c2627e026f17251b8d531700cbbcb8d525fd1e55e91a6edd497efa",
+      "bytes": 58544664
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/client",
+      "sha256": "0e0d674716ce9e54997585225255bfcee71277f53b408904860e744b2636ef01",
+      "bytes": 87360
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-ssap-probe",
+      "sha256": "0ef247f756788d0111481b25456b97a10faead857f51eb64871b84e108ef6a9d",
+      "bytes": 18304
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/materials.sha256",
+      "sha256": "1ce3539bbc069d87dc2411f38a4a9392995356779506fc7810ef945ec3628b92",
+      "bytes": 1688
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/python.stderr",
+      "sha256": "b537cc5854cbd9b78dcf74597d77acb78463e83cc2e1b74c45fe0d35c4a78cf8",
+      "bytes": 283
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-c-positive.stdout",
+      "sha256": "5c6935125505d609ac5f673c3db71163d3f848ceb032edf781bcb97fb45a7d0f",
+      "bytes": 190
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-c-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-c-negative.stdout",
+      "sha256": "855e994ef54f9ef163fedc3bbc4c16edbceee1f6a46ec635754cf689d7e7b7ea",
+      "bytes": 62
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-c-negative.stderr",
+      "sha256": "04851cad3901d4c8856ba253d693b63d6e13154943ef9549d194746e74cf7822",
+      "bytes": 42
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-python-positive.stdout",
+      "sha256": "42c9e8adc74160c34f8993c0547c7af95c8c2f549bbd6347ad048b979bc79072",
+      "bytes": 200
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-python-positive.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-python-negative.stdout",
+      "sha256": "ca223cf23dca3fbee0ffe32f8a12ac96e1c2bfbc075dadad3ca7ec06ab0b4bdc",
+      "bytes": 72
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/sdk-python-negative.stderr",
+      "sha256": "38f7eb0fc989ca2b7531b0e8d2f221e2006972164e1757c6eb825a686e912e39",
+      "bytes": 959
+    },
+    {
+      "path": ".dev/architecture-r5f5-cross-language-all-features-v1/COMPLETE",
+      "sha256": "8bf9164b69be8b47e9eaadba571927eacb8f13dd76f35c8c43036cd8c2446716",
+      "bytes": 45
+    },
+    {
+      "path": ".dev/architecture-r5f5-offline-materials-v1/libslk_native.so.0",
+      "sha256": "91d137ea5511165e6b42eab5586efbac1b541c7501ea80e7b47251f080e67392",
+      "bytes": 16374880
+    },
+    {
+      "path": ".dev/architecture-r5f5-offline-materials-v1/identity.json",
+      "sha256": "35ba455cb81d1c58ac0ec4367e8302391f89fad5a67c589eae486d4323e36512",
+      "bytes": 203
+    },
+    {
+      "path": ".dev/architecture-r4f2e-userspace-worktree/crates/slk-native/include/sparklink_native.h",
+      "sha256": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+      "bytes": 24050
+    },
+    {
+      "path": ".dev/architecture-r4f2e-userspace-worktree/crates/libsparklink/include/sparklink.h",
+      "sha256": "d119588f97c9eb3c1760308a7d2c39d1cb03a0d9776468ca7a33047a80738a45",
+      "bytes": 13528
+    },
+    {
+      "path": ".dev/architecture-r5f5-write-offline-report-v1.py",
+      "sha256": "35b96ceb8995d800047d31bcf0ea9e2683906988052892474cd3c6cd27aa2ddb",
+      "bytes": 5888
+    },
+    {
+      "path": ".dev/architecture-r4f2e-userspace-worktree/Cargo.toml",
+      "sha256": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+      "bytes": 1232
+    },
+    {
+      "path": ".dev/architecture-r4f2e-userspace-worktree/Cargo.lock",
+      "sha256": "fb9c2151354f2bde1fe8918c9ddd72714081a8240faa3bad1547da4562276909",
+      "bytes": 45882
+    }
+  ]
+}

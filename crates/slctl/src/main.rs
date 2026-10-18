@@ -1,13 +1,37 @@
 mod commands;
+mod security_agent;
+mod ssap_server;
 
 use std::process;
 
-use rustyline::error::ReadlineError;
+use clap::Parser;
 use rustyline::DefaultEditor;
+use rustyline::error::ReadlineError;
 
 const PROMPT: &str = "[slk]# ";
 
+#[derive(Debug, Parser)]
+#[command(name = "slctl", version, about = "SparkLink control tool", after_help = COMMAND_HELP)]
+struct Cli {
+    /// Use the session bus for isolated tests.
+    #[arg(long)]
+    session: bool,
+
+    /// Select an adapter for a one-shot command.
+    #[arg(long, value_name = "PATH", requires = "command")]
+    adapter: Option<String>,
+
+    /// Run one command, or start the interactive shell when omitted.
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    command: Vec<String>,
+}
+
 fn main() {
+    let cli = Cli::parse();
+    if cli.command == ["help"] {
+        print_help();
+        return;
+    }
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -16,16 +40,28 @@ fn main() {
             process::exit(1);
         });
 
-    if let Err(e) = rt.block_on(run()) {
+    if let Err(e) = rt.block_on(run(cli)) {
         eprintln!("error: {e}");
         process::exit(1);
     }
 }
 
-async fn run() -> anyhow::Result<()> {
-    let conn = zbus::Connection::system().await?;
+async fn run(cli: Cli) -> anyhow::Result<()> {
+    let conn = if cli.session {
+        zbus::Connection::session().await?
+    } else {
+        zbus::Connection::system().await?
+    };
     let mut ctx = commands::Context::new(conn);
 
+    // One-shot commands make automation reproducible.
+    if !cli.command.is_empty() {
+        if let Some(adapter) = &cli.adapter {
+            ctx.dispatch(&["select", adapter]).await?;
+        }
+        let parts = cli.command.iter().map(String::as_str).collect::<Vec<_>>();
+        return ctx.dispatch(&parts).await;
+    }
     let mut rl = DefaultEditor::new()?;
     let history_path = dirs_history_path();
     if let Some(ref path) = history_path {
@@ -70,45 +106,59 @@ async fn run() -> anyhow::Result<()> {
 }
 
 fn print_help() {
-    println!(
-        "\
-Commands:
-  list                          List adapters
-  show                          Show adapter details
-  scan on|off                   Start/stop scanning
-  devices                       List discovered devices
-  info <address>                Show device details
-  pair <address>                Pair with device
-  connect <address>             Connect to device
-  disconnect [address]          Disconnect
-  services                      List local SSAP services
-  remote-services               List remote services
-  read <handle>                 Read property value
-  write <handle> <hex>          Write property value
-  security                      Show security state
-  role [g|t]                    Get/set role
-  phy                           Show PHY parameters
-  stats                         Show subsystem statistics
-  events                        Show event queue statistics
-  mgmt                          Show management plane statistics
-  extadv <sub>                  Extended advertising management
-  power                         Show power management state
-  dli                           Show DLI controller info
-  mcs <index>                   Set MCS index
-  txpower <dBm>                 Set TX power
-  bandwidth <MHz>               Set bandwidth
-  afh <sub>                     AFH channel map management
-  ral <sub>                     Resolving address list management
-  rpa <sub>                     Resolvable private address control
-  sync <sub>                    Sync link management
-  meas <sub>                    Measurement / ranging control
-  peer <sub>                    Peer capability queries
-  bonded [list|remove <addr>]   Manage bonded devices
-  help                          Print this help
-  quit                          Exit"
-    );
+    println!("{COMMAND_HELP}");
 }
 
+const COMMAND_HELP: &str = "\
+Commands:
+  registrations                 Observe live Core registrations including early faults
+  registration <path>           Read exact Core lifecycle (Installed is not Ready)
+  daemon                        Show the bus-authenticated slkd owner/PID/UID
+  list                          List adapters
+  select <path>                 Select a live adapter registration
+  reports                       Show exact native discovery reports
+  show                          Show adapter details
+  scan on [marker address]|off  Scan and optionally await a fresh matching report
+  advertise on [32-hex-marker]   Start native beacon with a fresh random marker
+  advertise connectable [marker] Start explicit fixed-T connectable announcement
+  advertise negotiable [marker]  Start explicit negotiable-T announcement
+  advertise off                 Stop native beacon
+  advertise initialized-off     Query real initializer OFF for untouched advertising
+  scan initialized-off          Query real initializer OFF for untouched scanning
+  result <request-id>           Inspect retained native operation result
+  cancel-discovery              Cancel both native policies and drain this device
+  management                    Query native kernel management state without token
+  peers                         List typed peers and observation validity
+  peer-observation <path>        Show one typed Peer advertisement (unknown RSSI explicit)
+  agent [method]                Foreground Agent [sdk111-no-mitm|sdk111-numeric-comparison], no auto-approval
+  security-request <path> [ms] [method]  Request exact Connection security (1..5000ms)
+  connect <address>             Connect to device
+  connections                   Show canonical native links and lifetimes
+  connection-objects            List typed physical connection objects
+  peer-info <path>               Show a typed peer and its connection lifetimes
+  connection-info <path>        Show one immutable connection identity
+  disconnect-object <path>      Disconnect the exact physical lifetime
+  ssap-discover <path> [structure|service|property uuid-hex] Discover actual peer metadata
+  ssap-list                            Inspect local service metadata only
+  ssap-register <service-hex> <property-hex> <ops> <access> <value-hex> Configure local database only
+  ssap-serve <service-hex> <property-hex> <ops> <access> <value-hex> [ask|allow|deny] Own a foreground local service; policy decision is not peer receipt
+  ssap-remove <start-handle>                 Remove local service (handles not reused)
+  ssap-local-read <handle>                   Inspect local database, not peer receipt
+  ssap-observe <path> <handle> [notify|indicate|both] [wait-ms] Observe one actual incoming packet; no remote subscription
+  ssap-read-uuid <path> <start> <end> <uuid-hex> [minimum] Read actual peer values by UUID
+  ssap-read <path> <handle> [minimum]                  Read actual peer value on SMTC
+  ssap-write <path> <handle> <value-hex> [minimum]      Write with peer verification and reply
+  transport-status <path>                    Read current Session queues/debt/state (not drain/reuse proof)
+  ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
+  disconnect <address> [type]    Disconnect an unambiguous current peer
+  disconnect-link <addr> <type> <handle> <lifetime> <role>  Disconnect exact link
+  stats                         Show confirmed physical-link summary
+  events                        Show selected registration event watermark
+  help                          Print this help
+  quit                          Exit";
+
 fn dirs_history_path() -> Option<String> {
-    std::env::var("HOME").ok().map(|h| format!("{h}/.slctl_history"))
+    std::env::var("HOME")
+        .ok()
+        .map(|h| format!("{h}/.slctl_history"))
 }

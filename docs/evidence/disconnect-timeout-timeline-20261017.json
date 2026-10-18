@@ -1,0 +1,148 @@
+{
+  "status": "OBSERVED_USB_TIMELINES_ORIGINAL_FAILURE_CAUSE_UNPROVED",
+  "cases": [
+    {
+      "name": "old13-late",
+      "original_status": "FAIL",
+      "request_params": "000013",
+      "command_record": 2334,
+      "USB_OUT_completion_after_ns": 169000,
+      "controllers": [
+        {
+          "index": 1,
+          "role": "caller",
+          "events": [
+            {
+              "event": 1,
+              "params": "03140100",
+              "record": 2336,
+              "after_request_ns": 352000
+            },
+            {
+              "event": 5,
+              "params": "0000000d",
+              "record": 2338,
+              "after_request_ns": 1977000
+            }
+          ],
+          "last_ACB_before_request_ns": 176028000,
+          "last_NOCP_before_request_ns": 183409000
+        },
+        {
+          "index": 0,
+          "role": "peer",
+          "events": [
+            {
+              "event": 5,
+              "params": "00000007",
+              "record": 2344,
+              "after_request_ns": 5082532000
+            }
+          ],
+          "last_ACB_before_request_ns": 183155000,
+          "last_NOCP_before_request_ns": 174785000
+        }
+      ]
+    },
+    {
+      "name": "fresh13-fast",
+      "original_status": "CONTROL_PASSTHROUGH_EVIDENCE_PENDING",
+      "request_params": "000013",
+      "command_record": 2334,
+      "USB_OUT_completion_after_ns": 202000,
+      "controllers": [
+        {
+          "index": 1,
+          "role": "caller",
+          "events": [
+            {
+              "event": 1,
+              "params": "03140100",
+              "record": 2336,
+              "after_request_ns": 361000
+            },
+            {
+              "event": 5,
+              "params": "00000011",
+              "record": 2338,
+              "after_request_ns": 1238000
+            }
+          ],
+          "last_ACB_before_request_ns": 183337000,
+          "last_NOCP_before_request_ns": 190733000
+        },
+        {
+          "index": 0,
+          "role": "peer",
+          "events": [
+            {
+              "event": 5,
+              "params": "00000013",
+              "record": 2340,
+              "after_request_ns": 2224000
+            }
+          ],
+          "last_ACB_before_request_ns": 190391000,
+          "last_NOCP_before_request_ns": 181967000
+        }
+      ]
+    },
+    {
+      "name": "new10-fast",
+      "original_status": "CONTROL_PASSTHROUGH_EVIDENCE_PENDING",
+      "request_params": "000010",
+      "command_record": 2334,
+      "USB_OUT_completion_after_ns": 156000,
+      "controllers": [
+        {
+          "index": 1,
+          "role": "caller",
+          "events": [
+            {
+              "event": 1,
+              "params": "03140100",
+              "record": 2336,
+              "after_request_ns": 332000
+            },
+            {
+              "event": 5,
+              "params": "00000011",
+              "record": 2340,
+              "after_request_ns": 2787000
+            }
+          ],
+          "last_ACB_before_request_ns": 198103000,
+          "last_NOCP_before_request_ns": 205525000
+        },
+        {
+          "index": 0,
+          "role": "peer",
+          "events": [
+            {
+              "event": 5,
+              "params": "00000010",
+              "record": 2338,
+              "after_request_ns": 2723000
+            }
+          ],
+          "last_ACB_before_request_ns": 205275000,
+          "last_NOCP_before_request_ns": 196819000
+        }
+      ]
+    }
+  ],
+  "scope": "GuestUSBclock only;bounded6scontext,NOCPnotphysicaldrainproof. Samehandlereuse/firmwareeventidentity assumptions notproved. Original13late versusfresh13fast refutesreason-alonecause;noRFobservation orhardwarestateclearproof. Privatecapturehashes retained in publishedreports.",
+  "schema_version": 1,
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "new_compiled_userspace": "8bda4e0e3dd32c737957b2cdfd19d062d68cef3a",
+  "old_compiled_userspace": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+  "executed_analysis_tools": "8bda4e0e3dd32c737957b2cdfd19d062d68cef3a",
+  "interpretation": [
+    "Original13slow:USBOUTcompletes169us,CommandStatussuccess352us,localDownreason0d1.977ms,peerDownreason075.082532s afterUSBrequest. D-Bus5s observationfailure follows actualUSBoutcomes;not sufficient toblame daemon scheduling.",
+    "Fresh13fast:local11/peer13 within1.238/2.224ms;new10fast:local11/peer10within2.787/2.723ms. These areindividualsecondrole observations,notfullperformancestatistics.",
+    "SameCreatebytes andoldfreshproductioncode confirmreason-alonecause unproved. Controllerfirmware/LL/RF/retainedstate/oldlifetime conditionsnotisolated;USBtimestampscannotseparateRF,callbackorfirmwareexecution. No claimallhostcauses eliminated.",
+    "LastobservedACB/NOCP precededDisconnect byroughly175..206ms,notphysicaldebt/drainproof;completionaccuracy andeventlifetimeassumptionsremainopen.",
+    "KeeporiginalFAIL andfreshlegacyPASS;fixuserterminationsemanticswithoutclaimingtimeoutRCAclosed. ContinueboundedfailurediagnosticsinparallelwithSSAPattribute/datawork,noallcontrolprecondition."
+  ],
+  "wall_ns": 1792200104815007040
+}

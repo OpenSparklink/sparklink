@@ -1,0 +1,81 @@
+{
+  "scope": "WP12 first retirement slice, not full event ownership completion",
+  "audited_heads": {
+    "linux": "4ea441ee2e3a475c629f767e8228de83c88841ae",
+    "userspace": "96cafc461c361463f2bbd38965078033e24807bd"
+  },
+  "immediately_delete": [
+    {
+      "path": "kernel ioctl_legacy_dli_poll + ControllerState.dli_ring + Raw256 projection",
+      "callers": [
+        "old SDK raw poll",
+        "legacy monitoring",
+        "legacy diagnostic historical runner"
+      ],
+      "function": "destructive shared dequeue/copy, second event projection",
+      "replacement": "ControllerEventGet per-reader cursor; DiagnosticResult author-private; CAP-controlled snoop",
+      "issues": [
+        "K#3",
+        "K#5",
+        "U#2"
+      ]
+    },
+    {
+      "path": "libsparklink EventReceiver/next_event/poll_event, C/Python slk_poll_event, CLI legacy capture/scan",
+      "function": "raw consumer and 50ms fallback, truncated rendering",
+      "replacement": "existing full native receiver/snoop; unsupported capabilities explicitly rejected",
+      "issues": [
+        "U#2",
+        "K#19"
+      ]
+    }
+  ],
+  "move_to_tests": [
+    {
+      "path": "kernel exact legacy wire/ring/copy handler at retired-event-poll",
+      "function": "six valuable old copy/commit fixtures and provenance",
+      "qualification": "historical only; current ioctl absent"
+    },
+    {
+      "path": "libsparklink retired_event codec/shape + bounds tests",
+      "function": "retain exact historical codec safety without default wire intake",
+      "qualification": "test-only; no Engine or native RF claim"
+    },
+    {
+      "path": "tools retired DLI ctypes and old probe run",
+      "function": "archived evidence verification only; current live old matrix rejects"
+    }
+  ],
+  "waiting_for_replacement": [
+    {
+      "path": "legacy BroadcastRing/read_iter/normalized legacy state/genl mirrors",
+      "reason": "separate published/caller and copy regression migration; this slice does not delete the read projection",
+      "replacement": "canonical loss/resync/state/topology events and matching actual copy/fault tests",
+      "issues": [
+        "K#3",
+        "K#4",
+        "U#1",
+        "U#2"
+      ]
+    },
+    {
+      "path": "standard control/domain observations",
+      "reason": "profile0 query only; typed policy and full standard hardware still Unsupported",
+      "replacement": "registered dialect canonical ingress"
+    }
+  ],
+  "regression_gates": [
+    "strict default/all-feature build/clippy",
+    "current generated C header and x86_32/x86_64 C/Rust/Python ABI",
+    "historical tests labeled separately",
+    "empty USB real Virtual File/Diagnostic gates with old ioctl ENOTTY",
+    "exact new-source WS73 fault peer8 + short40 +249/16 rejects, full raw HCC both ends"
+  ],
+  "unchanged": [
+    "Native WS73 full event receiver",
+    "privileged independent snoop",
+    "Host reserved reply and per-author DiagnosticResult",
+    "per-Channel application sockets",
+    "VM-only and natural-recovery open gates"
+  ]
+}

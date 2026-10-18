@@ -1,0 +1,2151 @@
+[
+  {
+    "program": "CBMC 6.11.0 (cbmc-6.11.0)"
+  },
+  {
+    "messageText": "CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Type-checking progress_cbmc",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generating GOTO Program",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Adding CPROVER library (x86_64)",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Removal of function pointers and virtual functions",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generic Property Instrumentation",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Starting Bounded Model Checking",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Passing problem to propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "converting SSA",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Running propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "SAT checker: instance is UNSATISFIABLE",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "result": [
+      {
+        "description": "assertion invariant(initial)",
+        "property": "main.assertion.1",
+        "sourceLocation": {
+          "comment": "assertion invariant(initial)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/progress_cbmc.c",
+          "function": "main",
+          "line": "45",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion invariant(after)",
+        "property": "main.assertion.2",
+        "sourceLocation": {
+          "comment": "assertion invariant(after)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/progress_cbmc.c",
+          "function": "main",
+          "line": "53",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion after.phase == SL_CH_CLOSED",
+        "property": "main.assertion.3",
+        "sourceLocation": {
+          "comment": "assertion after.phase == SL_CH_CLOSED",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/progress_cbmc.c",
+          "function": "main",
+          "line": "55",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion after.phase == SL_CH_FAILED || after.phase == SL_CH_CLOSED",
+        "property": "main.assertion.4",
+        "sourceLocation": {
+          "comment": "assertion after.phase == SL_CH_FAILED || after.phase == SL_CH_CLOSED",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/progress_cbmc.c",
+          "function": "main",
+          "line": "57",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion after.phase == SL_CH_FAILED",
+        "property": "main.assertion.5",
+        "sourceLocation": {
+          "comment": "assertion after.phase == SL_CH_FAILED",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/progress_cbmc.c",
+          "function": "main",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_close.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_close",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_close.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_close.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_close",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_close.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_close.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_close",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_close.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_close.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_close",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_close.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_close.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_close",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_close.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_close.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_close",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_close.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_fail.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_fail",
+          "line": "32",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_fail.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_fail.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_fail",
+          "line": "32",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_fail.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_fail.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_fail",
+          "line": "32",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_fail.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_fail.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_fail",
+          "line": "32",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_fail.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_fail.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_fail",
+          "line": "32",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_fail.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_fail.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_fail",
+          "line": "32",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_fail.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_peer_capability.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_peer_capability.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_peer_capability.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_peer_capability.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_peer_capability.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_peer_capability.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->request_submitted",
+        "property": "sl_channel_peer_capability.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->request_submitted",
+        "property": "sl_channel_peer_capability.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->request_submitted",
+        "property": "sl_channel_peer_capability.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->request_submitted",
+        "property": "sl_channel_peer_capability.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->request_submitted",
+        "property": "sl_channel_peer_capability.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->request_submitted",
+        "property": "sl_channel_peer_capability.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "60",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.13",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.13",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.14",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.14",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.15",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.15",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.16",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.16",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.17",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.17",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.18",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.18",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->maximum",
+        "property": "sl_channel_peer_capability.pointer_dereference.19",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->maximum",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.19",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->maximum",
+        "property": "sl_channel_peer_capability.pointer_dereference.20",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->maximum",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.20",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->maximum",
+        "property": "sl_channel_peer_capability.pointer_dereference.21",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->maximum",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.21",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->maximum",
+        "property": "sl_channel_peer_capability.pointer_dereference.22",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->maximum",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.22",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->maximum",
+        "property": "sl_channel_peer_capability.pointer_dereference.23",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->maximum",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.23",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->maximum",
+        "property": "sl_channel_peer_capability.pointer_dereference.24",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->maximum",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "61",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.24",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->mtu",
+        "property": "sl_channel_peer_capability.pointer_dereference.25",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->mtu",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "62",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.25",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->mtu",
+        "property": "sl_channel_peer_capability.pointer_dereference.26",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->mtu",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "62",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.26",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->mtu",
+        "property": "sl_channel_peer_capability.pointer_dereference.27",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->mtu",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "62",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.27",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->mtu",
+        "property": "sl_channel_peer_capability.pointer_dereference.28",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->mtu",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "62",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.28",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->mtu",
+        "property": "sl_channel_peer_capability.pointer_dereference.29",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->mtu",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "62",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.29",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->mtu",
+        "property": "sl_channel_peer_capability.pointer_dereference.30",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->mtu",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "62",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.30",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.31",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "63",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.31",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.32",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "63",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.32",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.33",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "63",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.33",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.34",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "63",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.34",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.35",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "63",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.35",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->peer_capability",
+        "property": "sl_channel_peer_capability.pointer_dereference.36",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_peer_capability",
+          "line": "63",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_peer_capability.pointer_dereference.36",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_request_submitted.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "53",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_request_submitted.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "53",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_request_submitted.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "53",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_request_submitted.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "53",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_request_submitted.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "53",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_request_submitted.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "53",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->request_submitted",
+        "property": "sl_channel_request_submitted.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "54",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->request_submitted",
+        "property": "sl_channel_request_submitted.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "54",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->request_submitted",
+        "property": "sl_channel_request_submitted.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "54",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->request_submitted",
+        "property": "sl_channel_request_submitted.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "54",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->request_submitted",
+        "property": "sl_channel_request_submitted.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "54",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->request_submitted",
+        "property": "sl_channel_request_submitted.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_request_submitted",
+          "line": "54",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_request_submitted.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_response_submitted.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "70",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_response_submitted.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "70",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_response_submitted.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "70",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_response_submitted.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "70",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_response_submitted.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "70",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_response_submitted.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "70",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->response_submitted",
+        "property": "sl_channel_response_submitted.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "71",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->response_submitted",
+        "property": "sl_channel_response_submitted.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "71",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->response_submitted",
+        "property": "sl_channel_response_submitted.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "71",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->response_submitted",
+        "property": "sl_channel_response_submitted.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "71",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->response_submitted",
+        "property": "sl_channel_response_submitted.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "71",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->response_submitted",
+        "property": "sl_channel_response_submitted.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_response_submitted",
+          "line": "71",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_response_submitted.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_start.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "21",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_start.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "21",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_start.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "21",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_start.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "21",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_start.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "21",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_start.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "21",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in *s",
+        "property": "sl_channel_start.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "27",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in *s",
+        "property": "sl_channel_start.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "27",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in *s",
+        "property": "sl_channel_start.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "27",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in *s",
+        "property": "sl_channel_start.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "27",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in *s",
+        "property": "sl_channel_start.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "27",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in *s",
+        "property": "sl_channel_start.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in *s",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_start",
+          "line": "27",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_start.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "41",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "41",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "41",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "41",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "41",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "41",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "42",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "42",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "42",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "42",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "42",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_tick.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_tick",
+          "line": "42",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_tick.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->request_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->request_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->request_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->request_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->request_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->request_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->request_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "46",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->peer_capability",
+        "property": "sl_channel_try_open.pointer_dereference.13",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.13",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->peer_capability",
+        "property": "sl_channel_try_open.pointer_dereference.14",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.14",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->peer_capability",
+        "property": "sl_channel_try_open.pointer_dereference.15",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.15",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->peer_capability",
+        "property": "sl_channel_try_open.pointer_dereference.16",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.16",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->peer_capability",
+        "property": "sl_channel_try_open.pointer_dereference.17",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.17",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->peer_capability",
+        "property": "sl_channel_try_open.pointer_dereference.18",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->peer_capability",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.18",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->response_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.19",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.19",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->response_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.20",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.20",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->response_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.21",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.21",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->response_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.22",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.22",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->response_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.23",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.23",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->response_submitted",
+        "property": "sl_channel_try_open.pointer_dereference.24",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->response_submitted",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "47",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.24",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.25",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "48",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.25",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.26",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "48",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.26",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.27",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "48",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.27",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.28",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "48",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.28",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.29",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "48",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.29",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in s->phase",
+        "property": "sl_channel_try_open.pointer_dereference.30",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in s->phase",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_state.h",
+          "function": "sl_channel_try_open",
+          "line": "48",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_channel_try_open.pointer_dereference.30",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "messageText": "VERIFICATION SUCCESSFUL",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "cProverStatus": "success"
+  }
+]

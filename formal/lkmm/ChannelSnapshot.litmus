@@ -1,0 +1,21 @@
+C ChannelSnapshot
+
+(* state_lock publication in sl_progress_event/sl_snapshot. Never. *)
+{}
+P0(int *mtu, int *phase, spinlock_t *state_lock)
+{
+	spin_lock(state_lock);
+	WRITE_ONCE(*mtu, 249);
+	WRITE_ONCE(*phase, 1);
+	spin_unlock(state_lock);
+}
+P1(int *mtu, int *phase, spinlock_t *state_lock)
+{
+	int r0;
+	int r1;
+	spin_lock(state_lock);
+	r0 = READ_ONCE(*phase);
+	r1 = READ_ONCE(*mtu);
+	spin_unlock(state_lock);
+}
+exists (1:r0=1 /\ 1:r1=0)

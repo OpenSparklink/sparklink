@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "EXACT_READBACK_SCOPES_UNCHANGED_ISSUES_OPEN",
+  "implementation": "fa7197034eead7e2ed4835e765171d32686dd787",
+  "compiled_userspace": "6385e43081bfcbeabee1ac4f18b9d0917c7a6057",
+  "guest_and_host_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
+  "report_publication": "0feeb290450b7fb9bbb1926fdfa869d56e8b80c6",
+  "qualification_registry_publication": "d383e64ef13da403173805e0cffc89523dfaf550",
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 18,
+      "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6198455001",
+      "readback_exact": true,
+      "scope_body_unchanged": true,
+      "original_body_sha256": "5c2dbee1928dff3ce3caecac72d05f6c37a8509549022002c7911376ed40132b",
+      "comment_body_sha256": "8c6a17c8ba8ca201460a1d6d0098ecc74851b90b50255a94c5478d9adae8c850",
+      "state": "OPEN"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 5,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6198456236",
+      "readback_exact": true,
+      "scope_body_unchanged": true,
+      "original_body_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+      "comment_body_sha256": "8c6a17c8ba8ca201460a1d6d0098ecc74851b90b50255a94c5478d9adae8c850",
+      "state": "OPEN"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6198457307",
+      "readback_exact": true,
+      "scope_body_unchanged": true,
+      "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "comment_body_sha256": "8c6a17c8ba8ca201460a1d6d0098ecc74851b90b50255a94c5478d9adae8c850",
+      "state": "OPEN"
+    }
+  ],
+  "qualification_integrity": {
+    "failed_stale_source_assertion_preserved": {
+      "workspace_relative_path": ".dev/security-cli-qualification-local.json",
+      "sha256": "9ab474d86e13a6d684dd25967f4e161371ab0d4b1bdf1f9350be229b458945fc",
+      "bytes": 441,
+      "access": "private original authorized workspace"
+    },
+    "corrected_exact_binding": {
+      "workspace_relative_path": ".dev/security-cli-qualification-local-v2.json",
+      "sha256": "2d184cd31561a27ab5d4ede64b57d53741652457cbe0bd9ab3b12b5a53219aae",
+      "bytes": 230,
+      "access": "private original authorized workspace"
+    },
+    "result": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "overall": "INCOMPLETE"
+  },
+  "remaining": "Eleven new-image retained data gates still run separately; no whole issue/goal closed. Original S0-S6/19WP/10FV/12DG, VM-only and low-priority UserHost unchanged; natural RCA/nonhuman recovery open."
+}

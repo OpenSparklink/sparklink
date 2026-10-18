@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "status": "POLICY_PRODUCTION_OFFLINE_SCOPED_PASS",
+  "compiled_userspace": "16175ab14a054e3cff01824beeb5870bc44c979c",
+  "production_agent_commit": "9e3d7aa30fe6859d7eb9f5ff03a4bb0ba21fef3a",
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "-p",
+    "slkd",
+    "--all-features",
+    "security_policy::tests"
+  ],
+  "environment": {
+    "SPARKLINK_TEST_DBUS_DAEMON": "<workspace>/.dev/tools/dbus/usr/bin/dbus-daemon"
+  },
+  "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+  "cases": [
+    {
+      "name": "security_policy::tests::actual_success_publication_is_fail_closed_on_clock_failure_or_expiry",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::allocated_caller_death_is_active_without_query",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::reject_has_no_native_admission_and_duplicate_begin_is_rejected",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::approval_reaches_real_ioctl_failure_never_fake_install_success",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::allocated_agent_unregistration_is_active_and_old_epoch_cannot_follow_replacement",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::retire_does_not_touch_peer_registry_and_prevents_resurrection",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::caller_death_during_callback_never_submits",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::missing_agent_unknown_method_and_other_owner_are_rejected",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::agent_death_then_replacement_cannot_revive_old_request",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::allocation_wait_does_not_renew_original_deadline",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::pending_author_and_retained_record_budgets_are_enforced_by_production_allocate",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::allocated_expiry_is_active_without_query_or_begin",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::duplicate_begin_while_agent_pending_invokes_only_one_callback",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::stale_identity_and_removed_connection_cannot_admit",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::cancel_before_late_approval_is_terminal_without_controller_release",
+      "status": "ok"
+    },
+    {
+      "name": "security_policy::tests::approval_after_original_deadline_does_not_submit_or_rewrite",
+      "status": "ok"
+    }
+  ],
+  "bounds": {
+    "cases": 16,
+    "private_bus_cases": 15,
+    "pure_production_clock_publication": 1,
+    "registration_agents_per_controller": 1,
+    "retained_records": 64,
+    "pending_per_author": 4,
+    "native_io": "actual /dev/null ENOTTY; never successful stub",
+    "actual": "EXTERNAL private bus, exported interfaces, unique names/loss, Tokio task/timer/cancel and real libc syscall errors",
+    "fixtures": [
+      "canonical Ready/link/generation metadata",
+      "Managed lease token and connection identity",
+      "explicit test Agent decisions/delays",
+      "/dev/null replaces actual SparkLink device"
+    ]
+  },
+  "excluded": [
+    "No actual SparkLink kernel concurrency/locks/refs, firmware, USB, credit, crypto or radio proof.",
+    "No actual full system-bus/udev/systemd deployment qualification; private bus checks policy mechanics only.",
+    "No new formal proof; hardware assumptions and installation composition remain unproved.",
+    "Source16175 scope is frozen; later exact real runs bind their own compiled/source/tool identities."
+  ],
+  "remaining": [
+    "actual two-role Agent matrix with independent USB/application replies",
+    "full deployment/permissions and in-flight installation/revoke/Down/reuse composition",
+    "authentication/trusted Grant/Bond/natural recovery"
+  ],
+  "materials": {
+    "test_log": {
+      "base": "workspace",
+      "path": ".dev/security-agent-policy-exact16175-tests.log",
+      "sha256": "59273a6bdadcb222bd94cb49fb3be3fc5c4b46409c1f39ccaee55d9421bcb483",
+      "bytes": 2095,
+      "access": "private",
+      "format": "bytes"
+    },
+    "test_binary": {
+      "base": "workspace",
+      "path": ".dev/agent-policy-offline-16175/slkd-tests",
+      "sha256": "a4b9f3e27fd27effc002301337373a337f35fbc64c4c02a7c2eb3f0a9ac05e58",
+      "bytes": 135445080,
+      "access": "private",
+      "format": "bytes"
+    },
+    "source_mapping": {
+      "base": "workspace",
+      "path": ".dev/agent-policy-offline-16175/source-mapping.json",
+      "sha256": "f0d2c0d70e6210b8e0c8fddc708bc7c815632b0378619f570da3f6f93736f3c1",
+      "bytes": 6939,
+      "access": "private",
+      "format": "json"
+    }
+  },
+  "reference": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "files": [
+      "services/stack/src/cp/bsl/sle/sm/src/sm_slink.c",
+      "services/stack/src/cp/bsl/sle/sm/src/sm_stm.c"
+    ],
+    "takeaway": "reference separates input/protocol waiting; our original total deadline is not refreshed per step. No reference implementation copied."
+  },
+  "retained_failure": {
+    "base": "workspace",
+    "path": ".dev/security-agent-policy-first-tests.log",
+    "sha256": "95d654406de752dbe272c6328de3e79ca580c621a0cf6bcbde4a7c50860cdc50",
+    "bytes": 6630,
+    "access": "private",
+    "format": "bytes"
+  },
+  "failure_classification": "sandbox blocked private bus bind; unchanged13case normaluser run and later16exact cases passed; not erased"
+}

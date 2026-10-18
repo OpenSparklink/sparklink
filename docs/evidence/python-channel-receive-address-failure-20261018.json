@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "result": "FAIL",
+  "compiled_userspace": "3ff5296145a1",
+  "scope": "Actual constructors/dup reached;Python address-aware recvmsg failed before peer application validation. No successfulroundtrip orrecoveryqualification.",
+  "error": "OSError: getsockaddrlen: bad family",
+  "correction": "Both test applications receive through existing public C/Python Channel receipt API;samekernel socket/productiondecoder,withfullpayload/truncation/lifetimechecks. No newEngine orreceivercodec.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v5/manifest.json",
+      "sha256": "eda27dcd2b142e3132f23f034b21827ef2393b9983877dc522db7f4753fe4652",
+      "bytes": 48148
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v5/guest-output/application/passthrough-control/run.json",
+      "sha256": "1da8c7cc6c56b5018494f58f402cdbebea8ccbda7663fae683f5c026675f51ba",
+      "bytes": 53230
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v5/guest-output/application/passthrough-control/app-client-0-python.stderr",
+      "sha256": "dff88354ce54fd36319e6fb3ca67bb20c717a7b9b5feb8b44ca675336bef3006",
+      "bytes": 431
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v5/guest-output/ws73.pcap",
+      "sha256": "c426b1add879e45a6a0800be59792c3bde174716b367b8f3f637f56f68d35486",
+      "bytes": 60775
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v5/guest-output/capture-stats.txt",
+      "sha256": "963b15f2662984c9a628079fff57ffe905d90ca47c3ea0d636f653eddbecde9f",
+      "bytes": 225
+    }
+  ],
+  "remaining": [
+    "Exactnewimage/actualboth-application randomrequest/reply andoriginalgates",
+    "Full permissions/lifecycle/highlevelAPI/R6c/naturalRCA remainOPEN"
+  ],
+  "resolved_compiled_userspace": "3ff5296145a16798dd4a13ce231a63486280b946",
+  "identity_note": "Original abbreviated source retained above;resolved full identity is the same compiled image source,not a replacement artifact."
+}

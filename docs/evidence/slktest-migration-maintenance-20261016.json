@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "status": "SLKTEST_MIGRATION_MAINTENANCE_RECEIPT",
+  "scope": "Issue/readback/metadata integrity receipt only;notnewRF/formal/performancequalification",
+  "code_commits": [
+    "10be90c49ce29e271873efb7c9ca66ac5e86f694",
+    "7694e14fccab1ac101521edb8ef09fa20bcc5e1b"
+  ],
+  "documentation_commit": "7f7832984e9b44237f88b59ac5a54a7f2f07501a",
+  "report_commit": "5e02d197c8b19937115ca650a57c4ed2982121c6",
+  "registry_commit": "b50a54cd89f68b204837ec1d17812b23f4dd8348",
+  "issues": [
+    {
+      "issue": "https://github.com/OpenSparklink/linux/issues/17",
+      "comment": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6212738360",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "original_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "posted_body_sha256": "40ded3f2cc0d1953d33009e9bfc3f20969f519538b854d9d15c1fd81167349f4"
+    },
+    {
+      "issue": "https://github.com/OpenSparklink/linux/issues/19",
+      "comment": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6212739023",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "posted_body_sha256": "40ded3f2cc0d1953d33009e9bfc3f20969f519538b854d9d15c1fd81167349f4"
+    },
+    {
+      "issue": "https://github.com/OpenSparklink/sparklink/issues/8",
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6212739622",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "posted_body_sha256": "40ded3f2cc0d1953d33009e9bfc3f20969f519538b854d9d15c1fd81167349f4"
+    }
+  ],
+  "ci_observed": [
+    {
+      "conclusion": "success",
+      "databaseId": 38882336209,
+      "headSha": "b50a54cd89f68b204837ec1d17812b23f4dd8348",
+      "name": "Qualification integrity",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38882336209"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38882336064,
+      "headSha": "b50a54cd89f68b204837ec1d17812b23f4dd8348",
+      "name": "Production codec bounded fuzz",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38882336064"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38882336180,
+      "headSha": "b50a54cd89f68b204837ec1d17812b23f4dd8348",
+      "name": "Documentation",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38882336180"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38882336501,
+      "headSha": "b50a54cd89f68b204837ec1d17812b23f4dd8348",
+      "name": "CI",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38882336501"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38882326176,
+      "headSha": "b50a54cd89f68b204837ec1d17812b23f4dd8348",
+      "name": "Qualification integrity",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38882326176"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38882326155,
+      "headSha": "b50a54cd89f68b204837ec1d17812b23f4dd8348",
+      "name": "Documentation",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38882326155"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38881030432,
+      "headSha": "7694e14fccab1ac101521edb8ef09fa20bcc5e1b",
+      "name": "Qualification integrity",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38881030432"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38881030399,
+      "headSha": "7694e14fccab1ac101521edb8ef09fa20bcc5e1b",
+      "name": "Documentation",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38881030399"
+    }
+  ],
+  "qualification_integrity": {
+    "exact-scoped-source-and-retained-bytes": {
+      "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+      "current": "SCOPED_SOURCE_AND_BYTES_MATCH_NOT_REPLAYED",
+      "errors": []
+    },
+    "old-source": {
+      "verification": "INVALID",
+      "current": "NOT_QUALIFIED",
+      "errors": [
+        "slktest-migration-7694e14/application: stale/incomplete source mapping",
+        "source changed since qualification: slktest-migration-7694e14/application"
+      ]
+    },
+    "missing-application-artifact": {
+      "verification": "INVALID",
+      "current": "NOT_QUALIFIED",
+      "errors": [
+        "slktest-migration-7694e14-m30: missing material"
+      ]
+    },
+    "widened-scope": {
+      "verification": "INVALID",
+      "current": "NOT_QUALIFIED",
+      "errors": [
+        "slktest-migration-7694e14: scope mismatch"
+      ]
+    }
+  },
+  "qualification_checker_regressions": "27 PASS;metadata/source/bytes only,notreplay",
+  "goal": {
+    "status": "active",
+    "scope": "unchanged fullS0-S6/19WP/10FV/12DG",
+    "new_goal": false,
+    "budget_unchanged": true
+  },
+  "next": "P1schema2 both-end evidenceclosure/pairedendcoordination/Nativebaseline;thenP2events,noallcontrolprerequisite",
+  "missing": [
+    "newslktestNative/realWS73 qualification",
+    "credibleperformancebaseline/schema2fullclosure",
+    "formal/kernelconcurrency/newRFqualification",
+    "naturalRCA/nonhumanrecovery/fulloriginalscope"
+  ]
+}

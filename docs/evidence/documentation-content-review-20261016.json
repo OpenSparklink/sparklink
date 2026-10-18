@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "basis": "278ff966e434ec6d51f769632da89da05851ad00 plus explicitly hashed reclassification changes; published with the changes",
+  "scope": "Reader intent/category audit of published reader pages only; not complete API semantic review, device replay or proof of content completeness",
+  "decisions": [
+    {
+      "path": "docs/decisions/0001-management-channel-service-boundaries.md",
+      "reader": "架构读者",
+      "task": "ADR 0001：管理、连接 socket 与应用服务分层",
+      "category": "explanation",
+      "disposition": "needs_split",
+      "reason": "ADR 决策独立保留；历史进展/具体轮次混入，需提取并保留原始理由及来源",
+      "reviewed_bytes_sha256": "f65e96a285459603d733e263dce3b74cd27c0e0a1535a22021b82d1f6771afe9"
+    },
+    {
+      "path": "docs/decisions/0002-session-socket-lifetime-and-proof-contract.md",
+      "reader": "架构读者",
+      "task": "ADR 0002：连接会话、通道、fd 与验证契约",
+      "category": "explanation",
+      "disposition": "needs_split",
+      "reason": "ADR 决策独立保留；历史进展/具体轮次混入，需提取并保留原始理由及来源",
+      "reviewed_bytes_sha256": "12c5bd72ed4ebd9e6afb82cdef1848c8dc97cfb28c7fb171da165761ada1c5ec"
+    },
+    {
+      "path": "docs/decisions/0003-optional-exclusive-user-host.md",
+      "reader": "架构读者",
+      "task": "ADR 0003：可选 controller 独占 UserHost",
+      "category": "explanation",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "62eb9b0639e90fcdbdde492f7fc335aa4824268643f4f8916905c8dfc4bf8e14"
+    },
+    {
+      "path": "docs/decisions/index.md",
+      "reader": "决策审查者",
+      "task": "架构决策",
+      "category": "decisions",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "9e125878879f6a4696918dfde4086295cba422fefe816947e5b4868969b6f9f6"
+    },
+    {
+      "path": "docs/evidence/index.md",
+      "reader": "资格审查者",
+      "task": "证据入口与取得限制",
+      "category": "evidence",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "f25c976e5089b4df10b98ee826e4b6ff7c9369110bf97e2478a984413ae3bb13"
+    },
+    {
+      "path": "docs/explanation/documentation-model.md",
+      "reader": "架构读者",
+      "task": "为什么按读者需求组织文档",
+      "category": "explanation",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "492e3c35760e8135e11c46002b60658e29091aea3cf63c7554f49c16cdc782a9"
+    },
+    {
+      "path": "docs/explanation/index.md",
+      "reader": "架构读者",
+      "task": "原理解释",
+      "category": "explanation",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "8ff3441243baad649db6e776b11b34b6d2909b99597789925885aa43a5bdb7b1"
+    },
+    {
+      "path": "docs/history/index.md",
+      "reader": "审查者／故障分析者",
+      "task": "历史、审计与验收记录",
+      "category": "history",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "bfa9ed2663ca987f1aeca1cf20378ec6c6b6d2439b2509dc1fab4bb394298150"
+    },
+    {
+      "path": "docs/history/records.md",
+      "reader": "审查者／故障分析者",
+      "task": "历史与待拆分资料",
+      "category": "history",
+      "disposition": "history_index",
+      "reason": "原始处置/来源目录；不是当前任务指南或 API 手册",
+      "reviewed_bytes_sha256": "ea0cf6f5871ad2baccccf177de10d0f525caf9062dbdb9911a5393366c13adc6"
+    },
+    {
+      "path": "docs/how-to/capture-and-check-discovery.md",
+      "reader": "执行具体任务的开发者",
+      "task": "保存并核对双设备发现证据",
+      "category": "how-to",
+      "disposition": "needs_rewrite",
+      "reason": "类型应是测试人员核对任务；正文仍混执行/采集与核对，需要按任务拆开",
+      "reviewed_bytes_sha256": "64b7124cd36941c05942559b7c9c1722181695c511ab5894303b9e7aa4f2389b"
+    },
+    {
+      "path": "docs/how-to/export-board-inputs.md",
+      "reader": "执行具体任务的开发者",
+      "task": "导出 WS73 板级输入候选",
+      "category": "how-to",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "dcf1e1b9da2a4630d9d62b333593d1534a6c99483a1908c1e7c989324bf0a9a6"
+    },
+    {
+      "path": "docs/how-to/index.md",
+      "reader": "执行具体任务的开发者",
+      "task": "操作指南",
+      "category": "how-to",
+      "disposition": "corrected",
+      "reason": "按使用者、集成测试、贡献者分组，不用测试材料填补用户指南",
+      "reviewed_bytes_sha256": "078b3c228dc901cdef65290f6c3d802852f287918a7ca0bcacd7aa9aba05dc42"
+    },
+    {
+      "path": "docs/reference/vm-gate-inputs.md",
+      "reader": "集成／测试人员",
+      "task": "查清 runner 输入的类型、匹配关系和失败边界",
+      "category": "reference",
+      "disposition": "corrected",
+      "reason": "只有输入契约，重写为字段参考；完整 VM 制作指南保持缺失",
+      "reviewed_bytes_sha256": "bd1b44a807b0a685c3b4eb1678ab5185ed3e1ae640db70dec06ee43f12c5f3f5"
+    },
+    {
+      "path": "docs/how-to/run-offline-checks.md",
+      "reader": "代码贡献者",
+      "task": "执行当前锁定工具链的无硬件开发检查",
+      "category": "how-to",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "bfb0c2d271ad87dca2895f9e3b1485268da186cb6b71efc51f6963754c959980"
+    },
+    {
+      "path": "docs/how-to/write-documentation.md",
+      "reader": "执行具体任务的开发者",
+      "task": "增补和验证文档",
+      "category": "how-to",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "210f24452101f019dc2a4d9c1043d4906f08221357524a792a5c58eab2a75eec"
+    },
+    {
+      "path": "docs/index.md",
+      "reader": "所有读者",
+      "task": "SparkLink 文档",
+      "category": "project",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "09c0a79077bc2724e849b2612bc9ed8779a266a9b76c159edf82ce9591001faa"
+    },
+    {
+      "path": "docs/project/documentation-migration.md",
+      "reader": "文档维护者／审查者",
+      "task": "查找旧文档整改记录、失败和原始适用范围",
+      "category": "history",
+      "disposition": "corrected",
+      "reason": "按历史审计归类和导航；唯一待办链接现有计划",
+      "reviewed_bytes_sha256": "c9804b697a893259e425687ecdd197d4fc56e5d9e8609d08fba95b5d715ce65d"
+    },
+    {
+      "path": "docs/project/index.md",
+      "reader": "项目维护者",
+      "task": "项目计划与资格",
+      "category": "project",
+      "disposition": "project_record",
+      "reason": "项目/资格记录独立于四类；不以进度或历史 PASS 作为使用步骤",
+      "reviewed_bytes_sha256": "33bc0281fa0e160161c63cd90292f17ac17db286aa8e8c8b95f1e7ad184daf8a"
+    },
+    {
+      "path": "docs/reference/controller-events.md",
+      "reader": "接口使用者／维护者",
+      "task": "Controller 事件与位置契约",
+      "category": "reference",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "e42ce2fb66e101a8235f07de2c9dfe156c0163016a3a5f065bfe4406d5ad6c27"
+    },
+    {
+      "path": "docs/reference/documentation-build.md",
+      "reader": "接口使用者／维护者",
+      "task": "文档构建配置",
+      "category": "reference",
+      "disposition": "partial_reference",
+      "reason": "工具配置参考有效；与维护步骤的重复需继续收敛",
+      "reviewed_bytes_sha256": "737fed53a4cedf68f9f96ec1c3e4f4a03dfac777de6647ed8b825174c6a912a8"
+    },
+    {
+      "path": "docs/reference/index.md",
+      "reader": "接口使用者／维护者",
+      "task": "技术参考",
+      "category": "reference",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "4e8004009975c7ea4d5f6dcf79bd2af8107252f009d018f12cb73a40590acc9e"
+    },
+    {
+      "path": "docs/reference/interfaces.md",
+      "reader": "接口使用者／维护者",
+      "task": "接口与能力的查找入口",
+      "category": "reference",
+      "disposition": "partial_reference",
+      "reason": "源码可达性/拒绝的参考索引；不能冒充全部方法字段/错误手册",
+      "reviewed_bytes_sha256": "773d2ee550b98ae8021975d71ce6682a3c733ec25d0bf11c79f25ef727e448db"
+    },
+    {
+      "path": "docs/how-to/build-documentation.md",
+      "reader": "贡献者",
+      "task": "构建和预览待 review 的文档 HTML",
+      "category": "how-to",
+      "disposition": "corrected",
+      "reason": "开发者的明确构建任务移出教程，补失败与清理；旧 HTML 跳转",
+      "reviewed_bytes_sha256": "e6b7df2f4ca3388dcb8aecf5401035e209b9a16a3c7e9301b759152a1dab3edf"
+    },
+    {
+      "path": "docs/tutorials/index.md",
+      "reader": "初学者",
+      "task": "教程",
+      "category": "tutorials",
+      "disposition": "corrected",
+      "reason": "产品任务优先；区分受限教程草案和仍缺的首次发现/建链",
+      "reviewed_bytes_sha256": "4ea380df2a0a0f03b645b30b96215ccb0f3d35c81afbbf52ee3d4405cb0df016"
+    },
+    {
+      "path": "docs/history/kernel-records.md",
+      "reader": "内核贡献者／审查者",
+      "task": "区分内核侧原文和当前契约",
+      "category": "history",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "42b77dab6117d139a0703244742596c62b1dc410374c1b2f662d96257dc8fb51"
+    },
+    {
+      "path": "docs/how-to/capture-controller-snoop.md",
+      "reader": "维护者／诊断工具使用者",
+      "task": "保存一个身份明确的私有 snoop 文件并处理失败",
+      "category": "how-to",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "93f789294246aa1e0cbad4a3f8d1e52d8657949aa385fb3ed5ce091925ae71c1"
+    },
+    {
+      "path": "docs/reference/controller-snoop.md",
+      "reader": "维护者／诊断工具使用者",
+      "task": "查询当前 snoop 字段、权限、错误和源码限制",
+      "category": "reference",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "3b195ec4a0e8a8872ae01d19e910203a67d392370d35d11ce24c66bb3d0bf784"
+    },
+    {
+      "path": "docs/how-to/check-business-roundtrip.md",
+      "reader": "测试人员／资格审查者",
+      "task": "核对已经执行的业务往返证据而不是学习操作设备",
+      "category": "how-to",
+      "disposition": "corrected",
+      "reason": "合并旧证据教程；直接链接准确历史报告，不到当前资格页反查",
+      "reviewed_bytes_sha256": "cb1b2d00056f8071bfb0467f09bd695f4daefb91612916d1841caba7ebbed398"
+    },
+    {
+      "path": "docs/explanation/qualification-boundaries.md",
+      "reader": "架构读者／贡献者",
+      "task": "解释不同证据层次及生命周期归属",
+      "category": "explanation",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "69c1c43f3b2fed14eccea65cf28c13f313e222332d8bb1c28fd5bd0f5130e2c2"
+    },
+    {
+      "path": "docs/project/uppercase-document-guide.md",
+      "reader": "维护者／审查者／接口使用者",
+      "task": "逐篇归纳全部46份大写文档的有效范围、历史及推荐入口",
+      "category": "project",
+      "disposition": "project_source_map",
+      "reason": "仓库原文归纳服务维护/审查，保留 project 导航，不当产品 API 参考",
+      "reviewed_bytes_sha256": "8789d28a555589cd638166900c30af219d94c889da79197cf58364e43670b90d"
+    },
+    {
+      "path": "docs/reference/ssap-permissions.md",
+      "reader": "维护者／审查者／接口使用者",
+      "task": "准确说明复用权限类型及旧staging与远端能力的区别",
+      "category": "reference",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "408e4a0534e12780dc81c65c299d29ef1d23bcccd2885ecc54cf06f0fd246cfb"
+    },
+    {
+      "path": "docs/explanation/architecture.md",
+      "reader": "使用者／维护者",
+      "task": "从唯一源渲染 project/architecture.md",
+      "category": "explanation",
+      "disposition": "needs_split",
+      "reason": "目标架构解释位置正确；继续剥离实现过程和逐轮证据，原文仍唯一",
+      "reviewed_bytes_sha256": "be9b9ef97f89c95c55c8ce2d659f92f409be551fb33b64c42343f00f7a8147a7",
+      "canonical_source": "project/architecture.md",
+      "canonical_source_sha256": "0ca929a93d0e5381202cecb9536aa9f2a4d19634ccd9af70c761c269f8acc1a6"
+    },
+    {
+      "path": "docs/project/implementation-plan.md",
+      "reader": "使用者／维护者",
+      "task": "从唯一源渲染 project/implementation-plan.md",
+      "category": "project",
+      "disposition": "project_record",
+      "reason": "项目/资格记录独立于四类；不以进度或历史 PASS 作为使用步骤",
+      "reviewed_bytes_sha256": "1ec67203f9be6c768eef6593ea7fbbff70f4a413a2e04e20d4f21a202ca5ada6",
+      "canonical_source": "project/implementation-plan.md",
+      "canonical_source_sha256": "9de813dc9336e1f22e780fe149a7f2c85d4beae38be46aff0d03cb778cc92788"
+    },
+    {
+      "path": "docs/project/current-capabilities.md",
+      "reader": "使用者／维护者",
+      "task": "从唯一源渲染 project/current-capabilities.md",
+      "category": "project",
+      "disposition": "project_record",
+      "reason": "项目/资格记录独立于四类；不以进度或历史 PASS 作为使用步骤",
+      "reviewed_bytes_sha256": "2fc1b0c37f81513fb28bfdab82c32444898a1a9445cfaa3a729f1e516a06c042",
+      "canonical_source": "project/current-capabilities.md",
+      "canonical_source_sha256": "3da1ee6428a1d79b4046eeba1e5e7eba4e75d185b0ef48986085ff6833cb1aa1"
+    },
+    {
+      "path": "docs/decisions/0004-application-ownership-and-delivery.md",
+      "reader": "架构读者",
+      "task": "应用资源、管理权限和五阶段交付契约",
+      "category": "explanation",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "62085194184473ce2bbb3d61c4031af441c5e98ab64a5828ee1810dc5277fbfe"
+    },
+    {
+      "path": "docs/history/relay-reference-diagnostic.md",
+      "reader": "故障审查维护者",
+      "task": "复核固定 K2d5d/U3a2c 的 reference Host 历史实验",
+      "category": "history",
+      "disposition": "corrected",
+      "reason": "固定版本故障实验移到历史；顶端区分后续安全子资格",
+      "reviewed_bytes_sha256": "ec6a5cfd8a1f02aeeeb962f1ab3a2dfa9376e1eb1454162b2bd8e2be300336f6"
+    },
+    {
+      "path": "docs/explanation/openharmony-dli-reference.md",
+      "reader": "驱动、Host 和用户态维护者",
+      "task": "解释固定版本 DLI/HAL 与当前分层和验收边界的对应关系",
+      "category": "explanation",
+      "disposition": "reference_case_study",
+      "reason": "解释包边界和借鉴取舍，可保留；固定版本来源核对留独立证据，不称通用教程",
+      "reviewed_bytes_sha256": "6e4465c67d2a3b32e548040bf6ebbaaee84734dcbe24291884d06dc13c3c8c5b"
+    },
+    {
+      "path": "docs/decisions/0005-qualification-and-quality-gates.md",
+      "reader": "维护者与审查者",
+      "task": "决定资格单一来源、分层测试及证明边界",
+      "category": "decisions",
+      "disposition": "aligned_intent",
+      "reason": "读者意图与所属类型相符；本次分类审阅不等于逐字段语义或操作链验收",
+      "reviewed_bytes_sha256": "b14828c98ab8a1b756d101b8c181b19567f23d9c584fd463f9a91724f4a0161a"
+    },
+    {
+      "path": "docs/tutorials/first-ws73-message.md",
+      "reader": "有已准备实验 VM 的首次设备/应用使用者",
+      "task": "启动真实对端校验回复并理解20轮短消息结果",
+      "category": "tutorials",
+      "disposition": "draft_not_replayed",
+      "reason": "产品学习任务而非文档工具；基于准确实机命令，整篇/从零流程未验收",
+      "reviewed_bytes_sha256": "6276687d97b71e852bab812d49849f144756bf9cd7e42b7fc9e51d36444b04d0"
+    }
+  ],
+  "source_only_documents": "Existing dispositions remain; source publication and inventory registration are not semantic acceptance. Review remaining mixed originals incrementally under sole DQ plan.",
+  "remaining": [
+    "Rewrite/split discovery acquisition vs evidence checking",
+    "Separate ADR1/2 and architecture implementation chronology",
+    "Complete interface fields/errors/examples in DQ2",
+    "Replay authored product tutorial and full VM/discovery/link chain in DQ3"
+  ],
+  "compatibility": "documentation-paths.json retains former dispositions/hashes and old HTML redirects",
+  "runtime_changed": false
+}

@@ -1,0 +1,1687 @@
+{
+  "schema_version": 1,
+  "status": "HCC110_FOUR_BOOTSTRAPS_AND_FOUR_DATA_GATES_SCOPED_PASS_FULL_GOAL_OPEN",
+  "compiled_kernel": "f887b477f0857aa83454b255ba681a9f7b95473f",
+  "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+  "executed_tools": "e5134791dc3014f3e07c96785d66bbc1a5597383",
+  "bootstrap_executed_tools": "69b7cce3035e43b89f8c271ef3b34875590ad92b",
+  "offline_executed_tools": "7f8c39de133157bb15384c9b864a8d94df88f3d1",
+  "scope": [
+    "VM-only exactf887 kernel,compiled836 nativebinaries,realbusiness executed e513/guest e513;bootstrap launcher69/guest836,model decoder byte-identical82/e513. Full729offline suite at7f8 includes fixture-only correction to e513; compiled crates/data/Cargo unchanged. No hostdriver/install.",
+    "All four selected devices actual RAM USB payloads match1.10.110 model-specific files: Eport1e,Uports2/3/4us. Four actual HCC replies distinguishE vsU before DLI;DLISetup isnotReady orsilicon/firmwareattestation. S andotherboards notrealtested.",
+    "Runtime-only mixedVM omitsbootimagesfrombothsearchpaths,keepssameSDK candidateboardinputs;unexpectedROMfails ratherthanwrongvariantload. HCCcannotchoosefirstROMimage;noVIDPID/portfallback. Platformallocquirk narrowly19/queue9,notSLE/ACBrelaxation.",
+    "Three mixedE/U gates(two connectionroleseach) andoneU2/3gate:32actualordinarypeer-validatedreplies,88discoveryroundsincludingcontrolledQMPremove/readd,48attribute cases32denied,64oldSSAPpeerchecks,64originalRXcontexts,96invalidintentand16unknowncontrolrefusals. 249is workloadsizerun,notmaximumMTU:actualoversizerejections2043/2046/2047/2048 total16;2042complete8RT,actualE1526/U254fragments. No performance ornewprotectedSSAPqualification.",
+    "Four bootstrapwire exactreplays+72copiednegatives;fourbusiness/connection/objectexactreplays+128copiednegatives. OldhardwareaddressCreatecomparison deliberatelynotapplicable tonewE;originaldeadlines/protocolassertionsretained. Same decoder TCB,notindependentRFsniffer orphysicalfaultinjection.",
+    "Actualproductionchipreply CBMC6.11 eightsemanticassertions/439rawchecks,n=0..128 fullnondetbytes,validobjects,fullunwind129;threefalse/mutant/underunwindnegativecontrols. Notaggregateparser/clock/USB/refs/locks/generation/drainproof. 942actualcodec/queryfixturechecks+ASanUBSan areoffline,notformal kernelproof.",
+    "Preserve firstcdab EPROTO platformlengthFAIL;firstmixedU254/5assumptionFAIL,fourapprepliesnotwholePASS;secondmixedrelativepreparedpathartifactmismatchFAIL despiteguestfinished;ABIheaders/sandboxfailures,missingmetadatafixturefailures andwrongidentityfirstprivateaudit retainedandexcluded fromqualification. No assertionweakening.",
+    "OriginalSDK111intent matrix interruptedonlyafterchildcompletedattheuser110directive;notfullPASS. First110originaldeadlineFAIL measured5508767234..5508861382ns vsoriginal5500000000upperbound;notwaived orbroadened. Fresh unmodifiedmatrixwithhostschedulingobservations separate,ongoing,notcovered bythisreport."
+  ],
+  "remaining": [
+    "FirstcoldROM automaticmodel/firmwareselection unresolved;HCC availableonlyafterfirmwareruns,firmwaretruth/no-requestnonce/late-replydrainnotattested. SboardandgeneralEdeploymentunqualified.",
+    "Current11030typed-intent lifecyclematrix,protected1/2SSAP/Agent,Bond/localauthorization/securityupdates,alloldfailurecompositions andfourmixeddevices requireseparate gates. First5.509sdeadlineFAILRCAopen;repeatPASS wouldnotcloseit.",
+    "Naturalstartup/re-enumeration/disappearanceRCAandnonmanualautomaticrecoveryremainOPEN;controlledRAMreset/QMPnotnaturalrecovery. FullS0-S6/19WP/10FV/12DG,multi/four/performance/PM/deployment/release andUserHostP4unchanged."
+  ],
+  "bounds": {
+    "peer_round_trips": 32,
+    "RF_discovery_rounds": 88,
+    "attribute_cases": 48,
+    "attribute_denied": 32,
+    "old_SSAPS_peer_checks": 64,
+    "receipt_contexts": 64,
+    "invalid_intent_refusals": 96,
+    "unknown_control_refusals": 16,
+    "full2042_round_trips": 8,
+    "oversize_refusals": 16,
+    "bootstrap_devices": 4,
+    "boot_images": 12,
+    "HCC_replies": 4,
+    "business_cases": 4,
+    "exact_replays": 8,
+    "copied_negatives": 200,
+    "offline_tools": 729,
+    "ABI": 48,
+    "codec_fixture_checks": 942,
+    "CBMC_semantic_assertions": 8,
+    "CBMC_raw_properties": 439
+  },
+  "bootstrap_gates": [
+    {
+      "name": "port1-110-e-RAM-HCC-DLI-Setup",
+      "status": "VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS",
+      "result": "PASS",
+      "manifest": ".dev/firmware110-e-reset-port1-v2/manifest.json",
+      "model": "WS73E",
+      "proof": {
+        "port": "1-2.1.1",
+        "hcc": {
+          "status": "ACTUAL_HCC_FIRMWARE_REPORTED_MODEL_MATCH",
+          "observation": {
+            "model": "WS73E",
+            "model_id": 2,
+            "bus": "USB",
+            "bus_id": 0,
+            "bus_number": 1,
+            "device": 4,
+            "request_record": 302,
+            "request_completion": 303,
+            "response_submit": 308,
+            "response_record": 309,
+            "hcc_offset": 92,
+            "first_dli_record": 316
+          },
+          "scope": "Paired physical USB request/reply before DLI; not silicon/board/firmware attestation, Ready, peer business or natural recovery"
+        },
+        "upload": {
+          "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+          "images": [
+            {
+              "image": "ws73.bin",
+              "load_address": 4194304,
+              "bytes": 137580,
+              "image_sha256": "6a0c322668d67a7e8c5cab9bff5d7af1f737e30ed4d9258975e8068054e4377b",
+              "payload_sha256": "2b4ccf4c127caac551d4cf69d272f9a4f01ea91b7f4b32700f07965ea16a8b68",
+              "chunks": [
+                {
+                  "address": 4194304,
+                  "state": 0,
+                  "command_record": 160,
+                  "data_record": 164,
+                  "completion_record": 165,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4227072,
+                  "state": 1,
+                  "command_record": 168,
+                  "data_record": 172,
+                  "completion_record": 173,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4259840,
+                  "state": 1,
+                  "command_record": 176,
+                  "data_record": 180,
+                  "completion_record": 181,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4292608,
+                  "state": 1,
+                  "command_record": 184,
+                  "data_record": 188,
+                  "completion_record": 189,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4325376,
+                  "state": 2,
+                  "command_record": 192,
+                  "data_record": 196,
+                  "completion_record": 197,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            },
+            {
+              "image": "wifi_cali.bin",
+              "load_address": 4390912,
+              "bytes": 20996,
+              "image_sha256": "ac55f1a2e1d1466a02123c21e50204e108fe4660c587566e63798de648bd1390",
+              "payload_sha256": "7ebabfdbb878d09fed1aef4c14da3cfa43d050968b6574b518acdd8e159cf0e5",
+              "chunks": [
+                {
+                  "address": 4390912,
+                  "state": 3,
+                  "command_record": 200,
+                  "data_record": 204,
+                  "completion_record": 205,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            },
+            {
+              "image": "btc_cali.bin",
+              "load_address": 4456448,
+              "bytes": 34056,
+              "image_sha256": "601b143db64ef6e70bf882fd5a998ecff59f19ede85f477cdc8967b21a8a472f",
+              "payload_sha256": "481a89beaac1ccc203cfb93ac34b5742eab6454c776cfdad0497086b294c7310",
+              "chunks": [
+                {
+                  "address": 4456448,
+                  "state": 0,
+                  "command_record": 208,
+                  "data_record": 212,
+                  "completion_record": 213,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4489216,
+                  "state": 2,
+                  "command_record": 216,
+                  "data_record": 220,
+                  "completion_record": 221,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            }
+          ],
+          "scope": "Successful USB boot-mode OUT bytes match supplied images; not firmware execution/air delivery/secure attestation/natural recovery"
+        },
+        "scope": "Controlled VM RAM download+HCC+DLI Setup only,notReady/business/recovery"
+      }
+    },
+    {
+      "name": "port2-110-us-RAM-HCC-DLI-Setup",
+      "status": "VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS",
+      "result": "PASS",
+      "manifest": ".dev/firmware110-u-reset-port2-v1/manifest.json",
+      "model": "WS73U",
+      "proof": {
+        "port": "1-2.1.2",
+        "hcc": {
+          "status": "ACTUAL_HCC_FIRMWARE_REPORTED_MODEL_MATCH",
+          "observation": {
+            "model": "WS73U",
+            "model_id": 0,
+            "bus": "USB",
+            "bus_id": 0,
+            "bus_number": 1,
+            "device": 4,
+            "request_record": 292,
+            "request_completion": 293,
+            "response_submit": 298,
+            "response_record": 299,
+            "hcc_offset": 92,
+            "first_dli_record": 306
+          },
+          "scope": "Paired physical USB request/reply before DLI; not silicon/board/firmware attestation, Ready, peer business or natural recovery"
+        },
+        "upload": {
+          "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+          "images": [
+            {
+              "image": "ws73.bin",
+              "load_address": 4194304,
+              "bytes": 143892,
+              "image_sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+              "payload_sha256": "1ec2f93a520d090cffbfb378da4439b59015215bd9cb6cca1e64135724d4cedc",
+              "chunks": [
+                {
+                  "address": 4194304,
+                  "state": 0,
+                  "command_record": 158,
+                  "data_record": 162,
+                  "completion_record": 163,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4227072,
+                  "state": 1,
+                  "command_record": 166,
+                  "data_record": 170,
+                  "completion_record": 171,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4259840,
+                  "state": 1,
+                  "command_record": 174,
+                  "data_record": 178,
+                  "completion_record": 179,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4292608,
+                  "state": 1,
+                  "command_record": 182,
+                  "data_record": 186,
+                  "completion_record": 187,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4325376,
+                  "state": 2,
+                  "command_record": 190,
+                  "data_record": 194,
+                  "completion_record": 195,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            },
+            {
+              "image": "wifi_cali.bin",
+              "load_address": 4390912,
+              "bytes": 20980,
+              "image_sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+              "payload_sha256": "7933e503491685e143cbbbf266fe82bdacb3f02f4a39298fe87edb478cffda89",
+              "chunks": [
+                {
+                  "address": 4390912,
+                  "state": 3,
+                  "command_record": 198,
+                  "data_record": 202,
+                  "completion_record": 203,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            },
+            {
+              "image": "btc_cali.bin",
+              "load_address": 4456448,
+              "bytes": 7708,
+              "image_sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+              "payload_sha256": "f84cab78d225a669bf0d51e04683d2372dcb92250b3afe366d6ec07ce5e68f3f",
+              "chunks": [
+                {
+                  "address": 4456448,
+                  "state": 3,
+                  "command_record": 206,
+                  "data_record": 210,
+                  "completion_record": 211,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            }
+          ],
+          "scope": "Successful USB boot-mode OUT bytes match supplied images; not firmware execution/air delivery/secure attestation/natural recovery"
+        },
+        "scope": "Controlled VM RAM download+HCC+DLI Setup only,notReady/business/recovery"
+      }
+    },
+    {
+      "name": "port3-110-us-RAM-HCC-DLI-Setup",
+      "status": "VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS",
+      "result": "PASS",
+      "manifest": ".dev/firmware110-u-reset-port3-v1/manifest.json",
+      "model": "WS73U",
+      "proof": {
+        "port": "1-2.1.3",
+        "hcc": {
+          "status": "ACTUAL_HCC_FIRMWARE_REPORTED_MODEL_MATCH",
+          "observation": {
+            "model": "WS73U",
+            "model_id": 0,
+            "bus": "USB",
+            "bus_id": 0,
+            "bus_number": 1,
+            "device": 4,
+            "request_record": 292,
+            "request_completion": 293,
+            "response_submit": 298,
+            "response_record": 299,
+            "hcc_offset": 92,
+            "first_dli_record": 306
+          },
+          "scope": "Paired physical USB request/reply before DLI; not silicon/board/firmware attestation, Ready, peer business or natural recovery"
+        },
+        "upload": {
+          "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+          "images": [
+            {
+              "image": "ws73.bin",
+              "load_address": 4194304,
+              "bytes": 143892,
+              "image_sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+              "payload_sha256": "1ec2f93a520d090cffbfb378da4439b59015215bd9cb6cca1e64135724d4cedc",
+              "chunks": [
+                {
+                  "address": 4194304,
+                  "state": 0,
+                  "command_record": 158,
+                  "data_record": 162,
+                  "completion_record": 163,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4227072,
+                  "state": 1,
+                  "command_record": 166,
+                  "data_record": 170,
+                  "completion_record": 171,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4259840,
+                  "state": 1,
+                  "command_record": 174,
+                  "data_record": 178,
+                  "completion_record": 179,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4292608,
+                  "state": 1,
+                  "command_record": 182,
+                  "data_record": 186,
+                  "completion_record": 187,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4325376,
+                  "state": 2,
+                  "command_record": 190,
+                  "data_record": 194,
+                  "completion_record": 195,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            },
+            {
+              "image": "wifi_cali.bin",
+              "load_address": 4390912,
+              "bytes": 20980,
+              "image_sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+              "payload_sha256": "7933e503491685e143cbbbf266fe82bdacb3f02f4a39298fe87edb478cffda89",
+              "chunks": [
+                {
+                  "address": 4390912,
+                  "state": 3,
+                  "command_record": 198,
+                  "data_record": 202,
+                  "completion_record": 203,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            },
+            {
+              "image": "btc_cali.bin",
+              "load_address": 4456448,
+              "bytes": 7708,
+              "image_sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+              "payload_sha256": "f84cab78d225a669bf0d51e04683d2372dcb92250b3afe366d6ec07ce5e68f3f",
+              "chunks": [
+                {
+                  "address": 4456448,
+                  "state": 3,
+                  "command_record": 206,
+                  "data_record": 210,
+                  "completion_record": 211,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            }
+          ],
+          "scope": "Successful USB boot-mode OUT bytes match supplied images; not firmware execution/air delivery/secure attestation/natural recovery"
+        },
+        "scope": "Controlled VM RAM download+HCC+DLI Setup only,notReady/business/recovery"
+      }
+    },
+    {
+      "name": "port4-110-us-RAM-HCC-DLI-Setup",
+      "status": "VM_REGISTER_RESET_REBOOTSTRAP_SETUP_PASS",
+      "result": "PASS",
+      "manifest": ".dev/firmware110-u-reset-port4-v1/manifest.json",
+      "model": "WS73U",
+      "proof": {
+        "port": "1-2.1.4",
+        "hcc": {
+          "status": "ACTUAL_HCC_FIRMWARE_REPORTED_MODEL_MATCH",
+          "observation": {
+            "model": "WS73U",
+            "model_id": 0,
+            "bus": "USB",
+            "bus_id": 0,
+            "bus_number": 1,
+            "device": 4,
+            "request_record": 294,
+            "request_completion": 295,
+            "response_submit": 300,
+            "response_record": 301,
+            "hcc_offset": 92,
+            "first_dli_record": 308
+          },
+          "scope": "Paired physical USB request/reply before DLI; not silicon/board/firmware attestation, Ready, peer business or natural recovery"
+        },
+        "upload": {
+          "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+          "images": [
+            {
+              "image": "ws73.bin",
+              "load_address": 4194304,
+              "bytes": 143892,
+              "image_sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+              "payload_sha256": "1ec2f93a520d090cffbfb378da4439b59015215bd9cb6cca1e64135724d4cedc",
+              "chunks": [
+                {
+                  "address": 4194304,
+                  "state": 0,
+                  "command_record": 158,
+                  "data_record": 162,
+                  "completion_record": 163,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4227072,
+                  "state": 1,
+                  "command_record": 166,
+                  "data_record": 170,
+                  "completion_record": 171,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4259840,
+                  "state": 1,
+                  "command_record": 174,
+                  "data_record": 178,
+                  "completion_record": 179,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4292608,
+                  "state": 1,
+                  "command_record": 182,
+                  "data_record": 186,
+                  "completion_record": 187,
+                  "bus": 1,
+                  "device": 3
+                },
+                {
+                  "address": 4325376,
+                  "state": 2,
+                  "command_record": 190,
+                  "data_record": 194,
+                  "completion_record": 195,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            },
+            {
+              "image": "wifi_cali.bin",
+              "load_address": 4390912,
+              "bytes": 20980,
+              "image_sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+              "payload_sha256": "7933e503491685e143cbbbf266fe82bdacb3f02f4a39298fe87edb478cffda89",
+              "chunks": [
+                {
+                  "address": 4390912,
+                  "state": 3,
+                  "command_record": 198,
+                  "data_record": 202,
+                  "completion_record": 203,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            },
+            {
+              "image": "btc_cali.bin",
+              "load_address": 4456448,
+              "bytes": 7708,
+              "image_sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+              "payload_sha256": "f84cab78d225a669bf0d51e04683d2372dcb92250b3afe366d6ec07ce5e68f3f",
+              "chunks": [
+                {
+                  "address": 4456448,
+                  "state": 3,
+                  "command_record": 206,
+                  "data_record": 210,
+                  "completion_record": 211,
+                  "bus": 1,
+                  "device": 3
+                }
+              ]
+            }
+          ],
+          "scope": "Successful USB boot-mode OUT bytes match supplied images; not firmware execution/air delivery/secure attestation/natural recovery"
+        },
+        "scope": "Controlled VM RAM download+HCC+DLI Setup only,notReady/business/recovery"
+      }
+    }
+  ],
+  "real_gates": [
+    {
+      "name": "firmware110-mixed-short-v3",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/firmware110-mixed-short-v3/manifest.json",
+      "round_trips": 8,
+      "discovery_rounds": 22,
+      "proofs": 2
+    },
+    {
+      "name": "firmware110-mixed249-v1",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/firmware110-mixed249-v1/manifest.json",
+      "round_trips": 8,
+      "discovery_rounds": 22,
+      "proofs": 2
+    },
+    {
+      "name": "firmware110-mixed2042-v1",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/firmware110-mixed2042-v1/manifest.json",
+      "round_trips": 8,
+      "discovery_rounds": 22,
+      "proofs": 2
+    },
+    {
+      "name": "firmware110-u23short-v1",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/firmware110-u23short-v1/manifest.json",
+      "round_trips": 8,
+      "discovery_rounds": 22,
+      "proofs": 2
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "729-tools",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "48-sealedABI",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "942-productioncodec-query-ASanUBSan",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "four-boot-HCC-replays72negatives",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "four-business-replays128negatives",
+      "result": "PASS",
+      "status": "PASS"
+    },
+    {
+      "name": "strict115docs",
+      "result": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "formal_gates": [
+    {
+      "name": "actual-production-chipreply-n128",
+      "result": "PASS",
+      "status": "ACTUAL_PRODUCTION_DECODER_BOUNDED_PASS_THREE_NEGATIVES"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "FirstcoldROM automaticmodel/firmwareselection unresolved;HCC availableonlyafterfirmwareruns,firmwaretruth/no-requestnonce/late-replydrainnotattested. SboardandgeneralEdeploymentunqualified.",
+      "result": "UNPROVED",
+      "status": "OPEN"
+    },
+    {
+      "name": "Current11030typed-intent lifecyclematrix,protected1/2SSAP/Agent,Bond/localauthorization/securityupdates,alloldfailurecompositions andfourmixeddevices requireseparate gates. First5.509sdeadlineFAILRCAopen;repeatPASS wouldnotcloseit.",
+      "result": "UNPROVED",
+      "status": "OPEN"
+    },
+    {
+      "name": "Naturalstartup/re-enumeration/disappearanceRCAandnonmanualautomaticrecoveryremainOPEN;controlledRAMreset/QMPnotnaturalrecovery. FullS0-S6/19WP/10FV/12DG,multi/four/performance/PM/deployment/release andUserHostP4unchanged.",
+      "result": "UNPROVED",
+      "status": "OPEN"
+    }
+  ],
+  "bootstrap_result": "PASS",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "formal_result": "PASS",
+  "full_goal_result": "UNPROVED",
+  "materials": [
+    {
+      "path": ".dev/firmware110-e-reset-port1-v2/manifest.json",
+      "sha256": "1cff40f2cb9c319761a2d1cd48e8b0ad330187608aa6b3fa30ff60d9fbf34fba",
+      "bytes": 6254,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v2/console.log",
+      "sha256": "caf5fa672f25f8d31b850aa5eb3e684d3d60831cc68e302fb986aa8ec7c378e8",
+      "bytes": 13841,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v2/qmp.jsonl",
+      "sha256": "9986c6e72cbded5a35025a631b9b915c1993be63f79b5f02f8515ecebe9e4d60",
+      "bytes": 4255,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v2/guest-output/maintenance/reset/run.json",
+      "sha256": "4dee31cb2f6300e8fec2bf0e56a108b439bdb8517d2dffebb2ca3c38063f547e",
+      "bytes": 685,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v2/guest-output/maintenance/kernel.log",
+      "sha256": "8d014befaf036c9fe87d51ff10752be1cd72569026795d1afbd0a7a360e53fd6",
+      "bytes": 56777,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v2/guest-output/maintenance/ws73.pcap",
+      "sha256": "86ca900b1682f048afffe5a4fb0503b2852ccb10e5c3d6d3dc0ce0f754b679db",
+      "bytes": 225601,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v2/guest-output/maintenance/capture.log",
+      "sha256": "ce94c96223b487e891eb71bcded88e98215e594606f03654bb17d85cd276565d",
+      "bytes": 200,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-port1-wire-evidence-v1.json",
+      "sha256": "9eca504a6055e178cfd53e5c74429dda9995ce84828a189523b0be1ef319961f",
+      "bytes": 3710,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port2-v1/manifest.json",
+      "sha256": "51373fa943ce9692775784644d08bd52486492fb6252bf58b017598fccc92cef",
+      "bytes": 6257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port2-v1/console.log",
+      "sha256": "c90669bee91a0d58a3ee23ff43f110a669ac5319ac126e434df6ec89f2d3092b",
+      "bytes": 13651,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port2-v1/qmp.jsonl",
+      "sha256": "869b6da902969508879b5cd21d1a0a9e9c2e39f7efdd3a15052aeb246f2c4b6b",
+      "bytes": 4054,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port2-v1/guest-output/maintenance/reset/run.json",
+      "sha256": "b21f3a97b89af1175e5477f6591d1c3cf95b5bacd4e28fa999ac7f5d5effd0e6",
+      "bytes": 685,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port2-v1/guest-output/maintenance/kernel.log",
+      "sha256": "fa93778e930e18d2a554aee3dd1add566a53b93c5b6eac56904c5371427de1af",
+      "bytes": 56901,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port2-v1/guest-output/maintenance/ws73.pcap",
+      "sha256": "bea1af67a55471fab9e0009532fd70246f417aff5250196a7cbfc20c2e9c45e8",
+      "bytes": 204642,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port2-v1/guest-output/maintenance/capture.log",
+      "sha256": "7ea79132ee87592c1cb45b58d30f9b28f6a057903fb697f621254405c841b0bc",
+      "bytes": 200,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-port2-wire-evidence-v1.json",
+      "sha256": "499a735102124d0530c99138f0471e21923ea7ec5348dc01dbd71433f468c0b3",
+      "bytes": 3477,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port3-v1/manifest.json",
+      "sha256": "fe72e16276da8614ada5e107918f405441e2f8955094f3947c026b3954f67ec6",
+      "bytes": 6260,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port3-v1/console.log",
+      "sha256": "50c6d27f538aa360e7622578c2bbabebbd4c269d2c9ddf087f66d3c13c1351fe",
+      "bytes": 13651,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port3-v1/qmp.jsonl",
+      "sha256": "ab81f65193c57ef976ddbe94810e7393cead9570a5bca0b85e9e8ab2fd1ecc0a",
+      "bytes": 3853,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port3-v1/guest-output/maintenance/reset/run.json",
+      "sha256": "4e1edc2415f9e379b62b9bf5715a36f94a7f95d4cf3b32f0b56781ec9124fca7",
+      "bytes": 685,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port3-v1/guest-output/maintenance/kernel.log",
+      "sha256": "ebc8d0c80d887e3b9b283d43f57c9e686c0774a6f63254eb24c678fd8854dd6f",
+      "bytes": 56775,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port3-v1/guest-output/maintenance/ws73.pcap",
+      "sha256": "3a341900a8273d260c4c1923256f7358ed577f3548375fb9ea355a5b4e426a6a",
+      "bytes": 204642,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port3-v1/guest-output/maintenance/capture.log",
+      "sha256": "7ea79132ee87592c1cb45b58d30f9b28f6a057903fb697f621254405c841b0bc",
+      "bytes": 200,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-port3-wire-evidence-v1.json",
+      "sha256": "5dcc1cfa19320a120cb5776b6db09fc20e21187715d43123dd0d5909b0ad6ced",
+      "bytes": 3477,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port4-v1/manifest.json",
+      "sha256": "9a5603710318e397f263e7dd33e4e6d3d213e32b0dfbbeebd8350f563cebf1c7",
+      "bytes": 6262,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port4-v1/console.log",
+      "sha256": "88caf41be2b82805609ace2364fd71a229cde109e18a84055a148d321a786b84",
+      "bytes": 13841,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port4-v1/qmp.jsonl",
+      "sha256": "8c1256385b665c9af728554c30c11b50a55fa06f061eecbec75e2da7abe8d2b7",
+      "bytes": 4054,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port4-v1/guest-output/maintenance/reset/run.json",
+      "sha256": "6bdf8810ef8de2c9157c295b76b9b1b9a79b6bad85047b4f10060781731e7c05",
+      "bytes": 685,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port4-v1/guest-output/maintenance/kernel.log",
+      "sha256": "b07ff8484468cac43cfac335d02405945a642ea247b902f8d8abf99eb6fd56ae",
+      "bytes": 56901,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port4-v1/guest-output/maintenance/ws73.pcap",
+      "sha256": "4e94115f1d5c8d65a0e26265044d2f341732ef9d3c31eca77957ca74430ec175",
+      "bytes": 204804,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u-reset-port4-v1/guest-output/maintenance/capture.log",
+      "sha256": "cff8c80a7c89d899f6cc1e9a4597a8dd2b176cbbfe46523418cace71c5ac4243",
+      "bytes": 200,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-port4-wire-evidence-v1.json",
+      "sha256": "248db72475b09d17f7aad68cbb0453a7215ac633a9d3271e9decc017b6b7023b",
+      "bytes": 3477,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v3/manifest.json",
+      "sha256": "e9cfdcba8d72cd0176b9bebf47d6d62d48386b263e6ed80884236fffcdd2aabc",
+      "bytes": 1510805,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v3/console.log",
+      "sha256": "2841b6ffbb4a2d35571330c31dcaebf9f021199a8f7bb1938e33d9fcc3540728",
+      "bytes": 16233,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v3/guest-output/ws73.pcap",
+      "sha256": "dbe0240131b689f8fb4ec57386115dcc2ab57a77d151e11fc0ce5046e3d345e3",
+      "bytes": 595296,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v3/guest-output/capture-stats.txt",
+      "sha256": "aca2b468d6ae1b83069888deab207235b0042a995a12698154c5ae0a73bc71a5",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v3/guest-output/kernel.log",
+      "sha256": "5341826e229214a6ace1a306fd1485715d9aa1d56d6e4b642b122a1076317529",
+      "bytes": 49268,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v3/guest-output/application/passthrough-control/run.json",
+      "sha256": "7c2423ceb8e6fc01b0f661be16a072e9fe4c8b1908a5c32e39de304c88fb8acf",
+      "bytes": 874461,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v3-audit-hcc110-v2.json",
+      "sha256": "69e47cdb7953aac25dc803d07f485886e5bb24bb43b0958e4ad8c9bfb29133f9",
+      "bytes": 6995,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed249-v1/manifest.json",
+      "sha256": "3a7aaaf6f8c11624ca3a47fd52831b13f1856ecbbc88330aa31a674b58109ede",
+      "bytes": 1598837,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed249-v1/console.log",
+      "sha256": "ce7326d11dffd6461000ff21e3d4346ecc4690139dd87f741759ea177837c6d7",
+      "bytes": 16260,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed249-v1/guest-output/ws73.pcap",
+      "sha256": "a198cd893b2df937901602d03e4de1112d36a960ea0e0431e1562111d1cd1d54",
+      "bytes": 636160,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed249-v1/guest-output/capture-stats.txt",
+      "sha256": "e88fff78fe5bcfae43e0b37299cf355cd0584fcfc0d64ea5322846f13720f7f1",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed249-v1/guest-output/kernel.log",
+      "sha256": "330c88234ee6a9b13ae80f7bd2492f250a1be2130f9606e2ac7044358247b00c",
+      "bytes": 49535,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "9a3424a4903e44f6fec1cab8ae090ce7876d9c16834314be6219b855cb1d9630",
+      "bytes": 952434,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed249-v1-audit-hcc110-v2.json",
+      "sha256": "8d3f503af7f7c016c9987a9d6ea86f5ae73df0f9dd353c69013aeafefcd334ef",
+      "bytes": 6989,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed2042-v1/manifest.json",
+      "sha256": "0b696db11190385bed2fb275a2574954ea1d4f2f3ae813453566e42d4023b73c",
+      "bytes": 2502243,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed2042-v1/console.log",
+      "sha256": "d983c7c91fe4098aa55b34a3cc3ae0990f3d0b36e004315fcbecce6c1d6d2be2",
+      "bytes": 16235,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed2042-v1/guest-output/ws73.pcap",
+      "sha256": "1257f249d81c40bd8c52f4984236a51d2cd33e3ffe19491be4aa205d0a73d489",
+      "bytes": 1071320,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed2042-v1/guest-output/capture-stats.txt",
+      "sha256": "6219f8e7ec308c688409922ab85266a22ed546c0f10b916fa6190ccdfe7218d7",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed2042-v1/guest-output/kernel.log",
+      "sha256": "a5afd071a3beb4efe859d43278183a5c28c975f4c5034d66a81fe345480c3dda",
+      "bytes": 49273,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "21aa9e5b84612f81a14df14ee2191b479501caac8636f16bec0aae956ad34c73",
+      "bytes": 1000721,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed2042-v1-audit-hcc110-v2.json",
+      "sha256": "7c6c6e1998a2eed434a3afdfe965b7e6788d7ce93ae23f263cb95afa994ec09a",
+      "bytes": 6992,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u23short-v1/manifest.json",
+      "sha256": "11984a0dfb1a1585c4aeaba2c301b9192d8ef47d4d951ab4c4000dbcabf74f52",
+      "bytes": 1510651,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u23short-v1/console.log",
+      "sha256": "e36386eb1bd525379a223dfb93ab1fc26f6e6780d5ceac7009fb22fd6a1c5b8f",
+      "bytes": 16211,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u23short-v1/guest-output/ws73.pcap",
+      "sha256": "d29d27199005b77e29a011d166de7331085419e3f60ded9ad8a375f1812cf99c",
+      "bytes": 595296,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u23short-v1/guest-output/capture-stats.txt",
+      "sha256": "aca2b468d6ae1b83069888deab207235b0042a995a12698154c5ae0a73bc71a5",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u23short-v1/guest-output/kernel.log",
+      "sha256": "8aa2963416d03c06ed2b35709251a0d45898f38fb84d74d4a3a0838fd8d2018a",
+      "bytes": 49355,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u23short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "70c47940e7a925f26d50ede74659f524ef84e6c108b733475b81fe1715bbb81c",
+      "bytes": 873465,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-u23short-v1-audit-hcc110-v2.json",
+      "sha256": "ccb7cd28b8af2bbe07c3d309b3e22b321c122803f3203bdb03c86380dc143253",
+      "bytes": 6989,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-mixed-budget-all-v1.log",
+      "sha256": "9300bb85ab2212e6b5bad73ee08b2f04770d8d3bf5796e014003f8601db05bd7",
+      "bytes": 2412,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-mixed-budget-all-v2.log",
+      "sha256": "bb3604e445a5848e23afa98bf713c379b3f32673264fbfdd53880718dafeb504",
+      "bytes": 865,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-sealed-bindings-v1.log",
+      "sha256": "6e0c0119c18746d365262723d84d010c3691eb6e137037549c2e06e2de0ab2e1",
+      "bytes": 4999,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-sealed-bindings-v2.log",
+      "sha256": "fd2248827cd27cbf4c3bc141e920c9d19573bc6504f49308bda2014eb5f5f174",
+      "bytes": 147,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-final-docs-v1.log",
+      "sha256": "debec062a05dd6dfbb73ede4e920fcf3e3080575f80d91f8ea7f6e3ffd5139ee",
+      "bytes": 344450,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-wire-audit-v1.py",
+      "sha256": "367c4ad239aca014f0e182d57afe730f9fd8aadf17e70b99a2985e253d6d044d",
+      "bytes": 3261,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-wire-audit-v1.json",
+      "sha256": "8cdcba22e8c23f9b254b6843c8bc13eb33a21ef253b76aee76be13b3c1dc42cc",
+      "bytes": 2731,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-data-case-audit-v1.py",
+      "sha256": "a2574496ec606c042b9463772377e23d670aa405c7ee0f85c94a82bd52ff9027",
+      "bytes": 8890,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-data-case-audit-v2.py",
+      "sha256": "f8ccfa03af21f194defd303332378ce223255d129239a21ed7e0f69f28255033",
+      "bytes": 8937,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v3-audit-hcc110-v1.json",
+      "sha256": "e928e3c8b94a07262d06172270373d0a7c53cc25e88b6d4576f1fa61639ba212",
+      "bytes": 6948,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-capture-completeness-v1.json",
+      "sha256": "512afeebe9e2c317102e827df6a036667a804c0e9e553de2ef3f0694f2989f3d",
+      "bytes": 476,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-selection-v1.json",
+      "sha256": "b6bac7ab7259a82a0f5feb2cdd659ef4876bb3ae9b22fb8baf812bc2468c5427",
+      "bytes": 2609,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-build-v1.json",
+      "sha256": "ae054fa358d22bdc47de1fb7e5a83693582d3741f054f7f15a0cf354b329c8f1",
+      "bytes": 1636,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-build-v2.json",
+      "sha256": "b723a51af2c42eb225eabd6ba01e57bb4d525d8832692458ae640a4f8dab3b8e",
+      "bytes": 1636,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-build-v2.log",
+      "sha256": "8d552c697de7fd912426ae9b65983260d68a40f27e3d7358ea1c70c2fa6dbfba",
+      "bytes": 1390,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-budget-v2.json",
+      "sha256": "96b91e0eb070e0a1a2dd0ed5df2d4a036cea09cc11b16570260e336d324df242",
+      "bytes": 1070,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-artifacts-v2/manifest.json",
+      "sha256": "8c3ad48e0ce53b94d7f497758ad148b836d7f6ecd66dfd8f13d0805603e8e023",
+      "bytes": 229017,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/manifest.json",
+      "sha256": "7870620be7f28a607e469a2e78313af4275101e609a243351da01375e354e913",
+      "bytes": 2351,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-root-smoke-v3/manifest.json",
+      "sha256": "b48950f1366911bf7042f4f766a34ae068eff732594cd0881dec195403da49a0",
+      "bytes": 36324,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepare-v2.json",
+      "sha256": "23d29b021b880b4e4b26a307c3328466472d0ea5583e077b21d1793a745de800",
+      "bytes": 1558,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-data-regressions-v1.json",
+      "sha256": "749f05161156f2f7f41e4338b5dc861afcd7615adaeb70ab91e25f9c2d16c1c3",
+      "bytes": 3122,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-cbmc-harness-v2.c",
+      "sha256": "df47cd5fb4a82f0046c8ccf3f8f864912a3476165db0e997e1711ea9038ca21d",
+      "bytes": 715,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-cbmc-run-v2.py",
+      "sha256": "26240237c20d837ec61e8f9851f281a700fc3416991bfa1582b10abe20675b1f",
+      "bytes": 2861,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-cbmc-v2/report.json",
+      "sha256": "f0607ef812e0842af6f62a32e934073fe33c5b8daaf943c32d39e6a456771526",
+      "bytes": 10631,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ws73-chip-sanitizer-v2.log",
+      "sha256": "714b068c5124543183312db257165bd70f9aef18572f5b39a50a3b81655e2708",
+      "bytes": 40,
+      "access": "private"
+    },
+    {
+      "path": ".dev/chip-query-offline-build-v1.log",
+      "sha256": "833317b4c10ba3cfaf74893382fafce3ead5bf1ae8f1798abcd3b73333fb3322",
+      "bytes": 632,
+      "access": "private"
+    },
+    {
+      "path": ".dev/chip-query-offline-build-v2.log",
+      "sha256": "e565636b3274f8a67315638480c02fbc23c2cf23e5b54cf9658c93d990989422",
+      "bytes": 1231,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-tools-current-v1.log",
+      "sha256": "416fa0a72e5b0f84b5411aa986275db72248bec5f81c5b1c0e1fb52eac4c3c7e",
+      "bytes": 1558,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-tools-current-v2.log",
+      "sha256": "c62eb3f76bbe4ae76dbf4aa2f715618e2170d43227d1da6e15b80e231eb5228d",
+      "bytes": 859,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-model-evidence-tests-v1.log",
+      "sha256": "33060fd73862c5e1af97335504d5b45211fce6d229657f556d8deceeadc52ce4",
+      "bytes": 101,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-runtime-only-tests-v1.log",
+      "sha256": "e586fc0f3bb2a05f4c80f07d1b4c6171e830592f6c7aaf70d4af3b0aa3ebd072",
+      "bytes": 105,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-mixed-budget-tests-v1.log",
+      "sha256": "e0253616bc31bada06f07ca8b04cf89f19078a336635bd11fc5ffa97b93d92e5",
+      "bytes": 1316,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-mixed-budget-tests-v2.log",
+      "sha256": "33e5358f031b4b3ff1229ad551bc69acf6b1f68d6aa5a1282a20d8a845602b83",
+      "bytes": 126,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-stop-sdk111-v1.json",
+      "sha256": "831d966a94070dbbc28f23de802aba6c4dc0601cf05a50bd3bd09c11ae567ebd",
+      "bytes": 435,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent-lifecycle-qualification-v1.json",
+      "sha256": "be5c839f114fc15998b8fa1caa862b97b222bd0c1457820c635562f5dbf52c5a",
+      "bytes": 15333,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent-lifecycle-qualification-v2.json",
+      "sha256": "3bf4b9b47ceb302f69ca32db586549aee99eb6d0a898be3eeacce1d373a1273c",
+      "bytes": 16982,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent-lifecycle-interrupted-at-firmware-change-v1.json",
+      "sha256": "96e516286c25fb790c1996e7656998c4193f576d8ac6b817d378734110fa55ff",
+      "bytes": 6032,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-qualification-v1.json",
+      "sha256": "cae3f9e7e10cdf85b03ba716be1eea618da97bcb1eee7a071ed7c4e33397caf6",
+      "bytes": 2157,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-cbmc-v2/actual.json",
+      "sha256": "7b86bfd38d3616208c1fe313cdfb32e3bf3410f0ebe06d8ac68ab2fbda26ef3a",
+      "bytes": 525747,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-cbmc-v2/false-model-U-only.json",
+      "sha256": "f47cd4691e91a129e0a852009c50aa17a94d72ff72b42dfdd7894062c47f7982",
+      "bytes": 1253523,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-cbmc-v2/non-atomic-mutant.json",
+      "sha256": "e9968e89e2eb44ee82d3ba3aa2f70a68f9a084c66c6ec96b24d0156f968a15e9",
+      "bytes": 1257005,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-cbmc-v2/insufficient-unwind.json",
+      "sha256": "a777bdd08d4f6590e0dfcd7b12cdd61422391a9b17e4e9ecff7d43efa23e11a3",
+      "bytes": 586835,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v1/manifest.json",
+      "sha256": "7d05cb39b3c09f476fc529f555ebb55c81f72a02e3b810a34d3bf99ae3c61799",
+      "bytes": 6146,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v1/console.log",
+      "sha256": "210e9c616e5265370999639dea0b574f0211a1e08d9a78abc485a2344fbfb62f",
+      "bytes": 14107,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-reset-port1-v1/guest-output/maintenance/ws73.pcap",
+      "sha256": "8e0095aeee0b7431ef6dcc2d257f52f1ffdb3205c79bf349794846eae5fd593e",
+      "bytes": 233111,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v1/manifest.json",
+      "sha256": "3646a8af9fb32534688e371ddab6c78144afd200e730450e2e0a0350e911e530",
+      "bytes": 48450,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v1/console.log",
+      "sha256": "1ed0618e53fb75ea3302e34ad2ca142d27a2b35ff934b7b20fdf64d7237e63f6",
+      "bytes": 59639,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v1/guest-output/ws73.pcap",
+      "sha256": "0b529539bb4955e73ade409e13ced10bf259b57d871270d50142b71815fe9744",
+      "bytes": 253412,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v2/manifest.json",
+      "sha256": "517c73f85de45f6a54b8af7340554361db8205dda991171043df9898a62f9812",
+      "bytes": 100306,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v2/console.log",
+      "sha256": "3a514175b179e168ac684eab30b17cbb4759dff5bfbc3f269233b9a3f7b8edba",
+      "bytes": 16233,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-short-v2/guest-output/ws73.pcap",
+      "sha256": "12ef1ce6b7ff6727eb4d8a1ff8833e1f476511eea193a67462c19fa44599dbef",
+      "bytes": 595296,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/manifest.json",
+      "sha256": "800e1b431f0f899b801a97950910af53dcead64c4c12f2b88d89fe335888f922",
+      "bytes": 52307,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/console.log",
+      "sha256": "abec04c272eff57e19c3f480f67b50dd6b46936c853221557f3535a2b992d795",
+      "bytes": 366448,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/guest-output/ws73.pcap",
+      "sha256": "5bfed72d592f65f682b44613e57b368aaa4e80f8f4efab2d292b32f68e9a349d",
+      "bytes": 84149,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/manifest.json",
+      "sha256": "0455bfa054d8197f50a291663af417de44c5e5c6f2abd582c83ccfca8206f407",
+      "bytes": 26982,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkd",
+      "sha256": "c86967115f9ba107d3ee42caf9f75ffe613707b202caf019b2ed5a997c6a271c",
+      "bytes": 10634880,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slctl",
+      "sha256": "138b84adfa8effbf6a528bf0dbaee9133d798e1f00c2f5aa4b1670c7413ba9fe",
+      "bytes": 7911664,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slktest",
+      "sha256": "0ffda53bcf2889ed8734398ee6d7a879142a8e80e46cf586e32041bba79675ad",
+      "bytes": 5278024,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkconfig",
+      "sha256": "b7b9678f35be4d7ac83e885c75f956d97ccde68ea50922448f9a273a588af299",
+      "bytes": 1403736,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkmon",
+      "sha256": "1d6402733c388a693a74764d4c9583701655cc662e20bcbb993ce49dc6585080",
+      "bytes": 1661896,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkdump",
+      "sha256": "880c446c2775675bbef373a3f9a07afe970765144eb05210e5c69bd09d37210c",
+      "bytes": 1661768,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/liblibsparklink.so",
+      "sha256": "30758249c58fd5db7fd9fe0fa8f47490a15bd5a45dbd7ff623d2904400d54c6e",
+      "bytes": 552048,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "6a0c322668d67a7e8c5cab9bff5d7af1f737e30ed4d9258975e8068054e4377b",
+      "bytes": 137644,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "ac55f1a2e1d1466a02123c21e50204e108fe4660c587566e63798de648bd1390",
+      "bytes": 21060,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "601b143db64ef6e70bf882fd5a998ecff59f19ede85f477cdc8967b21a8a472f",
+      "bytes": 34120,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "153bd4d0a29cab95ea4674e6aa3c33510a8ce5dedb4cbc0686cc7e7e6b899f3a",
+      "bytes": 507,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "82d65094030f4302dda3df7927e7bb2f7ac9d3355deca287ede43785cf86e857",
+      "bytes": 154,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v2/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/board110-candidate-e-v1/ws73-board-config.json",
+      "sha256": "f9405fa29917f0a5b6195fe4392cc4d76d53ce755dfde71d66aace3456524b15",
+      "bytes": 3478,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/manifest.json",
+      "sha256": "f11cb1a40cdff1ffe911b2ef78d718a2296b2f361830a0786857aef6262c4c14",
+      "bytes": 26981,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkd",
+      "sha256": "c86967115f9ba107d3ee42caf9f75ffe613707b202caf019b2ed5a997c6a271c",
+      "bytes": 10634880,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slctl",
+      "sha256": "138b84adfa8effbf6a528bf0dbaee9133d798e1f00c2f5aa4b1670c7413ba9fe",
+      "bytes": 7911664,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slktest",
+      "sha256": "0ffda53bcf2889ed8734398ee6d7a879142a8e80e46cf586e32041bba79675ad",
+      "bytes": 5278024,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkconfig",
+      "sha256": "b7b9678f35be4d7ac83e885c75f956d97ccde68ea50922448f9a273a588af299",
+      "bytes": 1403736,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkmon",
+      "sha256": "1d6402733c388a693a74764d4c9583701655cc662e20bcbb993ce49dc6585080",
+      "bytes": 1661896,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkdump",
+      "sha256": "880c446c2775675bbef373a3f9a07afe970765144eb05210e5c69bd09d37210c",
+      "bytes": 1661768,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/liblibsparklink.so",
+      "sha256": "30758249c58fd5db7fd9fe0fa8f47490a15bd5a45dbd7ff623d2904400d54c6e",
+      "bytes": 552048,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "153bd4d0a29cab95ea4674e6aa3c33510a8ce5dedb4cbc0686cc7e7e6b899f3a",
+      "bytes": 507,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "82d65094030f4302dda3df7927e7bb2f7ac9d3355deca287ede43785cf86e857",
+      "bytes": 154,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/board110-candidate-us-v1/ws73-board-config.json",
+      "sha256": "3f35a92e65d287a2aad7200b08fae02bcbbe1836a5178d52d6f6ccd4b0f7e3fe",
+      "bytes": 3479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/manifest.json",
+      "sha256": "c6ff19871c30ca0b2708590a2a51c239e4a05281757f45ee2f61f8e947134e6e",
+      "bytes": 274756,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/root.btrfs",
+      "sha256": "b7cb1229a594d6b081031dad4ced8a9524d38711cc2d198330eeeb3dc5c77764",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/manifest.json",
+      "sha256": "4c09612d9687380408235014051555d0cd4f4423d063a38e2a0e614de82aa7b8",
+      "bytes": 277509,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/root.btrfs",
+      "sha256": "344913548bc128f4df5c56055cb7b62e1e502b69e220491536c68480ba795d60",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "606e001cc5dea57df9047675c0f84bc6a5bbb8edfc4315e9a7cd0f55a239f83f",
+      "bytes": 144561,
+      "access": "private"
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private"
+    },
+    {
+      "path": ".dev/data-deadline-qemu/qemu-system-x86_64",
+      "sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "bytes": 30094800,
+      "access": "private"
+    }
+  ],
+  "retention": "Private SDK/firmware/USB remain authorized maintainer workspace only. Public relativepath/hash/size indexes, no verified offsite availability. Missing/hash/source/scope mismatch prevents currentPASS.",
+  "wall_ns": 1792211321670963652
+}

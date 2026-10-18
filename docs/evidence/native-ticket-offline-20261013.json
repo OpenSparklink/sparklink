@@ -1,0 +1,165 @@
+{
+  "status": "SOURCE_BOUNDARIES_PASS_WHOLE_TICKET_OPEN",
+  "kernel_head": "464d4d8a9de7a9f4d02848dcedabea3ea9b56c6e",
+  "userspace_head": "854f364d163ec23f88f6a7e83c6d84b625d3fb86",
+  "proof": "native-ticket-formal-20261013/manifest.json",
+  "strict_core_ffi_driver_build": "PASS",
+  "kernel_full_build": {
+    "status": "BUILD_PASSED",
+    "source_head": "464d4d8a9de7a9f4d02848dcedabea3ea9b56c6e",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-ticket-commit-kernel-build.log",
+      "sha256": "25a3b235bb23f5f593227388c31a3e633ab52655805a9464b3521de60d0a8d5c"
+    }
+  },
+  "tooling_tests": 423,
+  "extadv": "actual oversize handlers reject before held state lock/real ioctl; two tests",
+  "python_C_SDK_contract_tests": 34,
+  "reports": {
+    "native-ticket-final-data.json": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 25,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "real_data_acceptance": false,
+      "socket_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_native.rs": "beae9516bec172b8e3608f48f8a76179bf1088afd44b66bef732a12811dc06e7",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "d4dee681bdba31c26a860bffe2dd67e306cdadf83569c69cf43f61624e87ce3b",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "cebef73974e1c7a78e45eec7b5a50778a1451b7ed5dbbacd1b3cd583c2e04aa6"
+      }
+    },
+    "native-ticket-final-driver.json": {
+      "status": "WS73_ACTUAL_TICKET_DRIVER_FAULTS_PASS",
+      "cases": 10,
+      "scope": "actual C preparation/atomic submit/completion/finite wait/kill/join bodies + wire codec; USB/lock/time are explicit dependencies",
+      "physical_acceptance": false,
+      "whole_ticket_proof": false,
+      "production_bodies_sha256": "dbc3c893ed172b02cdcbe45bd0120ba26fc81498d5d12a46c351e7fc9d54beee",
+      "sources": {
+        "drivers/sparklink/ws73/usb.c": "4b5983387d31663664fe810bd8d8091de4bd16cd1c23632bb49c97169e3803e0",
+        "drivers/sparklink/ws73/wire.c": "d953b9c6bcd6745e4d5e4f30fb608a7646b9191ee099c62d547e17b72ce6e83a",
+        "drivers/sparklink/ws73/wire.h": "3fd8d6da2f1db5fa1387eed0a381d3c183aa249afc5f2d30b48208ab97e56ddb",
+        "tools/testing/selftests/sparklink/native-ticket/driver_fixture.c": "137c27756fe1e0335b6687ec36241a92b82a58bdfa840afc22005593cbbd1618"
+      }
+    },
+    "native-ticket-management-release-v2.json": {
+      "status": "MANAGEMENT_RELEASE_SOURCE_BOUNDARIES_PASS",
+      "rust_tests": 48,
+      "scope": "actual Host predicates/TX selection/InFlight/domain revocation and core fast-release block; source queue/operation/lease modules and opcode/timeout constants; locks, clock scaling, dependency error adapters and surrounding transport dependencies are fixtures",
+      "live_ioctl_acceptance": false,
+      "fd_close_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_host.rs": "d4dee681bdba31c26a860bffe2dd67e306cdadf83569c69cf43f61624e87ce3b",
+        "sparklink_core.rs": "e39ad81a99359ff165696463a4e1886c210a0cb3cad5bc61850afa929c43de1c",
+        "sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_dli.rs": "5a18a50b4f541115bf988626444cea9c705c77e7dc3834934f540b172098e098",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae"
+      }
+    },
+    "native-ticket-connection-contract-v3.json": {
+      "status": "NATIVE_CONNECTION_PRODUCTION_SOURCE_CONTRACT_PASS",
+      "scope": "actual production operation storage and WS7327/3-byte driver codec; actual Host caller dependency tests; not running kernel or RF proof",
+      "rust_tests": 12,
+      "actual_host_tests": 49,
+      "actual_host_sources": {
+        "sle_host.rs": "d4dee681bdba31c26a860bffe2dd67e306cdadf83569c69cf43f61624e87ce3b",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_dli.rs": "5a18a50b4f541115bf988626444cea9c705c77e7dc3834934f540b172098e098",
+        "sle_workers.rs": "a80436181c010ab58792b696aa43e4e4fc4b85982391d249fac71f787fd4282b"
+      },
+      "codec_sanitizers": [
+        "address",
+        "undefined",
+        "leak"
+      ],
+      "production_connection_admission": false,
+      "connection_rf_acceptance": false,
+      "ssap_acceptance": false,
+      "automatic_recovery_acceptance": false,
+      "sources": {
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+        "connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+        "sparklink_connection.h": "206ba287da537704bef03233f598e3607c6180493d009a66b6460dfaf129047b",
+        "ws73_connection_codec_test.c": "1f41500443ce81a9c71cfb34d7def2d898a89e5b97d598f28cbcf1575a22e56e"
+      }
+    },
+    "native-ticket-ssap-containment.json": {
+      "status": "SSAP_LEGACY_CONTAINMENT_PASS",
+      "rust_tests": 8,
+      "production_dependency_audit": "PASS",
+      "retired_ioctl_syscall_check": "separate ssap_removed_uapi_test in VM; not asserted by this runner",
+      "scope": "test-only historical staging/session and codec with allocator fixture; former rejection tests replaced by removed API audit; no production service DB or wire Engine",
+      "standard_ssap_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "legacy_staging.rs": "18ea4e2f197c856cd9ab733b4501f803c605879a437e8007d9cbafa999471bf4",
+        "sparklink_core.rs": "e39ad81a99359ff165696463a4e1886c210a0cb3cad5bc61850afa929c43de1c",
+        "sle_workers.rs": "a80436181c010ab58792b696aa43e4e4fc4b85982391d249fac71f787fd4282b",
+        "sle_conn.rs": "7b625a362843ec43283e773d0d8d315ab25b74cd7388c86a0c820b85f052fe70",
+        "sle_uapi.rs": "b9beb87c1f98a5583cb094dbfb4649013ae04a41ab6d4e4bfea73c0aeaf30d15",
+        "sle_authorization.rs": "c2090d0fc8f1fbe489df9489920f6eafc8819c48fdecc30bf9cb0af6dd854f34",
+        "sparklink_ioctl.h": "d90a0cdfbd089eb239f97c46ad9d78472e1502cad6ac330d036e3598cde4c430"
+      },
+      "remaining": [
+        "Userspace standard codec/fragment controls, permissions and authenticated per-peer database",
+        "PDU socket owner, deadline/budget/credit/commit semantics and real peer interoperability"
+      ]
+    }
+  },
+  "hardware_evidence": [
+    "ws73-ticket-commit-short-repeat-20261013.json",
+    "ws73-ticket-commit-249-boundary-20261013.json"
+  ],
+  "remaining": [
+    "controlled real VM submit/withdrawal interleavings",
+    "Channel/Session/Grant references and epochs",
+    "NOCP generation/lifetime/duplicate barrier",
+    "Callback/VFS lifetime full refinement and stress",
+    "Original full S0\u2013S6/19WP/10FV/12DG scope"
+  ],
+  "ci": {
+    "run_id": 38297781168,
+    "head": "854f364d163ec23f88f6a7e83c6d84b625d3fb86",
+    "conclusion": "success",
+    "jobs_passed": 9
+  }
+}

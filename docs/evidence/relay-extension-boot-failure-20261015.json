@@ -1,0 +1,256 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-10-15T03:22:38.366511+00:00",
+  "status": "CONTIGUOUS_EXTENSION_RETIRED_BOOT_FAILURE_ORIGINAL_RESTORE_NOT_VERIFIED",
+  "vm_only": true,
+  "source_kernel": "49467d4df595f8988a7ad6310b53932f37d68283",
+  "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+  "failed_generator_commit": "0c3471017e40d57baa546c3452eeef95278bd0ad",
+  "retired_cli_commit": "91a5bfb792e6ccdb347137c7e06bf7eb4e336e17",
+  "production_runtime_changed": false,
+  "default_or_user_supplied_firmware_modified": false,
+  "historical_retired_plan": {
+    "status": "RETIRED_CONTIGUOUS_PLAN_BOOT_FAILURE",
+    "packet_table": {
+      "address": 4386816,
+      "old_count": 44,
+      "new_count": 45,
+      "old_rows_sha256": "e81ba829591b416f3f81e677d46408444a9994270d34423eaf422d31d3e3584e"
+    },
+    "dispatch_table": {
+      "address": 4387088,
+      "old_count": 60,
+      "new_count": 61,
+      "old_rows_sha256": "e0d4b5cc657f1c0f620d550ee915d3f7700353917e7cba2de428ade769720dbc"
+    },
+    "original_entries_preserved": true,
+    "type146_preserved": true,
+    "reservation": {
+      "begin": 4386816,
+      "end": 4390912,
+      "bytes": 4096,
+      "pool_start": 4353024,
+      "original_pool_bytes": 37888,
+      "new_pool_bytes": 33792,
+      "used_table_bytes": 760
+    },
+    "patches": [
+      {
+        "address": 4290826,
+        "before": "9307c002",
+        "after": "9307d002",
+        "reason": "packet getter count44->45"
+      },
+      {
+        "address": 4290834,
+        "before": "d4c04100",
+        "after": "00f04200",
+        "reason": "packet getter pointer"
+      },
+      {
+        "address": 4312998,
+        "before": "3c00",
+        "after": "3d00",
+        "reason": "dispatch parent count60->61"
+      },
+      {
+        "address": 4313000,
+        "before": "accd4100",
+        "after": "10f14200",
+        "reason": "dispatch parent pointer"
+      },
+      {
+        "address": 4223336,
+        "before": "b7054300",
+        "after": "b7f54200",
+        "reason": "RAM pool upper bound430000->42f000"
+      }
+    ],
+    "scope": "Table byte preservation only; reduced RAM pool, placement and runtime behavior need VM hardware regression. Not stock111, approved security or natural recovery qualification.",
+    "production_default_changed": false,
+    "hardware_qualified": false,
+    "safe_to_upload": false,
+    "source_image_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+    "source_payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5",
+    "output_image_sha256": "d468c666ea129072d214292d2f2e6639d95fd22f0f244e3778c99e05f38ccb5e",
+    "output_payload_sha256": "5ac0b48005ca1bb42199625633e6472a467ebfa9a0d15c882cd335637ade7e80",
+    "output_payload_bytes": 193272,
+    "retirement_reason": "Actual contiguous VM boot upload timed out before completing; subsequent USB enumeration failed. Downloader workspace exclusion is unproved. No firmware output is permitted."
+  },
+  "runtime_memory_analysis": {
+    "code_reads": [
+      {
+        "artifact": "code111-layout",
+        "bytes": 1024,
+        "windows": [
+          {
+            "address": 1090560,
+            "bytes": 1024
+          }
+        ],
+        "capture_sha256": "dc3e1befac680b4a3ec9ba7eb9e3728272120cd81b26a2493c27358d0eeb61eb",
+        "dump_sha256": "2bcefd61b917a45e784ed06f6d663071146443f08120781ad672250a7ac30836",
+        "proof_sha256": "92f96b8799a4c909ae776265eec24aed2829d9ea938584bb1d2a2ceae1367a9b"
+      },
+      {
+        "artifact": "code111-layout2",
+        "bytes": 1536,
+        "windows": [
+          {
+            "address": 1102336,
+            "bytes": 1536
+          }
+        ],
+        "capture_sha256": "5cd94d77caf1c77f2f3ee73ac513ca12fce9e2a9d56878709d75b02cae111330",
+        "dump_sha256": "a834de4114d9358cf6041bdeeeb6e8c2bca2ceca8aa9ab80176062a7aea05b8d",
+        "proof_sha256": "9156aeab43fbf4584a1203525556da9d04afcf69154fcf5d1aeb6021abb85d68"
+      }
+    ],
+    "stock_image_end": 4338844,
+    "stock_bss": [
+      4338880,
+      4343736
+    ],
+    "stock_stack_fill": [
+      4348928,
+      4353024
+    ],
+    "ram_pool_initializer": 4333084,
+    "ram_pool_call_end_immediate": 4223336,
+    "stock_pool": [
+      4353024,
+      4390912
+    ],
+    "planned_table_reservation": [
+      4386816,
+      4390912
+    ],
+    "source_mapping": "Decoded pinned firmware startup and ROM code. ROM10a426/10d24a were diagnostic metadata registration, not allocator setup. Actual RAM pool setup is407168->421e1c.",
+    "limitation": "Runtime address arithmetic and unchanged old rows do not establish boot downloader workspace safety. No safe contiguous placement is proved."
+  },
+  "actual_failure": {
+    "artifact": "extrelay111",
+    "manifest_sha256": "26525019a7dc58b368f42c5fd323faa9d1304f9ba013e84b2622d2fc358cbf85",
+    "scope": "Only source host1-2.1.2 attached; survivor/oracle never started. No new relay/data behavior qualified.",
+    "exception": "RuntimeError('VM exited early: 0: .dev/extrelay111/native/console.log')",
+    "capture_sha256": "6b845eedc69c33f97d49deb88c2600110d1779dea164d124e6da59d517ef467e",
+    "capture_packets": 347,
+    "capture_kernel_drops": 0,
+    "capture_seal_exit": "0",
+    "kernel_log_sha256": "ceb9b294b68f88371d8f1b8310b0b89410007d51fb07fced99b9f932f3e1f9a4",
+    "intended_image_sha256": "d468c666ea129072d214292d2f2e6639d95fd22f0f244e3778c99e05f38ccb5e",
+    "intended_payload_bytes": 193272,
+    "fully_uploaded": false,
+    "files_commands": [
+      {
+        "record": 308,
+        "completion_record": 309,
+        "command": "FILES 1 0x400000 0x8000 0x0"
+      },
+      {
+        "record": 316,
+        "completion_record": 317,
+        "command": "FILES 1 0x408000 0x8000 0x1"
+      },
+      {
+        "record": 324,
+        "completion_record": 325,
+        "command": "FILES 1 0x410000 0x8000 0x1"
+      },
+      {
+        "record": 332,
+        "completion_record": 333,
+        "command": "FILES 1 0x418000 0x8000 0x1"
+      },
+      {
+        "record": 340,
+        "completion_record": 341,
+        "command": "FILES 1 0x420000 0x8000 0x1"
+      }
+    ],
+    "successful_data_out_bytes": 163840,
+    "last_command_ready_received": true,
+    "last_data_ack_received": false,
+    "failed_input": {
+      "submit_record": 346,
+      "record": 347,
+      "length": 0,
+      "successful": false
+    },
+    "boot_errno": -110,
+    "sixth_chunk_wifi_btc_quit_sent": false,
+    "intended_new_runtime_executed": false,
+    "intended_runtime_execution_scope": "No intended boot QUIT, full image or new Ready observed; not a claim about corrupted downloader PC behavior.",
+    "root_cause_status": "NOT_FULLY_IDENTIFIED: contiguous padding/downloader workspace overlap is a supported concern, not a complete ROM memory map or proof."
+  },
+  "restoration": {
+    "artifact": "r1ff-post-ext",
+    "manifest_sha256": "316486abe1af5f4aa452c452e6b55f3ede738cac7548894e60cbef55b51d4ac5",
+    "status": "FAILED",
+    "exception": "RuntimeError('VM exited early: 0: .dev/r1ff-post-ext/native/console.log')",
+    "sequence_sha256": "ba888316ab4e45d90b8277c7f2ec85ab1693de2528cbac37099d50584ae6d2e7",
+    "source_port": "1-2.1.2",
+    "original_upload_verified": false,
+    "capture_sha256": "7c8ac6e2adc13921606cb244e2a2dc4e40d9c60f44edbb4d36d4057c86993ccc",
+    "kernel_log_sha256": "3e033158e596d4b95db5bd94d5c1e00d17f461f777fb035026c2f15a986c2223",
+    "observed_errors": [
+      -110,
+      -32
+    ],
+    "scope": "VM unable to enumerate; host cached sysfs USB node is not successful current enumeration or Ready. No original restoration claim."
+  },
+  "containment": {
+    "public_tool": "tools/ws73_relay_firmware_extension.py",
+    "current_entry": "Pinned-source report only; no --output or returned upload image",
+    "retired_transform": "Private helper retained for explicit historical/audit regressions, not a default daemon/kernel/backend",
+    "current_status": "RETIRED_CONTIGUOUS_PLAN_BOOT_FAILURE",
+    "cannot_generate_upload_image": true,
+    "source_combined111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "no_host_experimental_install": true,
+    "original_inputs_unchanged": true,
+    "known_bad_private_artifact": "retired-firmware-experiments/contiguous-sdk111-DO-NOT-UPLOAD-d468c666.bin (read-only; retained as failure evidence, never a default input)"
+  },
+  "hardware_access": {
+    "current_vm_processes": "All these owned experiment/restore processes terminal",
+    "uhubctl_direct_query": "USB permission denied; no compatible accessible hub",
+    "sudo_noninteractive_query": "password required, including exact user-authorized hub query",
+    "user_question": "Requested restoration of previously configured hub access or cold power of affected dongle only; no password requested",
+    "hardware_actions_do_not_qualify_natural_recovery": true,
+    "guest_usb_core_power_cycle_logged": "Guest enumeration retry logged a virtual port power-cycle attempt; no physical power cut or successful recovery inferred.",
+    "host_hub_power_command_attempted": true,
+    "host_hub_power_action_executed": false,
+    "sudo_noninteractive_cycle": "password required for exact /usr/bin/uhubctl -f -l 1-2.1 -a cycle; no power action executed",
+    "cycle_preflight": "No active workspace test QEMU; all four selected hub children ffff:3733"
+  },
+  "offline": {
+    "actual_tool_tests": 502,
+    "log_sha256": "9e4877648a6fb97905e039b411ebfa3a0f15d0806a5f6ffd2a47b96d46c3ea14",
+    "scope": "Transformation preservation, bounded runtime placement arithmetic, retired CLI and ordinary actual fd/credential tests; NOT boot/RF/proof success",
+    "ci": {
+      "head": "6ae5df744a19865ef49b41a83346d39b476fd437",
+      "ci": 38676325648,
+      "documentation": 38676325643,
+      "conclusion": "success",
+      "scope": "Source and docs only; NOT boot, recovery or hardware qualification"
+    }
+  },
+  "formal": {
+    "new_hardware_or_boot_proof": false,
+    "credit_kani": "NOT_PROVEN, existing unsupported/timeout retained",
+    "source_consent311": "Historical actual494 limited scalar scope retained, not upgraded"
+  },
+  "retained_qualification": {
+    "evidence": "relay-firmware-table-cause-20261015.json",
+    "scope": "Previous sacrificed146 three/four-row refusal delivery stays historical with its exact source/firmware hashes; does not qualify this new extension or stock111. Original136 data/length/budget and six revoke subsets remain bound to earlier identities."
+  },
+  "next_actions": [
+    "Restore affected device and independently verify original111 actual upload/Ready when power access is available; not natural recovery qualification.",
+    "Do not retry contiguous padded image. A segmented bootstrap or runtime initialization correction must first establish downloader workspace, segment ownership and a reproducible restoration boundary.",
+    "Continue stock-supported SMP messages with sole Session/credit/ticket, explicit Agent approval and actual install/encrypted application gates; stock refusal remains open and is not a prerequisite for all data development.",
+    "Continue controlled begun physicalDown/original-deadline, lateNOCP/reuse composition and unrelated data/SSAP on available devices; keep all S0-S6/19WP/10FV/12DG scope."
+  ],
+  "raw_materials_public": false,
+  "raw_availability": "Named private artifacts and source snapshots only; hashes do not make raw firmware/ROM/captures downloadable",
+  "whole_issue_closure_allowed": false,
+  "goal_complete": false
+}

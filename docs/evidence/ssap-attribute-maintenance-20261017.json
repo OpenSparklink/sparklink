@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "status": "ATTRIBUTE_SCOPE_MAINTENANCE_COMPLETE_FULL_GOAL_INCOMPLETE",
+  "functional_report": "docs/evidence/ssap-attribute-access-20261017.json",
+  "functional_report_commit": "81ae6beec2a0eb48885e1f4358a3ae21e34fc778",
+  "canonical_plan_commit": "6d1c37ecb6d76b94b6829546f8a396350ee91ca1",
+  "compiled_kernel": "1bcb1cd8453068aeefedb4a8da4dc3cb15ea600f",
+  "compiled_userspace": "d4a13e941aefee3ef11ccf56d74b144322947cd3",
+  "executed_tools": "49a648826e42787a709e3e664eaacc5f2ad1a67f",
+  "whole_current_tree_qualification": "NOT_REVALIDATED",
+  "full_goal_result": "INCOMPLETE",
+  "goal_api_status_observed": "active",
+  "goal_budget_unchanged": true,
+  "goal_scope_unchanged": [
+    "S0-S6",
+    "19WP",
+    "10FV",
+    "12DG",
+    "All original issue requirements",
+    "VM-only",
+    "UserHostP4nonblocking"
+  ],
+  "qualification_records": [
+    {
+      "id": "ssap-access-d4-real",
+      "level": "real_device",
+      "result": "PASS"
+    },
+    {
+      "id": "ssap-access-d4-offline",
+      "level": "offline",
+      "result": "PASS"
+    },
+    {
+      "id": "ssap-access-d4-helper",
+      "level": "formal_bounded",
+      "result": "PASS"
+    },
+    {
+      "id": "ssap-access-d4-access-unproved",
+      "level": "formal_bounded",
+      "result": "UNPROVED"
+    },
+    {
+      "id": "ssap-access-d4-combination",
+      "level": "formal_bounded",
+      "result": "UNPROVED"
+    },
+    {
+      "id": "ssap-access-d4-failure",
+      "level": "real_device",
+      "result": "FAIL"
+    },
+    {
+      "id": "ssap-access-d4-remaining",
+      "level": "real_device",
+      "result": "UNPROVED"
+    }
+  ],
+  "verification": {
+    "errors": [],
+    "unavailable_private_materials": [],
+    "unavailable_source_checkouts": [],
+    "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "current": "NOT_CHECKED",
+    "overall": "INCOMPLETE",
+    "completed": true
+  },
+  "provenance_negatives": [
+    {
+      "kind": "stale-source",
+      "result": "REJECTED",
+      "errors": [
+        "ssap-access-d4-real: report/source mismatch compiled_userspace",
+        "ssap-access-d4-real/compiled_userspace: source object unavailable"
+      ]
+    },
+    {
+      "kind": "missing-artifact",
+      "result": "REJECTED",
+      "errors": [
+        "ssap-access-d4-main-m24: missing material"
+      ]
+    },
+    {
+      "kind": "scope-upgrade",
+      "result": "REJECTED",
+      "errors": [
+        "ssap-access-d4-real: scope mismatch"
+      ]
+    },
+    {
+      "kind": "missing-grade",
+      "result": "REJECTED",
+      "errors": [
+        "ssap-access-d4-real: missing/extra/duplicate gate"
+      ]
+    },
+    {
+      "kind": "partial-hides-unproved",
+      "result": "REJECTED",
+      "errors": [
+        "ssap-access-d4-remaining: PASS hides a required non-PASS gate"
+      ]
+    }
+  ],
+  "source_relocations": {
+    "status": "FOUR_HISTORICAL_SOURCE_PATHS_ARCHIVED_EXACT_ORIGINAL_BYTES",
+    "rows": [
+      {
+        "material": "cmtc-id0-runner",
+        "original": {
+          "base": "workspace",
+          "path": "linux/tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+          "sha256": "1ae85a29b39cc443bd982fc884d24a05652b2b14c37396ce618a6cb9035182e9",
+          "bytes": 3222,
+          "access": "private",
+          "format": "bytes"
+        },
+        "retained": {
+          "base": "workspace",
+          "path": ".dev/qualification-source-archive/1ae85a29b39cc443bd982fc884d24a05652b2b14c37396ce618a6cb9035182e9/linux/tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+          "sha256": "1ae85a29b39cc443bd982fc884d24a05652b2b14c37396ce618a6cb9035182e9",
+          "bytes": 3222,
+          "access": "private",
+          "format": "bytes",
+          "retained_original_path": "linux/tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+          "restored_exact_git_source": {
+            "repo": "linux",
+            "commit": "d75f7bdf17ab295d8b504f3a803d8a100f131646",
+            "path": "tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+            "sha256": "1ae85a29b39cc443bd982fc884d24a05652b2b14c37396ce618a6cb9035182e9",
+            "semantics": "Exact byte-equivalent historical source object,not rerun or reconstructed runtime evidence"
+          }
+        },
+        "hash_and_size_unchanged": true
+      },
+      {
+        "material": "cmtc-mps-fix-runner",
+        "original": {
+          "base": "workspace",
+          "path": "linux/tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+          "sha256": "8e3a3eb69ae507f70dbda5305afb1003b1ec584667bbe18ff86ce21a8b3eb41b",
+          "bytes": 4175,
+          "access": "private",
+          "format": "bytes"
+        },
+        "retained": {
+          "base": "workspace",
+          "path": ".dev/qualification-source-archive/8e3a3eb69ae507f70dbda5305afb1003b1ec584667bbe18ff86ce21a8b3eb41b/linux/tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+          "sha256": "8e3a3eb69ae507f70dbda5305afb1003b1ec584667bbe18ff86ce21a8b3eb41b",
+          "bytes": 4175,
+          "access": "private",
+          "format": "bytes",
+          "retained_original_path": "linux/tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+          "restored_exact_git_source": {
+            "repo": "linux",
+            "commit": "90fda1457a8d8191a1a5fab260927e31644b3e50",
+            "path": "tools/testing/selftests/sparklink/run_channel_identifier_cbmc.py",
+            "sha256": "8e3a3eb69ae507f70dbda5305afb1003b1ec584667bbe18ff86ce21a8b3eb41b",
+            "semantics": "Exact byte-equivalent historical source object,not rerun or reconstructed runtime evidence"
+          }
+        },
+        "hash_and_size_unchanged": true
+      },
+      {
+        "material": "lifecycle-u23-33f17a8-m241",
+        "original": {
+          "path": "linux/include/uapi/linux/sparklink_ioctl.h",
+          "sha256": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+          "bytes": 40217,
+          "access": "private",
+          "base": "workspace",
+          "format": "bytes"
+        },
+        "retained": {
+          "path": ".dev/qualification-source-archive/ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1/linux/include/uapi/linux/sparklink_ioctl.h",
+          "sha256": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+          "bytes": 40217,
+          "access": "private",
+          "base": "workspace",
+          "format": "bytes",
+          "retained_original_path": "linux/include/uapi/linux/sparklink_ioctl.h",
+          "restored_exact_git_source": {
+            "repo": "linux",
+            "commit": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+            "path": "include/uapi/linux/sparklink_ioctl.h",
+            "sha256": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+            "semantics": "Exact byte-equivalent historical source object,not rerun or reconstructed runtime evidence"
+          }
+        },
+        "hash_and_size_unchanged": true
+      },
+      {
+        "material": "session-status-42e-m168",
+        "original": {
+          "path": "linux/include/uapi/linux/sparklink_ioctl.h",
+          "sha256": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+          "bytes": 40217,
+          "access": "private",
+          "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs.",
+          "base": "workspace",
+          "format": "bytes"
+        },
+        "retained": {
+          "path": ".dev/qualification-source-archive/ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1/linux/include/uapi/linux/sparklink_ioctl.h",
+          "sha256": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+          "bytes": 40217,
+          "access": "private",
+          "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs.",
+          "base": "workspace",
+          "format": "bytes",
+          "retained_original_path": "linux/include/uapi/linux/sparklink_ioctl.h",
+          "restored_exact_git_source": {
+            "repo": "linux",
+            "commit": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
+            "path": "include/uapi/linux/sparklink_ioctl.h",
+            "sha256": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+            "semantics": "Exact byte-equivalent historical source object,not rerun or reconstructed runtime evidence"
+          }
+        },
+        "hash_and_size_unchanged": true
+      }
+    ],
+    "wall_ns": 1792207237708701031
+  },
+  "offline": {
+    "qualification_checker_tests": 27,
+    "strict_html_documents": 115,
+    "qualification_view_generation": "Shared registry,exact current baseline;old low-load performance baseline retained historically;independent current_heads/current_batch fields not introduced"
+  },
+  "issue_updates": {
+    "status": "SEVEN_EXISTING_ISSUES_OPEN_EXACT_READBACK",
+    "rows": [
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 6,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6229001276",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 7,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6229001682",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 17,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6229002081",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 19,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6229002672",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "number": 3,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6229003221",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "number": 5,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6229003652",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "number": 8,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6229004187",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+      }
+    ],
+    "wall_ns": 1792207461802182704
+  },
+  "remaining": [
+    "Local per-attribute authorization/CPCD, named identity/Bond, secure notifications/indications/full SSAP remain missing; authorization registration explicitly NotSupported, no application-supplied approval becomes authority.",
+    "New artifact queue-after-rekey/off/unknown/lease withdrawal/finalfd/dup/Down/original deadline and partial-prefix combinations require distinct actual VM gates; historical narrower artifacts not transferred.",
+    "Actual Owner truth/locks/references/USB callback drain/credit-revocation-late-NOCP-handle reuse combination UNPROVED; bounded helper results not implementation refinement.",
+    "Original U331 late Down failure and old13-fast counterevidence retained; natural startup/re-enumeration/disappearance RCA/nonmanual recovery/NOCP truth/reuse/full S0-S6/19WP/10FV/12DG/multi/four/performance/PM/deployment/release OPEN."
+  ],
+  "limitations": [
+    "Documentation/issue synchronization does not qualify newer HEAD or dirty tree",
+    "Retained byte verification is not replay; actual exact six capture replays recorded separately",
+    "Kani access predicate remains UNPROVED due tool diagnostics despite raw seven-property success",
+    "Historical first guest-module failure and old mutable-source mismatch retained;only original source bytes restored from matching git objects,no hash update or runtime evidence reconstruction",
+    "One controlled-pair isolation does not imply independent four-device business or natural recovery",
+    "Source/workspace private paths are retention locations,not public downloads;missing/hash/scope failure cannot PASS"
+  ],
+  "materials": [
+    {
+      "path": ".dev/attribute-access-qualification-full-local-v2.json",
+      "sha256": "fadd2f97ad8c37c3f262d136c7718eafaa8ecf68c71d4de2bfdc2fb14933b102",
+      "bytes": 555,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    },
+    {
+      "path": ".dev/attribute-access-qualification-full-local-v3.json",
+      "sha256": "2d184cd31561a27ab5d4ede64b57d53741652457cbe0bd9ab3b12b5a53219aae",
+      "bytes": 230,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    },
+    {
+      "path": ".dev/attribute-access-registry-local-v1.json",
+      "sha256": "25af6a561fc96b607c9d129ae6a0d0b81e7bff939f53a63aca1d2e9535715cc8",
+      "bytes": 1270,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    },
+    {
+      "path": ".dev/attribute-access-source-relocations-v1.json",
+      "sha256": "4d872debee4cf18e11eccb742a310064c4e569a0acd4ba2d8d44175492beb52b",
+      "bytes": 5708,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    },
+    {
+      "path": ".dev/attribute-access-qualification-checker-tests-v1.log",
+      "sha256": "38baf5a074d8b3d31cfd25836b5ed5504eb2d01f604e2fede9c44e7e531b7475",
+      "bytes": 980,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    },
+    {
+      "path": ".dev/attribute-access-qualification-checker-tests-v2.log",
+      "sha256": "66a2cf18a160cfbeb84acfbd6583f046bb1b4d208cf750ee9eba7ba14248a046",
+      "bytes": 3381,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    },
+    {
+      "path": ".dev/attribute-access-docs-final-v1.log",
+      "sha256": "ec20949d4ef2d191131b2017e653f49c6a169e4da2d8ff8ccf26e6a6c265ccc9",
+      "bytes": 344291,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    },
+    {
+      "path": ".dev/attribute-access-issue-receipts-v1.json",
+      "sha256": "cdac3d8fb838fde6c7736dca7c337e9c08a24d9d0006c72804d262c51004b44e",
+      "bytes": 2602,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    },
+    {
+      "path": ".dev/attribute-access-update-issues-v1.py",
+      "sha256": "be0e0edc1574b0f1d968c4f1e1be16137218180b883df44e0138e344829c796c",
+      "bytes": 5346,
+      "access": "private",
+      "scope": "Maintenance original,not new execution or physical qualification"
+    }
+  ],
+  "wall_ns": 1792207497868049368
+}

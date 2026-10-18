@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_LIFECYCLE_SYNC_READBACK_AND_USER_CI_PASS",
+  "canonical_commit": "53f77e9fe516d15ccb996bfe5d39b6afe428e068",
+  "report_commit": "4e75cf56626a639c36296656c5fee321a861d54b",
+  "kernel_selftests_commit": "a474a8503637f10cdf1c1160f64f6391c40919a7",
+  "issue_receipts": [
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6210666845",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "08f2d0f4ddfc7d082861c46275b595e9daa6a373a5ba153917967081215d0d2a"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6210668107",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "08f2d0f4ddfc7d082861c46275b595e9daa6a373a5ba153917967081215d0d2a"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6210669536",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "08f2d0f4ddfc7d082861c46275b595e9daa6a373a5ba153917967081215d0d2a"
+    }
+  ],
+  "user_ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38868604561,
+      "headSha": "53f77e9fe516d15ccb996bfe5d39b6afe428e068",
+      "name": "Qualification integrity",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38868604561"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38868604562,
+      "headSha": "53f77e9fe516d15ccb996bfe5d39b6afe428e068",
+      "name": "Documentation",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38868604562"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38868604606,
+      "headSha": "53f77e9fe516d15ccb996bfe5d39b6afe428e068",
+      "name": "Production codec bounded fuzz",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38868604606"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38868604567,
+      "headSha": "53f77e9fe516d15ccb996bfe5d39b6afe428e068",
+      "name": "CI",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38868604567"
+    }
+  ],
+  "kernel_ci": "NO_MATCHING_RUN_RETURNED_NOT_A_PASS",
+  "scope": "Issue scope/open-state readback and exactuserCI only;originalmatrixFAIL/compiledK400/runtimeU25df identitiesunchanged;no fullscope/NOCP/recovery qualification",
+  "materials": [
+    {
+      "private_workspace_path": ".dev/data-lifecycle-local-provenance-v1.json",
+      "sha256": "be1232354fb744c79241b0690a4f70486ab7cc85e4f98a7295ac57c2ecb9e0d7",
+      "bytes": 605
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-failure-materials-v1.json",
+      "sha256": "8c1b1558f6130fa9f67339194757835535f91276b4ed936cb6401f8dddeb6634",
+      "bytes": 5758
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-ci-user.json",
+      "sha256": "09126a738c4a9a2aa23ee8a6a5a5359a95e9d1168fe2e4d4ebcc06b314a7dbec",
+      "bytes": 1810
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-ci-kernel.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-issues-receipts.json",
+      "sha256": "73d1908c5e9fee939aa2cba81838a9af81204f710c3c412f306340c1f8e3401b",
+      "bytes": 930
+    },
+    {
+      "private_workspace_path": ".dev/data-lifecycle-final-docs.log",
+      "sha256": "7c58f26373f13b67a902ea0f105244baccb5f1bcf9b6d1aa5730d912a2b8ce8b",
+      "bytes": 175280
+    }
+  ]
+}

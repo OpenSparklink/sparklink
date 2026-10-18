@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_INCOMPLETE_DYNAMIC249_MONITOR_IO_ROOT_CAUSE_UNRESOLVED",
+  "generated_utc": "2026-10-16T05:36:14.237581+00:00",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
+  "tool_commit": "8297955575c978d32b814545b848eae804d792cb",
+  "scope": "Original entire matrixFAIL preserved;no dynamic249qualification,even though phase0 apps finished. Phase1 supervisorOSError61 killed activeB apps. No diagnosis of WS73 fault or natural recovery.",
+  "observed_error": "[Errno 61] No data available",
+  "exception_type": null,
+  "qemu_exit": 0,
+  "supervisor_exit": 1,
+  "phase_statuses": [
+    {
+      "phase": 0,
+      "status": "DYNAMIC_CHANNELS_USB_EVIDENCE_PENDING",
+      "error": null,
+      "channels": [
+        {
+          "name": "A",
+          "application_exits": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "B",
+          "application_exits": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "C",
+          "application_exits": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "status": "FAIL",
+      "error": "[Errno 61] No data available",
+      "channels": [
+        {
+          "name": "A",
+          "application_exits": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "B",
+          "application_exits": [
+            -9,
+            -9
+          ]
+        }
+      ]
+    }
+  ],
+  "cause_status": "UNRESOLVED:original log has no traceback;failure happened during live observation after B resumed,not enough evidence to claim a filesystem or hardware cause",
+  "remediation_candidate": "Use finite child stdout/stderr pipes rather than concurrently tailing writer files;persist raw bytes,failclosed on sink/decode/budget/EOF/artifact mismatch;record traceback. Keep original deadlines. Candidate requires own regression and new VM run.",
+  "materials": [
+    {
+      "private_workspace_path": ".dev/dynamic-boundary-matrix-v1.json",
+      "sha256": "08bf3a7f4087be96d7fa212312eb09c40fdfb0f88e462eb47ff0bdc228f086ac",
+      "bytes": 1773
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-boundary-v1-249/manifest.json",
+      "sha256": "53ac457d63b66224f681d6eda68643ab99ce490341ea986c2efd2037b7d7f247",
+      "bytes": 53369
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-boundary-v1-249/console.log",
+      "sha256": "d85f495553b8d98efd73ad020e4c28a6bfa27179e02b7140a8f951204eb82673",
+      "bytes": 61567
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-boundary-v1-249/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-boundary-v1-249/guest-output/ws73.pcap",
+      "sha256": "d97541e4ce3556dfc6031a0f25146365257691e9802d05bbbeee84458ab1934a",
+      "bytes": 527263
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-boundary-v1-249/guest-output/capture-stats.txt",
+      "sha256": "f99191f5cf028454e18412028e19eb7370ad588a409a66a8c6d7340ceb961b31",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-boundary-v1-249/guest-output/application/passthrough-control/run.json",
+      "sha256": "556cd903b876b7c011d28a03417c68236e39618b4f714d4552c043ecc6653eec",
+      "bytes": 488719
+    }
+  ]
+}

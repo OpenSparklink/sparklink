@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "status": "PROTECTED_TWENTY_CASE_EXIT_MAINTAINED_FULL_GOAL_ACTIVE",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "390a634b60320706e5fb619d3c0b1df661378261",
+  "executed_tools": "390a634b60320706e5fb619d3c0b1df661378261",
+  "reports": [
+    "docs/evidence/protected-channel-lifecycle-20261017.json",
+    "docs/evidence/protected-channel-lengths-20261017.json"
+  ],
+  "bounds": {
+    "new_successful_real_vm_cases": 22,
+    "protected_peer_validated_round_trips": 64,
+    "complete_2042_round_trips": 8,
+    "boundary_refusals": 16,
+    "exact_replays": 22,
+    "copied_lifecycle_evidence_negatives": 360,
+    "initial_failure_evidence_mutants": 6,
+    "provenance_negatives": 6,
+    "new_structured_records": 6,
+    "recorded_materials": 251,
+    "provenance_checker_tests": 27
+  },
+  "qualification": "20-casebatch exitPASS;newreal/offlinePASS separately from UNPROVED combinations/fullscope andoriginalc51FAIL;globalINCOMPLETE,not goalcompletion",
+  "issues": {
+    "status": "SEVEN_EXISTING_ISSUES_OPEN_EXACT_READBACK",
+    "rows": [
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 6,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6227395932",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 7,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6227396436",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 17,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6227396977",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 19,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6227397773",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "number": 3,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6227398667",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "number": 5,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6227399213",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "number": 8,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6227399752",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+      }
+    ],
+    "wall_ns": 1792197271087868049
+  },
+  "ci": {
+    "source": "390a634b60320706e5fb619d3c0b1df661378261",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38984812749,
+        "headSha": "390a634b60320706e5fb619d3c0b1df661378261",
+        "name": "Production codec bounded fuzz",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38984812794,
+        "headSha": "390a634b60320706e5fb619d3c0b1df661378261",
+        "name": "Qualification integrity",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38984812891,
+        "headSha": "390a634b60320706e5fb619d3c0b1df661378261",
+        "name": "Documentation",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38984812777,
+        "headSha": "390a634b60320706e5fb619d3c0b1df661378261",
+        "name": "CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38984807245,
+        "headSha": "390a634b60320706e5fb619d3c0b1df661378261",
+        "name": "Documentation",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38984807322,
+        "headSha": "390a634b60320706e5fb619d3c0b1df661378261",
+        "name": "Qualification integrity",
+        "status": "completed"
+      }
+    ],
+    "scope": "Exact runtime/tool source CI results,not branchprotection/requiredchecks orhardwarequalifiedreleaseattestation"
+  },
+  "documentation": {
+    "status": "STRICT115PASS",
+    "scope": "OnlyfourDiataxisreaderquadrantsbuilt;canonicalproject/ADR/evidence retainedsource-only;HTMLnot fullcontentorprotocolqualification"
+  },
+  "next": {
+    "behavior": "SoleSSAP firstSMTCbind selects validrequirement/deferbeforeautoplain,preserveCurrentKernelGrant andtransmitsecurityServiceargument;sameEngine,notrebind oranotherHost",
+    "scope": "Servicecurrentlyonlycalled0,not demonstratedbypass;operations separatefromauth/encryption/localauthorization andCPCD;strongerunsupportedmustfailclosed",
+    "real_exit": "NewaccurateprotectedSMTC/SSAPpeerread/write plusplainbaseline;no transferfromCUTC,noallcontrolprecondition"
+  },
+  "goal": {
+    "status": "active",
+    "full_scope": "S0-S6/19WP/10FV/12DG/alloriginalacceptance retained;UserHostP4,VM-only,no repeatedgoal/budgetchange"
+  },
+  "remaining": [
+    "Liveoff/rekey/unknown/query andinflightinstall/cancel/cleanup matrix",
+    "Actual lock/reference/USB/callback/refinement andfirmwareNOCP/reuse/drain",
+    "Fullprotectedlengths/credit/multi/fourdevice/fairness/performance/resources",
+    "SoleSSAPsecurity/localpermission/CPCD andfullsecurityBond/Profile/deployment/PM/release",
+    "Naturalstartup/re-enum/disappearanceRCA/nonmanualrecovery OPEN;manual/QMP/hub/injection not substitute"
+  ],
+  "materials": [
+    {
+      "path": ".dev/protected-lifecycle-registry-local-v1.json",
+      "sha256": "e1351e395e446403cf6b64433f5891ea0eb52c8056eef185dd308fb0291c3484",
+      "bytes": 1493,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-lifecycle-issue-receipts-v1.json",
+      "sha256": "cd61907e211f19548c5e5726751c66d459a9fccd5b9323f4369e746bb4fa77c4",
+      "bytes": 2602,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-lifecycle-views-v2.json",
+      "sha256": "6321fa65da16f4d1af5e1ee2246aaa7a5885ab55e9b0c8535146cd9632fe3a25",
+      "bytes": 316781,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-lifecycle-docs-v3.log",
+      "sha256": "cecddbe44d487a36e200228ac32a17a1c1fd31340baa0bcccf95ea6121a49ea0",
+      "bytes": 324394,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-lifecycle-qualification-checker-tests-v1.log",
+      "sha256": "51c0fa0e0a4e349a9a82ec3ac3bc4fb60147fa6c274cecfe8b081a02f2aa245e",
+      "bytes": 126,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-lifecycle-ci390-v2.json",
+      "sha256": "bd94669b06cbd52eeb758fd7ce0493ac68d8ac1c4e87a7bd60b9acaeace72275",
+      "bytes": 909,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-lifecycle-preparation-failures-v1.json",
+      "sha256": "5c61eb8c429ab9b8e3eaf8dc749934ab8d6c4b5e237ed1750911346b3de97d73",
+      "bytes": 1045,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-lifecycle-negative-caller-failure-v1.json",
+      "sha256": "c63528f842946055396f39c1bbd6994ef4c35606750c85d8401bfe4f611080bd",
+      "bytes": 786,
+      "access": "private"
+    },
+    {
+      "path": ".dev/protected-ssap-consumer-audit-v2.json",
+      "sha256": "9a780f14b81b8f196957ddc80ce4c99031a9d9b93108425089de57dd6498179f",
+      "bytes": 2676,
+      "access": "private"
+    }
+  ],
+  "wall_ns": 1792197421847086861
+}

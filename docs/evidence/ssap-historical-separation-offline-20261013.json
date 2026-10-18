@@ -1,0 +1,17 @@
+{
+  "status": "SSAP_LEGACY_CONTAINMENT_PASS",
+  "rust_tests": 10,
+  "scope": "test-only historical staging/session and codec with allocator fixture; actual local/remote rejection seams; no production service DB or wire Engine",
+  "standard_ssap_acceptance": false,
+  "physical_acceptance": false,
+  "sources": {
+    "legacy_staging.rs": "18ea4e2f197c856cd9ab733b4501f803c605879a437e8007d9cbafa999471bf4",
+    "sparklink_core.rs": "b6ab6fbbae18e58c3d1748ff72b05c2690ba9ee9b32b2d1c66b1b933d19e975e",
+    "sle_workers.rs": "a80436181c010ab58792b696aa43e4e4fc4b85982391d249fac71f787fd4282b"
+  },
+  "remaining": [
+    "Userspace standard codec/fragment controls, permissions and authenticated per-peer database",
+    "PDU socket owner, deadline/budget/credit/commit semantics and real peer interoperability"
+  ],
+  "kernel_head": "167f468c00f7930c7581d40c2d81e589fbb979d9"
+}

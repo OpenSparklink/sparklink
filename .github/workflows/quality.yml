@@ -1,0 +1,46 @@
+name: Qualification integrity
+
+on:
+  push:
+    branches: [master, codex/sparklink-ws73]
+    paths:
+      - 'project/**'
+      - 'docs/evidence/**'
+      - 'tools/check_qualifications.py'
+      - 'tools/tests/test_qualifications.py'
+      - '.github/workflows/quality.yml'
+  pull_request:
+    paths:
+      - 'project/**'
+      - 'docs/evidence/**'
+      - 'tools/check_qualifications.py'
+      - 'tools/tests/test_qualifications.py'
+      - '.github/workflows/quality.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata:
+    name: Public metadata and negative controls (no hardware qualification)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Provenance checker negative controls
+        env:
+          PYTHONPATH: tools
+        run: python3 -m unittest discover -s tools/tests -p test_qualifications.py -v
+      - name: Check generated summaries and public source/report bindings
+        run: python3 tools/check_qualifications.py --output qualification-integrity.json
+      - name: Upload metadata result; this is not a qualified release
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qualification-metadata-not-hardware-acceptance
+          path: qualification-integrity.json
+          if-no-files-found: error
+          retention-days: 14

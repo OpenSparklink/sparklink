@@ -1,0 +1,243 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/* VM-only real queued Managed cancellation. One vCPU + bounded FIFO critical
+ * section controls selection; actual Queued/opcode=0 and USB capture prove it.
+ * This is privileged scheduling support, not normal concurrency acceptance. */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <time.h>
+#include <unistd.h>
+#include <sched.h>
+#include "sparklink_ioctl.h"
+
+static int confirmed_off, ready_peer, connection_phase;
+static void fail(int line,const char *expr) {int e=errno;struct sched_param normal={0};sched_setscheduler(0,SCHED_OTHER,&normal);fprintf(stderr,"line %d: %s errno=%d\n",line,expr,e);exit(1);}
+#define CHECK(x) do { if (!(x)) fail(__LINE__,#x); } while (0)
+static uint64_t wall_ns(void) {struct timespec t;CHECK(!clock_gettime(CLOCK_REALTIME,&t));return (uint64_t)t.tv_sec*1000000000ULL+t.tv_nsec;}
+static void pause_ms(unsigned ms) {struct timespec t={ms/1000,(long)(ms%1000)*1000000};while(nanosleep(&t,&t))CHECK(errno==EINTR);}
+static int selected(unsigned index) {int fd=open("/dev/sparklink",O_RDWR|O_CLOEXEC);short n=(short)index;CHECK(fd>=0);CHECK(!ioctl(fd,SL_IOCTL_DEV_SELECT,&n));return fd;}
+static void hex(const void *data,size_t len) {const unsigned char *p=data;putchar('"');for(size_t i=0;i<len;i++)printf("%02x",p[i]);putchar('"');}
+static struct sle_controller_snapshot snapshot(int fd,uint64_t generation) {
+ struct sle_controller_snapshot s={.version=1,.generation=generation};CHECK(!ioctl(fd,SL_IOCTL_CONTROLLER_SNAPSHOT,&s));
+ CHECK(s.generation==generation&&s.profile==1&&s.flags==(confirmed_off?SLE_CONTROLLER_READY:SLE_CONTROLLER_SETUP)&&s.valid_fields==1&&!s.error);return s;
+}
+static struct sle_discovery_result radio(int fd,uint64_t generation) {
+ struct sle_discovery_result s={.version=1,.generation=generation};CHECK(!ioctl(fd,SL_IOCTL_DISCOVERY_RESULT,&s));
+ CHECK(s.generation==generation&&s.radio_adv==(unsigned)confirmed_off&&s.radio_scan==(unsigned)confirmed_off&&!s.error);return s;
+}
+static struct sle_management_query query(int fd,uint64_t generation,unsigned state) {
+ struct sle_management_query q={.version=1,.generation=generation};CHECK(!ioctl(fd,SL_IOCTL_MANAGEMENT_QUERY,&q));
+ CHECK(q.state==state&&q.mode==(state==SLE_MANAGEMENT_HELD?SLE_MANAGEMENT_MANAGED:0)&&!q.lease&&!q.flags&&!q.error&&!q.status&&!q.opcode);return q;
+}
+static void closed(int fd) {CHECK(!close(fd));errno=0;CHECK(fcntl(fd,F_GETFD)==-1&&errno==EBADF);}
+static struct sle_discovery_result operation(int fd,uint64_t gen,uint64_t id,unsigned state) {
+ struct sle_discovery_result r={.version=1,.generation=gen,.request_id=id};
+ CHECK(!ioctl(fd,SL_IOCTL_DISCOVERY_RESULT,&r));
+ CHECK(r.state==state&&!r.opcode&&!r.step&&!r.status&&!r.power_valid&&!r.flags&&r.radio_adv==(unsigned)confirmed_off&&r.radio_scan==(unsigned)confirmed_off);
+ CHECK(r.error==(state==SLE_DISCOVERY_CANCELLED?-ECANCELED:0));return r;
+}
+static struct sle_discovery_result completed(int fd,uint64_t gen,uint64_t id,unsigned op,unsigned count,unsigned opcode) {
+ uint64_t deadline=wall_ns()+500000000ULL;
+ for(;;){struct sle_discovery_result r={.version=1,.generation=gen,.request_id=id};CHECK(!ioctl(fd,SL_IOCTL_DISCOVERY_RESULT,&r));
+  if(r.state==SLE_DISCOVERY_SUCCEEDED){CHECK(!r.error&&!r.status&&r.operation==op&&r.count==count&&r.step==count-1&&r.opcode==opcode);return r;}
+  CHECK(r.state==SLE_DISCOVERY_QUEUED||r.state==SLE_DISCOVERY_PENDING);CHECK(wall_ns()<deadline);pause_ms(1);
+ }
+}
+static struct sle_discovery_result peer_radio(int fd,uint64_t gen) {
+ struct sle_discovery_result r={.version=1,.generation=gen};CHECK(!ioctl(fd,SL_IOCTL_DISCOVERY_RESULT,&r));
+ CHECK(r.generation==gen&&r.radio_adv==1&&r.radio_scan==2&&!r.flags&&!r.error);return r;
+}
+static void peer_policy(int fd,unsigned index,uint64_t gen,unsigned case_index,unsigned phase) {
+ unsigned op=(phase==0||phase==2)?SLE_DISCOVERY_SCAN_START:SLE_DISCOVERY_SCAN_STOP;
+ struct sle_discovery_submit input={.version=1,.generation=gen,.request_id=2000+case_index*4+phase,.profile=1,.operation=op};
+ if(op==SLE_DISCOVERY_SCAN_START)input.scanning=(struct sle_discovery_scan_config){.frame_types=1,.interval=1600,.window=800};
+ uint64_t start=wall_ns();CHECK(!ioctl(fd,SL_IOCTL_DISCOVERY_SUBMIT,&input));
+ struct sle_discovery_result result=completed(fd,gen,input.request_id,op,op==SLE_DISCOVERY_SCAN_START?2:1,0x1002);
+ CHECK(result.radio_adv==1&&result.radio_scan==(op==SLE_DISCOVERY_SCAN_START?2U:1U)&&!result.flags&&!result.power_valid);
+ printf("{\"%s\":true,\"index\":%u,\"case_index\":%u,\"phase\":%u,\"start_wall_ns\":%llu,\"end_wall_ns\":%llu,\"input\":",connection_phase?"connection_peer_activity":"peer_activity",index,case_index,phase,(unsigned long long)start,(unsigned long long)wall_ns());
+ hex(&input,sizeof(input));printf(",\"result\":");hex(&result,sizeof(result));puts("}");fflush(stdout);
+}
+static void bootstrap(int fd,unsigned index,uint64_t gen) {
+ struct sle_controller_snapshot initial=snapshot(fd,gen);
+ struct sle_management_request lease={.version=1,.generation=gen,.mode=SLE_MANAGEMENT_MANAGED};CHECK(!ioctl(fd,SL_IOCTL_MANAGEMENT_ACQUIRE,&lease)&&lease.lease);
+ struct sle_discovery_submit adv={.version=1,.profile=1,.generation=gen,.request_id=1000,.operation=SLE_DISCOVERY_ADV_CONFIGURE_OFF,
+  .advertising={.gt_role=2,.interval_min=1200,.interval_max=1200,.channel_map=7,.tx_power=127,.supervision_timeout=200}};
+ memcpy(adv.advertising.own_address,initial.address,6);
+ struct sle_discovery_submit scan={.version=1,.profile=1,.generation=gen,.request_id=1001,.operation=SLE_DISCOVERY_SCAN_INITIALIZE_OFF,.scanning={.frame_types=1,.interval=1600,.window=800}};
+ uint64_t start=wall_ns();CHECK(!ioctl(fd,SL_IOCTL_DISCOVERY_SUBMIT,&adv));struct sle_discovery_result ar=completed(fd,gen,1000,5,2,0xc05);
+ CHECK(ar.radio_adv==1&&ar.radio_scan==0&&ar.power_valid==1);
+ CHECK(!ioctl(fd,SL_IOCTL_DISCOVERY_SUBMIT,&scan));struct sle_discovery_result sr=completed(fd,gen,1001,6,3,0x1002);CHECK(sr.radio_adv==1&&sr.radio_scan==1&&!sr.power_valid);
+ CHECK(!ioctl(fd,SL_IOCTL_MANAGEMENT_RELEASE,&lease));pause_ms(20);query(fd,gen,SLE_MANAGEMENT_FREE);
+ confirmed_off=1;struct sle_controller_snapshot ready=snapshot(fd,gen);struct sle_discovery_result rr=radio(fd,gen);confirmed_off=0;
+ printf("{\"bootstrap\":true,\"index\":%u,\"start_wall_ns\":%llu,\"end_wall_ns\":%llu,\"advertising_input\":",index,(unsigned long long)start,(unsigned long long)wall_ns());hex(&adv,sizeof(adv));printf(",\"scanning_input\":");hex(&scan,sizeof(scan));printf(",\"advertising_result\":");hex(&ar,sizeof(ar));printf(",\"scanning_result\":");hex(&sr,sizeof(sr));printf(",\"ready_snapshot\":");hex(&ready,sizeof(ready));printf(",\"radio\":");hex(&rr,sizeof(rr));puts("}");fflush(stdout);
+}
+static struct sle_connection_result connection_result(int fd,uint64_t gen,uint64_t id,unsigned state) {
+ struct sle_connection_result result={.version=1,.generation=gen,.request_id=id};
+ CHECK(!ioctl(fd,SL_IOCTL_CONNECTION_RESULT,&result));
+ CHECK(result.version==1&&result.profile==1&&result.generation==gen&&result.request_id==id&&result.operation==SLE_CONNECTION_CREATE&&result.state==state);
+ CHECK(result.error==(state==SLE_CONNECTION_CANCELLED?-ECANCELED:0)&&!result.fault_error&&!result.flags&&!result.command_status&&!result.outcome_status&&!result.handle);
+ return result;
+}
+static int private_result(int fd,uint64_t gen,uint64_t id) {
+ struct sle_connection_result result={.version=1,.generation=gen,.request_id=id};errno=0;
+ CHECK(ioctl(fd,SL_IOCTL_CONNECTION_RESULT,&result)==-1&&errno==ENOENT);return errno;
+}
+static void connection_cases(int observe[2],uint64_t generations[2]) {
+ connection_phase=1;
+ for(unsigned target=0;target<2;target++)for(unsigned kind=0;kind<3;kind++) {
+  unsigned peer=1-target,number=6+target*3+kind;
+  int peer_writer=selected(peer),writer=selected(target),duplicate=-1,wrong_errno=0;
+  uint64_t gen=generations[target],pgen=generations[peer],id=11+kind;
+  struct sle_management_request peer_lease={.version=1,.generation=pgen,.mode=1},lease={.version=1,.generation=gen,.mode=1};
+  CHECK(!ioctl(peer_writer,SL_IOCTL_MANAGEMENT_ACQUIRE,&peer_lease)&&peer_lease.lease);
+  peer_policy(peer_writer,peer,pgen,number,0);
+  struct sle_controller_snapshot before=snapshot(observe[target],gen),pb=snapshot(observe[peer],pgen);
+  struct sle_discovery_result rb=radio(observe[target],gen),prb=peer_radio(observe[peer],pgen);
+  struct sle_management_query pmb=query(observe[peer],pgen,SLE_MANAGEMENT_HELD);
+  query(observe[target],gen,SLE_MANAGEMENT_FREE);
+  CHECK(!ioctl(writer,SL_IOCTL_MANAGEMENT_ACQUIRE,&lease)&&lease.lease);
+  if(kind==2){duplicate=dup(writer);CHECK(duplicate>=0);}
+  struct sle_connection_submit input={.version=2,.profile=1,.operation=SLE_CONNECTION_CREATE,.generation=gen,.request_id=id,.timeout_ms=10000,
+   .parameters={.gt_negotiate=1,.frame=1,.scan_interval=32,.scan_window=32,.interval_min=12,.interval_max=12,.supervision_timeout=508}};
+  memcpy(input.parameters.peer_address,pb.address,6);
+  struct sched_param rt={.sched_priority=1},normal={0};
+  uint64_t start=wall_ns(),critical_start=wall_ns();CHECK(!sched_setscheduler(0,SCHED_FIFO,&rt));
+  CHECK(!ioctl(writer,SL_IOCTL_CONNECTION_SUBMIT,&input));
+  struct sle_connection_result queued=connection_result(writer,gen,id,SLE_CONNECTION_QUEUED),first_result={0},cancelled={0};
+  int privacy_before=private_result(observe[target],gen,id);
+  struct sle_management_query held=query(observe[target],gen,SLE_MANAGEMENT_HELD),first={0};
+  struct sle_management_query pmd=query(observe[peer],pgen,SLE_MANAGEMENT_HELD);
+  struct sle_discovery_result prd=peer_radio(observe[peer],pgen);uint64_t during=wall_ns();
+  if(kind==0) {
+   struct sle_management_request wrong=lease;wrong.lease++;
+   errno=0;CHECK(ioctl(writer,SL_IOCTL_MANAGEMENT_RELEASE,&wrong)==-1&&errno==EPERM);wrong_errno=errno;
+   connection_result(writer,gen,id,SLE_CONNECTION_QUEUED);
+   CHECK(!ioctl(writer,SL_IOCTL_MANAGEMENT_RELEASE,&lease));
+   cancelled=connection_result(writer,gen,id,SLE_CONNECTION_CANCELLED);
+  } else if(kind==1) closed(writer);
+  else {
+   closed(writer);first=query(observe[target],gen,SLE_MANAGEMENT_HELD);
+   first_result=connection_result(duplicate,gen,id,SLE_CONNECTION_QUEUED);
+   closed(duplicate);
+  }
+  int privacy_after=private_result(observe[target],gen,id);
+  CHECK(!sched_setscheduler(0,SCHED_OTHER,&normal));uint64_t critical_end=wall_ns();
+  CHECK(critical_end-critical_start<50000000ULL&&sched_getscheduler(0)==SCHED_OTHER);
+  pause_ms(350);
+  struct sle_management_query free=query(observe[target],gen,SLE_MANAGEMENT_FREE),pma=query(observe[peer],pgen,SLE_MANAGEMENT_HELD);
+  struct sle_controller_snapshot after=snapshot(observe[target],gen),pa=snapshot(observe[peer],pgen);
+  struct sle_discovery_result ra=radio(observe[target],gen),pra=peer_radio(observe[peer],pgen);
+  CHECK(!memcmp(&before,&after,sizeof(before))&&!memcmp(&pb,&pa,sizeof(pb))&&!memcmp(&rb,&ra,sizeof(rb)));
+  uint64_t end=wall_ns();
+  printf("{\"connection_case\":true,\"case\":\"%s\",\"case_index\":%u,\"index\":%u,\"generation\":%llu,\"peer_index\":%u,\"peer_generation\":%llu,\"start_wall_ns\":%llu,\"end_wall_ns\":%llu,\"critical_start_ns\":%llu,\"critical_end_ns\":%llu,\"scheduler_restored\":true,\"writer_fd\":%d,\"duplicate_fd\":%d,\"wrong_token_errno\":%d,\"privacy_before_errno\":%d,\"privacy_after_errno\":%d,\"peer_writer_fd\":%d,\"peer_lease\":%llu,\"peer_during_wall_ns\":%llu,\"input\":",
+    kind==0?"explicit-release":kind==1?"last-fd-close":"dup-last-fd-close",number,target,(unsigned long long)gen,peer,(unsigned long long)pgen,(unsigned long long)start,(unsigned long long)end,(unsigned long long)critical_start,(unsigned long long)critical_end,writer,duplicate,wrong_errno,privacy_before,privacy_after,peer_writer,(unsigned long long)peer_lease.lease,(unsigned long long)during);
+  hex(&input,sizeof(input));printf(",\"queued\":");hex(&queued,sizeof(queued));printf(",\"cancelled\":");if(kind==0)hex(&cancelled,sizeof(cancelled));else printf("null");
+  printf(",\"after_first_close_result\":");if(kind==2)hex(&first_result,sizeof(first_result));else printf("null");
+  printf(",\"snapshot_before\":");hex(&before,sizeof(before));printf(",\"snapshot_after\":");hex(&after,sizeof(after));printf(",\"peer_before\":");hex(&pb,sizeof(pb));printf(",\"peer_after\":");hex(&pa,sizeof(pa));
+  printf(",\"radio_before\":");hex(&rb,sizeof(rb));printf(",\"radio_after\":");hex(&ra,sizeof(ra));printf(",\"held\":");hex(&held,sizeof(held));printf(",\"after_first_close\":");hex(&first,sizeof(first));printf(",\"free\":");hex(&free,sizeof(free));
+  printf(",\"peer_management_before\":");hex(&pmb,sizeof(pmb));printf(",\"peer_management_during\":");hex(&pmd,sizeof(pmd));printf(",\"peer_management_after\":");hex(&pma,sizeof(pma));printf(",\"peer_radio_before\":");hex(&prb,sizeof(prb));printf(",\"peer_radio_during\":");hex(&prd,sizeof(prd));printf(",\"peer_radio_after\":");hex(&pra,sizeof(pra));puts("}");fflush(stdout);
+  if(kind==0)closed(writer);
+  for(unsigned phase=1;phase<4;phase++)peer_policy(peer_writer,peer,pgen,number,phase);
+  CHECK(!ioctl(peer_writer,SL_IOCTL_MANAGEMENT_RELEASE,&peer_lease));struct sle_management_query released=query(observe[peer],pgen,SLE_MANAGEMENT_FREE);
+  printf("{\"connection_peer_release\":true,\"case_index\":%u,\"wall_ns\":%llu,\"management\":",number,(unsigned long long)wall_ns());hex(&released,sizeof(released));puts("}");fflush(stdout);closed(peer_writer);
+ }
+}
+int main(int argc,char **argv) {
+ CHECK(argc==3||(argc==4&&!strcmp(argv[3],"--confirmed-off"))||(argc==5&&!strcmp(argv[3],"--confirmed-off")&&!strcmp(argv[4],"--ready-peer"))||(argc==6&&!strcmp(argv[3],"--confirmed-off")&&!strcmp(argv[4],"--ready-peer")&&!strcmp(argv[5],"--connection")));
+ ready_peer=argc>=5;CHECK(sysconf(_SC_NPROCESSORS_ONLN)==1);CHECK(sched_getscheduler(0)==SCHED_OTHER);uint64_t generations[2];unsigned long long parsed;char tail;
+ CHECK(sscanf(argv[1],"%llu%c",&parsed,&tail)==1);generations[0]=parsed;
+ CHECK(sscanf(argv[2],"%llu%c",&parsed,&tail)==1);generations[1]=parsed;
+ CHECK(generations[0]&&generations[1]&&generations[0]!=generations[1]);
+ int observe[2]={selected(0),selected(1)};
+ if(argc>=4){for(unsigned i=0;i<2;i++)bootstrap(observe[i],i,generations[i]);confirmed_off=1;}
+ for(unsigned target=0;target<2;target++)for(unsigned kind=0;kind<3;kind++) {
+  unsigned peer=1-target,case_index=target*3+kind;int peer_writer=-1;
+  struct sle_management_request peer_lease={.version=1,.generation=generations[peer],.mode=SLE_MANAGEMENT_MANAGED};
+  if(ready_peer){peer_writer=selected(peer);CHECK(!ioctl(peer_writer,SL_IOCTL_MANAGEMENT_ACQUIRE,&peer_lease)&&peer_lease.lease);peer_policy(peer_writer,peer,generations[peer],case_index,0);}
+  uint64_t start=wall_ns();
+  struct sle_management_query peer_before={0},peer_during={0},peer_after={0};
+  struct sle_discovery_result peer_radio_before={0},peer_radio_during={0},peer_radio_after={0};uint64_t peer_during_ns=0;
+  if(ready_peer){peer_before=query(observe[peer],generations[peer],SLE_MANAGEMENT_HELD);peer_radio_before=peer_radio(observe[peer],generations[peer]);}
+  struct sle_controller_snapshot before=snapshot(observe[target],generations[target]),pb=snapshot(observe[peer],generations[peer]);
+  struct sle_discovery_result rb=radio(observe[target],generations[target]);query(observe[target],generations[target],SLE_MANAGEMENT_FREE);
+  int writer=selected(target),duplicate=-1,wrong_errno=0;
+  struct sle_management_request lease={.version=1,.generation=generations[target],.mode=SLE_MANAGEMENT_MANAGED};
+  CHECK(!ioctl(writer,SL_IOCTL_MANAGEMENT_ACQUIRE,&lease)&&lease.lease);
+  struct sle_discovery_submit commands[2]={
+   {.version=1,.profile=1,.generation=generations[target],.request_id=kind*2+1,.operation=SLE_DISCOVERY_ADV_CONFIGURE_OFF,
+    .advertising={.gt_role=2,.interval_min=1200,.interval_max=1200,.channel_map=7,.tx_power=127,.supervision_timeout=200}},
+   {.version=1,.profile=1,.generation=generations[target],.request_id=kind*2+2,.operation=SLE_DISCOVERY_SCAN_STOP}};
+  struct sle_discovery_submit rejected[2]={
+   {.version=1,.profile=1,.generation=generations[target],.request_id=100+kind,.operation=SLE_DISCOVERY_SCAN_INITIALIZE_OFF,
+    .scanning={.frame_types=1,.interval=1600,.window=800}},
+   {.version=1,.profile=1,.generation=generations[target],.request_id=200+kind,.operation=SLE_DISCOVERY_SCAN_INITIALIZE_OFF,
+    .scanning={.frame_types=1,.interval=1600,.window=800}}};
+  int rejected_errno[2]={0},missing_errno[2]={0};
+  if(confirmed_off){commands[1]=rejected[0];commands[1].request_id=kind*2+2;}
+  memcpy(commands[0].advertising.own_address,before.address,6);
+  if(kind==2){duplicate=dup(writer);CHECK(duplicate>=0);}
+  struct sched_param rt={.sched_priority=1},normal={0};
+  uint64_t critical_start=wall_ns();CHECK(!sched_setscheduler(0,SCHED_FIFO,&rt));
+  if(confirmed_off){
+   // Scan INITIALIZE contains START: admit while prior advertising Off is
+   // confirmed and no advertising request is pending, then queue advertising.
+   CHECK(!ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&commands[1]));
+   CHECK(!ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&commands[0]));
+  } else {
+  errno=0;CHECK(ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&rejected[0])==-1&&errno==EBUSY);rejected_errno[0]=errno;
+  struct sle_discovery_result absent={.version=1,.generation=generations[target],.request_id=rejected[0].request_id};
+  errno=0;CHECK(ioctl(observe[target],SL_IOCTL_DISCOVERY_RESULT,&absent)==-1&&errno==ENOENT);missing_errno[0]=errno;
+  CHECK(!ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&commands[0]));
+  errno=0;CHECK(ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&rejected[1])==-1&&errno==EBUSY);rejected_errno[1]=errno;
+  absent=(struct sle_discovery_result){.version=1,.generation=generations[target],.request_id=rejected[1].request_id};
+  errno=0;CHECK(ioctl(observe[target],SL_IOCTL_DISCOVERY_RESULT,&absent)==-1&&errno==ENOENT);missing_errno[1]=errno;
+  CHECK(!ioctl(writer,SL_IOCTL_DISCOVERY_SUBMIT,&commands[1]));
+  }
+  struct sle_discovery_result queued[2]={operation(observe[target],generations[target],commands[0].request_id,SLE_DISCOVERY_QUEUED),operation(observe[target],generations[target],commands[1].request_id,SLE_DISCOVERY_QUEUED)};
+  struct sle_management_query held=query(observe[target],generations[target],SLE_MANAGEMENT_HELD),first={0};
+  if(ready_peer){peer_during=query(observe[peer],generations[peer],SLE_MANAGEMENT_HELD);peer_radio_during=peer_radio(observe[peer],generations[peer]);peer_during_ns=wall_ns();}
+
+  if(!kind) {
+   struct sle_management_request wrong=lease;wrong.lease++;
+   errno=0;CHECK(ioctl(writer,SL_IOCTL_MANAGEMENT_RELEASE,&wrong)==-1&&errno==EPERM);wrong_errno=errno;
+   query(observe[target],generations[target],SLE_MANAGEMENT_HELD);
+   CHECK(!ioctl(writer,SL_IOCTL_MANAGEMENT_RELEASE,&lease));
+  } else if(kind==1) closed(writer);
+  else {
+   closed(writer);
+   first=query(observe[target],generations[target],SLE_MANAGEMENT_HELD);
+   CHECK(operation(observe[target],generations[target],commands[0].request_id,SLE_DISCOVERY_QUEUED).state==SLE_DISCOVERY_QUEUED);
+   query(observe[target],generations[target],SLE_MANAGEMENT_HELD);closed(duplicate);
+  }
+  struct sle_discovery_result cancelled[2]={operation(observe[target],generations[target],commands[0].request_id,SLE_DISCOVERY_CANCELLED),operation(observe[target],generations[target],commands[1].request_id,SLE_DISCOVERY_CANCELLED)};
+  CHECK(!sched_setscheduler(0,SCHED_OTHER,&normal));uint64_t critical_end=wall_ns();CHECK(critical_end-critical_start<50000000ULL);
+  CHECK(sched_getscheduler(0)==SCHED_OTHER);pause_ms(350);
+  struct sle_management_query free=query(observe[target],generations[target],SLE_MANAGEMENT_FREE);
+  struct sle_controller_snapshot after=snapshot(observe[target],generations[target]),pa=snapshot(observe[peer],generations[peer]);
+  struct sle_discovery_result ra=radio(observe[target],generations[target]);
+  if(ready_peer){peer_after=query(observe[peer],generations[peer],SLE_MANAGEMENT_HELD);peer_radio_after=peer_radio(observe[peer],generations[peer]);}
+  else query(observe[peer],generations[peer],SLE_MANAGEMENT_FREE);
+  CHECK(!memcmp(&before,&after,sizeof(before))&&!memcmp(&pb,&pa,sizeof(pb))&&!memcmp(&rb,&ra,sizeof(rb)));
+  uint64_t end=wall_ns();
+  printf("{\"case\":\"%s\",\"index\":%u,\"generation\":%llu,\"peer_index\":%u,\"peer_generation\":%llu,\"start_wall_ns\":%llu,\"end_wall_ns\":%llu,\"writer_fd\":%d,\"duplicate_fd\":%d,\"wrong_token_errno\":%d,\"snapshot_before\":",kind==0?"explicit-release":kind==1?"last-fd-close":"dup-last-fd-close",target,(unsigned long long)generations[target],peer,(unsigned long long)generations[peer],(unsigned long long)start,(unsigned long long)end,writer,duplicate,wrong_errno);
+  hex(&before,sizeof(before));printf(",\"snapshot_after\":");hex(&after,sizeof(after));printf(",\"peer_before\":");hex(&pb,sizeof(pb));printf(",\"peer_after\":");hex(&pa,sizeof(pa));
+  printf(",\"radio_before\":");hex(&rb,sizeof(rb));printf(",\"radio_after\":");hex(&ra,sizeof(ra));printf(",\"held\":");hex(&held,sizeof(held));printf(",\"after_first_close\":");hex(&first,sizeof(first));printf(",\"free\":");hex(&free,sizeof(free));printf(",\"queued\":[");hex(&queued[0],sizeof(queued[0]));printf(",");hex(&queued[1],sizeof(queued[1]));printf("],\"cancelled\":[");hex(&cancelled[0],sizeof(cancelled[0]));printf(",");hex(&cancelled[1],sizeof(cancelled[1]));printf("],\"scan_initialize_rejections\":[");
+  for(unsigned i=0;!confirmed_off&&i<2;i++){if(i)printf(",");printf("{\"input\":");hex(&rejected[i],sizeof(rejected[i]));printf(",\"submit_errno\":%d,\"result_errno\":%d}",rejected_errno[i],missing_errno[i]);}
+  printf("],\"critical_start_ns\":%llu,\"critical_end_ns\":%llu,\"scheduler_restored\":true",(unsigned long long)critical_start,(unsigned long long)critical_end);
+  if(ready_peer){printf(",\"peer_writer_fd\":%d,\"peer_lease\":%llu,\"peer_during_wall_ns\":%llu,\"peer_management_before\":",peer_writer,(unsigned long long)peer_lease.lease,(unsigned long long)peer_during_ns);hex(&peer_before,sizeof(peer_before));printf(",\"peer_management_during\":");hex(&peer_during,sizeof(peer_during));printf(",\"peer_management_after\":");hex(&peer_after,sizeof(peer_after));printf(",\"peer_radio_before\":");hex(&peer_radio_before,sizeof(peer_radio_before));printf(",\"peer_radio_during\":");hex(&peer_radio_during,sizeof(peer_radio_during));printf(",\"peer_radio_after\":");hex(&peer_radio_after,sizeof(peer_radio_after));}
+  puts("}");fflush(stdout);
+  if(!kind)closed(writer);
+  if(ready_peer){
+   for(unsigned phase=1;phase<4;phase++)peer_policy(peer_writer,peer,generations[peer],case_index,phase);
+   CHECK(!ioctl(peer_writer,SL_IOCTL_MANAGEMENT_RELEASE,&peer_lease));struct sle_management_query released=query(observe[peer],generations[peer],SLE_MANAGEMENT_FREE);
+   printf("{\"peer_release\":true,\"case_index\":%u,\"wall_ns\":%llu,\"management\":",case_index,(unsigned long long)wall_ns());hex(&released,sizeof(released));puts("}");fflush(stdout);closed(peer_writer);
+  }
+ }
+ if(argc==6)connection_cases(observe,generations);
+ closed(observe[0]);closed(observe[1]);return 0;
+}

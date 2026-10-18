@@ -1,0 +1,3353 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "REAL_TWO_ROLE_LIMITED134_135_PASS",
+  "vm_only": true,
+  "host_driver_installed": false,
+  "production_kernel": "1cf095fd1650a974b523a807ad9d69623ebb0a78",
+  "compiled_userspace": "02ac5ed5a76cf7981d83df23107d6ba2b9790270",
+  "executed_vm_tools": "1ee2f4e1b72e2a83c43902e726b777fd35048087",
+  "verification_kernel": "c272157cbc58da335c6fc71e8b940de02efb62f4",
+  "ci": {
+    "commit": "b6b93e5eb85c4e8cf7798ea0fe769cc863fa733d",
+    "strict": "https://github.com/OpenSparklink/sparklink/actions/runs/38685657642",
+    "documentation": "https://github.com/OpenSparklink/sparklink/actions/runs/38685657626",
+    "status": "PASS"
+  },
+  "production_sources_unchanged_from_qualified_image": true,
+  "sources": {
+    "net/sparklink/sle_security_relay_state.rs": "a85cdaf1e5498940b2732a7f9e5ddf6436df6d0414b52120aac6e8902c890ca8",
+    "net/sparklink/sle_security_relay.rs": "20917f0adeb84070e7f4124e163b83a8972398a0be2e0722821532d614731831",
+    "net/sparklink/sle_workers.rs": "694a31909dcd0818b6d470d0236775ee9cf8eec187db4ec0117bc9b17f630be0",
+    "net/sparklink/sparklink_core.rs": "6897b66b0dce74b637f75777fbb36d86f53ae12f5b41b0535fa604c93aadf727",
+    "include/uapi/linux/sparklink_ioctl.h": "82c30e6d18c261fa8bbdf32b86ca236bf7b969d923d38b03898d706a104dd5c3"
+  },
+  "behavior": "Explicit CAPABILITY_ONLY approval bound to original Managed File/CAP_NET_ADMIN/physical Session identity/epoch. Same relay, command credit and final submit ticket; actual typed134/135 and real Complete/RX, no new Engine.",
+  "qualification": "Local unauthenticated capability observation only. Not Agent consent, pairing, peer proof, trusted installation, encryption, Bond, standard interoperability or natural recovery.",
+  "offer": {
+    "hex": "03000010000202020200",
+    "mitm": false,
+    "bond": false,
+    "oob": false,
+    "key_distribution": false,
+    "known_offer_only": true,
+    "roles": "G initiates134, approved T responds135; no T-initiated133 in this slice"
+  },
+  "scope": {
+    "timeout_ms": "1..5000 original total deadline",
+    "one_exchange_per_physical_lifetime": true,
+    "no_same_life_restart_barrier": true,
+    "ordinary_channel_grant_cannot_approve": true,
+    "raw_tx_or_rx_injection_api": false,
+    "query_requires_same_active_manager": true,
+    "default_pair_api": "NotSupported"
+  },
+  "real_positive": [
+    {
+      "role_index": 0,
+      "status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+      "manifest_sha256": "409542f70f7dd1440d1c3b293137a02e0aab77f2844f409517f914b4e1ea5c16",
+      "pcap_sha256": "78e53495e73f34c4e5c393d160167937410bfd62b072f3c822c92e78d977d2ee",
+      "guest_run_sha256": "9913d2c96b3119167bf8856d7e5ff0c892b638331625c6ed901090df946784f0",
+      "controllers": [
+        {
+          "command": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792040808714670000,
+            "urb": 18446612832934271808,
+            "record": 482,
+            "file_offset": 56942,
+            "usb_sha256": "47960fda0e84d4855289ab7e130da8a68c1b5dd2052409fd3eaa30da02c665e9",
+            "opcode": 6162,
+            "params": "000034010a03000010000202020200",
+            "sequence": 25,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792040808714825000,
+              "urb": 18446612832934271808,
+              "record": 483,
+              "file_offset": 57150
+            }
+          },
+          "complete": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792040808715003000,
+            "urb": 18446612832934273984,
+            "record": 484,
+            "file_offset": 57230,
+            "hcc_offset": 92,
+            "usb_sha256": "9a86d5e78b648828bf03e8945f5738b279643f3a548189b42432ab623b5a00d9",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401"
+          },
+          "peer_rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792040808717995000,
+            "urb": 18446612832934273984,
+            "record": 492,
+            "file_offset": 58532,
+            "hcc_offset": 92,
+            "usb_sha256": "3e7ea2f7c6e355a657634897b911ac9e2482058d7b1808d30a0a33654c13edf9",
+            "usb_length": 178,
+            "event": 20,
+            "params": "000035010a03000010000202020200"
+          }
+        },
+        {
+          "command": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792040808716532000,
+            "urb": 18446612832934269888,
+            "record": 488,
+            "file_offset": 57906,
+            "usb_sha256": "3b1ca67d98c83375c417a665a7184741181d888a6abc8bf08726cfeb3e4fb8cd",
+            "opcode": 6162,
+            "params": "000035010a03000010000202020200",
+            "sequence": 25,
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792040808716643000,
+              "urb": 18446612832934269888,
+              "record": 489,
+              "file_offset": 58114
+            }
+          },
+          "complete": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792040808716820000,
+            "urb": 18446612832934273600,
+            "record": 490,
+            "file_offset": 58194,
+            "hcc_offset": 92,
+            "usb_sha256": "2fc5219704c4809b2a27020753d9da8787c54d7aa6c540bf611f27019b9e5f20",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003501"
+          },
+          "peer_rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792040808716468000,
+            "urb": 18446612832934273600,
+            "record": 486,
+            "file_offset": 57568,
+            "hcc_offset": 92,
+            "usb_sha256": "9125539eb74326d2f5e12014780366fbabb64f2e2c9fbef26885cefd1676d13c",
+            "usb_length": 178,
+            "event": 20,
+            "params": "000034010a03000010000202020200"
+          }
+        }
+      ],
+      "business_round_trips": 4,
+      "original_deadline_ms": 5000,
+      "observed_ms": 12.828729,
+      "unauthorized_inherited_file": {
+        "credentials": {
+          "uids": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "caps": {
+            "CapEff": "0000000000000000",
+            "CapPrm": "0000000000000000",
+            "CapAmb": "0000000000000000"
+          }
+        },
+        "submit_errno": 1,
+        "result_errno": 1
+      },
+      "negative": [
+        {
+          "index": 0,
+          "kind": "generation",
+          "errno": 19
+        },
+        {
+          "index": 0,
+          "kind": "lifetime",
+          "errno": 116
+        },
+        {
+          "index": 0,
+          "kind": "address",
+          "errno": 116
+        },
+        {
+          "index": 0,
+          "kind": "role",
+          "errno": 116
+        },
+        {
+          "index": 0,
+          "kind": "profile",
+          "errno": 95
+        },
+        {
+          "index": 0,
+          "kind": "flags",
+          "errno": 22
+        },
+        {
+          "index": 0,
+          "kind": "reserved",
+          "errno": 22
+        },
+        {
+          "index": 0,
+          "kind": "nonowner_submit",
+          "errno": 1
+        },
+        {
+          "index": 0,
+          "kind": "nonowner_result",
+          "errno": 1
+        },
+        {
+          "index": 1,
+          "kind": "generation",
+          "errno": 19
+        },
+        {
+          "index": 1,
+          "kind": "lifetime",
+          "errno": 116
+        },
+        {
+          "index": 1,
+          "kind": "address",
+          "errno": 116
+        },
+        {
+          "index": 1,
+          "kind": "role",
+          "errno": 116
+        },
+        {
+          "index": 1,
+          "kind": "profile",
+          "errno": 95
+        },
+        {
+          "index": 1,
+          "kind": "flags",
+          "errno": 22
+        },
+        {
+          "index": 1,
+          "kind": "reserved",
+          "errno": 22
+        },
+        {
+          "index": 1,
+          "kind": "nonowner_submit",
+          "errno": 1
+        },
+        {
+          "index": 1,
+          "kind": "nonowner_result",
+          "errno": 1
+        },
+        {
+          "index": 0,
+          "kind": "same_lifetime_restart",
+          "errno": 16
+        },
+        {
+          "index": 1,
+          "kind": "same_lifetime_restart",
+          "errno": 16
+        }
+      ],
+      "raw_material_public": false
+    },
+    {
+      "role_index": 1,
+      "status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+      "manifest_sha256": "30a004f33cf6c8ca58e0ef2d570dc08b1a29c42decf1881644ee032bd412251e",
+      "pcap_sha256": "d6daa27996e5bc7ac9b463b4a2c5d17bbd1e430b8cbd309ddab55af5e0bf3574",
+      "guest_run_sha256": "dfcadee66e1ea30771cd758406fe71204034d75add1b92651026cbbd997f3b61",
+      "controllers": [
+        {
+          "command": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792040863833915000,
+            "urb": 18446619821861704832,
+            "record": 488,
+            "file_offset": 57906,
+            "usb_sha256": "3b1ca67d98c83375c417a665a7184741181d888a6abc8bf08726cfeb3e4fb8cd",
+            "opcode": 6162,
+            "params": "000035010a03000010000202020200",
+            "sequence": 25,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792040863834014000,
+              "urb": 18446619821861704832,
+              "record": 489,
+              "file_offset": 58114
+            }
+          },
+          "complete": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792040863834239000,
+            "urb": 18446619821861711424,
+            "record": 490,
+            "file_offset": 58194,
+            "hcc_offset": 92,
+            "usb_sha256": "ce9a469eea344a6e428c8f63664b4a62fe9c4af98439df4d6225383e0f2b9d10",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003501"
+          },
+          "peer_rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792040863833855000,
+            "urb": 18446619821861711424,
+            "record": 486,
+            "file_offset": 57568,
+            "hcc_offset": 92,
+            "usb_sha256": "4af578963f32d30e77d5e271e8e750f836bd87ef46fa0a6c08aacf56f458f59a",
+            "usb_length": 178,
+            "event": 20,
+            "params": "000034010a03000010000202020200"
+          }
+        },
+        {
+          "command": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792040863832045000,
+            "urb": 18446619821861707136,
+            "record": 482,
+            "file_offset": 56942,
+            "usb_sha256": "47960fda0e84d4855289ab7e130da8a68c1b5dd2052409fd3eaa30da02c665e9",
+            "opcode": 6162,
+            "params": "000034010a03000010000202020200",
+            "sequence": 25,
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792040863832260000,
+              "urb": 18446619821861707136,
+              "record": 483,
+              "file_offset": 57150
+            }
+          },
+          "complete": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792040863832456000,
+            "urb": 18446619821861711040,
+            "record": 484,
+            "file_offset": 57230,
+            "hcc_offset": 92,
+            "usb_sha256": "822adbe39814b1ddbc179670fa568aefb839665164d6f54c0481c3ebd048ff71",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401"
+          },
+          "peer_rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792040863835384000,
+            "urb": 18446619821861711040,
+            "record": 492,
+            "file_offset": 58532,
+            "hcc_offset": 92,
+            "usb_sha256": "3e3ecf307b34069199096cbafeda60aa58aad0083fc4bccbad21f31c80bb5cc2",
+            "usb_length": 178,
+            "event": 20,
+            "params": "000035010a03000010000202020200"
+          }
+        }
+      ],
+      "business_round_trips": 4,
+      "original_deadline_ms": 5000,
+      "observed_ms": 11.646801,
+      "unauthorized_inherited_file": {
+        "credentials": {
+          "uids": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "caps": {
+            "CapEff": "0000000000000000",
+            "CapPrm": "0000000000000000",
+            "CapAmb": "0000000000000000"
+          }
+        },
+        "submit_errno": 1,
+        "result_errno": 1
+      },
+      "negative": [
+        {
+          "index": 1,
+          "kind": "generation",
+          "errno": 19
+        },
+        {
+          "index": 1,
+          "kind": "lifetime",
+          "errno": 116
+        },
+        {
+          "index": 1,
+          "kind": "address",
+          "errno": 116
+        },
+        {
+          "index": 1,
+          "kind": "role",
+          "errno": 116
+        },
+        {
+          "index": 1,
+          "kind": "profile",
+          "errno": 95
+        },
+        {
+          "index": 1,
+          "kind": "flags",
+          "errno": 22
+        },
+        {
+          "index": 1,
+          "kind": "reserved",
+          "errno": 22
+        },
+        {
+          "index": 1,
+          "kind": "nonowner_submit",
+          "errno": 1
+        },
+        {
+          "index": 1,
+          "kind": "nonowner_result",
+          "errno": 1
+        },
+        {
+          "index": 0,
+          "kind": "generation",
+          "errno": 19
+        },
+        {
+          "index": 0,
+          "kind": "lifetime",
+          "errno": 116
+        },
+        {
+          "index": 0,
+          "kind": "address",
+          "errno": 116
+        },
+        {
+          "index": 0,
+          "kind": "role",
+          "errno": 116
+        },
+        {
+          "index": 0,
+          "kind": "profile",
+          "errno": 95
+        },
+        {
+          "index": 0,
+          "kind": "flags",
+          "errno": 22
+        },
+        {
+          "index": 0,
+          "kind": "reserved",
+          "errno": 22
+        },
+        {
+          "index": 0,
+          "kind": "nonowner_submit",
+          "errno": 1
+        },
+        {
+          "index": 0,
+          "kind": "nonowner_result",
+          "errno": 1
+        },
+        {
+          "index": 1,
+          "kind": "same_lifetime_restart",
+          "errno": 16
+        },
+        {
+          "index": 0,
+          "kind": "same_lifetime_restart",
+          "errno": 16
+        }
+      ],
+      "raw_material_public": false
+    }
+  ],
+  "real_business_round_trips": 8,
+  "burst_pool": {
+    "status": "REAL_BURST_POOL_DEPLETION_AND_NOCP_RESUMPTION_SCOPED_PASS",
+    "source": {
+      "kernel_head": "1cf095fd1650a974b523a807ad9d69623ebb0a78",
+      "userspace_head": "02ac5ed5a76cf7981d83df23107d6ba2b9790270"
+    },
+    "phases": [
+      {
+        "phase": 0,
+        "source_pool_refusals_delta": 26,
+        "source_full_samples": 6,
+        "endpoints": [
+          {
+            "controller": 0,
+            "generation": 1,
+            "lifetime": 1,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 108,
+            "full_nocp_resume_intervals": [
+              {
+                "full_record": 1604,
+                "nocp_record": 1610,
+                "resumed_submit_record": 1634
+              },
+              {
+                "full_record": 1634,
+                "nocp_record": 1648,
+                "resumed_submit_record": 1664
+              },
+              {
+                "full_record": 1664,
+                "nocp_record": 1684,
+                "resumed_submit_record": 1694
+              },
+              {
+                "full_record": 1694,
+                "nocp_record": 1722,
+                "resumed_submit_record": 1726
+              },
+              {
+                "full_record": 1726,
+                "nocp_record": 1760,
+                "resumed_submit_record": 1778
+              },
+              {
+                "full_record": 1832,
+                "nocp_record": 1840,
+                "resumed_submit_record": 1860
+              },
+              {
+                "full_record": 1860,
+                "nocp_record": 1876,
+                "resumed_submit_record": 1892
+              },
+              {
+                "full_record": 1892,
+                "nocp_record": 1910,
+                "resumed_submit_record": 1920
+              },
+              {
+                "full_record": 1920,
+                "nocp_record": 1950,
+                "resumed_submit_record": 1952
+              },
+              {
+                "full_record": 1952,
+                "nocp_record": 1986,
+                "resumed_submit_record": 2006
+              },
+              {
+                "full_record": 2006,
+                "nocp_record": 2024,
+                "resumed_submit_record": 2032
+              },
+              {
+                "full_record": 2032,
+                "nocp_record": 2056,
+                "resumed_submit_record": 2060
+              },
+              {
+                "full_record": 2060,
+                "nocp_record": 2066,
+                "resumed_submit_record": 2088
+              },
+              {
+                "full_record": 2088,
+                "nocp_record": 2108,
+                "resumed_submit_record": 2118
+              },
+              {
+                "full_record": 2118,
+                "nocp_record": 2144,
+                "resumed_submit_record": 2146
+              },
+              {
+                "full_record": 2146,
+                "nocp_record": 2180,
+                "resumed_submit_record": 2200
+              },
+              {
+                "full_record": 2200,
+                "nocp_record": 2214,
+                "resumed_submit_record": 2230
+              },
+              {
+                "full_record": 2230,
+                "nocp_record": 2256,
+                "resumed_submit_record": 2259
+              },
+              {
+                "full_record": 2259,
+                "nocp_record": 2290,
+                "resumed_submit_record": 2314
+              },
+              {
+                "full_record": 2314,
+                "nocp_record": 2326,
+                "resumed_submit_record": 2340
+              },
+              {
+                "full_record": 2340,
+                "nocp_record": 2366,
+                "resumed_submit_record": 2392
+              },
+              {
+                "full_record": 2474,
+                "nocp_record": 2482,
+                "resumed_submit_record": 2498
+              },
+              {
+                "full_record": 2498,
+                "nocp_record": 2516,
+                "resumed_submit_record": 2532
+              },
+              {
+                "full_record": 2532,
+                "nocp_record": 2552,
+                "resumed_submit_record": 2556
+              },
+              {
+                "full_record": 2556,
+                "nocp_record": 2594,
+                "resumed_submit_record": 2614
+              },
+              {
+                "full_record": 2614,
+                "nocp_record": 2628,
+                "resumed_submit_record": 2636
+              },
+              {
+                "full_record": 2636,
+                "nocp_record": 2670,
+                "resumed_submit_record": 2696
+              },
+              {
+                "full_record": 2780,
+                "nocp_record": 2786,
+                "resumed_submit_record": 2810
+              },
+              {
+                "full_record": 2810,
+                "nocp_record": 2822,
+                "resumed_submit_record": 2838
+              },
+              {
+                "full_record": 2838,
+                "nocp_record": 2856,
+                "resumed_submit_record": 2870
+              },
+              {
+                "full_record": 2870,
+                "nocp_record": 2898,
+                "resumed_submit_record": 2900
+              },
+              {
+                "full_record": 2900,
+                "nocp_record": 2932,
+                "resumed_submit_record": 2950
+              },
+              {
+                "full_record": 2950,
+                "nocp_record": 2968,
+                "resumed_submit_record": 2980
+              },
+              {
+                "full_record": 3004,
+                "nocp_record": 3012,
+                "resumed_submit_record": 3036
+              },
+              {
+                "full_record": 3036,
+                "nocp_record": 3048,
+                "resumed_submit_record": 3064
+              },
+              {
+                "full_record": 3064,
+                "nocp_record": 3088,
+                "resumed_submit_record": 3098
+              },
+              {
+                "full_record": 3098,
+                "nocp_record": 3124,
+                "resumed_submit_record": 3126
+              },
+              {
+                "full_record": 3126,
+                "nocp_record": 3158,
+                "resumed_submit_record": 3175
+              },
+              {
+                "full_record": 3175,
+                "nocp_record": 3194,
+                "resumed_submit_record": 3202
+              },
+              {
+                "full_record": 3202,
+                "nocp_record": 3236,
+                "resumed_submit_record": 3259
+              },
+              {
+                "full_record": 3259,
+                "nocp_record": 3272,
+                "resumed_submit_record": 3290
+              },
+              {
+                "full_record": 3346,
+                "nocp_record": 3352,
+                "resumed_submit_record": 3374
+              },
+              {
+                "full_record": 3374,
+                "nocp_record": 3394,
+                "resumed_submit_record": 3404
+              },
+              {
+                "full_record": 3404,
+                "nocp_record": 3428,
+                "resumed_submit_record": 3430
+              },
+              {
+                "full_record": 3430,
+                "nocp_record": 3464,
+                "resumed_submit_record": 3484
+              },
+              {
+                "full_record": 3484,
+                "nocp_record": 3498,
+                "resumed_submit_record": 3512
+              },
+              {
+                "full_record": 3512,
+                "nocp_record": 3540,
+                "resumed_submit_record": 3562
+              },
+              {
+                "full_record": 3562,
+                "nocp_record": 3574,
+                "resumed_submit_record": 3592
+              },
+              {
+                "full_record": 3646,
+                "nocp_record": 3654,
+                "resumed_submit_record": 3676
+              },
+              {
+                "full_record": 3676,
+                "nocp_record": 3692,
+                "resumed_submit_record": 3704
+              },
+              {
+                "full_record": 3704,
+                "nocp_record": 3730,
+                "resumed_submit_record": 3734
+              },
+              {
+                "full_record": 3734,
+                "nocp_record": 3766,
+                "resumed_submit_record": 3782
+              },
+              {
+                "full_record": 3782,
+                "nocp_record": 3808,
+                "resumed_submit_record": 3816
+              },
+              {
+                "full_record": 3816,
+                "nocp_record": 3842,
+                "resumed_submit_record": 3870
+              },
+              {
+                "full_record": 3870,
+                "nocp_record": 3884,
+                "resumed_submit_record": 3900
+              },
+              {
+                "full_record": 3954,
+                "nocp_record": 3962,
+                "resumed_submit_record": 3984
+              },
+              {
+                "full_record": 3984,
+                "nocp_record": 3998,
+                "resumed_submit_record": 4014
+              },
+              {
+                "full_record": 4014,
+                "nocp_record": 4034,
+                "resumed_submit_record": 4038
+              },
+              {
+                "full_record": 4038,
+                "nocp_record": 4068,
+                "resumed_submit_record": 4090
+              },
+              {
+                "full_record": 4090,
+                "nocp_record": 4110,
+                "resumed_submit_record": 4120
+              },
+              {
+                "full_record": 4120,
+                "nocp_record": 4144,
+                "resumed_submit_record": 4146
+              },
+              {
+                "full_record": 4146,
+                "nocp_record": 4180,
+                "resumed_submit_record": 4202
+              },
+              {
+                "full_record": 4260,
+                "nocp_record": 4261,
+                "resumed_submit_record": 4286
+              },
+              {
+                "full_record": 4286,
+                "nocp_record": 4302,
+                "resumed_submit_record": 4316
+              },
+              {
+                "full_record": 4316,
+                "nocp_record": 4336,
+                "resumed_submit_record": 4344
+              },
+              {
+                "full_record": 4344,
+                "nocp_record": 4376,
+                "resumed_submit_record": 4378
+              },
+              {
+                "full_record": 4378,
+                "nocp_record": 4414,
+                "resumed_submit_record": 4430
+              },
+              {
+                "full_record": 4430,
+                "nocp_record": 4448,
+                "resumed_submit_record": 4458
+              },
+              {
+                "full_record": 4458,
+                "nocp_record": 4484,
+                "resumed_submit_record": 4488
+              },
+              {
+                "full_record": 4488,
+                "nocp_record": 4494,
+                "resumed_submit_record": 4516
+              },
+              {
+                "full_record": 4516,
+                "nocp_record": 4530,
+                "resumed_submit_record": 4546
+              },
+              {
+                "full_record": 4546,
+                "nocp_record": 4564,
+                "resumed_submit_record": 4572
+              },
+              {
+                "full_record": 4572,
+                "nocp_record": 4606,
+                "resumed_submit_record": 4626
+              },
+              {
+                "full_record": 4626,
+                "nocp_record": 4640,
+                "resumed_submit_record": 4656
+              },
+              {
+                "full_record": 4656,
+                "nocp_record": 4676,
+                "resumed_submit_record": 4684
+              },
+              {
+                "full_record": 4684,
+                "nocp_record": 4710,
+                "resumed_submit_record": 4737
+              },
+              {
+                "full_record": 4737,
+                "nocp_record": 4752,
+                "resumed_submit_record": 4762
+              },
+              {
+                "full_record": 4762,
+                "nocp_record": 4786,
+                "resumed_submit_record": 4788
+              },
+              {
+                "full_record": 4788,
+                "nocp_record": 4796,
+                "resumed_submit_record": 4820
+              },
+              {
+                "full_record": 4820,
+                "nocp_record": 4832,
+                "resumed_submit_record": 4848
+              },
+              {
+                "full_record": 4848,
+                "nocp_record": 4868,
+                "resumed_submit_record": 4878
+              },
+              {
+                "full_record": 4878,
+                "nocp_record": 4902,
+                "resumed_submit_record": 4928
+              },
+              {
+                "full_record": 4928,
+                "nocp_record": 4944,
+                "resumed_submit_record": 4959
+              },
+              {
+                "full_record": 4959,
+                "nocp_record": 4980,
+                "resumed_submit_record": 4990
+              },
+              {
+                "full_record": 4990,
+                "nocp_record": 5022,
+                "resumed_submit_record": 5024
+              },
+              {
+                "full_record": 5024,
+                "nocp_record": 5056,
+                "resumed_submit_record": 5072
+              },
+              {
+                "full_record": 5072,
+                "nocp_record": 5090,
+                "resumed_submit_record": 5102
+              },
+              {
+                "full_record": 5130,
+                "nocp_record": 5136,
+                "resumed_submit_record": 5160
+              },
+              {
+                "full_record": 5160,
+                "nocp_record": 5172,
+                "resumed_submit_record": 5186
+              },
+              {
+                "full_record": 5186,
+                "nocp_record": 5206,
+                "resumed_submit_record": 5210
+              },
+              {
+                "full_record": 5210,
+                "nocp_record": 5248,
+                "resumed_submit_record": 5264
+              },
+              {
+                "full_record": 5264,
+                "nocp_record": 5282,
+                "resumed_submit_record": 5290
+              },
+              {
+                "full_record": 5290,
+                "nocp_record": 5316,
+                "resumed_submit_record": 5321
+              },
+              {
+                "full_record": 5321,
+                "nocp_record": 5352,
+                "resumed_submit_record": 5374
+              },
+              {
+                "full_record": 5374,
+                "nocp_record": 5394,
+                "resumed_submit_record": 5404
+              },
+              {
+                "full_record": 5426,
+                "nocp_record": 5438,
+                "resumed_submit_record": 5455
+              },
+              {
+                "full_record": 5455,
+                "nocp_record": 5474,
+                "resumed_submit_record": 5484
+              },
+              {
+                "full_record": 5484,
+                "nocp_record": 5512,
+                "resumed_submit_record": 5520
+              },
+              {
+                "full_record": 5520,
+                "nocp_record": 5552,
+                "resumed_submit_record": 5572
+              },
+              {
+                "full_record": 5572,
+                "nocp_record": 5586,
+                "resumed_submit_record": 5604
+              },
+              {
+                "full_record": 5604,
+                "nocp_record": 5622,
+                "resumed_submit_record": 5630
+              },
+              {
+                "full_record": 5630,
+                "nocp_record": 5664,
+                "resumed_submit_record": 5680
+              },
+              {
+                "full_record": 5680,
+                "nocp_record": 5698,
+                "resumed_submit_record": 5710
+              },
+              {
+                "full_record": 5737,
+                "nocp_record": 5744,
+                "resumed_submit_record": 5766
+              },
+              {
+                "full_record": 5766,
+                "nocp_record": 5778,
+                "resumed_submit_record": 5792
+              },
+              {
+                "full_record": 5792,
+                "nocp_record": 5812,
+                "resumed_submit_record": 5820
+              },
+              {
+                "full_record": 5820,
+                "nocp_record": 5848,
+                "resumed_submit_record": 5876
+              }
+            ]
+          },
+          {
+            "controller": 1,
+            "generation": 2,
+            "lifetime": 1,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 127,
+            "full_nocp_resume_intervals": [
+              {
+                "full_record": 1642,
+                "nocp_record": 1654,
+                "resumed_submit_record": 1676
+              },
+              {
+                "full_record": 1676,
+                "nocp_record": 1724,
+                "resumed_submit_record": 1736
+              },
+              {
+                "full_record": 1736,
+                "nocp_record": 1794,
+                "resumed_submit_record": 1818
+              },
+              {
+                "full_record": 1818,
+                "nocp_record": 1866,
+                "resumed_submit_record": 1870
+              },
+              {
+                "full_record": 1870,
+                "nocp_record": 1936,
+                "resumed_submit_record": 1962
+              },
+              {
+                "full_record": 1962,
+                "nocp_record": 2004,
+                "resumed_submit_record": 2016
+              },
+              {
+                "full_record": 2016,
+                "nocp_record": 2078,
+                "resumed_submit_record": 2100
+              },
+              {
+                "full_record": 2130,
+                "nocp_record": 2158,
+                "resumed_submit_record": 2162
+              },
+              {
+                "full_record": 2162,
+                "nocp_record": 2226,
+                "resumed_submit_record": 2243
+              },
+              {
+                "full_record": 2243,
+                "nocp_record": 2296,
+                "resumed_submit_record": 2300
+              },
+              {
+                "full_record": 2300,
+                "nocp_record": 2364,
+                "resumed_submit_record": 2378
+              },
+              {
+                "full_record": 2378,
+                "nocp_record": 2436,
+                "resumed_submit_record": 2462
+              },
+              {
+                "full_record": 2462,
+                "nocp_record": 2508,
+                "resumed_submit_record": 2520
+              },
+              {
+                "full_record": 2520,
+                "nocp_record": 2578,
+                "resumed_submit_record": 2580
+              },
+              {
+                "full_record": 2580,
+                "nocp_record": 2648,
+                "resumed_submit_record": 2658
+              },
+              {
+                "full_record": 2688,
+                "nocp_record": 2726,
+                "resumed_submit_record": 2744
+              },
+              {
+                "full_record": 2744,
+                "nocp_record": 2798,
+                "resumed_submit_record": 2802
+              },
+              {
+                "full_record": 2802,
+                "nocp_record": 2868,
+                "resumed_submit_record": 2892
+              },
+              {
+                "full_record": 2892,
+                "nocp_record": 2938,
+                "resumed_submit_record": 2948
+              },
+              {
+                "full_record": 2948,
+                "nocp_record": 3010,
+                "resumed_submit_record": 3032
+              },
+              {
+                "full_record": 3032,
+                "nocp_record": 3080,
+                "resumed_submit_record": 3092
+              },
+              {
+                "full_record": 3092,
+                "nocp_record": 3150,
+                "resumed_submit_record": 3174
+              },
+              {
+                "full_record": 3174,
+                "nocp_record": 3220,
+                "resumed_submit_record": 3234
+              },
+              {
+                "full_record": 3258,
+                "nocp_record": 3300,
+                "resumed_submit_record": 3319
+              },
+              {
+                "full_record": 3319,
+                "nocp_record": 3370,
+                "resumed_submit_record": 3380
+              },
+              {
+                "full_record": 3380,
+                "nocp_record": 3442,
+                "resumed_submit_record": 3458
+              },
+              {
+                "full_record": 3458,
+                "nocp_record": 3510,
+                "resumed_submit_record": 3516
+              },
+              {
+                "full_record": 3516,
+                "nocp_record": 3582,
+                "resumed_submit_record": 3600
+              },
+              {
+                "full_record": 3600,
+                "nocp_record": 3652,
+                "resumed_submit_record": 3658
+              },
+              {
+                "full_record": 3658,
+                "nocp_record": 3722,
+                "resumed_submit_record": 3742
+              },
+              {
+                "full_record": 3742,
+                "nocp_record": 3792,
+                "resumed_submit_record": 3794
+              },
+              {
+                "full_record": 3794,
+                "nocp_record": 3800,
+                "resumed_submit_record": 3824
+              },
+              {
+                "full_record": 3824,
+                "nocp_record": 3866,
+                "resumed_submit_record": 3878
+              },
+              {
+                "full_record": 3878,
+                "nocp_record": 3940,
+                "resumed_submit_record": 3964
+              },
+              {
+                "full_record": 3964,
+                "nocp_record": 4010,
+                "resumed_submit_record": 4022
+              },
+              {
+                "full_record": 4022,
+                "nocp_record": 4080,
+                "resumed_submit_record": 4098
+              },
+              {
+                "full_record": 4098,
+                "nocp_record": 4152,
+                "resumed_submit_record": 4156
+              },
+              {
+                "full_record": 4156,
+                "nocp_record": 4220,
+                "resumed_submit_record": 4240
+              },
+              {
+                "full_record": 4240,
+                "nocp_record": 4292,
+                "resumed_submit_record": 4296
+              },
+              {
+                "full_record": 4296,
+                "nocp_record": 4362,
+                "resumed_submit_record": 4386
+              },
+              {
+                "full_record": 4408,
+                "nocp_record": 4440,
+                "resumed_submit_record": 4466
+              },
+              {
+                "full_record": 4466,
+                "nocp_record": 4512,
+                "resumed_submit_record": 4524
+              },
+              {
+                "full_record": 4524,
+                "nocp_record": 4584,
+                "resumed_submit_record": 4600
+              },
+              {
+                "full_record": 4600,
+                "nocp_record": 4652,
+                "resumed_submit_record": 4657
+              },
+              {
+                "full_record": 4657,
+                "nocp_record": 4722,
+                "resumed_submit_record": 4736
+              },
+              {
+                "full_record": 4736,
+                "nocp_record": 4794,
+                "resumed_submit_record": 4798
+              },
+              {
+                "full_record": 4798,
+                "nocp_record": 4864,
+                "resumed_submit_record": 4874
+              },
+              {
+                "full_record": 4874,
+                "nocp_record": 4934,
+                "resumed_submit_record": 4958
+              },
+              {
+                "full_record": 4988,
+                "nocp_record": 5012,
+                "resumed_submit_record": 5016
+              },
+              {
+                "full_record": 5016,
+                "nocp_record": 5082,
+                "resumed_submit_record": 5103
+              },
+              {
+                "full_record": 5103,
+                "nocp_record": 5154,
+                "resumed_submit_record": 5156
+              },
+              {
+                "full_record": 5156,
+                "nocp_record": 5226,
+                "resumed_submit_record": 5236
+              },
+              {
+                "full_record": 5236,
+                "nocp_record": 5296,
+                "resumed_submit_record": 5320
+              },
+              {
+                "full_record": 5320,
+                "nocp_record": 5364,
+                "resumed_submit_record": 5376
+              },
+              {
+                "full_record": 5376,
+                "nocp_record": 5436,
+                "resumed_submit_record": 5454
+              },
+              {
+                "full_record": 5454,
+                "nocp_record": 5506,
+                "resumed_submit_record": 5516
+              },
+              {
+                "full_record": 5544,
+                "nocp_record": 5584,
+                "resumed_submit_record": 5600
+              },
+              {
+                "full_record": 5600,
+                "nocp_record": 5654,
+                "resumed_submit_record": 5656
+              },
+              {
+                "full_record": 5656,
+                "nocp_record": 5726,
+                "resumed_submit_record": 5736
+              },
+              {
+                "full_record": 5736,
+                "nocp_record": 5798,
+                "resumed_submit_record": 5824
+              },
+              {
+                "full_record": 5824,
+                "nocp_record": 5866,
+                "resumed_submit_record": 5884
+              },
+              {
+                "full_record": 5884,
+                "nocp_record": 5934,
+                "resumed_submit_record": 5938
+              },
+              {
+                "full_record": 5938,
+                "nocp_record": 5998,
+                "resumed_submit_record": 6004
+              },
+              {
+                "full_record": 6004,
+                "nocp_record": 6022,
+                "resumed_submit_record": 6034
+              },
+              {
+                "full_record": 6044,
+                "nocp_record": 6052,
+                "resumed_submit_record": 6056
+              },
+              {
+                "full_record": 6056,
+                "nocp_record": 6076,
+                "resumed_submit_record": 6080
+              },
+              {
+                "full_record": 6080,
+                "nocp_record": 6100,
+                "resumed_submit_record": 6108
+              },
+              {
+                "full_record": 6108,
+                "nocp_record": 6124,
+                "resumed_submit_record": 6128
+              },
+              {
+                "full_record": 6128,
+                "nocp_record": 6148,
+                "resumed_submit_record": 6154
+              },
+              {
+                "full_record": 6154,
+                "nocp_record": 6174,
+                "resumed_submit_record": 6180
+              },
+              {
+                "full_record": 6180,
+                "nocp_record": 6196,
+                "resumed_submit_record": 6200
+              },
+              {
+                "full_record": 6200,
+                "nocp_record": 6220,
+                "resumed_submit_record": 6230
+              },
+              {
+                "full_record": 6238,
+                "nocp_record": 6250,
+                "resumed_submit_record": 6258
+              },
+              {
+                "full_record": 6258,
+                "nocp_record": 6274,
+                "resumed_submit_record": 6282
+              },
+              {
+                "full_record": 6282,
+                "nocp_record": 6298,
+                "resumed_submit_record": 6302
+              },
+              {
+                "full_record": 6302,
+                "nocp_record": 6322,
+                "resumed_submit_record": 6328
+              },
+              {
+                "full_record": 6328,
+                "nocp_record": 6346,
+                "resumed_submit_record": 6354
+              },
+              {
+                "full_record": 6354,
+                "nocp_record": 6372,
+                "resumed_submit_record": 6374
+              },
+              {
+                "full_record": 6374,
+                "nocp_record": 6394,
+                "resumed_submit_record": 6400
+              },
+              {
+                "full_record": 6400,
+                "nocp_record": 6418,
+                "resumed_submit_record": 6430
+              },
+              {
+                "full_record": 6440,
+                "nocp_record": 6448,
+                "resumed_submit_record": 6450
+              },
+              {
+                "full_record": 6450,
+                "nocp_record": 6472,
+                "resumed_submit_record": 6476
+              },
+              {
+                "full_record": 6476,
+                "nocp_record": 6496,
+                "resumed_submit_record": 6502
+              },
+              {
+                "full_record": 6502,
+                "nocp_record": 6520,
+                "resumed_submit_record": 6528
+              },
+              {
+                "full_record": 6528,
+                "nocp_record": 6546,
+                "resumed_submit_record": 6554
+              },
+              {
+                "full_record": 6554,
+                "nocp_record": 6568,
+                "resumed_submit_record": 6574
+              },
+              {
+                "full_record": 6574,
+                "nocp_record": 6592,
+                "resumed_submit_record": 6600
+              },
+              {
+                "full_record": 6600,
+                "nocp_record": 6616,
+                "resumed_submit_record": 6620
+              },
+              {
+                "full_record": 6620,
+                "nocp_record": 6622,
+                "resumed_submit_record": 6630
+              },
+              {
+                "full_record": 6630,
+                "nocp_record": 6646,
+                "resumed_submit_record": 6650
+              },
+              {
+                "full_record": 6650,
+                "nocp_record": 6670,
+                "resumed_submit_record": 6676
+              },
+              {
+                "full_record": 6676,
+                "nocp_record": 6694,
+                "resumed_submit_record": 6702
+              },
+              {
+                "full_record": 6702,
+                "nocp_record": 6718,
+                "resumed_submit_record": 6722
+              },
+              {
+                "full_record": 6722,
+                "nocp_record": 6742,
+                "resumed_submit_record": 6748
+              },
+              {
+                "full_record": 6748,
+                "nocp_record": 6766,
+                "resumed_submit_record": 6768
+              },
+              {
+                "full_record": 6768,
+                "nocp_record": 6790,
+                "resumed_submit_record": 6796
+              },
+              {
+                "full_record": 6796,
+                "nocp_record": 6814,
+                "resumed_submit_record": 6826
+              },
+              {
+                "full_record": 6836,
+                "nocp_record": 6844,
+                "resumed_submit_record": 6848
+              },
+              {
+                "full_record": 6848,
+                "nocp_record": 6868,
+                "resumed_submit_record": 6874
+              },
+              {
+                "full_record": 6874,
+                "nocp_record": 6892,
+                "resumed_submit_record": 6900
+              },
+              {
+                "full_record": 6900,
+                "nocp_record": 6916,
+                "resumed_submit_record": 6918
+              },
+              {
+                "full_record": 6918,
+                "nocp_record": 6940,
+                "resumed_submit_record": 6944
+              },
+              {
+                "full_record": 6944,
+                "nocp_record": 6964,
+                "resumed_submit_record": 6970
+              },
+              {
+                "full_record": 6970,
+                "nocp_record": 6988,
+                "resumed_submit_record": 6996
+              },
+              {
+                "full_record": 6996,
+                "nocp_record": 7012,
+                "resumed_submit_record": 7018
+              },
+              {
+                "full_record": 7018,
+                "nocp_record": 7019,
+                "resumed_submit_record": 7030
+              },
+              {
+                "full_record": 7030,
+                "nocp_record": 7042,
+                "resumed_submit_record": 7048
+              },
+              {
+                "full_record": 7048,
+                "nocp_record": 7066,
+                "resumed_submit_record": 7074
+              },
+              {
+                "full_record": 7074,
+                "nocp_record": 7090,
+                "resumed_submit_record": 7092
+              },
+              {
+                "full_record": 7092,
+                "nocp_record": 7114,
+                "resumed_submit_record": 7118
+              },
+              {
+                "full_record": 7118,
+                "nocp_record": 7138,
+                "resumed_submit_record": 7146
+              },
+              {
+                "full_record": 7146,
+                "nocp_record": 7162,
+                "resumed_submit_record": 7164
+              },
+              {
+                "full_record": 7164,
+                "nocp_record": 7186,
+                "resumed_submit_record": 7192
+              },
+              {
+                "full_record": 7192,
+                "nocp_record": 7210,
+                "resumed_submit_record": 7222
+              },
+              {
+                "full_record": 7232,
+                "nocp_record": 7240,
+                "resumed_submit_record": 7244
+              },
+              {
+                "full_record": 7244,
+                "nocp_record": 7264,
+                "resumed_submit_record": 7270
+              },
+              {
+                "full_record": 7270,
+                "nocp_record": 7288,
+                "resumed_submit_record": 7294
+              },
+              {
+                "full_record": 7294,
+                "nocp_record": 7312,
+                "resumed_submit_record": 7314
+              },
+              {
+                "full_record": 7314,
+                "nocp_record": 7336,
+                "resumed_submit_record": 7342
+              },
+              {
+                "full_record": 7342,
+                "nocp_record": 7360,
+                "resumed_submit_record": 7368
+              },
+              {
+                "full_record": 7368,
+                "nocp_record": 7384,
+                "resumed_submit_record": 7388
+              },
+              {
+                "full_record": 7388,
+                "nocp_record": 7408,
+                "resumed_submit_record": 7416
+              },
+              {
+                "full_record": 7426,
+                "nocp_record": 7438,
+                "resumed_submit_record": 7444
+              },
+              {
+                "full_record": 7444,
+                "nocp_record": 7462,
+                "resumed_submit_record": 7470
+              },
+              {
+                "full_record": 7470,
+                "nocp_record": 7486,
+                "resumed_submit_record": 7488
+              },
+              {
+                "full_record": 7488,
+                "nocp_record": 7510,
+                "resumed_submit_record": 7516
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 1,
+        "source_pool_refusals_delta": 25,
+        "source_full_samples": 6,
+        "endpoints": [
+          {
+            "controller": 1,
+            "generation": 2,
+            "lifetime": 3,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 109,
+            "full_nocp_resume_intervals": [
+              {
+                "full_record": 8812,
+                "nocp_record": 8820,
+                "resumed_submit_record": 8841
+              },
+              {
+                "full_record": 8841,
+                "nocp_record": 8856,
+                "resumed_submit_record": 8871
+              },
+              {
+                "full_record": 8871,
+                "nocp_record": 8894,
+                "resumed_submit_record": 8900
+              },
+              {
+                "full_record": 8900,
+                "nocp_record": 8930,
+                "resumed_submit_record": 8954
+              },
+              {
+                "full_record": 8954,
+                "nocp_record": 8970,
+                "resumed_submit_record": 8980
+              },
+              {
+                "full_record": 8980,
+                "nocp_record": 9004,
+                "resumed_submit_record": 9010
+              },
+              {
+                "full_record": 9040,
+                "nocp_record": 9050,
+                "resumed_submit_record": 9066
+              },
+              {
+                "full_record": 9066,
+                "nocp_record": 9084,
+                "resumed_submit_record": 9092
+              },
+              {
+                "full_record": 9092,
+                "nocp_record": 9120,
+                "resumed_submit_record": 9142
+              },
+              {
+                "full_record": 9142,
+                "nocp_record": 9156,
+                "resumed_submit_record": 9174
+              },
+              {
+                "full_record": 9174,
+                "nocp_record": 9196,
+                "resumed_submit_record": 9204
+              },
+              {
+                "full_record": 9204,
+                "nocp_record": 9230,
+                "resumed_submit_record": 9253
+              },
+              {
+                "full_record": 9253,
+                "nocp_record": 9268,
+                "resumed_submit_record": 9282
+              },
+              {
+                "full_record": 9282,
+                "nocp_record": 9306,
+                "resumed_submit_record": 9316
+              },
+              {
+                "full_record": 9344,
+                "nocp_record": 9354,
+                "resumed_submit_record": 9370
+              },
+              {
+                "full_record": 9370,
+                "nocp_record": 9390,
+                "resumed_submit_record": 9398
+              },
+              {
+                "full_record": 9398,
+                "nocp_record": 9426,
+                "resumed_submit_record": 9450
+              },
+              {
+                "full_record": 9450,
+                "nocp_record": 9466,
+                "resumed_submit_record": 9480
+              },
+              {
+                "full_record": 9480,
+                "nocp_record": 9500,
+                "resumed_submit_record": 9508
+              },
+              {
+                "full_record": 9508,
+                "nocp_record": 9536,
+                "resumed_submit_record": 9538
+              },
+              {
+                "full_record": 9538,
+                "nocp_record": 9572,
+                "resumed_submit_record": 9596
+              },
+              {
+                "full_record": 9596,
+                "nocp_record": 9612,
+                "resumed_submit_record": 9628
+              },
+              {
+                "full_record": 9680,
+                "nocp_record": 9690,
+                "resumed_submit_record": 9710
+              },
+              {
+                "full_record": 9710,
+                "nocp_record": 9726,
+                "resumed_submit_record": 9742
+              },
+              {
+                "full_record": 9742,
+                "nocp_record": 9764,
+                "resumed_submit_record": 9770
+              },
+              {
+                "full_record": 9770,
+                "nocp_record": 9798,
+                "resumed_submit_record": 9822
+              },
+              {
+                "full_record": 9822,
+                "nocp_record": 9838,
+                "resumed_submit_record": 9852
+              },
+              {
+                "full_record": 9852,
+                "nocp_record": 9872,
+                "resumed_submit_record": 9886
+              },
+              {
+                "full_record": 9886,
+                "nocp_record": 9914,
+                "resumed_submit_record": 9916
+              },
+              {
+                "full_record": 9916,
+                "nocp_record": 9920,
+                "resumed_submit_record": 9940
+              },
+              {
+                "full_record": 9940,
+                "nocp_record": 9960,
+                "resumed_submit_record": 9970
+              },
+              {
+                "full_record": 9970,
+                "nocp_record": 9996,
+                "resumed_submit_record": 9998
+              },
+              {
+                "full_record": 9998,
+                "nocp_record": 10032,
+                "resumed_submit_record": 10052
+              },
+              {
+                "full_record": 10052,
+                "nocp_record": 10068,
+                "resumed_submit_record": 10076
+              },
+              {
+                "full_record": 10076,
+                "nocp_record": 10106,
+                "resumed_submit_record": 10108
+              },
+              {
+                "full_record": 10108,
+                "nocp_record": 10142,
+                "resumed_submit_record": 10158
+              },
+              {
+                "full_record": 10158,
+                "nocp_record": 10180,
+                "resumed_submit_record": 10188
+              },
+              {
+                "full_record": 10188,
+                "nocp_record": 10214,
+                "resumed_submit_record": 10242
+              },
+              {
+                "full_record": 10326,
+                "nocp_record": 10334,
+                "resumed_submit_record": 10354
+              },
+              {
+                "full_record": 10354,
+                "nocp_record": 10368,
+                "resumed_submit_record": 10384
+              },
+              {
+                "full_record": 10384,
+                "nocp_record": 10406,
+                "resumed_submit_record": 10414
+              },
+              {
+                "full_record": 10414,
+                "nocp_record": 10440,
+                "resumed_submit_record": 10442
+              },
+              {
+                "full_record": 10442,
+                "nocp_record": 10483,
+                "resumed_submit_record": 10502
+              },
+              {
+                "full_record": 10502,
+                "nocp_record": 10516,
+                "resumed_submit_record": 10534
+              },
+              {
+                "full_record": 10560,
+                "nocp_record": 10564,
+                "resumed_submit_record": 10584
+              },
+              {
+                "full_record": 10584,
+                "nocp_record": 10602,
+                "resumed_submit_record": 10616
+              },
+              {
+                "full_record": 10616,
+                "nocp_record": 10638,
+                "resumed_submit_record": 10644
+              },
+              {
+                "full_record": 10644,
+                "nocp_record": 10674,
+                "resumed_submit_record": 10700
+              },
+              {
+                "full_record": 10700,
+                "nocp_record": 10710,
+                "resumed_submit_record": 10724
+              },
+              {
+                "full_record": 10724,
+                "nocp_record": 10748,
+                "resumed_submit_record": 10752
+              },
+              {
+                "full_record": 10752,
+                "nocp_record": 10784,
+                "resumed_submit_record": 10802
+              },
+              {
+                "full_record": 10802,
+                "nocp_record": 10822,
+                "resumed_submit_record": 10836
+              },
+              {
+                "full_record": 10892,
+                "nocp_record": 10904,
+                "resumed_submit_record": 10920
+              },
+              {
+                "full_record": 10920,
+                "nocp_record": 10938,
+                "resumed_submit_record": 10946
+              },
+              {
+                "full_record": 10946,
+                "nocp_record": 10976,
+                "resumed_submit_record": 10978
+              },
+              {
+                "full_record": 10978,
+                "nocp_record": 11010,
+                "resumed_submit_record": 11032
+              },
+              {
+                "full_record": 11032,
+                "nocp_record": 11052,
+                "resumed_submit_record": 11062
+              },
+              {
+                "full_record": 11062,
+                "nocp_record": 11088,
+                "resumed_submit_record": 11114
+              },
+              {
+                "full_record": 11114,
+                "nocp_record": 11128,
+                "resumed_submit_record": 11144
+              },
+              {
+                "full_record": 11200,
+                "nocp_record": 11208,
+                "resumed_submit_record": 11224
+              },
+              {
+                "full_record": 11224,
+                "nocp_record": 11244,
+                "resumed_submit_record": 11258
+              },
+              {
+                "full_record": 11258,
+                "nocp_record": 11280,
+                "resumed_submit_record": 11284
+              },
+              {
+                "full_record": 11284,
+                "nocp_record": 11318,
+                "resumed_submit_record": 11338
+              },
+              {
+                "full_record": 11338,
+                "nocp_record": 11354,
+                "resumed_submit_record": 11366
+              },
+              {
+                "full_record": 11366,
+                "nocp_record": 11392,
+                "resumed_submit_record": 11398
+              },
+              {
+                "full_record": 11398,
+                "nocp_record": 11426,
+                "resumed_submit_record": 11452
+              },
+              {
+                "full_record": 11538,
+                "nocp_record": 11546,
+                "resumed_submit_record": 11566
+              },
+              {
+                "full_record": 11566,
+                "nocp_record": 11580,
+                "resumed_submit_record": 11594
+              },
+              {
+                "full_record": 11594,
+                "nocp_record": 11622,
+                "resumed_submit_record": 11624
+              },
+              {
+                "full_record": 11624,
+                "nocp_record": 11658,
+                "resumed_submit_record": 11682
+              },
+              {
+                "full_record": 11682,
+                "nocp_record": 11696,
+                "resumed_submit_record": 11710
+              },
+              {
+                "full_record": 11710,
+                "nocp_record": 11730,
+                "resumed_submit_record": 11738
+              },
+              {
+                "full_record": 11768,
+                "nocp_record": 11776,
+                "resumed_submit_record": 11794
+              },
+              {
+                "full_record": 11794,
+                "nocp_record": 11814,
+                "resumed_submit_record": 11826
+              },
+              {
+                "full_record": 11826,
+                "nocp_record": 11850,
+                "resumed_submit_record": 11854
+              },
+              {
+                "full_record": 11854,
+                "nocp_record": 11886,
+                "resumed_submit_record": 11906
+              },
+              {
+                "full_record": 11906,
+                "nocp_record": 11922,
+                "resumed_submit_record": 11930
+              },
+              {
+                "full_record": 11930,
+                "nocp_record": 11962,
+                "resumed_submit_record": 11964
+              },
+              {
+                "full_record": 11964,
+                "nocp_record": 11996,
+                "resumed_submit_record": 12012
+              },
+              {
+                "full_record": 12012,
+                "nocp_record": 12032,
+                "resumed_submit_record": 12044
+              },
+              {
+                "full_record": 12070,
+                "nocp_record": 12076,
+                "resumed_submit_record": 12098
+              },
+              {
+                "full_record": 12098,
+                "nocp_record": 12112,
+                "resumed_submit_record": 12126
+              },
+              {
+                "full_record": 12126,
+                "nocp_record": 12148,
+                "resumed_submit_record": 12150
+              },
+              {
+                "full_record": 12150,
+                "nocp_record": 12190,
+                "resumed_submit_record": 12212
+              },
+              {
+                "full_record": 12212,
+                "nocp_record": 12226,
+                "resumed_submit_record": 12238
+              },
+              {
+                "full_record": 12238,
+                "nocp_record": 12266,
+                "resumed_submit_record": 12268
+              },
+              {
+                "full_record": 12268,
+                "nocp_record": 12300,
+                "resumed_submit_record": 12324
+              },
+              {
+                "full_record": 12324,
+                "nocp_record": 12338,
+                "resumed_submit_record": 12352
+              },
+              {
+                "full_record": 12374,
+                "nocp_record": 12380,
+                "resumed_submit_record": 12408
+              },
+              {
+                "full_record": 12408,
+                "nocp_record": 12418,
+                "resumed_submit_record": 12430
+              },
+              {
+                "full_record": 12430,
+                "nocp_record": 12456,
+                "resumed_submit_record": 12462
+              },
+              {
+                "full_record": 12462,
+                "nocp_record": 12492,
+                "resumed_submit_record": 12512
+              },
+              {
+                "full_record": 12512,
+                "nocp_record": 12528,
+                "resumed_submit_record": 12544
+              },
+              {
+                "full_record": 12544,
+                "nocp_record": 12564,
+                "resumed_submit_record": 12572
+              },
+              {
+                "full_record": 12572,
+                "nocp_record": 12602,
+                "resumed_submit_record": 12626
+              },
+              {
+                "full_record": 12626,
+                "nocp_record": 12638,
+                "resumed_submit_record": 12654
+              },
+              {
+                "full_record": 12710,
+                "nocp_record": 12718,
+                "resumed_submit_record": 12738
+              },
+              {
+                "full_record": 12738,
+                "nocp_record": 12758,
+                "resumed_submit_record": 12770
+              },
+              {
+                "full_record": 12770,
+                "nocp_record": 12796,
+                "resumed_submit_record": 12800
+              },
+              {
+                "full_record": 12800,
+                "nocp_record": 12834,
+                "resumed_submit_record": 12854
+              },
+              {
+                "full_record": 12854,
+                "nocp_record": 12868,
+                "resumed_submit_record": 12883
+              },
+              {
+                "full_record": 12883,
+                "nocp_record": 12908,
+                "resumed_submit_record": 12914
+              },
+              {
+                "full_record": 12914,
+                "nocp_record": 12942,
+                "resumed_submit_record": 12944
+              },
+              {
+                "full_record": 12944,
+                "nocp_record": 12946,
+                "resumed_submit_record": 12970
+              },
+              {
+                "full_record": 12970,
+                "nocp_record": 12988,
+                "resumed_submit_record": 12996
+              },
+              {
+                "full_record": 12996,
+                "nocp_record": 13022,
+                "resumed_submit_record": 13024
+              },
+              {
+                "full_record": 13024,
+                "nocp_record": 13060,
+                "resumed_submit_record": 13080
+              },
+              {
+                "full_record": 13080,
+                "nocp_record": 13098,
+                "resumed_submit_record": 13112
+              }
+            ]
+          },
+          {
+            "controller": 0,
+            "generation": 1,
+            "lifetime": 3,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 128,
+            "full_nocp_resume_intervals": [
+              {
+                "full_record": 8870,
+                "nocp_record": 8884,
+                "resumed_submit_record": 8904
+              },
+              {
+                "full_record": 8904,
+                "nocp_record": 8952,
+                "resumed_submit_record": 8956
+              },
+              {
+                "full_record": 8956,
+                "nocp_record": 9026,
+                "resumed_submit_record": 9044
+              },
+              {
+                "full_record": 9044,
+                "nocp_record": 9098,
+                "resumed_submit_record": 9122
+              },
+              {
+                "full_record": 9122,
+                "nocp_record": 9166,
+                "resumed_submit_record": 9176
+              },
+              {
+                "full_record": 9176,
+                "nocp_record": 9236,
+                "resumed_submit_record": 9252
+              },
+              {
+                "full_record": 9252,
+                "nocp_record": 9304,
+                "resumed_submit_record": 9320
+              },
+              {
+                "full_record": 9348,
+                "nocp_record": 9386,
+                "resumed_submit_record": 9406
+              },
+              {
+                "full_record": 9406,
+                "nocp_record": 9456,
+                "resumed_submit_record": 9460
+              },
+              {
+                "full_record": 9460,
+                "nocp_record": 9526,
+                "resumed_submit_record": 9546
+              },
+              {
+                "full_record": 9546,
+                "nocp_record": 9594,
+                "resumed_submit_record": 9604
+              },
+              {
+                "full_record": 9604,
+                "nocp_record": 9668,
+                "resumed_submit_record": 9692
+              },
+              {
+                "full_record": 9692,
+                "nocp_record": 9738,
+                "resumed_submit_record": 9744
+              },
+              {
+                "full_record": 9744,
+                "nocp_record": 9808,
+                "resumed_submit_record": 9823
+              },
+              {
+                "full_record": 9823,
+                "nocp_record": 9878,
+                "resumed_submit_record": 9887
+              },
+              {
+                "full_record": 9922,
+                "nocp_record": 9958,
+                "resumed_submit_record": 9976
+              },
+              {
+                "full_record": 9976,
+                "nocp_record": 10028,
+                "resumed_submit_record": 10034
+              },
+              {
+                "full_record": 10034,
+                "nocp_record": 10098,
+                "resumed_submit_record": 10116
+              },
+              {
+                "full_record": 10116,
+                "nocp_record": 10168,
+                "resumed_submit_record": 10172
+              },
+              {
+                "full_record": 10172,
+                "nocp_record": 10238,
+                "resumed_submit_record": 10254
+              },
+              {
+                "full_record": 10254,
+                "nocp_record": 10310,
+                "resumed_submit_record": 10312
+              },
+              {
+                "full_record": 10312,
+                "nocp_record": 10380,
+                "resumed_submit_record": 10396
+              },
+              {
+                "full_record": 10396,
+                "nocp_record": 10452,
+                "resumed_submit_record": 10454
+              },
+              {
+                "full_record": 10454,
+                "nocp_record": 10460,
+                "resumed_submit_record": 10480
+              },
+              {
+                "full_record": 10480,
+                "nocp_record": 10530,
+                "resumed_submit_record": 10542
+              },
+              {
+                "full_record": 10542,
+                "nocp_record": 10600,
+                "resumed_submit_record": 10624
+              },
+              {
+                "full_record": 10624,
+                "nocp_record": 10670,
+                "resumed_submit_record": 10676
+              },
+              {
+                "full_record": 10676,
+                "nocp_record": 10740,
+                "resumed_submit_record": 10753
+              },
+              {
+                "full_record": 10753,
+                "nocp_record": 10808,
+                "resumed_submit_record": 10832
+              },
+              {
+                "full_record": 10832,
+                "nocp_record": 10880,
+                "resumed_submit_record": 10888
+              },
+              {
+                "full_record": 10888,
+                "nocp_record": 10952,
+                "resumed_submit_record": 10968
+              },
+              {
+                "full_record": 10968,
+                "nocp_record": 11020,
+                "resumed_submit_record": 11028
+              },
+              {
+                "full_record": 11054,
+                "nocp_record": 11098,
+                "resumed_submit_record": 11106
+              },
+              {
+                "full_record": 11106,
+                "nocp_record": 11168,
+                "resumed_submit_record": 11192
+              },
+              {
+                "full_record": 11192,
+                "nocp_record": 11240,
+                "resumed_submit_record": 11250
+              },
+              {
+                "full_record": 11250,
+                "nocp_record": 11310,
+                "resumed_submit_record": 11326
+              },
+              {
+                "full_record": 11326,
+                "nocp_record": 11380,
+                "resumed_submit_record": 11384
+              },
+              {
+                "full_record": 11384,
+                "nocp_record": 11450,
+                "resumed_submit_record": 11466
+              },
+              {
+                "full_record": 11466,
+                "nocp_record": 11522,
+                "resumed_submit_record": 11526
+              },
+              {
+                "full_record": 11526,
+                "nocp_record": 11592,
+                "resumed_submit_record": 11612
+              },
+              {
+                "full_record": 11642,
+                "nocp_record": 11670,
+                "resumed_submit_record": 11674
+              },
+              {
+                "full_record": 11674,
+                "nocp_record": 11744,
+                "resumed_submit_record": 11760
+              },
+              {
+                "full_record": 11760,
+                "nocp_record": 11812,
+                "resumed_submit_record": 11818
+              },
+              {
+                "full_record": 11818,
+                "nocp_record": 11882,
+                "resumed_submit_record": 11898
+              },
+              {
+                "full_record": 11898,
+                "nocp_record": 11952,
+                "resumed_submit_record": 11954
+              },
+              {
+                "full_record": 11954,
+                "nocp_record": 12022,
+                "resumed_submit_record": 12034
+              },
+              {
+                "full_record": 12034,
+                "nocp_record": 12094,
+                "resumed_submit_record": 12118
+              },
+              {
+                "full_record": 12118,
+                "nocp_record": 12166,
+                "resumed_submit_record": 12176
+              },
+              {
+                "full_record": 12204,
+                "nocp_record": 12244,
+                "resumed_submit_record": 12260
+              },
+              {
+                "full_record": 12260,
+                "nocp_record": 12312,
+                "resumed_submit_record": 12316
+              },
+              {
+                "full_record": 12316,
+                "nocp_record": 12386,
+                "resumed_submit_record": 12400
+              },
+              {
+                "full_record": 12400,
+                "nocp_record": 12454,
+                "resumed_submit_record": 12458
+              },
+              {
+                "full_record": 12458,
+                "nocp_record": 12524,
+                "resumed_submit_record": 12540
+              },
+              {
+                "full_record": 12540,
+                "nocp_record": 12594,
+                "resumed_submit_record": 12618
+              },
+              {
+                "full_record": 12618,
+                "nocp_record": 12666,
+                "resumed_submit_record": 12676
+              },
+              {
+                "full_record": 12676,
+                "nocp_record": 12736,
+                "resumed_submit_record": 12760
+              },
+              {
+                "full_record": 12788,
+                "nocp_record": 12816,
+                "resumed_submit_record": 12820
+              },
+              {
+                "full_record": 12820,
+                "nocp_record": 12885,
+                "resumed_submit_record": 12902
+              },
+              {
+                "full_record": 12902,
+                "nocp_record": 12958,
+                "resumed_submit_record": 12962
+              },
+              {
+                "full_record": 12962,
+                "nocp_record": 13030,
+                "resumed_submit_record": 13040
+              },
+              {
+                "full_record": 13040,
+                "nocp_record": 13096,
+                "resumed_submit_record": 13120
+              },
+              {
+                "full_record": 13120,
+                "nocp_record": 13164,
+                "resumed_submit_record": 13176
+              },
+              {
+                "full_record": 13176,
+                "nocp_record": 13230,
+                "resumed_submit_record": 13246
+              },
+              {
+                "full_record": 13246,
+                "nocp_record": 13262,
+                "resumed_submit_record": 13266
+              },
+              {
+                "full_record": 13266,
+                "nocp_record": 13267,
+                "resumed_submit_record": 13276
+              },
+              {
+                "full_record": 13276,
+                "nocp_record": 13292,
+                "resumed_submit_record": 13296
+              },
+              {
+                "full_record": 13296,
+                "nocp_record": 13316,
+                "resumed_submit_record": 13324
+              },
+              {
+                "full_record": 13324,
+                "nocp_record": 13340,
+                "resumed_submit_record": 13348
+              },
+              {
+                "full_record": 13348,
+                "nocp_record": 13364,
+                "resumed_submit_record": 13368
+              },
+              {
+                "full_record": 13368,
+                "nocp_record": 13388,
+                "resumed_submit_record": 13394
+              },
+              {
+                "full_record": 13394,
+                "nocp_record": 13412,
+                "resumed_submit_record": 13420
+              },
+              {
+                "full_record": 13420,
+                "nocp_record": 13436,
+                "resumed_submit_record": 13446
+              },
+              {
+                "full_record": 13446,
+                "nocp_record": 13460,
+                "resumed_submit_record": 13468
+              },
+              {
+                "full_record": 13476,
+                "nocp_record": 13490,
+                "resumed_submit_record": 13496
+              },
+              {
+                "full_record": 13496,
+                "nocp_record": 13514,
+                "resumed_submit_record": 13522
+              },
+              {
+                "full_record": 13522,
+                "nocp_record": 13538,
+                "resumed_submit_record": 13542
+              },
+              {
+                "full_record": 13542,
+                "nocp_record": 13562,
+                "resumed_submit_record": 13568
+              },
+              {
+                "full_record": 13568,
+                "nocp_record": 13586,
+                "resumed_submit_record": 13588
+              },
+              {
+                "full_record": 13588,
+                "nocp_record": 13610,
+                "resumed_submit_record": 13614
+              },
+              {
+                "full_record": 13614,
+                "nocp_record": 13634,
+                "resumed_submit_record": 13640
+              },
+              {
+                "full_record": 13640,
+                "nocp_record": 13658,
+                "resumed_submit_record": 13668
+              },
+              {
+                "full_record": 13678,
+                "nocp_record": 13688,
+                "resumed_submit_record": 13690
+              },
+              {
+                "full_record": 13690,
+                "nocp_record": 13712,
+                "resumed_submit_record": 13716
+              },
+              {
+                "full_record": 13716,
+                "nocp_record": 13736,
+                "resumed_submit_record": 13742
+              },
+              {
+                "full_record": 13742,
+                "nocp_record": 13760,
+                "resumed_submit_record": 13768
+              },
+              {
+                "full_record": 13768,
+                "nocp_record": 13784,
+                "resumed_submit_record": 13786
+              },
+              {
+                "full_record": 13786,
+                "nocp_record": 13808,
+                "resumed_submit_record": 13812
+              },
+              {
+                "full_record": 13812,
+                "nocp_record": 13832,
+                "resumed_submit_record": 13840
+              },
+              {
+                "full_record": 13840,
+                "nocp_record": 13856,
+                "resumed_submit_record": 13860
+              },
+              {
+                "full_record": 13860,
+                "nocp_record": 13862,
+                "resumed_submit_record": 13872
+              },
+              {
+                "full_record": 13872,
+                "nocp_record": 13886,
+                "resumed_submit_record": 13890
+              },
+              {
+                "full_record": 13890,
+                "nocp_record": 13910,
+                "resumed_submit_record": 13916
+              },
+              {
+                "full_record": 13916,
+                "nocp_record": 13934,
+                "resumed_submit_record": 13942
+              },
+              {
+                "full_record": 13942,
+                "nocp_record": 13958,
+                "resumed_submit_record": 13962
+              },
+              {
+                "full_record": 13962,
+                "nocp_record": 13982,
+                "resumed_submit_record": 13988
+              },
+              {
+                "full_record": 13988,
+                "nocp_record": 14006,
+                "resumed_submit_record": 14014
+              },
+              {
+                "full_record": 14014,
+                "nocp_record": 14030,
+                "resumed_submit_record": 14034
+              },
+              {
+                "full_record": 14034,
+                "nocp_record": 14054,
+                "resumed_submit_record": 14064
+              },
+              {
+                "full_record": 14072,
+                "nocp_record": 14084,
+                "resumed_submit_record": 14092
+              },
+              {
+                "full_record": 14092,
+                "nocp_record": 14108,
+                "resumed_submit_record": 14110
+              },
+              {
+                "full_record": 14110,
+                "nocp_record": 14132,
+                "resumed_submit_record": 14136
+              },
+              {
+                "full_record": 14136,
+                "nocp_record": 14156,
+                "resumed_submit_record": 14160
+              },
+              {
+                "full_record": 14160,
+                "nocp_record": 14180,
+                "resumed_submit_record": 14188
+              },
+              {
+                "full_record": 14188,
+                "nocp_record": 14204,
+                "resumed_submit_record": 14206
+              },
+              {
+                "full_record": 14206,
+                "nocp_record": 14228,
+                "resumed_submit_record": 14232
+              },
+              {
+                "full_record": 14232,
+                "nocp_record": 14252,
+                "resumed_submit_record": 14260
+              },
+              {
+                "full_record": 14268,
+                "nocp_record": 14282,
+                "resumed_submit_record": 14288
+              },
+              {
+                "full_record": 14288,
+                "nocp_record": 14306,
+                "resumed_submit_record": 14308
+              },
+              {
+                "full_record": 14308,
+                "nocp_record": 14330,
+                "resumed_submit_record": 14334
+              },
+              {
+                "full_record": 14334,
+                "nocp_record": 14354,
+                "resumed_submit_record": 14362
+              },
+              {
+                "full_record": 14362,
+                "nocp_record": 14378,
+                "resumed_submit_record": 14382
+              },
+              {
+                "full_record": 14382,
+                "nocp_record": 14402,
+                "resumed_submit_record": 14408
+              },
+              {
+                "full_record": 14408,
+                "nocp_record": 14426,
+                "resumed_submit_record": 14434
+              },
+              {
+                "full_record": 14434,
+                "nocp_record": 14450,
+                "resumed_submit_record": 14454
+              },
+              {
+                "full_record": 14454,
+                "nocp_record": 14456,
+                "resumed_submit_record": 14464
+              },
+              {
+                "full_record": 14464,
+                "nocp_record": 14480,
+                "resumed_submit_record": 14484
+              },
+              {
+                "full_record": 14484,
+                "nocp_record": 14504,
+                "resumed_submit_record": 14510
+              },
+              {
+                "full_record": 14510,
+                "nocp_record": 14528,
+                "resumed_submit_record": 14536
+              },
+              {
+                "full_record": 14536,
+                "nocp_record": 14552,
+                "resumed_submit_record": 14556
+              },
+              {
+                "full_record": 14556,
+                "nocp_record": 14576,
+                "resumed_submit_record": 14582
+              },
+              {
+                "full_record": 14582,
+                "nocp_record": 14600,
+                "resumed_submit_record": 14606
+              },
+              {
+                "full_record": 14606,
+                "nocp_record": 14624,
+                "resumed_submit_record": 14632
+              },
+              {
+                "full_record": 14632,
+                "nocp_record": 14648,
+                "resumed_submit_record": 14654
+              },
+              {
+                "full_record": 14664,
+                "nocp_record": 14678,
+                "resumed_submit_record": 14682
+              },
+              {
+                "full_record": 14682,
+                "nocp_record": 14702,
+                "resumed_submit_record": 14708
+              },
+              {
+                "full_record": 14708,
+                "nocp_record": 14726,
+                "resumed_submit_record": 14734
+              },
+              {
+                "full_record": 14734,
+                "nocp_record": 14750,
+                "resumed_submit_record": 14754
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "application_round_trips": 32,
+    "assumptions": [
+      "PCAP USB submission/NOCP observed ordering; original link interval starts drained",
+      "NOCP accuracy is firmware/hardware trust, not proven by a matching count",
+      "No duplicate/late NOCP or handle-reuse barrier qualified",
+      "USB completion is not credit return; only NOCP changes reconstructed debt"
+    ],
+    "inputs": {
+      "manifest.json": "4c50ee53c829f0d86438e05782592a390e86e2875e9c26f3cd539b17a162f6b2",
+      "run.json": "4ed1c0a948eb9a92c3bc61581f6d0b67ec74f1fbcb1af1ae8c877b9e84f4f75c",
+      "ws73.pcap": "cf9efa4420fb8417ca838fc729650a248d517209ddb9f270a27d6f1df70ca51b"
+    },
+    "scope": "Two real controllers, exchanged roles, fixed channels and SDK111 profile. Supplemental evidence; original manifest remains unchanged.",
+    "natural_recovery_qualified": false,
+    "whole_credit_proof": false
+  },
+  "old_path_regression": {
+    "status": "ALL11_REAL_REGRESSION_GATES_PASS",
+    "runs": [
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "short",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "f19d0c7fa37eb3a71b7abaf8e51b16a5535b0aa9e6767ed67277f4704717b05d",
+        "pcap_sha256": "3f957c16d93ac55963498c1f0d167a1561afb879bacea8b032a21f7195e1f533",
+        "round_trips": 40,
+        "application_bytes": 61,
+        "rounds_per_role": 20,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "boundary",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "8cd98ccfdda7c2b02540e621c44cdf8951583a81124f2fbdab71f33a8cf0316d",
+        "pcap_sha256": "7b7a25315515095be1c560ac3ab1c506691c33d373a8f09c4ef8cf6cbec363ad",
+        "round_trips": 8,
+        "application_bytes": 249,
+        "rounds_per_role": 4,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 16,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "long",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "6c054fbadf5a1329b07ef4b29bd8b34ea097413e43d98f403ebddd5f04cc6fad",
+        "pcap_sha256": "6a095d7ab6b3c314860bfd250bb14b98e32355f8e81c01d4806963c7e648a813",
+        "round_trips": 8,
+        "application_bytes": 2042,
+        "rounds_per_role": 4,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 16,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "length248",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "96834404aecf44591f05e167a2e910ffadd4315e4ca253796895e4c23ee8be62",
+        "pcap_sha256": "b8cab92cf2d092f4850797fef721019407a195882f193c5cd9de25a81a35c60e",
+        "round_trips": 8,
+        "application_bytes": 248,
+        "rounds_per_role": 4,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "length250",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "90f8ac4bbc63bdacf67f79cecc42d3751494d64743773cc5059e765d37b5a638",
+        "pcap_sha256": "2049e55f7a0fa0d44547413d77bd7869831b5eb4f2610859d3227aa211148a6b",
+        "round_trips": 8,
+        "application_bytes": 250,
+        "rounds_per_role": 4,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "length253",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "e8101cbfeeeb32d69c30205f00b90e50e053ff81e056b14917a0c4ef5797ffa7",
+        "pcap_sha256": "ac0b3e03489c6c64d819d662cf26e26d543ded808854f9dd80d63209824ce11d",
+        "round_trips": 8,
+        "application_bytes": 253,
+        "rounds_per_role": 4,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "length254",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "6eb08d1b82317abac7d34028a416b503393035d4b0bba1161884ab38e8b2bc5d",
+        "pcap_sha256": "9629750ee52c5afe460eb4a91acb745d6a5574b662af4541daf3fbee909673b9",
+        "round_trips": 8,
+        "application_bytes": 254,
+        "rounds_per_role": 4,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "length255",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "fedc918463b9d2897fe6bf58d1369ee3165f8de8b2cd5fc2d9259e3b15faba42",
+        "pcap_sha256": "f8ad9dc47782590e855d9dc3acbf665f5e38d20b218151c86cc80cfd47241398",
+        "round_trips": 8,
+        "application_bytes": 255,
+        "rounds_per_role": 4,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "length1024",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "16ec8eb44e7057c40d97e74e5557b0bd370370d4a2ebf1ce5c76a08decf7b6cc",
+        "pcap_sha256": "94aadcfbb3935b63994822ddf3a2446c801ded28374651cf0102388e3e7399f4",
+        "round_trips": 8,
+        "application_bytes": 1024,
+        "rounds_per_role": 4,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "prefix-close",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "ab03f48b69a877a930d9b6ebb0982cdf04118b80ea4145bc00ec33efd7a43246",
+        "pcap_sha256": "2f162a06d7d76265ef1d7297f5639850ee1e93b584b85a68215d2d7b01345912",
+        "round_trips": 0,
+        "application_bytes": 2042,
+        "rounds_per_role": 1,
+        "prefix_close_phases": 2,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": false
+      },
+      {
+        "capture_kernel_drops": 0,
+        "vm_taint": 0,
+        "gate": "burst",
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "4c50ee53c829f0d86438e05782592a390e86e2875e9c26f3cd539b17a162f6b2",
+        "pcap_sha256": "cf9efa4420fb8417ca838fc729650a248d517209ddb9f270a27d6f1df70ca51b",
+        "round_trips": 32,
+        "application_bytes": 2042,
+        "rounds_per_role": 16,
+        "prefix_close_phases": 0,
+        "boundary_refusals": 0,
+        "raw_material_public": false,
+        "ssap_exchange_info": true,
+        "ssap_values": true,
+        "ssap_discovery": true,
+        "software_backpressure": true
+      }
+    ],
+    "round_trips": 136,
+    "raw_material_public": false
+  },
+  "offline": {
+    "cargo_tests": 222,
+    "cargo_suites": 13,
+    "python_c_rust_checks": 38,
+    "tool_tests": 514,
+    "relay_tests": 13,
+    "actual_host_tests": 68,
+    "connection_storage_tests": 13,
+    "strict_clippy": true,
+    "strict_kernel_build": true,
+    "isolated_vm_boot_smoke": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+    "additional_source_tests": [
+      {
+        "test": "run_runtime_ingress.py",
+        "exit": 0,
+        "log": "security-capability-run_runtime_ingress.log"
+      },
+      {
+        "test": "run_native_data.py",
+        "exit": 0,
+        "log": "security-capability-run_native_data.log"
+      },
+      {
+        "test": "run_session_dispatch.py",
+        "exit": 0,
+        "log": "security-capability-run_session_dispatch.log"
+      },
+      {
+        "test": "run_native_ticket_driver.py",
+        "exit": 0,
+        "log": "security-capability-run_native_ticket_driver.log"
+      }
+    ]
+  },
+  "formal": {
+    "withdraw": {
+      "status": "PRODUCTION_RELAY_SESSION_FORMAL_NOT_PROVEN",
+      "tests": 13,
+      "default_kernel_implementation": true,
+      "rf_acceptance": false,
+      "source_head": "c272157cbc58da335c6fc71e8b940de02efb62f4",
+      "source_tree_clean": true,
+      "runner_sha256": "4a5f9e224105d34d68b742820aaceb71518b1693d05371a37aac59b00a32c014",
+      "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+      "sources": {
+        "net/sparklink/sle_security_relay_state.rs": "a85cdaf1e5498940b2732a7f9e5ddf6436df6d0414b52120aac6e8902c890ca8",
+        "tools/testing/selftests/sparklink/security/relay_session.rs": "fd512edf8a9206b019591e1630151d21db6a99c8df79e7b755f8d1f9d4ff4c20",
+        "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "876ffd28d23bcbe4954e737d53d17166350c51a8c67b805db91284a94e290f19"
+      },
+      "formal": {
+        "status": "NOT_PROVEN_UNSUPPORTED",
+        "exit": 0,
+        "generated_checks": [
+          996
+        ],
+        "command": [
+          "kani",
+          "tools/testing/selftests/sparklink/security/relay_session_kani.rs",
+          "--harness",
+          "capability_withdraw_deadline_and_submit"
+        ],
+        "log_sha256": "ca2b992d5416605c69c0312afc5712ceda94176257199ccb127031df0edd225f",
+        "version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0"
+      },
+      "proof_scope": {
+        "harness": "capability_withdraw_deadline_and_submit",
+        "queue_depth": 2,
+        "capability_payload_bytes": 10,
+        "capability_exchanges": 1,
+        "capability_terminal_replies": 1,
+        "arbitrary_commit_time_u64": true,
+        "unwind": 12,
+        "property_inventory_by_harness": {
+          "capability_withdraw_deadline_and_submit": [
+            "No callback after prior withdraw/expiry or foreign identity",
+            "Submit failure is nondeterministic; only accepted callback creates obligation",
+            "Withdraw/expiry preserve submitted obligation until matching terminal reply"
+          ],
+          "capability_requires_peer_and_terminal_complete": [
+            "Successful Status alone cannot pay obligation or complete exchange",
+            "Both peer ingress and real Complete required in either order; terminal failure cannot revive"
+          ]
+        },
+        "assumptions": [
+          "Caller serializes exact production methods under Owner lock",
+          "Host/gate identity is current; driver callback atomically accepts or NEVER queues",
+          "Input reply ticket already resolved by Host; peer ingress identity already frozen"
+        ],
+        "excluded": [
+          "Actual locks/references/IRQ/USB callback drain and Host-to-driver mapping",
+          "Wire Complete uniqueness, late/duplicate handle attribution, firmware state clear/reuse barrier",
+          "Unbounded execution, cryptography, authentication, Agent, key install and natural recovery"
+        ]
+      },
+      "regression_status": "PASS"
+    },
+    "completion": {
+      "status": "PRODUCTION_RELAY_SESSION_FORMAL_NOT_PROVEN",
+      "tests": 13,
+      "default_kernel_implementation": true,
+      "rf_acceptance": false,
+      "source_head": "c272157cbc58da335c6fc71e8b940de02efb62f4",
+      "source_tree_clean": true,
+      "runner_sha256": "4a5f9e224105d34d68b742820aaceb71518b1693d05371a37aac59b00a32c014",
+      "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+      "sources": {
+        "net/sparklink/sle_security_relay_state.rs": "a85cdaf1e5498940b2732a7f9e5ddf6436df6d0414b52120aac6e8902c890ca8",
+        "tools/testing/selftests/sparklink/security/relay_session.rs": "fd512edf8a9206b019591e1630151d21db6a99c8df79e7b755f8d1f9d4ff4c20",
+        "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "876ffd28d23bcbe4954e737d53d17166350c51a8c67b805db91284a94e290f19"
+      },
+      "formal": {
+        "status": "NOT_PROVEN_UNSUPPORTED",
+        "exit": 0,
+        "generated_checks": [
+          945
+        ],
+        "command": [
+          "kani",
+          "tools/testing/selftests/sparklink/security/relay_session_kani.rs",
+          "--harness",
+          "capability_requires_peer_and_terminal_complete"
+        ],
+        "log_sha256": "4734d6671f4cebe2047cbab933813e1eb96f07066424087e37728e2f13c656c6",
+        "version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0"
+      },
+      "proof_scope": {
+        "harness": "capability_requires_peer_and_terminal_complete",
+        "queue_depth": 2,
+        "capability_payload_bytes": 10,
+        "capability_exchanges": 1,
+        "capability_terminal_replies": 1,
+        "arbitrary_commit_time_u64": false,
+        "unwind": 12,
+        "property_inventory_by_harness": {
+          "capability_withdraw_deadline_and_submit": [
+            "No callback after prior withdraw/expiry or foreign identity",
+            "Submit failure is nondeterministic; only accepted callback creates obligation",
+            "Withdraw/expiry preserve submitted obligation until matching terminal reply"
+          ],
+          "capability_requires_peer_and_terminal_complete": [
+            "Successful Status alone cannot pay obligation or complete exchange",
+            "Both peer ingress and real Complete required in either order; terminal failure cannot revive"
+          ]
+        },
+        "assumptions": [
+          "Caller serializes exact production methods under Owner lock",
+          "Host/gate identity is current; driver callback atomically accepts or NEVER queues",
+          "Input reply ticket already resolved by Host; peer ingress identity already frozen"
+        ],
+        "excluded": [
+          "Actual locks/references/IRQ/USB callback drain and Host-to-driver mapping",
+          "Wire Complete uniqueness, late/duplicate handle attribution, firmware state clear/reuse barrier",
+          "Unbounded execution, cryptography, authentication, Agent, key install and natural recovery"
+        ]
+      },
+      "regression_status": "PASS"
+    }
+  },
+  "proof_followup": "Both harnesses retain NOT_PROVEN_UNSUPPORTED despite zero failed generated checks. Triage caller_location/foreign-function dependency mapping and verifier support without suppressing warnings or replacing production transitions. Full locks/refs/Host-to-HCD/late wire attribution remain excluded.",
+  "failures_preserved": [
+    "1ee2f4e CI38684957988 failed: existing actual Host fixture omitted EOPNOTSUPP for new Unsupported enum; fixed only in selftests602f26d7, no production change",
+    "First Cargo sandbox UnixStream timeout permission and missing dbus-daemon failures retained; actual pinned daemon rerun passed222",
+    "First Python run rejected stale shared library; fresh library passed38",
+    "ASan/LeakSanitizer ptrace sandbox abort retained; unsandboxed pure-source checks passed",
+    "Prior 1ff/147 original111 missing descriptor/RX dispatch and retired contiguous firmware upload failure remain failures"
+  ],
+  "firmware": {
+    "combined111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "blob_modified": false,
+    "derived_ram_image_used": false,
+    "firmware_execution_attestation": false,
+    "note": "Unmodified original111 service bundle and healthy ports1/4; warm boot/version/transport are not firmware execution attestation. No new claim that every gate freshly uploaded full firmware."
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "differences": [
+      "OHOS packed10-byte request/response and G/T transition audited, not C structure casting",
+      "libws73 offer authReq05 includes binding/MITM; limited unauthenticated probe explicitly clears those bits to00",
+      "No GPL3 implementation copied into GPL2 kernel; no SDK/standard/firmware/raw dump republished"
+    ]
+  },
+  "remaining": [
+    "Agent/method policy and fresh cryptographic material/peer proof, actual role-specific1c03/1c05 installation and0011, encrypted peer application replies and Bond",
+    "Native134/135 peer acceptance is local observation; no protocol/app ACK reliability claim",
+    "Original111147/1ff missing descriptors not fixed; derived table diagnostic remains historical",
+    "Managed revocation/Down/originaldeadline at actual new relay submit boundary and late/duplicate Complete/reuse barrier need controlled VM interleavings",
+    "NOCP accuracy/duplicate/late handling, callback drain, old lifetime/handle reuse and firmware clear barriers remain hardware assumptions",
+    "Dynamic multi-channel/four-device two-group data, SSAP CCC/notification/indication and remaining fullS0-S6",
+    "Port1-2.1.2 original restore unverified; user temporarily cannot operate hardware, no repeated manual request. Natural RCA/nonmanual recovery not qualified"
+  ],
+  "evidence_access": "Public bounded summaries/source mappings/USB record coordinates and hashes. Raw pcaps, guest manifests and private reports not published; unavailable raw materials explicitly not independently reproducible from this report alone. Reproducible public runner requires local original firmware/board configuration and qualified VM.",
+  "reproduction": {
+    "prepare": "tools/ws73_target.py prepare with current qualified kernel build/modules/boot smoke/service bundle",
+    "positive": "tools/ws73_target.py run --prepared PREPARED --output UNIQUE --ports 1-2.1.1 1-2.1.4 --setup-release-verify --managed-connected-case release --managed-channel-grant --managed-security-capabilities --managed-connected-index 0 --timeout 600; repeat index1",
+    "proof": "linux/tools/testing/selftests/sparklink/run_security_relay.py --kani --kani-harness capability_withdraw_deadline_and_submit --output REPORT; select capability_requires_peer_and_terminal_complete separately"
+  },
+  "issue_closure": false,
+  "whole_security_proof": false,
+  "natural_recovery_acceptance": false,
+  "formal_scope_clarification": {
+    "both_harnesses": "G-only fixed controller1/generation2/lifetime3/handle0/epoch4, fresh Session deadline100 abstract ticks, exact10-byte offer; not an arbitrary multi-session/role or fullqueue proof",
+    "withdraw": "arbitraryu64 commit time; boolean prewithdraw/expiry, accepted/neverqueued callback and fixed foreignlifetime4; one matching late Complete at102, no wire attribution proof",
+    "completion": "boolean RX/Complete order and success/status1 failure; fixed times1..9, no arbitrarytime or driver failure claim",
+    "bounds": "queue configured2 but these capability harnesses use one command only; no unbounded liveness or trusted state proof"
+  }
+}

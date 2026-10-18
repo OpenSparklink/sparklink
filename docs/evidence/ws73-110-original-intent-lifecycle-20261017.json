@@ -1,0 +1,2797 @@
+{
+  "schema_version": 1,
+  "status": "THIRTY_TYPED_INTENT110_LIFECYCLE_REAL_GATES_SCOPED_PASS_FIRST_FAILURE_RETAINED",
+  "compiled_kernel": "f887b477f0857aa83454b255ba681a9f7b95473f",
+  "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+  "executed_tools": "e5134791dc3014f3e07c96785d66bbc1a5597383",
+  "scope": [
+    "Exactf887/compiled836/executede513/gueste513,SDK110-us actualRAMbytes alreadycorroborated,U2/3 VM-only. No productionHost/Engine fork;soleRuntime/Session/Grant/credit/Ticket unchanged. E notinthisU23matrix;no0cd hardwarequalificationtransfer.",
+    "30freshcases grade0/1/2 xsource0/1 xrelease/lastmanagementfd/dup/directDown/original5s. Ordinaryuid1000/caps0 duplicateapplicationfd,explicitprivilegedmechanismprelude;predaemon gate,notslkdAgentdeployment/crashproof. Realmechanism1/2 notnamedidentity/Bond/RFcryptographicattestation.",
+    "72actualrandompeer-validatedbusinessreplies beforecontrol,144typedTX/RXobservations,30incompletePBprefixadmissions,108latefreshprepare/cachedoriginalconstraintrefusals (54each),12cachedexpiryrefusals. Original2s/8srealIN81holds,fullpool5,absoluteconstraint andexactphaseerrors maintained. PartialPDU isnot applicationdelivery.",
+    "Eachsourcegetsonecontrollerbudgetandlifetime;originalqueuedintentbytes neverrenewed. Freshprepare ENOTCONN and originalexpiredcachedsubmit ETIMEDOUT arecheckedseparatelywithper-callmono bracketing,notbroaderrnoallowlists. LatephysicalNOCP doesnoteraseolddebt/authorcancelobligations.",
+    "Othercontrollerkeepsoriginalregistration/lease/Ready andactualscancontrol;directDownnecessarilyendsphysicalpeerconnection. This isnot survivingindependentbusinesspair orfourdeviceisolation. Prefixfragmentcounts areactualpercase,notassumedallU snapshots.",
+    "30exactfrozenreplays+892copiedactualevidencenegatives;samecheckerTCB,notphysicalinjection,independentRFdecoder orkernelrefinementproof. Context/scope/time/error/payload/credit/hold/Down mutations allreject. FullOwner/locks/refs/USBdrain/NOCPtruth/reusecombinationUNPROVED.",
+    "Oneearlier110deadlineattemptFAIL lower5.508767234s/upper5.508861382s exceedsunchanged5.5s upper.31attemptsinclude1failureand30freshsuccesses;failedattempt had2precontrolactualRTseparatefrom72qualifiedRT. Originalfailure/rootcauseopen;freshscheduling-observedPASS doesnotexplainorcloseit. OldSDK111firstoracleFAILandinterruptedcorrectedmatrixretainedwithouttransferringqualification.",
+    "0cd4731 fixes separateHCC2swrite-budget auditfinding withtimedcallbacks/pre-I/Oexpiry/overflow. Its1116fixture+sanitizer and8-waybuild areseparate;new0cdphysicalgatesnotcovered bythisf887report. The5.509sSessiondatafailure isnotclaimedcausedorfixed byHCCbootstrapchange."
+  ],
+  "remaining": [
+    "First5.509sdata-deadlinerootcause stillunknown;repeatPASSnotcausalclosure orworst-caseSLA. Needoriginalfailure replay/Sessionserviceandhost/guest schedulingmapping asapplicable,withoutwideningprotocoldeadline.",
+    "Real110slkdAgent/protectedSMTC/SSAP/localAuth/CPCD/Bond,off/rekey/unknown andfullOwner/credit-revoke-lateNOCP-handle-reuse/drainproof remainseparate. No independentbusinesspair/fourmixeddevicesqualification.",
+    "Naturalstartup/re-enumeration/disappearanceRCA/nonmanualautomaticrecovery,ROMfirstmodel/firmwareselection,Sboards,PM/deploy/performance/releaseandfullS0-S6/19WP/10FV/12DG remainOPEN;UserHostP4. Manual/hub/QMP/RAMresetnotnaturalrecovery."
+  ],
+  "bounds": {
+    "real_cases": 30,
+    "peer_round_trips": 72,
+    "business_tx_and_rx_contexts": 144,
+    "late_fresh_prepare_and_cached_submit_refusals": 108,
+    "expired_cached_submit_refusals": 12,
+    "prefix_admissions": 30,
+    "security_installations": 40,
+    "copied_negatives": 892,
+    "exact_replays": 30,
+    "original_110_attempts": 31,
+    "original_110_failed_attempts": 1,
+    "partial_PDU_application_round_trips": 0
+  },
+  "deadline_success_observations": [
+    {
+      "name": "sec0-deadline0",
+      "lower_ns": 5435542234,
+      "upper_ns": 5435631362
+    },
+    {
+      "name": "sec0-deadline1",
+      "lower_ns": 5374707587,
+      "upper_ns": 5374855897
+    },
+    {
+      "name": "sec1-deadline0",
+      "lower_ns": 5265222156,
+      "upper_ns": 5265326993
+    },
+    {
+      "name": "sec1-deadline1",
+      "lower_ns": 5182698350,
+      "upper_ns": 5182843424
+    },
+    {
+      "name": "sec2-deadline0",
+      "lower_ns": 5104916512,
+      "upper_ns": 5105008496
+    },
+    {
+      "name": "sec2-deadline1",
+      "lower_ns": 5088730596,
+      "upper_ns": 5088849139
+    }
+  ],
+  "actual_prefix_observations": [
+    {
+      "name": "sec0-deadline0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-deadline1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-release0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-release1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-close0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-close1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-dup0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-dup1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-down0",
+      "fragments": 4,
+      "bytes": 1016,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec0-down1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-deadline0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-deadline1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-release0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-release1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-close0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-close1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-dup0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-dup1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-down0",
+      "fragments": 6,
+      "bytes": 1524,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec1-down1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-deadline0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-deadline1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-release0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-release1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-close0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-close1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-dup0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-dup1",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-down0",
+      "fragments": 5,
+      "bytes": 1270,
+      "application_round_trips": 0
+    },
+    {
+      "name": "sec2-down1",
+      "fragments": 6,
+      "bytes": 1524,
+      "application_round_trips": 0
+    }
+  ],
+  "original_failed_attempt": {
+    "compiled_kernel": "f887b477f0857aa83454b255ba681a9f7b95473f",
+    "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+    "executed_tools": "e5134791dc3014f3e07c96785d66bbc1a5597383",
+    "status": "FAIL",
+    "lower_ns": 5508767234,
+    "upper_ns": 5508861382,
+    "original_upper_ns": 5500000000,
+    "peer_round_trips_before_failed_deadline": 2,
+    "root_cause_closed": false
+  },
+  "real_result": "PASS",
+  "failure_result": "FAIL",
+  "full_goal_result": "UNPROVED",
+  "real_gates": [
+    {
+      "name": "sec0-deadline0",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-deadline0-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 2,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-deadline1",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-deadline1-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 2,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-release0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-release0-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-release1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-release1-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-close0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-close0-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-close1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-close1-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-dup0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-dup0-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 4,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 8,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-dup1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-dup1-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 4,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 8,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-down0",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-down0-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 2,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec0-down1",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec0-down1-v2/manifest.json",
+      "security_requirement": 0,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 2,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-deadline0",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-deadline0-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 2,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-deadline1",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-deadline1-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 2,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-release0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-release0-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-release1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-release1-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-close0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-close0-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-close1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-close1-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-dup0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-dup0-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 4,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 8,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-dup1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-dup1-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 4,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 8,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-down0",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-down0-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 2,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec1-down1",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec1-down1-v2/manifest.json",
+      "security_requirement": 1,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 2,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-deadline0",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-deadline0-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 2,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-deadline1",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-deadline1-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 2,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-release0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-release0-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-release1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-release1-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-close0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-close0-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-close1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-close1-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-dup0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-dup0-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 4,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 8,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-dup1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-dup1-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 4,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 8,
+        "prefix_admission": true,
+        "late_refusals": 4,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-down0",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-down0-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 2,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    },
+    {
+      "name": "sec2-down1",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "manifest": ".dev/intent110-lifecycle-sec2-down1-v2/manifest.json",
+      "security_requirement": 2,
+      "peer_round_trips": 2,
+      "typed": {
+        "status": "ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED",
+        "business_sends": 4,
+        "prefix_admission": true,
+        "late_refusals": 2,
+        "expired_intent_refusals": 0,
+        "scope": "Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof"
+      }
+    }
+  ],
+  "failure_gates": [
+    {
+      "name": "first110-original-deadline5509ms",
+      "status": "FAIL",
+      "result": "FAIL",
+      "manifest": ".dev/intent110-lifecycle-sec0-deadline0-v1/manifest.json"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "First5.509sdata-deadlinerootcause stillunknown;repeatPASSnotcausalclosure orworst-caseSLA. Needoriginalfailure replay/Sessionserviceandhost/guest schedulingmapping asapplicable,withoutwideningprotocoldeadline.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "Real110slkdAgent/protectedSMTC/SSAP/localAuth/CPCD/Bond,off/rekey/unknown andfullOwner/credit-revoke-lateNOCP-handle-reuse/drainproof remainseparate. No independentbusinesspair/fourmixeddevicesqualification.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "Naturalstartup/re-enumeration/disappearanceRCA/nonmanualautomaticrecovery,ROMfirstmodel/firmwareselection,Sboards,PM/deploy/performance/releaseandfullS0-S6/19WP/10FV/12DG remainOPEN;UserHostP4. Manual/hub/QMP/RAMresetnotnaturalrecovery.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v2/manifest.json",
+      "sha256": "51b6cd246f34d9e706f36d536bd0ae38efdb9d944d0dd87d43dd3c05ee0e59bc",
+      "bytes": 64696,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v2/console.log",
+      "sha256": "7e563f0501163a28446add2cf1c69085d6c790f6b15fdd5c53c094b0ec80febe",
+      "bytes": 13913,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v2/qemu-stderr.log",
+      "sha256": "098549001ef11a18663498274607f07975ba05dec0cd9fc3ddae2b40d66f3afc",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v2/guest-output/connected-file/run.json",
+      "sha256": "dd56548de24c656df9789e7e9113146733b97c90a20b6a867716f940eca1d9fe",
+      "bytes": 48019,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v2/guest-output/ws73.pcap",
+      "sha256": "41b8d88c60afc02973b28b6388ef0cef051930c2eedabf879e534586574a28b1",
+      "bytes": 84149,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v2/guest-output/capture-stats.txt",
+      "sha256": "78d33580d9988bd32a34eacdd9d97336029d9d5b5eaa121e04b51db268f4b371",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v2/guest-output/kernel.log",
+      "sha256": "d522c77fe94a737175a578c9564b0abd0089eafd38c23eb6b2bec1bdec310592",
+      "bytes": 348196,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-replay-v2.json",
+      "sha256": "97983cda1367a044c39cbeb9662e676f307b94a2c39fa2c27bd51210081c3d63",
+      "bytes": 17921,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-deadline0-v2.json",
+      "sha256": "4787257fa02a615c542d7a6b4eb2ed6efc33158cf5d84f2e5f0de4d3f6910d83",
+      "bytes": 5792,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline1-v2/manifest.json",
+      "sha256": "3288164cd63ecfbc83cc9ef8b5f50a79d085fb8275d855a91901a02afb1253da",
+      "bytes": 64697,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline1-v2/console.log",
+      "sha256": "50352c832e83617980047ab73d1c4d647d73f99a0678a5060084b6fec262b466",
+      "bytes": 13913,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline1-v2/qemu-stderr.log",
+      "sha256": "47918686d88ef5f1e6b26ce63107de0bf3fa3881cb3221fb3819c59df7365377",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline1-v2/guest-output/connected-file/run.json",
+      "sha256": "59f1f13427efdb62d78f46609dcbb6c26f2256d6f262769c7cb2baa7e2e58dd7",
+      "bytes": 48020,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline1-v2/guest-output/ws73.pcap",
+      "sha256": "5d622c14088381c0147127fbb1428caa688ddbdffaea22d27ceda114bae26565",
+      "bytes": 84149,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline1-v2/guest-output/capture-stats.txt",
+      "sha256": "78d33580d9988bd32a34eacdd9d97336029d9d5b5eaa121e04b51db268f4b371",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline1-v2/guest-output/kernel.log",
+      "sha256": "1680908ca7485522256e4180ed5da40eaa9f7ca38f83886fbf930fb45b6cbe71",
+      "bytes": 347393,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline1-replay-v2.json",
+      "sha256": "efa78763976a47575c29583a7eeb29b33e54a0b090e978c7705f0428ba066a8f",
+      "bytes": 17921,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-deadline1-v2.json",
+      "sha256": "8c53c660309ad8f1a675791f67f9f9430732c1c08b06f541bd5ef0d05215ee7a",
+      "bytes": 5792,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release0-v2/manifest.json",
+      "sha256": "d82bd367bd182a8759c2898511eaf21f717f2f29c843206c519d360073a6c609",
+      "bytes": 93945,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release0-v2/console.log",
+      "sha256": "6a6c64d3b6bf4e107879b61c259af0a82812c1423a4bee93577eb03690132113",
+      "bytes": 13889,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release0-v2/qemu-stderr.log",
+      "sha256": "5ae860418856bf3a7ff8b789f5602f9e25664ca142c07cc945734d4fa37ce122",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release0-v2/guest-output/connected-file/run.json",
+      "sha256": "be2505e81bc25a35769c384da33c4e9e9eaf661df965a3f3cf6945fe70bdd665",
+      "bytes": 41659,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release0-v2/guest-output/ws73.pcap",
+      "sha256": "07419cb97366f104a4f6f4d3a14a87846c77e15fa470482c192ea0a0b4890a1d",
+      "bytes": 84149,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release0-v2/guest-output/capture-stats.txt",
+      "sha256": "78d33580d9988bd32a34eacdd9d97336029d9d5b5eaa121e04b51db268f4b371",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release0-v2/guest-output/kernel.log",
+      "sha256": "6cbf8029157ec073c9ae506aa1ae0e23bfcccabdbea77ab0dac94686f0a36d42",
+      "bytes": 348015,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release0-replay-v2.json",
+      "sha256": "eb04e09d37426f3cf8658f17b44b865b0781f9c44a982dec86f9b04dbacf9ba5",
+      "bytes": 49333,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-release0-v2.json",
+      "sha256": "8a6cd1a03c3cbd7cb0ca825e0e814e104b5af24d129292d044f68fd2fd0693cd",
+      "bytes": 5340,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release1-v2/manifest.json",
+      "sha256": "929fd7c9a75229009e3d661d561b781e104d63f70a9c7d4683ec524e4e67a2e3",
+      "bytes": 93946,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release1-v2/console.log",
+      "sha256": "62038329308c57ffc37438c1f650c68c0639e3f8cb0fea20210490fc1dbc9907",
+      "bytes": 14079,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release1-v2/qemu-stderr.log",
+      "sha256": "db8a9b15922b260eb6677862069c8c3fe55d8c0710500e698f049e487245c06c",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release1-v2/guest-output/connected-file/run.json",
+      "sha256": "93d564d4ecc1bbaa313514708c4eefdd6b3778614f84b8250636eb21fbb042a0",
+      "bytes": 41659,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release1-v2/guest-output/ws73.pcap",
+      "sha256": "1dbcbd0cb135648dae77d6f04714b0b899c791ca5c709766c848df9a3d31e80e",
+      "bytes": 84149,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release1-v2/guest-output/capture-stats.txt",
+      "sha256": "78d33580d9988bd32a34eacdd9d97336029d9d5b5eaa121e04b51db268f4b371",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release1-v2/guest-output/kernel.log",
+      "sha256": "039a2c5d546c513a8bdc014cfad0f30217ace8ce833efd9a30925f1e5f95f45c",
+      "bytes": 347850,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-release1-replay-v2.json",
+      "sha256": "a0399de8ad3c4d66b83d0fbc5ade04a6a2cc560a2478a58e52b6087add2a5827",
+      "bytes": 49333,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-release1-v2.json",
+      "sha256": "0871c16700c3fc9ca5ca525431a0b7455d95ae14d1692c569583ccec76f2ac05",
+      "bytes": 5340,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close0-v2/manifest.json",
+      "sha256": "06bb74be24babd97f103659b4432a2f3d35eaecae6311621b68219e1b0c0cb23",
+      "bytes": 93875,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close0-v2/console.log",
+      "sha256": "be86589a950a64d9c4ba09b9def0e3a3501ef25084c374e49dc45508bcba0972",
+      "bytes": 14077,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close0-v2/qemu-stderr.log",
+      "sha256": "a6421e405f6b32919e221b748f1a93949f8d13339dbbc1698632aa6a9877604e",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close0-v2/guest-output/connected-file/run.json",
+      "sha256": "d812bd3d367bee7f5c7c3b56a35d818c39709fab5e8e28945aeebb742c65c0ca",
+      "bytes": 41558,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close0-v2/guest-output/ws73.pcap",
+      "sha256": "99a9233d4310ef7b28a4a6bad1a6edbf93e547955b86ba1d72c11ad46c6fd38c",
+      "bytes": 84149,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close0-v2/guest-output/capture-stats.txt",
+      "sha256": "78d33580d9988bd32a34eacdd9d97336029d9d5b5eaa121e04b51db268f4b371",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close0-v2/guest-output/kernel.log",
+      "sha256": "7d5407485abae10a2bad561fb4b33b41f4ca3cbfd157f2998408beefc9335dfd",
+      "bytes": 347073,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close0-replay-v2.json",
+      "sha256": "d10eb02021d76b4ab6b43383dbe14ba7dd4ee2733c463e3fd3291cb74cf7f496",
+      "bytes": 49329,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-close0-v2.json",
+      "sha256": "b275a2256796bea1c14eb584901d744b5f91fde1578f7b4f9229146c738a70c5",
+      "bytes": 5290,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close1-v2/manifest.json",
+      "sha256": "e1b6779718a2214a969c2a10805c1ea28e8edadc779ffa4976fe782b55a118eb",
+      "bytes": 93876,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close1-v2/console.log",
+      "sha256": "5c3cbc749b017363ab8a0bde4c69708fba28c35ebbff94b0e3c95613bd69e478",
+      "bytes": 13887,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close1-v2/qemu-stderr.log",
+      "sha256": "b278a2456eff1d57735c1728a24b6ab120c93bb96569c75b715ec84b324988b1",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close1-v2/guest-output/connected-file/run.json",
+      "sha256": "e87502dd5767a68ed147e62862c6fe10511ad6c57782ed79805788d21bab31e8",
+      "bytes": 41558,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close1-v2/guest-output/ws73.pcap",
+      "sha256": "1e27226731870ee442cc3161dd54684e3b12c051360c45e340962ae2166cd7d5",
+      "bytes": 84149,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close1-v2/guest-output/capture-stats.txt",
+      "sha256": "78d33580d9988bd32a34eacdd9d97336029d9d5b5eaa121e04b51db268f4b371",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close1-v2/guest-output/kernel.log",
+      "sha256": "5bd7d607f13ab2039515a882f64315506eca0f8c94e8a05416e96b5d30c669b2",
+      "bytes": 348145,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-close1-replay-v2.json",
+      "sha256": "c0f4c960b76aba015d2d89c27ace2b54c16c6cc9e848d01a09c9fafa22c8d186",
+      "bytes": 49329,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-close1-v2.json",
+      "sha256": "f903f731dedbd27d8b04c8e9807e7da0050b1052982285b3e54f8df08f9e8fee",
+      "bytes": 5290,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup0-v2/manifest.json",
+      "sha256": "135e9cc9bd266c6fef381a80e8d02d6faf65cb8ca76a2128054bc7068fe00512",
+      "bytes": 109445,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup0-v2/console.log",
+      "sha256": "f0a995f18e4f33fa4879de1a947428f1e67028d381ab5280d419536bcbea3aeb",
+      "bytes": 13885,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup0-v2/qemu-stderr.log",
+      "sha256": "076db41579a754272c1f94fd55e2d173ed681dfe6c44f9dc49d3a76e93b55203",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup0-v2/guest-output/connected-file/run.json",
+      "sha256": "ad30b268dcfe1bbc0132ec1d505aefbee52a8a1510654a1d6acab84805ceeffa",
+      "bytes": 46326,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup0-v2/guest-output/ws73.pcap",
+      "sha256": "f868280c78c65526e496389b1788d9e4f485069896afe938b9db4f7fc06a46c0",
+      "bytes": 90753,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup0-v2/guest-output/capture-stats.txt",
+      "sha256": "30f6ebfc46fef34eed1d35a4ea0218f6050625f094afe8c570ac40d329764133",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup0-v2/guest-output/kernel.log",
+      "sha256": "dca57d1ebb57a4c8c83792902cb24c1c0b43d5fedbfb507421ce40e6f08c70c4",
+      "bytes": 347471,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup0-replay-v2.json",
+      "sha256": "4fecff6b458a3a2c107e8428f11ce04b21758df2a73e0c3f0ca5d31a215c2a3c",
+      "bytes": 65814,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-dup0-v2.json",
+      "sha256": "cad2522632979f2b1bd11c64ca0dffe388125a1d1671023e5192333255673836",
+      "bytes": 5240,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup1-v2/manifest.json",
+      "sha256": "c437bf96649e054d55b46bc6fbc478154dd101b02469417b074d83c472f82d9e",
+      "bytes": 109446,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup1-v2/console.log",
+      "sha256": "95e89fd095590a0ce4447bbb1335ca1d3e4436bd5889d821062eea27b4ce094b",
+      "bytes": 14075,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup1-v2/qemu-stderr.log",
+      "sha256": "85047ba25de1efac67a935826eb18e876b19cd06e24b4490d5cfa572e52d411a",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup1-v2/guest-output/connected-file/run.json",
+      "sha256": "56e1697c891ef85e8a9d78f4ce501e2dadae794811f683c1257a77d0988c4f46",
+      "bytes": 46327,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup1-v2/guest-output/ws73.pcap",
+      "sha256": "795aab354615dae4b0f9ca4013dbd92ef2f2b40e7543cf993e83cb6a85a9bf36",
+      "bytes": 90753,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup1-v2/guest-output/capture-stats.txt",
+      "sha256": "30f6ebfc46fef34eed1d35a4ea0218f6050625f094afe8c570ac40d329764133",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup1-v2/guest-output/kernel.log",
+      "sha256": "f57c668148b5cbb223b21115bf212f43e153225c771dff3b92ea8d2af641ecb4",
+      "bytes": 347202,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-dup1-replay-v2.json",
+      "sha256": "b1301b2e0a844a5c9313cf16b0240b4275cb69aa71399ca3b918d94618f1f69a",
+      "bytes": 65814,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-dup1-v2.json",
+      "sha256": "35a9f87ce1db9bf2a73225d333718506b2ebd1406dca99e63d55f0553e56e5c3",
+      "bytes": 5240,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down0-v2/manifest.json",
+      "sha256": "e6a73350651e9f6cfadd97ec16b6b92ca2795b9bb9fa8143b3e2173e7b4ec88f",
+      "bytes": 65830,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down0-v2/console.log",
+      "sha256": "0498bbcd1794e7e8e1344e956421c188e6a91f85dfff00f0558f0aa5bb9a8b73",
+      "bytes": 13914,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down0-v2/qemu-stderr.log",
+      "sha256": "276410893ac8483829d28afe5aa30ee583cbcbbc2e03e189431e372c8f661f8f",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down0-v2/guest-output/connected-file/run.json",
+      "sha256": "2d7f776e8b0d48e98eb6ff631362a8981ac7cb421b376bd00c6a4c2cc6c19269",
+      "bytes": 47920,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down0-v2/guest-output/ws73.pcap",
+      "sha256": "10913409a72e796fd3359f8a1c0b67e5401194d7a9c5f6872e439b55f1124203",
+      "bytes": 76408,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down0-v2/guest-output/capture-stats.txt",
+      "sha256": "53b69c0e6f4db2bee640c1f8c2e18720c98863642b66490b286ab31370c076f2",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down0-v2/guest-output/kernel.log",
+      "sha256": "e6d212245eabe8e8d5cbd5aaad38d6073037b04e4f1326a041f16796fa248d9b",
+      "bytes": 345385,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down0-replay-v2.json",
+      "sha256": "dac385bb6e8c0ae5c31297d335755d872ab7256dae319820353b5321177a5f6b",
+      "bytes": 19269,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-down0-v2.json",
+      "sha256": "e42085403337c67f963e6381c98e96e87a0f666bb6156cb527bf556af5938a1d",
+      "bytes": 5244,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down1-v2/manifest.json",
+      "sha256": "699b8bbe8af3f41417c1fd84238fd87b12f22227779df9c25ec891a577a39c2b",
+      "bytes": 66114,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down1-v2/console.log",
+      "sha256": "010007408abb44c9dc1c0b53c1194223f5d849de7cbec77447881e2c4cbc935a",
+      "bytes": 13914,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down1-v2/qemu-stderr.log",
+      "sha256": "24e751ae45e8a7c2c58e194e3c353b97b6b6d2ef9bfd5b0d5ad7270b88769cc9",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down1-v2/guest-output/connected-file/run.json",
+      "sha256": "cec6bdbba0525fa51a0cf8468f105da038617694ed46eab06cb99879db223c66",
+      "bytes": 47920,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down1-v2/guest-output/ws73.pcap",
+      "sha256": "67af504b68dfe2bccd6abd2f9438d9fb047dd5ad3a520eba35e98e0cbb6a4202",
+      "bytes": 77233,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down1-v2/guest-output/capture-stats.txt",
+      "sha256": "5c5eaaa0077f85d010b9ae2428bd3ba85281962811f3e20108bcf4e898ed3492",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down1-v2/guest-output/kernel.log",
+      "sha256": "3e3cdf8b847307c29b51333b51c95fe91631443408eadc95f624895f027d2b76",
+      "bytes": 348333,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-down1-replay-v2.json",
+      "sha256": "028127a999d257b5042b90d1879fbbdfca6bc7472170ff24616aea0bc924ba07",
+      "bytes": 19269,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec0-down1-v2.json",
+      "sha256": "504dbda88ccce49cc63751f525b97a5602acc482f9400420847be0a3a6e21a79",
+      "bytes": 5244,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline0-v2/manifest.json",
+      "sha256": "02e5826b0192bb2193d74df27d12a388bd238075d1ac0274c207e11f4796b3e8",
+      "bytes": 86227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline0-v2/console.log",
+      "sha256": "7ae5a67816b27fa186761c3558ab6d000320ac98f1496465ebc6588405d1c791",
+      "bytes": 14127,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline0-v2/qemu-stderr.log",
+      "sha256": "a472051b64655e04f2b3ea078f38c0278bce63141d798d421ac02c86301b7cfe",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline0-v2/guest-output/connected-file/run.json",
+      "sha256": "590de28f6ec68924cec7f1afe45406e365075fb938593623417eec0b84f043f7",
+      "bytes": 58827,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline0-v2/guest-output/ws73.pcap",
+      "sha256": "ed32010da9ef518c2898bba5997387caf528341a2a0348034464cc36f0bab117",
+      "bytes": 96815,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline0-v2/guest-output/capture-stats.txt",
+      "sha256": "3ef80f72f3bbb4a90583b99e6a35c134bf30cb31385124dd478f33201a64348f",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline0-v2/guest-output/kernel.log",
+      "sha256": "1acf4891df9de5c118d57c065a0da8e6a42fa6147cbfb0a16b7e5ff584c079eb",
+      "bytes": 347890,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline0-replay-v2.json",
+      "sha256": "a471cc1d2954cca9a068577f64c441e5304858273639aec11e7202d9068b2fe3",
+      "bytes": 38984,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-deadline0-v2.json",
+      "sha256": "b42fcf3eb25f5bfc338d5b2019c2a1bba4e92ae96547faf02eba885808370a8e",
+      "bytes": 7511,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline1-v2/manifest.json",
+      "sha256": "0e85fabd61a8990160892a48839b327bf3481afdda9eaee4a44f4d667b4d1d38",
+      "bytes": 86228,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline1-v2/console.log",
+      "sha256": "bcc01bf90d3adbb1cf957a18dacb194384ace6c17179cd650816047bdcd5c4bf",
+      "bytes": 13937,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline1-v2/qemu-stderr.log",
+      "sha256": "797aba815def93c8f71f2e73d82b325409b58290af623a2e630680811be4deed",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline1-v2/guest-output/connected-file/run.json",
+      "sha256": "166f64c5c1906d02aca8382835d159f945cdc8e58e64370bcfc0e87542bc0ce1",
+      "bytes": 58829,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline1-v2/guest-output/ws73.pcap",
+      "sha256": "970bce3899c8956f2fb090961eb1bdbc8782c343247904ff30158033cb161d20",
+      "bytes": 96815,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline1-v2/guest-output/capture-stats.txt",
+      "sha256": "3ef80f72f3bbb4a90583b99e6a35c134bf30cb31385124dd478f33201a64348f",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline1-v2/guest-output/kernel.log",
+      "sha256": "86a4142b42a4b72bbbe6edbaa2855247535a0d665f79c1ec856c2208b5632976",
+      "bytes": 347977,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-deadline1-replay-v2.json",
+      "sha256": "cb0fc00fc911722656a021941a6c1fc0e73e37677bcc60c6bc50056c4ca89ae2",
+      "bytes": 38984,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-deadline1-v2.json",
+      "sha256": "613331b400bd5b083ff9ce4c8d02e8ae0bf60b5435aa85d703cae4a3514a2496",
+      "bytes": 7511,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release0-v2/manifest.json",
+      "sha256": "671dbcf658fcbf6f4592a0c3e13cd70df21b961681e4a963afb0dab7b4de54ad",
+      "bytes": 115476,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release0-v2/console.log",
+      "sha256": "267de23b491dcf76d3f97aa14b5914ead86dd00748004e69951203780cc39377",
+      "bytes": 14147,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release0-v2/qemu-stderr.log",
+      "sha256": "b58a1fa0e6d04e2e22bec57581a85345e0dbf0a9b9dd42b0904319bc9938a4e0",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release0-v2/guest-output/connected-file/run.json",
+      "sha256": "da4d8e62be01085f35751e273ce4aa741db7e6c79b04597035cc089f5d33d410",
+      "bytes": 52467,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release0-v2/guest-output/ws73.pcap",
+      "sha256": "5832859c7e505ee22100f7b028d04b7474faca609c89b7a53d3bc23e385e3423",
+      "bytes": 96815,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release0-v2/guest-output/capture-stats.txt",
+      "sha256": "3ef80f72f3bbb4a90583b99e6a35c134bf30cb31385124dd478f33201a64348f",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release0-v2/guest-output/kernel.log",
+      "sha256": "f25a96811403ed354f4734142175fc560bc10c94801efd919e9b2f1f9e1297f0",
+      "bytes": 348374,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release0-replay-v2.json",
+      "sha256": "91f83caef3cb777943a2855026c2e8b7b76f1cd25e2d21a8b6aec77c4ea7e6df",
+      "bytes": 70397,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-release0-v2.json",
+      "sha256": "0bec487b654624e05ebf51780a9ae064eb65fef387b6b0b2750aaeac101c48b4",
+      "bytes": 7046,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release1-v2/manifest.json",
+      "sha256": "cd5222eac7f2fb37c2ff77b429a88d5a1623c53c46b7e53dd31852919314be94",
+      "bytes": 115477,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release1-v2/console.log",
+      "sha256": "45a9194f37a426f6db50ff06ddae0aec0401a6b90e99375cfd5c4c4e67165753",
+      "bytes": 13723,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release1-v2/qemu-stderr.log",
+      "sha256": "10003bd84d2faecf6ede139a4f8866c469cfc68c21ea7d9dd9bce21f13bec0de",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release1-v2/guest-output/connected-file/run.json",
+      "sha256": "e223f617c73de2e66c957ebbe9e07ff56d1e96fbdde3cde38ea3ea874fbe1cd1",
+      "bytes": 52467,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release1-v2/guest-output/ws73.pcap",
+      "sha256": "190c9c80f7aa6311794151919198559111d7b3a00009a9c814880363cc22a731",
+      "bytes": 96815,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release1-v2/guest-output/capture-stats.txt",
+      "sha256": "3ef80f72f3bbb4a90583b99e6a35c134bf30cb31385124dd478f33201a64348f",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release1-v2/guest-output/kernel.log",
+      "sha256": "a3266a74f21286b80135df78d36bc292e0cc2016e9dba9e755559401f21d70c2",
+      "bytes": 347795,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-release1-replay-v2.json",
+      "sha256": "8dcbc9157c4711bed87534133e9940775356faaaf786aa10f680e3486e7f5f42",
+      "bytes": 70397,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-release1-v2.json",
+      "sha256": "fb3000bb13f912464f6832641189353905ed5524a065d9248bbed58dd484d3ef",
+      "bytes": 7046,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close0-v2/manifest.json",
+      "sha256": "94f935f32b31775b146d7f3041465de3b9ec47b064c7b20d0c58e4e3364d3546",
+      "bytes": 115406,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close0-v2/console.log",
+      "sha256": "0e178629730b9acbba0dc65827f3979ad3d1cce15e8654f7794c1b8b6063eebc",
+      "bytes": 14101,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close0-v2/qemu-stderr.log",
+      "sha256": "9e4b1b86d004144cf75289cdabf88d1921ff61434f54d921f3e35c900a442e2f",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close0-v2/guest-output/connected-file/run.json",
+      "sha256": "4186dd99d18977c6a17e100b04e9462eb6753c33eff795a45d004d435e2eabcd",
+      "bytes": 52367,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close0-v2/guest-output/ws73.pcap",
+      "sha256": "e1db53016e531bcd6b794ffbc583350bea6b51d9cc6fdc757054b48b47a68ae8",
+      "bytes": 96815,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close0-v2/guest-output/capture-stats.txt",
+      "sha256": "3ef80f72f3bbb4a90583b99e6a35c134bf30cb31385124dd478f33201a64348f",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close0-v2/guest-output/kernel.log",
+      "sha256": "1b5d7452eb7c395f83faa17554787da6c68f8eb32876e1ab004dee7e4568a697",
+      "bytes": 347917,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close0-replay-v2.json",
+      "sha256": "9f3ae5c1d2a317e70d2272b0a245ba3750400fe51dd068c47aa0d0a8a42031df",
+      "bytes": 70393,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-close0-v2.json",
+      "sha256": "61906897d32a104824d72f0c5c9f7e973e5c468f92d21ef6ef5a93e330f189be",
+      "bytes": 6980,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close1-v2/manifest.json",
+      "sha256": "c8aaa994c5e8c0f4256c15ca752bbea731d55060f384855ca3d2a3ac79dd958a",
+      "bytes": 115407,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close1-v2/console.log",
+      "sha256": "c7d6db84da3674653c1a19782a468057394970dba4799ddc2101ce300fee0b6b",
+      "bytes": 13911,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close1-v2/qemu-stderr.log",
+      "sha256": "1054aaf51d950f3fdb344be362a23a6477af87c17f74883ccb0e18159c5522aa",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close1-v2/guest-output/connected-file/run.json",
+      "sha256": "4e1f1a79612b83a4407af540b79a5bc1c4ea51defbdd798fe1498dc70a5e8403",
+      "bytes": 52367,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close1-v2/guest-output/ws73.pcap",
+      "sha256": "07ad1f4c3f4ce1cb4a5cfc3cdb213507908e68b63432569250a8d44931825df9",
+      "bytes": 96815,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close1-v2/guest-output/capture-stats.txt",
+      "sha256": "3ef80f72f3bbb4a90583b99e6a35c134bf30cb31385124dd478f33201a64348f",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close1-v2/guest-output/kernel.log",
+      "sha256": "6d752aff7fdda554bfd2374ee694598ab534eb42867c60310f2d746bce9bd2fd",
+      "bytes": 348472,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-close1-replay-v2.json",
+      "sha256": "44cee989e267efb7902b3ae388929864013f76d8307bfdbdfaea629cc0b234d6",
+      "bytes": 70393,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-close1-v2.json",
+      "sha256": "d7f65c2d1467782051bfa33415ed05300caece6d1d0152c4777b48dfd7441985",
+      "bytes": 6980,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup0-v2/manifest.json",
+      "sha256": "12239bfec6b4e71801f985b6513f507ab97a1c572e05ebe2038f72d02ac24fe8",
+      "bytes": 130990,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup0-v2/console.log",
+      "sha256": "5c9f0867431d04bc914cae3b487f79adf01cddfd5b1942d8dc281f7f0251584e",
+      "bytes": 13909,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup0-v2/qemu-stderr.log",
+      "sha256": "53c832daa97dc38f0f1a37178bf737f694d2f75dab5e6be9463662761db71608",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup0-v2/guest-output/connected-file/run.json",
+      "sha256": "0e2d742e3051c809500ce96d31148be3b23190a6466db304a1eff4374b8ef451",
+      "bytes": 57134,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup0-v2/guest-output/ws73.pcap",
+      "sha256": "6f2a6bbdfc395db13e903af9d401846baa2761d08adedc438c2b1e83043e475c",
+      "bytes": 103419,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup0-v2/guest-output/capture-stats.txt",
+      "sha256": "042de76bdc4e5516f3d211152ce95640e44dc1ed372b564a2f0bdd927ad998ad",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup0-v2/guest-output/kernel.log",
+      "sha256": "e18db2591ec97e293c59add76617b604e25788a0ef871a16f487702d21e40fda",
+      "bytes": 348412,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup0-replay-v2.json",
+      "sha256": "bb9831ae39b68eac2d4f031c4823fc808be94afd74400f84a5be0d42cc7ab410",
+      "bytes": 86892,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-dup0-v2.json",
+      "sha256": "563d6c89e5c100ec48d638c38e9a871d0b3e50bae23a7bef8c58a93b5389864f",
+      "bytes": 6914,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup1-v2/manifest.json",
+      "sha256": "e05a84d326154c1a8c4ae294d5cadd8b54b3d6a2142ed0c9d05778c52b9e63cf",
+      "bytes": 130991,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup1-v2/console.log",
+      "sha256": "1c2914c1892dfe6574d126430dcd74072501c25d64155e9fc702d466eea1995f",
+      "bytes": 13909,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup1-v2/qemu-stderr.log",
+      "sha256": "115f1c9f9c4890f51af7747d4e8b05ad441cc187bde4f657f9cf36aad45ba9f2",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup1-v2/guest-output/connected-file/run.json",
+      "sha256": "b0557db72ce618c57ae798e2fdc2475c0d8ee6033d68b2237a2107fff2eb2b64",
+      "bytes": 57134,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup1-v2/guest-output/ws73.pcap",
+      "sha256": "f33ac466511053674e2058941d3f0a80ebca1b695802b618ae872d5ffeb16786",
+      "bytes": 103419,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup1-v2/guest-output/capture-stats.txt",
+      "sha256": "042de76bdc4e5516f3d211152ce95640e44dc1ed372b564a2f0bdd927ad998ad",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup1-v2/guest-output/kernel.log",
+      "sha256": "562edfe1daf77137a013a7a71e4de2f6fb28b69c1bea5e57649b6f8eaac18461",
+      "bytes": 347378,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-dup1-replay-v2.json",
+      "sha256": "a20c2e6eb37f0bbddac3c86c0629776aba99b305f4e1b6c946fdb15469b9f486",
+      "bytes": 86892,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-dup1-v2.json",
+      "sha256": "5733769c78aac162e31fc929037ba7d2c4bf26981cb4bb03f4b038fabc58acd0",
+      "bytes": 6914,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down0-v2/manifest.json",
+      "sha256": "d61bc288dec8e3eb5f7007019d598fb1d6694b7fb8f7176f9f61abc1c9093a9f",
+      "bytes": 87361,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down0-v2/console.log",
+      "sha256": "58d3286b4020af1d3754444e021e28d3506b2e427bdbbc192472a2e5bdadb18a",
+      "bytes": 13938,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down0-v2/qemu-stderr.log",
+      "sha256": "01456b427443e4c993751defa27402e0c392597918dd440f2dc1b33fcd7597b0",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down0-v2/guest-output/connected-file/run.json",
+      "sha256": "90c64ceaeb328905ea62cfd389c3477f672181a0561dcfff43948163eaf41472",
+      "bytes": 58730,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down0-v2/guest-output/ws73.pcap",
+      "sha256": "e1a924c7d54403b2c6143cf68c8250e1d72f780fe0fea95706ee12f6d5c5a307",
+      "bytes": 89372,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down0-v2/guest-output/capture-stats.txt",
+      "sha256": "98d077160ace06c6d90f263f773d196e382978c9cad225a43971f3d2ce7aa55b",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down0-v2/guest-output/kernel.log",
+      "sha256": "2b228772cfc4fc14dbb1c3c651d62ed6f0ce64767de104173e71d6eb64e8c023",
+      "bytes": 347351,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down0-replay-v2.json",
+      "sha256": "0419cdb968ed74a42503d4bfc411cb8677d64feab12d7aecdaab896174b0f4e7",
+      "bytes": 40332,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-down0-v2.json",
+      "sha256": "ac21125c18b59954652f1246d84519279a27d43d7fdcad260050d80e621b2d90",
+      "bytes": 6935,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down1-v2/manifest.json",
+      "sha256": "c4076bf0906744dab28eb98abcb5cffe8d6b049ad9655735aca2aa00cf4b8a9e",
+      "bytes": 87362,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down1-v2/console.log",
+      "sha256": "9aca5be43f44953700958f5527126c0401cc4f33eab519ea82dc910e43eea303",
+      "bytes": 13938,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down1-v2/qemu-stderr.log",
+      "sha256": "81cca228086c1aa47c568232c27cb2eadc19eb7fb8873e4a91ca972d87b07a5a",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down1-v2/guest-output/connected-file/run.json",
+      "sha256": "5366ba465a224cf85221ca7651e42676f46748cdf9f68c88a2d0f0fd7a212e1f",
+      "bytes": 58728,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down1-v2/guest-output/ws73.pcap",
+      "sha256": "70f641092407a13cbd196d9f43cf37ad07be5279482766752b625cdcce7b2750",
+      "bytes": 88547,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down1-v2/guest-output/capture-stats.txt",
+      "sha256": "1ca2e8fc3d0ab4c722ca828bfcce39b3b028644989bc3f97d544a5e2c40807c1",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down1-v2/guest-output/kernel.log",
+      "sha256": "d4dec4640c31a945d36b26494dc0b364e21544d296ed0561a675af8ab5e761c2",
+      "bytes": 347722,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec1-down1-replay-v2.json",
+      "sha256": "eb598089d0fc3c2ef677872c2298d3eb8678d80f57d1d503e55ed302153c8252",
+      "bytes": 40332,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec1-down1-v2.json",
+      "sha256": "50a636726e49142428d5c1b1def3c1189580a3cd649aaa8e68f91d39dc3d9fb0",
+      "bytes": 6935,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline0-v2/manifest.json",
+      "sha256": "2d530cd7f6e5f749ad81a22e990ba147ffc1ebdedc84c18a6a42de3703bf1369",
+      "bytes": 85538,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline0-v2/console.log",
+      "sha256": "f54bd7b77355fe765e00f363fd3283acf184e490e43952ecfd48d7b92db01e6e",
+      "bytes": 13937,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline0-v2/qemu-stderr.log",
+      "sha256": "49122c71c846e80b189c5dd1e29a48572d43ad53b8e598ad4f4a4798c99ee693",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline0-v2/guest-output/connected-file/run.json",
+      "sha256": "6e54b0dfede7abef36ccee856e6fbb68218dc142cab6d75377e2bc51417d05f9",
+      "bytes": 63854,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline0-v2/guest-output/ws73.pcap",
+      "sha256": "eb51651e94d3af6ace55a5073e181ba3e44bb7971833285a08e1a332a3d341b3",
+      "bytes": 95851,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline0-v2/guest-output/capture-stats.txt",
+      "sha256": "7cf8ac81a1c4895ec2a547695c4968335787a322d6254cb727c1f7a4043414f1",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline0-v2/guest-output/kernel.log",
+      "sha256": "784d9f5a8fa46fa40eca04a5784651a8a007038fb43386e04e55a07037d16eda",
+      "bytes": 347931,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline0-replay-v2.json",
+      "sha256": "280247962162078c1f96940ba851d7467aa00e0bbb681c0063fda57641019d82",
+      "bytes": 38247,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-deadline0-v2.json",
+      "sha256": "a2ef89f16582499d5f0ce6a08750b22779effae96ab5dd755f25c9599005b290",
+      "bytes": 7511,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline1-v2/manifest.json",
+      "sha256": "71c87d7d3479ad107f10c572cb3ad36bd7096d42fde6f6342be0cefa90dcb461",
+      "bytes": 85539,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline1-v2/console.log",
+      "sha256": "20a73bc5fedb7ae71c419e3b0dbbf27f4c9b4cc2ea47d00258b33e1eca598e82",
+      "bytes": 14127,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline1-v2/qemu-stderr.log",
+      "sha256": "8b2732b3b616f2538f0bfaa545a2e4c712d8a185433f6b8a0f5bfc781d1446c7",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline1-v2/guest-output/connected-file/run.json",
+      "sha256": "f936e61fbace9a97749318934ce18f6d6ea99b2a431d1c0d20b6dbec8eebee1c",
+      "bytes": 63854,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline1-v2/guest-output/ws73.pcap",
+      "sha256": "2629f4e24a9a6f24e6eac472259f653048e3b11c225b1313a497bd7661496fc8",
+      "bytes": 95851,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline1-v2/guest-output/capture-stats.txt",
+      "sha256": "7cf8ac81a1c4895ec2a547695c4968335787a322d6254cb727c1f7a4043414f1",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline1-v2/guest-output/kernel.log",
+      "sha256": "694745f29125fa7cc85febcf2ad755cf4a9d859eaab9eb57893a77fd1d0190b1",
+      "bytes": 347710,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-deadline1-replay-v2.json",
+      "sha256": "b6d5bcf3f18de3008b224c5c9916a5c53509b696ed86cd00cb163c3303c22824",
+      "bytes": 38247,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-deadline1-v2.json",
+      "sha256": "67ef3008b0a951cf2c73081d079c23c7d4f2d966e42c4063043cb00cae983996",
+      "bytes": 7511,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release0-v2/manifest.json",
+      "sha256": "268235ffd7363eb6008ce578cf557dd3c90895ecf1e23406357be2ccf279cffe",
+      "bytes": 114787,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release0-v2/console.log",
+      "sha256": "ec43c44906fc286ba41b9e55f9b4b0f0ee326a0fab5567f499c7421ae2c53aee",
+      "bytes": 14103,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release0-v2/qemu-stderr.log",
+      "sha256": "78987fb363847ce4af3cb86203cb6dc9322dcdd2b2ae9c243a81503b18c1d5f6",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release0-v2/guest-output/connected-file/run.json",
+      "sha256": "0fe8b5d500d537645627d2b4cf9a3f8fcf41da99ae9078f533dad2787dfa28b4",
+      "bytes": 57496,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release0-v2/guest-output/ws73.pcap",
+      "sha256": "54eb45227be8d3fa217c3971640bb91606361a84060126744d81369865dedb07",
+      "bytes": 95851,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release0-v2/guest-output/capture-stats.txt",
+      "sha256": "7cf8ac81a1c4895ec2a547695c4968335787a322d6254cb727c1f7a4043414f1",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release0-v2/guest-output/kernel.log",
+      "sha256": "cb3994358725d20215ba49f4fc6e6a592d10a2ae11148deeac1825851ad36847",
+      "bytes": 347164,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release0-replay-v2.json",
+      "sha256": "37d725d6e1cef4902c9d7762494e83f8fd271a55a92b6d80774a97495e80d86c",
+      "bytes": 69660,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-release0-v2.json",
+      "sha256": "0f3fda24b23af770d8dcab103aa81dd2fe80cc8f5de60b2c86e1d713cdd95313",
+      "bytes": 7046,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release1-v2/manifest.json",
+      "sha256": "0b31958866cce569b88ffb5d253dab196d33c7d3a50a721486d3af943e89b3b2",
+      "bytes": 114788,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release1-v2/console.log",
+      "sha256": "0de5d3e6ededf1e2b8e8827defd1ad7f02fcdf36bf2b205f687ac7c1e3229c2f",
+      "bytes": 14103,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release1-v2/qemu-stderr.log",
+      "sha256": "5b584431e106f5c6a865c58e35c104359a6f5b5a6bc4dd210883e2fdfef04cf4",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release1-v2/guest-output/connected-file/run.json",
+      "sha256": "147f856735d4caf112cd4ecca60a6bc75489d9071905cb40b82d19965cf8e9b6",
+      "bytes": 57494,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release1-v2/guest-output/ws73.pcap",
+      "sha256": "7fbd775e885a01b878975dae7d1aae6712c85998c7424baef89a7226377a48b1",
+      "bytes": 95851,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release1-v2/guest-output/capture-stats.txt",
+      "sha256": "7cf8ac81a1c4895ec2a547695c4968335787a322d6254cb727c1f7a4043414f1",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release1-v2/guest-output/kernel.log",
+      "sha256": "6b4afeb107b9d9f6d764da07d4a964c2312ea9e95f5ed8667579ff8d3b8a07cd",
+      "bytes": 348696,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-release1-replay-v2.json",
+      "sha256": "1d2ce3ca1059c4a878976b051a65d73fa557f0108d3d1421df51438cc8f78758",
+      "bytes": 69660,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-release1-v2.json",
+      "sha256": "f6cd16359cb675953697b6d6cccb093d6f5a557cdb3a2ee047c8a47a1b0705f2",
+      "bytes": 7046,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close0-v2/manifest.json",
+      "sha256": "df69a75ef16d032192b0eb051f01c4c56495475efd290dc53d9142892c93ef4e",
+      "bytes": 114717,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close0-v2/console.log",
+      "sha256": "23be53f0042273605a93f4ee2da7113f27ca23938624500036defee5bcf12999",
+      "bytes": 13911,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close0-v2/qemu-stderr.log",
+      "sha256": "14ebf42028d1a97f5cff3366244bfd16b6c0385bb14f64e12e802e620e85ec4b",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close0-v2/guest-output/connected-file/run.json",
+      "sha256": "d1877adb89ff0c0d0ad8f062b4096376880c9aecea18974027c27c54a9d2d87b",
+      "bytes": 57392,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close0-v2/guest-output/ws73.pcap",
+      "sha256": "ca41b95766bd692fcbecdaeea35108eb513bf43439bc6670785ed2360e2a1e5c",
+      "bytes": 95851,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close0-v2/guest-output/capture-stats.txt",
+      "sha256": "7cf8ac81a1c4895ec2a547695c4968335787a322d6254cb727c1f7a4043414f1",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close0-v2/guest-output/kernel.log",
+      "sha256": "cbdcdb9b273e260c942dc47f51579de4657b1c02c301d867028e1d8a1e2ea199",
+      "bytes": 348538,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close0-replay-v2.json",
+      "sha256": "dc2c06e54aa21cb21542b9130ef5e0170e734aaaaab59361ab05ec6e24e4944b",
+      "bytes": 69656,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-close0-v2.json",
+      "sha256": "c806e381fd181c555b5848ac3a1103b5e7b1c7d6f7b515bf0d8820a0689f7f9a",
+      "bytes": 6980,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close1-v2/manifest.json",
+      "sha256": "50370839010715a2aad705b945e720f723cfeda8cd8b17e32fb31d8050d58d9a",
+      "bytes": 114718,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close1-v2/console.log",
+      "sha256": "4e1e22c3f0dad56ffb473c72e771e9c8942aa90d985b3b7ae08eb67c70885274",
+      "bytes": 14101,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close1-v2/qemu-stderr.log",
+      "sha256": "ca04991e9bf9ec2d0754ed1dbc9aee41ba4792e6b769619278b02c6a8487b5bb",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close1-v2/guest-output/connected-file/run.json",
+      "sha256": "1c0dc6f5ca6c41eb3e139e1c6dfc18a11b4e043aa0fbb80f095b521e7a0a6e4c",
+      "bytes": 57394,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close1-v2/guest-output/ws73.pcap",
+      "sha256": "cfc2fa66abc3062aa15fe1932299f56466070e22724214f1e80b8c0c8ff39650",
+      "bytes": 95851,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close1-v2/guest-output/capture-stats.txt",
+      "sha256": "7cf8ac81a1c4895ec2a547695c4968335787a322d6254cb727c1f7a4043414f1",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close1-v2/guest-output/kernel.log",
+      "sha256": "d98d491c94d6fb806f83f00be04b1a9c8cb035601f6e3e96a1150594fe8f8a32",
+      "bytes": 347838,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-close1-replay-v2.json",
+      "sha256": "1f88c0aa17bdb44e5e6b0ee3dfec261789d63e189ae1baebac1488f133d9d729",
+      "bytes": 69656,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-close1-v2.json",
+      "sha256": "d64b6e0823f56f49316c56c18cbcb74f597b7a803f63bbc8cec3f5f10a07d828",
+      "bytes": 6980,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup0-v2/manifest.json",
+      "sha256": "a7cec6170d1f5b53c567c5d363f7aae7e25d86b660f1c3a46553ac79ae2cadfd",
+      "bytes": 130298,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup0-v2/console.log",
+      "sha256": "b1acb70a962c22761efbbae383865ef18e7a1a6e121ba23b9f1cafc1165624b3",
+      "bytes": 14099,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup0-v2/qemu-stderr.log",
+      "sha256": "b8cb42d84bbfc6b51abefa6714a37565c3fe6eaeaf1a9c92ba8d226d4656aa9b",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup0-v2/guest-output/connected-file/run.json",
+      "sha256": "27b744b751a333556a88d15840bcac3a56ad0797d0c9f6750b7c691f4a7fd500",
+      "bytes": 62161,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup0-v2/guest-output/ws73.pcap",
+      "sha256": "e68ba88de2e3ee952c6b8e8c346d91a422e8c1973bc6117ad05cbc5bf9301632",
+      "bytes": 102455,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup0-v2/guest-output/capture-stats.txt",
+      "sha256": "575a6d6ac05430adab343345a08995a5e8d5485dbca7071e5f870533419cb9ff",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup0-v2/guest-output/kernel.log",
+      "sha256": "d7f0887d5b1be2bc7ecd5a7efb29e20e27a0351532e319fb37242d640752a7ef",
+      "bytes": 348055,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup0-replay-v2.json",
+      "sha256": "9644125786e6b50d0814fd0c99a08348e8ca245c90938c13872db5e9dbe35072",
+      "bytes": 86152,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-dup0-v2.json",
+      "sha256": "56cc24b866cdbbb732ab8eeb26dbc6faf33ee41ee42ce905c4bf314fd9d3a58e",
+      "bytes": 6914,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup1-v2/manifest.json",
+      "sha256": "9f39a25013a5660b6c82fa02a843358b77b816a9a0a7e209ea692665afb15da3",
+      "bytes": 130299,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup1-v2/console.log",
+      "sha256": "e0344f7c885c00e7f36803490355016c3b5ece693404472c23e002d6368b405a",
+      "bytes": 13909,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup1-v2/qemu-stderr.log",
+      "sha256": "63c852010241665bf0b1d3ea67484403febc99a3d910bfad47a9240ae436d3a1",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup1-v2/guest-output/connected-file/run.json",
+      "sha256": "57f9898897d9f387c3076a49aeb1d16ae134874b30a5a1766112a24a4ffecb76",
+      "bytes": 62161,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup1-v2/guest-output/ws73.pcap",
+      "sha256": "9f7f5dbcfbe863d5a388f4e4ed4f481736f0fcbdf11c89ca798eecb956c96740",
+      "bytes": 102455,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup1-v2/guest-output/capture-stats.txt",
+      "sha256": "575a6d6ac05430adab343345a08995a5e8d5485dbca7071e5f870533419cb9ff",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup1-v2/guest-output/kernel.log",
+      "sha256": "48f3d2740fe08967ee6070f2e04cb0fe6a4f3f8549c47cb74afff17760cf298d",
+      "bytes": 348055,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-dup1-replay-v2.json",
+      "sha256": "e3be15e704cda1e63a9751a589188374aa92b4d8cf0d532079e36b138d2551d2",
+      "bytes": 86152,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-dup1-v2.json",
+      "sha256": "bbb9941299206465b42abe7472c41ca35ee8fd4dfef3bc9ec59c94f07c653ee8",
+      "bytes": 6914,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down0-v2/manifest.json",
+      "sha256": "56dd573e8bb26ccfae43de281a665a0caabcddf052cb4087c4ef9383aa0ae626",
+      "bytes": 86672,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down0-v2/console.log",
+      "sha256": "73a0c24aa672bd60b8323b2d3e040c5bc502f5be361ffbaba7a462892e91dbb7",
+      "bytes": 13938,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down0-v2/qemu-stderr.log",
+      "sha256": "a3bdede00240250242a0d00a5345c8cde0cdc5782a612784dcd6d7ed2ff5acf9",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down0-v2/guest-output/connected-file/run.json",
+      "sha256": "c91dddb223c3cc81a2b4c9635a3bdab43cbcc712d797dd5912b33e42a7b7d0c6",
+      "bytes": 63756,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down0-v2/guest-output/ws73.pcap",
+      "sha256": "5ab17eec47ce6c7fa21a39b90b75befe743e79d207fec5e56f929a74a17159a0",
+      "bytes": 87583,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down0-v2/guest-output/capture-stats.txt",
+      "sha256": "a61765b363f70c01f0e164dde632dc5ace73d42e07592224e9627863c1d80cba",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down0-v2/guest-output/kernel.log",
+      "sha256": "bdc58c7b9c7c057a80154d6cab4ec426b3be8f8a8a4dff86a5ea5f7579afb93d",
+      "bytes": 345299,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down0-replay-v2.json",
+      "sha256": "a47fb4d95e8b65ed22cfb2138b6221db59eab76023588792f8c5a9b4a0e73b9f",
+      "bytes": 39595,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-down0-v2.json",
+      "sha256": "7d5b3bc0a7c24228b66b4a32f1117334a7d238b877f8bea679f99640b219e8ad",
+      "bytes": 6935,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down1-v2/manifest.json",
+      "sha256": "6a272b1dc038c8b4790190d677d4c3d1c97e7d1ac269bcbb300e23093e498c90",
+      "bytes": 86673,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down1-v2/console.log",
+      "sha256": "dfc1d26a5408f097bde0c25d529c40699dc43f6b58f6c1511098585ce6ce3dc8",
+      "bytes": 14128,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down1-v2/qemu-stderr.log",
+      "sha256": "b01150d5b441c8c3faa6b648fdef437cbd39240caa3597eb33d144a6136e3809",
+      "bytes": 259,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down1-v2/guest-output/connected-file/run.json",
+      "sha256": "860e818c82063b45e2b7531d4b138388ce217d7849ae61b15908fc728859410f",
+      "bytes": 63755,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down1-v2/guest-output/ws73.pcap",
+      "sha256": "ba57377522a9f0669f5327189037a5f3db2cd69c3b980573695305a345909ab5",
+      "bytes": 88408,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down1-v2/guest-output/capture-stats.txt",
+      "sha256": "5a23b23bc253fe6b4166948e373c9ae1f8e6013b64a0b27e9a046f32c35a0352",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down1-v2/guest-output/kernel.log",
+      "sha256": "a2cd234b34e1a5dcb227841e2142c07c8821de6d3c3d78853592742f54c917e0",
+      "bytes": 348247,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec2-down1-replay-v2.json",
+      "sha256": "306086b43f52c6a965e2fbfb2298be343a108ec13912fb7300bced30ed487fd7",
+      "bytes": 39595,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-sec2-down1-v2.json",
+      "sha256": "8b2fe9f745bf837f08806486ad8c459b685c08bebb42725fdc1eaa730548766e",
+      "bytes": 6935,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/manifest.json",
+      "sha256": "800e1b431f0f899b801a97950910af53dcead64c4c12f2b88d89fe335888f922",
+      "bytes": 52307,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/console.log",
+      "sha256": "abec04c272eff57e19c3f480f67b50dd6b46936c853221557f3535a2b992d795",
+      "bytes": 366448,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/qemu-stderr.log",
+      "sha256": "56f80a6133a98318e1952d04e0eaff0cfe26467ee60cf1f7db987c1bbf60ad60",
+      "bytes": 257,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/guest-output/connected-file/run.json",
+      "sha256": "19bada9746b73adeda21206fe50ec2624f937c2b92604b6a036c9299701fd858",
+      "bytes": 48133,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/guest-output/ws73.pcap",
+      "sha256": "5bfed72d592f65f682b44613e57b368aaa4e80f8f4efab2d292b32f68e9a349d",
+      "bytes": 84149,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/guest-output/capture-stats.txt",
+      "sha256": "78d33580d9988bd32a34eacdd9d97336029d9d5b5eaa121e04b51db268f4b371",
+      "bytes": 225,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-sec0-deadline0-v1/guest-output/kernel.log",
+      "sha256": "5473fb5fde7c672d56dadf4d3755236cc51448a705f6585e1585107e7b417549",
+      "bytes": 347305,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-qualification-v1.json",
+      "sha256": "cae3f9e7e10cdf85b03ba716be1eea618da97bcb1eee7a071ed7c4e33397caf6",
+      "bytes": 2157,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-qualification-v2.json",
+      "sha256": "0cdb60872f6a5d8bf0eb42a8ee42a46d821e78e8b7999897c32e0ec7e7220b30",
+      "bytes": 53135,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-qualify-v1.py",
+      "sha256": "8e2244baf24d6589e08d7c028512083fddfbd608e40c93ff3bb38709b9ec07f7",
+      "bytes": 4639,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-qualify-v2.py",
+      "sha256": "cc8c46543e8e2600cc4ed38c246781cd5e5f7a63d898014c1e3c4208e2a5510a",
+      "bytes": 4716,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-observed-v2.py",
+      "sha256": "7fad1e09688f7ea316261125f9ee792e6ff25bbd7453409ce9e784ba159fbe33",
+      "bytes": 1227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-host-scheduling-v2.jsonl",
+      "sha256": "3b1780b615680ab70cf36e9a8d1cd62039c73e2222944aa3564ab3cee8e55e6c",
+      "bytes": 988573,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-replay-all-v2.py",
+      "sha256": "1b13dd4b0b94d795decc6d24f530e21715e7be630adb51efd828e8a9306c1e02",
+      "bytes": 1841,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-replay-summary-v2.json",
+      "sha256": "2e8c69230601275eedace654689c7df275ec4be4a28fb901a5e912df6e88b66a",
+      "bytes": 6161,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent110-lifecycle-evidence-negatives-v2.py",
+      "sha256": "120daecfaf51ffa135448639130a5213e2b605241f7474315fe2db1d9c85417a",
+      "bytes": 8014,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-event-replay-case-v2.py",
+      "sha256": "12e4ad6d265c4d582aef4485fa42b6d4d171ebcb34a7b91a3daafd61c01b25b3",
+      "bytes": 3031,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-prepare-v1.json",
+      "sha256": "76225a1d25e242f691bef0be8956004654a2eba69ffbedae9b7e20e025153fff",
+      "bytes": 2989,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-deadline-root-smoke-v1/manifest.json",
+      "sha256": "3a4e46c093fcb62f5491dc4d092247d5af35353efb36d6225bf866424ec04c2d",
+      "bytes": 37268,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepare-v2.json",
+      "sha256": "23d29b021b880b4e4b26a307c3328466472d0ea5583e077b21d1793a745de800",
+      "bytes": 1558,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-selection-v1.json",
+      "sha256": "b6bac7ab7259a82a0f5feb2cdd659ef4876bb3ae9b22fb8baf812bc2468c5427",
+      "bytes": 2609,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-artifacts-v2/manifest.json",
+      "sha256": "8c3ad48e0ce53b94d7f497758ad148b836d7f6ecd66dfd8f13d0805603e8e023",
+      "bytes": 229017,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/manifest.json",
+      "sha256": "7870620be7f28a607e469a2e78313af4275101e609a243351da01375e354e913",
+      "bytes": 2351,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/manifest.json",
+      "sha256": "f11cb1a40cdff1ffe911b2ef78d718a2296b2f361830a0786857aef6262c4c14",
+      "bytes": 26981,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-registry-local-v1.json",
+      "sha256": "e1340b7e38d3ad6a643825a33d69dc8670b57d320e1f2cf8744a6b21eb69435f",
+      "bytes": 1205,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-full-local-v1.json",
+      "sha256": "2d184cd31561a27ab5d4ede64b57d53741652457cbe0bd9ab3b12b5a53219aae",
+      "bytes": 230,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-maintenance-docs-v2.log",
+      "sha256": "74e6536338ffcbd0f0f2ddf571e7e9826839c674adc3d1a95e6f0d15f1c2c1e0",
+      "bytes": 347589,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-mixed-budget-all-v2.log",
+      "sha256": "bb3604e445a5848e23afa98bf713c379b3f32673264fbfdd53880718dafeb504",
+      "bytes": 865,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-sealed-bindings-v2.log",
+      "sha256": "fd2248827cd27cbf4c3bc141e920c9d19573bc6504f49308bda2014eb5f5f174",
+      "bytes": 147,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent-lifecycle-qualification-v1.json",
+      "sha256": "be5c839f114fc15998b8fa1caa862b97b222bd0c1457820c635562f5dbf52c5a",
+      "bytes": 15333,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent-lifecycle-qualification-v2.json",
+      "sha256": "3bf4b9b47ceb302f69ca32db586549aee99eb6d0a898be3eeacce1d373a1273c",
+      "bytes": 16982,
+      "access": "private"
+    },
+    {
+      "path": ".dev/intent-lifecycle-interrupted-at-firmware-change-v1.json",
+      "sha256": "96e516286c25fb790c1996e7656998c4193f576d8ac6b817d378734110fa55ff",
+      "bytes": 6032,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/manifest.json",
+      "sha256": "c6ff19871c30ca0b2708590a2a51c239e4a05281757f45ee2f61f8e947134e6e",
+      "bytes": 274756,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-mixed-runtime-prepared-v2/root.btrfs",
+      "sha256": "b7cb1229a594d6b081031dad4ced8a9524d38711cc2d198330eeeb3dc5c77764",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/manifest.json",
+      "sha256": "4c09612d9687380408235014051555d0cd4f4423d063a38e2a0e614de82aa7b8",
+      "bytes": 277509,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-deadline-runtime-prepared-v1/root.btrfs",
+      "sha256": "344913548bc128f4df5c56055cb7b62e1e502b69e220491536c68480ba795d60",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkd",
+      "sha256": "c86967115f9ba107d3ee42caf9f75ffe613707b202caf019b2ed5a997c6a271c",
+      "bytes": 10634880,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slctl",
+      "sha256": "138b84adfa8effbf6a528bf0dbaee9133d798e1f00c2f5aa4b1670c7413ba9fe",
+      "bytes": 7911664,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slktest",
+      "sha256": "0ffda53bcf2889ed8734398ee6d7a879142a8e80e46cf586e32041bba79675ad",
+      "bytes": 5278024,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkconfig",
+      "sha256": "b7b9678f35be4d7ac83e885c75f956d97ccde68ea50922448f9a273a588af299",
+      "bytes": 1403736,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkmon",
+      "sha256": "1d6402733c388a693a74764d4c9583701655cc662e20bcbb993ce49dc6585080",
+      "bytes": 1661896,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkdump",
+      "sha256": "880c446c2775675bbef373a3f9a07afe970765144eb05210e5c69bd09d37210c",
+      "bytes": 1661768,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/83625029e313/liblibsparklink.so",
+      "sha256": "30758249c58fd5db7fd9fe0fa8f47490a15bd5a45dbd7ff623d2904400d54c6e",
+      "bytes": 552048,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "153bd4d0a29cab95ea4674e6aa3c33510a8ce5dedb4cbc0686cc7e7e6b899f3a",
+      "bytes": 507,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "82d65094030f4302dda3df7927e7bb2f7ac9d3355deca287ede43785cf86e857",
+      "bytes": 154,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v2/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "606e001cc5dea57df9047675c0f84bc6a5bbb8edfc4315e9a7cd0f55a239f83f",
+      "bytes": 144561,
+      "access": "private"
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private"
+    },
+    {
+      "path": ".dev/data-deadline-qemu/qemu-system-x86_64",
+      "sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "bytes": 30094800,
+      "access": "private"
+    }
+  ],
+  "retention": "Authorized maintainer privateworkspace;SDK/USBmaycontainkeys.Notpubliclyfetchable. Relativepaths/hashesonly;noverifiedoffsitearchive.Missing/hash/source/scope mismatchcannotPASS.",
+  "wall_ns": 1792212531825441496
+}

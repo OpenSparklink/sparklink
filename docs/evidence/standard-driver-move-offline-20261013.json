@@ -1,0 +1,251 @@
+{
+  "kernel": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
+  "compiled_service_tools": "967ad220271009498319f3bb71d93fbfb9c63e83",
+  "build": {
+    "status": "BUILD_PASSED",
+    "source_head": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
+    "normalized_config_sha256": "0ad95d3ebc876124b8184d367b201de305c0b26137454d93959f9c7b3ef6b4dc",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-standard-driver-move-kernel-build.log",
+      "sha256": "17a17cb4faf08ea8c31e8050f5c78ce83eefbb5d322b903d496474a4ce14301e"
+    }
+  },
+  "actual_source_regressions": {
+    "driver-move-current-driver.json": {
+      "sha256": "58ba6609a3d348638599b1ca17c3daae769c89f5956c27d14f9794d43b1f633f",
+      "record": {
+        "status": "ACTUAL_STANDARD_DRIVER_BINDING_PASS",
+        "cases": 6,
+        "source_sha256": "f3834f07caa73bf1e0286f197ea31de80bb124ed0b10217039c851d47118b9b0",
+        "scope": "Actual driver probe/disconnect/PM rejection; Core/USB/init/install/dependency refs controlled. Original identity only, Core retirement before USB release, partial init/failure cleanup and no silent PM; not real module/IRQ/URB/refcount/lifetime/physical proof.",
+        "physical_acceptance": false
+      }
+    },
+    "driver-move-binding-life.json": {
+      "sha256": "58ba6609a3d348638599b1ca17c3daae769c89f5956c27d14f9794d43b1f633f",
+      "record": {
+        "status": "ACTUAL_STANDARD_DRIVER_BINDING_PASS",
+        "cases": 6,
+        "source_sha256": "f3834f07caa73bf1e0286f197ea31de80bb124ed0b10217039c851d47118b9b0",
+        "scope": "Actual driver probe/disconnect/PM rejection; Core/USB/init/install/dependency refs controlled. Original identity only, Core retirement before USB release, partial init/failure cleanup and no silent PM; not real module/IRQ/URB/refcount/lifetime/physical proof.",
+        "physical_acceptance": false
+      }
+    },
+    "driver-move-pending.json": {
+      "sha256": "d3c663b5074c9e2ca2817ad6bb0a32195bb093d729504150d80ecc99b38df2e5",
+      "record": {
+        "status": "ACTUAL_USB_PENDING_RESERVATION_PASS",
+        "tests": 15,
+        "pending_allocator_tests": 9,
+        "retired_static_open_adoption_tests": 6,
+        "sources": {
+          "sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+          "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+          "sparklink_core.rs": "02152195e39581a8758390cd4e96000d40584fb7872d922f2d131efe44ad2373",
+          "sle_usb.rs": "a553b22e65c3d7575f77ab816d64670a51bf3c6bd6be922157177d94b395c82b",
+          "sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1"
+        },
+        "scope": "actual constructor/pending allocator/generation/get/unregister/common reservation/cancel and Native wrapper/exact two-phase detach and retired static USB listener/open adoption history; current lifecycle is common Native/provider open; logging/Mutex/info types/stats dependencies, not concurrent registry or callbacks/kernel/physical USB qualification",
+        "hardware_acceptance": false
+      }
+    },
+    "driver-move-install.json": {
+      "sha256": "1823583f360597509088f6a50d0bd36067813d8be200492d2a7875082c533e21",
+      "record": {
+        "status": "ACTUAL_COMMON_BACKEND_INSTALL_PASS",
+        "tests": 18,
+        "sources": {
+          "sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+          "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+          "sparklink_core.rs": "02152195e39581a8758390cd4e96000d40584fb7872d922f2d131efe44ad2373",
+          "sle_uapi.rs": "e332156977f30b6476d920d82d90315eeaab9c129211283241bfdd042675c283"
+        },
+        "scope": "Actual reserve/profile/borrowed validation/pending error/query/install/cancel/retire and registry functions; std Mutex/Arc and instrumented Runtime constructor/destructor dependencies. Controlled retire/reuse/competing-install/subsystem-removal windows, not real kernel concurrency, IRQ, allocation/callback or physical qualification.",
+        "kernel_lifetime_proven": false,
+        "physical_acceptance": false,
+        "early_ws73_bootstrap_registered": false
+      }
+    },
+    "driver-move-run_backend_command_port.json": {
+      "sha256": "9d46ef2ed0bc9705178dd17b37c3cacca689546ac851b4824d78d0e93b07c04c",
+      "record": {
+        "status": "ACTUAL_RETAINED_COMMAND_PORT_PASS",
+        "tests": 2,
+        "sources": {
+          "sle_backend.rs": "751072b684206c563a7bf69c6aef783dad2c396406ad81a4f22421176ebc4784",
+          "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+          "sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1",
+          "sle_usb.rs": "74e5d8ebe6e71e96a48029ea6d9ba71044d52ab1963fdbbf0a93d9037e0274da",
+          "sle_workers.rs": "c6b89e5fb611b10fc409c65168291b753a6efcb3bcff5665c8353553b4192ca9"
+        },
+        "scope": "Actual selector and provider impls, allocator/std Arc/USB transport dependencies; KBox allocation adapted only to fallible Box fixture. Static worker release-before-submit order check, not actual workqueue/lockdep/IRQ/module/callback or USB proof.",
+        "physical_acceptance": false
+      }
+    },
+    "driver-move-run_usb_codec_isolation.json": {
+      "sha256": "d203f3d31070b81b7b3462cb8661e2ba44a32af8408768bcf294a8fa1f6a00ed",
+      "record": {
+        "status": "LIVE_USB_PARSER_AND_HISTORICAL_CODEC_WITNESSES_PASS",
+        "live_parser_tests": 4,
+        "historical_witnesses": 3,
+        "sources": {
+          "sle_usb.rs": "74e5d8ebe6e71e96a48029ea6d9ba71044d52ab1963fdbbf0a93d9037e0274da",
+          "legacy_usb_codec.rs": "63e83bdd63f9e7589b1ee29d97525dc8d3234bcdcfb40f84c6229d04c6ffc7cb"
+        },
+        "scope": "Actual live parse_event_packet/structure; allocation/errno dependencies are fixtures. Historical encoder/header witnesses record retired behavior, not production functionality or standard conformance.",
+        "historical_truncation_supported": false,
+        "physical_acceptance": false,
+        "live_callback_lifetime_proven": false
+      }
+    },
+    "driver-move-run_usb_discovery.json": {
+      "sha256": "4c92eef764c5b1c309069f29b868720d1e617894a6d5a196e347a0541598db13",
+      "record": {
+        "status": "GENERIC_USB_DESCRIPTOR_CAPABILITY_SOURCE_BOUNDARIES_PASS",
+        "c_cases": 19,
+        "rust_tests": 11,
+        "scope": "actual C register/unregister and pending reservation/default types; retired static USB constructor/info/snapshot and archived attach/serdev history; current registered projection tested by run_backend_bus;  descriptor lookup/allocation/URB/types/firmware getters are dependency fixtures",
+        "physical_acceptance": false,
+        "generic_dialect_acceptance": false,
+        "full_capability_provenance_contract": false,
+        "natural_fault_root_cause_closed": false,
+        "sources": {
+          "sle_usb_ffi.c": "e617abd627fe5c1a801d6fa08aeab1dd8d1231bc2b38b41efc8066131f00d9b7",
+          "sle_usb.rs": "74e5d8ebe6e71e96a48029ea6d9ba71044d52ab1963fdbbf0a93d9037e0274da",
+          "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+          "sparklink_core.rs": "662a6689f4f29e99263a1975696d75f7509bccc15b072a69893f87d078fd096b"
+        },
+        "archived_attach_sha256": "2225b51f8cec3f5f33c31f053b10d8321bd81fbbe5bb41486ae681e471451626",
+        "archived_serdev_info_sha256": "12e851cef7fbda7b92409752f36690d3c2d1d579a50cd1bff3eed3c98fd80ad7"
+      }
+    },
+    "driver-move-run_connection_tx.json": {
+      "sha256": "42074fa2b7049e4d9e2933fc6faf6b8f3a4fa3768d64ffdde301ffe1cc3a61d2",
+      "record": {
+        "status": "CONNECTION_TX_SUBMISSION_BOUNDARY_PASS",
+        "scope": "actual Rust sender/ioctl plus retired test-only unqualified C USB data body with controlled dependencies; not socket/protocol/RF qualification",
+        "physical_acceptance": false,
+        "socket_acceptance": false,
+        "rust_tests": 11,
+        "usb_boundaries": [
+          "range",
+          "allocation",
+          "errno",
+          "all short completions",
+          "exact completion",
+          "max length"
+        ],
+        "retired_c_data_only_sha256": "2a3f8a90cb79651932816ac98172277a70bb4d3f843c2f8c75a9823ddc1d7bcc",
+        "sources": {
+          "sle_conn.rs": "7b625a362843ec43283e773d0d8d315ab25b74cd7388c86a0c820b85f052fe70",
+          "sparklink_core.rs": "662a6689f4f29e99263a1975696d75f7509bccc15b072a69893f87d078fd096b",
+          "sle_usb_ffi.c": "e617abd627fe5c1a801d6fa08aeab1dd8d1231bc2b38b41efc8066131f00d9b7"
+        }
+      }
+    },
+    "driver-move-run_usb_registration.json": {
+      "sha256": "a04f554822e03ce2ff3a838f3492e323ab2d5f00ecebd35a209e443e1c8f2f85",
+      "record": {
+        "status": "ACTUAL_USB_PENDING_RESERVATION_PASS",
+        "tests": 15,
+        "pending_allocator_tests": 9,
+        "retired_static_open_adoption_tests": 6,
+        "sources": {
+          "sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+          "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+          "sparklink_core.rs": "662a6689f4f29e99263a1975696d75f7509bccc15b072a69893f87d078fd096b",
+          "sle_usb.rs": "74e5d8ebe6e71e96a48029ea6d9ba71044d52ab1963fdbbf0a93d9037e0274da",
+          "sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1"
+        },
+        "scope": "actual constructor/pending allocator/generation/get/unregister/common reservation/cancel and Native wrapper/exact two-phase detach and retired static USB listener/open adoption history; current lifecycle is common Native/provider open; logging/Mutex/info types/stats dependencies, not concurrent registry or callbacks/kernel/physical USB qualification",
+        "hardware_acceptance": false
+      }
+    },
+    "driver-move-run_runtime_ingress.json": {
+      "sha256": "c54e37362f134822dcd6ad9f0621ac6f4bf8a792c747b4aa7b27b40381b7bf96",
+      "record": {
+        "status": "ACTUAL_RUNTIME_INGRESS_PASS",
+        "tests": 9,
+        "scope": "production route/queue functions and identity; std Mutex/Arc with ranked guard checks, Host admission/receive and event/queue dependency fixtures; not kernel IRQ/workqueue/module/Host or hardware refinement",
+        "sources": {
+          "net/sparklink/sle_ingress.rs": "c372709252f304fc03d1725a1c03c3e52681c776ba0632698ee57a66fa82d00f",
+          "net/sparklink/sle_native.rs": "667286a5a9b3cb3efae97ae08428ded2b129b46a484a4ba3cf9f98bb979326d1",
+          "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+          "tools/testing/selftests/sparklink/ingress/fixture.rs": "e6c828bb79a36cc9c1e0195a596014df374b0b3e25bdefd993812dcd48ee4beb"
+        },
+        "actual_function_sha256": "1cf0e540c1fb6e648ca2ee717fc4d0a782285bc7416934cc1bac1047275c5b77",
+        "hardware_acceptance": false
+      }
+    },
+    "driver-move-provider.json": {
+      "sha256": "fad48c2ece35b0358d44e5ff4371fedb82afe949b0457663799ded4888127f7e",
+      "record": {
+        "status": "ACTUAL_COMMON_STANDARD_PROVIDER_PASS",
+        "cases": 14,
+        "source_sha256": "e617abd627fe5c1a801d6fa08aeab1dd8d1231bc2b38b41efc8066131f00d9b7",
+        "header_sha256": "764ac209980fe55f322a416d84df0196000a188e533e2f34f2c15a6b54ece5bd",
+        "scope": "Actual standard provider adapter including ops table, metadata descriptor/borrowed identity, query validation, retained get/put and exact open/partial-failure close. Primitive locks/getter/USB/register dependencies controlled; no real Core/URB/module/refcount/IRQ/lifetime or physical standard qualification.",
+        "physical_acceptance": false
+      }
+    },
+    "driver-move-binding.json": {
+      "sha256": "a13da1a9d7e0fe91aaa8f4f35d639a68a101c4bed4e0cad7bc50493ca0ca0896",
+      "record": {
+        "status": "ACTUAL_STANDARD_USB_BINDING_PASS",
+        "cases": 25,
+        "rust_tests": 8,
+        "rust_sha256": "74e5d8ebe6e71e96a48029ea6d9ba71044d52ab1963fdbbf0a93d9037e0274da",
+        "source_sha256": "e617abd627fe5c1a801d6fa08aeab1dd8d1231bc2b38b41efc8066131f00d9b7",
+        "scope": "Actual EP0 writer/control setup/four-byte framing/interrupt bootstrap read/unsupported data stub, and current attributed DLI lane callback with retired prepare history; decoder/ingress ownership are controlled fixture dependencies, not protocol/lifetime proof; USB, allocation and retained active context dependencies controlled. Includes u16 wLength boundary and uncertain/short transfers. No hardware, class discovery, async listener, lifetime, Ready or firmware proof.",
+        "physical_acceptance": false
+      }
+    }
+  },
+  "tools_tests": {
+    "passed": 456,
+    "log_sha256": "b852be431ee2976d7862aaf25e97605476eb3269d95427f95b0e84c1402e6688"
+  },
+  "limitations": [
+    "Some fixture records preceded final dead-wrapper deletion: record source hashes remain authoritative; accurate CI pins final source.",
+    "C dependency stubs are not real Core/IRQ/module/refcount/URB/lifetime proof.",
+    "No physical standard USB/PM/natural recovery acceptance."
+  ],
+  "historical_failure": {
+    "integration_warning_count": 6,
+    "integration_log_sha256": "708f7ddb920eec53392d56e46a5c1864d784759e1ae5f4d43972d200f4d4c87a",
+    "resolution": "Unused Core wrappers/constants removed; exact clean committed build no compiler warnings."
+  },
+  "formal": {
+    "metadata": "standard-driver-move-formal-20261013/metadata/report.json",
+    "writer": "standard-driver-move-formal-20261013/writer/report.json",
+    "scope_enlarged": false
+  },
+  "whole_package_complete": false,
+  "hardware_constraint": "VM_ONLY",
+  "remaining_public_api_cleanup": {
+    "unpublished_usb_count": "Kernel Unsupported, Rust ioctl/Adapter method and slkd D-Bus wrapper still present; migrate/delete together with API table and authorization tests. Not reported removed.",
+    "replacement": "ListRegistrations authoritative id/generation/bus/profile snapshots"
+  }
+}

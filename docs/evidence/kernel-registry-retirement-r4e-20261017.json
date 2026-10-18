@@ -1,0 +1,386 @@
+{
+  "schema": 1,
+  "firmware_combined_sha256": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+  "references": {
+    "NearLinkHost": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "SDK": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+    "libws73usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "scope": "Pinned native client/Host proxy structure consulted;no copied protocol implementation or new Engine;firmware remains explicitSDK110U."
+  },
+  "real_result": "PASS",
+  "compiled_kernel": "64a324844bfc66bc46de2c894bc78598c1cde515",
+  "compiled_userspace": "0a7a605798685bc337057f459cc52c60a7036726",
+  "executed_tools": "997ea198dfc689c96053f6e460fdf1aecb067c70",
+  "scope": [
+    "R4e registry slice K64a3248 removes unconsumed operation/Ready flags,capability/statistics copies and convenience accessors from the registry object;retains identity/setup/retirement/address observation and actual Runtime/Backend authorities. Production module now denies dead code. Actual generation,install,partial initialization and joined retirement contracts preserved;no new protocol Engine.",
+    "1814b96/7f40666 isolate previously unlinked historical crypto in selftests and migrate all actual remediation/probe consumers. Files byte-identical;production P256/CMAC and Session relay unchanged. Dedicated crypto report remains boot0cd/probe7f,no new pairing/security qualification from the move.",
+    "Exact compiled K64a324844bfc66bc46de2c894bc78598c1cde515/U0a7a605798685bc337057f459cc52c60a7036726,executed tools997ea19,SDK110 U2/U3,four VM-only preservation gates.61/249+16oversize/2042/mechanism2,32 actual opposite application replies,24Ownedcases96policydecisions120remoteOwnedtransactions. Owner exits BETWEEN operations,not inflight matrix. Service-only68actual guest role/local owner denials,not service-only RF/clean distro deployment.",
+    "Eight ordinary Native observer C bitmap/count and8actual CLI full-generation snapshots across four gates;all match prepared ELF and original command receipts after actual physical two-role disconnect. Registry allocation count is not Ready count;not C/Python business delivery,atomic cross-query,chip identity authentication or recovery.",
+    "Fresh exact full Kernel build and signed-module/root boot checks,19current install+9current pending/registration actual-function cases and6explicitly archived static-open cases,49actual sealed two-library ABI/historical layout checks. Userspace crates/data/Cargo source scope is byte-identical to997;old304Rust/759tool results keep their original source identity and are NOT claimed freshly executed for0a here. New actual C namespace checker23f is separate offline result,not part of frozen hardware tool identity.",
+    "Five exact paired data/owner/length/service replays81copiednegatives plus4metadata replays56copiednegatives. Full kernel config,build environment,firmware,artifacts,tools and raw captures retained;normal VM taint0. No new formal proof or debug-sanitizer concurrency qualification. Existing NOCP/drain/firmware/reuse assumptions remain unproved.",
+    "No full architecture or issue completion. Isolated command-path drafts c811/b35 are excluded from these physical gates and not merged. Remaining DLI/global masks/raw ABI/selftests,R5fullcontracts,R6cleanVMdeploy and fullS0-S6/19WP/10FV/12DG remain. Natural RCA/nonmanual recovery OPEN;QMP/hub/manual/injection not natural recovery."
+  ],
+  "remaining": [
+    "Isolated raw-command draft b35 has six offline subsets and actual Rust component Werror compile only;requires full kernel/link and exactVM before main merge.",
+    "Remaining DLI metadata/catalog/global mask,93raw ioctl declarations/authorization/selftests and whole public interface retirement.",
+    "Full SDK client/C-Python broker/SSAP conveniences and existing CLI callers,advanced Channel/owner inflight/deadline/revoke/Down;R5wholecontracts/provenance,R6cleanVMdeployment/external consumers/upgrade/rollback/uninstall.",
+    "All original multichannel/four devices/Agent/security/Bond/performance/soak/PM/recovery scope;natural root causes/nonmanual recovery,original failures and retention incident remain open."
+  ],
+  "bounds": {
+    "ordinary_round_trips": 32,
+    "owned_cases": 24,
+    "owner_decisions": 96,
+    "remote_owned_transactions": 120,
+    "owner_exits": 24,
+    "oversize_rejections": 16,
+    "service_role_denials": 68,
+    "real_gates": 4,
+    "exact_replays": 5,
+    "copied_negative_controls": 81,
+    "c_rust_python_checks": 49,
+    "metadata_c_commands": 8,
+    "metadata_cli_commands": 8,
+    "metadata_exact_replays": 4,
+    "metadata_copied_negative_controls": 56,
+    "install_fixture_cases": 19,
+    "fresh_rust_userspace_tests": 0,
+    "fresh_frozen_hardware_tools_suite_runs": 0,
+    "current_pending_fixture_cases": 9,
+    "historical_static_open_cases": 6
+  },
+  "real_gates": [
+    {
+      "name": "architecture-r4e-real-short-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-r4e-real-short-v1/manifest.json",
+        "sha256": "c84858cae1eaa1e5e27f38871560d6fa6575d31106544ba348bc608d47f0e451",
+        "bytes": 1787519,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "run": {
+        "path": ".dev/architecture-r4e-real-short-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "5f389f6e8902a11cb6e1ca21a7c252405af12e7c1794ddb3bb810a4e9ce28161",
+        "bytes": 983947,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "capture": {
+        "path": ".dev/architecture-r4e-real-short-v1/guest-output/ws73.pcap",
+        "sha256": "a4e0d4c4e4890554747be9a430383a3ce1cfbe46f8fd06d4b2c20c338edd7363",
+        "bytes": 680528,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "replay": {
+        "path": ".dev/architecture-r4e-real-short-v1-r4e-owned-audit-v1.json",
+        "sha256": "36ee3d35650a811051de20b41d17293d1befabb2c7c80d72fda36d1604b0f045",
+        "bytes": 3023,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "application_bytes": 61,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": false,
+      "security_requirement": 0,
+      "metadata_commands": 4
+    },
+    {
+      "name": "architecture-r4e-real-long-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-r4e-real-long-v1/manifest.json",
+        "sha256": "45d01cd4dc2a1dbfe0a91f2393ce784eba3c84c1b978f0fa7294e17874ff3648",
+        "bytes": 2859879,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "run": {
+        "path": ".dev/architecture-r4e-real-long-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "9427833f86cecf92bfad9a1add256cf79732067f453868cc09d97490956258a5",
+        "bytes": 1110726,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "capture": {
+        "path": ".dev/architecture-r4e-real-long-v1/guest-output/ws73.pcap",
+        "sha256": "8f5b527fb277314017a2673a72ec8b2aea94404c3dda2c58de3451ca59bca9e5",
+        "bytes": 1207776,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "replay": {
+        "path": ".dev/architecture-r4e-real-long-v1-r4e-owned-audit-v1.json",
+        "sha256": "7eda15cca8cacd7151adf58bcb349d5f55e61f3602fc1d418100777cab571e18",
+        "bytes": 3023,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "application_bytes": 2042,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": true,
+      "security_requirement": 0,
+      "metadata_commands": 4
+    },
+    {
+      "name": "architecture-r4e-real-boundary-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-r4e-real-boundary-v1/manifest.json",
+        "sha256": "cdecfca316696b8ac6065d3644176e74af2381ef59a19bb3bbe7d156118cc582",
+        "bytes": 1599119,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "run": {
+        "path": ".dev/architecture-r4e-real-boundary-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "7dab2e08ad70ff9e4001e5b545782b98548301aed3b6efc1c467d3be57446615",
+        "bytes": 962619,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "capture": {
+        "path": ".dev/architecture-r4e-real-boundary-v1/guest-output/ws73.pcap",
+        "sha256": "852c5fe718be258d9dc6077b8ce939cba9e5670d82f8f593c4b6abe6a672f06b",
+        "bytes": 636160,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "replay": {
+        "path": ".dev/architecture-r4e-real-boundary-v1-r4e-length-audit-v1.json",
+        "sha256": "3465da7897b6f86bdecc36d8deb080d1c407533dd9bce727357395220a194ed7",
+        "bytes": 1508,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "application_bytes": 249,
+      "ordinary_round_trips": 8,
+      "owned_cases": 0,
+      "service_role_acceptance": false,
+      "security_requirement": 0,
+      "metadata_commands": 4
+    },
+    {
+      "name": "architecture-r4e-real-sec2-v1",
+      "status": "PASS",
+      "manifest_status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": {
+        "path": ".dev/architecture-r4e-real-sec2-v1/manifest.json",
+        "sha256": "fd6a912cbc88359d3f82d4be5ff47d0072a348b8aef27c23325d782efb8de780",
+        "bytes": 1878046,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "run": {
+        "path": ".dev/architecture-r4e-real-sec2-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "ff377fd65a2c7b16eb5b0f2d9e592ac1993a407ad9d2f11fe8f4bfb318399b03",
+        "bytes": 1045412,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "capture": {
+        "path": ".dev/architecture-r4e-real-sec2-v1/guest-output/ws73.pcap",
+        "sha256": "7fb85e33e64e253278396f82eaeaf27ead646a4bf3af48d10f63a93ae7c277d7",
+        "bytes": 741112,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "replay": {
+        "path": ".dev/architecture-r4e-real-sec2-v1-r4e-owned-audit-v1.json",
+        "sha256": "ff6ce28f79c4ecc277cf3cb19f64b655e02224808faff155eb144f02d788fba5",
+        "bytes": 3023,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      "application_bytes": 61,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": false,
+      "security_requirement": 2,
+      "metadata_commands": 4
+    }
+  ],
+  "offline": {
+    "result": "PASS",
+    "scope": "Fresh exact full Kernel build and signed-module/root boot checks,19install+15pending/registration actual-function fixtures,49actual sealed two-library ABI/historical layout checks. Userspace crates/data/Cargo source scope is byte-identical to997;old304Rust/759tool results keep their original source identity and are NOT claimed freshly executed for0a here. New actual C namespace checker23f is separate offline result,not part of frozen hardware tool identity.",
+    "materials": [
+      {
+        "path": ".dev/architecture-r4e-device-kernel-build-v1.json",
+        "sha256": "49946ed4e3ed9ddcac92c39f10d8a3e129c0695be907809423877231c0c8fef6",
+        "bytes": 1668,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-device-kernel-build-v1.log",
+        "sha256": "eae709089272e8bd542546b54387026e9383032da9dfcb76ab72a13b2ce90f41",
+        "bytes": 1299608,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-device-kernel-budget-v1.json",
+        "sha256": "a2de6b9cc1a75ef216c68467bb169828cd793aca7636c1185cf46063309419ef",
+        "bytes": 1070,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-kernel-artifacts-v1/manifest.json",
+        "sha256": "d21ff26e69a8cf20ece0ca8cb4f3312ef250d95d1c49e809537842be9eb3a7c4",
+        "bytes": 229025,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-modules-v1/manifest.json",
+        "sha256": "161a7bdaab1b0840da5e89b8a19ba6a9eff28d6737adab4190bf59f49898289d",
+        "bytes": 2391,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-root-smoke-v1/manifest.json",
+        "sha256": "4a43df0f367614a7d83cadcf032fb24dd65b7ee954066c7ce7a4ad82fc4095af",
+        "bytes": 37188,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-postbuild-v1.json",
+        "sha256": "62ea989506e00bdd362f963af8a05776ecabcb80dec2150518c43115e36bb8c0",
+        "bytes": 11007,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-device-install-v3.json",
+        "sha256": "856dc8057770a942949ee229719870104db3cc9f24afc406db58b45e5569eae5",
+        "bytes": 927,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-device-install-v3.log",
+        "sha256": "eac15e99ed8d2b347ecd2c763d1c350428647b778695f98e6173938ba7d5afdc",
+        "bytes": 2432,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-device-registration-v3.json",
+        "sha256": "95694b8505c77a12ff2142638cdf5b27691393bff2ec0b5943ec8b161415a83d",
+        "bytes": 1001,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-device-registration-v3.log",
+        "sha256": "4d8b6c0bccc23ab1d3ed223120794feaf292177300e8158c69cdc88fad25e4e9",
+        "bytes": 961,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-sealed-abi-v2.log",
+        "sha256": "b3ae23d7d087b5555efcf85001bcea0f9a6049e11baed788cd8dea44580eacc0",
+        "bytes": 148,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-userspace-source-mapping-v1.json",
+        "sha256": "d9c2712d5fc52cb1a3543feb9b97bf5a7be370b365dd813edbfe4ca7ac578da6",
+        "bytes": 12722,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-metadata-audit-v1.json",
+        "sha256": "d5ad6d9351a54ea166b9916e51c93ec2e6a2554e8eace5e416b78c8dfd15e594",
+        "bytes": 10375,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r5-public-symbols-v1.json",
+        "sha256": "0cd2553b83383a44839d014d7308aec0c579cb12f55b92b27f53fb9badecba09",
+        "bytes": 3429,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r5-symbol-tests-v2.log",
+        "sha256": "24722526f94e7e3b539016a0b7834fc0a63637a0b1d22d74d8cf79205edfa68b",
+        "bytes": 801,
+        "access": "private retained workspace;raw USB/security material restricted"
+      }
+    ]
+  },
+  "role_audit": {
+    "path": ".dev/architecture-r4e-service-audit-v1.json",
+    "sha256": "b83a6d65073b1c2c33a0510405ef8c7f6338eb2c984383a013341f025c386f3c",
+    "bytes": 3084,
+    "access": "private retained workspace;raw USB/security material restricted"
+  },
+  "native_bundle": {
+    "path": ".dev/architecture-r4e-us-bundle-v1/manifest.json",
+    "sha256": "7c5df98f95950c09b16f250c28572125512ab8f76d632d585b1667d95f58fe9f",
+    "bytes": 27765,
+    "access": "private retained workspace;raw USB/security material restricted"
+  },
+  "metadata_audit": {
+    "path": ".dev/architecture-r4e-metadata-audit-v1.json",
+    "sha256": "d5ad6d9351a54ea166b9916e51c93ec2e6a2554e8eace5e416b78c8dfd15e594",
+    "bytes": 10375,
+    "access": "private retained workspace;raw USB/security material restricted"
+  },
+  "failure_retained": {
+    "materials": [
+      {
+        "path": ".dev/architecture-r4e-mask-build-v1.log",
+        "sha256": "62bfd6666c2c061c45203611dd01b7e6a3de1e8f10dff2710a1fcac1e02328f1",
+        "bytes": 7934,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-mask-build-failed-config-v1",
+        "sha256": "6a99a0d31936916c014bd06a8f0b7d27cf21aa3f1941c5d9fad0149b0f702459",
+        "bytes": 297134,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-mask-build-v2.log",
+        "sha256": "a054574a5b58bfe22aa638f978465020b2da4a79f0277e1612eb42f0ab122026",
+        "bytes": 53105,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-device-install-v1.log",
+        "sha256": "14fe82a1de77bdde6ff2978a3a85548e9c686a36c0da898bedc32b578c67329d",
+        "bytes": 1731,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-device-registration-v1.log",
+        "sha256": "b4887017ad7f19c8dc84939b3e8d0c9ce56dfb377333c61d730cfba5f550595d",
+        "bytes": 1797,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-sealed-abi-v1.log",
+        "sha256": "d1a665a21c20b70550fd9a043dc1d9a064bbc5e879e5084827bfcb326e71eb3f",
+        "bytes": 2415,
+        "access": "private retained workspace;raw USB/security material restricted"
+      },
+      {
+        "path": ".dev/architecture-r4e-sandbox-errno-witness-v1.json",
+        "sha256": "c149397703029bbf8a003b51def66d05834f9c4bf360ad1cf765a558c05bf039",
+        "bytes": 277,
+        "access": "private retained workspace;raw USB/security material restricted"
+      }
+    ],
+    "interpretation": "Initial sandbox ccache path was read-only;failed configuration probes disabled features,so saved that failed dev config and restored the ORIGINAL sealed config before the recorded stable64 full build. This caused broad recompilation despite fixedO;old qualification inputs untouched. An intentional three-module deny audit emitted127errors,not a passing build;only audited registry subset implemented,remaining DLI/mgmt catalog not mechanically suppressed. First fixture builds exposed now-unread copied capability fields;tests now assert actual input metadata and actual remaining registry fields,not fake statistics. These early dirty diagnostic failures were not fully pre-sealed whole trees;logs/baseline3files and immutable7f remain,not whole-failure provenance proof. ABI v1 three EBADF assertions failed because sandbox seccomp made direct libc getsockopt(-1) return EPERM;original log and direct witness retained. Identical49tests/artifacts passed outside sandbox without changing assertions. No failed run relabeled PASS. The old registration runner scope still says stats dependencies;the removed fake stats type is no longer present.19install/9pending are current function fixtures;the other6cases exercise archived static-open history,not current Runtime."
+  },
+  "build_diagnostics": {
+    "log_sha256": "eae709089272e8bd542546b54387026e9383032da9dfcb76ab72a13b2ce90f41",
+    "compiler_warning_count": 0,
+    "compiler_diagnostics": [],
+    "make_warning_count": 1,
+    "make_diagnostics": [
+      "make[4]: 警告: jobserver 不可用: 正使用 -j1。添加 “+” 到父 make 的规则。"
+    ],
+    "unclassified_warning_count": 0,
+    "unclassified_diagnostics": [],
+    "warning_free_log": false
+  },
+  "build_diagnostic_limits": "One make jobserver notice retained/classified;not a warning-free-log claim. No sanitizer configuration added by this cleanup.",
+  "replay": {
+    "tools_checkout": ".dev/architecture-r4d-source-v1",
+    "scripts": [
+      ".dev/architecture-r4e-owned-audit-v1.py",
+      ".dev/architecture-r4e-length-audit-v1.py",
+      ".dev/architecture-r4e-service-audit-v1.py",
+      ".dev/architecture-r4e-metadata-audit-v1.py"
+    ],
+    "command": "Matching retained scripts against exact architecture-r4e-real-*-v1 directories;SPARKLINK_KERNEL_SOURCE matching64. Frozen production corroborators remain997;compiled userspace0a.",
+    "raw_access": "Private raw retained .dev workspace with report hashes;full USB/security captures restricted because contain key material. Live reproduction requires matching explicit SDK110 U firmware/calibration,VM USB permissions and two known U boards. All real drivers VM-only."
+  },
+  "kernel_selftest_tools": "64a324844bfc66bc46de2c894bc78598c1cde515",
+  "independent_symbol_tool": "23f1da7ec923c336e7b785a9185bca83397805d0"
+}

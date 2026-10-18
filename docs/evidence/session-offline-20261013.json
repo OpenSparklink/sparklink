@@ -1,0 +1,104 @@
+{
+  "status": "SESSION_OFFLINE_SCOPED_PASS_REAL_VM_FOLLOWUP_SEPARATE",
+  "kernel_head": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
+  "userspace_head": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972",
+  "kernel_build": {
+    "status": "BUILD_PASSED",
+    "source_head": "3c8da4fac302a391090946e03d3e157eefa9cdc6",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-session-owned-kernel-build.log",
+      "sha256": "deae3a9e10f214e8ca0f3969c2a3f3bd8b4d1f2dcf226fa4e2a0805054594958"
+    }
+  },
+  "formal": "session-formal-20261013/manifest.json",
+  "strict_clippy": "PASS",
+  "application_unit_tests": 2,
+  "tooling_tests": 423,
+  "reports": {
+    "session-native-final-tests.json": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 28,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "real_data_acceptance": false,
+      "socket_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_native.rs": "58cd158b05fd6c218181803bbdca93e76ede1d4c1c83beb138a291ee5ffa8f1f",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "d4dee681bdba31c26a860bffe2dd67e306cdadf83569c69cf43f61624e87ce3b",
+        "net/sparklink/sle_sessions.rs": "7fa8e9315ac1bc481500de1ba2d2c0b27ea9750c1e84492b28f83b815ff0697e",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "641eeb6fca7860cf2f6bdbb9a8c062c8c54824912647a90e8c25ee7103755ca3"
+      }
+    },
+    "session-ticket-final-tests.json": {
+      "status": "WS73_ACTUAL_TICKET_DRIVER_FAULTS_PASS",
+      "cases": 11,
+      "scope": "actual C preparation/atomic submit/completion/finite wait/kill/join bodies + wire codec; USB/lock/time are explicit dependencies",
+      "physical_acceptance": false,
+      "whole_ticket_proof": false,
+      "production_bodies_sha256": "f2d960f629acdfd96a9add76af92e83cb40940d2ac5ea641904bae3512b7c335",
+      "sources": {
+        "drivers/sparklink/ws73/usb.c": "0034f43f2cb46db2a50650b6498593784cea0757e2dfa33cd115a525019cd4f9",
+        "drivers/sparklink/ws73/wire.c": "d953b9c6bcd6745e4d5e4f30fb608a7646b9191ee099c62d547e17b72ce6e83a",
+        "drivers/sparklink/ws73/wire.h": "3fd8d6da2f1db5fa1387eed0a381d3c183aa249afc5f2d30b48208ab97e56ddb",
+        "tools/testing/selftests/sparklink/native-ticket/driver_fixture.c": "703cce5227159dc6e18a8b5494e7d9277819e1cdb7bb8b8ea33ace369b13b601"
+      }
+    },
+    "session-route-tests-v2.json": {
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "scope": "actual single-consumer route/local TCID+PI/finite RX and atomic channel submit-consent; kernel allocation/lock/wakeup dependencies; capability reply integration separately tested",
+      "physical_acceptance": false,
+      "whole_session_proof": false,
+      "bodies_sha256": "010691d23bc86eaf493b56b6217672a8dfb941717fe5ce8aa7f667c157919df3",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "732ab59f01a187ecaefb75827766030c6971f5df639f1cbb426112d7305aa622",
+        "net/sparklink/sle_channel_state.h": "3cf939ce87b914f9cee06391029a73f8cc2b1b0cf4a793293354ad4d11221612",
+        "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+        "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+        "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "fa131d102d10dbe42ede67aaa36db5bd2e4e1a4052070aebc1590b5a2bea96af"
+      }
+    }
+  },
+  "remaining": [
+    "Full Session/VFS/kref refinement and KCSAN/lockdep",
+    "Grant epoch/security/direction",
+    "Dynamic TCID/close/rebind protocol",
+    "NOCP/old RX wire identity and reuse barriers",
+    "Physical unplug/controlled in-flight close/independent natural recovery",
+    "Full S0-S6/19WP/10FV/12DG"
+  ],
+  "ci": {
+    "run_id": 38303054893,
+    "head": "d1f9ddead8d78389b2e6771ae39e34bfdfdd5972",
+    "jobs": 9,
+    "conclusion": "success"
+  },
+  "real_evidence": [
+    "ws73-session-owned-short-repeat-20261013.json",
+    "ws73-session-owned-249-boundary-20261013.json"
+  ]
+}

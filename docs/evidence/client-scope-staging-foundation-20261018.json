@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "status": "OFFLINE_FOUNDATION_ONLY_NOT_NEW_REAL_QUALIFICATION",
+  "baseline_userspace": "931f035392720ac6ad0e3cb246c8a080cc5b1b7b",
+  "production": "Shared Client observes name transitions before owner lookup; terminal scope shared by clones. Four manager local-staging calls use the existing SDK and independent contract. No new Engine, authorization epoch or implicit physical cleanup.",
+  "counterexample": "Actual baseline Client accepted readonly calls after the same unique owner released/reacquired the service name; preserved baseline FAIL, not RF misdelivery.",
+  "tests": {
+    "workspace_passed": 335,
+    "strict_all_features_clippy": "PASS",
+    "actual_private_bus": "owner transition, clone/final release, bus termination, staging SDK and all four CLI commands"
+  },
+  "boundaries": [
+    "Source and tools are in this commit; no new artifact or real WS73 qualification",
+    "Staging success is local only; a failed response after mutation does not prove rollback or permission to retry",
+    "Owned and security Agent callers remain to migrate; targeted original-owner cleanup must survive scope loss",
+    "Not a kernel authorization epoch or atomic bus-to-USB proof; no new formal proof",
+    "C/Python broker/SSAP convenience and clean-VM deployment remain open"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5e-owner-baseline-v1.json",
+      "sha256": "162eca9337618fa8f7d4837d09fb078762bb466754867d32eca237652afb4955",
+      "bytes": 811,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-owner-baseline-v1.log",
+      "sha256": "82b3913e801e812ac7356a526f13ffb9255d1ed5175c6226ce61f521c189f802",
+      "bytes": 1458,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-owner-fixed-v1.log",
+      "sha256": "4bea28602e0dead86d0369cd17973fc637ed63c414f03868bce5a7ad27628fae",
+      "bytes": 885,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-owner-suite-v1.log",
+      "sha256": "81a908f8ffc6ef0bc5ef89cfdd2a62be9b6c52766aef61012d6bd3b2b4c896e5",
+      "bytes": 3375,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-staging-test-v1.log",
+      "sha256": "07027ffa02a03db4b875813e17c705ebf2284bbbc9f3f6dfcfa6c01489fcbe74",
+      "bytes": 1051,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-staging-cli-v1.log",
+      "sha256": "1c219591d3c3f244dddb97d5f67582161f2154a38f3230a4075ad84992121b3c",
+      "bytes": 1012,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-foundation-workspace-v1.log",
+      "sha256": "9bc593ae015b6100f7e137eb3959e8434ec2c013bce5b76b22746c3b97a22c7b",
+      "bytes": 36248,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-foundation-workspace-budget-v1.json",
+      "sha256": "837c0194495b620ce735fc12ce5f7a6beec0dd6915422e7938d9a6daddab9e37",
+      "bytes": 891,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-foundation-clippy-v1.log",
+      "sha256": "c604f3013d92fa8fd937d0663562a3bc1db0bec52fad22e5cfb92b5f08051f9b",
+      "bytes": 1071,
+      "access": "private development evidence; no firmware or raw identity published"
+    },
+    {
+      "path": ".dev/architecture-r5e-foundation-clippy-budget-v1.json",
+      "sha256": "7d2b48c93990d8252f5fcbb4b1642ac901d15775e6f01300f4f5d13fabfeb198",
+      "bytes": 950,
+      "access": "private development evidence; no firmware or raw identity published"
+    }
+  ]
+}

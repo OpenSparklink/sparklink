@@ -1,11 +1,8 @@
-sparklink (0.1.0-1) unstable; urgency=medium
+sparklink (0.1.0-1) UNRELEASED; urgency=medium
 
-  * Initial release.
-  * slkd: SparkLink D-Bus management daemon
-  * slkconfig: CLI configuration tool
-  * slctl: interactive control shell
-  * slkmon: protocol analyzer
-  * slkdump: frame dump utility
-  * libsparklink: shared library with C FFI
+  * Consolidate development installation layout and explicit application/Native
+    libraries. Packaging and release qualification remain source-bound.
+  * Include slktest, pkg-config, policy, sysusers and udev integration.
+  * Preserve administrator configuration and state on removal.
 
- -- SparkLink Maintainers <sparklink@example.com>  Mon, 01 Jan 2025 00:00:00 +0800
+ -- sanchuanhehe <wyihe5220@gmail.com>  Sun, 18 Oct 2026 00:00:00 +0800

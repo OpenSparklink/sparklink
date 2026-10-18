@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "result": "EXPECTED_OLD_POLICY_GETINFO_DENIAL_OBSERVED_NOT_POSITIVE_QUALIFICATION",
+  "compiled_userspace": "a6b968db6705406d16aea21d232a2e236c89d28f",
+  "executed_tools": "a421470147ebd829bab09303b564df38d739ce48",
+  "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "scope": "Actual disposable-VM system-bus permission negative only. Original run remains FAIL;no new application delivery, full permissions, architecture or recovery PASS.",
+  "observed": {
+    "uid": 1004,
+    "gid": 1004,
+    "extra_groups": [],
+    "capabilities": 0,
+    "request_file_mode": "0600",
+    "raw_device_opens": "denied",
+    "own_service": "AccessDenied",
+    "connection_get_info": "AccessDenied",
+    "channel_pair_started": false
+  },
+  "old_policy_source_sha256": "5b629a5da1be0cdf91a76787ad3229c7127e4776d9b87895ee1bba2b86fe1b66",
+  "earlier_failure": "Firstattemptstoppedatstrictfileguardbeforepolicy;actualoriginalmodewasnotrecordedandhostextractionnormalizesmetadata. No policy result is inferred from it. Explicit0600request/0644rootoutputretainsoriginalguard;newrequestmetadatawasrecorded.",
+  "remaining": [
+    "Allow only necessary apps-group read-only GetInfo;all other native management,SSAP,security and service ownership denials remain.",
+    "Obtain actual SDK/peer/USB role-positive and original path regression on exact new artifact;full lifecycle/originaldeadline/architecture remain open."
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v2/manifest.json",
+      "sha256": "9ff0cd5d5465e5fa93719619337f4a7cde30897ce094d626fa075b738f05ea5c",
+      "bytes": 49665
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v2/guest-output/application-role/phase-0/run.json",
+      "sha256": "14431e2f742efad98b507bacbaffacecea5c6299191a34713ade5de6133c9261",
+      "bytes": 10600
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v2/guest-output/application-role/phase-0/probe.stdout",
+      "sha256": "8334f7fda6248d1742c4e2de989c8922953fe3c6d9821f97f1e3293392d593b9",
+      "bytes": 103
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v2/guest-output/application-role/phase-0/probe.stderr",
+      "sha256": "6d92c8c64148c9924e35a04a3f97eca7a41f9887c29b27da04580e4bac06c35a",
+      "bytes": 423
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v2/guest-output/application-role-supervisor.log",
+      "sha256": "6a593cd7eb056aa02023e31e7804906d31cea1abee26e4eee7450096c191be1f",
+      "bytes": 1075
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "cc0d50eca97951d929cf6ad2e318ffe35be5b386f72a97ceef232412efe32a37",
+      "bytes": 45901
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v2/guest-output/ws73.pcap",
+      "sha256": "e35866222ec5a13c710253d67836d0b10d7fba9156432563d03300e1f40a5320",
+      "bytes": 59124
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v2/guest-output/capture-stats.txt",
+      "sha256": "e796804c71472d2dbe4643c827ace3edaaa7c07fbd8a7edf5b9714ea1d12ff58",
+      "bytes": 225
+    },
+    {
+      "path": ".dev/architecture-r5f4-denial-prepared-v2/manifest.json",
+      "sha256": "808b40beea98ce6cfd258b0e86c2e1f643b282dadfc19c243f7d78c81adacaeb",
+      "bytes": 297516
+    },
+    {
+      "path": ".dev/architecture-r5f4-denial-us-bundle-v1/manifest.json",
+      "sha256": "de250e5f907b37ff06dd0596c4a187af6659bc01b3598f236c38f4acbdc7789e",
+      "bytes": 31396
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v1/manifest.json",
+      "sha256": "00ce6e92b02df4581fed69cef5ab582008ab230ae92cb178bc0cb0ab5c47b5c7",
+      "bytes": 48910
+    },
+    {
+      "path": ".dev/architecture-r5f4-old-policy-negative-v1/guest-output/application-role-supervisor.log",
+      "sha256": "704a6aeb66fd92d8420c53428aa787b3e51e60cb4155aff166f0e8d19e86344c",
+      "bytes": 575
+    }
+  ]
+}

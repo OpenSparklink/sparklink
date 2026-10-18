@@ -1,0 +1,31 @@
+{
+  "status": "EXPECTED_COUNTEREXAMPLE",
+  "production_proof": false,
+  "failed_properties": [
+    {
+      "property": "main.assertion.2",
+      "description": "assertion !d.metadata_valid",
+      "sourceLocation": {
+        "comment": "assertion !d.metadata_valid",
+        "file": "/home/sanchuanhehe/Documents/opensparklink/.dev/standard-snapshot-v2-weak-proof/actual.c",
+        "function": "main",
+        "line": "151",
+        "pragma": [
+          "checked:bounds-check",
+          "checked:pointer-check",
+          "checked:div-by-zero-check",
+          "checked:signed-overflow-check",
+          "checked:unsigned-overflow-check",
+          "checked:undefined-shift-check",
+          "checked:pointer-primitive-check"
+        ],
+        "propertyClass": "assertion",
+        "propertyId": "main.assertion.2",
+        "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+      },
+      "status": "FAILURE"
+    }
+  ],
+  "mapping": "actual44 failed-query ENODATA/no-output-overwrite; deliberately broken invalidation, not actual physical fault",
+  "original_solver": "weak/solver.json.gz"
+}

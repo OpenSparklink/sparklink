@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "status": "ACTUAL_NATIVE_SEEDED_SEQUENCES_SCOPED_PASS",
+  "production_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "selftest_commit": "a474a8503637f10cdf1c1160f64f6391c40919a7",
+  "selftest_source_changes": "Only fixture and runner;productionRuntime unchangedfromK400",
+  "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+  "sources": {
+    "net/sparklink/sle_native.rs": "0a2794f2a27d372cfe1debb70f9b2a1895996f91afa25e67eca21dae8f66c1d1",
+    "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+    "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+    "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+    "net/sparklink/sle_host.rs": "4eccb8c3c4e4b954778438cd2bf911bcd12faf8a679a6e61e415ffcccd45ed88",
+    "net/sparklink/sle_sessions.rs": "c5597f3d54cd20102cc40d719abea233d976f05e8abd8dfb0dcb3a0aeb75f84e",
+    "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+    "net/sparklink/sle_dli.rs": "c2935790c9edd1167f037694318dc2d5d1531df0611410a1fa594f3715c8b981",
+    "tools/testing/selftests/sparklink/native-data/fixture.rs": "300379921bf71325d124f80d32182e18b58959f1e3730710a602bf2db242b942"
+  },
+  "runner_sha256": "727ca043be981de4380e2b9f2320695edd095be71259951918c824b70d358abc",
+  "generated_fixture_sha256": "cb41220c63d502d46478708e967cfef8a389c2dc24730d15457f3087c83691a1",
+  "test_binary_sha256": "20bd6d2be7164adeeebf8e426205feb39b0f427f87536a206edcd79d382842e7",
+  "tests": 45,
+  "stateful_sequences": {
+    "seed": 7536913,
+    "cases": 1024,
+    "events": 32768,
+    "primed": 1024,
+    "accepted": 289,
+    "refused": 3790,
+    "failure_attempts": 1957,
+    "atomic_rejections": 113,
+    "uncertain": 125
+  },
+  "counterexamples": [
+    {
+      "name": "ignore-epoch",
+      "status": "EXPECTED_REAL_SEQUENCE_COUNTEREXAMPLE",
+      "exit": 1,
+      "expected_assertion": "no new physical submit from revoked/stale/cancelled admission",
+      "mutation_source_sha256": "5dafdc68a938324c598ed0de994ad3fc637a6179fa353c5d2b2c188c750aaea8",
+      "trace": "sequence failure seed=7536913 case=21 operations=[1, 0]: no new physical submit from revoked/stale/cancelled admission",
+      "log_sha256": "ef8ac1cfee338bc1d0f0dfa531f6ecd05a386d3a0e2e350c7a212de9fb990cbb"
+    },
+    {
+      "name": "refund-uncertain",
+      "status": "EXPECTED_REAL_SEQUENCE_COUNTEREXAMPLE",
+      "exit": 1,
+      "expected_assertion": "uncertain failure retains physical debt",
+      "mutation_source_sha256": "9bafa930ab6f231159b4fbb6b9476689df235706ba8e4b92419fd815e339f6bf",
+      "trace": "sequence failure seed=7536913 case=4 operations=[7]: assertion `left == right` failed: uncertain failure retains physical debt: [7]",
+      "log_sha256": "ee2eebe95e241f289ee66344e10acb63e9c50f97b62c7fba49705b2786a910fe"
+    }
+  ],
+  "scope": [
+    "Actual production NativeTX/credit/authority/ingress transitions after a valid initial submit, 1024 seeded 32-event sequences; explicit USB/locks/clock/owner/consent fixtures. Conservation, no stale submit, definite/uncertain failure and controller isolation only. Not exhaustive/formal, original-deadline/worker/VFS concurrency or NOCP accuracy/reuse proof.",
+    "After1024 validinitialsubmits,32768generatedevents.1957configured failureattempts include only113actualatomic callback rejections;125actual acceptedthenuncertainfixture outcomes retain debt. Counts are not hardwaremeasurements.",
+    "Privateproductionmutants disabletwoepochchecks orrefund accepteduncertain send. Actualsequence test alone failswith deterministicseed/case/trace and intendedassertion. Firstnegativeattempt failedstrictcompile becausemutationleftunreadfield:NOT avalidcounterexample;retained,notcountedasPASS.",
+    "No formalproof/exhaustivecoverage/kernel locks/refcounts/VFS/USB/firmwareNOCPtruth/reuse orreal originaldeadline fromthis fixture. Actualdeadline is separatelytested inVM. ExistingNOCPReusecounterexample remainsOPEN.",
+    "Generatedharness andactualtestbinary retained;overwriteattempt rejectedunchanged;allsourcebytes checkedstable. No mockswithalwayssuccessfulcredit/authorization."
+  ],
+  "negative_compile_attempt": "NOT_VALID_COUNTEREXAMPLE_STRICT_COMPILER_REJECTION_RETAINED",
+  "materials": [
+    {
+      "private_workspace_path": ".dev/native-sequence-v4.json",
+      "sha256": "3971b1a8a686f7d3536ee372d70cb3486caa5809f93e43f1ad25743fd1574db6",
+      "bytes": 2208
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-v4.log",
+      "sha256": "34f97ec6ab0b87bc4d3ecd6ffe5b396903180e26004d7fab0827e8fea4ff9289",
+      "bytes": 9952
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-v4.bin",
+      "sha256": "20bd6d2be7164adeeebf8e426205feb39b0f427f87536a206edcd79d382842e7",
+      "bytes": 7418376
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-v4.fixture.rs",
+      "sha256": "cb41220c63d502d46478708e967cfef8a389c2dc24730d15457f3087c83691a1",
+      "bytes": 50227
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-v1.json",
+      "sha256": "7be3571c69cf2591b6d6aed5ba9e936e5a40202424d6df598f8639ad74f40909",
+      "bytes": 1847
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-v1.log",
+      "sha256": "dbbf57ce2b04e436faf318ee2e780c970929b5778f79cad2252e8399b000c18a",
+      "bytes": 9565
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-negative-v1.py",
+      "sha256": "b6c18ac88304c2fe01fe223effc54ca74fa31ad57bb06f3fca373a195d34f613",
+      "bytes": 3029
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-negative-v2.py",
+      "sha256": "87ef41670e15d0ec0e346af5a66dc79be655d8102b891f5b3f9f3037f66d5d63",
+      "bytes": 3045
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-negative-v2.json",
+      "sha256": "e3a0bd4c7f2619b42b051401445b4ae8233dd8dbcaf94d8bfd209377619a71c4",
+      "bytes": 1324
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-overwrite-control.json",
+      "sha256": "25473efd53489c2303d669fb72d43e7c21f9ca160b506be1fcc7cf9208e230e6",
+      "bytes": 532
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-ignore-epoch.log",
+      "sha256": "b97d1344619fc485eb562240050dd5f5b7c7fb9f445d1c2254062dee564f759b",
+      "bytes": 1628
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-v2-ignore-epoch.json",
+      "sha256": "0ea25a2b9d7b40d0a0328f0a6b4f5dbc07ae43a27e976654bdea2ccb66a0a6ce",
+      "bytes": 388
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-v2-ignore-epoch.log",
+      "sha256": "ef8ac1cfee338bc1d0f0dfa531f6ecd05a386d3a0e2e350c7a212de9fb990cbb",
+      "bytes": 1834
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-v2-ignore-epoch.bin",
+      "sha256": "7a158146e87b926f1b1de843399b0279b51fb12e2625b8cbae2a2ab0aff80eae",
+      "bytes": 7418376
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-v2-ignore-epoch.fixture.rs",
+      "sha256": "eb7ef65d6c0a360f1dd3a4e57b440fad1d3ad535992d2f3dd45bf7ba514f5fc8",
+      "bytes": 50245
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-v2-refund-uncertain.json",
+      "sha256": "3b7593ded7e94252d2b79848229e4c3205910854b08a6446333c995317208e2d",
+      "bytes": 388
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-v2-refund-uncertain.log",
+      "sha256": "ee2eebe95e241f289ee66344e10acb63e9c50f97b62c7fba49705b2786a910fe",
+      "bytes": 1911
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-v2-refund-uncertain.bin",
+      "sha256": "386a6448c2d2c7b193e525a31c1cd5c94a45145018d294e46ab1110fea31b9b7",
+      "bytes": 7418392
+    },
+    {
+      "private_workspace_path": ".dev/native-sequence-mutant-v2-refund-uncertain.fixture.rs",
+      "sha256": "a8fbbea03bca68d246cd489f7a4f30da839fa4f4e798d51fb1e736b02b321e57",
+      "bytes": 50245
+    }
+  ]
+}

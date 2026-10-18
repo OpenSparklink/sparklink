@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "status": "FAIL_RETAINED_PROBE_EXTRACTION_ERROR",
+  "compiled_userspace_and_tools": "4008c555eaf1def7200cd1e4d5061a31e3d94e08",
+  "failure": "Moving the guest probe into main indented embedded multiline Python source;outer py_compile did not compile embedded source. Actual policy process failed before assertions.",
+  "fix": "Dedent both embedded scripts and directly compile the actual source constants before a VM run. Keep original permissions and all previous assertions.",
+  "scope": "Harness failure;no permission or deployment qualification;first failure also retained",
+  "materials": [
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v2/guest.py",
+      "sha256": "aa1a9d65b65f69e86aeef1a55e7f1e716b2b85e0d52b058418cf96e38e315a31",
+      "bytes": 13415,
+      "access": "private workspace retained"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v2/run.json",
+      "sha256": "58481c352b2aaf63889d9c5f5f58b6341c01da7316bd49f38fa89b7370c1c0d7",
+      "bytes": 1108,
+      "access": "private workspace retained"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v2/console.log",
+      "sha256": "bdce8c74d85f466044b66260d6acdec8f2484bd0028c6036456cb241bdaefb60",
+      "bytes": 68504,
+      "access": "private workspace retained"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v2/export/outputs/result.json",
+      "sha256": "be335da637bd0bddafb002e88e2817f94a9f5b372e75ee8ba1316446c6e4da66",
+      "bytes": 12298,
+      "access": "private workspace retained"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v2/export/outputs/policy.py",
+      "sha256": "b1f43fb88d01b45857faae4b1e1a2bcd280a9c92d40778a6b929344458a4afea",
+      "bytes": 1822,
+      "access": "private workspace retained"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v2/export/outputs/system-bus-observer.log",
+      "sha256": "84a420c7a2f6c9490e51ceac773c6f75bf3b24bb3d0d3bdeab7949a407aa4b2c",
+      "bytes": 153,
+      "access": "private workspace retained"
+    }
+  ]
+}

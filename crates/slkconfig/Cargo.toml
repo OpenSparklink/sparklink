@@ -9,6 +9,8 @@ name = "slkconfig"
 path = "src/main.rs"
 
 [dependencies]
+anyhow = "1"
 slk-protocol = { workspace = true }
-libsparklink = { workspace = true }
+slk-native = { workspace = true }
 clap = { workspace = true }
+nix = { workspace = true }

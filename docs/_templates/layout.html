@@ -1,0 +1,7 @@
+{% extends "!layout.html" %}
+{# Book Theme owns the article controls. PyData's additional navbar creates
+   hidden duplicate toggles and steals the first-element event bindings.
+   Keep only its geometry anchor, which the parent scroll spy requires. #}
+{% block docs_navbar %}
+<header id="pst-header" class="bd-header" hidden aria-hidden="true"></header>
+{% endblock %}

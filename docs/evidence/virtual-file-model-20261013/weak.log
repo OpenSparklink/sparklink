@@ -1,0 +1,103 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 102 and seed 2655046919187920703 with 2 workers on 16 cores with 1820MB heap and 64MB offheap memory [pid: 2199342] (Linux 7.2.8-200.fc44.x86_64 amd64, Red Hat, Inc. 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lifecycle/virtual-file/VirtualFile.tla
+Parsing file /tmp/Naturals.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Sequences.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module VirtualFile
+Starting... (2026-10-13 19:31:00)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-10-13 19:31:00.
+Error: Invariant WorkHasContext is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ generation = (s0 :> 0 @@ s1 :> 0)
+/\ aliases = (s0 :> 0 @@ s1 :> 0)
+/\ context = (s0 :> FALSE @@ s1 :> FALSE)
+/\ nextGeneration = 1
+/\ queued = (s0 :> FALSE @@ s1 :> FALSE)
+/\ emitted = (s0 :> FALSE @@ s1 :> FALSE)
+/\ running = (s0 :> FALSE @@ s1 :> FALSE)
+/\ phase = (s0 :> "Free" @@ s1 :> "Free")
+/\ accepted = (s0 :> 0 @@ s1 :> 0)
+/\ captured = (s0 :> 0 @@ s1 :> 0)
+
+State 2: <Open line 18, col 12 to line 25, col 62 of module VirtualFile>
+/\ generation = (s0 :> 1 @@ s1 :> 0)
+/\ aliases = (s0 :> 1 @@ s1 :> 0)
+/\ context = (s0 :> TRUE @@ s1 :> FALSE)
+/\ nextGeneration = 2
+/\ queued = (s0 :> FALSE @@ s1 :> FALSE)
+/\ emitted = (s0 :> FALSE @@ s1 :> FALSE)
+/\ running = (s0 :> FALSE @@ s1 :> FALSE)
+/\ phase = (s0 :> "Live" @@ s1 :> "Free")
+/\ accepted = (s0 :> 0 @@ s1 :> 0)
+/\ captured = (s0 :> 0 @@ s1 :> 0)
+
+State 3: <Send line 39, col 12 to line 42, col 61 of module VirtualFile>
+/\ generation = (s0 :> 1 @@ s1 :> 0)
+/\ aliases = (s0 :> 1 @@ s1 :> 0)
+/\ context = (s0 :> TRUE @@ s1 :> FALSE)
+/\ nextGeneration = 2
+/\ queued = (s0 :> TRUE @@ s1 :> FALSE)
+/\ emitted = (s0 :> FALSE @@ s1 :> FALSE)
+/\ running = (s0 :> FALSE @@ s1 :> FALSE)
+/\ phase = (s0 :> "Live" @@ s1 :> "Free")
+/\ accepted = (s0 :> 0 @@ s1 :> 0)
+/\ captured = (s0 :> 0 @@ s1 :> 0)
+
+State 4: <LastClose line 34, col 17 to line 38, col 65 of module VirtualFile>
+/\ generation = (s0 :> 1 @@ s1 :> 0)
+/\ aliases = (s0 :> 0 @@ s1 :> 0)
+/\ context = (s0 :> TRUE @@ s1 :> FALSE)
+/\ nextGeneration = 2
+/\ queued = (s0 :> TRUE @@ s1 :> FALSE)
+/\ emitted = (s0 :> FALSE @@ s1 :> FALSE)
+/\ running = (s0 :> FALSE @@ s1 :> FALSE)
+/\ phase = (s0 :> "Retiring" @@ s1 :> "Free")
+/\ accepted = (s0 :> 0 @@ s1 :> 0)
+/\ captured = (s0 :> 0 @@ s1 :> 0)
+
+State 5: <BeginWork line 43, col 17 to line 50, col 47 of module VirtualFile>
+/\ generation = (s0 :> 1 @@ s1 :> 0)
+/\ aliases = (s0 :> 0 @@ s1 :> 0)
+/\ context = (s0 :> TRUE @@ s1 :> FALSE)
+/\ nextGeneration = 2
+/\ queued = (s0 :> FALSE @@ s1 :> FALSE)
+/\ emitted = (s0 :> FALSE @@ s1 :> FALSE)
+/\ running = (s0 :> TRUE @@ s1 :> FALSE)
+/\ phase = (s0 :> "Retiring" @@ s1 :> "Free")
+/\ accepted = (s0 :> 0 @@ s1 :> 0)
+/\ captured = (s0 :> 1 @@ s1 :> 0)
+
+State 6: <DriverClose line 61, col 19 to line 65, col 67 of module VirtualFile>
+/\ generation = (s0 :> 1 @@ s1 :> 0)
+/\ aliases = (s0 :> 0 @@ s1 :> 0)
+/\ context = (s0 :> TRUE @@ s1 :> FALSE)
+/\ nextGeneration = 2
+/\ queued = (s0 :> FALSE @@ s1 :> FALSE)
+/\ emitted = (s0 :> FALSE @@ s1 :> FALSE)
+/\ running = (s0 :> TRUE @@ s1 :> FALSE)
+/\ phase = (s0 :> "Stopping" @@ s1 :> "Free")
+/\ accepted = (s0 :> 0 @@ s1 :> 0)
+/\ captured = (s0 :> 1 @@ s1 :> 0)
+
+State 7: <FinishRetire line 66, col 20 to line 70, col 68 of module VirtualFile>
+/\ generation = (s0 :> 1 @@ s1 :> 0)
+/\ aliases = (s0 :> 0 @@ s1 :> 0)
+/\ context = (s0 :> FALSE @@ s1 :> FALSE)
+/\ nextGeneration = 2
+/\ queued = (s0 :> FALSE @@ s1 :> FALSE)
+/\ emitted = (s0 :> FALSE @@ s1 :> FALSE)
+/\ running = (s0 :> TRUE @@ s1 :> FALSE)
+/\ phase = (s0 :> "Free" @@ s1 :> "Free")
+/\ accepted = (s0 :> 0 @@ s1 :> 0)
+/\ captured = (s0 :> 1 @@ s1 :> 0)
+
+627 states generated, 287 distinct states found, 143 states left on queue.
+The depth of the complete state graph search is 7.
+The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 5 and the 95th percentile is 4).
+Finished in 00s at (2026-10-13 19:31:00)

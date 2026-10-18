@@ -1,0 +1,62 @@
+{
+  "scope": "Maintenance receipts only;no newRF orformal qualification",
+  "compiled_userspace": "4736dd287ad8edfde2223f776cb4ad3ac5f198f6",
+  "report_commit": "7f15621",
+  "canonical_commit": "4772063",
+  "issues": "Six original bodies unchanged andOPEN;exact receipt retained",
+  "goal": "active/fullscope unchanged;APIobjective cannot be edited;linked plan updated",
+  "checks": [
+    "2194 private index entries byte-verified;9finitegates",
+    "32 qualification validator tests",
+    "metadata completed/errors0;METADATA_ONLY_NOT_REVERIFIED,overallINCOMPLETE",
+    "116-document inventory andstrictHTML;first network-restricted uvfetch failed,locked dependencies theninstalled andstrictbuild passed"
+  ],
+  "remaining": [
+    "All R5d/localOwned/Agent/C-Python/R6 andoriginalconditions;no wholecurrenttreequalification",
+    "NaturalRCA/nonmanualrecovery andoriginalretentionincident remainOPEN"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5c-issue-receipts-v1.json",
+      "sha256": "ec33a31ef40617331ac352352b0a433eeefc212fdc13646a3d8c390a88ea8261",
+      "bytes": 2817,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-global-metadata-v1.json",
+      "sha256": "dd4ced278884c5c9f7dfd68967454db4e6beb18f79300e0263eaeaa492e1ebc1",
+      "bytes": 873184,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-registry-preflight-v1.json",
+      "sha256": "aef4a133eee92ef9cfa142c04b65d543ef978967a20fdc3f7651d79ddc7c16ac",
+      "bytes": 1370,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-qualification-tests-v2.log",
+      "sha256": "bf67abe8d6a852eb355dd6a21b8efaf7291de0c6858df7ce3720f2e4088d55d1",
+      "bytes": 131,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-sealed-docs-v2.log",
+      "sha256": "b1ed26170a4114d2796b22ce62eb68cc9afd683a89f919e72e899e65f6d0ad9d",
+      "bytes": 881993,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-sealed-docs-v1.log",
+      "sha256": "63bc187d2c64d4620b5ccc2ef097fad9f47a5fa3931979ce1c5368e02016d0ce",
+      "bytes": 876089,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5c-docs-sync-v2.log",
+      "sha256": "367cea18ced9e6f0557429f60a968650c49c494b967df3fbf43d057ef4c72d71",
+      "bytes": 1141,
+      "access": "private ownerworkspace"
+    }
+  ]
+}

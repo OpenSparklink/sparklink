@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_BATCH_SYNC_READBACK_AND_CI_PASS",
+  "source_commit": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "canonical_commit": "b791cfaa550f3bfcde48d6244bc175a7a0efe9fb",
+  "report_commits": [
+    "25bbb10",
+    "253702e"
+  ],
+  "issue_receipts": [
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6209897540",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "f7c18eca812cb40fe5ecfd41bbd87df25176de07c8bda2591b5c5d9a72de187b"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6209898549",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "f7c18eca812cb40fe5ecfd41bbd87df25176de07c8bda2591b5c5d9a72de187b"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6209899780",
+      "exact_readback": true,
+      "original_scope_unchanged": true,
+      "state": "OPEN",
+      "body_sha256": "f7c18eca812cb40fe5ecfd41bbd87df25176de07c8bda2591b5c5d9a72de187b"
+    }
+  ],
+  "ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38863820146,
+      "headSha": "b791cfaa550f3bfcde48d6244bc175a7a0efe9fb",
+      "name": "Production codec bounded fuzz",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38863820146"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38863820125,
+      "headSha": "b791cfaa550f3bfcde48d6244bc175a7a0efe9fb",
+      "name": "Documentation",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38863820125"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38863820130,
+      "headSha": "b791cfaa550f3bfcde48d6244bc175a7a0efe9fb",
+      "name": "Qualification integrity",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38863820130"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38863820136,
+      "headSha": "b791cfaa550f3bfcde48d6244bc175a7a0efe9fb",
+      "name": "CI",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38863820136"
+    }
+  ],
+  "final_tools_regression": {
+    "status": "PASS",
+    "count": 614,
+    "execution_source": "Exact25df09b tools subtree;publication commitb791 hasno toolsourcechanges",
+    "note": "Full rerun includes final malformed-credit type controls;earlier interim logs retained.",
+    "log_sha256": "f1f80bae4f9b588479fb991b0a25f86beed320f5859fb755dd76f6291dbdf9d1"
+  },
+  "materials": [
+    {
+      "private_workspace_path": ".dev/dynamic-burst-exact-final-test-inputs.json",
+      "sha256": "9c6a96af5374878c961f98dc782d7f215f4c6098e711ef6d134bedc823799899",
+      "bytes": 22436
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-all-tools-exact-final.log",
+      "sha256": "f1f80bae4f9b588479fb991b0a25f86beed320f5859fb755dd76f6291dbdf9d1",
+      "bytes": 749
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-both-local-provenance-v1.json",
+      "sha256": "a7c9aa940aede9fe2dc16b949b561fc50a7dd2d95ca37ac39121b439df38c21c",
+      "bytes": 321
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-ci-status.json",
+      "sha256": "365b58295fba919c68f7f6e0448a15f12a9d82f9ff2526baef68c3a40cf4c979",
+      "bytes": 1837
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-issue-receipts.json",
+      "sha256": "a22be3f84bc9f2f530cad5e2daf29c654813144dcf95a55652c7eb701a33322b",
+      "bytes": 930
+    }
+  ],
+  "scope": "Issue/CI/local source-integrity record only;real80 and retained392 have separate reports;no fullS0-S6/firmware/protocolrefinement or naturalrecovery qualification"
+}

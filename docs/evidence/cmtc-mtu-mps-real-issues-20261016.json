@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "status": "REAL_REGRESSION_EXISTING_ISSUES_SYNCED_OPEN",
+  "kernel": "90fda1457a8d8191a1a5fab260927e31644b3e50",
+  "compiled_userspace": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
+  "real_report_publication": "312f64a23663e102da02e1e693f09914c346bc1c",
+  "canonical_sync": "6d1f53206ca693a980e3dafac24d49dfb1b1168f",
+  "receipts": [
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6207528652",
+      "state": "open",
+      "body_readback": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6207529201",
+      "state": "open",
+      "body_readback": true
+    }
+  ],
+  "scoped_current_verification": {
+    "errors": [],
+    "unavailable_private_materials": [],
+    "unavailable_source_checkouts": [],
+    "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "current": "SCOPED_SOURCE_AND_BYTES_MATCH_NOT_REPLAYED",
+    "overall": "RECORDED_REQUIRED_RESULTS_PASS",
+    "scope": "Only current K90/U2ee fixed-basic14-execution and bounded-limit records;explicit header scopes;not full-project/security/recovery qualification or hardware replay"
+  },
+  "prior_source_mapping_failure": {
+    "status": "INVALID retained",
+    "cause": "ls-tree wildcard scopes selected no headers while current ls-files expanded them;corrected to explicit9header paths,not a kernel mutation or weakened current check"
+  },
+  "ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38843688106,
+      "headSha": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
+      "name": "CI",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38843688106"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38843687996,
+      "headSha": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
+      "name": "Qualification integrity",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38843687996"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38843688120,
+      "headSha": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
+      "name": "Documentation",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38843688120"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38843688130,
+      "headSha": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
+      "name": "Production codec bounded fuzz",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38843688130"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38843682672,
+      "headSha": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
+      "name": "Documentation",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38843682672"
+    }
+  ],
+  "materials": [
+    {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-real-scoped-local-check.json",
+      "sha256": "d495c3ab7681097b8a321a7a9cb58f8debc2d1b0302a85c8943f40c33515571d",
+      "bytes": 438,
+      "access": "private"
+    },
+    {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-real-scoped-local-check-v2.json",
+      "sha256": "9aecfbce2c94969db154f23579a4faea631cb9c738ef6dfd374e638c25bf61aa",
+      "bytes": 437,
+      "access": "private"
+    },
+    {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-current-capability-links.json",
+      "sha256": "3ccf620bd6b6a592d8204caa0b7618ba409d9eba569bbff51af6986e5259af46",
+      "bytes": 245,
+      "access": "private"
+    },
+    {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-prefix-classification-correction.json",
+      "sha256": "4ea3a6ff7e7baf2798fc2874ddc12c7e0afbfe5e828f7cba07300c82a1af5e59",
+      "bytes": 818,
+      "access": "private"
+    },
+    {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-real-issue-body.md",
+      "sha256": "22683e876da7fe467be446316b78d078f8211b67e6ed0c44d327429c012e0c12",
+      "bytes": 2743,
+      "access": "private"
+    },
+    {
+      "base": "workspace",
+      "path": ".dev/cmtc-mps-ci-inventory-fullsha.json",
+      "sha256": "b3644e2386c91fae83456f104294f9834b77a45f5f305e08f0dac55fdb3676e8",
+      "bytes": 1132,
+      "access": "private"
+    }
+  ],
+  "not_complete": [
+    "Dynamic multichannel,full security/permissions/Grant/Bond/CPCD,NOCP truths and reuse barriers",
+    "Natural RCA/nonhuman recovery,real devicefault,PM/compat/deployment/release,originalfullS0-S6"
+  ],
+  "full_goal_complete": false
+}

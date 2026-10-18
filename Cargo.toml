@@ -2,10 +2,15 @@
 resolver = "2"
 members = [
     "crates/slk-protocol",
+    "crates/slk-channel",
+    "crates/slk-native",
+    "crates/slk-contract",
     "crates/libsparklink",
     "crates/slkd",
+    "crates/slk-experimental",
     "crates/slkconfig",
     "crates/slctl",
+    "crates/slktest",
     "crates/slkmon",
     "crates/slkdump",
 ]
@@ -13,15 +18,19 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
-repository = "https://gitee.com/sparklinkZ/sparklink-userspace"
+repository = "https://github.com/OpenSparklink/sparklink"
 
 [workspace.dependencies]
 slk-protocol = { path = "crates/slk-protocol" }
+slk-channel = { path = "crates/slk-channel" }
+slk-native = { path = "crates/slk-native" }
+slk-contract = { path = "crates/slk-contract" }
 libsparklink = { path = "crates/libsparklink" }
 tokio = { version = "1", features = ["full"] }
-zbus = "5"
+zbus = { version = "5", default-features = false, features = ["tokio"] }
 nix = { version = "0.30", features = ["ioctl", "fs", "net"] }
 serde = { version = "1", features = ["derive"] }
+zvariant = "5"
 toml = "0.8"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "TWO_EXISTING_ISSUES_UPDATED_AND_READ_BACK_OPEN",
+  "qualification_record": "four-burst64-d42da67",
+  "report": "docs/evidence/four-device-burst-20261016.json",
+  "scope": "Four-device64long peer replies,software backpressure and scoped pool observations only;no fairness/wholecredit/devicefault/natural recovery;no issue closed",
+  "body_sha256": "f51d1792f5b6d0edff50aedbeb8614257b52aae8f967c36e92e39b06a2cfc12d",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6206416977",
+      "id": 6206416977,
+      "state": "OPEN",
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6206417876",
+      "id": 6206417876,
+      "state": "OPEN",
+      "readback_verified": true
+    }
+  ],
+  "exact_tools_ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38838088776,
+      "headSha": "d42da67fc29f2958922e30f2ef370f21d10bb1bd",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38838088776",
+      "workflowName": "Documentation"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38838088790,
+      "headSha": "d42da67fc29f2958922e30f2ef370f21d10bb1bd",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38838088790",
+      "workflowName": "Production codec bounded fuzz"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38838088779,
+      "headSha": "d42da67fc29f2958922e30f2ef370f21d10bb1bd",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38838088779",
+      "workflowName": "Qualification integrity"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38838088814,
+      "headSha": "d42da67fc29f2958922e30f2ef370f21d10bb1bd",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38838088814",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38838082380,
+      "headSha": "d42da67fc29f2958922e30f2ef370f21d10bb1bd",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38838082380",
+      "workflowName": "Documentation"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38838082321,
+      "headSha": "d42da67fc29f2958922e30f2ef370f21d10bb1bd",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38838082321",
+      "workflowName": "Qualification integrity"
+    }
+  ],
+  "ci_scope": "Full headSha readback,completed jobs only;not new hardware/formal qualification or artifact trust proof",
+  "observation_correction": "Initial gh short-SHA run filter returned empty;retained locally,then full40hex lookup found these exact6completed successes"
+}

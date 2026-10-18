@@ -1,0 +1,75 @@
+{
+  "status": "REGISTRATION_DAEMON_OFFLINE_PASS_SCOPED",
+  "kernel_head": "9c0e616c8d36853afadf32a403fb3bb2a0458679",
+  "compiled_service_tools_head": "1cccf5d79b254b96f8d94803bfaeae5046e6795e",
+  "implemented": "Generation-bound Registration objects with fresh Core GetSnapshot/ListRegistrations and notification hints; topology cache never supplies availability. Pending/Fault no Runtime/Managed. Installed matching generation only enters Adapter creation. Default observer read policy, slctl commands and real private-bus ENOTTY/cache/removal/reuse regression.",
+  "workspace_tests": 201,
+  "python_contract_tests": 36,
+  "tool_tests": 451,
+  "strict_default_and_all_features_clippy": true,
+  "private_bus_actual_negative_tests": 1,
+  "negative_test_scope": "Actual production Node/Root/RegistrationIface over real local D-Bus and /dev/null ENOTTY; constructed fixture topology does not simulate controller success. Cached Fault must fail, no Ready/AcquireManagement interface, remove/reuse rejects old path.",
+  "source_ci": {
+    "head": "1cccf5d79b254b96f8d94803bfaeae5046e6795e",
+    "run_id": 38351394816,
+    "jobs": 9,
+    "status": "success"
+  },
+  "formal_scope": "Rechecked actual SDK predicate only83checks+weak generation witness. No new daemon/Core/producer/lifetime/refinement/authority proof.",
+  "formal_evidence": "docs/evidence/registration-daemon-sdk-formal-20261013",
+  "source_files": {
+    "crates/slkd/src/registration.rs": "ae2a1e82b49cd4e8cf6194fb020e4c45fc72c307339d9bbce6ab840b4500e4b8",
+    "crates/slkd/src/adapters.rs": "3562a825776d5cd3a87537ead497f5584f6c3d1f9112152ecda072725dc3d814",
+    "crates/slkd/src/dbus_iface.rs": "797a1bfd6bf49c174a208d91934a7810cb239ea75a9605ab761df4d6c925539a",
+    "crates/slkd/src/state.rs": "79232c7b0d120ede8d5a3ed7d640113759f135b473d7d6d996e5af0a9ee8c40d",
+    "crates/slctl/src/commands.rs": "7b32d2ebb8329808e4dc19aade730734fd80829754619a6b2d6b242103f8a92b",
+    "data/dbus/sparklink.conf": "4ee2f180aca0e9f379cadee2e16ae28d08bb89bbed2400559c667414842527d4"
+  },
+  "logs": [
+    {
+      "path": ".dev/registration-daemon-check.log",
+      "sha256": "3f5575780c882d8d73a1bdecce4b09d9046b9b2240d163663095e3d3278f2c1b"
+    },
+    {
+      "path": ".dev/registration-daemon-negative-test.log",
+      "sha256": "b065845ee5fcd853167f763d9fb133c870a269c9f34da2d625e03ed7f460d5c7"
+    },
+    {
+      "path": ".dev/registration-daemon-negative-test-v2.log",
+      "sha256": "23e4052de6b9fb5737710483e44e3264bdd9475b7c794c977902a083856a64ac"
+    },
+    {
+      "path": ".dev/registration-daemon-clippy-all.log",
+      "sha256": "38dfe84a65d35cac4d836cc547f534636fe4269f12be65e05ea41845d52af475"
+    },
+    {
+      "path": ".dev/registration-daemon-clippy-all-v2.log",
+      "sha256": "91d0ada1f564e27cf6f52fbe25834b3acc20ed6c65d2f099bcbc1bbb70d470d3"
+    },
+    {
+      "path": ".dev/registration-daemon-clippy-all-final.log",
+      "sha256": "ed855e6ee3ebfbd50fdfb990be79adfdb717b464eadeb4edd366240ef39e72ed"
+    },
+    {
+      "path": ".dev/registration-daemon-clippy-default.log",
+      "sha256": "3c4140ea692fdb04ee556685526a8d3fbadd702d293dc02b7c51762106d51d77"
+    },
+    {
+      "path": ".dev/registration-daemon-workspace-tests.log",
+      "sha256": "366904ca31536d5977ff6672f05805cb3361fe2b5e5ab3deba4cdb2a294371ca"
+    },
+    {
+      "path": ".dev/registration-daemon-tool-tests.log",
+      "sha256": "da5e49e050cd18af634f0ec7436dc685332f5f59479b963025866de9d5962e7a"
+    },
+    {
+      "path": ".dev/registration-daemon-python.log",
+      "sha256": "4cc240937ea4928dfdf25cbcccf982772165f72deb318deb55bdc8b86b15961b"
+    }
+  ],
+  "failure_scope": "First private-bus test borrowed node.path across owned remove; strict clippy caught nested condition. Original failing logs kept, corrected and independently rerun. No real failed gate this slice.",
+  "full_architecture_complete": false,
+  "full_event_topology_complete": false,
+  "natural_root_cause_closed": false,
+  "automatic_recovery_acceptance": false
+}

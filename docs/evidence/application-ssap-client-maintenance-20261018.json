@@ -1,0 +1,40 @@
+{
+  "status": "SIX_ISSUES_OPEN_ACTIVE_GOAL_FULL_ARCHITECTURE_INCOMPLETE",
+  "canonical_revision": "7ec5803a21842065ff787e90e01618537cdf96bf",
+  "qualified_compiled_userspace": "a37c4cb0366b9c182e3f3b5da95146b24824e7f4",
+  "qualified_compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "scope": "Maintenance receipts only;fourrealVM/177+5negative/316workspace/50ABI in separate source-bound qualification. No new proof or runtimebehavior in this doc update.",
+  "next": "FiniteR5c currentCLIowner/callerclosure,then remainingR5 andR6;no allcontrolrace prerequisite,noduplicate goal or issueclosure",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5b-issue-receipts-v1.json",
+      "sha256": "30790a890165c94f13f56982bcfa48f96c640454241eb076924e518be3b45178",
+      "bytes": 2229,
+      "access": "privateownerworkspace;metadataisnotRFqualification"
+    },
+    {
+      "path": ".dev/architecture-r5b-ci-v3.json",
+      "sha256": "a609a714c78846ced00771885a136dfaeb4d5b5d4a22380b7713847b7efeb706",
+      "bytes": 1365,
+      "access": "privateownerworkspace;metadataisnotRFqualification"
+    },
+    {
+      "path": ".dev/architecture-r5b-global-metadata-v1.json",
+      "sha256": "b510e6cfbdd4be7d4aeec067e7a6893dad9d834994f82aae3ef5cbf8d30e182b",
+      "bytes": 773271,
+      "access": "privateownerworkspace;metadataisnotRFqualification"
+    },
+    {
+      "path": ".dev/architecture-r5b-qualification-unit-v1.log",
+      "sha256": "90357f32ff8c5b0f2853e51dda38919627f555f02d656715e13ee9ae2fcea960",
+      "bytes": 4285,
+      "access": "privateownerworkspace;metadataisnotRFqualification"
+    },
+    {
+      "path": ".dev/architecture-r5b-registry-preflight-v1.json",
+      "sha256": "cab13ca8b42fd797ca59d5231c60223f630ebab6990d8d5f5fac905a82fb98fd",
+      "bytes": 1340,
+      "access": "privateownerworkspace;metadataisnotRFqualification"
+    }
+  ]
+}

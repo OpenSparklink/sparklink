@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-10-16T02:48:11.008608+00:00",
+  "status": "SCOPED_DOCUMENTATION_THEME_PASS",
+  "documentation_source_commit": "e62a77044700705ea68e9ac6e5cf2597da2d2bf9",
+  "runtime_changes": false,
+  "runtime_qualification_unchanged": true,
+  "publishing_scope": "Home and four Diataxis quadrants only; canonical project/ADR/history/evidence sources remain repository-only",
+  "theme": "Locked Sphinx Book Theme 1.4.0, local CSS and branding template; no new dependencies",
+  "changes": [
+    "Four responsive task cards",
+    "Compact chapter tree and source-version branding",
+    "Keyboard focus, reduced-motion support, light/dark and mobile reading"
+  ],
+  "checks": {
+    "home_tasks": true,
+    "task_cards_desktop": true,
+    "versioned_brand": true,
+    "navigation": true,
+    "table": true,
+    "book_sidebars": true,
+    "dark_mode": true,
+    "code_block": true,
+    "code_copy_paste": true,
+    "product_tutorial_navigation": true,
+    "javascript_search": true,
+    "chinese_search": true,
+    "mobile_no_page_overflow": true,
+    "task_cards_mobile": true,
+    "mobile_navigation": true,
+    "mobile_table_container": true,
+    "mermaid_rendered": true,
+    "business_evidence_navigation": true,
+    "qualification_explanation": true,
+    "source_only_pages_excluded": true,
+    "legacy_html_redirects": true
+  },
+  "strict_build": "PASS: make docs including inventory, qualification consistency, negative controls and HTML/resource checks",
+  "browser_scope": "Isolated Firefox; actual localhost /sparklink/ navigation, search, copy/paste, diagrams, tables and mobile drawer; not user hardware workflow replay",
+  "visually_reviewed": [
+    "desktop-home.png",
+    "mobile-home.png",
+    "book-dark-reference.png"
+  ],
+  "prior_attempt": {
+    "source_commit": "d19cce97481d2f5027bdf074dde6c57db63745e8",
+    "status": "PARTIAL",
+    "failures": [
+      "Home self-anchor test incorrectly expected an index.html suffix rather than comparing URL pathname",
+      "Visual review caught upstream container CSS overriding card padding; fixed and padding checked in successor"
+    ]
+  },
+  "deployment": {
+    "pages_api": "HTTP404; not configured or not accessible",
+    "deployed": false,
+    "artifact": "Existing Documentation CI workflow builds downloadable HTML; not a published site"
+  },
+  "reference": "https://sphinx-book-theme.readthedocs.io/en/stable/sections/sidebar-primary.html",
+  "remaining": [
+    "DQ2-DQ5 content remediation and full product tutorial replay remain open",
+    "No new external linkcheck; previous rate limits remain separate",
+    "No public Pages deployment"
+  ],
+  "raw_access": {
+    "condition": "Authorized workspace owner/developer; raw materials are not public HTML",
+    "retention": "Private workspace .dev; no permanent public retention promised",
+    "replay": "Checkout exact documentation source; uv sync --locked --only-group docs; make docs; isolated Firefox with tools/check_docs_browser.py against localhost /sparklink/"
+  },
+  "materials": [
+    {
+      "private_workspace_path": ".dev/docs-gitbook-polish-e62a770-browser/report.json",
+      "sha256": "6cae75f64fd6b784435673560e8a64e1f1d6b85e58a20a149c2a1b5201a02925",
+      "bytes": 3010
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-polish-corrected-build.log",
+      "sha256": "5df134afbf39bfa7f2500cf05386280f3f4c276b9f7086e4f948b13787cd6532",
+      "bytes": 45759
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-polish-e62a770-preview/sparklink/documentation-build.json",
+      "sha256": "1ccb753fdcacecd9ac3f0f1feb6b201c2579924db89aaf69377168f194e8dc33",
+      "bytes": 3249
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-polish-d19cce9-browser/report.json",
+      "sha256": "384fc0c294c0a822eb0e863d4754cf40e14d12a9a389273747d84323114800a8",
+      "bytes": 3014
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-polish-e62a770-browser/desktop-home.png",
+      "sha256": "72df106bcca187df088c83938853c003a4dc65e82dfac053bdfc8e8e778d594b",
+      "bytes": 182767
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-polish-e62a770-browser/mobile-home.png",
+      "sha256": "06be9a307488d8550e3977c61a32b5eb28c93254c0f706ed1b170f7100c25e03",
+      "bytes": 91379
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-polish-e62a770-browser/book-dark-reference.png",
+      "sha256": "3169b6dde1ffe79f965ce70b314cba0bd36fc173862109c9659b0cdc8e9d4ccc",
+      "bytes": 210589
+    }
+  ],
+  "ci": {
+    "documentation": {
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38842197131"
+    },
+    "qualification_integrity": {
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38842197094"
+    },
+    "other_workflows": "Still in progress when inspected; not claimed PASS"
+  }
+}

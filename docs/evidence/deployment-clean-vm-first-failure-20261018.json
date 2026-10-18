@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "status": "FAIL_RETAINED_NO_DEPLOYMENT_QUALIFICATION",
+  "compiled_userspace": "dd72c5857efff4033d8fd018590130b0dcbebe8a",
+  "kernel": "Debian vendor 6.12.113+deb13-cloud-amd64;no experimental driver or USB attached",
+  "failure": "Disposable-guest policy probe omitted the role argument and exited before permission assertions;not evidence of a production permission failure",
+  "observed_partial_only": [
+    "Actual pinnedRust lockedoffline sourcebuild",
+    "Actual Make install,sysusers,udev reload,ldconfig andunitverify",
+    "Actual systemd slkd active;no controller qualification inferred"
+  ],
+  "correction": "Pass the role argument;keep all permission assertions;repeat clean VM with source/tool/ELF identity andruntime-only Python loading",
+  "remaining": "Actual systembus roles,installed C/Python consumers,reinstall/uninstall,cross-versionupgrade/rollback,packages andnewRF acceptance remain open",
+  "materials": [
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v1/guest.py",
+      "sha256": "3ed18357e9cfb5bb90284ef7c0c8f3fc37fcd0924bd30d854ed9973f540b06e9",
+      "bytes": 10400,
+      "access": "private workspace retained;no current qualification"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v1/run.json",
+      "sha256": "dd11729d24eabcc85690f7dc42933b6ebd9aa1dc62ac676147e0f279ffab1193",
+      "bytes": 1108,
+      "access": "private workspace retained;no current qualification"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v1/console.log",
+      "sha256": "a0c0e62589c676d3e12f26ff41b0a0302151b894bfc54bab1aaa0d1d52d3a9cc",
+      "bytes": 69185,
+      "access": "private workspace retained;no current qualification"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v1/export/outputs/result.json",
+      "sha256": "a88eeb8b2249cdbd6e86f671dcf5aae03940b76c02db6f0f02b386e6fe65cde0",
+      "bytes": 11643,
+      "access": "private workspace retained;no current qualification"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v1/export/outputs/system-bus-observer.log",
+      "sha256": "1b98998e99fce43033d8d020deef4b70e9b6f456f5bbf1bc02390352ab583753",
+      "bytes": 222,
+      "access": "private workspace retained;no current qualification"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v1/export/outputs/source-build.log",
+      "sha256": "5c28fcd49ce25f86f01a2541ce74c6ff5ff582b4b6e7611f836007f3eb7aca25",
+      "bytes": 5095,
+      "access": "private workspace retained;no current qualification"
+    },
+    {
+      "path": ".dev/architecture-r6a-clean-vm-v1/export/outputs/failure-service-status.log",
+      "sha256": "469eca2c5fc3dfad613b44928a036e8b4260227eb26eb86aebfc82a63a4c1f6a",
+      "bytes": 856,
+      "access": "private workspace retained;no current qualification"
+    }
+  ]
+}

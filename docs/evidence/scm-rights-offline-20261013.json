@@ -1,0 +1,23 @@
+{
+  "status": "OFFLINE_TOOLING_PASS_ONLY",
+  "tool_commit": "8f19590",
+  "kernel_unchanged": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+  "compiled_service_unchanged": "dfb8636d4aa95fa24693b8d7e59730759032f34c",
+  "tool_tests": 431,
+  "fd_local_tests": 7,
+  "local_test_scope": "Actual AF_UNIX SCM_RIGHTS descriptor identity, CLOEXEC and rejection cleanup; receipt mutation tests. No WS73 qualification from offline tests.",
+  "sources": {
+    "sparklink/tools/ws73_channel_grant.py": "41ec4ba3fc311c880a85adff161852f72529ccf7c79bf1b7a6ce6d66e6c8b549",
+    "sparklink/tools/ws73_connected_file_gate.py": "28bbe271eccf402c072807ae9a5120a046d1b99e5dc127c330e57e0a0d28ea97",
+    "sparklink/tools/ws73_target.py": "d5b617795b4ce58e45719cd8f3eecb480174c5a0b3fe271901ba9bb2c4b9fb74",
+    "sparklink/tools/ws73_target_init.sh": "92c91b613ff0e65637bb08c4f83350a04a80b56a88c9ba28ee61bc8fb4fb5bb5",
+    "sparklink/tools/tests/test_ws73_channel_grant.py": "9702bb5a7de7f52d715be725c96159ee1994e1b88d10c11bafe29886afd51ca6"
+  },
+  "logs": {
+    ".dev/scm-rights-v2-tooling-tests.log": "b7b309cade65d1f97f189671fdac9db64b2fa05466deaf5bff9f0868bad89aa8",
+    ".dev/scm-rights-local-tests.log": "d5a4875b4579cd8d17f8638658e481f105ebc0103894fd6f33918fb7e91153a0"
+  },
+  "initial_vm_failure_preserved": ".dev/native-scm-rights-release0/manifest.json",
+  "initial_vm_failure_scope": "Tool startup failure before business receipts; native inferred socket wrapping replaced by explicit family/type. No original child errno receipt; first failure is not a new hardware RCA conclusion.",
+  "formal_proof_added": false
+}

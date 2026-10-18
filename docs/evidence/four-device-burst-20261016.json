@@ -1,0 +1,934 @@
+{
+  "schema_version": 1,
+  "status": "FOUR_DEVICE_PARALLEL_BURST64_SCOPED_PASS",
+  "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+  "compiled_userspace": "d01aa82ec25bd7dfa1394b0ed7678c714e60f8da",
+  "guest_tools": "d42da67fc29f2958922e30f2ef370f21d10bb1bd",
+  "executed_tools": "d42da67fc29f2958922e30f2ef370f21d10bb1bd",
+  "vm_only": true,
+  "host_installation": false,
+  "attempts": [
+    {
+      "name": "parallel-burst",
+      "status": "SCOPED_REAL_PASS",
+      "result": "PASS",
+      "reported_status": "FOUR_DEVICE_PARALLEL_BURST_PASS",
+      "supervisor_exit": 0,
+      "qemu_exit": 0,
+      "round_trips": 64,
+      "controllers": 4,
+      "role_phases": 2,
+      "rounds_per_pair_phase": 16,
+      "application_bytes": 2042,
+      "business_tx_fragments": 1152,
+      "capture_packets": 29693,
+      "capture_drops": 0,
+      "kernel_taint": 0
+    }
+  ],
+  "pair_phase_observations": [
+    {
+      "pair": 0,
+      "role_phase": 0,
+      "round_trips": 16,
+      "application_bytes": 2042,
+      "dtap_pdu_bytes": 2047,
+      "controller_tx_maximum": 254,
+      "business_tx_fragments": 288,
+      "tx_fragments_per_message": 9,
+      "software_pressure": {
+        "eagain": 8,
+        "poll_not_writable": 8,
+        "resumed_sequences": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "replies": 16,
+        "scope": "Software finite queue pressure; not controller packet-credit depletion"
+      },
+      "source_pool_refusals_delta": 26,
+      "endpoints": [
+        {
+          "controller": 0,
+          "generation": 1,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 103,
+          "full_nocp_resume_count": 102
+        },
+        {
+          "controller": 1,
+          "generation": 2,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 127,
+          "full_nocp_resume_count": 126
+        }
+      ]
+    },
+    {
+      "pair": 0,
+      "role_phase": 1,
+      "round_trips": 16,
+      "application_bytes": 2042,
+      "dtap_pdu_bytes": 2047,
+      "controller_tx_maximum": 254,
+      "business_tx_fragments": 288,
+      "tx_fragments_per_message": 9,
+      "software_pressure": {
+        "eagain": 8,
+        "poll_not_writable": 8,
+        "resumed_sequences": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "replies": 16,
+        "scope": "Software finite queue pressure; not controller packet-credit depletion"
+      },
+      "source_pool_refusals_delta": 27,
+      "endpoints": [
+        {
+          "controller": 1,
+          "generation": 2,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 109,
+          "full_nocp_resume_count": 108
+        },
+        {
+          "controller": 0,
+          "generation": 1,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 126,
+          "full_nocp_resume_count": 125
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "role_phase": 0,
+      "round_trips": 16,
+      "application_bytes": 2042,
+      "dtap_pdu_bytes": 2047,
+      "controller_tx_maximum": 254,
+      "business_tx_fragments": 288,
+      "tx_fragments_per_message": 9,
+      "software_pressure": {
+        "eagain": 8,
+        "poll_not_writable": 8,
+        "resumed_sequences": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "replies": 16,
+        "scope": "Software finite queue pressure; not controller packet-credit depletion"
+      },
+      "source_pool_refusals_delta": 28,
+      "endpoints": [
+        {
+          "controller": 2,
+          "generation": 3,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 106,
+          "full_nocp_resume_count": 105
+        },
+        {
+          "controller": 3,
+          "generation": 4,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 128,
+          "full_nocp_resume_count": 127
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "role_phase": 1,
+      "round_trips": 16,
+      "application_bytes": 2042,
+      "dtap_pdu_bytes": 2047,
+      "controller_tx_maximum": 254,
+      "business_tx_fragments": 288,
+      "tx_fragments_per_message": 9,
+      "software_pressure": {
+        "eagain": 8,
+        "poll_not_writable": 8,
+        "resumed_sequences": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "replies": 16,
+        "scope": "Software finite queue pressure; not controller packet-credit depletion"
+      },
+      "source_pool_refusals_delta": 25,
+      "endpoints": [
+        {
+          "controller": 3,
+          "generation": 4,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 107,
+          "full_nocp_resume_count": 106
+        },
+        {
+          "controller": 2,
+          "generation": 3,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 128,
+          "full_nocp_resume_count": 127
+        }
+      ]
+    }
+  ],
+  "overlaps": [
+    {
+      "role_phase": 0,
+      "business_windows": [
+        [
+          1792116083396252000,
+          1792116087249453000
+        ],
+        [
+          1792116083399257000,
+          1792116087257964000
+        ]
+      ],
+      "overlap_wall_ns": [
+        1792116083399257000,
+        1792116087249453000
+      ]
+    },
+    {
+      "role_phase": 1,
+      "business_windows": [
+        [
+          1792116093009250000,
+          1792116096865794000
+        ],
+        [
+          1792116093007249000,
+          1792116096881872000
+        ]
+      ],
+      "overlap_wall_ns": [
+        1792116093009250000,
+        1792116096865794000
+      ]
+    }
+  ],
+  "actual_owners": [
+    {
+      "port": "1-1",
+      "index": 0,
+      "generation": 1,
+      "address": "00:01:09:32:54:CD",
+      "bus": 1,
+      "device": 2
+    },
+    {
+      "port": "1-2",
+      "index": 1,
+      "generation": 2,
+      "address": "00:01:09:30:D1:AC",
+      "bus": 1,
+      "device": 3
+    },
+    {
+      "port": "1-3",
+      "index": 2,
+      "generation": 3,
+      "address": "00:01:09:30:CE:85",
+      "bus": 1,
+      "device": 4
+    },
+    {
+      "port": "1-4",
+      "index": 3,
+      "generation": 4,
+      "address": "00:01:09:32:54:F9",
+      "bus": 1,
+      "device": 5
+    }
+  ],
+  "warm_start_observations": [
+    [
+      "14.047191",
+      "1-1",
+      "attempt=1 cause=-110"
+    ],
+    [
+      "15.181134",
+      "1-1",
+      "result=0 elapsed_ms=1134"
+    ],
+    [
+      "26.135156",
+      "1-2",
+      "attempt=1 cause=-110"
+    ],
+    [
+      "27.277123",
+      "1-2",
+      "result=0 elapsed_ms=1142"
+    ],
+    [
+      "38.302972",
+      "1-3",
+      "attempt=1 cause=-110"
+    ],
+    [
+      "39.437040",
+      "1-3",
+      "result=0 elapsed_ms=1134"
+    ],
+    [
+      "50.262814",
+      "1-4",
+      "attempt=1 cause=-110"
+    ],
+    [
+      "51.403801",
+      "1-4",
+      "result=0 elapsed_ms=1141"
+    ]
+  ],
+  "negative_controls": [
+    {
+      "name": "missing-peer-acb",
+      "status": "REJECTED"
+    },
+    {
+      "name": "wrong-fragment-boundary",
+      "status": "REJECTED"
+    },
+    {
+      "name": "duplicate-nocp",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-nocp",
+      "status": "REJECTED"
+    },
+    {
+      "name": "inherited-pool-peak",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-controller",
+      "status": "REJECTED"
+    },
+    {
+      "name": "false-credit-proof",
+      "status": "REJECTED"
+    },
+    {
+      "name": "false-fairness",
+      "status": "REJECTED"
+    },
+    {
+      "name": "wrong-root-mode",
+      "status": "REJECTED"
+    },
+    {
+      "name": "no-overlap",
+      "status": "REJECTED"
+    }
+  ],
+  "formal_result": "NO_NEW_PROOF",
+  "controller_credit_correctness_proof": false,
+  "fairness_acceptance": false,
+  "limits": [
+    "First four-device parallel long/burst scope only:2pairs2roles16x2042-byte actual peer replies=64. Fixed basic CUTC31/PI241;not dynamic multichannel or all data gates.",
+    "Actual ordered9 TX PB fragments per business PDU, two-end reassembly, finite software-queue backpressure and actual USB business overlap. Not other size boundaries, arbitrary long messages or protocol reliability modes.",
+    "Observed pool saturation,NOCP resumption,submission/completion count and finaldrain use actual packet ordering and original drained link intervals. NOCP truth remains firmware/hardware trust;duplicate/late/handle-reuse barriers and whole CreditLedger correctness not proven.",
+    "Corrupted-capture NOCP negatives test the observer/verifier,not kernel behavior under injected hardware completion faults. USB completion is not credit return;NOCP is not peer application delivery.",
+    "Equal bounded workloads and interval overlap do not qualify fairness,starvation freedom,long-term resource convergence or independent process fault domains.",
+    "No new production Engine or data parser/ledger. Compiled d01aa82,guest/Host toolsd42da67; all100 offline/strictdocs and historical80/48 saved-proof checks are separate scopes,not new execution of old gates.",
+    "No new formal proof/debug-kernel/deployment permission qualification. ProtectedCPCD/notification still needs minimum authentication and authorization;trustedGrant/Bond not qualified.",
+    "All four warm starts observed-110 then one warm recovery0 before Ready. Natural startup/reenumeration/disappearance RCA,firmware-clear barriers and general nonhuman recovery remain OPEN. No manual/hub/QMP removal/fault injection in this run.",
+    "Actual USB/device-fault isolation remains missing; previous controlledDown48 is separate. Original full S0-S6/19WP/10FV/12DG and whole issues remain incomplete.",
+    "Private raw materials retained only on original machine;hash/access/replay explicit,no public/offsite archive. No restricted SDK/standards/firmware/keys published. Saved capture rerun uses same verifier,not independent decoder."
+  ],
+  "materials": {
+    "manifest": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/manifest.json",
+      "sha256": "0ff9d2151cdd88303e4834c6d2fd2aeef0d8b4ac67f7bdb6740a5502288130a8",
+      "bytes": 12945100,
+      "access": "private",
+      "format": "json",
+      "assertions": [
+        {
+          "pointer": [
+            "status"
+          ],
+          "equals": "FOUR_DEVICE_PARALLEL_BURST_PASS"
+        },
+        {
+          "pointer": [
+            "supervisor_exit"
+          ],
+          "equals": 0
+        },
+        {
+          "pointer": [
+            "qemu_exit"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    "capture": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ws73.pcap",
+      "sha256": "1ac9f2197e15b5e8783c99280144b23fe216c1ecc02e0f9f7aef576ea03bf2a5",
+      "bytes": 5092774,
+      "access": "private",
+      "format": "bytes"
+    },
+    "capture_stats": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/capture-stats.txt",
+      "sha256": "0e19783d9d56c879c2c21d921349f9739a1a9e7b16d82fc9ac91ec299955d39b",
+      "bytes": 229,
+      "access": "private",
+      "format": "bytes"
+    },
+    "kernel_log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/kernel.log",
+      "sha256": "74a06aa7563ffe849c438d7396047675ae687e50adf1f49eccfa37ab53897df6",
+      "bytes": 53275,
+      "access": "private",
+      "format": "bytes"
+    },
+    "control": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/run.json",
+      "sha256": "425cd5dd6b86b7c69ffda3bdd225cee5d77e6eab47081df44565da7e4578c93c",
+      "bytes": 2047547,
+      "access": "private",
+      "format": "json"
+    },
+    "guest_proof": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/parallel-business-proofs.json",
+      "sha256": "4729c0e6bbefab979298d896c82fdeee71ce482439d4b9fe8dc416216158f107",
+      "bytes": 12409087,
+      "access": "private",
+      "format": "json"
+    },
+    "recheck": {
+      "base": "workspace",
+      "path": ".dev/four-burst-v1-sealed-recheck.json",
+      "sha256": "0639d619dd1e0866e7db35ccb39cf4f3ad83619b565048e81e1e00146ccd0bb8",
+      "bytes": 1192,
+      "access": "private",
+      "format": "json"
+    },
+    "recheck-source": {
+      "base": "workspace",
+      "path": ".dev/verify-four-burst-v1.py",
+      "sha256": "818d65fcf70d77f479e82ca54c22024617aa0e2a72656296a198073f09c4721a",
+      "bytes": 3683,
+      "access": "private",
+      "format": "bytes"
+    },
+    "prepare": {
+      "base": "workspace",
+      "path": ".dev/four-burst-v1-prepare.json",
+      "sha256": "5798f1c94d8e6371c0a0b888eae5ffd63a5fdf16a0d8ac20f5619901b48bc4fa",
+      "bytes": 1579,
+      "access": "private",
+      "format": "json"
+    },
+    "bundle": {
+      "base": "workspace",
+      "path": ".dev/native-four-business-v1-service-bundle/manifest.json",
+      "sha256": "04ab9cb20aefdecfee88b65108f811de2c606d143b68c8e028c7d000cd125f5f",
+      "bytes": 22927,
+      "access": "private",
+      "format": "json"
+    },
+    "prepared": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-prepared/manifest.json",
+      "sha256": "cade139edad50fc1b9433f2dfa5ffbc9b8d9af0b08135099f3030b2a8fc62214",
+      "bytes": 256196,
+      "access": "private",
+      "format": "json"
+    },
+    "retained-recheck": {
+      "base": "workspace",
+      "path": ".dev/four-burst-retained-capture-check.json",
+      "sha256": "36ff96251d0d46456f59afa75fb25b15745bf6d87c6f2f102d99a627b307e18f",
+      "bytes": 443,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-application-parallel-business-pair-0-channel-0-initiator.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-0-initiator.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/channel-0-initiator.stdout",
+      "sha256": "80f0951c29c7c82e6ee72cfb516a0b5def8d61f3f60aec8cfb525951de677619",
+      "bytes": 135229,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-0-peer.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-0-peer.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/channel-0-peer.stdout",
+      "sha256": "03982b410d10e8dcf3b20b7e6d6b016cc713d1b37b358963c24541e53de64f3e",
+      "bytes": 132552,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-1-initiator.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-1-initiator.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/channel-1-initiator.stdout",
+      "sha256": "b03cab60ee12c6606044b0d22176ee9f167187b0e4c121d4bcde00ed88eb020b",
+      "bytes": 135248,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-1-peer.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-channel-1-peer.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/channel-1-peer.stdout",
+      "sha256": "2a5fa8a23375e788be6e141ea81da1ca0fef363b3ef7a03ddc37de815231d8c2",
+      "bytes": 132553,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-0-run.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-0/run.json",
+      "sha256": "1e5c5bddfb9e0bcb722ec136e2a88be2fdcd04d4b76c972441f827db6464e918",
+      "bytes": 954218,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-application-parallel-business-pair-1-channel-0-initiator.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-0-initiator.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/channel-0-initiator.stdout",
+      "sha256": "692a8dd8d6537b3c510db03b4e402b6287f552f57785f1d625fb4c0694c0c615",
+      "bytes": 135230,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-0-peer.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-0-peer.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/channel-0-peer.stdout",
+      "sha256": "06e7f8db11a77d267fa7bd3e8a659ac3bde88005d6cada375a1fe9197b8fbc83",
+      "bytes": 132552,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-1-initiator.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-1-initiator.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/channel-1-initiator.stdout",
+      "sha256": "12a0944e536c1b5d4e1310ac56820d041e9bfcb5ffe3378e5f772d1e8d4aa831",
+      "bytes": 135248,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-1-peer.stderr": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-channel-1-peer.stdout": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/channel-1-peer.stdout",
+      "sha256": "73de92cbfa81a22aa70fd229d91e402eef83610031c16838416ac0abbcac8fff",
+      "bytes": 132553,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-parallel-business-pair-1-run.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/pair-1/run.json",
+      "sha256": "373b73fc314bd05fc23cbea0162cd9f07bc8a1f459b8049377cf8da668064a5e",
+      "bytes": 954207,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-application-parallel-business-run.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/parallel-business/run.json",
+      "sha256": "425cd5dd6b86b7c69ffda3bdd225cee5d77e6eab47081df44565da7e4578c93c",
+      "bytes": 2047547,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-application-socket-type-ordinary.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-application-ssap-removed-uapi-ordinary.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-capture-process-status.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/capture-process-status.txt",
+      "sha256": "90a71ceb0c2b684bfd5209c8fedf7008d52c5cc7bf50b19d12e2a429783ec396",
+      "bytes": 1486,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-capture-stats.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/capture-stats.txt",
+      "sha256": "0e19783d9d56c879c2c21d921349f9739a1a9e7b16d82fc9ac91ec299955d39b",
+      "bytes": 229,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-capture-stdout.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-dbus.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-discovery-config-validation.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-kernel.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/kernel.log",
+      "sha256": "74a06aa7563ffe849c438d7396047675ae687e50adf1f49eccfa37ab53897df6",
+      "bytes": 53275,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-parallel-business-proofs.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/parallel-business-proofs.json",
+      "sha256": "4729c0e6bbefab979298d896c82fdeee71ce482439d4b9fe8dc416216158f107",
+      "bytes": 12409087,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-pending-observations-0.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/pending-observations-0.json",
+      "sha256": "26e64cbe5e04e92482ecd42219887c990f39b1a81b11b99e6b74c10112ff1895",
+      "bytes": 1126,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-pending-observations-1.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/pending-observations-1.json",
+      "sha256": "d23331521ea734c43d8e0440681bf70d21e95ffe390a097b75d3ccac5e493890",
+      "bytes": 1126,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-pending-observations-2.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/pending-observations-2.json",
+      "sha256": "565bfe394cd3b058d355f1b3e48ada50ff4fd4b8d05023961796898a7e2c358e",
+      "bytes": 1126,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-pending-observations-3.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/pending-observations-3.json",
+      "sha256": "b4661bd3846c32335e563963deb9ea57213a2bb2e8118fd471620621e0265fb2",
+      "bytes": 1126,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-0.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-1.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ready-1.json",
+      "sha256": "5d3b2a32399cab5bf891486ce8686182401ab92bdac871d5af3d4d1e5d417ef7",
+      "bytes": 882,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-2.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ready-2.json",
+      "sha256": "b0f0e3fcafc29a9ef0cce85d396e02c155fb7b1e1e17fdec32c3afe430977fe2",
+      "bytes": 882,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-3.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ready-3.json",
+      "sha256": "e351a8406c9ec5c9ccbb142eef12515ee429e361ff9ce39a6a2667c7e8fdbba9",
+      "bytes": 882,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-progress-0.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ready-progress-0.json",
+      "sha256": "4163167c71aa8cf375c5ac6734569b22c227fe69aa02bf3b3f7037849af2bdc5",
+      "bytes": 1119,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-progress-1.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ready-progress-1.json",
+      "sha256": "139b396575d83abb818166571c6dc953a6f358b54f3a03d289df7df16c7f41d1",
+      "bytes": 1119,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-progress-2.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ready-progress-2.json",
+      "sha256": "3ae19022f738c7a5991c382e23dd58fe69dac69067f34223cb04e639a966bf27",
+      "bytes": 1119,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-ready-progress-3.json": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ready-progress-3.json",
+      "sha256": "54edfa8248297b2cec9da75dcbca3b2dcb7ef2ae8e17dac6917876826cf31a91",
+      "bytes": 1119,
+      "access": "private",
+      "format": "json"
+    },
+    "guest-slkd-config.conf": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-slkd-process-status.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/slkd-process-status.txt",
+      "sha256": "75373b1b036f75839d2c771070ae90da18b2a740810500e17d71cc6e8320e109",
+      "bytes": 1455,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-slkd.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/slkd.log",
+      "sha256": "332e98d9fd2710f90ba272ffb45a5121cca03804e26abff1eb15bcebd431d073",
+      "bytes": 7341,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-socket-type-root.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-ssap-removed-uapi-root.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-ws73.pcap": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/ws73.pcap",
+      "sha256": "1ac9f2197e15b5e8783c99280144b23fe216c1ecc02e0f9f7aef576ea03bf2a5",
+      "bytes": 5092774,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-xhci-trace-stats.txt": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/xhci-trace-stats.txt",
+      "sha256": "cc6767fb052a53fc6a56948cb488905fd5b69d5a87f2e4bf6a8e253cd8ebea33",
+      "bytes": 288,
+      "access": "private",
+      "format": "bytes"
+    },
+    "guest-xhci-trace.log": {
+      "base": "workspace",
+      "path": ".dev/native-four-burst-v1-run/guest-output/xhci-trace.log",
+      "sha256": "f89334df8ef77afdc2416d75240d4d093902a83e508f4707d759efded6748aec",
+      "bytes": 3898878,
+      "access": "private",
+      "format": "bytes"
+    }
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "firmware": "SDK111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3"
+  },
+  "replay": {
+    "prepare": "Checkout d42da67;reuse immutable d01aa82 service bundle and8cbf native kernel;hashed prepare JSON binds actual argv/source separation.",
+    "run": "python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN --ports 1-2.1.1 1-2.1.2 1-2.1.3 1-2.1.4 --four-device-burst --timeout 600",
+    "capture": "read_capture,check_capture_stats,ws73_parallel_data.corroborate;each pair uses original ws73_credit_observation.observe_phase. Normalized proof must equal guest and Host proof.",
+    "access": "Private .dev files require original machine owner;never overwrite sealed manifests/rechecks."
+  }
+}

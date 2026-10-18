@@ -1,0 +1,1025 @@
+{
+  "schema_version": 1,
+  "status": "ROM_REGISTER_CANDIDATE_SOFT_RESET_OBSERVATIONS_PASS_FIRST_COLD_SELECTION_UNPROVED",
+  "answer": "NOT_YET_RELIABLE_FOR_FIRST_COLD_DOWNLOAD_AUTOMATIC_SELECTION",
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+  "executed_tools": "d4b681cf3af073a697e89619ba9dc663d97c8648",
+  "post_processing_tools": "0ab1f9d917ccb8aadad12a714d6885c2e36fbb0e",
+  "bounds": {
+    "known_physical_samples": 2,
+    "models": [
+      "E",
+      "U"
+    ],
+    "software_reset_cases": 4,
+    "rom_reads_before_any_write_or_upload": 12,
+    "runtime_guest_word_observations": 24,
+    "actual_three_image_uploads": 4,
+    "hcc_comparisons": 4,
+    "exact_replays": 4,
+    "copied_negative_controls": 60,
+    "frozen_tools": 739,
+    "observer_tools": 741,
+    "post_rom_actual_peer_round_trips": 16,
+    "post_rom_copied_negatives": 64
+  },
+  "scope": [
+    "UserproposedSDK110firmwarefullhashesand56bytefunctionhashreproduced;header64subtractedbefore0x400000loadaddressmapping. Hisiobjdumpdecodesspecialbneiandl.li;actualcaller/log0xc1380f42/response10,length88,output2pathverifiedinbothimages.",
+    "KnownEport1/Uport4only;twosoftware-resetRAMbootstrapVMsperknownsample. ExactROMREADM19bytecommandwithtrailingblank;512byteINrequestreturnedexact4;12physicalROMresponsesbeforeALLWRITEMandFILES,explicitmatchingSDK110main+bothcalibrationuploadsactualbytesmatched,HCCmodelbeforeDLI.",
+    "Eraw0a000000matcheslittle-endian10andHCCE/USB;Uraw00000000matchesstaticU/USBmappingbutisAMBIGUOUS,neveracceptedbycandidate_variant. Before/afterruntimewordsareguestusbfsregisterobservationscapturedraw,notindependentlydecodedbyROMobserver. Allselectionflagsfalse,validityunproved,no productionauto-firmwarechange.",
+    "Sourcesexact0cdkernel/compiled836/VMtoolsd4/observer0ab;initialnonzeroErunandfirstUstrictzeroguardFAILared618historicalobservations,separatefromfournewruns. No firmware/code/rawlogs copiedpublic;restrictedSDK/disassembly/capturesretainedprivatewithhashes.",
+    "TwofreshpostROMordinaryRF/businessgatesuseoriginalee8runtimeprofile,oneE1/U4andoneuntouchedU2/3,16randompeer-verifiedRTandtwo64negativereplays. This ispostmaintenancefunctionality,notconcurrentpeerisolation,naturalrecoveryorlatencyqualification."
+  ],
+  "remaining": [
+    "Truecold-powerstartupbeforeanyfirmwaredownloadnotperformed;software-registerresetisnotcoldpower. ROMregistermapping/resetstabilityatcoldvoltage/bootconditionsremainsunverified.",
+    "KnownUactualruntime/ROMwordiszero. Zeroislegitimateunderfirmwaremappingbutindistinguishablefromsomeinvalidreadscenarioswithoutindependentaccess-validitycriterion. USBstatus/exact4bytes/repetition/HCCagreementareobservations,notauthenticationoruniversalvalidityproof. Productionautomaticselectionremainsdisabled;explicitmatchingE/Uboardinputremainsrequired.",
+    "Needvalidatedper-devicee/uswholethree-imagepathselectionwithROMtoruntimeidentity/generationbindingandruntimeHCCconsistency;S/SDIO,E/UART,unknown,short,timeout,mismatchmustnotfallintoU. Currentglobalimagepathsnotconvertedtoautomaticmixedselection.",
+    "PostROME/UanduntouchedU2/3twofreshRF/businessgatesaresequential,notconcurrentbusinessduringreset/drainisolation. Moreknownboards/samplesandcoldfailurematrixrequired.",
+    "OriginalUzero-guardFAILretained;newobserve-onlyallowancedoesnotupgradezeroorpermitselection. Launchmissingkernelpathandlocaltestenvironmenterrorsretained. First1105.509sdataSessionRCA/naturalstartup/reenumeration/disappearance/nonmanualrecoverystillOPEN;manual/hub/QMP/resetnotnaturalacceptance.",
+    "FullS0-S6/19WP/10FV/12DG/soleEngineanddrivers/net/slkd/VM-onlyunchanged. Continueexistinglocalattributeauthorization/CPCD/secureupdates/data/multi/four/performanceinparallel;UserHostP4. Nochip/firmwareattestationornewformalproof."
+  ],
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "full_goal_result": "UNPROVED",
+  "real_gates": [
+    {
+      "name": "E-soft-reset-1",
+      "status": "VM_SOFT_ROM_CHIP_COMPARE_PASS_NOT_COLD_OR_AUTOMATIC_SELECTION",
+      "result": "PASS",
+      "manifest": ".dev/rom-chip-e-attempt1-v2/manifest.json",
+      "raw": "0a000000",
+      "model": "E",
+      "raw_zero_ambiguous": false,
+      "cold_power": false,
+      "automatic_selection": false
+    },
+    {
+      "name": "E-soft-reset-2",
+      "status": "VM_SOFT_ROM_CHIP_COMPARE_PASS_NOT_COLD_OR_AUTOMATIC_SELECTION",
+      "result": "PASS",
+      "manifest": ".dev/rom-chip-e-attempt2-v2/manifest.json",
+      "raw": "0a000000",
+      "model": "E",
+      "raw_zero_ambiguous": false,
+      "cold_power": false,
+      "automatic_selection": false
+    },
+    {
+      "name": "U-soft-reset-1",
+      "status": "VM_SOFT_ROM_CHIP_COMPARE_PASS_NOT_COLD_OR_AUTOMATIC_SELECTION",
+      "result": "PASS",
+      "manifest": ".dev/rom-chip-u-attempt1-v2/manifest.json",
+      "raw": "00000000",
+      "model": "U",
+      "raw_zero_ambiguous": true,
+      "cold_power": false,
+      "automatic_selection": false
+    },
+    {
+      "name": "U-soft-reset-2",
+      "status": "VM_SOFT_ROM_CHIP_COMPARE_PASS_NOT_COLD_OR_AUTOMATIC_SELECTION",
+      "result": "PASS",
+      "manifest": ".dev/rom-chip-u-attempt2-v2/manifest.json",
+      "raw": "00000000",
+      "model": "U",
+      "raw_zero_ambiguous": true,
+      "cold_power": false,
+      "automatic_selection": false
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "static-source-and-special-instruction-review",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "741-tools-and-four-exact-replays60-negative-controls",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "Truecold-powerstartupbeforeanyfirmwaredownloadnotperformed;software-registerresetisnotcoldpower. ROMregistermapping/resetstabilityatcoldvoltage/bootconditionsremainsunverified.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "KnownUactualruntime/ROMwordiszero. Zeroislegitimateunderfirmwaremappingbutindistinguishablefromsomeinvalidreadscenarioswithoutindependentaccess-validitycriterion. USBstatus/exact4bytes/repetition/HCCagreementareobservations,notauthenticationoruniversalvalidityproof. Productionautomaticselectionremainsdisabled;explicitmatchingE/Uboardinputremainsrequired.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "Needvalidatedper-devicee/uswholethree-imagepathselectionwithROMtoruntimeidentity/generationbindingandruntimeHCCconsistency;S/SDIO,E/UART,unknown,short,timeout,mismatchmustnotfallintoU. Currentglobalimagepathsnotconvertedtoautomaticmixedselection.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "PostROME/UanduntouchedU2/3twofreshRF/businessgatesaresequential,notconcurrentbusinessduringreset/drainisolation. Moreknownboards/samplesandcoldfailurematrixrequired.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "OriginalUzero-guardFAILretained;newobserve-onlyallowancedoesnotupgradezeroorpermitselection. Launchmissingkernelpathandlocaltestenvironmenterrorsretained. First1105.509sdataSessionRCA/naturalstartup/reenumeration/disappearance/nonmanualrecoverystillOPEN;manual/hub/QMP/resetnotnaturalacceptance.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "FullS0-S6/19WP/10FV/12DG/soleEngineanddrivers/net/slkd/VM-onlyunchanged. Continueexistinglocalattributeauthorization/CPCD/secureupdates/data/multi/four/performanceinparallel;UserHostP4. Nochip/firmwareattestationornewformalproof.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    }
+  ],
+  "post_rom_data": [
+    {
+      "name": "mixed",
+      "round_trips": 8,
+      "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+      "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+      "executed_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+      "manifest": ".dev/rom-chip-post-mixed-v1/manifest.json"
+    },
+    {
+      "name": "u23",
+      "round_trips": 8,
+      "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+      "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+      "executed_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+      "manifest": ".dev/rom-chip-post-u23-v1/manifest.json"
+    }
+  ],
+  "static_review": [
+    {
+      "variant": "e",
+      "firmware": "ws73_SDK/firmware/e/ws73.bin",
+      "firmware_sha256": "6a0c322668d67a7e8c5cab9bff5d7af1f737e30ed4d9258975e8068054e4377b",
+      "header": "2b4ccf4c127caac551d4cf69d272f9a4f01ea91b7f4b32700f07965ea16a8b68",
+      "payload_sha256": "2b4ccf4c127caac551d4cf69d272f9a4f01ea91b7f4b32700f07965ea16a8b68",
+      "load_address": "0x400000",
+      "function_address": "0x409896",
+      "file_offset": 39126,
+      "machine_code_sha256": "f7f1221ea123e5c8f6426f30da777a4b81f8d590e26daa3f9c405659e8379365",
+      "disassembler_exit": 0,
+      "command": [
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/hisi-binutils/riscv32-linux-musl-objdump",
+        "-D",
+        "-b",
+        "binary",
+        "-m",
+        "riscv:rv32",
+        "--adjust-vma=0x409896",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/rom-chip-static-v1/e-model56.bin"
+      ]
+    },
+    {
+      "variant": "us",
+      "firmware": "ws73_SDK/firmware/us/ws73.bin",
+      "firmware_sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "header": "1ec2f93a520d090cffbfb378da4439b59015215bd9cb6cca1e64135724d4cedc",
+      "payload_sha256": "1ec2f93a520d090cffbfb378da4439b59015215bd9cb6cca1e64135724d4cedc",
+      "load_address": "0x400000",
+      "function_address": "0x408bc2",
+      "file_offset": 35842,
+      "machine_code_sha256": "f7f1221ea123e5c8f6426f30da777a4b81f8d590e26daa3f9c405659e8379365",
+      "disassembler_exit": 0,
+      "command": [
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/hisi-binutils/riscv32-linux-musl-objdump",
+        "-D",
+        "-b",
+        "binary",
+        "-m",
+        "riscv:rv32",
+        "--adjust-vma=0x408bc2",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/rom-chip-static-v1/us-model56.bin"
+      ]
+    }
+  ],
+  "call_review": {
+    "disassembler_sha256": "069f3ac5274a410bc7244a91f906e602b3593c8aa16172e50f5f6078067ea059",
+    "version": "GNU objdump (build ver102.010 2024-04-2) 2.38",
+    "log_id": "0xc1380f42",
+    "anchor_source": "ws73_SDK/build/config/hso/database_es0/cco/system/hdbcfg/device_mss_prim_db.xml:1837",
+    "e_caller": "0x409724",
+    "e_call": "0x40972e ->0x409896",
+    "us_caller": "0x408a18",
+    "us_call": "0x408a22 ->0x408bc2",
+    "fields": "a2=10,a1=88,output_len=2,result=0,2onebytefields;errorlogIDsame",
+    "status": "STATIC_CALL_AND_STRAP_REPRODUCED_NOT_COLD_OR_ACCESS_VALIDITY_PROOF"
+  },
+  "materials": [
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/manifest.json",
+      "sha256": "98c3be93966c0fd64ba01569e60affa076b77282aec5708d05ee23835914bfd7",
+      "bytes": 12027,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/console.log",
+      "sha256": "ebc8ca9dfd45b7dcb99b11babb93fc86689b06c2093fa8968b3e036e37f404dc",
+      "bytes": 13766,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/qmp.jsonl",
+      "sha256": "9986c6e72cbded5a35025a631b9b915c1993be63f79b5f02f8515ecebe9e4d60",
+      "bytes": 4255,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/qemu-stderr.log",
+      "sha256": "1ac7e8085271990b72a8bb9771d4a151e1dce37fa8714f5b5c3682713494a64e",
+      "bytes": 178,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/guest-output/maintenance/reset/run.json",
+      "sha256": "ac97f88509034dd95846bdde9de4bba0d76f68f79258d538d1f869f2d2daf767",
+      "bytes": 5208,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/guest-output/maintenance/ws73.pcap",
+      "sha256": "1d254f0f671a3aa019aeb8d8136b0cbaf4610f3d26e6042bb43475a5dc5e03b8",
+      "bytes": 228668,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/guest-output/maintenance/capture.log",
+      "sha256": "5b57646a7b0e7fe736afb2511171413167e0179087fd1af25097c0a7dd81aa94",
+      "bytes": 200,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/guest-output/maintenance/kernel.log",
+      "sha256": "e67ecf3ea09ee60fded96a2daee91d47e9f356816476af72b16587adc8756a54",
+      "bytes": 56828,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v2/guest-output/maintenance/probe.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/manifest.json",
+      "sha256": "d58c2df107d2aa5a555c5b76aae2b8da66fa08b575a934fde2f27a81fbab5550",
+      "bytes": 12027,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/console.log",
+      "sha256": "a8f56e675eb988f4f6c4d11280fac8b1730b5485873b405e7cd4205dd94234f4",
+      "bytes": 13766,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/qmp.jsonl",
+      "sha256": "9986c6e72cbded5a35025a631b9b915c1993be63f79b5f02f8515ecebe9e4d60",
+      "bytes": 4255,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/qemu-stderr.log",
+      "sha256": "1796f6dd37f0432cb2a6550d26ca6b9849057ec0d083dd8a393e7be0ceb72564",
+      "bytes": 178,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/guest-output/maintenance/reset/run.json",
+      "sha256": "4b8db57cddbb4ec4502e249b567959253dbfe4d605e45e1cef0916a85d409eea",
+      "bytes": 5208,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/guest-output/maintenance/ws73.pcap",
+      "sha256": "d0405963ab9b9a0e385bdd396882ed1b4152d3ba04ce8dc01138f7342709a43e",
+      "bytes": 228668,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/guest-output/maintenance/capture.log",
+      "sha256": "5b57646a7b0e7fe736afb2511171413167e0179087fd1af25097c0a7dd81aa94",
+      "bytes": 200,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/guest-output/maintenance/kernel.log",
+      "sha256": "fd23e1797479a8c25b1b18718af9ab3f92b4a21f35c10c3c661e5f53aa18b3c0",
+      "bytes": 56954,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt2-v2/guest-output/maintenance/probe.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/manifest.json",
+      "sha256": "408262d95b8dab74630fa395c2ef2b95f35133ad86214ec02d23353a8044bae7",
+      "bytes": 12012,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/console.log",
+      "sha256": "4390c2fc234b2da01a406fbc874f7c9d048ee9dc917c7d63b81af93340dcde10",
+      "bytes": 13766,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/qmp.jsonl",
+      "sha256": "8c1256385b665c9af728554c30c11b50a55fa06f061eecbec75e2da7abe8d2b7",
+      "bytes": 4054,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/qemu-stderr.log",
+      "sha256": "bd22207e9fa45d6095d289fe4d40289d1bccab5cc9e446013fe93e2419416e28",
+      "bytes": 178,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/guest-output/maintenance/reset/run.json",
+      "sha256": "474c3bf3b8bb27587e0429c845460d11008784111a3cf1101c34fb935d5834e4",
+      "bytes": 5190,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/guest-output/maintenance/ws73.pcap",
+      "sha256": "90e7926e619bf8f28a5789bfcc742a5912aab18825925298559b8d43fe0bf4d0",
+      "bytes": 207871,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/guest-output/maintenance/capture.log",
+      "sha256": "d90676a457a300098bc169cc591332a471227494bd94ae5c0da17f6b3dc387f8",
+      "bytes": 200,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/guest-output/maintenance/kernel.log",
+      "sha256": "567c4aace1329f53881edb6abedfb4edc20ae3b650dc4355e4d73e83553a4c8a",
+      "bytes": 56961,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v2/guest-output/maintenance/probe.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/manifest.json",
+      "sha256": "0b6c801a5a2a305e3659030ea0f9b49736f7c5ba6a82c73135664c43e585ffb4",
+      "bytes": 12011,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/console.log",
+      "sha256": "8a245d02258c8f2998519137debe9b5f829077041acdd9d6d71d9a37df0f7e3a",
+      "bytes": 13766,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/qmp.jsonl",
+      "sha256": "cbf49337f61f693b0991e319f6b782add520feefb3fd38775d60c61df236b311",
+      "bytes": 4456,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/qemu-stderr.log",
+      "sha256": "08cd754cc7f905df3ed7905af2f176dce13806bdbb18c824518b9250e902fc59",
+      "bytes": 178,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/guest-output/maintenance/reset/run.json",
+      "sha256": "2e31cb47960abd02ee98dc4b6c2da515fa71489c023c05b4980752db38b8abf0",
+      "bytes": 5190,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/guest-output/maintenance/ws73.pcap",
+      "sha256": "a29265da9d38caf9822aee210388e97026c033bd2107cd660092d4b1ef30612b",
+      "bytes": 207871,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/guest-output/maintenance/capture.log",
+      "sha256": "d90676a457a300098bc169cc591332a471227494bd94ae5c0da17f6b3dc387f8",
+      "bytes": 200,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/guest-output/maintenance/kernel.log",
+      "sha256": "d5f6dc1eb5419576eceb465cd634b74a9a679aa43c4cb265163082a3396e3786",
+      "bytes": 56953,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt2-v2/guest-output/maintenance/probe.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-prepared-v2/manifest.json",
+      "sha256": "4ff6d6724eba93a1b344190d96879e316653d3cd1c8c905f59975dd831e683f2",
+      "bytes": 262085,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-prepared-v2/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-prepared-v2/root.btrfs",
+      "sha256": "32ddce3ea20018feb8332c565ddc5cc85f359ed4d2f035774d6f1b68e7f786cc",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/firmware/e/ws73.bin",
+      "sha256": "6a0c322668d67a7e8c5cab9bff5d7af1f737e30ed4d9258975e8068054e4377b",
+      "bytes": 137644,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/firmware/e/wifi_cali.bin",
+      "sha256": "ac55f1a2e1d1466a02123c21e50204e108fe4660c587566e63798de648bd1390",
+      "bytes": 21060,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/firmware/e/btc_cali.bin",
+      "sha256": "601b143db64ef6e70bf882fd5a998ecff59f19ede85f477cdc8967b21a8a472f",
+      "bytes": 34120,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-us-prepared-v2/manifest.json",
+      "sha256": "ab13042a28652bd1d5b841d8034599932b4acb98a8c3f74aeda3872fcce702c7",
+      "bytes": 263018,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-us-prepared-v2/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-us-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-us-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-us-prepared-v2/root.btrfs",
+      "sha256": "3d9df51b5d39f449dce15089ee77e89d14e504bfb7ba0529743e42955dbc3a72",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/firmware/us/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/firmware/us/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/firmware/us/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-series-v2.py",
+      "sha256": "aaff253bee84f131536abb8a6ffa57ef9c16b6c6be80159f103420c541f96ad8",
+      "bytes": 1255,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-series-v2.json",
+      "sha256": "49ba5022189305c5d127e580c1b44a68693c8bcc324b5d0d981c791848d054df",
+      "bytes": 1881,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-real-audit-v1.py",
+      "sha256": "8170ac7ae4a0d956a5c03e9d661d7bb6e3466fabdcff6299e690d8f660765020",
+      "bytes": 3252,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-real-audit-v1.json",
+      "sha256": "f856948576362278b0b928d03535f82a043f6385c58ffa3b57d796fee84206f2",
+      "bytes": 34288,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-vm-run-v2.py",
+      "sha256": "2e87cc13b28679d36573c98615ecbe2eeea6b7ad002107aa8b0cd61ae8117ed1",
+      "bytes": 5666,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-prepare-v2.py",
+      "sha256": "7d6d190261c691cb5986718bd99454a2504da9ff099f75d8a9763d6cbcb413fb",
+      "bytes": 1669,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-prepare-v2.json",
+      "sha256": "6a785c78fcfc9c232bb386053490e48c2ca496304dc3fbd730510b8d96c9ea3a",
+      "bytes": 3338,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-frozen-tools-v3.log",
+      "sha256": "f82aec172aab480963af0aa70759a653f8874991bda0160c51d9d8bc9935e3fc",
+      "bytes": 875,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-evidence-all-v1.log",
+      "sha256": "68634cfe66265f156fa122e99b0beae45e1cc565148f44b15167560141710705",
+      "bytes": 877,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-zero-original-evidence-v1.json",
+      "sha256": "5c6becf7260d37560c8a53122fe99b50c3963a27bd04747433a47997b4ad3acc",
+      "bytes": 372,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v1/manifest.json",
+      "sha256": "0fa26f98d452a245ddf210e7868d770e69b14acdbe41d19d496c7041e2e4fa10",
+      "bytes": 6445,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-u-attempt1-v1/guest-output/maintenance/ws73.pcap",
+      "sha256": "6e301f72053c818fc50d568ed29fa17c6faac3323521e8b6d2747595937ea9bc",
+      "bytes": 5032,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-e-attempt1-v1/manifest.json",
+      "sha256": "862672bd9013d8d81076e479dc706e3f294b6afe6807503fc0237028c27a4175",
+      "bytes": 11669,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-data-v1.py",
+      "sha256": "e6ed4e36485d7d4a2b65f9dda5624465d6bfa00adb6e76c783c101e35d94e705",
+      "bytes": 1312,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-data-v1.json",
+      "sha256": "ea1634ccccb387e0010364fe72dbc7763e2f2fcf06a29a64a50c802f84f5ee56",
+      "bytes": 1885,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/e-model56.bin",
+      "sha256": "f7f1221ea123e5c8f6426f30da777a4b81f8d590e26daa3f9c405659e8379365",
+      "bytes": 56,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/e-model56.asm",
+      "sha256": "6cbf96f82e75954dca58970ecb2ebf04495f4e81e327fe4b78ae16937e86643d",
+      "bytes": 1010,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/us-model56.bin",
+      "sha256": "f7f1221ea123e5c8f6426f30da777a4b81f8d590e26daa3f9c405659e8379365",
+      "bytes": 56,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/us-model56.asm",
+      "sha256": "163d09d0ce5e32c462c1453aaa7ef84d81a9858e1056f939f512aa6fe3b7e6b3",
+      "bytes": 1011,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/report.json",
+      "sha256": "843b5e57d436d44d9b92ac87ea910331281d73d9334345266b3c5743c56176b5",
+      "bytes": 1758,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/e-payload.bin",
+      "sha256": "2b4ccf4c127caac551d4cf69d272f9a4f01ea91b7f4b32700f07965ea16a8b68",
+      "bytes": 137580,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/e-payload.asm",
+      "sha256": "fb59025acb10b3a56648f054232e244e98fe46fefd36fa04deb1f4e06fac0a7d",
+      "bytes": 1856901,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/us-payload.bin",
+      "sha256": "1ec2f93a520d090cffbfb378da4439b59015215bd9cb6cca1e64135724d4cedc",
+      "bytes": 143892,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/us-payload.asm",
+      "sha256": "30f923baf14376bdfe74613868454c7e262b703846c2b7af0896b0001f559bb7",
+      "bytes": 1939271,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-static-v1/call-review.json",
+      "sha256": "e175e890f2fc7aa4e24cd4feb6be29f487569ed4ab09a01f26afd4ab2ea38077",
+      "bytes": 576,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/driver/platform/drv/plat_misc.c",
+      "sha256": "8c5cb9859dc108f7301f538e9f5c0e38258487dee6d7fdf90d97391747bf5ffc",
+      "bytes": 46244,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/driver/platform/drv/plat_misc.h",
+      "sha256": "0db7f055ecafc927a0caab310d513af1946cea8ac9f218f67b9e426e34275848",
+      "bytes": 1500,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/driver/wifi/hal/hh503/hal_gp_reg.h",
+      "sha256": "231b1afc5956517089bcf848a818dbd624e84d8c67835211976bdee1222d8ff5",
+      "bytes": 1286,
+      "access": "private"
+    },
+    {
+      "path": "ws73_SDK/build/config/hso/database_es0/cco/system/hdbcfg/device_mss_prim_db.xml",
+      "sha256": "2db65f402e64850ddaf5247d913cbdcdc6ff87d55eabe39e6a52c5976f00c069",
+      "bytes": 362105,
+      "access": "private"
+    },
+    {
+      "path": "libws73-usb/src/ws73_usb_firmware.c",
+      "sha256": "7132dfbd3c36f03790d55116b1f951b663b922353f3e0d55795421639e5b083b",
+      "bytes": 9275,
+      "access": "private"
+    },
+    {
+      "path": "libws73-usb/src/ws73_usb_control.c",
+      "sha256": "a191868d6fefe553171d037e08408fd7a23578f8d3f4568fd53ad7d70cdd2bc8",
+      "bytes": 5955,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-mixed-v1/manifest.json",
+      "sha256": "7d8ac009069765bb151f4e56cde5d52c6990d626f814957db7c6bfed9030b17c",
+      "bytes": 1510728,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-mixed-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "3f481fbc789531ed87d3b56e2aa1ccc45f1bab8869e75044983b497a7bd5e6f7",
+      "bytes": 874476,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-mixed-v1/guest-output/ws73.pcap",
+      "sha256": "eb797fbb018a6f900922e9634ddc9b7d786078266b411b6db0e4c92ddb857949",
+      "bytes": 595296,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-mixed-v1/guest-output/capture-stats.txt",
+      "sha256": "aca2b468d6ae1b83069888deab207235b0042a995a12698154c5ae0a73bc71a5",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-mixed-v1/guest-output/kernel.log",
+      "sha256": "51d8ea04ead4abe5427701d458f041d03f11f92976fd26d38d9961c3c45c0354",
+      "bytes": 49355,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-mixed-v1-audit-hcc110-timed-v1.json",
+      "sha256": "193d6acfc7b7758f6858b4f67e78f54374761524bb70c1cceaea84f9ca20c11d",
+      "bytes": 6987,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-u23-v1/manifest.json",
+      "sha256": "ebd165e070aae557f80c2d37081349baa729ec467d09e76f717f0fee509a455c",
+      "bytes": 1510614,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-u23-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "3baa29fbdff4ce9f1c22a6e5cdac0aba351c03f08e8a7d61d28f02aa2e95b128",
+      "bytes": 873428,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-u23-v1/guest-output/ws73.pcap",
+      "sha256": "f661d28ab3513879e380d0531aa2d27fc5cc6568a8769288be57fb7ac895eaff",
+      "bytes": 595296,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-u23-v1/guest-output/capture-stats.txt",
+      "sha256": "aca2b468d6ae1b83069888deab207235b0042a995a12698154c5ae0a73bc71a5",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-u23-v1/guest-output/kernel.log",
+      "sha256": "fe95e7b7145d91e199cf90496f31c4f8828f8686834563324ec91e6bc6a2009c",
+      "bytes": 49481,
+      "access": "private"
+    },
+    {
+      "path": ".dev/rom-chip-post-u23-v1-audit-hcc110-timed-v1.json",
+      "sha256": "331a242373ba951ba443c62d90e6f4a332ef5e25492e124a332dadd0098c4b36",
+      "bytes": 6983,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-build-v3.json",
+      "sha256": "389a7fbd3153cea5e2547c69e72eb5f159638ff294fea763490dcacb6a49408f",
+      "bytes": 1624,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-build-v3.log",
+      "sha256": "8aec90a8e850a413bd23a957d30ce3b9bfda15400a9e13822b97356fa2424d97",
+      "bytes": 1466,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-budget-v3.json",
+      "sha256": "c826bf6f9cafaf58b14cfbc1b3d9883bd38fd49cd2f17fc2c3a88d8fcd4d6aa9",
+      "bytes": 1067,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-artifacts-v3/manifest.json",
+      "sha256": "bc3f5827f0b31e4fa663bedf852abbd49e124ebbd8d3d486c4c521ccb22eecad",
+      "bytes": 229017,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/manifest.json",
+      "sha256": "9f79924c1c90ffa435329afe14c59b1f9d63f4a2aa6912021bda39dd5aa383aa",
+      "bytes": 2351,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-root-smoke-v4/manifest.json",
+      "sha256": "3b2054ed2603d77fe2a2d5328800e8cfa5494c8021e9e68480c046b24b55f2bc",
+      "bytes": 36324,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-selection-v1.json",
+      "sha256": "b6bac7ab7259a82a0f5feb2cdd659ef4876bb3ae9b22fb8baf812bc2468c5427",
+      "bytes": 2609,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "80bd5f638d65f574b738eee8f65cabf99d81cdf371c677a67d91115e25a4ef3f",
+      "bytes": 145497,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/manifest.json",
+      "sha256": "e0032c92d18d116badbf726eec92ee7a3bb6f129050a2bf2c8a33ec9b86daae2",
+      "bytes": 26979,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkd",
+      "sha256": "c86967115f9ba107d3ee42caf9f75ffe613707b202caf019b2ed5a997c6a271c",
+      "bytes": 10634880,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slctl",
+      "sha256": "138b84adfa8effbf6a528bf0dbaee9133d798e1f00c2f5aa4b1670c7413ba9fe",
+      "bytes": 7911664,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slktest",
+      "sha256": "0ffda53bcf2889ed8734398ee6d7a879142a8e80e46cf586e32041bba79675ad",
+      "bytes": 5278024,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkconfig",
+      "sha256": "b7b9678f35be4d7ac83e885c75f956d97ccde68ea50922448f9a273a588af299",
+      "bytes": 1403736,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkmon",
+      "sha256": "1d6402733c388a693a74764d4c9583701655cc662e20bcbb993ce49dc6585080",
+      "bytes": 1661896,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkdump",
+      "sha256": "880c446c2775675bbef373a3f9a07afe970765144eb05210e5c69bd09d37210c",
+      "bytes": 1661768,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/liblibsparklink.so",
+      "sha256": "30758249c58fd5db7fd9fe0fa8f47490a15bd5a45dbd7ff623d2904400d54c6e",
+      "bytes": 552048,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "153bd4d0a29cab95ea4674e6aa3c33510a8ce5dedb4cbc0686cc7e7e6b899f3a",
+      "bytes": 507,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "82d65094030f4302dda3df7927e7bb2f7ac9d3355deca287ede43785cf86e857",
+      "bytes": 154,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v3/manifest.json",
+      "bytes": 26982,
+      "sha256": "be37c93c37d963bdc3a83a55c48f59e01df8dbf6d2135c229a69082d448f8b87",
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkd",
+      "bytes": 10634880,
+      "sha256": "c86967115f9ba107d3ee42caf9f75ffe613707b202caf019b2ed5a997c6a271c",
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slctl",
+      "bytes": 7911664,
+      "sha256": "138b84adfa8effbf6a528bf0dbaee9133d798e1f00c2f5aa4b1670c7413ba9fe",
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slktest",
+      "bytes": 5278024,
+      "sha256": "0ffda53bcf2889ed8734398ee6d7a879142a8e80e46cf586e32041bba79675ad",
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkconfig",
+      "bytes": 1403736,
+      "sha256": "b7b9678f35be4d7ac83e885c75f956d97ccde68ea50922448f9a273a588af299",
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkmon",
+      "bytes": 1661896,
+      "sha256": "1d6402733c388a693a74764d4c9583701655cc662e20bcbb993ce49dc6585080",
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkdump",
+      "bytes": 1661768,
+      "sha256": "880c446c2775675bbef373a3f9a07afe970765144eb05210e5c69bd09d37210c",
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-e-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/liblibsparklink.so",
+      "bytes": 552048,
+      "sha256": "30758249c58fd5db7fd9fe0fa8f47490a15bd5a45dbd7ff623d2904400d54c6e",
+      "access": "private"
+    }
+  ],
+  "retention": "Privateauthorizedworkspaceonly;captures/disassembly/SDKmayberestricted,hash/path/sizeprovided,nopublicdownloadorverifiedoffsitearchive. Missinghash/source/scopepreventsqualification.",
+  "wall_ns": 1792214967696497839
+}

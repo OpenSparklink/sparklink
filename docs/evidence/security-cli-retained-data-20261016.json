@@ -1,0 +1,889 @@
+{
+  "schema_version": 1,
+  "status": "ALL11_RETAINED_DATA_GATES_PASS",
+  "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+  "compiled_userspace": "6385e43081bfcbeabee1ac4f18b9d0917c7a6057",
+  "guest_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
+  "executed_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
+  "vm_only": true,
+  "ports": [
+    "1-2.1.2",
+    "1-2.1.3"
+  ],
+  "runs": [
+    {
+      "name": "short",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 40,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 61,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-short/manifest.json",
+          "sha256": "4932f022000c030b52da5bc27fcee16080a55a347d6143caf9fc05b64a37a5e6",
+          "bytes": 1457819,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-short/guest-output/ws73.pcap",
+          "sha256": "61e0a1c73e0702e5d5ab9ae8bc53cac6a2261da4389bf185e4514bf39ba21b02",
+          "bytes": 601134,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-short/guest-output/capture-stats.txt",
+          "sha256": "bbdff71f813d8657682d679f773a705cac2e6ba15ee1271d451ac16053ca4e34",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-short/guest-output/application/passthrough-control/run.json",
+          "sha256": "4fecd36108d33b59af0aad01f5681086663e213135757b582de1a5798eac33d0",
+          "bytes": 720063,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-short/guest-output/kernel.log",
+          "sha256": "a794ea1cf27792e326fcf7b3646e2557341a1b6620bf9c735eb21f25d70f5edd",
+          "bytes": 49151,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "boundary",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 8,
+      "application_boundary_rejections": 16,
+      "requested_application_bytes": 249,
+      "boundary_probe_application_message_bytes": 249,
+      "boundary_probe_dtap_pdu_bytes": 254,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-boundary/manifest.json",
+          "sha256": "38505eb56463f178bd36508da2b9ce3daa40bccdaa714ddc8334c1ec99aa4765",
+          "bytes": 1263609,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-boundary/guest-output/ws73.pcap",
+          "sha256": "e71b99364c86e315609b38159c3dca15f17b2848bdd7fecd1188ef1703182f11",
+          "bytes": 534982,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-boundary/guest-output/capture-stats.txt",
+          "sha256": "ac363602eb65f777f9fe94707e5a4dc2037cf70597882f893b9081c93751bb57",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-boundary/guest-output/application/passthrough-control/run.json",
+          "sha256": "ca541e5c00564d8134f17b243ab1b29c50886f08dc77ea626654b55bf7e58c34",
+          "bytes": 774769,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-boundary/guest-output/kernel.log",
+          "sha256": "d08835799298e0a4eecc08e5791e4b46a15fe0ca4ca63dd9f6665f5058235ae4",
+          "bytes": 49288,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "long",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 8,
+      "application_boundary_rejections": 16,
+      "requested_application_bytes": 2042,
+      "boundary_probe_application_message_bytes": 2042,
+      "boundary_probe_dtap_pdu_bytes": 2047,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-long/manifest.json",
+          "sha256": "681f0bab2a973e106f074af07cb938100e4a99f1d75d5086c5abfd2093dbb383",
+          "bytes": 2243509,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-long/guest-output/ws73.pcap",
+          "sha256": "575e446150ab8f9763fc89ec915d05d9f56e0f3f3268bef40f33be73217bf1c6",
+          "bytes": 1022718,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-long/guest-output/capture-stats.txt",
+          "sha256": "73d7807494c115ab7c069173ee3c808a9ad1a071637d1b1ee4ee893e27a61b56",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-long/guest-output/application/passthrough-control/run.json",
+          "sha256": "9ccd5b7c76a60f0a2f0ba0c731ecba460826e5534cdf12e4c703059858fdbc2c",
+          "bytes": 882662,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-long/guest-output/kernel.log",
+          "sha256": "b945f4b11809049f34d8aeeb6a25aab5513d43a62a2d6e6194bb00ad8449f2ee",
+          "bytes": 49120,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "length248",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 8,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 248,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length248/manifest.json",
+          "sha256": "11e0010a51a7ab8451694db9c6ee30ef78d7a900ba50f4a2057c4a899509d62e",
+          "bytes": 1254252,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length248/guest-output/ws73.pcap",
+          "sha256": "13781fb5e90c265c841cd5531804f041f53a858a191499e32683e7020bdeb9ab",
+          "bytes": 530234,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length248/guest-output/capture-stats.txt",
+          "sha256": "686fb49740a9a13fbb9c976d1fb86ea81aec94ea22be288f3fbae3b23130bbbf",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length248/guest-output/application/passthrough-control/run.json",
+          "sha256": "eb776d9fd5ca21cf711c040868edcd569c30763a755cca5bd6b8c9bd79acb20a",
+          "bytes": 707319,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length248/guest-output/kernel.log",
+          "sha256": "e950784fd99cb77554707c3d06f74a71b6aaa17455488a56a3dd44211a65b617",
+          "bytes": 48978,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "length250",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 8,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 250,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length250/manifest.json",
+          "sha256": "e4e688dbedd9dab22e3443925b2fc55a06bdf7ea131495fe4a78367daf71929f",
+          "bytes": 1285515,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length250/guest-output/ws73.pcap",
+          "sha256": "d9d3fb1a5994832d2ff62b396463fbcfb0a6a97e9b92324fb67565d31a8ffed7",
+          "bytes": 551082,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length250/guest-output/capture-stats.txt",
+          "sha256": "e52d61e837995da3f5269bc8ef40c815d38184baf5eb9f5165f197979512421b",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length250/guest-output/application/passthrough-control/run.json",
+          "sha256": "2dfb811c477bfdbc44de8fdb413e630f80ae8d39651b40f46d0f34c5c5ddb73d",
+          "bytes": 703478,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length250/guest-output/kernel.log",
+          "sha256": "c15be4687e4526f243b7632b3962e63cc2c7193f38f6672f1a099294ff0ad247",
+          "bytes": 48978,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "length253",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 8,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 253,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length253/manifest.json",
+          "sha256": "a20b335caf62b456fa94c8175578e5f5b068c44711861b8f5527172178e430ee",
+          "bytes": 1285897,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length253/guest-output/ws73.pcap",
+          "sha256": "b148051557aef1e86ff6c3832b5359791fada630d9e676cd8e9997e7e83ba366",
+          "bytes": 548378,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length253/guest-output/capture-stats.txt",
+          "sha256": "b0c617aef58192761fe215afa36ae1e281841ab71937bf249fd43ba8f8c32f06",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length253/guest-output/application/passthrough-control/run.json",
+          "sha256": "ea998da30741a5f46139fed36cdb33b079bf3ab9043b5b940532457e7b2b7874",
+          "bytes": 699330,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length253/guest-output/kernel.log",
+          "sha256": "d1dfb26f930869509dec75c87349c81dfcb9eb0b781100876f3d593570d81aa8",
+          "bytes": 49066,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "length254",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 8,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 254,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length254/manifest.json",
+          "sha256": "b8b0b2680a1b872750d25fab4447654908588e0772d9b7440257f8be10d3e21d",
+          "bytes": 1286027,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length254/guest-output/ws73.pcap",
+          "sha256": "a0e4678efb417162975dc650c602d50f8dcb4eaf653a5aea161eac2e86c3212b",
+          "bytes": 552434,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length254/guest-output/capture-stats.txt",
+          "sha256": "e83a40ef064f50c9a7636025f757cb4f4c31b04c97c4da1fcaf64bdfb686e863",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length254/guest-output/application/passthrough-control/run.json",
+          "sha256": "6c713aeaed73a96d9133fc21b25cd825e75c68f176fbc1feb3c6476173fb7116",
+          "bytes": 736152,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length254/guest-output/kernel.log",
+          "sha256": "504f2e8e1a563d620e61ccd2dc320aa00e05f3cfdbfb900914d9df49f1a43196",
+          "bytes": 49497,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "length255",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 8,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 255,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length255/manifest.json",
+          "sha256": "362bd170ce3233fe17319a0ec4aeafd8e2c2668d01980dd1398eddb6bebc707b",
+          "bytes": 1286155,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length255/guest-output/ws73.pcap",
+          "sha256": "9352cf3e1534093f3a6fda9c60f66e1658e3973f0d5f314889c34b0222434a99",
+          "bytes": 550406,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length255/guest-output/capture-stats.txt",
+          "sha256": "20fcb2cc54ac77e345d82cdb7e286f93c430f87e8fdb12528e7123c6c0a2da21",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length255/guest-output/application/passthrough-control/run.json",
+          "sha256": "352ad59730afc10c59c0ca8309646159dfac6b12ef658b51420219f00a3b1513",
+          "bytes": 705584,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length255/guest-output/kernel.log",
+          "sha256": "01f8338667429d4fbbe16cb8e943719c8f505324f4c6c28d94649c6a99efd31f",
+          "bytes": 49192,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "length1024",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 8,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 1024,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length1024/manifest.json",
+          "sha256": "2a957e1a5586f7832c5d97a12b33812b2d16ef127d2d5f1dacabea89dac6764b",
+          "bytes": 1696931,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length1024/guest-output/ws73.pcap",
+          "sha256": "dadd5beea62991e87126a91b25b5e64d633d5af6070a90f59084670c1c9f1811",
+          "bytes": 752584,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length1024/guest-output/capture-stats.txt",
+          "sha256": "119be3fe691de0d87ef35c710d46143d43f255da19be1a6f6a7d0788421fc800",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length1024/guest-output/application/passthrough-control/run.json",
+          "sha256": "86b53adb9df53e8058b5c32176dfab1d26d4d6fe3a7f1d595b671b53e9b3a2db",
+          "bytes": 762139,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-length1024/guest-output/kernel.log",
+          "sha256": "db24a4cdc3df5af2493521cf73dc05f5d5404940f45c18e984efda96341e98e0",
+          "bytes": 49068,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "prefix-close",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 0,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 2042,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 2,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-prefix-close/manifest.json",
+          "sha256": "8a6a8f5199ac4630f23951ca73bc306cd6db1b4cf900b27a67c0cd22df3db0e6",
+          "bytes": 1390861,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-prefix-close/guest-output/ws73.pcap",
+          "sha256": "485b214c77983acfae50490fff127c5659ea09fb06056492653205697ab01788",
+          "bytes": 606118,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-prefix-close/guest-output/capture-stats.txt",
+          "sha256": "3cc68bbd6ea1db0242de740f894aa883a859d99cfaaf07cdd2d2f98299a4756a",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-prefix-close/guest-output/application/passthrough-control/run.json",
+          "sha256": "c8eda4d8a3e8a944a94d2c7e06907671fc2d2488d21ad756bc545182be7633a3",
+          "bytes": 702788,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-prefix-close/guest-output/kernel.log",
+          "sha256": "3688984e27f7b52964789cad22c712967c0475b8d38ba4e1653e373fe0875f92",
+          "bytes": 49124,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "burst",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "business_round_trips": 32,
+      "application_boundary_rejections": 0,
+      "requested_application_bytes": 2042,
+      "boundary_probe_application_message_bytes": null,
+      "boundary_probe_dtap_pdu_bytes": null,
+      "strict_prefix_close_phases": 0,
+      "credit_exhaustion_manifest_claim": false,
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-burst/manifest.json",
+          "sha256": "6e0b9a71b4a5b7f24f0502bbfda8123c711f68d83aaea27699b6be9a69ea4288",
+          "bytes": 5677864,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-burst/guest-output/ws73.pcap",
+          "sha256": "17c91b26723133aeb7e1b6c6f07765db3d488d0d8a934e568239ce007012b229",
+          "bytes": 2687090,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-burst/guest-output/capture-stats.txt",
+          "sha256": "f881a4e66e27d50225e9b606455d00ba37f0c714569990c27dc48009bca8e0f0",
+          "bytes": 229,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-burst/guest-output/application/passthrough-control/run.json",
+          "sha256": "b01203477f698ff5e7c3436478c23b1570e3ccdd31b92dfeda2b238db3aa5a88",
+          "bytes": 1247761,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-retained-v1-burst/guest-output/kernel.log",
+          "sha256": "c87418abe9ec90d061e7c2a4389e84fc0a32dfd71ccd35ee5ad4c1705c9a0539",
+          "bytes": 49112,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    }
+  ],
+  "totals": {
+    "business_round_trips": 136,
+    "boundary_rejections": 32,
+    "strict_prefix_close_phases": 2
+  },
+  "pool_observation": {
+    "status": "REAL_BURST_POOL_DEPLETION_AND_NOCP_RESUMPTION_SCOPED_PASS",
+    "phases": [
+      {
+        "phase": 0,
+        "source_pool_refusals_delta": 30,
+        "endpoints": [
+          {
+            "controller": 0,
+            "generation": 1,
+            "lifetime": 1,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 107
+          },
+          {
+            "controller": 1,
+            "generation": 2,
+            "lifetime": 1,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 128
+          }
+        ]
+      },
+      {
+        "phase": 1,
+        "source_pool_refusals_delta": 26,
+        "endpoints": [
+          {
+            "controller": 1,
+            "generation": 2,
+            "lifetime": 3,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 107
+          },
+          {
+            "controller": 0,
+            "generation": 1,
+            "lifetime": 3,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_points": 126
+          }
+        ]
+      }
+    ],
+    "assumptions": [
+      "PCAP USB submission/NOCP observed ordering; original link interval starts drained",
+      "NOCP accuracy is firmware/hardware trust, not proven by a matching count",
+      "No duplicate/late NOCP or handle-reuse barrier qualified",
+      "USB completion is not credit return; only NOCP changes reconstructed debt"
+    ],
+    "material": {
+      "base": "workspace",
+      "path": ".dev/security-cli-retained-pool-v1.json",
+      "sha256": "342781013b89386a74e525efebcf1e52509ceb67f0f80e470cc5194d7369b314",
+      "bytes": 69684,
+      "access": "private",
+      "format": "json"
+    }
+  },
+  "limits": [
+    "Only exact listed11 data gates on basic fixed channels; not complete DG01-DG12 or all original NS1/physical/hardware requirements.",
+    "Private raw captures remain original machine only; hashes and explicit access, no asserted public/offsite archive.",
+    "Original manifests keep credit_exhaustion_acceptance=false. Separate pool observations show actual exhaustion/NOCP resumption for this run, not hardware NOCP truth, late/duplicate/reuse barrier or complete ledger proof.",
+    "Current fixture/function/formal results are separate; no new formal proof or KASAN/KCSAN/lockdep/fault-injection/KCOV qualification.",
+    "Prefix-close unfinished PDUs contribute zero app round trips; two strict phases are separate from136 peer-checked replies.",
+    "Dynamic multi-channel/reopen, four devices two-group business, full socket/Grant/revoke/Down/failure matrices and SSAP CCC/notify/indicate remain incomplete.",
+    "Production CLI two-mode positive/negative scope is a separate report; not general authentication/trustedGrant/Bond/third-party interop or fullsystemd/udev/deployment.",
+    "Natural startup/reenumeration/disappearance RCA and nonhuman recovery remain OPEN. QMP/manual/hub/injection are not natural recovery.",
+    "This report closes only the explicitly named CLI-batch retention gates. Original collector path failure is kept in the separate CLI report; no whole issue or original goal is complete."
+  ],
+  "supervisor_material": {
+    "base": "workspace",
+    "path": ".dev/security-cli-retained-v1.json",
+    "sha256": "95a72f17c76f534e1bb0bc74fbc6e750ae991b770ff887cc9e2777f372f3086e",
+    "bytes": 12847,
+    "access": "private",
+    "format": "json"
+  },
+  "agent_report": "docs/evidence/security-cli-real-progress-20261016.json"
+}

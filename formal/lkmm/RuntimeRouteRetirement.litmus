@@ -1,0 +1,30 @@
+C RuntimeRouteRetirement
+
+(* One identity, live references, routes initially absent. publish_runtime
+   keeps schedule_gate through the routes lock and publish. invalidate closes
+   the gate before exact owner unpublication. No Arc/IRQ/workqueue refinement. *)
+{}
+P0(int *closed, int *route, spinlock_t *gate, spinlock_t *routes)
+{
+ int r0;
+ spin_lock(gate);
+ r0 = READ_ONCE(*closed);
+ if (r0 == 0) {
+  spin_lock(routes);
+  WRITE_ONCE(*route, 1);
+  spin_unlock(routes);
+ }
+ spin_unlock(gate);
+}
+P1(int *closed, int *route, spinlock_t *gate, spinlock_t *routes)
+{
+ int r1;
+ spin_lock(gate);
+ WRITE_ONCE(*closed, 1);
+ spin_unlock(gate);
+ spin_lock(routes);
+ r1 = READ_ONCE(*route);
+ WRITE_ONCE(*route, 0);
+ spin_unlock(routes);
+}
+exists (0:r0=0 /\ 1:r1=0 /\ route=1)

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "THREE_EXISTING_ISSUES_UPDATED_AND_READ_BACK_OPEN",
+  "qualification_record": "four-business80-d01aa82",
+  "report": "docs/evidence/four-device-business-20261016.json",
+  "scope": "First positive four-device basic business slice only; original issue scopes/remaining gates unchanged; no issue closed",
+  "body_sha256": "97633e0072c742d5b7594016947f69c1e41e4ac8070b372f1891ddb3db540719",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6206080124",
+      "id": 6206080124,
+      "state": "OPEN",
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 3,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6206080764",
+      "id": 6206080764,
+      "state": "OPEN",
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6206081485",
+      "id": 6206081485,
+      "state": "OPEN",
+      "readback_verified": true
+    }
+  ],
+  "exact_code_ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38835710455,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38835710455",
+      "workflowName": "Qualification integrity"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38835710647,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38835710647",
+      "workflowName": "Documentation"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38835710395,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38835710395",
+      "workflowName": "Production codec bounded fuzz"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38835710471,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38835710471",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38835702259,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38835702259",
+      "workflowName": "Documentation"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38835702321,
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38835702321",
+      "workflowName": "Qualification integrity"
+    }
+  ],
+  "ci_scope": "Actual completed CI statuses for d01aa82; qualification metadata/fuzz/docs/CI are separate scopes, no additional hardware or formal qualification"
+}

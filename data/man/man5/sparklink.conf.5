@@ -8,33 +8,39 @@ This file controls the runtime behaviour of
 .BR slkd (8).
 It uses TOML syntax.
 .PP
-If the file does not exist or cannot be parsed, the daemon starts with
-built\-in defaults.
+Only a missing implicit default file permits built\-in defaults. An explicitly
+supplied path must exist, including when it equals the default location. Read,
+permission, parsing, unknown-field and unsupported-policy errors abort startup
+before D\-Bus registration or controller management ownership.
 .SH SECTIONS
 .SS [general]
 .TP
 .B discovery_level
 Integer 0\(en4. Minimum discovery level filter for scan results.
-Devices advertising below this level are ignored. Default:
+This filter is used by the legacy scan path. Native WS73 currently requires
+level 1; another configured level is rejected for that adapter before acquiring
+its management lease. Default:
 .BR 1 .
 .TP
 .B auto_enable
-Boolean. Automatically power on the adapter at daemon startup. Default:
+Boolean. Currently only true is supported; false is rejected until controller
+enable policy is implemented. Default:
 .BR true .
 .TP
 .B name
-String. Local device name advertised to peers. Default:
+String. Daemon adapter alias; does not set the native radio advertisement name. Default:
 .BR \(dqSparkLink\(dq .
 .SS [policy]
 .TP
 .B auto_pair
-Boolean. Automatically accept pairing requests. Default:
+Boolean. Currently only false is supported. True is rejected because authenticated
+automatic pairing is not implemented. Default:
 .BR false .
 .TP
 .B min_encryption
-Integer 0\(en3. Minimum encryption level required for incoming connections.
-.B 0
-disables enforcement. Default:
+Integer. Currently only 0 is supported. Nonzero values are rejected until
+per-connection encryption enforcement is implemented. This setting is not a
+claim of authenticated or encrypted connection support. Default:
 .BR 0 .
 .SH EXAMPLE
 .nf

@@ -1,0 +1,39 @@
+{
+  "status": "MODEL_CHECKED_SCOPED",
+  "source_sha256": "1cb87ed4fff0aeef6e56b259097499573e90a7b20ab90833ce68b9174a0af6c6",
+  "native_header_sha256": "0ab59e0e834f3d64e02378e4a38fcdf22acdcf51da920c34312fb57c8f52a88f",
+  "source_head": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
+  "source_clean": true,
+  "tool": "6.11.0 (cbmc-6.11.0)",
+  "command": [
+    "cbmc",
+    "/home/sanchuanhehe/Documents/opensparklink/.dev/virtual-codec-proof-strict/actual.c",
+    "-I",
+    "/home/sanchuanhehe/Documents/opensparklink/linux/include",
+    "-I",
+    "/home/sanchuanhehe/Documents/opensparklink/linux/drivers/sparklink",
+    "--bounds-check",
+    "--pointer-check",
+    "--signed-overflow-check",
+    "--unsigned-overflow-check",
+    "--unwind",
+    "34",
+    "--unwinding-assertions",
+    "--json-ui"
+  ],
+  "harness_sha256": "248aab18a1ae5098703a40695426bcf2752dc4e821c0450d428df677955c0713",
+  "assumptions": [
+    "Live initialized NativeInfo, valid one-byte parameter object and 18-byte output; no aliasing.",
+    "Pure test codec only; no Core/Host credit/Runtime/worker/IRQ/refcount/lifetime/hardware proof."
+  ],
+  "bounds": "All u16 opcodes, size_t lengths, u8 parameter and metadata bytes; unwind34 with unwinding assertions.",
+  "source_mapping": [
+    "sparklink_virtual_validate",
+    "sparklink_virtual_reply"
+  ],
+  "physical_acceptance": false,
+  "exit": 0,
+  "properties": 100,
+  "warnings": [],
+  "failures": []
+}

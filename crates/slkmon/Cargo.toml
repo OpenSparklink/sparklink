@@ -9,7 +9,9 @@ name = "slkmon"
 path = "src/main.rs"
 
 [dependencies]
+anyhow = "1"
+tokio = { workspace = true }
 slk-protocol = { workspace = true }
-libsparklink = { workspace = true }
+slk-native = { workspace = true }
 clap = { workspace = true }
 chrono = { workspace = true }

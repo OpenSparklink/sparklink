@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "result": "SOURCE_BOUND_OFFLINE_MAINTENANCE_ONLY",
+  "production_source": "22cd8cb9794d5880ba43da417f243b77085e8603",
+  "offline_report_commit": "f7c5c68a6789015dac2778d8b567899a299b9f7f",
+  "offline_report": "docs/evidence/application-connection-ssap-clients-offline-20261018.json",
+  "verification": [
+    "31 local qualification materials andscopedsource/report/gates checked;6negativecontrols refuse stale source/missingorbadartifact/falseRFscope/missingorUNPROVEDgate.",
+    "Globalerrors0,metadata-only-not-reverified;currentwhole treeNOT_REVALIDATED/overallINCOMPLETE. Oldrealrecords andAgentselectedartifact unchanged.",
+    "StrictHTML warning-as-error/inventory116 passed;onlyfourreaderquadrants publish. Nonewbrowser/external-link ordevice acceptance.",
+    "Read-only22cd CIobservation:CI/docs/qualification/boundedfuzz completed success;not transferred to laterdocsheads.",
+    "Mainfastforward retained all10existingWIP files byteforbyte. Kernelc396 clean;actualcompiledkernel2fc remains separate."
+  ],
+  "candidate": {
+    "status": "BUILD_AND_FILE_STAGING_ONLY_NO_VM_OR_RF",
+    "actual_build_head": "f7c5c68a6789015dac2778d8b567899a299b9f7f",
+    "production_code_base": "22cd8cb9794d5880ba43da417f243b77085e8603",
+    "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+    "sdk": "explicit110US",
+    "jobs": 12,
+    "incremental_target": "same fixed .dev/cargo-native-dev;separate sealed private payload"
+  },
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f3-registry-preflight-v1.json",
+      "sha256": "d71fd90d487c08d302fdeb4f49b526f2c56338ea0af07a11bacbfab8d083d247",
+      "bytes": 1406
+    },
+    {
+      "path": ".dev/architecture-r5f3-final-global-metadata-v1.json",
+      "sha256": "21195452816ecf625f6112a8e996820dc541ac9dadbdeea21aff31d3ada432f8",
+      "bytes": 1078024
+    },
+    {
+      "path": ".dev/architecture-r5f3-final-docs-v1.log",
+      "sha256": "10ff87f010ae403fdb4161ce513a921d26c6ce227eb4e1ce82145cf5ced69f8a",
+      "bytes": 1085769
+    },
+    {
+      "path": ".dev/architecture-r5f3-ci-observation-v1.json",
+      "sha256": "44c6d0ae234c9b0776a97683dba32e0a165a9677b2f28918d11dcc2b2b284f09",
+      "bytes": 1575
+    },
+    {
+      "path": ".dev/architecture-r5f3-main-wip-preserved-v1.json",
+      "sha256": "b84797caf692ae0acc665c344a03ed6b82e15daf317876604f4fabaccc5c4ce4",
+      "bytes": 1247
+    },
+    {
+      "path": ".dev/architecture-r5f3-us-bundle-v1/manifest.json",
+      "sha256": "7b657f679c8838c63b0e6f5f0816ce50c7c803d8be6c21ef7a27b1fa566b4cfe",
+      "bytes": 31396
+    },
+    {
+      "path": ".dev/architecture-r5f3-us-bundle-v1/build.log",
+      "sha256": "9f578c71bc21ea299b0f90e64f275800d8d7267884fe47fca9e4e6fb4152a74c",
+      "bytes": 462
+    }
+  ],
+  "remaining": [
+    "ActualC-PythonSSAPpeer/USB gate onnewcandidate,ordinaryrole/Grant/release/revoke/Down/originaldeadline/peerisolation andoriginalpathpreservation.",
+    "No apps-onlySSAP right added;no end-to-enddeadlinewirefield. Higherdiscovery/Owned/Agent/commonAPI/perappDiscovery andR6c remain.",
+    "FullS0-S6/19WP/10FV/12DG andalloriginalscope remain;naturalRCA/nonmanualrecovery OPEN. No wholeissueclosed orduplicategoal."
+  ]
+}

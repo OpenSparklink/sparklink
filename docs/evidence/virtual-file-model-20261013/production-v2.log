@@ -1,0 +1,22 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 20 and seed -6876588341294009691 with 2 workers on 16 cores with 1820MB heap and 64MB offheap memory [pid: 2198609] (Linux 7.2.8-200.fc44.x86_64 amd64, Red Hat, Inc. 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lifecycle/virtual-file/VirtualFile.tla
+Parsing file /tmp/Naturals.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Sequences.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module VirtualFile
+Starting... (2026-10-13 19:30:53)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-10-13 19:30:53.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 1.7E-10
+  based on the actual fingerprints:  val = 3.0E-11
+129155 states generated, 32513 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 27.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 6 and the 95th percentile is 2).
+Finished in 00s at (2026-10-13 19:30:54)

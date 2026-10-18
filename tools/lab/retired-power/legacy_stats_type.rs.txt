@@ -1,0 +1,11 @@
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, zbus::zvariant::Type)]
+pub struct SubsysStats {
+    pub dev_count: u16,
+    pub active_connections: u16,
+    pub total_conn_created: u32,
+    pub total_mgmt_submitted: u32,
+    pub total_mgmt_timeouts: u32,
+    pub crc_errors: u32,
+    pub power_state: u8,
+}
+

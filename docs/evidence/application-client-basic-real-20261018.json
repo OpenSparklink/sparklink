@@ -1,0 +1,837 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "level": "real_device",
+  "scope": [
+    "Finite two knownU WS73/explicitSDK110/basicCUTC61byte one-shot requests and independent replies,ordinaryUID1000/caps0,connection/application role exchange only.",
+    "Both applications duplicate the actualauthorizedfd,close originalfd andClient before I/O,validate opposite bytes through existingChannel receive context,thenfinalclose andsame-lifetimeNotSupported. No newHost/Engine,Grant orcredit state.",
+    "Full run/USBHCC independentrecomputation;QMPguestdetach/readd and22RFcontrolrounds are not physicalunplug/naturalfaultRCA/automaticrecovery.",
+    "No completeapps-onlydeployment/revoke/Down/deadline/fork/lifetime/fairness/highlevelSSAP-Agent-Owned API orperformance/formalqualification. OriginalS0-S6/19WP/10FV/12DG remainOPEN."
+  ],
+  "bounds": {
+    "real_sdk_vms": 1,
+    "connection_roles": 2,
+    "application_apis": [
+      "c",
+      "python"
+    ],
+    "round_trips": 2,
+    "application_bytes": 61,
+    "applications": 4,
+    "usb_packets": 1543,
+    "independent_negative_controls": 8,
+    "new_formal_proofs": 0
+  },
+  "compiled_service": "3ff5296145a16798dd4a13ce231a63486280b946",
+  "guest_tools": "004c74624b9455a83ce3c3bf4ca83562dd77d45a",
+  "host_tools": "004c74624b9455a83ce3c3bf4ca83562dd77d45a",
+  "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "firmware": {
+    "version": "1.10.110-us",
+    "combined_sha256": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+    "selection": "explicitknownU;notcoldROMautomaticselection/chipauthentication"
+  },
+  "gates": [
+    {
+      "name": "actual-public-C-Python-peer-roundtrips",
+      "status": "PASS"
+    },
+    {
+      "name": "dup-closeClient-finalclose-same-lifetime-refusal",
+      "status": "PASS"
+    },
+    {
+      "name": "both-end-USB-HCC-and-identity-recomputed",
+      "status": "PASS"
+    },
+    {
+      "name": "actual-evidence-negative-controls",
+      "status": "PASS"
+    }
+  ],
+  "proof": {
+    "status": "C_PYTHON_BASIC_APPLICATION_USB_AND_PEER_SCOPED_PASS",
+    "round_trips": 2,
+    "proofs": [
+      {
+        "phase": 0,
+        "applications": {
+          "1": {
+            "api": "python",
+            "identity": {
+              "stage": "ready",
+              "api": "python",
+              "index": 1,
+              "generation": 2,
+              "lifetime": 1,
+              "handle": 0,
+              "dup_alive": true,
+              "client_closed": true
+            }
+          },
+          "0": {
+            "api": "c",
+            "identity": {
+              "stage": "ready",
+              "api": "c",
+              "index": 0,
+              "generation": 1,
+              "lifetime": 1,
+              "handle": 0,
+              "dup_alive": true,
+              "client_closed": true
+            }
+          }
+        },
+        "legs": [
+          {
+            "out": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792278613967672000,
+              "urb": 18446617834427134336,
+              "record": 486,
+              "file_offset": 56570,
+              "usb_sha256": "c2ddc1ce54d4854e519409d16eb9e6b2c4ab4c069401772e4bfebf905b809241",
+              "handle": 0,
+              "boundary": 0,
+              "data": "1f003e00f100000000de3ecdcc595f7b8df73ee9a64eb363632198fc9447f7049c5b64da6f57d5a029a5ea2b1b0b7560ab529ee9108a0e8fb550668060540dc8569b",
+              "direction": "out",
+              "completion": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792278613967961000,
+                "urb": 18446617834427134336,
+                "record": 487,
+                "file_offset": 56789
+              },
+              "fragments": [
+                {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792278613967672000,
+                  "urb": 18446617834427134336,
+                  "record": 486,
+                  "file_offset": 56570,
+                  "usb_sha256": "c2ddc1ce54d4854e519409d16eb9e6b2c4ab4c069401772e4bfebf905b809241",
+                  "handle": 0,
+                  "boundary": 0,
+                  "data": "1f003e00f100000000de3ecdcc595f7b8df73ee9a64eb363632198fc9447f7049c5b64da6f57d5a029a5ea2b1b0b7560ab529ee9108a0e8fb550668060540dc8569b",
+                  "direction": "out",
+                  "completion": {
+                    "bus": 1,
+                    "device": 2,
+                    "wall_ns": 1792278613967961000,
+                    "urb": 18446617834427134336,
+                    "record": 487,
+                    "file_offset": 56789
+                  }
+                }
+              ]
+            },
+            "in": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792278613971926000,
+              "urb": 18446617834427256576,
+              "record": 494,
+              "file_offset": 57883,
+              "hcc_offset": 92,
+              "usb_sha256": "84291527b14898e6ecf9c8ee35801477e1175a36c35f993907e5fd3bde093d99",
+              "usb_length": 178,
+              "handle": 0,
+              "boundary": 3,
+              "data": "1f003e00f100000000de3ecdcc595f7b8df73ee9a64eb363632198fc9447f7049c5b64da6f57d5a029a5ea2b1b0b7560ab529ee9108a0e8fb550668060540dc8569b",
+              "direction": "in",
+              "fragments": [
+                {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792278613969038000,
+                  "urb": 18446617834427256576,
+                  "record": 488,
+                  "file_offset": 56869,
+                  "hcc_offset": 92,
+                  "usb_sha256": "c673d4edd829bb5052e5e221a75844bfc24972d0bb74f11a6030d9b5c2117181",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 1,
+                  "data": "1f003e00f100000000de3ecdcc595f7b8df73ee9a64eb363632198fc",
+                  "direction": "in"
+                },
+                {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792278613970524000,
+                  "urb": 18446617834427256576,
+                  "record": 490,
+                  "file_offset": 57207,
+                  "hcc_offset": 92,
+                  "usb_sha256": "d4c5fb4fa9e517af07deb3e9f9986b234558257a3b736f91d165fe5593b77cd3",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 2,
+                  "data": "9447f7049c5b64da6f57d5a029a5ea2b1b0b7560ab529ee9108a0e8f",
+                  "direction": "in"
+                },
+                {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792278613971926000,
+                  "urb": 18446617834427256576,
+                  "record": 494,
+                  "file_offset": 57883,
+                  "hcc_offset": 92,
+                  "usb_sha256": "84291527b14898e6ecf9c8ee35801477e1175a36c35f993907e5fd3bde093d99",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 3,
+                  "data": "b550668060540dc8569b",
+                  "direction": "in"
+                }
+              ]
+            }
+          },
+          {
+            "out": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792278613972234000,
+              "urb": 18446617834427134336,
+              "record": 496,
+              "file_offset": 58221,
+              "usb_sha256": "52b67a7aa2658527ef03b65828503bd836088d59a80cf423e6dd8e2769cfed89",
+              "handle": 0,
+              "boundary": 0,
+              "data": "1f003e00f100000000d246414c22bf9869d4ab64654a59f111abee872318d7a44edc8f6bae8f5af354727792380bf8090a9b4554c060d206ffad11f3bafa381ae3ab",
+              "direction": "out",
+              "completion": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792278613972373000,
+                "urb": 18446617834427134336,
+                "record": 497,
+                "file_offset": 58440
+              },
+              "fragments": [
+                {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792278613972234000,
+                  "urb": 18446617834427134336,
+                  "record": 496,
+                  "file_offset": 58221,
+                  "usb_sha256": "52b67a7aa2658527ef03b65828503bd836088d59a80cf423e6dd8e2769cfed89",
+                  "handle": 0,
+                  "boundary": 0,
+                  "data": "1f003e00f100000000d246414c22bf9869d4ab64654a59f111abee872318d7a44edc8f6bae8f5af354727792380bf8090a9b4554c060d206ffad11f3bafa381ae3ab",
+                  "direction": "out",
+                  "completion": {
+                    "bus": 1,
+                    "device": 3,
+                    "wall_ns": 1792278613972373000,
+                    "urb": 18446617834427134336,
+                    "record": 497,
+                    "file_offset": 58440
+                  }
+                }
+              ]
+            },
+            "in": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792278613983883000,
+              "urb": 18446617834477373312,
+              "record": 502,
+              "file_offset": 59196,
+              "hcc_offset": 92,
+              "usb_sha256": "a6c95e88fa7750015d3e109602f039f9220cb5ab854c9dc8dcb398909e954cd1",
+              "usb_length": 178,
+              "handle": 0,
+              "boundary": 3,
+              "data": "1f003e00f100000000d246414c22bf9869d4ab64654a59f111abee872318d7a44edc8f6bae8f5af354727792380bf8090a9b4554c060d206ffad11f3bafa381ae3ab",
+              "direction": "in",
+              "fragments": [
+                {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792278613973474000,
+                  "urb": 18446617834477373312,
+                  "record": 498,
+                  "file_offset": 58520,
+                  "hcc_offset": 92,
+                  "usb_sha256": "665b13afe016caadb54893baf4646535f70a26e6355a72e8e86dc7b99e171bc1",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 1,
+                  "data": "1f003e00f100000000d246414c22bf9869d4ab64654a59f111abee87",
+                  "direction": "in"
+                },
+                {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792278613978054000,
+                  "urb": 18446617834477373312,
+                  "record": 500,
+                  "file_offset": 58858,
+                  "hcc_offset": 92,
+                  "usb_sha256": "71e13f7ec2968a69489cd6a739212e6c5cb2b005af9c799c834c40671c3fbc32",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 2,
+                  "data": "2318d7a44edc8f6bae8f5af354727792380bf8090a9b4554c060d206",
+                  "direction": "in"
+                },
+                {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792278613983883000,
+                  "urb": 18446617834477373312,
+                  "record": 502,
+                  "file_offset": 59196,
+                  "hcc_offset": 92,
+                  "usb_sha256": "a6c95e88fa7750015d3e109602f039f9220cb5ab854c9dc8dcb398909e954cd1",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 3,
+                  "data": "ffad11f3bafa381ae3ab",
+                  "direction": "in"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "phase": 1,
+        "applications": {
+          "1": {
+            "api": "c",
+            "identity": {
+              "stage": "ready",
+              "api": "c",
+              "index": 0,
+              "generation": 1,
+              "lifetime": 3,
+              "handle": 0,
+              "dup_alive": true,
+              "client_closed": true
+            }
+          },
+          "0": {
+            "api": "python",
+            "identity": {
+              "stage": "ready",
+              "api": "python",
+              "index": 1,
+              "generation": 2,
+              "lifetime": 3,
+              "handle": 0,
+              "dup_alive": true,
+              "client_closed": true
+            }
+          }
+        },
+        "legs": [
+          {
+            "out": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792278614950960000,
+              "urb": 18446617834476761664,
+              "record": 606,
+              "file_offset": 75872,
+              "usb_sha256": "4d84fe7d77072ec7e0a51753dda2df25b9c03a609283c57edc396b06e8959ed8",
+              "handle": 0,
+              "boundary": 0,
+              "data": "1f003e00f101000000422f38cad21d810033afff27fb9904458a81d52aed864a8df39779612e1ffe8106a78e25fe57abe3449502e18951de6af7b5a724decc51ef05",
+              "direction": "out",
+              "completion": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792278614951230000,
+                "urb": 18446617834476761664,
+                "record": 607,
+                "file_offset": 76091
+              },
+              "fragments": [
+                {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792278614950960000,
+                  "urb": 18446617834476761664,
+                  "record": 606,
+                  "file_offset": 75872,
+                  "usb_sha256": "4d84fe7d77072ec7e0a51753dda2df25b9c03a609283c57edc396b06e8959ed8",
+                  "handle": 0,
+                  "boundary": 0,
+                  "data": "1f003e00f101000000422f38cad21d810033afff27fb9904458a81d52aed864a8df39779612e1ffe8106a78e25fe57abe3449502e18951de6af7b5a724decc51ef05",
+                  "direction": "out",
+                  "completion": {
+                    "bus": 1,
+                    "device": 3,
+                    "wall_ns": 1792278614951230000,
+                    "urb": 18446617834476761664,
+                    "record": 607,
+                    "file_offset": 76091
+                  }
+                }
+              ]
+            },
+            "in": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792278614956484000,
+              "urb": 18446617834477373312,
+              "record": 612,
+              "file_offset": 76847,
+              "hcc_offset": 92,
+              "usb_sha256": "d586670304c295969c5da366cf2f782368c23508fb6518214144c0def2edebf9",
+              "usb_length": 178,
+              "handle": 0,
+              "boundary": 3,
+              "data": "1f003e00f101000000422f38cad21d810033afff27fb9904458a81d52aed864a8df39779612e1ffe8106a78e25fe57abe3449502e18951de6af7b5a724decc51ef05",
+              "direction": "in",
+              "fragments": [
+                {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792278614953630000,
+                  "urb": 18446617834477373312,
+                  "record": 608,
+                  "file_offset": 76171,
+                  "hcc_offset": 92,
+                  "usb_sha256": "a8215e18a38af69b1f2536c23307095816bd7762fc54fa852161b5adcac6ea5c",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 1,
+                  "data": "1f003e00f101000000422f38cad21d810033afff27fb9904458a81d5",
+                  "direction": "in"
+                },
+                {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792278614955028000,
+                  "urb": 18446617834477373312,
+                  "record": 610,
+                  "file_offset": 76509,
+                  "hcc_offset": 92,
+                  "usb_sha256": "0ed01f77a27198581943691f91dbc2f1fc3672c4b7702598fb236603163d8825",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 2,
+                  "data": "2aed864a8df39779612e1ffe8106a78e25fe57abe3449502e18951de",
+                  "direction": "in"
+                },
+                {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792278614956484000,
+                  "urb": 18446617834477373312,
+                  "record": 612,
+                  "file_offset": 76847,
+                  "hcc_offset": 92,
+                  "usb_sha256": "d586670304c295969c5da366cf2f782368c23508fb6518214144c0def2edebf9",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 3,
+                  "data": "6af7b5a724decc51ef05",
+                  "direction": "in"
+                }
+              ]
+            }
+          },
+          {
+            "out": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792278614956746000,
+              "urb": 18446617834476761664,
+              "record": 616,
+              "file_offset": 77523,
+              "usb_sha256": "39394d1351571f85ae5fff88f8d16df59f30318ce489e1a8c37793cb21cbc954",
+              "handle": 0,
+              "boundary": 0,
+              "data": "1f003e00f10100000090139a7e22c99bbe19ca3e215bf9d6581c958149bb7dff8c7abc20dbfceb7d0c7a7290e26362090002c8e7ef29d9361dd0a601c24c1cb1b682",
+              "direction": "out",
+              "completion": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792278614956930000,
+                "urb": 18446617834476761664,
+                "record": 617,
+                "file_offset": 77742
+              },
+              "fragments": [
+                {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1792278614956746000,
+                  "urb": 18446617834476761664,
+                  "record": 616,
+                  "file_offset": 77523,
+                  "usb_sha256": "39394d1351571f85ae5fff88f8d16df59f30318ce489e1a8c37793cb21cbc954",
+                  "handle": 0,
+                  "boundary": 0,
+                  "data": "1f003e00f10100000090139a7e22c99bbe19ca3e215bf9d6581c958149bb7dff8c7abc20dbfceb7d0c7a7290e26362090002c8e7ef29d9361dd0a601c24c1cb1b682",
+                  "direction": "out",
+                  "completion": {
+                    "bus": 1,
+                    "device": 2,
+                    "wall_ns": 1792278614956930000,
+                    "urb": 18446617834476761664,
+                    "record": 617,
+                    "file_offset": 77742
+                  }
+                }
+              ]
+            },
+            "in": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792278614963930000,
+              "urb": 18446617834427256576,
+              "record": 622,
+              "file_offset": 78498,
+              "hcc_offset": 92,
+              "usb_sha256": "ee640796f408b1a587036870096b9d4e550fb72e54fc8a62593c3cef04cfd933",
+              "usb_length": 178,
+              "handle": 0,
+              "boundary": 3,
+              "data": "1f003e00f10100000090139a7e22c99bbe19ca3e215bf9d6581c958149bb7dff8c7abc20dbfceb7d0c7a7290e26362090002c8e7ef29d9361dd0a601c24c1cb1b682",
+              "direction": "in",
+              "fragments": [
+                {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792278614958078000,
+                  "urb": 18446617834427256576,
+                  "record": 618,
+                  "file_offset": 77822,
+                  "hcc_offset": 92,
+                  "usb_sha256": "03346f019e851720cc50481dea6b28e6cdf1af110c16229a27dcd5b010feb816",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 1,
+                  "data": "1f003e00f10100000090139a7e22c99bbe19ca3e215bf9d6581c9581",
+                  "direction": "in"
+                },
+                {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792278614961129000,
+                  "urb": 18446617834427256576,
+                  "record": 620,
+                  "file_offset": 78160,
+                  "hcc_offset": 92,
+                  "usb_sha256": "b16f4fcee18678d9d892379b17f452d0ced610a2c98c59381ddee461006beec8",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 2,
+                  "data": "49bb7dff8c7abc20dbfceb7d0c7a7290e26362090002c8e7ef29d936",
+                  "direction": "in"
+                },
+                {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1792278614963930000,
+                  "urb": 18446617834427256576,
+                  "record": 622,
+                  "file_offset": 78498,
+                  "hcc_offset": 92,
+                  "usb_sha256": "ee640796f408b1a587036870096b9d4e550fb72e54fc8a62593c3cef04cfd933",
+                  "usb_length": 178,
+                  "handle": 0,
+                  "boundary": 3,
+                  "data": "1dd0a601c24c1cb1b682",
+                  "direction": "in"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "remaining": [
+      "Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification",
+      "Other lifecycle combinations and original gates remainrequired"
+    ]
+  },
+  "negative_controls": [
+    {
+      "name": "missing-peer-capture",
+      "result": "REJECTED"
+    },
+    {
+      "name": "missing-application",
+      "result": "REJECTED"
+    },
+    {
+      "name": "truncated-output",
+      "result": "REJECTED"
+    },
+    {
+      "name": "unexpected-stderr",
+      "result": "REJECTED"
+    },
+    {
+      "name": "actual-process-failure",
+      "result": "REJECTED"
+    },
+    {
+      "name": "payload-replaced",
+      "result": "REJECTED"
+    },
+    {
+      "name": "source-environment-replaced",
+      "result": "REJECTED"
+    },
+    {
+      "name": "missing-role",
+      "result": "REJECTED"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/manifest.json",
+      "sha256": "ae255516d2990482574b0e5e587766af5fb58853efc930c4573933458663a4c8",
+      "bytes": 119480
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/run.json",
+      "sha256": "7cc29b8ab478e9a1f3bd80d24814bfb5c967906c19d91fa5d498bab1694430ad",
+      "bytes": 409874
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/ws73.pcap",
+      "sha256": "01e056cc36116062030b91cd8abf361d2ffa04b5851f86c87b313539a18b85a2",
+      "bytes": 213324
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/capture-stats.txt",
+      "sha256": "5a35f406c5c3983f008191b51cdd47dd74c216ff32e0a84c0f82c56446a78117",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f2-prepared-v4/manifest.json",
+      "sha256": "ec01b8e6a286cbc38216523cde29639a17d3d499c2e02a88d8d98d7d79306b98",
+      "bytes": 289695
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/manifest.json",
+      "sha256": "508c8bb23a941dd9b8f283c6ae916bdabc34d1ff0cea4386b08ecfa771332aac",
+      "bytes": 31279
+    },
+    {
+      "path": ".dev/architecture-r5f2-sdk-real-audit-v2.py",
+      "sha256": "0683e5659602487166bbf634eba1e6f7670f6aa36c219869daec646716198325",
+      "bytes": 5670
+    },
+    {
+      "path": ".dev/architecture-r5f2-prepared-v4/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/architecture-r5f2-prepared-v4/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/architecture-r5f2-prepared-v4/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/architecture-r5f2-prepared-v4/root.btrfs",
+      "sha256": "c3cbbc77f49504ff5b66e17559adc126d80ed85252e84127bfe73624019c9245",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/app-client-0-python.stdout",
+      "sha256": "182c967bc71842bed78721ae810bdfd06839c64b1dc8f6aba5397a16411dcfa0",
+      "bytes": 483
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/app-client-0-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/app-client-0-c.stdout",
+      "sha256": "311097b17361171b28b1307de12df3dd61e2f2c9c71b1aec912b7a937682c066",
+      "bytes": 449
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/app-client-0-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f2-prepared-v4/root/bin/ws73-application-client-c",
+      "sha256": "b4da3717db83d2ccd876a1a415ce0e99c461f498e3827109c4f86bbc09f8af7a",
+      "bytes": 17864
+    },
+    {
+      "path": ".dev/architecture-r5f2-prepared-v4/root/usr/share/sparklink/tools/ws73-application-client.py",
+      "sha256": "9733e6e5c80c134910cd9224e94981504ff3f7290b60be02cda185d65be31538",
+      "bytes": 4121
+    },
+    {
+      "path": ".dev/architecture-r5f2-prepared-v4/root/usr/lib/libsparklink.so.0",
+      "sha256": "aa969da00e5cd9bdb3f8a93148c47cffcd5833819d30ed71dc40bdf7986bb432",
+      "bytes": 4394472
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/app-client-1-c.stdout",
+      "sha256": "a4f68883401004c94cb593d4c467ad9f44ad97e777346afc25e41dc5084e7f8c",
+      "bytes": 449
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/app-client-1-c.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/app-client-1-python.stdout",
+      "sha256": "cb5a4ff2e2d571d64be6496fd9e035aa9eed0d4d2723f2001f7854de6f1c5a22",
+      "bytes": 483
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v6/guest-output/application/passthrough-control/app-client-1-python.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/3ff5296145a1/slkd",
+      "sha256": "e67d5eb1c0b38d17a58760d0163dfa55cd0567928b8fbdddc47a9e54ac847bf8",
+      "bytes": 9973408
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/3ff5296145a1/slkconfig",
+      "sha256": "93692380bfc4bad64760da23f9e8fcd3b2672396da8e4bd1f7cbd9defc35a9cf",
+      "bytes": 1338336
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/3ff5296145a1/slctl",
+      "sha256": "4782b12918babd1ef06c15ddffa28ed40fdc4d64ac8deddfc44d9ba9c8f0f4d8",
+      "bytes": 8436832
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/3ff5296145a1/slktest",
+      "sha256": "541c197ac558f99f31e2648c9b597ffefca2c702bdff18222c7702f4c80e599e",
+      "bytes": 5747024
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/3ff5296145a1/slkmon",
+      "sha256": "5e7cef50f9543a5acdf88884e2c65a3d3f13a2843ea312c173e2b73b2b5ec81a",
+      "bytes": 1661328
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/3ff5296145a1/slkdump",
+      "sha256": "0d38b26507f2ccd7730c0cc3e67d9bbb9e5a6ba14ca3e1f22f3130affdcec8de",
+      "bytes": 1661136
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/3ff5296145a1/liblibsparklink.so",
+      "sha256": "aa969da00e5cd9bdb3f8a93148c47cffcd5833819d30ed71dc40bdf7986bb432",
+      "bytes": 4394472
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/libexec/opensparklink/native-lab/3ff5296145a1/libslk_native.so",
+      "sha256": "6968f08bce73bfde7a95e55a7c3bf5eecd3269e395f69737e783c410302c791d",
+      "bytes": 531096
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "5b629a5da1be0cdf91a76787ad3229c7127e4776d9b87895ee1bba2b86fe1b66",
+      "bytes": 6216
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "754f7db3130adffd7800c52453acdd7c514aa2763dfa5a5d13462953dc894a76",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "09600e437d01983b76a00544dc843f216af1d9eff3e85637182844ab21a92324",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/architecture-r5f2-us-bundle-v2/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/architecture-r5f2-sdk-independent-audit-v2.json",
+      "sha256": "92fe921a2405dede3f431ac2ee222497b805addac1c3826e5267c125ab3dacd5",
+      "bytes": 29205
+    },
+    {
+      "path": ".dev/architecture-r5f2-sdk-real-audit-v2.py",
+      "sha256": "0683e5659602487166bbf634eba1e6f7670f6aa36c219869daec646716198325",
+      "bytes": 5670
+    },
+    {
+      "path": ".dev/architecture-r5f2-bindings-v2.log",
+      "sha256": "b7f11589595ad6e2370a7527f4a223d5381ed5a3b1f7d31a43d04674a86483b7",
+      "bytes": 152
+    },
+    {
+      "path": ".dev/architecture-r5f2-old-python-counterexample-v1.log",
+      "sha256": "075cc1ceb67ec0722708139d528a45dea7dc0a00dbf2f2ceafcf0b196113bbc1",
+      "bytes": 2134
+    }
+  ],
+  "prior_failures": [
+    "application-client-preflight-failure-20261018.json",
+    "application-client-first-device-attempts-20261018.json",
+    "python-channel-constructor-failure-20261018.json",
+    "python-channel-receive-address-failure-20261018.json"
+  ],
+  "regression_state": "Exactnewimage short/Owned run completed;length/fulloriginalmatrix stillinprogress andnotinherited.",
+  "trusted_base": [
+    "Kernel2fc/firmware/QEMU/USB/air/stdlib/compiler are not fullyformallyproved.",
+    "Eightactualevidence negatives andtypedoutputs do not prove arbitraryhardwarebehavior orallinterleavings."
+  ],
+  "remaining": [
+    "Finish newartifact length/fragmentation andallrelatedoriginalregression gates",
+    "Actualgroup-policy/revoke/release/Down/originaldeadline andpeerisolation combinations",
+    "RemaininghighlevelSDK/sharedAPI,R6c/fullarchitecture;naturalRCA/nonmanualrecovery andalloriginalissuesOPEN"
+  ]
+}

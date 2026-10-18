@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "status": "OWNED_SSAP_CANONICAL_REGISTRY_GOAL_AND_SIX_ISSUES_SYNCHRONIZED_FULL_SCOPE_OPEN",
+  "real_report": "docs/evidence/ssap-owned-authorization-20261017.json",
+  "production_commit": "6be14aa2ca702bc253023053e272558e28a489f9",
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "compiled_userspace": "c6f9d8b9634773dbae79a8417814857a8834e9e3",
+  "executed_tools": "c6f9d8b9634773dbae79a8417814857a8834e9e3",
+  "report_commit": "b2adb2394affc6335e0dd9844a9c0b7de9674ba4",
+  "registry": {
+    "prefix": "ssap-owner-c6",
+    "records": 5,
+    "negative_controls": 5,
+    "verification": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED",
+    "retired_evidence_unavailable": [
+      "hcc110-document-retention-incident"
+    ],
+    "overall": "INCOMPLETE",
+    "current": "NOT_CHECKED",
+    "scope": "Active-material bytes verified,not independent replay of all history or current dirty HEAD qualification"
+  },
+  "issues": [
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6230860159",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "body_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 5,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6230861053",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "body_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6230861734",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 6,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6230862506",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "body_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6230863091",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6230863739",
+      "readback_exact": true,
+      "original_scope_unchanged": true,
+      "body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+    }
+  ],
+  "ci_snapshot": {
+    "wall_ns": 1792219886776705905,
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 39011214994,
+        "headSha": "b2adb2394affc6335e0dd9844a9c0b7de9674ba4",
+        "status": "completed",
+        "workflowName": "Qualification integrity"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39011214995,
+        "headSha": "b2adb2394affc6335e0dd9844a9c0b7de9674ba4",
+        "status": "completed",
+        "workflowName": "Production codec bounded fuzz"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39011214999,
+        "headSha": "b2adb2394affc6335e0dd9844a9c0b7de9674ba4",
+        "status": "completed",
+        "workflowName": "Documentation"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39011214991,
+        "headSha": "b2adb2394affc6335e0dd9844a9c0b7de9674ba4",
+        "status": "completed",
+        "workflowName": "CI"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39011210101,
+        "headSha": "b2adb2394affc6335e0dd9844a9c0b7de9674ba4",
+        "status": "completed",
+        "workflowName": "Qualification integrity"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39011210215,
+        "headSha": "b2adb2394affc6335e0dd9844a9c0b7de9674ba4",
+        "status": "completed",
+        "workflowName": "Documentation"
+      }
+    ],
+    "scope": "source-specific online CI snapshot;not real-device or publication qualification"
+  },
+  "goal": {
+    "status": "active",
+    "original_scope": "S0-S6/19WP/10FV/12DG",
+    "duplicate": false,
+    "all_issues_closed": false
+  },
+  "preserved_user_work": {
+    "tools/ws73_dynamic_channels.py": "7becfe0f3d0130d6af76d0e68dcef5e16ee43e1fe636afbf9fecbc9cdbababaa",
+    "tools/ws73_parallel_data.py": "f358ec380d96753b7d734ffa09ed9bedd561252e21b12a1207d606faf9463870"
+  },
+  "next": "Finite real owner callback/deadline/retirement and service-only permission gates;then typed CPCD/protected updates through soleEngine. Data/multi/four/performance and ROMvalidity/cold/naturalRCA parallel. No all-control prerequisite or UserHost implementation.",
+  "materials": [
+    {
+      "path": ".dev/ssap-owner-issue-receipts-v1.json",
+      "sha256": "dc7f58956856a9333b1b7ac10baf25170aa4eb6537da83076c329641a6393b51",
+      "bytes": 2212,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-register-v1.py",
+      "sha256": "8d61ac638551ddb151c4c049214e3ce3d378be722e6c49370bbea2391ec46f12",
+      "bytes": 6472,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-register-v1.log",
+      "sha256": "7352ef1be07b093a3126e968d18a4adc1f1f573439feaf7f71fcff3724a1a3b9",
+      "bytes": 9691,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-register-v2.py",
+      "sha256": "859dd14578133ace75996762a5c541adf32d98b870a8fabb930075ec54c4150e",
+      "bytes": 6599,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-register-v2.log",
+      "sha256": "f41e127b59f174a4af1486a15c1f0ea18b51b6db04467c0e949b6cea12407826",
+      "bytes": 27,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-registry-local-v1.json",
+      "sha256": "ef064245661c4b54b57f54d26eed1c079aa3109a9611743ee66922f6b6ffd3cf",
+      "bytes": 1288,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-full-local-v1.json",
+      "sha256": "a5439bb3437dfdfa614642048785450e69a1066acc83d604225d6f3744d35aff",
+      "bytes": 339,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-full-local-v1.log",
+      "sha256": "a5439bb3437dfdfa614642048785450e69a1066acc83d604225d6f3744d35aff",
+      "bytes": 339,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-final-docs-v1.log",
+      "sha256": "1c00b9acd63cb281cbc6c36b245d40120af5bbfa28130877ddb93e50a239b501",
+      "bytes": 367617,
+      "access": "private authorized workspace;not publicly downloadable"
+    },
+    {
+      "path": ".dev/ssap-owner-ci-snapshot-1792219885411648039.json",
+      "sha256": "d20ec27355241c2809778cf2104ccb4d443c2b0774663a63af7a270675f5240b",
+      "bytes": 1402,
+      "access": "private authorized workspace;not publicly downloadable"
+    }
+  ],
+  "wall_ns": 1792219973897059711
+}

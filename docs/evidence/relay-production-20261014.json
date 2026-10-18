@@ -1,0 +1,465 @@
+{
+  "status": "PRODUCTION_IMPLEMENTED_NEW_RELAY_HARDWARE_PENDING",
+  "runtime_sources": {
+    "linux": "9806e333a07230567fe79b76810b184bdf7a0988",
+    "service": "a0f93e7b6bedd99d35b61904daa803a56593aa58",
+    "sha256": {
+      "net/sparklink/sle_security_relay.rs": "e9da4efb80234639fad4f01ec2ef4a6ca5034892423fd211112d672813e37622",
+      "net/sparklink/sle_security_relay_state.rs": "017d7d8e223cc1153b533876da53b53d6ef7d7cc4fe3a613962fbe4551848c92",
+      "net/sparklink/sle_host.rs": "e68978dde4069e0c17ed21e3ae475ac3309159b5eb002431aa1a2aee66736a09",
+      "net/sparklink/sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+      "net/sparklink/sle_channel_socket.c": "cc068d4e34648512d1391cbf30877c705cbd13d1d45fafcde7a536daf44e33a1",
+      "net/sparklink/sle_native.rs": "f3c3971896787c2a283de55448352ce58ba5b9778ffe104772d5f812fc873f1c",
+      "drivers/sparklink/ws73/dli.c": "4ea601f440892d999d2743081c41c4b016ff03fc0ad4add601fae0c9f44b99fa"
+    }
+  },
+  "latest_test_only_kernel": "c11672ead650be359f8fde4a18bd87dc91bca378",
+  "behavior": [
+    "Unique physical Session owns the same relay transitions/ticket references",
+    "Typed1812, actual command slot/credit and atomic USB commit",
+    "Only real matching Complete/status ends submission; USB success is not a reply/credit grant",
+    "0014 freezes observed life at ingress; wire handle reuse barrier unproved",
+    "Default PairingNotSupported denial only, not approved pairing or trusted installation"
+  ],
+  "offline": [
+    {
+      "name": "Host",
+      "record_sha256": "892508bb002bbfb384674ae4c60fa7b56a1c39add40a2db240c8e91eef059554",
+      "result": "NATIVE_CONNECTION_ACTUAL_HOST_SOURCE_PASS",
+      "tests": 66,
+      "scope": "actual Host/queue/operation/link source; clock/errno/allocation/wire-event dependencies are fixtures; not VFS, running kernel or RF",
+      "source_mapping": {
+        "sle_host.rs": "e68978dde4069e0c17ed21e3ae475ac3309159b5eb002431aa1a2aee66736a09",
+        "sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+        "sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_dli.rs": "fa2a69d6cb968b6c43fc90173b19c11843a312f4f6050ec32389acfffd87ceda",
+        "sle_workers.rs": "9c0fb163f4950ae72592063bcfa958184f1d0501f2aa045a0acf07071452128a",
+        "sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+        "sle_native.rs": "f3c3971896787c2a283de55448352ce58ba5b9778ffe104772d5f812fc873f1c",
+        "sle_security_relay.rs": "e8f4db58b408158cd5620ec430faa662a1efb57e8cb4e458258dbb1526fe63bf",
+        "sle_security_relay_state.rs": "0f467c36a1a7914d02aecbd66ed4d9aae841c09d808330c49d7d472225448073"
+      },
+      "formal_proof": false,
+      "report_source_head": null,
+      "report_tree_clean": null
+    },
+    {
+      "name": "relay-state",
+      "record_sha256": "a5668e012879aee6b0612a7ee039c9862a6fdb516f70be90cba1fa70b741dfa2",
+      "result": "PRODUCTION_RELAY_SESSION_REGRESSION_PASS",
+      "tests": 9,
+      "scope": "Actual production relay state source, dependency fixture",
+      "source_mapping": {
+        "net/sparklink/sle_security_relay_state.rs": "017d7d8e223cc1153b533876da53b53d6ef7d7cc4fe3a613962fbe4551848c92",
+        "tools/testing/selftests/sparklink/security/relay_session.rs": "be5e6bba35aae0a6842ede607e79dd81e808e30f43f668c1df29be6a31a2a969"
+      },
+      "formal_proof": false,
+      "report_source_head": null,
+      "report_tree_clean": null
+    },
+    {
+      "name": "data",
+      "record_sha256": "470034b7a7e75bd6c4614fddc78867f26886682bca6a42faae20199c065e0376",
+      "result": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 38,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "source_mapping": {
+        "net/sparklink/sle_native.rs": "fbb1e26a6ed5ed96648310e46ab5de0e3fd6f2c668bf20b6fd862eb92572b7ab",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "e68978dde4069e0c17ed21e3ae475ac3309159b5eb002431aa1a2aee66736a09",
+        "net/sparklink/sle_sessions.rs": "60eb079226523984104fc9602ce55f1aaa238cda3f298bfb2306bc6c3ea32342",
+        "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "7792487c1def1e2a04315257b73836d79da3fbd760d248580a06b75d541b0291"
+      },
+      "formal_proof": false,
+      "report_source_head": null,
+      "report_tree_clean": null
+    },
+    {
+      "name": "release",
+      "record_sha256": "9363f194fe263c85cf751ea85a02b6a6e4dfab3747062d7ca59514c5f96b4224",
+      "result": "MANAGEMENT_RELEASE_SOURCE_BOUNDARIES_PASS",
+      "tests": 56,
+      "scope": "actual Host predicates/TX selection/InFlight/domain revocation and core fast-release block; source queue/operation/lease modules and opcode/timeout constants; locks, clock scaling, dependency error adapters and surrounding transport dependencies are fixtures",
+      "source_mapping": {
+        "sle_host.rs": "e68978dde4069e0c17ed21e3ae475ac3309159b5eb002431aa1a2aee66736a09",
+        "sparklink_core.rs": "12651b565fca7507e050b17f20207f44264045497715fb5df259d932c321f5e3",
+        "sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+        "sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+        "sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_dli.rs": "fa2a69d6cb968b6c43fc90173b19c11843a312f4f6050ec32389acfffd87ceda",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+        "sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+        "sle_security_relay.rs": "e8f4db58b408158cd5620ec430faa662a1efb57e8cb4e458258dbb1526fe63bf",
+        "sle_security_relay_state.rs": "0f467c36a1a7914d02aecbd66ed4d9aae841c09d808330c49d7d472225448073"
+      },
+      "formal_proof": false,
+      "report_source_head": null,
+      "report_tree_clean": null
+    },
+    {
+      "name": "diagnostic",
+      "record_sha256": "c3619f0ad3b2fa7481337559c9c90c2220f444407ab9f1436b677893fc50e8a4",
+      "result": "DIAGNOSTIC_RESULT_BOUNDARY_PASS",
+      "tests": 50,
+      "scope": "actual pending/queue modules, submit/result handlers and Host enqueue/cancel bodies; clock/lease/lock/usercopy/allocation dependencies are fixtures",
+      "source_mapping": {
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_uapi.rs": "c777ce276ccb21506aefcd108221b7a02b632579510e52e7ea533553ead1588c",
+        "sparklink_core.rs": "12651b565fca7507e050b17f20207f44264045497715fb5df259d932c321f5e3",
+        "sle_host.rs": "e68978dde4069e0c17ed21e3ae475ac3309159b5eb002431aa1a2aee66736a09",
+        "sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_workers.rs": "9c0fb163f4950ae72592063bcfa958184f1d0501f2aa045a0acf07071452128a",
+        "sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_security_relay.rs": "e9da4efb80234639fad4f01ec2ef4a6ca5034892423fd211112d672813e37622",
+        "sle_security_relay_state.rs": "017d7d8e223cc1153b533876da53b53d6ef7d7cc4fe3a613962fbe4551848c92"
+      },
+      "formal_proof": false,
+      "report_source_head": null,
+      "report_tree_clean": null
+    },
+    {
+      "name": "Kani-envelope",
+      "record_sha256": "3fdce9e791d800b98a1c5d097e1b9384e2c693010dc1921bc9217e8da27d99e0",
+      "result": "NOT_PROVEN_UNSUPPORTED",
+      "tests": null,
+      "scope": "Exact production predicate, arbitrary bytes[265], slice length 0..265, unwind270; length/12bit handle/u8 payload consistency and memory safety",
+      "source_mapping": {
+        "net/sparklink/sle_native.rs": "fbb1e26a6ed5ed96648310e46ab5de0e3fd6f2c668bf20b6fd862eb92572b7ab",
+        "tools/testing/selftests/sparklink/security/controller_data_kani.rs": "5503b9d734fb072f7fdaad227e4f2ddd465911f1678f51da8f9619b2a0bf7d73"
+      },
+      "formal_proof": false,
+      "report_source_head": "0d1d31c1cfd7bd659800960f1a89a89bbab8c81d",
+      "report_tree_clean": false
+    }
+  ],
+  "nonregression": {
+    "vm_only": true,
+    "kernel": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
+    "service": "c590576bcc61755f2493cbac57f017ec23ec3379",
+    "status": "RELAY_ECHO_REAL_PIPELINE_TERMINAL_PASS",
+    "short_rounds": 40,
+    "application_249_rounds": 8,
+    "oversize_no_submit": {
+      "sizes": [
+        250,
+        253,
+        254,
+        255
+      ],
+      "count": 16
+    },
+    "scope": "Original discovery/link/socket/SSAP paths; not new SMP or apps-only qualification",
+    "pipeline_record_sha256": "2da206da9cca3d06fa71833f0cbf8580a03c380dacd6c93634e76c36596e2c32",
+    "previous_runtime": {
+      "linux": "9806e333a07230567fe79b76810b184bdf7a0988",
+      "userspace": "a0f93e7b6bedd99d35b61904daa803a56593aa58",
+      "scope": "Preserved old accurate baseline and new branch EPROTO counterexample"
+    }
+  },
+  "new_relay_hardware": {
+    "status": "FAILED_PEER_DELIVERY_AFTER_REAL_COMPLETE",
+    "first_reference_attempt": "Actual warm-reset boot-mode re-enumeration timeout before SMP; exit0 is not PASS",
+    "fixture_failures": [
+      "fixed generation assumption",
+      "missing rmmod command entry"
+    ],
+    "oracle": "libws73 f4d85d0e95af2d0043432e1301fd2f6b660a4906 inside isolated VM; test-only warm CLOSE adaptation requires real ACK; not production UserHost",
+    "actual_failure": "K9806 two real radios linked, oracle sent0134, Native submitted0147, real1812Complete returned handle/index4bytes; empty-return assumption caused EPROTO/Runtime retirement. New Kaa3f8ff12d8d688d0e1b488472252de033ae1f43 validates/matches the echo; real peer gate must rerun.",
+    "failure_capture": {
+      "native": "14d29a6187c8dd4d80402de6893c106550ba65de282ebfc1592b516377367e96",
+      "oracle": "160a83338dabd60100f3b67c6e59b74973e05a5ee0ad99d413a333ec865a7ba4"
+    },
+    "result": "K8cb44/Uc590 sees real0134, sends0147 and receives exact1812Complete00004701 without EPROTO/Runtime retirement; peer capture has no0014 and app times out. Complete is not RF/application delivery.",
+    "failure_capture_latest": {
+      "native": "978f3b680d085d9c0b35b3b42205ee98ed8af22140de39d1859249d361769541",
+      "oracle": "e82a94203a7c043be904e7ab4e69d2ed69693aacc0d699026ff731068e51df0a"
+    },
+    "public_reproduction": {
+      "status": "REAL_PEER_DELIVERY_FAIL",
+      "expected_exit": 1,
+      "vm_exits": [
+        0,
+        0
+      ],
+      "runtime_kernel": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
+      "compiled_service": "c590576bcc61755f2493cbac57f017ec23ec3379",
+      "test_inputs": {
+        "ws73_security_relay_reference.py": "7891c558bbeaa276080c1099f6d28d3de00146bc142133e4087119355d855cae",
+        "security_relay_oracle.c": "82e336c353c2f90eefae4f3117ab044c06f6ce658014a0b22ab8d0d415aa7b9b",
+        "security_relay_reference_warm.patch": "fb26b36dd321c53d67b6c4b59a79f5795636b401bf378ab2848abadaec2a1ebc",
+        "ws73_usb_sle_fd.c": "5034189e2215ec35f01e40f4e93b330ab359bd7df3558c7974e7ac76d1b9a979",
+        "oracle": "c9462ef79adf16d32d19171b2c67e25cb058254b90d574fab64bdc610e9f130a"
+      },
+      "relay": {
+        "native": {
+          "capture_sha256": "8c9d860e94bb55846c3d7dea55ad3707c2c9dadc51956c8d9fa8e7753d9ae564",
+          "packet_count": 563,
+          "commands": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752950500000,
+              "urb": 18446620105412762432,
+              "record": 550,
+              "file_offset": 68564,
+              "usb_sha256": "36c6d808a587ec382e95e936fe2508dad3eaa981150f0dd99dfc09f4cb6f5126",
+              "opcode": 6162,
+              "params": "000047010102",
+              "sequence": 24,
+              "completion": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791993752950649000,
+                "urb": 18446620105412762432,
+                "record": 551,
+                "file_offset": 68772
+              }
+            }
+          ],
+          "complete": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752950839000,
+              "urb": 18446620105412765568,
+              "record": 552,
+              "file_offset": 68852,
+              "hcc_offset": 92,
+              "usb_sha256": "82dc3b1ab7650ea8bf065fd9ca5987a27210f4960fec252df74655ae25ecdad4",
+              "usb_length": 178,
+              "opcode": 6162,
+              "status": 0,
+              "value": "00004701"
+            }
+          ],
+          "received": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752950409000,
+              "urb": 18446620105412765568,
+              "record": 548,
+              "file_offset": 68226,
+              "hcc_offset": 92,
+              "usb_sha256": "c74f6c1c9b9e6c731982317ca1cd064d99a78ffc8dcc45b2688b0d0f436d0fc9",
+              "usb_length": 178,
+              "event": 20,
+              "params": "000034010a03000510000202020200"
+            }
+          ]
+        },
+        "oracle": {
+          "capture_sha256": "10ebf8e33c15a32e08571250fd29dba5f79394eefc7af0f988862fb4963b1c48",
+          "packet_count": 305,
+          "commands": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752535013000,
+              "urb": 18446619504602691648,
+              "record": 298,
+              "file_offset": 34222,
+              "usb_sha256": "21e04457adeb6d3e3257f0c0dab3ead5184c4de2a0d5b3b62ec27f017106d9ad",
+              "opcode": 6162,
+              "params": "000034010a03000510000202020200",
+              "sequence": 13,
+              "completion": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791993752535161000,
+                "urb": 18446619504602691648,
+                "record": 299,
+                "file_offset": 34430
+              }
+            }
+          ],
+          "complete": [
+            {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791993752535384000,
+              "urb": 18446619504602692800,
+              "record": 300,
+              "file_offset": 34510,
+              "hcc_offset": 92,
+              "usb_sha256": "30822f735bc6113220529bfd663c3b49323a27e4f42fbc2fe80a94c8029950fa",
+              "usb_length": 178,
+              "opcode": 6162,
+              "status": 0,
+              "value": "00003401"
+            }
+          ],
+          "received": []
+        }
+      },
+      "survivor_scope": "same generation Ready and actual scan start/stop; not independent business or natural recovery qualification",
+      "result": "Real two-way CMTC also does not produce peer0014; no proven firmware cause yet",
+      "source": "tools/ws73_security_relay_reference.py",
+      "guide": "docs/how-to/diagnose-security-relay.md",
+      "raw_materials": "Private capture/VM disks kept locally; packet offsets and hashes published, no SDK/firmware copies"
+    }
+  },
+  "proof_strength": {
+    "Kani": "NOT_PROVEN_UNSUPPORTED despite successful raw checks; caller-location/foreign-function warnings retained",
+    "scope": "Not full kernel/IRQ/kref/VFS/USB/firmware proof",
+    "composition_remaining": "reserve -> revoke/linkdown -> actual USB -> late reply/NOCP -> handle reuse, implementation correspondence and VM interleaving"
+  },
+  "hardware_assumptions_pending": [
+    "NOCP accuracy/duplicate/late attribution",
+    "handle reuse and old wire RX barrier",
+    "USB callback drain",
+    "firmware state clear before Ready",
+    "scheduling"
+  ],
+  "remaining": [
+    "SDK111 control-data peer delivery RCA: failure0147 accepted/echoed but absent at peer even after CMTC; do not add unsafe capability success or new parallel Engine",
+    "New real relay peer receipt and matching Complete",
+    "approved pairing/Agent/key installation/encrypted application reply",
+    "apps-only permission gate/shared scan leases",
+    "long/credit pressure/bounded queues/multi-channel/four-device business",
+    "natural RCA and nonhuman recovery"
+  ],
+  "issue_closure": false,
+  "new_fix": {
+    "kernel": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
+    "scope": "Real SDK111 Complete exact handle/index echo; frozen ticket match before grant/terminal; no lifetime reuse guarantee",
+    "offline": {
+      "Host": 67,
+      "release": 56,
+      "diagnostic": 54,
+      "recipe": 23,
+      "actual_C_sanitizer": "WS73_NATIVE_DLI_TEST: PASS (533191 checks, 0 failures; synthetic IO only)"
+    },
+    "rf": "OLD_DATA_PATH_NONREGRESSION_PASS_NEW_RELAY_DELIVERY_FAIL",
+    "formal": {
+      "current": {
+        "status": "BOUNDED_PASS",
+        "exit": 0,
+        "timeout_seconds": 300,
+        "source_head": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
+        "baseline": null,
+        "validator_sha256": "ba8d272a3ce5a24dde0004790d29b0a3e791ad9fb513474dde22b71a4a937279",
+        "sources": {
+          "drivers/sparklink/ws73/dli.c": "ba8d272a3ce5a24dde0004790d29b0a3e791ad9fb513474dde22b71a4a937279",
+          "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e",
+          "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+          "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+          "drivers/sparklink/ws73/dli.h": "e91bc653df1b174cfb387849ebbf5fd76d000a171a911e6ee646bbf19a74102a",
+          "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+          "drivers/sparklink/ws73/wire.h": "3fd8d6da2f1db5fa1387eed0a381d3c183aa249afc5f2d30b48208ab97e56ddb",
+          "tools/testing/selftests/sparklink/security/relay_complete_cbmc.c": "8e527434b947a4dc0704f3f44025139033ca04907434149be3c7b75912b3ea7f"
+        },
+        "tool_version": "6.11.0 (cbmc-6.11.0)",
+        "command": [
+          "cbmc",
+          "probe.c",
+          "--function",
+          "main",
+          "--unwind",
+          "266",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--conversion-check",
+          "--trace"
+        ],
+        "log_sha256": "3e714abd66fbce0656f77637b3e212a0209ce3bcfe41b541a22e1b716282ef55",
+        "generated_checks": [
+          [
+            "0",
+            "598"
+          ]
+        ],
+        "scope": "Actual production ws73_dli_validate_reply: memory safety for arbitrary allocated bytes[265]/length0..265, successful1812 exact13-byte frame/handle12bit; no second parser",
+        "assumptions": [
+          "Valid allocated C packet object; actual lifetime/generation/locks/USB/firmware outside this harness",
+          "Lengths beyond265 outside this bounded model; packet contents are not trusted"
+        ],
+        "trusted_base": [
+          "CBMC C front-end/solver and C semantics; not a proof of Linux, firmware or hardware"
+        ],
+        "implementation_regression": "Real K9806 VM counterexample plus ws73_dli_test and actual Host echo mismatch tests",
+        "rf_acceptance": false,
+        "whole_security_proof": false
+      },
+      "old_counterexample": {
+        "status": "EXPECTED_OLD_SOURCE_COUNTEREXAMPLE",
+        "exit": 10,
+        "timeout_seconds": 300,
+        "source_head": "8cb44f8d3a9aaf4988756360e663890b0d6d6f57",
+        "baseline": "9806e333a07230567fe79b76810b184bdf7a0988",
+        "validator_sha256": "4ea601f440892d999d2743081c41c4b016ff03fc0ad4add601fae0c9f44b99fa",
+        "sources": {
+          "drivers/sparklink/ws73/dli.c": "ba8d272a3ce5a24dde0004790d29b0a3e791ad9fb513474dde22b71a4a937279",
+          "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e",
+          "drivers/sparklink/ws73/connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+          "drivers/sparklink/ws73/discovery.h": "0f037a6b9d54f9ab6aae9b6be281192818d79c452fd05338cef816fc28110327",
+          "drivers/sparklink/ws73/dli.h": "e91bc653df1b174cfb387849ebbf5fd76d000a171a911e6ee646bbf19a74102a",
+          "drivers/sparklink/ws73/recovery.h": "dc7e02c98e9d7b88fffd321ef6cbe840e77b9c3cee64fd335946c8939747c284",
+          "drivers/sparklink/ws73/wire.h": "3fd8d6da2f1db5fa1387eed0a381d3c183aa249afc5f2d30b48208ab97e56ddb",
+          "tools/testing/selftests/sparklink/security/relay_complete_cbmc.c": "8e527434b947a4dc0704f3f44025139033ca04907434149be3c7b75912b3ea7f"
+        },
+        "tool_version": "6.11.0 (cbmc-6.11.0)",
+        "command": [
+          "cbmc",
+          "probe.c",
+          "--function",
+          "main",
+          "--unwind",
+          "266",
+          "--unwinding-assertions",
+          "--bounds-check",
+          "--pointer-check",
+          "--signed-overflow-check",
+          "--unsigned-overflow-check",
+          "--conversion-check",
+          "--trace"
+        ],
+        "log_sha256": "92c96936da5150e41e93a6327c4115f5f6f106daf93fa930f1058f7db35173f2",
+        "generated_checks": [
+          [
+            "4",
+            "598"
+          ]
+        ],
+        "scope": "Actual production ws73_dli_validate_reply: memory safety for arbitrary allocated bytes[265]/length0..265, successful1812 exact13-byte frame/handle12bit; no second parser",
+        "assumptions": [
+          "Valid allocated C packet object; actual lifetime/generation/locks/USB/firmware outside this harness",
+          "Lengths beyond265 outside this bounded model; packet contents are not trusted"
+        ],
+        "trusted_base": [
+          "CBMC C front-end/solver and C semantics; not a proof of Linux, firmware or hardware"
+        ],
+        "implementation_regression": "Real K9806 VM counterexample plus ws73_dli_test and actual Host echo mismatch tests",
+        "rf_acceptance": false,
+        "whole_security_proof": false
+      },
+      "log_hashes": {
+        "relay-echo-cbmc-committed.cbmc.log": "3e714abd66fbce0656f77637b3e212a0209ce3bcfe41b541a22e1b716282ef55",
+        "relay-echo-old-cbmc-committed.cbmc.log": "92c96936da5150e41e93a6327c4115f5f6f106daf93fa930f1058f7db35173f2"
+      },
+      "limitations": "Only production C validator; no Host lock/refinement/firmware/hardware or lifetime reuse proof"
+    },
+    "source_hashes": {
+      "drivers/sparklink/ws73/dli.c": "ba8d272a3ce5a24dde0004790d29b0a3e791ad9fb513474dde22b71a4a937279",
+      "net/sparklink/sle_host.rs": "76b10d44191623785a6e23d5fa7fb214ecf4f096391f340a9b0768d02575b1dd",
+      "net/sparklink/sle_security_relay.rs": "3f470e7aa4a239659282e7cc17e69b8b06d35d88db1eb5337f04754fad365b7d",
+      "net/sparklink/sle_security_relay_state.rs": "017d7d8e223cc1153b533876da53b53d6ef7d7cc4fe3a613962fbe4551848c92"
+    }
+  },
+  "issue_sync": "docs/evidence/relay-contract-issues-20261014.json"
+}

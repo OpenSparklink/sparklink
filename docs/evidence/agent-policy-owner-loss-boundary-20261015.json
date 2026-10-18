@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "report": "agent-policy-real-matrix-20261015.json",
+  "report_commit": "13af39e0857cddd7df5a089faa99394f91e87f39",
+  "report_sha256": "4e86bc4de00c4fdb24de22b061a517d1159a8695198b68a7b79ccc2db68e5245",
+  "compiled_probe": "85cdf627d70bd239609ab0e74124b787279f139f",
+  "source": "crates/slctl/examples/native_security_agent_probe.rs",
+  "clarification": [
+    "agent-exit and caller-exit deliberately close their respective actual D-Bus connections in the same witness process; the bus emits real NameOwnerChanged/loss.",
+    "The witness process remains alive to validate the other role/new caller and subsequent business. These gates prove unique-bus-owner loss handling, not separate Agent/requester SIGKILL, fork/inherited bus descriptor or exec semantics.",
+    "The caller-exit gate does not read the original private terminal; it checks fresh allocation/cancel with distinct IDs, old-query AccessDenied, zero security wire and subsequent app replies.",
+    "Application payload checks/replies run in separate ordinary channel applications; they are actual device business, not callbacks/method echo.",
+    "No retroactive change to raw captures, old failures or original report identity. Separate process death/fd inheritance/admin revocation deployment/inflight tests remain open."
+  ]
+}

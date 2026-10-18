@@ -1,0 +1,11 @@
+usr/sbin/slkd
+usr/bin/*
+usr/share/man
+usr/share/dbus-1
+usr/share/sparklink
+usr/share/doc/sparklink
+usr/lib/systemd
+usr/lib/udev
+usr/lib/sysusers.d
+etc/sparklink
+var/lib/sparklink

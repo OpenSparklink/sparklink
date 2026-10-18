@@ -1,0 +1,22 @@
+# 历史、审计与验收记录
+
+这里保存限定通过、失败、反例、整改和当时的复现步骤。
+旧记录可能使用已经移除的接口，或者描述后来已经变化的能力。
+使用者应先看[当前资格](../../project/current-capabilities.md)。
+
+```{toctree}
+:maxdepth: 1
+
+records
+kernel-records
+relay-reference-diagnostic
+../project/documentation-migration
+```
+
+自然故障根因未查明、非人工自动恢复尚未通过的事项继续开放。
+人工重插、软件重枚举和合成测试结果不升级为自动恢复通过。
+
+
+[按主题查找46份大写原文与阅读去向](../project/uppercase-document-guide.md)。
+
+[整改前逐批进度与资格的准确历史快照](../../history/architecture/progress-snapshots-20261014.md)。

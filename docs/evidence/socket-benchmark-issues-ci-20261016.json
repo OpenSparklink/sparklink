@@ -1,0 +1,70 @@
+{
+  "commit": "12c5c217954bdae5f5636f1372fa174c968e74ae",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6211265794",
+      "readback": true,
+      "state": "OPEN",
+      "original_body_unchanged": true
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6211267183",
+      "readback": true,
+      "state": "OPEN",
+      "original_body_unchanged": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6211269814",
+      "readback": true,
+      "state": "OPEN",
+      "original_body_unchanged": true
+    }
+  ],
+  "whole_P1_complete": false,
+  "performance_qualified": false,
+  "ci_snapshot": [
+    {
+      "conclusion": "success",
+      "databaseId": 38873007624,
+      "name": "Production codec bounded fuzz",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38873007600,
+      "name": "Documentation",
+      "status": "completed"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 38873008049,
+      "name": "CI",
+      "status": "in_progress"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38873007664,
+      "name": "Qualification integrity",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38872996991,
+      "name": "Qualification integrity",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38872996949,
+      "name": "Documentation",
+      "status": "completed"
+    }
+  ],
+  "ci_scope": "Read-only snapshot for exact registry commit;not compiledCLI identity or hardware qualification"
+}

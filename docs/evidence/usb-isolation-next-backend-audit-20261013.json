@@ -1,0 +1,33 @@
+{
+  "kernel": "06c901906b7e6ecc91a904f3c7aea66b10b6b5be",
+  "scope": "read-only next Backend migration caller audit",
+  "findings": [
+    {
+      "path": "include/linux/sparklink_backend.h",
+      "fact": "validator admits USB and TEST but profile is restricted to WS73_HCC; standard USB cannot directly register this descriptor",
+      "required": "Add implemented standard dialect admission/ingress semantics before relaxing profile validator"
+    },
+    {
+      "path": "net/sparklink/sle_native_ffi.c:82",
+      "fact": "registration consumes descriptor info/ops/context but passes no bus to Rust; NativeController.info currently hardcodes USB",
+      "required": "Preserve validated provider bus provenance through retained transport/Runtime metadata; TEST must not claim physical USB"
+    },
+    {
+      "path": "net/sparklink/sle_native.rs:366",
+      "fact": "register allocates its own pending identity; standard USB reserves identity before bootstrap and URI receive",
+      "required": "Unify reserve/install/drop ownership without double allocating or releasing old identities; retain partial-open tests"
+    },
+    {
+      "path": "net/sparklink/sle_dli.rs:1186",
+      "fact": "ControllerBackend still statically dispatches Usb/Native",
+      "required": "Migrate all actual standard operation/RX/lifecycle callers to registered Backend before deleting static variant"
+    },
+    {
+      "path": "net/sparklink/Kconfig",
+      "fact": "core still depends on USB=y and compiles standard USB Rust/C implementation",
+      "required": "Split real bus provider build and prove core USB=n/m plus driver load/unload combinations"
+    }
+  ],
+  "production_changes": false,
+  "full_backend_complete": false
+}

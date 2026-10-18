@@ -1,0 +1,643 @@
+{
+  "status": "ACTUAL_CLEAR_HALT_RETURNS_ZERO_ROUTE_TIMEOUT_ORIGINAL_FAIL_PRESERVED",
+  "created_wall_ns": 1791710799032855569,
+  "vm_only": true,
+  "simulated_usb": false,
+  "supersedes_prior_evidence": false,
+  "source_tools_head": "52f7cbd577b3e803b342a5ee4e5e307b4203b680",
+  "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+  "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+  "probe": {
+    "status": "FAIL",
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "natural_fault_root_cause_closed": false,
+    "managed_acceptance": false,
+    "node": "/dev/bus/usb/001/002",
+    "endpoints": [
+      1,
+      2,
+      129,
+      130,
+      131
+    ],
+    "started_wall_ns": 1791710668736904028,
+    "usb_configuration_before_clear_halt": [
+      {
+        "name": "configuration",
+        "kind": 128,
+        "request": 8,
+        "value": 0,
+        "length": 1,
+        "before_wall_ns": 1791710668740336245,
+        "returned": 1,
+        "data": "01",
+        "after_wall_ns": 1791710668741005156
+      },
+      {
+        "name": "descriptor",
+        "kind": 128,
+        "request": 6,
+        "value": 512,
+        "length": 53,
+        "before_wall_ns": 1791710668741034761,
+        "returned": 53,
+        "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+        "after_wall_ns": 1791710668741769255
+      }
+    ],
+    "clear_halt_transfers": [
+      {
+        "endpoint": 1,
+        "before_wall_ns": 1791710668746143387,
+        "returned": 0,
+        "after_wall_ns": 1791710668748568617
+      },
+      {
+        "endpoint": 129,
+        "before_wall_ns": 1791710668750351266,
+        "returned": 0,
+        "after_wall_ns": 1791710668752721702
+      }
+    ],
+    "physical_clear_halt_confirmed": false,
+    "usb_configuration_after_clear_halt": [
+      {
+        "name": "configuration",
+        "kind": 128,
+        "request": 8,
+        "value": 0,
+        "length": 1,
+        "before_wall_ns": 1791710668754545709,
+        "returned": 1,
+        "data": "01",
+        "after_wall_ns": 1791710668755211433
+      },
+      {
+        "name": "descriptor",
+        "kind": 128,
+        "request": 6,
+        "value": 512,
+        "length": 53,
+        "before_wall_ns": 1791710668755216894,
+        "returned": 53,
+        "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+        "after_wall_ns": 1791710668755833245
+      }
+    ],
+    "runtime_route_experiment": true,
+    "register_write_not_requested": true,
+    "route_transfers": [
+      {
+        "endpoint": 1,
+        "data": "030000000000000000000000010000000a00000000000000000000000000000000000000",
+        "before_wall_ns": 1791710668759464848
+      }
+    ],
+    "error": "[Errno 110] Connection timed out",
+    "error_type": "TimeoutError",
+    "errno": 110
+  },
+  "manifest": {
+    "status": "FAIL",
+    "scope": "explicit guest EP01/EP81 clear-halt comparison with actual libusb return observer; no bus/hub/SoC reset or Managed acceptance",
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "managed_acceptance": false,
+    "natural_fault_root_cause_closed": false,
+    "started_wall_ns": 1791710661173378387,
+    "prepared_manifest_sha256": "475d8d8d65f6ecb0e39700c12c7553aa6053c3fea7f13aa1fbc26fa9923aca13",
+    "inventory_before": {
+      "1-2.1.1": {
+        "path": "1-2.1.1",
+        "bus": 1,
+        "address": 110,
+        "node": "/dev/bus/usb/001/110",
+        "writable": true,
+        "interfaces": [
+          {
+            "name": "1-2.1.1:1.0",
+            "endpoints": 5,
+            "driver": null
+          }
+        ]
+      },
+      "1-2.1.2": {
+        "path": "1-2.1.2",
+        "bus": 1,
+        "address": 111,
+        "node": "/dev/bus/usb/001/111",
+        "writable": true,
+        "interfaces": [
+          {
+            "name": "1-2.1.2:1.0",
+            "endpoints": 5,
+            "driver": null
+          }
+        ]
+      },
+      "1-2.1.3": {
+        "path": "1-2.1.3",
+        "bus": 1,
+        "address": 112,
+        "node": "/dev/bus/usb/001/112",
+        "writable": true,
+        "interfaces": [
+          {
+            "name": "1-2.1.3:1.0",
+            "endpoints": 5,
+            "driver": null
+          }
+        ]
+      },
+      "1-2.1.4": {
+        "path": "1-2.1.4",
+        "bus": 1,
+        "address": 117,
+        "node": "/dev/bus/usb/001/117",
+        "writable": true,
+        "interfaces": [
+          {
+            "name": "1-2.1.4:1.0",
+            "endpoints": 2,
+            "driver": null
+          }
+        ]
+      }
+    },
+    "power_before": {
+      "1-2": {
+        "power/control": "auto",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "0",
+        "power/runtime_active_time": "398294540",
+        "speed": "480"
+      },
+      "1-2.1": {
+        "power/control": "auto",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "17001",
+        "power/runtime_active_time": "77743241",
+        "speed": "480"
+      },
+      "1-2.1.2": {
+        "power/control": "on",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "0",
+        "power/runtime_active_time": "12711371",
+        "speed": "480"
+      }
+    },
+    "qemu_args": [
+      "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-qemu/qemu-system-x86_64",
+      "-machine",
+      "q35,accel=kvm",
+      "-cpu",
+      "host",
+      "-m",
+      "1024M",
+      "-smp",
+      "2",
+      "-display",
+      "none",
+      "-monitor",
+      "none",
+      "-no-reboot",
+      "-nic",
+      "none",
+      "-chardev",
+      "socket,id=console,path=/tmp/slkc-pcu9k5g2/serial.sock,server=on,wait=off",
+      "-serial",
+      "chardev:console",
+      "-qmp",
+      "unix:/tmp/slkc-pcu9k5g2/qmp.sock,server=on,wait=off",
+      "-kernel",
+      "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-prepared/bzImage",
+      "-initrd",
+      "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-prepared/initramfs.cpio.gz",
+      "-device",
+      "qemu-xhci,id=xhci,p2=8,p3=8",
+      "-fsdev",
+      "local,id=evidence,path=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/guest-output,security_model=mapped-xattr",
+      "-device",
+      "virtio-9p-pci,fsdev=evidence,mount_tag=evidence",
+      "-L",
+      "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-prepared/qemu-data",
+      "-drive",
+      "file=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/root.btrfs,if=none,id=scratch,format=raw",
+      "-device",
+      "nvme,drive=scratch,serial=SLK_VM_ROOT_ONLY",
+      "-append",
+      "console=ttyS0 loglevel=6 panic=1 oops=panic ws73.register_reset_lab=1 ws73.runtime_route_lab=1 ws73.clear_halt_lab=1 root=UUID=d25cd0a0-2e24-4aa8-9647-6752a0ef67c1 rootfstype=btrfs rw init=/bin/rebootstrap-init rd.plymouth=0 plymouth.enable=0 rd.shell=0 rd.retry=30 rd.timeout=45",
+      "-msg",
+      "timestamp=on",
+      "-trace",
+      "events=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/usb-lifecycle.events,file=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/usb-lifecycle.log"
+    ],
+    "runner_sha256": "c9f6632591a22eaf22db7cf72a0cc9e1f37102d248e2aa0da556ea962985fc85",
+    "observer_manifest_sha256": "5e6d3c30563d61c91eccf4a475cb932ef3327b785411748b1f99fc8c39a8e07d",
+    "qemu_libusb_debug": "4",
+    "reattach": [],
+    "qemu_exit": 0,
+    "guest_probe": {
+      "status": "FAIL",
+      "physical_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "natural_fault_root_cause_closed": false,
+      "managed_acceptance": false,
+      "node": "/dev/bus/usb/001/002",
+      "endpoints": [
+        1,
+        2,
+        129,
+        130,
+        131
+      ],
+      "started_wall_ns": 1791710668736904028,
+      "usb_configuration_before_clear_halt": [
+        {
+          "name": "configuration",
+          "kind": 128,
+          "request": 8,
+          "value": 0,
+          "length": 1,
+          "before_wall_ns": 1791710668740336245,
+          "returned": 1,
+          "data": "01",
+          "after_wall_ns": 1791710668741005156
+        },
+        {
+          "name": "descriptor",
+          "kind": 128,
+          "request": 6,
+          "value": 512,
+          "length": 53,
+          "before_wall_ns": 1791710668741034761,
+          "returned": 53,
+          "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+          "after_wall_ns": 1791710668741769255
+        }
+      ],
+      "clear_halt_transfers": [
+        {
+          "endpoint": 1,
+          "before_wall_ns": 1791710668746143387,
+          "returned": 0,
+          "after_wall_ns": 1791710668748568617
+        },
+        {
+          "endpoint": 129,
+          "before_wall_ns": 1791710668750351266,
+          "returned": 0,
+          "after_wall_ns": 1791710668752721702
+        }
+      ],
+      "physical_clear_halt_confirmed": false,
+      "usb_configuration_after_clear_halt": [
+        {
+          "name": "configuration",
+          "kind": 128,
+          "request": 8,
+          "value": 0,
+          "length": 1,
+          "before_wall_ns": 1791710668754545709,
+          "returned": 1,
+          "data": "01",
+          "after_wall_ns": 1791710668755211433
+        },
+        {
+          "name": "descriptor",
+          "kind": 128,
+          "request": 6,
+          "value": 512,
+          "length": 53,
+          "before_wall_ns": 1791710668755216894,
+          "returned": 53,
+          "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+          "after_wall_ns": 1791710668755833245
+        }
+      ],
+      "runtime_route_experiment": true,
+      "register_write_not_requested": true,
+      "route_transfers": [
+        {
+          "endpoint": 1,
+          "data": "030000000000000000000000010000000a00000000000000000000000000000000000000",
+          "before_wall_ns": 1791710668759464848
+        }
+      ],
+      "error": "[Errno 110] Connection timed out",
+      "error_type": "TimeoutError",
+      "errno": 110
+    },
+    "error": "maintenance probe failed; preserve all evidence",
+    "power_after": {
+      "1-2": {
+        "power/control": "auto",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "0",
+        "power/runtime_active_time": "398303237",
+        "speed": "480"
+      },
+      "1-2.1": {
+        "power/control": "auto",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "17001",
+        "power/runtime_active_time": "77751939",
+        "speed": "480"
+      },
+      "1-2.1.2": {
+        "power/control": "on",
+        "power/runtime_status": "active",
+        "power/runtime_suspended_time": "0",
+        "power/runtime_active_time": "12720068",
+        "speed": "480"
+      }
+    },
+    "finished_wall_ns": 1791710671275582644,
+    "inventory_after": {
+      "1-2.1.1": {
+        "path": "1-2.1.1",
+        "bus": 1,
+        "address": 110,
+        "node": "/dev/bus/usb/001/110",
+        "writable": true,
+        "interfaces": [
+          {
+            "name": "1-2.1.1:1.0",
+            "endpoints": 5,
+            "driver": null
+          }
+        ]
+      },
+      "1-2.1.2": {
+        "path": "1-2.1.2",
+        "bus": 1,
+        "address": 111,
+        "node": "/dev/bus/usb/001/111",
+        "writable": true,
+        "interfaces": [
+          {
+            "name": "1-2.1.2:1.0",
+            "endpoints": 5,
+            "driver": null
+          }
+        ]
+      },
+      "1-2.1.3": {
+        "path": "1-2.1.3",
+        "bus": 1,
+        "address": 112,
+        "node": "/dev/bus/usb/001/112",
+        "writable": true,
+        "interfaces": [
+          {
+            "name": "1-2.1.3:1.0",
+            "endpoints": 5,
+            "driver": null
+          }
+        ]
+      },
+      "1-2.1.4": {
+        "path": "1-2.1.4",
+        "bus": 1,
+        "address": 117,
+        "node": "/dev/bus/usb/001/117",
+        "writable": true,
+        "interfaces": [
+          {
+            "name": "1-2.1.4:1.0",
+            "endpoints": 2,
+            "driver": null
+          }
+        ]
+      }
+    },
+    "actual_clear_halt_observations": [
+      {
+        "bus": 1,
+        "address": 111,
+        "endpoint": 1,
+        "libusb_return": 0
+      },
+      {
+        "bus": 1,
+        "address": 111,
+        "endpoint": 129,
+        "libusb_return": 0
+      }
+    ],
+    "physical_clear_halt_returns_confirmed": true,
+    "active_ready_peer_isolation_acceptance": false
+  },
+  "original_status": "FAIL",
+  "observer_patch": "--- a/hw/usb/host-libusb.c\n+++ b/hw/usb/host-libusb.c\n@@ -1752,7 +1752,9 @@\n     case EndpointOutRequest | USB_REQ_CLEAR_FEATURE:\n         if (value == 0) { /* clear halt */\n             int pid = (index & USB_DIR_IN) ? USB_TOKEN_IN : USB_TOKEN_OUT;\n-            libusb_clear_halt(s->dh, index);\n+            rc = libusb_clear_halt(s->dh, index);\n+            fprintf(stderr, \"WS73_CLEAR_HALT_DIAGNOSTIC: bus=%u address=%u endpoint=%u rc=%d\\n\",\n+                    s->bus_num, s->addr, index, rc);\n             usb_ep_set_halted(udev, pid, index & 0x0f, 0);\n             trace_usb_host_req_emulated(s->bus_num, s->addr, p, p->status);\n             return;\n",
+  "independent_capture": {
+    "packets": 69,
+    "zero_kernel_drops": true,
+    "clear_feature": [
+      {
+        "submitted": {
+          "record": 60,
+          "urb": 18446617500462083264,
+          "wall_ns": 1791710668748112000,
+          "status": -115,
+          "length": 0,
+          "endpoint": 1
+        },
+        "completed": {
+          "record": 61,
+          "urb": 18446617500462083264,
+          "wall_ns": 1791710668748410000,
+          "status": 0,
+          "length": 0
+        }
+      },
+      {
+        "submitted": {
+          "record": 62,
+          "urb": 18446617500462083264,
+          "wall_ns": 1791710668752194000,
+          "status": -115,
+          "length": 0,
+          "endpoint": 129
+        },
+        "completed": {
+          "record": 63,
+          "urb": 18446617500462083264,
+          "wall_ns": 1791710668752549000,
+          "status": 0,
+          "length": 0
+        }
+      }
+    ],
+    "route": [
+      {
+        "submitted": {
+          "record": 68,
+          "urb": 18446617500462083264,
+          "wall_ns": 1791710668761406000,
+          "status": -115,
+          "length": 36,
+          "payload_sha256": "fbb8931edc881723917f0ed97de3136de1e09ca1dafaa72fd0aaf5ba18796b7b"
+        },
+        "completed": {
+          "record": 69,
+          "urb": 18446617500462083264,
+          "wall_ns": 1791710670768395000,
+          "status": -2,
+          "length": 36
+        }
+      }
+    ],
+    "parsed": {
+      "reports": [],
+      "complete": [],
+      "commands": [],
+      "failures": [
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791710670768395000,
+          "urb": 18446617500462083264,
+          "record": 69,
+          "file_offset": 5876,
+          "status": -2,
+          "endpoint": 1
+        }
+      ],
+      "empty_bulk_completions": [],
+      "packet_count": 69
+    }
+  },
+  "actual_libusb_log_lines": [
+    "WS73_CLEAR_HALT_DIAGNOSTIC: bus=1 address=111 endpoint=1 rc=0",
+    "WS73_CLEAR_HALT_DIAGNOSTIC: bus=1 address=111 endpoint=129 rc=0",
+    "[ 0.401091] [00340d13] libusb: debug [submit_bulk_transfer] need 1 urbs for new transfer with length 36",
+    "[ 2.407682] [00340d0f] libusb: debug [reap_for_handle] urb type=3 status=-2 transferred=0"
+  ],
+  "assets": [
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/console.log",
+      "sha256": "d868539b46b7be0703bf2306041ed19b8f86e1b27cd036d615be35a1f621f7c5",
+      "bytes": 13697
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/guest-output/maintenance/capture.log",
+      "sha256": "46d7fd244a6f10055d2b7b13eb3e0e8ab81c0f43bbe6692711f2c27006ab44de",
+      "bytes": 198
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/guest-output/maintenance/kernel.log",
+      "sha256": "b055c0a719029240aa7be1c920c22f7d161b290c977497b502bac771ff8cbf5a",
+      "bytes": 39937
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/guest-output/maintenance/probe.log",
+      "sha256": "baadd750108b1e9b6a187049479001bb1424c57dfc945689c69058103c6f1be4",
+      "bytes": 1583
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/guest-output/maintenance/reset/run.json",
+      "sha256": "dfc20c6ace79e151012e4f4b120417f89fb47958319cb96913ab3ac12e1dafac",
+      "bytes": 2343
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/guest-output/maintenance/ws73.pcap",
+      "sha256": "8fe2e87c9aaf4f6cc07d03178c21ab057f588be8e408095774d406fae2afac9f",
+      "bytes": 5956
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/manifest.json",
+      "sha256": "34a5be8eb1f884938320ec38b2d5b28a5e27ea46041ae2c50735464445f82fc2",
+      "bytes": 9202
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/qemu-stderr.log",
+      "sha256": "fc356b874f2158260d9318e5d83d1538eef5b7f4720ba8ed926798aa08482e9a",
+      "bytes": 36925
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/qmp.jsonl",
+      "sha256": "f53a1398672c46e22ee5702ee84abd18a95225c4a41446a15b5b046d039392a1",
+      "bytes": 651
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/root.btrfs",
+      "sha256": "a71597bdc1608c120ae9f7f4d71841d2ab7b18c02db1d480baf7a8e202e02712",
+      "bytes": 1073741824
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/usb-lifecycle.events",
+      "sha256": "76825f7a68301d63a95b57187411cb62c7aad721045032d2e2907dfa6ca2e317",
+      "bytes": 447
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-clear-halt-route-run/usb-lifecycle.log",
+      "sha256": "88949288c91030906adda544641591a96a8405e10b5015c43db4d80f7667e522",
+      "bytes": 18327
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-qemu/host-libusb.observer.c",
+      "sha256": "634b833b9bf94279fbd07c687770d61d6a4694fba55f19bf216c02dbcba9f499",
+      "bytes": 72430
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-qemu/host-libusb.original.c",
+      "sha256": "9fef03d5f739c70286348959308e0478f287e82c70ee6c866c3d490f8553c81c",
+      "bytes": 72275
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-qemu/manifest.json",
+      "sha256": "5e6d3c30563d61c91eccf4a475cb932ef3327b785411748b1f99fc8c39a8e07d",
+      "bytes": 1278
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-qemu/observer.patch",
+      "sha256": "b9896fd15bd4833f00a6f235dc5a23393b53f0e1cebf54c1be34e9fb2af0d9fc",
+      "bytes": 657
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-qemu/qemu-system-x86_64",
+      "sha256": "b25082b79df7e6af9a3d5eb0d95c6a3aca0ac14665223c5c74a27880edce78ec",
+      "bytes": 30090232
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-prepared/manifest.json",
+      "sha256": "475d8d8d65f6ecb0e39700c12c7553aa6053c3fea7f13aa1fbc26fa9923aca13",
+      "bytes": 227311
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-root-smoke/manifest.json",
+      "sha256": "5bd9627c0c83ae1ef327a9fc575d416ba7777b125e9026d0f702a18d17cf8eef",
+      "bytes": 37074
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/run_vm_clear_halt_route_diagnostic.py",
+      "sha256": "c9f6632591a22eaf22db7cf72a0cc9e1f37102d248e2aa0da556ea962985fc85",
+      "bytes": 6879
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-clear-halt-source-tests.log",
+      "sha256": "e0973ab5152dfb29a430c0b8a8767f806729db5209e491ae16ea81dc6a018b26",
+      "bytes": 44293
+    }
+  ],
+  "mutable_host_source_and_binary_restored": true,
+  "production_behavior_changed": false,
+  "host_permissions_pm_or_install_mutated": false,
+  "source_tools_tests": 278,
+  "current_ready_bootstrap": false,
+  "managed_preselection_live_acceptance": false,
+  "managed_partial_live_acceptance": false,
+  "active_ready_peer_isolation_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "full_goal_complete": false,
+  "conclusions": [
+    "Two actual libusb_clear_halt returns were zero for target EP01/EP81; guest controls corroborated in capture and complete runtime configuration unchanged. This does not establish payload delivery, firmware readiness or production recovery.",
+    "First length36 reference route OUT submitted, then cancelled with guest USB completion ENOENT and host transferred0. Guest errno110 and original FAIL preserved. No second route frame, module load or SoC write.",
+    "Standard endpoint clear-halt alone did not restore this attempt; natural root cause remains unknown. Parent/hub/target suspend-time deltas zero, all four host inventory entries unchanged. Host enumeration is not active Ready peer isolation.",
+    "Private observation-only QEMU has frozen patch/hash; default mutable host source and binary restored exactly. All real Managed/recovery/RCA/whole-issue gates remain OPEN."
+  ]
+}

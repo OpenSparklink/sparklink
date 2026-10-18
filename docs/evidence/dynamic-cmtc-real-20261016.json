@@ -1,0 +1,520 @@
+{
+  "schema_version": 1,
+  "status": "REAL_DYNAMIC_BASIC_TWO_CHANNEL_SCOPED_PASS_RETAINED_MATRIX_PENDING",
+  "generated_utc": "2026-10-16T05:01:27.431367+00:00",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
+  "guest_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+  "executed_tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+  "scope": [
+    "Real VM SDK111 scope only:two physical controllers,ordinaryuid1000/caps0,basic PI241,MTU249/MPS254,actual CMTC and48 random application request/replies across both physical connection roles. Not full dynamic multichannel qualification or original12DG/19WP/S0-S6 completion.",
+    "Kernel400bd681,compileduserspacecca8a20,preparedguest/Hosttools4b33733 separately frozen. Report/document commits do not substitute for compiler or execution identity.",
+    "Per physical role:real unmatched endpoint resource refusal,channelA4RT andB20RT coexist with distinct asymmetric local/remoteTCIDs;actual CloseReq/CloseRsp and B business after Aclose verified at both USB ends. Close may cross in both directions;each observed obligation has an exact matching echo.",
+    "SIGSTOP/SIGCONT schedules only B peer application inVM for a bounded original5second interval;kernel/firmware continue. This is controlled scheduling,not fairness,device fault,callback/credit proof,natural recovery or permission-deployment acceptance.",
+    "Each phase owns the same immutable controller/generation/physical connection lifetime as canonical Connection. Port/AID routing and policy permission are not authentication or hardware QoS. No protected/reliable mode or unsafe TCID reuse enabled.",
+    "Two-end USB/HCC/A3 evidence plus actual peer application validation,not independent third-party PHY sniffer/authenticated capture. USB write,NOCP and logs alone are not peer delivery;this does not prove completion-event truth/duplicate/late behavior or handle reuse barriers.",
+    "Four dynamic slots and transaction/TCID tombstones per physical lifetime avoid unproved reuse but are only a finite first slice. Full resource recycle,allocation exhaustion,fairness,slowconsumer,longtermconvergence,late close and complete Grant/revoke/disconnect/deadline matrix remain separate.",
+    "Saved original capture and application files reverified by same frozen production gate;12 evidence negative controls rejected. This replay is not a second independent decoder or a second hardware execution.",
+    "Newimage companion fixed8RT/SSAP/discovery/connect/disconnect/RF20+postQMP2 passed inthisrun;the complete attained14 fixed/length/long/close/pressure/four-device regressions are separately RUNNING and not yet granted. Old K90/U2ee328RT qualification remains at original identity.",
+    "Formal/fixture/fuzz results are separate bounded/offline evidence,not whole-kernel refinement. Naturalstartup/reenumeration/disappearance RCA and nonhumanrecovery remainOPEN;manual/hub/QMP/injection never substitute. Original incomplete issues stayOPEN;UserHost remainsP4."
+  ],
+  "physical_controllers": 2,
+  "ordinary_round_trips": 48,
+  "maximum_round_trip_ms": 244,
+  "phases": [
+    {
+      "phase": 0,
+      "ordinary_round_trips": 24,
+      "asymmetric_channel_info": {
+        "A": {
+          "peer": [
+            1,
+            2,
+            1,
+            0,
+            128,
+            129,
+            241,
+            249,
+            254,
+            0,
+            3
+          ],
+          "initiator": [
+            0,
+            1,
+            1,
+            0,
+            129,
+            128,
+            241,
+            249,
+            254,
+            0,
+            3
+          ]
+        },
+        "B": {
+          "peer": [
+            1,
+            2,
+            1,
+            0,
+            129,
+            130,
+            241,
+            249,
+            254,
+            0,
+            3
+          ],
+          "initiator": [
+            0,
+            1,
+            1,
+            0,
+            130,
+            129,
+            241,
+            249,
+            254,
+            0,
+            3
+          ]
+        }
+      },
+      "close_exchanges": {
+        "A": 2,
+        "B": 1
+      },
+      "A_close_B_actual_business": true,
+      "peer_pause_ms": 254.630571
+    },
+    {
+      "phase": 1,
+      "ordinary_round_trips": 24,
+      "asymmetric_channel_info": {
+        "A": {
+          "peer": [
+            0,
+            1,
+            3,
+            0,
+            128,
+            129,
+            241,
+            249,
+            254,
+            0,
+            3
+          ],
+          "initiator": [
+            1,
+            2,
+            3,
+            0,
+            129,
+            128,
+            241,
+            249,
+            254,
+            0,
+            3
+          ]
+        },
+        "B": {
+          "peer": [
+            0,
+            1,
+            3,
+            0,
+            129,
+            130,
+            241,
+            249,
+            254,
+            0,
+            3
+          ],
+          "initiator": [
+            1,
+            2,
+            3,
+            0,
+            130,
+            129,
+            241,
+            249,
+            254,
+            0,
+            3
+          ]
+        }
+      },
+      "close_exchanges": {
+        "A": 1,
+        "B": 2
+      },
+      "A_close_B_actual_business": true,
+      "peer_pause_ms": 237.904697
+    }
+  ],
+  "qemu_exit": 0,
+  "supervisor_exit": 0,
+  "capture": {
+    "packets": 4345,
+    "drops": 0,
+    "basis": "Sealed tcpdump original capture-stat output agrees with classic pcap record count and all guest file hashes"
+  },
+  "kernel_taint": 0,
+  "kernel_diagnostics": "No warning/BUG/Oops/sanitizer fault in guest kernel log/console;not KASAN/KCSAN configuration qualification",
+  "negative_controls": [
+    {
+      "name": "missing-peer-rx",
+      "status": "REJECTED"
+    },
+    {
+      "name": "wrong-tcid",
+      "status": "REJECTED"
+    },
+    {
+      "name": "wrong-pi",
+      "status": "REJECTED"
+    },
+    {
+      "name": "wrong-cmtc-id",
+      "status": "REJECTED"
+    },
+    {
+      "name": "old-lifetime",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-final-close",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-peer-application-reply",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-stopped-receipt",
+      "status": "REJECTED"
+    },
+    {
+      "name": "running-status",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-proof",
+      "status": "REJECTED"
+    },
+    {
+      "name": "missing-acceptance",
+      "status": "REJECTED"
+    },
+    {
+      "name": "failed-qemu",
+      "status": "REJECTED"
+    }
+  ],
+  "gates": [
+    {
+      "name": "two-channel-dynamic-business",
+      "status": "REAL_TWO_END_APPLICATION_AND_USB_PASS",
+      "result": "PASS"
+    }
+  ],
+  "remaining": [
+    "Accurate newimage attained14 fixed/length/long/close/pressure/four-device matrix currently running",
+    "Dynamic resource recycling/allocation/late-close/completeGrant and concurrency/fairness matrix",
+    "Full authenticated security/CPCD/Bond,productionpermissions,deployment,and original S0-S6/19WP/10FV/12DG",
+    "NaturalRCA/nonhuman recovery remains OPEN"
+  ],
+  "raw_access": {
+    "condition": "Authorized originalworkspace owner/developer;raw private artifacts not published,not permanentpublicstorage",
+    "replay": "Checkout exactfrozen4b33733;run manifest command with exact preparedkernel400bd681/bundlecca8a20/SDK111;allrealUSB onlyVM. Savedproof replay and damaged-evidence negatives in hashed audit script"
+  },
+  "materials": [
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/manifest.json",
+      "sha256": "38a7c6b7a413d5b162e6c57a1952d9eda94b3854819192fb4908641696ed6ef9",
+      "bytes": 1728700
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-v1-supervisor.json",
+      "sha256": "17caa1e80e1f16cdb9a1071cad42ebcfd0e871d93ccf82c181f274e5ba9165cc",
+      "bytes": 1240
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-cmtc-v1-reverification.json",
+      "sha256": "d5a4afe85486141f08e7c01fd3f374dc1392ff0abc3bd2af8a7ade59548e02af",
+      "bytes": 1487
+    },
+    {
+      "private_workspace_path": ".dev/reverify-dynamic-cmtc-v1.py",
+      "sha256": "e1ae6164ffc9b48e22e0475c16464a4bb3ba025bcd7c3f4549acbb746c159845",
+      "bytes": 4066
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-prepared/manifest.json",
+      "sha256": "3b038dc48e38398930b49dfaefe452a243d370e8b969280e1eb3c712f6d5d03e",
+      "bytes": 261850
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-service-bundle/manifest.json",
+      "sha256": "98fae75622d4a7b43a3c821d68e363000784450b3ff80e6802f1119de93cef20",
+      "bytes": 23270
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-artifacts/manifest.json",
+      "sha256": "7f6ec27cc09c34d0f1e88fe005792322d1a61c3805156fd8a88486f4f8b736e2",
+      "bytes": 229027
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-root-smoke/manifest.json",
+      "sha256": "fa397809a06bc247ed2ab3d7752fd1e2e90161d358887b77dbfd7080a7aa4265",
+      "bytes": 37174
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "679ccd94636a3c2e6cf4cddc17aa47c20d34c1eebce82b2f46b61ce69ca91eb9",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "5e7e958293983de9ebc2a3fb3ceb2660a489acce2f97d08e5d6fa95c4545e1c8",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "d8089584d039acee0483738a432f279ae447d99a0ef2ebf80fad56867a8fc49d",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "36377f2d2f9796db19b624b63ccb5843513a69fdb271232ba08980bd95e58169",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "4ab79d458ec522b4aa36a4eb05e41c7ce0e584223ee8ef9ccdb2a9c35f0dd525",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "999cf7f0b5820df0409c031ab3bf4418d7b907eaaa60a6224d1be3623b8df6db",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "d442f3ebadbae66625ef703e14a861403ee45ae4d4123169517dcec66d171eab",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "0da09db6e96f7e5925a53b6af79d4d86c1a7370fdc4d7e6f3c1030894d2eb9be",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "cb3bff58cf6b9af32cd57368263d4f1a61ff98738644768a2dec7560169d8742",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "81694f90ebcfa2ee0c6165a17ffb46a6a7d634b55622756104f3f9f363a09c8d",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "bb20982411acb6611dd7472f5ced5448e946705d726d15efa10d73d48a15c087",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "1b84fd71d76f4270273e06528fae561952ca07386ec6cad6472ccc318ad3e1a9",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/passthrough-control/run.json",
+      "sha256": "a7674f317b3db935f3f5900086449b64b7561bf1d3b5106214fa80866fe878c1",
+      "bytes": 764145
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/capture-process-status.txt",
+      "sha256": "815155d408b05dd38dcb434bbfc50c22e528b3688cc6c9f415df360300204618",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/capture-stats.txt",
+      "sha256": "9d8004239912dbddfbe057eb7e493ebc8d79024fe17c38d028e0155738a0d307",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/kernel.log",
+      "sha256": "2191918af38864cac989c9c577886f0f0038898ff19b26b175a7541649525f27",
+      "bytes": 49414
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/passthrough-control-proofs.json",
+      "sha256": "831db5516160adc3885560a489377b94c4aac52204afdcebce161e1f9592c510",
+      "bytes": 477310
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/pending-observations-0.json",
+      "sha256": "1ddfc2306598e36c6d8c7c81604c0e5a379b53ff3cc3b0fc26fcef6cf4703ad3",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/pending-observations-1.json",
+      "sha256": "9c9a69875745501ad12ead7fe55210d21901b3d0ccab3b022e88e43a66654a12",
+      "bytes": 1125
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/ready-progress-0.json",
+      "sha256": "575d4c0f72efae2772f81965652e7bacf6256c94ab8d4585fad464042f181d24",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/ready-progress-1.json",
+      "sha256": "316125392ebfff739952534c5cdef21621c741c4facb31c6232a847348761bbf",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/slkd-process-status.txt",
+      "sha256": "63242042ce9d189ac39dc23532d15cf4a7d3b27dabfc9407a3112ea7078b4fe5",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/slkd.log",
+      "sha256": "02faf1dc9344d20e2b1a2d4d99b6d85cc5678e63205aa27507a68c92f0f77f69",
+      "bytes": 5248
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/ws73.pcap",
+      "sha256": "d691c981664883932f59ea9ec60264f16a4f9dafd9b78fffb0add2ce775db00b",
+      "bytes": 671356
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/xhci-trace-stats.txt",
+      "sha256": "32d4c3a36ed066c12e1459cc09d1a6c60520cdced9be428b684a3ba738851ac0",
+      "bytes": 282
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-cmtc-v1-run/guest-output/xhci-trace.log",
+      "sha256": "aba3ae19fe3b5816f5e00f811bae61adf9e34baa4ebf3b72c180b590b265084d",
+      "bytes": 2370943
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "status": "FAIL_TEST_RECORD_WRITER_BEFORE_ACTUAL_RELEASE_PROBE",
+  "kernel_head": "f822db7756d7c99eb6a7d0e1e9e32c513e91ad71",
+  "source_userspace_head": "cc6ad09a87135bc1657b11fd3ee03e57977926cb",
+  "real_setup_release_acceptance": false,
+  "real_fd_close_acceptance": false,
+  "rf_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "full_goal_complete": false,
+  "cause": "Test run.json progress wrongly used one-shot write_marker; second metadata save raises ValueError, failure save repeats error. Both real devices registered Setup but C release probe never launched. Original run.json remains RUNNING; terminal manifest is FAIL.",
+  "original_progress": {
+    "format_version": 1,
+    "status": "RUNNING",
+    "daemon_running": false,
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "initial_snapshots": [
+      "01000000000000000100000002000000010000000100000000000401fe0000000500016c00a100231550001200000100000001093254f9000000000000000000"
+    ],
+    "cases": []
+  },
+  "started_at": "2026-10-11T03:26:15.751695+00:00",
+  "finished_at": "2026-10-11T03:26:50.219715+00:00",
+  "artifact_sha256": {
+    "manifest": "c36dac1d18687080af699143eca795dd17db0377930bb8b037bcbbafec61368c",
+    "console": "fa32cb8bef4cf752372a3acbdad2c877168e8866bf239ca9c1c28be803d68231",
+    "kernel": "96ba9429b338b8726072cbe1ad70bab260ae17a31b6c5367eae15a5d40e85450",
+    "capture": "63dbaa2bc2a73a846e5656ca7c349ab29bd960617e41312851f46fe752bbdedd",
+    "qmp": "ae36b7bcf38221a1340aebbe0d14e9c2411119feb3d449962aabb1ebf55f6e51",
+    "supervisor": "e4e2a517a49304ba9635ff699bc445a33c8377aa6d2354785aacea7c0001c20c",
+    "original_progress": "a9220b671f24c301aebdf42931adc15c21a53b14b2eb98f50349c84388c18792"
+  },
+  "next": "Use atomic replacement for mutable progress, retain one-shot metadata handshake; add actual repeated file I/O regression then qualify two new VMs. Preserve original failed logs and full lifecycle/RCA issues OPEN."
+}

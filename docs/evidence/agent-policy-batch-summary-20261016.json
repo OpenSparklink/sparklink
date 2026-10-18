@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "AGENT_VERTICAL_SLICE_REAL_SCOPED_AND_RETAINED_DATA_PASS_FULL_GOAL_INCOMPLETE",
+  "generated_at_utc": "2026-10-15T16:04:20.534259+00:00",
+  "implementation": {
+    "production_agent": "9e3d7aa30fe6859d7eb9f5ff03a4bb0ba21fef3a",
+    "initial_witness": "16175ab14a054e3cff01824beeb5870bc44c979c",
+    "canonical_path_fix": "85cdf627d70bd239609ab0e74124b787279f139f",
+    "supervisor_exit_fix": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d"
+  },
+  "qualification": {
+    "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "compiled_userspace_and_guest": "85cdf627d70bd239609ab0e74124b787279f139f",
+    "executed_host_tools": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
+    "agent_report_commit": "13af39e0857cddd7df5a089faa99394f91e87f39",
+    "data_report_commit": "3776f4724227a8163d4cc08a7a829ef865500d34",
+    "new_agent_modes": 6,
+    "swapped_connection_role_phases": 12,
+    "agent_case_peer_round_trips": 48,
+    "retained_data_gates": 11,
+    "retained_data_peer_round_trips": 136,
+    "retained_boundary_refusals": 32,
+    "retained_strict_finalfd_phases": 2
+  },
+  "validation": {
+    "offline_agent": "16 atsource16175,15actualprivateDbus+1productionclock; ready/link/lease fixtures, native/dev/null ENOTTY real",
+    "workspace": "238/13 suites atproduction9e; not automatically relabeled latest",
+    "default_and_allfeature_clippy": "PASS atproduction9e; witness/path controls separately exactsource andCI",
+    "latest_tools_tests": 559,
+    "qualification_negative_controls": 27,
+    "strict_docs_documents": 104,
+    "local_materials": 274,
+    "no_new_formal_proof": true
+  },
+  "local_logs": [
+    {
+      "path": ".dev/agent-final-all-tools.log",
+      "sha256": "a801ea48b4f500eeb27bd29f026da726cc4cc0fc49a211d3fb8967262fcff7bc",
+      "bytes": 694,
+      "access": "private original machine"
+    },
+    {
+      "path": ".dev/agent-publication-identity-negative.log",
+      "sha256": "29d7556fd1e509233345b5a6b54e2915fd33fdb75f92a2a4c10ab934f1e6e5f9",
+      "bytes": 126,
+      "access": "private original machine"
+    },
+    {
+      "path": ".dev/agent-nine-records-local-final.log",
+      "sha256": "2d184cd31561a27ab5d4ede64b57d53741652457cbe0bd9ab3b12b5a53219aae",
+      "bytes": 230,
+      "access": "private original machine"
+    },
+    {
+      "path": ".dev/agent-nine-records-docs-final.log",
+      "sha256": "9f3f05cf6ab0d5c90fccef81743adca6b6954eb7bf1da070c9f5ef369667da8a",
+      "bytes": 16820,
+      "access": "private original machine"
+    }
+  ],
+  "retained_failures": [
+    "preparev1 directory argument/noVM",
+    "real16175 objectpath beforeAgent FAIL",
+    "real85cdf wire8replies butmanifestPASS/supervisor1 overallFAIL"
+  ],
+  "loss_trigger_boundary": "See agent-policy-owner-loss-boundary-20261015.json:actualunique-ownerloss fromConnection.close(),notseparateSIGKILL/fork/bus-fd inheritance",
+  "ci_observations": [
+    {
+      "head": "85cdf627d70bd239609ab0e74124b787279f139f",
+      "ci": 38757660942,
+      "docs": 38757660956,
+      "qualification": 38757660979,
+      "conclusion": "success"
+    },
+    {
+      "head": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
+      "ci": 38758974428,
+      "docs": 38758974409,
+      "qualification": 38758974464,
+      "conclusion": "success"
+    },
+    {
+      "head": "3776f4724227a8163d4cc08a7a829ef865500d34",
+      "ci": 38763855056,
+      "docs": 38763855311,
+      "qualification": 38763855203,
+      "conclusion": "success"
+    }
+  ],
+  "limits": [
+    "Limited SDK111 no-MITM reference mechanism; no generalAgentpasskey/OOB/PSK/authenticatedidentity/trustedGrant/Bond.",
+    "Pre-native policy loss/cancel only; actualinflightinstall/Status/0011/revoke/Down/late/reuse, controller installfailure and completeprocess/deployment matrices remain open.",
+    "No new KASAN/KCSAN/lockdep/faultinjection/KCOV or formal theorem; natural RCA/nonhuman recovery and all original fullscope remain open.",
+    "Single slkdprocess is not independentcontroller processfault isolation; UserHostP4,fullS0-S6/19WP/10FV/12DG,VM-only preserved.",
+    "OriginalSDK11113X route retained, no RAMtablemodification,manual/hubreset,nativehostkernelinstall; captureswithkeysremainprivate."
+  ]
+}

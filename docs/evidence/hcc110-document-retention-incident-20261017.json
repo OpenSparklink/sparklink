@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "ORIGINAL_HCC110_BUNDLE_REPLAY_UNPROVED_DOCUMENT_LOG_OVERWRITTEN",
+  "result": "UNPROVED",
+  "scope": [
+    "Originalfivehcc110recordsandexpectedmetadataarepreservedfromac52167;notretainedascurrentPASSwhentheirrequiredhistoricaldocslogcannotbereverified. Thisisnotnewbytesundertheolddigest.",
+    "Samefilenamereusedbyearlierassistantdocumentationbuildandredirectionoverwrotesealedlog;full-localcheckdetectedhash/sizefailure. Originalbusiness/USB/HCC/firmware/model/formalrawmaterialsremain,butfullinitialbundlecannotclaimcompleteoriginalartifactretention.",
+    "New0cddata,SDK110protectedSSAP,ROMcandidateandf887lifecyclehaveindependentreports/materialsets;noqualificationscopeisupgraded. NaturalRCA/nonmanualrecoveryandalloriginalscope remainOPEN."
+  ],
+  "remaining": [
+    "Original344450byte/debec062historicaldocumentationlognotrecovered;expectedhashmustnotbeupdatedtoblessthereplacement. Re-establishappropriatecurrentqualificationcoveragewithnewimmutableartifacts;historicaloriginalclaimremainsunreplayable.",
+    "Useexclusiveopen/newpathsfornewlogs,sealretainedcurrentlogsread-only;retirementmustleavearequirednonPASSincidentandverifyexactoriginalmetadatafromgit. NooverallPASSorhiddenmaterialwaiver."
+  ],
+  "original_registry_commit": "ac52167dac7dce425f03ee26958c32d35f879ccd",
+  "affected_records": [
+    "hcc110-boot",
+    "hcc110-data",
+    "hcc110-offline",
+    "hcc110-decoder",
+    "hcc110-remaining"
+  ],
+  "expected_material": {
+    "path": ".dev/hcc110-final-docs-v1.log",
+    "sha256": "debec062a05dd6dfbb73ede4e920fcf3e3080575f80d91f8ea7f6e3ffd5139ee",
+    "bytes": 344450,
+    "access": "private",
+    "base": "workspace",
+    "format": "bytes"
+  },
+  "observed_material": {
+    "path": ".dev/hcc110-final-docs-v1.log",
+    "bytes": 356644,
+    "sha256": "9899c555f630ecc32836217a052a70306d3e41bee83836b168ea03cef722fd32"
+  },
+  "detected_by": ".dev/rom-chip-full-local-v1.json",
+  "bounds": {
+    "affected_original_records": 5,
+    "damaged_log_materials": 1,
+    "original_bytes": 344450,
+    "current_bytes": 356644
+  },
+  "gates": [
+    {
+      "name": "original-document-log-byte-availability",
+      "status": "UNAVAILABLE",
+      "result": "UNPROVED"
+    }
+  ],
+  "wall_ns": 1792215567350687668
+}

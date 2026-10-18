@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "status": "MAINTENANCE_COMPLETE_NOT_NEW_DEVICE_OR_FORMAL_QUALIFICATION",
+  "qualification": "docs/evidence/owned-agent-client-qualification-20261018.json",
+  "registry_revision": "18946426b875d7808b82a69b8a2a92c7835e4a40",
+  "boundaries": [
+    "Original159requiredrecords retained;new selected finiteR5e makes160;wholeoriginalscope incomplete",
+    "Selected report-bound counts generated into plan/capabilities;old manual capability count matrix removed",
+    "35checker tests and5+2 local registry negatives;strictHTML116;metadata checks not private replay or formal proof",
+    "Six existing issues comments read back OPEN,original bodies unchanged;active existing goal scope preserved",
+    "Original10WIP preserved;one selected tool stash and reverse committed-patch byte comparison retained;no host installation/driver/hub operations",
+    "R5f/R6 public consumers/deployment next;naturalRCA/nonmanualrecovery andallunfinishedwhole issues open"
+  ],
+  "issues": [
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6240433208",
+      "state": "OPEN"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6240434133",
+      "state": "OPEN"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6240435383",
+      "state": "OPEN"
+    },
+    {
+      "repo": "linux",
+      "number": 6,
+      "comment": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6240436416",
+      "state": "OPEN"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "comment": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6240437304",
+      "state": "OPEN"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "comment": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6240438216",
+      "state": "OPEN"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5e-registry-preflight-v1.json",
+      "sha256": "9e5f5ac3a169190c209d9003a2594740b5dfdbb98f4e19be7cdf20a64c200698",
+      "bytes": 1311,
+      "access": "private owner workspace;maintenance receipt,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r5e-local-bound-validation-v1.json",
+      "sha256": "a3fc319d78eae18e7a65d61b04dc4b173413ac4bfe7b047d50b1bdf0b1be0997",
+      "bytes": 719,
+      "access": "private owner workspace;maintenance receipt,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r5e-global-metadata-v1.json",
+      "sha256": "736f58d6b3beca4bd1d89da2ca7b0e0a4ce83cd7b16b54cdb7a2c5404239b046",
+      "bytes": 1047273,
+      "access": "private owner workspace;maintenance receipt,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r5e-qualification-tests-v2.log",
+      "sha256": "dd5bca0f05f5181004990594e00f021c6f4a5154325bbe6142400be0f1c6978a",
+      "bytes": 4807,
+      "access": "private owner workspace;maintenance receipt,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r5e-docs-final-v1.log",
+      "sha256": "8bdbd4fa8d4a45b614f0f2de0d57d69b3d2a488c5033727ddfbbd1de4bf788ca",
+      "bytes": 1055018,
+      "access": "private owner workspace;maintenance receipt,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r5e-issue-receipts-v1.json",
+      "sha256": "871da3f7b3fc98ba439bad93eacd1580e4dedf4f1a7ec3ec8d0d06291f7b086c",
+      "bytes": 2875,
+      "access": "private owner workspace;maintenance receipt,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r5e-pre-tool-merge-wip-v1.json",
+      "sha256": "331281af3c559e59d4daee0e8eceab3ca0b07227f5528590b42e6477907ffa19",
+      "bytes": 3625,
+      "access": "private owner workspace;maintenance receipt,not new RF proof"
+    }
+  ]
+}

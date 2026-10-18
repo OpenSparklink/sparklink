@@ -1,0 +1,25 @@
+Test TxCommitWithdrawal Allowed
+States 2
+0:r0=0; 1:r1=1; [submitted]=1;
+0:r0=1; 1:r1=0; [submitted]=0;
+No
+Witnesses
+Positive: 0 Negative: 2
+Condition exists (0:r0=0 /\ 1:r1=0 /\ [submitted]=1)
+Observation TxCommitWithdrawal Never 0 2
+Time TxCommitWithdrawal 0.00
+Hash=24149fae61b7384f421fb80ead56acba
+
+Test TxCommitWithdrawalWeak Allowed
+States 3
+0:r0=0; 1:r1=0; [submitted]=1;
+0:r0=0; 1:r1=1; [submitted]=1;
+0:r0=1; 1:r1=0; [submitted]=0;
+Ok
+Witnesses
+Positive: 1 Negative: 2
+Condition exists (0:r0=0 /\ 1:r1=0 /\ [submitted]=1)
+Observation TxCommitWithdrawalWeak Sometimes 1 2
+Time TxCommitWithdrawalWeak 0.00
+Hash=482e99ebaf2ac8a1ca79159e9dcff748
+

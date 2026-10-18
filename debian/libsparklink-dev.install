@@ -1,0 +1,4 @@
+usr/lib/*/libsparklink.so
+usr/lib/*/libslk_native.so
+usr/lib/*/pkgconfig/*.pc
+usr/include/*.h

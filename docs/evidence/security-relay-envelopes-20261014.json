@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "kernel_source_head": "7de50814c263b1b4416616e081b6878905c6c1b6",
+  "source_mapping": {
+    "drivers/sparklink/ws73/dli.c": "15292384991ee6f530f491dbc1c6d9186cffec575b52d08221ead0a611338075",
+    "drivers/sparklink/ws73/dli.h": "8bd462b537559ab8e263dbd3e13cf650cb61aaacf4a8ced3ef5068d102b597db",
+    "drivers/sparklink/ws73/usb.c": "06c7510b7afcf767dd7169480e7bcdd79412f8076c994e266db101f547db8270",
+    "tools/testing/selftests/sparklink/ws73_dli_test.c": "20eb5a31ccddbe8c177b896e5fe8da28869ee48b5557a281b825a083236bbaec",
+    "tools/testing/selftests/sparklink/security/relay_envelope_cbmc.c": "fca3d5e6e995727f2cfe9932c8502a8e54f0d0e83ce88db32214129a79fd0f38"
+  },
+  "scope": "SDK111 security event envelope validation in default RX, not relay TX/session ownership or pairing",
+  "reference_review": {
+    "nearlink_host_head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "nearlink_host_dirty": false,
+    "sources": [
+      "services/stack/src/cp/bsl/sle/sm/src/sm.c::SmSendMessage",
+      "services/stack/src/dli/interface/dli_cmd_struct.h::DLI_ControllerData",
+      "services/stack/src/dli/interface/dli_event_struct.h::DLI_ControllerDataEvt,DLI_EncryptChangeEvt"
+    ],
+    "libws73_head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "libws73_dirty": false,
+    "libws73_sources": [
+      "src/sle73/sle73_sm.c::sm_relay,sm_ltk_reply",
+      "src/sle73/sle73_priv.h"
+    ],
+    "independent_implementation": true,
+    "differences": [
+      "explicit5byte relay header; no padded C struct cast",
+      "SDK1110011 exact4byte body; legacy3byte not accepted",
+      "no copying singleton reference Host state or raw mutation admission"
+    ]
+  },
+  "offline": {
+    "asan_ubsan": "PASS",
+    "checks": 531897,
+    "initial_attempt": "LeakSanitizer sandbox ptrace failure; rerun outside ptrace completed with zero failures",
+    "formal": {
+      "tool": "6.11.0 (cbmc-6.11.0)",
+      "result": "BOUNDED_PASS",
+      "generated_checks": 602,
+      "failed": 0,
+      "bounded_input_bytes": [
+        0,
+        265
+      ],
+      "command": "cbmc tools/testing/selftests/sparklink/security/relay_envelope_cbmc.c --function main --unwind 266 --unwinding-assertions --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --conversion-check --trace",
+      "log_sha256": "d406368a5bef729b36a22291c72a3c2619c6af8e1ac117a2250057971f1fec46",
+      "assumptions": [
+        "one fully allocated packet, exact advertised length; allocation failure allowed",
+        "all packet bytes nondeterministic; input size0..265, no protocol-state assumptions"
+      ],
+      "not_proven": [
+        "larger packets",
+        "generation/lifetime attribution",
+        "cancel/command credit",
+        "crypto/security state",
+        "firmware or RF"
+      ]
+    }
+  },
+  "pending": [
+    "Host per-connection lifetime/authorized security session",
+    "1812 typed TX with real command completion and original deadline",
+    "0014/000e/0011 session dispatch and stale response quarantine",
+    "role-bound1c03/1c05 key install, Agent/authentication levels, Bond",
+    "real positive pairing, encrypted channel and remote CCC/updates"
+  ],
+  "closure_allowed": false,
+  "runtime_regression": {
+    "pipeline_status": "SECURITY_RELAY_ENVELOPE_REAL_PIPELINE_TERMINAL_PASS",
+    "pipeline_sha256": "e6d9cd5322cf75a87603930b801aa81e69175054abf12b495ff4c892d39ca71e",
+    "vm_only": true,
+    "compiled_service_head": "af583eb0db58106a0f5ef9937247edf0e032e6c1",
+    "run_tools_snapshot_head": "af583eb0db58106a0f5ef9937247edf0e032e6c1",
+    "source_note": "U54f238 CI-only commit made during the RF runs; tools/source hashes from the prepared bundle and runner manifest are unchanged. Compiled service remains exactUaf583.",
+    "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "runs": {
+      "fault-real": {
+        "status": "REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS",
+        "manifest_sha256": "047d234795a819779f6f9be7f908b356cc77cf158f45699d1c6ab546b57ec2b3",
+        "qemu_exit": 0,
+        "taint": 0,
+        "physical_acceptance": false,
+        "natural_recovery_acceptance": false,
+        "raw_availability": "private workspace; hash is an index, not a public download",
+        "raw_files": [
+          {
+            "file": "console.log",
+            "sha256": "6d33667945bca7af9d8c7e59347d855c318a6ed4b8dfa164f24256f6928b66d7"
+          },
+          {
+            "file": "guest-output/ws73.pcap",
+            "sha256": "bcf80be3a528fe99b78fcd69f09aac1d02d5a21f0f4744fcf6ba8a59aa0dcd08"
+          },
+          {
+            "file": "guest-output/capture-stats.txt",
+            "sha256": "9bbfee84f03b105e9f0b65a0ddf4bd094dcf5df64d435975a4194f336918af70"
+          }
+        ]
+      },
+      "real-short": {
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "e3ff840eefa67fa202b4e55a4ccfdbf8cf36b209074a7d8e6d1429600f147bed",
+        "qemu_exit": 0,
+        "taint": 0,
+        "physical_acceptance": false,
+        "natural_recovery_acceptance": false,
+        "raw_availability": "private workspace; hash is an index, not a public download",
+        "raw_files": [
+          {
+            "file": "console.log",
+            "sha256": "7c39984636ceee29620f9d4292c72acca65dc5848eb22c5491b7a2ad3f66abda"
+          },
+          {
+            "file": "guest-output/ws73.pcap",
+            "sha256": "968bbe29bb4c1b49a48d7e01e5e19abc69d4b3bc75e4eb5b2930b69fd3df7bcf"
+          },
+          {
+            "file": "guest-output/capture-stats.txt",
+            "sha256": "d5ac13894068ca05c384f697bee138189ee347018d2cbb55121710592fc9bead"
+          }
+        ],
+        "capture_packets": 3883,
+        "capture_stats": "dropped privs to capture\ntcpdump: listening on usbmon1, link-type USB_LINUX_MMAPPED (USB with padded Linux header), snapshot length 245824 bytes\n3883 packets captured\n3883 packets received by filter\n0 packets dropped by kernel",
+        "accepted": {
+          "physical_acceptance": false,
+          "ordinary_channel_socket_acceptance": true,
+          "ordinary_channel_info_acceptance": true,
+          "ssap_exchange_info_acceptance": true,
+          "ssap_value_acceptance": true,
+          "ssap_discovery_acceptance": true,
+          "ssap_read_uuid_acceptance": true,
+          "ssap_local_update_rejection_acceptance": true
+        },
+        "uid": {
+          "uids": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "cap_eff": "0000000000000000",
+          "cap_prm": "0000000000000000",
+          "cap_amb": "0000000000000000",
+          "groups": [
+            1000,
+            1002
+          ]
+        },
+        "channel_proof_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+        "business_round_trips": 40,
+        "business_bytes": 61,
+        "direction_phases": 2,
+        "ssap_write_then_read_sequences": 16,
+        "discovery_calls": 16,
+        "local_update_refusals": 4,
+        "rejections": [],
+        "application_record_sha256": "1832ba1006e44132fe2bc09b817f5187f3d7d385ad97ede9e1620bdf095a2527",
+        "qmp_hotplug": true,
+        "positive_update_rf_acceptance": false,
+        "positive_pairing_acceptance": false
+      },
+      "real-boundary": {
+        "status": "PASSTHROUGH_SUPPORT_PASS",
+        "manifest_sha256": "951cb79ac7dc2526a68af1ff3ce0db28543c4188966c85afa0d36cc8fc30a1e1",
+        "qemu_exit": 0,
+        "taint": 0,
+        "physical_acceptance": false,
+        "natural_recovery_acceptance": false,
+        "raw_availability": "private workspace; hash is an index, not a public download",
+        "raw_files": [
+          {
+            "file": "console.log",
+            "sha256": "4c72b4c168874126282752270e51022e5182ca33f40c24eb1fc13afc0f2d7235"
+          },
+          {
+            "file": "guest-output/ws73.pcap",
+            "sha256": "b9faf1dd75ea294399cd47a4db60acc952885905ea351a3e5a67efd6e337d14c"
+          },
+          {
+            "file": "guest-output/capture-stats.txt",
+            "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307"
+          }
+        ],
+        "capture_packets": 3465,
+        "capture_stats": "dropped privs to capture\ntcpdump: listening on usbmon1, link-type USB_LINUX_MMAPPED (USB with padded Linux header), snapshot length 245824 bytes\n3465 packets captured\n3465 packets received by filter\n0 packets dropped by kernel",
+        "accepted": {
+          "physical_acceptance": false,
+          "ordinary_channel_socket_acceptance": true,
+          "ordinary_channel_info_acceptance": true,
+          "ssap_exchange_info_acceptance": true,
+          "ssap_value_acceptance": true,
+          "ssap_discovery_acceptance": true,
+          "ssap_read_uuid_acceptance": true,
+          "ssap_local_update_rejection_acceptance": true
+        },
+        "uid": {
+          "uids": [
+            1000,
+            1000,
+            1000,
+            1000
+          ],
+          "cap_eff": "0000000000000000",
+          "cap_prm": "0000000000000000",
+          "cap_amb": "0000000000000000",
+          "groups": [
+            1000,
+            1002
+          ]
+        },
+        "channel_proof_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+        "business_round_trips": 8,
+        "business_bytes": 249,
+        "direction_phases": 2,
+        "ssap_write_then_read_sequences": 16,
+        "discovery_calls": 16,
+        "local_update_refusals": 4,
+        "rejections": [
+          {
+            "bytes": 250,
+            "errno": 90
+          },
+          {
+            "bytes": 253,
+            "errno": 90
+          },
+          {
+            "bytes": 254,
+            "errno": 90
+          },
+          {
+            "bytes": 255,
+            "errno": 90
+          },
+          {
+            "bytes": 250,
+            "errno": 90
+          },
+          {
+            "bytes": 253,
+            "errno": 90
+          },
+          {
+            "bytes": 254,
+            "errno": 90
+          },
+          {
+            "bytes": 255,
+            "errno": 90
+          },
+          {
+            "bytes": 250,
+            "errno": 90
+          },
+          {
+            "bytes": 253,
+            "errno": 90
+          },
+          {
+            "bytes": 254,
+            "errno": 90
+          },
+          {
+            "bytes": 255,
+            "errno": 90
+          },
+          {
+            "bytes": 250,
+            "errno": 90
+          },
+          {
+            "bytes": 253,
+            "errno": 90
+          },
+          {
+            "bytes": 254,
+            "errno": 90
+          },
+          {
+            "bytes": 255,
+            "errno": 90
+          }
+        ],
+        "application_record_sha256": "54bf3d4c4c934fc2ed774e8fa05106f0ff43f47807bfc9bd8412af2fd31a4636",
+        "qmp_hotplug": true,
+        "positive_update_rf_acceptance": false,
+        "positive_pairing_acceptance": false
+      }
+    }
+  },
+  "build": {
+    "clean_head": "7de50814c263b1b4416616e081b6878905c6c1b6",
+    "config_sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+    "log_sha256": "9e564ed877b41ac3b1564109b89b1bbdcfd6db3f484bd7a8866a5b529b33b669",
+    "artifact_manifest_sha256": "ce0c2ffc2a733d80f487659be1e8fbe0b424fd3b654db809dd87c6fd30d7138c",
+    "empty_root": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+    "standard_empty_root": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+    "virtual_vm": "passed; separate synthetic module, not real WS73 qualification",
+    "first_build_record": "compile completed but untracked new formal harness meant source_unchanged=false; excluded from qualification and retained privately; subsequent clean exact commit rebuild used"
+  },
+  "ci": {
+    "source_head": "54f238ac5c5fdb2c24b8238a1536b7107846765b",
+    "run_id": 38505532873,
+    "status": "success",
+    "documentation_run_id": 38505532862,
+    "documentation_status": "success",
+    "jobs_passed": 9
+  },
+  "documentation": {
+    "strict_locked_build": "PASS",
+    "inventory_documents": 98,
+    "duplicate_canonical_sources": false
+  },
+  "issue_updates": [
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 7,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6160174799",
+      "state": "OPEN",
+      "body_sha256": "d2a7e552796411363e6425cef3810b1d25f10acfd618c3847b787fbb2b24b6fb"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 18,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6160175559",
+      "state": "OPEN",
+      "body_sha256": "79d76ba920d7c5acff893128c224abf001706cb9a93e239204da9eb613e2d4ff"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 19,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6160176206",
+      "state": "OPEN",
+      "body_sha256": "9f7ebfdc673372c8f77e7a74141129fd379a59a482ead5ef556dce7f89d9f2aa"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 5,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6160177167",
+      "state": "OPEN",
+      "body_sha256": "55f1b33c1a1935094d41447ef1ebb9918b428d0567f5880d291caddfd56740fd"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 3,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6160177740",
+      "state": "OPEN",
+      "body_sha256": "be6824026f0ac299edc7644f40d917338995fb285e8aaf4b88be2d6b330fe72b"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 8,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6160178357",
+      "state": "OPEN",
+      "body_sha256": "6498ad6facb987d79a170428ee191fdeb62974d940e87016f9f0275c53cf909d"
+    }
+  ]
+}

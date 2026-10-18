@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "status": "FOUR_ISSUES_READBACK_AND_MATCHED_SCOPE_MAINTENANCE_VERIFIED",
+  "scope": "Only maintenance/CI/scoped retainedbytes/negativecontrols;no additional hardware/formal/performance qualification",
+  "compiled_kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
+  "baseline_kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+  "compiled_userspace": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
+  "executed_tools": "f2fa4e1bdb1d4267a5774c2e9b959946ba2f1f4d",
+  "maintenance_base_head": "42070433eb4dad46d8a231c61202c28f7caad679",
+  "issues": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6223661503",
+      "state": "open",
+      "comment_id": 6223661503,
+      "original_body_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+      "readback_original_body_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+      "comment_sha256": "d14f347c582f219c8ae9fcbe356bda0107ed6ac5e5b43db5701dff5ba53d019f",
+      "readback_comment_sha256": "d14f347c582f219c8ae9fcbe356bda0107ed6ac5e5b43db5701dff5ba53d019f",
+      "original_scope_preserved": true
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6223662282",
+      "state": "open",
+      "comment_id": 6223662282,
+      "original_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "readback_original_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "comment_sha256": "48ddf0812f92498f57f3fb783c6cb0bcd5d01dfb52c8d45c1d98591d064b257a",
+      "readback_comment_sha256": "48ddf0812f92498f57f3fb783c6cb0bcd5d01dfb52c8d45c1d98591d064b257a",
+      "original_scope_preserved": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6223663192",
+      "state": "open",
+      "comment_id": 6223663192,
+      "original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "readback_original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "comment_sha256": "e8c1aa34844eb58cd7d3a9b701ee135c891f1614d46aa6d5927b100913ee610e",
+      "readback_comment_sha256": "e8c1aa34844eb58cd7d3a9b701ee135c891f1614d46aa6d5927b100913ee610e",
+      "original_scope_preserved": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6223664105",
+      "state": "open",
+      "comment_id": 6223664105,
+      "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "readback_original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "comment_sha256": "4c52e60a6876d931eb9911469e43a6483b5206afd415a203ac83a19b1d00d7b6",
+      "readback_comment_sha256": "4c52e60a6876d931eb9911469e43a6483b5206afd415a203ac83a19b1d00d7b6",
+      "original_scope_preserved": true
+    }
+  ],
+  "ci": {
+    "source": "f2fa4e1bdb1d4267a5774c2e9b959946ba2f1f4d",
+    "runs": [
+      {
+        "conclusion": "success",
+        "name": "Production codec bounded fuzz",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38954879339"
+      },
+      {
+        "conclusion": "success",
+        "name": "Documentation",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38954879525"
+      },
+      {
+        "conclusion": "success",
+        "name": "Qualification integrity",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38954879313"
+      },
+      {
+        "conclusion": "success",
+        "name": "CI",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38954879397"
+      },
+      {
+        "conclusion": "success",
+        "name": "Documentation",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38954869594"
+      },
+      {
+        "conclusion": "success",
+        "name": "Qualification integrity",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38954869699"
+      }
+    ],
+    "scope": "Exactexecutiontool terminalCI;not publication/currentdocumentationHEAD release qualification"
+  },
+  "registry": {
+    "materials": 367,
+    "negative_controls": 5,
+    "verification": {
+      "errors": [],
+      "unavailable_private_materials": [],
+      "unavailable_source_checkouts": [],
+      "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+      "current": "NOT_CHECKED",
+      "overall": "INCOMPLETE"
+    },
+    "metadata_scope": "Privatebytes locallychecked;publicCI metadataonly,overallINCOMPLETE,currenttreeNOT_REVALIDATED"
+  },
+  "goal_status": "active",
+  "full_goal_complete": false,
+  "performance_qualified": false,
+  "remaining": [
+    "SameKernelobservercost/kernelresourcepeaks/actualradio parameters",
+    "Fullfairness/overload/slowconsumer/fourdevice/longterm",
+    "Agent/security installation andrealSSAP/multichannel vertical work",
+    "NOCPtruth/reuse/callbackdrain,naturalRCA/nonmanual recovery OPEN;UserHostlowpriority"
+  ],
+  "materials": [
+    {
+      "path": ".dev/matched-u23-issue-receipts-v1.json",
+      "sha256": "812e7572c5a9d9f2d04ebf95be6e23bae1894703f70fc1e5d749b6b32c50af0c",
+      "bytes": 2695,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;original local issue/CI/scoped verification receipts."
+    },
+    {
+      "path": ".dev/matched-u23-update-issues-v1.py",
+      "sha256": "b3189b053277ab35c56b43c269e2f38e36cb7ca385ad37eaac821c374c03c0e1",
+      "bytes": 4722,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;original local issue/CI/scoped verification receipts."
+    },
+    {
+      "path": ".dev/matched-u23-update-issues-v1.log",
+      "sha256": "9dfe1d6c02d54177291bbb65c210bffe968351fe1ddafc8d94c6b890c59cc0be",
+      "bytes": 26,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;original local issue/CI/scoped verification receipts."
+    },
+    {
+      "path": ".dev/matched-u23-ci-f2fa4e1-v2.json",
+      "sha256": "6e78edc90d65db8e0815f26437937fcadf5e13f00eff14348071b7767e44430a",
+      "bytes": 897,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;original local issue/CI/scoped verification receipts."
+    },
+    {
+      "path": ".dev/matched-u23-registry-local-v1.json",
+      "sha256": "9657c26de767e301c91632a1f7313126287801077f8ba5e1cf0cbd69332c5654",
+      "bytes": 1214,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;original local issue/CI/scoped verification receipts."
+    },
+    {
+      "path": ".dev/matched-u23-repinned-registry-local-v1.json",
+      "sha256": "df253efad51c86546ecd437203ae00e4e6c8b6a5f3785e6647b8926609a3c3a3",
+      "bytes": 495,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;original local issue/CI/scoped verification receipts."
+    },
+    {
+      "path": ".dev/matched-u23-qualification-metadata-v1.json",
+      "sha256": "49073f319de85218f5995969d84b774468475664c4c2646d30fccd43725b2f79",
+      "bytes": 282912,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;original local issue/CI/scoped verification receipts."
+    },
+    {
+      "path": ".dev/matched-u23-final-docs-v1.log",
+      "sha256": "d3ea06809a6ac0fbcf1cf34d7f89a3262812ee427ed1583059f710bc32ae87b9",
+      "bytes": 290684,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;original local issue/CI/scoped verification receipts."
+    },
+    {
+      "path": ".dev/matched-u23-maintenance-documentation-audit-v1.json",
+      "sha256": "245385b1731ed8bea56baf1de037bdc36897d8e753becef12dd738ea84621146",
+      "bytes": 132056,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact strictbuild/sourceaudit/signature receipts."
+    },
+    {
+      "path": ".dev/matched-u23-maintenance-docs-v1.log",
+      "sha256": "b3d15ab3def8cac3ed4032830eda7b6e9eed17645a9d32bef36108805576a6e7",
+      "bytes": 290684,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact strictbuild/sourceaudit/signature receipts."
+    },
+    {
+      "path": ".dev/matched-u23-tool-signature-v1.log",
+      "sha256": "039c69b7a3d4b62b6a3117d75b79a72b613375296bcadd49d949c5ee5d345546",
+      "bytes": 113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact strictbuild/sourceaudit/signature receipts."
+    },
+    {
+      "path": ".dev/matched-u23-baseline-signature-v1.log",
+      "sha256": "039c69b7a3d4b62b6a3117d75b79a72b613375296bcadd49d949c5ee5d345546",
+      "bytes": 113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact strictbuild/sourceaudit/signature receipts."
+    }
+  ],
+  "docs": {
+    "strict_html_documents": 115,
+    "source_revision": "42070433eb4dad46d8a231c61202c28f7caad679",
+    "working_tree_changes": [
+      " M docs/evidence/index.md",
+      " M project/goal-execution-state.json",
+      " M tools/ws73_dynamic_channels.py",
+      " M tools/ws73_parallel_data.py",
+      "?? docs/evidence/matched-u23-maintenance-20261017.json"
+    ],
+    "source_audit": {
+      "path": ".dev/matched-u23-maintenance-documentation-audit-v1.json",
+      "sha256": "245385b1731ed8bea56baf1de037bdc36897d8e753becef12dd738ea84621146",
+      "bytes": 132056,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;exact strictbuild/sourceaudit/signature receipts."
+    },
+    "browser_rechecked": false,
+    "qualification": "Strict build at this source/tree;not protocol/performance or future docsHEAD qualification"
+  }
+}

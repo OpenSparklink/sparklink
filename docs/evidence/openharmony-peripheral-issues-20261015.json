@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "reference_commit": "fb079aff268d006a5b211241a5b26aaab6027d6d",
+  "scope": "Pinned-reference documentation audit only, no implementation or hardware qualification",
+  "receipts": [
+    {
+      "repo": "linux",
+      "issue": 13,
+      "url": "https://github.com/OpenSparklink/linux/issues/13#issuecomment-6188535537",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "89dbdb6edb813dce57310ca59d0a80a0319444700124bb765913f6d84c26bfb9",
+      "comment_sha256": "fad506bf48179047c450945ddf2322fc3d57f01d8bef93dee4b01b3ca7b8b45b"
+    },
+    {
+      "repo": "linux",
+      "issue": 14,
+      "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6188536827",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+      "comment_sha256": "fad506bf48179047c450945ddf2322fc3d57f01d8bef93dee4b01b3ca7b8b45b"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6188538326",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "comment_sha256": "fad506bf48179047c450945ddf2322fc3d57f01d8bef93dee4b01b3ca7b8b45b"
+    }
+  ]
+}

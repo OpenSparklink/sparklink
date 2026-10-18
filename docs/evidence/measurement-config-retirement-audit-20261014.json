@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "kernel": "dd11fa38a33817d555fc74305244d88118b50c22",
+    "userspace": "b47606fbc8163ed05d52d61ab376c3f49de2c22b"
+  },
+  "hashes": {
+    "sparklink_core.rs": "d03c0fbea0f432117f331ddccc66a8187fd6cfce5259f67a32cc7dff82988d2d",
+    "sle_configfs.rs": "7a1dc139322c4cd05a7fff4f21d75a636d36a8344619f2ea1aa8deb1d32ff49e",
+    "Kconfig": "e081a8f99afa933919ecc19bd074389a882168161584be6dddf1bdf796923bf9"
+  },
+  "immediate_delete": [
+    {
+      "item": "measurement capability constants/direct legacy command submits",
+      "callers": "four core ioctls, SDK and D-Bus",
+      "actual_function": "local capability projection and commands without validated Native transaction/lifetime rules",
+      "replacement": "NotSupported; future typed capability/query/control with actual firmware gates",
+      "issues": [
+        "K#5",
+        "K#11",
+        "K#16",
+        "U#4"
+      ]
+    },
+    {
+      "item": "configfs max_connections/adv_interval_ms/scan_window_ms/power_mode/controller_type",
+      "actual_function": "retired defaults; controller_type none/0 acknowledged no action",
+      "replacement": "remove nodes; version only; parameters via identity-bound Native requests; per-device board firmware stays in driver",
+      "regression": "ENOENT for old names, empty registry unchanged; actual ordinary File/dual WS data gates"
+    },
+    {
+      "item": "SPARKLINK_SLE/SPARKLINK_DEBUGFS unused symbols and Core forced crypto selects",
+      "actual_function": "no source/build condition consumes SLE toggle; crypto sources have no default consumer",
+      "replacement": "global Linux DEBUG_FS still governs debugfs; Native requires actual SPARKLINK + registered driver; future security mechanism owns crypto dependencies",
+      "regression": "explicit config delta/source identity; preserve hardware/driver/module/hardening options"
+    },
+    {
+      "item": "ControllerState duplicate command queue/credits and always-false worker fallback",
+      "actual_function": "no producer for state.cmd_queue; all registered providers use CommandHost; event fallback is a no-op",
+      "replacement": "single actual CommandHost queue/credit owner; retain standard CmdPending author ledger and actual Host queue",
+      "regression": "actual queue/Host/Diagnostic/cancel/deadline and full new kernel VM/real gates"
+    }
+  ],
+  "move_to_tests": [
+    {
+      "item": "exact old configfs, measurement dispatcher, Kconfig and obsolete config test",
+      "destination": "tools/testing/selftests/sparklink/retired-measurement-config",
+      "scope": "historical reference only; no production inclusion"
+    }
+  ],
+  "await_replacement": [
+    {
+      "item": "measurement wire codec/events and unreleased wrappers",
+      "condition": "retain codec for future real capability/typed mechanism; old facade returns unsupported, no fake success or compatibility commitment"
+    },
+    {
+      "item": "kernel crypto mechanism source",
+      "condition": "retain in net; reconnect only with per-session authenticated mechanism and its Kconfig/proof/hardware gates"
+    },
+    {
+      "item": "CmdRequestQueue.len test inspection",
+      "condition": "cfg(test) only; actual queue state and transitions unchanged; no global allow(dead_code)"
+    }
+  ],
+  "preserved": [
+    "standard Diagnostic transactions/expiry/cancel/credit",
+    "Native Runtime/Session/Channel/Grant and current real socket paths",
+    "drivers/sparklink/ws73 firmware/bsle_custom.bin/pm_config.bin",
+    "root-only optional Virtual test backend"
+  ],
+  "whole_issue_closed": false,
+  "hardware_qualified": false,
+  "initial_credit_clarification": "Driver metadata.command_credits was a real one-time construction seed. It is retained as explicit install/Runtime->Host input, not replaced with constant 1; no mutable duplicate ledger."
+}

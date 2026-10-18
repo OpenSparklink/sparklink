@@ -1,0 +1,625 @@
+{
+  "schema_version": 1,
+  "status": "BOTH_CLI_MODES_TWO_ROLE_SCOPED_REAL_PASS",
+  "kernel": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+  "compiled_userspace": "6385e43081bfcbeabee1ac4f18b9d0917c7a6057",
+  "guest_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
+  "executed_host_tools": "300a39b9e496f09119769c03a0a77360263a8c1e",
+  "vm_only": true,
+  "ports": [
+    "1-2.1.2",
+    "1-2.1.3"
+  ],
+  "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "runs": [
+    {
+      "name": "cli-approve",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "capture_drops": 0,
+      "business_round_trips": 8,
+      "rf_rounds": 22,
+      "phases": [
+        {
+          "phase": 0,
+          "generation_lifetime_handle_roles": [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0,
+              1
+            ]
+          ],
+          "policy_results": [
+            {
+              "request_id": 1,
+              "generation": 2,
+              "lifetime": 1,
+              "phase": 4,
+              "error": 0,
+              "deadline_monotonic_ns": 33317703984,
+              "agent_approved": true,
+              "native_admitted": true,
+              "kernel_state": 9,
+              "kernel_error": 0,
+              "kernel_flags": 7,
+              "kernel_status": 0,
+              "cleanup_error": 0
+            },
+            {
+              "request_id": 1,
+              "generation": 1,
+              "lifetime": 1,
+              "phase": 4,
+              "error": 0,
+              "deadline_monotonic_ns": 33320987633,
+              "agent_approved": true,
+              "native_admitted": true,
+              "kernel_state": 9,
+              "kernel_error": 0,
+              "kernel_flags": 7,
+              "kernel_status": 0,
+              "cleanup_error": 0
+            }
+          ],
+          "actual_cli_processes": 4,
+          "wire": {
+            "relay_indices": [
+              308,
+              310,
+              313,
+              321,
+              309,
+              311,
+              312,
+              314,
+              322
+            ],
+            "opposite_receipts": 9,
+            "installations": [
+              {
+                "role": 0,
+                "opcode": 7171,
+                "key_redacted": true,
+                "command_record": 520,
+                "event_record": 532,
+                "wall_ns": 1792085650615936000
+              },
+              {
+                "role": 1,
+                "opcode": 7173,
+                "key_redacted": true,
+                "command_record": 526,
+                "event_record": 530,
+                "wall_ns": 1792085650614440000
+              }
+            ]
+          }
+        },
+        {
+          "phase": 1,
+          "generation_lifetime_handle_roles": [
+            [
+              2,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              3,
+              0,
+              1
+            ]
+          ],
+          "policy_results": [
+            {
+              "request_id": 2,
+              "generation": 1,
+              "lifetime": 3,
+              "phase": 4,
+              "error": 0,
+              "deadline_monotonic_ns": 37630707018,
+              "agent_approved": true,
+              "native_admitted": true,
+              "kernel_state": 9,
+              "kernel_error": 0,
+              "kernel_flags": 7,
+              "kernel_status": 0,
+              "cleanup_error": 0
+            },
+            {
+              "request_id": 2,
+              "generation": 2,
+              "lifetime": 3,
+              "phase": 4,
+              "error": 0,
+              "deadline_monotonic_ns": 37638904999,
+              "agent_approved": true,
+              "native_admitted": true,
+              "kernel_state": 9,
+              "kernel_error": 0,
+              "kernel_flags": 7,
+              "kernel_status": 0,
+              "cleanup_error": 0
+            }
+          ],
+          "actual_cli_processes": 4,
+          "wire": {
+            "relay_indices": [
+              308,
+              310,
+              313,
+              321,
+              309,
+              311,
+              312,
+              314,
+              322
+            ],
+            "opposite_receipts": 9,
+            "installations": [
+              {
+                "role": 0,
+                "opcode": 7171,
+                "key_redacted": true,
+                "command_record": 1640,
+                "event_record": 1652,
+                "wall_ns": 1792085654936849000
+              },
+              {
+                "role": 1,
+                "opcode": 7173,
+                "key_redacted": true,
+                "command_record": 1646,
+                "event_record": 1650,
+                "wall_ns": 1792085654935355000
+              }
+            ]
+          }
+        }
+      ],
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-approve/manifest.json",
+          "sha256": "d064ca7ec8e47e58ccb0348bddb71b7cb5eb20d6170d9fdb66bba6380f7fa64c",
+          "bytes": 1221789,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "status"
+              ],
+              "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+            },
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-approve/guest-output/ws73.pcap",
+          "sha256": "da8338e02ca8bcebccbbe6e844aedaec074a6f1b854b5cac61d26df4c8c4a57a",
+          "bytes": 538040,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-approve/guest-output/capture-stats.txt",
+          "sha256": "9a4bdefa9f12625627921ffbe4513ed4f532f37f868d4614955fc3f46966daed",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-approve/guest-output/application/passthrough-control/run.json",
+          "sha256": "068e15794faa6565e9817ff05a180ccb10df9117bf2161fd4e03892987247cbb",
+          "bytes": 717494,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-approve/guest-output/kernel.log",
+          "sha256": "b8f8e19adf8bbee11b0016e5c9cefe92a60543eef2c8e0a6840f0770cec279a1",
+          "bytes": 49213,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    },
+    {
+      "name": "cli-reject",
+      "status": "SCOPED_REAL_PASS",
+      "supervisor_exit": 0,
+      "manifest_supervisor_exit": 0,
+      "qemu_exit": 0,
+      "capture_drops": 0,
+      "business_round_trips": 8,
+      "rf_rounds": 22,
+      "phases": [
+        {
+          "phase": 0,
+          "generation_lifetime_handle_roles": [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0,
+              1
+            ]
+          ],
+          "policy_results": [
+            {
+              "request_id": 1,
+              "generation": 2,
+              "lifetime": 1,
+              "phase": 5,
+              "error": -125,
+              "deadline_monotonic_ns": 33554650124,
+              "agent_approved": false,
+              "native_admitted": false,
+              "kernel_state": 0,
+              "kernel_error": 0,
+              "kernel_flags": 0,
+              "kernel_status": 0,
+              "cleanup_error": 0
+            },
+            {
+              "request_id": 1,
+              "generation": 1,
+              "lifetime": 1,
+              "phase": 5,
+              "error": -125,
+              "deadline_monotonic_ns": 33558439747,
+              "agent_approved": false,
+              "native_admitted": false,
+              "kernel_state": 0,
+              "kernel_error": 0,
+              "kernel_flags": 0,
+              "kernel_status": 0,
+              "cleanup_error": 0
+            }
+          ],
+          "actual_cli_processes": 4,
+          "wire": {
+            "no_security_commands_or_events": true
+          }
+        },
+        {
+          "phase": 1,
+          "generation_lifetime_handle_roles": [
+            [
+              2,
+              3,
+              0,
+              0
+            ],
+            [
+              1,
+              3,
+              0,
+              1
+            ]
+          ],
+          "policy_results": [
+            {
+              "request_id": 2,
+              "generation": 1,
+              "lifetime": 3,
+              "phase": 5,
+              "error": -125,
+              "deadline_monotonic_ns": 37851509532,
+              "agent_approved": false,
+              "native_admitted": false,
+              "kernel_state": 0,
+              "kernel_error": 0,
+              "kernel_flags": 0,
+              "kernel_status": 0,
+              "cleanup_error": 0
+            },
+            {
+              "request_id": 2,
+              "generation": 2,
+              "lifetime": 3,
+              "phase": 5,
+              "error": -125,
+              "deadline_monotonic_ns": 37860708449,
+              "agent_approved": false,
+              "native_admitted": false,
+              "kernel_state": 0,
+              "kernel_error": 0,
+              "kernel_flags": 0,
+              "kernel_status": 0,
+              "cleanup_error": 0
+            }
+          ],
+          "actual_cli_processes": 4,
+          "wire": {
+            "no_security_commands_or_events": true
+          }
+        }
+      ],
+      "materials": {
+        "manifest": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-reject/manifest.json",
+          "sha256": "a756ea60233f3ef6debe96ab114238991ee0ac78842ee677718f6146653f9080",
+          "bytes": 1176327,
+          "access": "private",
+          "format": "json",
+          "assertions": [
+            {
+              "pointer": [
+                "status"
+              ],
+              "equals": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS"
+            },
+            {
+              "pointer": [
+                "supervisor_exit"
+              ],
+              "equals": 0
+            },
+            {
+              "pointer": [
+                "qemu_exit"
+              ],
+              "equals": 0
+            }
+          ]
+        },
+        "capture": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-reject/guest-output/ws73.pcap",
+          "sha256": "b43184cdcacd997209b0032f699a7504d3743f66a2e2f46581f750d2f9a2fc58",
+          "bytes": 495808,
+          "access": "private",
+          "format": "bytes"
+        },
+        "capture_stats": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-reject/guest-output/capture-stats.txt",
+          "sha256": "f3c4273caf074bcf49f37624de22f7fe533af3d42c364067450eebfc4f72ee12",
+          "bytes": 227,
+          "access": "private",
+          "format": "bytes"
+        },
+        "control": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-reject/guest-output/application/passthrough-control/run.json",
+          "sha256": "2fd597fce7c9667cc62af51dc19f1955091d8caba0fa53c1a1826dff33ab579e",
+          "bytes": 724790,
+          "access": "private",
+          "format": "json"
+        },
+        "kernel_log": {
+          "base": "workspace",
+          "path": ".dev/native-security-cli-v2-cli-reject/guest-output/kernel.log",
+          "sha256": "572015eb030b0fec84654038f3248be926aa8f7b1d6de713652ac1a6afdcce9b",
+          "bytes": 49039,
+          "access": "private",
+          "format": "bytes"
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Only the installed explicit human-facing CLI driven by disposable test-fixture stdin decisions after actual prompts, sdk111-no-mitm, two controllers and approve/reject in both physical connection roles. Human manual terminal usability and other CLI policy modes are not qualified.",
+    "Policy approval, software admission, USB submission, real Complete, peer relay RX, installation/initial0011 and peer application validation remain distinct. No authenticated identity, trusted Grant, Bond, third-party interoperability or independent air-cipher attestation.",
+    "No new formal proof or complete in-flight install/Status/0011/revoke/Down/USB/NOCP/handle-reuse combination; hardware completion truth and natural recovery remain unproved.",
+    "Actual isolated guest system-type bus, production XML/EXTERNAL and UID1000/GID1002/caps0 control-group clients; no full distribution systemd/udev/deploy/upgrade or applications-only permission qualification.",
+    "The first CLI VM run failed before security clients because the collector assumed /bin/slctl instead of the resolved versioned bundle path. Original failure retained; fixed tools and separate fresh VM runs do not relabel it.",
+    "The eleven retained data gates on the new compiled source are running separately and do not receive PASS from this two-mode result. Historical85cdf/db6 qualifications retain original identity.",
+    "Raw USB captures include installed key material; private original workspace, fingerprints only publicly. No guaranteed public/offsite archive. Manual unplug, hub switching, QMP or injection are not natural recovery acceptance.",
+    "Full S0-S6,19WP,10FV,12DG and all unfinished issues remain open; UserHost stays low-priority planning."
+  ],
+  "supervisor_material": {
+    "base": "workspace",
+    "path": ".dev/security-cli-real-matrix-v2.json",
+    "sha256": "72b209ee337289742d9f847545e3680b1033f9a7b8ea814ab9d281f58cc96136",
+    "bytes": 2714,
+    "access": "private",
+    "format": "json"
+  },
+  "prior_failures": [
+    {
+      "source": "6385e43081bfcbeabee1ac4f18b9d0917c7a6057",
+      "status": "FAIL",
+      "reason": "collector hardcoded /bin/slctl; failed before CLI security clients",
+      "manifest": {
+        "base": "workspace",
+        "path": ".dev/native-security-cli-v1-approve/manifest.json",
+        "sha256": "43b23b4012499921416cd5c2fb46b78075acb289acdf209c6c8c2cf1e6449a07",
+        "bytes": 45724,
+        "access": "private",
+        "format": "json"
+      }
+    }
+  ],
+  "offline": {
+    "runtime_and_cli_source": "fa7197034eead7e2ed4835e765171d32686dd787",
+    "tool_source": "6385e43081bfcbeabee1ac4f18b9d0917c7a6057",
+    "path_fix_controls_source": "300a39b9e496f09119769c03a0a77360263a8c1e",
+    "default_workspace_cases": 244,
+    "cli_cases": 12,
+    "strict_default_and_all_features_clippy": "PASS",
+    "tool_cases": 579,
+    "path_fix_controls": 23,
+    "strict_html": "PASS source6385; no new browser replay",
+    "formal": "NO_NEW_PROOF",
+    "fixtures": "CLI process tests use actual private D-Bus, synthetic registration/metadata, no native successful dependencies; broker tests separately use production functions with /dev/null ioctl failure",
+    "failures_retained": [
+      "PATH lacked dbus-daemon; later existing workspace daemon used",
+      "unittest run omitted PYTHONPATH; rerun with correct module path",
+      "sandbox SO_PASSCRED denied; normal-user rerun passed"
+    ],
+    "materials": [
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-test-v1.log",
+        "sha256": "291d60034afca6bbe31cb298b3dfca187f37c3b42802c104482ea09d45db3205",
+        "bytes": 2269,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-test-v2.log",
+        "sha256": "7e957863b13adf746993b4bbd4ab1db6dd3c9a312c086b4e9bb850bc7572fb98",
+        "bytes": 1856,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-test-v3.log",
+        "sha256": "ca328ff5aa118667e6698c1b35c37fd4f0300f612225a17ae72a4aa039033a6f",
+        "bytes": 2027,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-check.log",
+        "sha256": "01f60d9622340c4e77554e8917cc4e8f196d1621441009d01cce1560025fd747",
+        "bytes": 3500,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-check2.log",
+        "sha256": "00ffd52a47d34a912495d8ae5954a645315ea622116bd35469270f87b7a402ff",
+        "bytes": 1079,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-check3.log",
+        "sha256": "f5849620d7b352d4d0a39a6017be129e76c250f8d8bad96a79511e4c882f4a87",
+        "bytes": 166,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-workspace-clippy-v1.log",
+        "sha256": "4294ee127892e778b899b53a5366c677952d59358847de3ba211b04c39f65977",
+        "bytes": 886,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-allfeatures-clippy-v1.log",
+        "sha256": "5b3ee60dafeb9956b15d4345a161a72fd1177e4e9445e3c55b466aad31e095fe",
+        "bytes": 313,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-workspace-test-v1.log",
+        "sha256": "aba3e3eb758b2b687daeefda1ee758b575f89f750717e19da80c78b76b578ea7",
+        "bytes": 20543,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-witness-test-v1.log",
+        "sha256": "2b75177bab5eddbf89417bfa5b4832f5fd2f65944f90db21c866a695aeb9c306",
+        "bytes": 918,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-witness-test-v2.log",
+        "sha256": "246de32d37df1bc3a6799de73f4c03453ddf2449b7fd536e7ee064042aa5a3b7",
+        "bytes": 121,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-all-tool-tests-v1.log",
+        "sha256": "8ebe3d38ca2e9d8a75c649f25017bb3c3dd22a5357f851bb3feac02600a2d69e",
+        "bytes": 1413,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-all-tool-tests-v2.log",
+        "sha256": "bb103f4947fda3d1d9e64a8559969edb6827d7188cf2b5b897e18fb09021a770",
+        "bytes": 714,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-slctl-agent-man-v1.txt",
+        "sha256": "d187bb46e0d4054386ad9eb68c260e834863130e2b56ab8873523d2d0f75b383",
+        "bytes": 8463,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/security-cli-6385-docs.log",
+        "sha256": "fe34c84909eab64aec228e5f6e236dcce483a95df7f2dd54c64b99131bccff3e",
+        "bytes": 16503,
+        "access": "private",
+        "format": "bytes"
+      }
+    ],
+    "initial_compiler_failures": "temporary argument lifetimes/immutable borrow and strict Clippy reborrow; fixed before fa719 commit, original logs retained; not runtime qualifications",
+    "production_scope_unchanged_between": [
+      "fa7197034eead7e2ed4835e765171d32686dd787",
+      "6385e43081bfcbeabee1ac4f18b9d0917c7a6057"
+    ]
+  },
+  "totals": {
+    "cli_processes": 16,
+    "business_round_trips": 16,
+    "approve_actual_relays": 18,
+    "approve_opposite_receipts": 18,
+    "approve_role_installations_and_initial_events": 4,
+    "reject_security_commands_or_events": 0
+  },
+  "access": {
+    "condition": "original workspace owner/authorized maintainer; raw SDK/firmware/key-bearing capture not public",
+    "replay": "checkout compiled6385 and tools300a, use recorded bundle/prepared manifests and exact supervisor commands; all device tests VM-only",
+    "retention": "listed private original paths and SHA256; availability checked locally, no permanent public storage claim"
+  }
+}

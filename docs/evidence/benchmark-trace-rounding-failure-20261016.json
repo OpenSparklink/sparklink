@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "status": "FAIL",
+  "compiled_kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+  "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+  "executed_tools": "0732f9dd4e4990e045a7f2d450bccb6f182be91e",
+  "scope": [
+    "First newwindow1 xHCIon VM realattempt remainsFAIL despite40actual peer-validated business roundtrips",
+    "Trace configuration exactrequested==allocated assumption waswrong;originalfile/error/assertion retained,no performance qualification",
+    "Newtest contract records request/actual separately,requires actualpageheader/subbuffer and exact kernel roundup/floor,no tolerance",
+    "Existing app/schema2/credit/Grant/Ticket/originaldeadlines unchanged;new exacttool/root must independently rerun12gates"
+  ],
+  "failure": {
+    "error": "actual trace start/end configuration differs",
+    "qemu_exit": 0,
+    "actual_business_round_trips": 40,
+    "requested_kib": 1024,
+    "actual_start": {
+      "enabled": "1",
+      "tracing_on": "1",
+      "tracer": "nop",
+      "buffer_kb": 1027,
+      "cookie": "9324005d-0f73-4466-a710-948df03f358e"
+    },
+    "actual_end": {
+      "enabled": "1",
+      "tracing_on": "1",
+      "tracer": "nop",
+      "buffer_kb": 1027,
+      "cookie": "9324005d-0f73-4466-a710-948df03f358e"
+    }
+  },
+  "kernel_mapping": {
+    "sources": {
+      "kernel/trace/trace.c": "4d044d1117da260b42c588f1b9757b9ead0cb4d053eca7ada601bc988a1b0030",
+      "kernel/trace/ring_buffer.c": "0cd1b50d3521d4c28c18fceaf2843eb7ad8ca43d30adb437adfdc21a53eb279d"
+    },
+    "functions": [
+      "tracing_entries_write",
+      "ring_buffer_resize",
+      "ring_buffer_size",
+      "tracing_entries_read",
+      "ring_buffer_print_page_header"
+    ],
+    "calculation": "x86_64 page4096/header16 =>payload4080;ceil(1048576/4080)=258pages;floor(258*4080/1024)=1027KiB",
+    "limits": "Firstattempt didnot captureheader_page;newattempt must captureboth actual liveheaders/subbuffer andchecksourcecorrespondence;no model orconcurrencyproof"
+  },
+  "retained_offline_failures": [
+    "Initialtimeline rejected realshort SDK111 RXmulti-fragment;diagnostic correctedusing existingproduction-independent reassembly,notchangingoldqualification",
+    "Firstpurefixture moved assembledRXtime butnotfirstfragmenttime;fixedfixture,originallogs retained",
+    "SO_PASSCRED denied in restrictedhost sandbox;unrestrictedpureoffline rerun passed,no hardware operations"
+  ],
+  "remaining": [
+    "All12fresh comparisonruns needed atnewexacttool;originalfirstFAIL retained",
+    "Fullperformance/resources/saturation/fairness,NOCP/reuse/drain,LKMM/debugVM,naturalRCA/nonmanualrecoveryOPEN",
+    "OriginalS0-S6/19WP/10FV/12DG unchanged,UserHost lowpriority,VM-only"
+  ],
+  "materials": [
+    {
+      "path": ".dev/benchmark-observation-w1-on-r1-v1/manifest.json",
+      "sha256": "d1413a326a6754260e3a5e1000904bf1653f25a488fd6ea722715c34933b69b5",
+      "bytes": 470888,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-w1-on-r1-v1/guest-output/benchmark-xhci-start.json",
+      "sha256": "936c8ab6c577a4ddcf2b1a7af27a66b9a50447ad25f2944b387035f8604245ec",
+      "bytes": 113,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-w1-on-r1-v1/guest-output/benchmark-xhci-end.json",
+      "sha256": "936c8ab6c577a4ddcf2b1a7af27a66b9a50447ad25f2944b387035f8604245ec",
+      "bytes": 113,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-w1-on-r1-v1/guest-output/xhci-trace.log",
+      "sha256": "54631ccc540f265d9ffd06c5048083d21fc9a0e38310bb320236ea8151531486",
+      "bytes": 1311268,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-w1-on-r1-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "cd1dfaa089dda7565d973cbcdb41c882e5d928537439ff785dbd43c1d950894f",
+      "bytes": 280,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-w1-on-r1-v1/guest-output/ws73.pcap",
+      "sha256": "aef0d78dc1bce3320c00dae63bccb42dfc57553ce75a0d3f371c54a957e93d2a",
+      "bytes": 335236,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-w1-on-r1-v1/guest-output/capture-stats.txt",
+      "sha256": "3a5b894eab3c28f902dda4462dfc09ae17af8d9dc2aee68aa45095ebcae942e7",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-w1-on-r1-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "7d20f1929baabfbf6cf93cf123504f0e8bb2a15ad8bacaaa531355bcfdf312de",
+      "bytes": 464805,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-qualification-v1.json",
+      "sha256": "8a95553e9093c4d0cf76c8cdfd1908fddcb58f158da9dabc7ecba8d7fc8f7154",
+      "bytes": 3798,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-timeline-first-failure.json",
+      "sha256": "f72b1ca02509c71f161ec3f38de97b77cc45a2b57cfacc6f772e515e9b24c28c",
+      "bytes": 339,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-full-python-v1.log",
+      "sha256": "b4eeaecd53199f9dbb87f9835ed1ef4b1946d4c41346cee817e4a7923e6cd6e2",
+      "bytes": 2566,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-full-python-v2.log",
+      "sha256": "c9b088069c4f2e3f3910f024666f898a1e5db81dd4aa3ca16f90834a8bad57df",
+      "bytes": 1882,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    },
+    {
+      "path": ".dev/benchmark-observation-full-python-v3.log",
+      "sha256": "06ff4e9944005452387e603424739e04a06eb47aefbfbb7ce0aaa640ecee20c9",
+      "bytes": 789,
+      "access": "private",
+      "retention": "Original workspace;authorized maintainers,no public/offsite availability asserted"
+    }
+  ]
+}

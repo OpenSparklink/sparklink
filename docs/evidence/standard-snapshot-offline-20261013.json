@@ -1,0 +1,233 @@
+{
+  "schema": 1,
+  "status": "IMMUTABLE_STANDARD_METADATA_CONSUMER_SCOPED_PASS",
+  "kernel_head": "1d6b3195484fa7ee63b675e5345dfc263850e44c",
+  "compiled_service_tools_head": "8a7666e245bd78df84dad5a4914a54b92d011b2c",
+  "implemented": [
+    "one io_lock snapshot of all standard queried metadata",
+    "immutable Rust production constructor/info/controller snapshot consumers",
+    "bootstrap address/version/credit consistency checks",
+    "30-byte align2 C/Rust metadata layout",
+    "replaced version/capability getters removed"
+  ],
+  "offline": {
+    "snapshot-v2-run_native_data.json": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 33,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "real_data_acceptance": false,
+      "socket_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_native.rs": "61eff2d00f811284eda49b2c50dad1a2f063ff6e22b439af0155913be6b1ad0d",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "net/sparklink/sle_sessions.rs": "d9ae47d27ba4fb9ab81d6c20cdc7fb5d36d48578593364068dd23b4154c7fdb1",
+        "net/sparklink/sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "0757ab388961bc115f545882168158519e49c53dccfded0acf20cbabfebf2ffc"
+      }
+    },
+    "snapshot-v2-run_usb_bootstrap_metadata.json": {
+      "status": "ACTUAL_USB_BOOTSTRAP_TUPLE_PASS",
+      "cases": 44,
+      "header_sha256": "a8f0e769970e7d4ccee62eee150d4d77bbee936463c9f8583f8729de66999a7c",
+      "source_sha256": "a6c14aee7ef59732f0bf8d89be6953cb904ab4ebb51edd8656b7e848f2fa2c06",
+      "scope": "Actual standard bootstrap, strict reply validator and locked tuple getter; synchronous response/USB/context dependencies are controlled fixtures. Fifth version byte preserved; failed requery invalidates observations, no partial commit/output overwrite. Actual command/buffer/features validation and coherent locked snapshot getter, standard 0406 address-type query. Not hardware, common provider migration or Ready proof.",
+      "physical_acceptance": false
+    },
+    "snapshot-v2-run_backend_install.json": {
+      "status": "ACTUAL_COMMON_BACKEND_INSTALL_PASS",
+      "tests": 18,
+      "sources": {
+        "sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+        "sle_dli.rs": "3a992c002c18a4b75b99f6b384ea4d5ec48c16de2208ddf02491ee211e43991e",
+        "sparklink_core.rs": "66e6fdc043ea17f3823bfebeb69e00dd2d97e0e9319858a95a72011c12f705bd",
+        "sle_uapi.rs": "e332156977f30b6476d920d82d90315eeaab9c129211283241bfdd042675c283"
+      },
+      "scope": "Actual reserve/profile/borrowed validation/pending error/query/install/cancel/retire and registry functions; std Mutex/Arc and instrumented Runtime constructor/destructor dependencies. Controlled retire/reuse/competing-install/subsystem-removal windows, not real kernel concurrency, IRQ, allocation/callback or physical qualification.",
+      "kernel_lifetime_proven": false,
+      "physical_acceptance": false,
+      "early_ws73_bootstrap_registered": false
+    },
+    "snapshot-v2-run_usb_registration.json": {
+      "status": "ACTUAL_USB_PENDING_RESERVATION_PASS",
+      "tests": 15,
+      "pending_allocator_tests": 9,
+      "open_adoption_tests": 6,
+      "sources": {
+        "sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+        "sle_dli.rs": "3a992c002c18a4b75b99f6b384ea4d5ec48c16de2208ddf02491ee211e43991e",
+        "sparklink_core.rs": "66e6fdc043ea17f3823bfebeb69e00dd2d97e0e9319858a95a72011c12f705bd",
+        "sle_usb.rs": "f901983d5a729b89734ce89c8ef66c0a632ade9c671ac1f18eb0b6d2a8700186",
+        "sle_native.rs": "61eff2d00f811284eda49b2c50dad1a2f063ff6e22b439af0155913be6b1ad0d"
+      },
+      "scope": "actual constructor/pending allocator/generation/get/unregister/common reservation/cancel and Native wrapper/exact two-phase detach and USB listener/open adoption; logging/Mutex/info types/stats dependencies, not concurrent registry or callbacks/kernel/physical USB qualification",
+      "hardware_acceptance": false
+    },
+    "snapshot-v2-run_runtime_ingress.json": {
+      "status": "ACTUAL_RUNTIME_INGRESS_PASS",
+      "tests": 9,
+      "scope": "production route/queue functions and identity; std Mutex/Arc with ranked guard checks, Host admission/receive and event/queue dependency fixtures; not kernel IRQ/workqueue/module/Host or hardware refinement",
+      "sources": {
+        "net/sparklink/sle_ingress.rs": "c372709252f304fc03d1725a1c03c3e52681c776ba0632698ee57a66fa82d00f",
+        "net/sparklink/sle_native.rs": "61eff2d00f811284eda49b2c50dad1a2f063ff6e22b439af0155913be6b1ad0d",
+        "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+        "tools/testing/selftests/sparklink/ingress/fixture.rs": "e6c828bb79a36cc9c1e0195a596014df374b0b3e25bdefd993812dcd48ee4beb"
+      },
+      "actual_function_sha256": "1cf0e540c1fb6e648ca2ee717fc4d0a782285bc7416934cc1bac1047275c5b77",
+      "hardware_acceptance": false
+    },
+    "snapshot-v2-run_usb_firmware.json": {
+      "status": "GENERIC_USB_FIRMWARE_SOURCE_BOUNDARIES_PASS",
+      "c_cases": 74,
+      "rust_tests": 12,
+      "scope": "actual C download/sync/validator and Rust loader/prepare/probe bodies; fixture USB, allocation, request_firmware and registry dependencies; C static linkage only lifted for extraction",
+      "generic_firmware_wire_acceptance": false,
+      "native_ws73_firmware_acceptance": false,
+      "natural_fault_root_cause_closed": false,
+      "sources": {
+        "sle_usb_ffi.c": "a6c14aee7ef59732f0bf8d89be6953cb904ab4ebb51edd8656b7e848f2fa2c06",
+        "sle_fw.rs": "6ad3582ca73c7144962a4981ec3913f7d3bb3972451a2469051265584e3f3c6c",
+        "sle_usb.rs": "f901983d5a729b89734ce89c8ef66c0a632ade9c671ac1f18eb0b6d2a8700186"
+      }
+    },
+    "snapshot-v2-run_backend_command_port.json": {
+      "status": "ACTUAL_RETAINED_COMMAND_PORT_PASS",
+      "tests": 5,
+      "sources": {
+        "sle_backend.rs": "751072b684206c563a7bf69c6aef783dad2c396406ad81a4f22421176ebc4784",
+        "sle_dli.rs": "3a992c002c18a4b75b99f6b384ea4d5ec48c16de2208ddf02491ee211e43991e",
+        "sle_native.rs": "61eff2d00f811284eda49b2c50dad1a2f063ff6e22b439af0155913be6b1ad0d",
+        "sle_usb.rs": "f901983d5a729b89734ce89c8ef66c0a632ade9c671ac1f18eb0b6d2a8700186",
+        "sle_workers.rs": "087411a13536ab9c2de7ccc1df398f79fe9e8cc91c79d788a122ad42ed5c86bc"
+      },
+      "scope": "Actual selector and provider impls, allocator/std Arc/USB transport dependencies; KBox allocation adapted only to fallible Box fixture. Static worker release-before-submit order check, not actual workqueue/lockdep/IRQ/module/callback or USB proof.",
+      "physical_acceptance": false
+    },
+    "discovery.json": {
+      "status": "GENERIC_USB_DESCRIPTOR_CAPABILITY_SOURCE_BOUNDARIES_PASS",
+      "c_cases": 18,
+      "rust_tests": 11,
+      "scope": "actual C register/unregister; actual Rust info structs/default, USB info/pending reservation metadata, archived attach and serdev info; descriptor lookup/allocation/URB/types/firmware getters are dependency fixtures",
+      "physical_acceptance": false,
+      "generic_dialect_acceptance": false,
+      "full_capability_provenance_contract": false,
+      "natural_fault_root_cause_closed": false,
+      "sources": {
+        "sle_usb_ffi.c": "a6c14aee7ef59732f0bf8d89be6953cb904ab4ebb51edd8656b7e848f2fa2c06",
+        "sle_usb.rs": "f901983d5a729b89734ce89c8ef66c0a632ade9c671ac1f18eb0b6d2a8700186",
+        "sle_dli.rs": "3a992c002c18a4b75b99f6b384ea4d5ec48c16de2208ddf02491ee211e43991e",
+        "sparklink_core.rs": "66e6fdc043ea17f3823bfebeb69e00dd2d97e0e9319858a95a72011c12f705bd"
+      },
+      "archived_attach_sha256": "2225b51f8cec3f5f33c31f053b10d8321bd81fbbe5bb41486ae681e471451626",
+      "archived_serdev_info_sha256": "12e851cef7fbda7b92409752f36690d3c2d1d579a50cd1bff3eed3c98fd80ad7"
+    }
+  },
+  "build": {
+    "status": "BUILD_PASSED",
+    "source_head": "1d6b3195484fa7ee63b675e5345dfc263850e44c",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-standard-snapshot-v2-kernel-build.log",
+      "sha256": "82a4a512c7b8e02dec90e9b5158a66566027e500c69457c43562d7e2d3905838"
+    }
+  },
+  "ci": "standard-snapshot-ci-20261013.json",
+  "formal": {
+    "status": "MODEL_CHECKED_SCOPED",
+    "properties": 314,
+    "report": "standard-snapshot-formal-20261013/production/report.json",
+    "negative": "standard-snapshot-formal-20261013/negative-control.json",
+    "scope": "Actual standard bootstrap and strict validator; all first18 response bytes, reported length and dependency return unrestricted; 6 sequential queries/unwind19. Coherent commit/failure invalidation, buffer schema, version/features/address provenance, bounded call count; actual combined getter under abstract mutex, no partial output on errors.",
+    "assumptions": [
+      "active retained context with io_lock held by caller",
+      "synchronous response dependency provides initialized first18 bytes in64-byte localbuffer",
+      "no concurrency/USB/module/refcount/firmware/Ready/lifetime proof"
+    ]
+  },
+  "real_regression": [
+    "ws73-standard-snapshot-v2-fault-isolation-20261013.json",
+    "ws73-standard-snapshot-v2-short-repeat-20261013.json",
+    "ws73-standard-snapshot-v2-249-boundary-20261013.json"
+  ],
+  "remaining": [
+    "standard common profile0 descriptor/provider/Host/RX/open-close/get-put migration",
+    "static Usb and core USB coupling removal",
+    "genuine Virtual/coreUSB n-m/moduleIRQPM",
+    "canonical events/legacy ring and remaining lifecycle/inflight/NOCP/backpressure gates"
+  ],
+  "failure_history": [
+    {
+      "kernel_head": "8e884ef3c3e17ee721d12168ab33d28ce2746351",
+      "status": "BUILD_FAILED",
+      "reason": "EPROTO unavailable in Rust kernel prelude; corrected in1d6b",
+      "offline_or_formal_not_sufficient_for_kernel_build": true
+    },
+    "initial actual snapshot fixture unused fields lint: retained untouched owner-field assertions, no allow(dead_code)",
+    "sandbox LSan ptrace restriction",
+    "deliberately weak invalidation counterexample",
+    "historical panic/lastclose loss/hardware recovery failures unchanged"
+  ],
+  "private_seals": [
+    {
+      "path": ".dev/native-standard-snapshot-v2-build-record.json",
+      "sha256": "03484d74b794cf8f267aa246c5f32487aed485aafd9ad5c93ca9a00467ef5521"
+    },
+    {
+      "path": ".dev/native-standard-snapshot-v2-kernel-build.log",
+      "sha256": "82a4a512c7b8e02dec90e9b5158a66566027e500c69457c43562d7e2d3905838"
+    },
+    {
+      "path": ".dev/native-standard-snapshot-v2-artifacts/manifest.json",
+      "sha256": "b145d75b14ceab7337cd1e856d407a6d1b74e1c755b6db4a75ef589f278a70c4"
+    },
+    {
+      "path": ".dev/native-standard-snapshot-v2-root-smoke/manifest.json",
+      "sha256": "ff2028194aea3d3887dd35565f6eae350850afc8cfdcafc567c8bec2c0fafb7f"
+    },
+    {
+      "path": ".dev/standard-snapshot-v2-pipeline.json",
+      "sha256": "45a26e49fad5ffd2c0cb2308595616a7fc48cf7ff2c96ec95b10f5564339f29c"
+    },
+    {
+      "path": ".dev/native-standard-snapshot-build-record.json",
+      "sha256": "f10ba314404dbb121471abf59eb1442f3bea12d7810e5603a82efdbdf9db513f"
+    },
+    {
+      "path": ".dev/native-standard-snapshot-kernel-build.log",
+      "sha256": "4258a740e44fe395be50b3fac98b0c50697c01630ad895c84193be8b360b6c49"
+    },
+    {
+      "path": ".dev/standard-snapshot-next-common-provider-audit.json",
+      "sha256": "43350880afbebbcc09a60b24faaf432c73927df9e3ebb0b2f82020b83973e0a3"
+    }
+  ],
+  "standard_physical_acceptance": false,
+  "full_architecture_complete": false,
+  "natural_fault_root_cause_closed": false,
+  "automatic_recovery_acceptance": false,
+  "whole_package_closed": false
+}

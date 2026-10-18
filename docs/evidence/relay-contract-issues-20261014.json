@@ -1,0 +1,272 @@
+{
+  "scope": "19 existing issue architecture/relay/proof gates updated; original scope and OPEN retained",
+  "receipt_count": 19,
+  "receipts": [
+    {
+      "repo": "linux",
+      "number": 4,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+      "comment": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6171810931",
+      "comment_id": 6171810931,
+      "comment_sha256": "5b02535e96d9b7a6a3b418fd4e5e22ca65881c448abc57556cb0c74a8d334daa"
+    },
+    {
+      "repo": "linux",
+      "number": 5,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "3ab0dfc4fb7c5a02575beb04bb0ba29a35282478067afe1a619fa3dff4563a4b",
+      "comment": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6171810811",
+      "comment_id": 6171810811,
+      "comment_sha256": "a0f697a8c09b1854f3507a7596d6a7947a4eed315bc5f794f1d9960f8e4a4ffc"
+    },
+    {
+      "repo": "linux",
+      "number": 3,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "4504199162b6ee0349fc1ee2595a0dd2c82056f1f1dc4ec387e97ff4e8ff94e0",
+      "comment": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6171810990",
+      "comment_id": 6171810990,
+      "comment_sha256": "2d889351077b760f8ec3cebdc887d702fadd5de74862ff6d7157164298232166"
+    },
+    {
+      "repo": "linux",
+      "number": 6,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+      "comment": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6171812654",
+      "comment_id": 6171812654,
+      "comment_sha256": "73c18f58509ca2ce0ba5c4e8d1ecb2f2ede00f2d0a8da64ff18c2dc022e3f471"
+    },
+    {
+      "repo": "linux",
+      "number": 7,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95",
+      "comment": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6171813112",
+      "comment_id": 6171813112,
+      "comment_sha256": "3e260d0f4ab66b8a52d78c093b87e7f6b92ed7692157055e4e89340417f767c2"
+    },
+    {
+      "repo": "linux",
+      "number": 10,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "6720885939ce943bc08ecda6811f92ecf305c35a8b6e14829f1d432f2eb4ed18",
+      "comment": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6171813986",
+      "comment_id": 6171813986,
+      "comment_sha256": "02c3e6c64c41722873e6dfa58097691e430340bb3e8cfe8629ad0200fa36ff6b"
+    },
+    {
+      "repo": "linux",
+      "number": 14,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+      "comment": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6171814856",
+      "comment_id": 6171814856,
+      "comment_sha256": "6b343287cf38f1839c4f007be6a1cbbc2a595847a84d9e54473914981b8936ee"
+    },
+    {
+      "repo": "linux",
+      "number": 15,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "fcfadf365ca6970d0211aac18233cfeefdcf0b66849eb91e11dbcadfd9a2f0c5",
+      "comment": "https://github.com/OpenSparklink/linux/issues/15#issuecomment-6171816257",
+      "comment_id": 6171816257,
+      "comment_sha256": "57dd1f13afc830b7c194d2cdfef4bb608a7eb1eb7ee424381debb280f8c18a9f"
+    },
+    {
+      "repo": "linux",
+      "number": 13,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "89dbdb6edb813dce57310ca59d0a80a0319444700124bb765913f6d84c26bfb9",
+      "comment": "https://github.com/OpenSparklink/linux/issues/13#issuecomment-6171815430",
+      "comment_id": 6171815430,
+      "comment_sha256": "ab6b520c66d76b620332f0c43d19e67e25de771337d8a50c928279086b8b7df3"
+    },
+    {
+      "repo": "linux",
+      "number": 16,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "f7160a379be1e38f4e8ed9c4ca04901ff66a85fd13f7f9fd40fecfd9fb13f8fc",
+      "comment": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6171817859",
+      "comment_id": 6171817859,
+      "comment_sha256": "ffd47e919b1206f419ada7a82dda4c3f50c23cfc6d5ae83b44fc87f17e383e03"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "comment": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6171818363",
+      "comment_id": 6171818363,
+      "comment_sha256": "9729e21dd856aa88ca27d4bdaf15e7a6e025cb3a77bd85d10b3ac30f5842d0b1"
+    },
+    {
+      "repo": "linux",
+      "number": 18,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "5c2dbee1928dff3ce3caecac72d05f6c37a8509549022002c7911376ed40132b",
+      "comment": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6171818812",
+      "comment_id": 6171818812,
+      "comment_sha256": "4961d41f499d5c523517a798577f7c4ebdac0053c188ec45a2dc284c9d81eba5"
+    },
+    {
+      "repo": "sparklink",
+      "number": 1,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "f9714474242708d99f5391b3477011b54f17957cd2a2be1c91ed964a4ef08535",
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/1#issuecomment-6171820810",
+      "comment_id": 6171820810,
+      "comment_sha256": "5791abcfb31fce5806bb6c06d5f758f4b45f63f95c951d2aa087de6b1dd3d91a"
+    },
+    {
+      "repo": "sparklink",
+      "number": 2,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "e54ce5c4823c935a00cf908e88c957ad01ca73773ecb4153dd8bbe4a5272e9cd",
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/2#issuecomment-6171820743",
+      "comment_id": 6171820743,
+      "comment_sha256": "b2c0591d0829cc3bb2e3ac71b4a28b25f17e5bb2930b12c42bfdffec42d574fe"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "comment": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6171820717",
+      "comment_id": 6171820717,
+      "comment_sha256": "05d814214d33169f5a8df45e23ea9cccac53e4f0304be95de12d660b9d6eb58e"
+    },
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41",
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6171822551",
+      "comment_id": 6171822551,
+      "comment_sha256": "df4e7668226b93838636cf8e11d73d9112947298f2bfa2742184484c7e0a6105"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "df0560c7a43f09ec1f84f7db8003d97c294b823d83c53da75fc517ce115a3b2b",
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6171822647",
+      "comment_id": 6171822647,
+      "comment_sha256": "e05e2ef0da96d5feb2263715eaa923832efcff33a9d5a5c13cc7849cec9905d0"
+    },
+    {
+      "repo": "sparklink",
+      "number": 5,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6171822965",
+      "comment_id": 6171822965,
+      "comment_sha256": "36a5712b82be547376e81a909d3b4e903702a7b76631d77f6d1d42bd24ef2681"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "state": "open",
+      "body_unchanged": true,
+      "body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6171824789",
+      "comment_id": 6171824789,
+      "comment_sha256": "300da0943fe9ad74da08bbaa08e8ed17066fd2a9cad4ef23f9ab0784e47c99f4"
+    }
+  ],
+  "new_peer_delivery": "still failed/pending, no issue closed",
+  "exact_peer_failure_followups": [
+    {
+      "repo": "linux",
+      "number": 16,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6172946416",
+      "comment_sha256": "97262eae6f218a1bb377c3995ae5234f2aeb9a2632c0a36bfb70323a00075232"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6172946409",
+      "comment_sha256": "97262eae6f218a1bb377c3995ae5234f2aeb9a2632c0a36bfb70323a00075232"
+    },
+    {
+      "repo": "linux",
+      "number": 10,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6172946508",
+      "comment_sha256": "97262eae6f218a1bb377c3995ae5234f2aeb9a2632c0a36bfb70323a00075232"
+    },
+    {
+      "repo": "linux",
+      "number": 18,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6172947708",
+      "comment_sha256": "97262eae6f218a1bb377c3995ae5234f2aeb9a2632c0a36bfb70323a00075232"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6172947951",
+      "comment_sha256": "97262eae6f218a1bb377c3995ae5234f2aeb9a2632c0a36bfb70323a00075232"
+    },
+    {
+      "repo": "sparklink",
+      "number": 5,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6172948152",
+      "comment_sha256": "97262eae6f218a1bb377c3995ae5234f2aeb9a2632c0a36bfb70323a00075232"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "state": "open",
+      "original_body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6172949440",
+      "comment_sha256": "97262eae6f218a1bb377c3995ae5234f2aeb9a2632c0a36bfb70323a00075232"
+    }
+  ],
+  "followup_count": 7,
+  "ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38596478872,
+      "headSha": "e408b7886a114f76123202040e9cb6e12040ac36",
+      "name": "Documentation",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38596478860,
+      "headSha": "e408b7886a114f76123202040e9cb6e12040ac36",
+      "name": "CI",
+      "status": "completed"
+    }
+  ]
+}

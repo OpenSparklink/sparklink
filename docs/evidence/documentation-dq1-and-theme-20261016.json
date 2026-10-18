@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-10-15T17:00:40.365367+00:00",
+  "status": "DQ1_AND_BOOK_UI_SCOPED_PASS_CONTENT_WORK_REMAINS",
+  "baseline": {
+    "linux": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "userspace": "8121ba0fc03810185120e4136481aa9bc418aba7",
+    "initial_worktrees": "clean"
+  },
+  "documentation_source_commit": "4a581c5fd829c4041561f21becfd2892fb2649db",
+  "report_publication": "Separate later commit; never substitutes for tested source or compiled WS73 artifacts",
+  "source_files_sha256": {
+    "pyproject.toml": "f4d927aac1c605b4cd2dc838aa0cde459ad6ad42689811fe0e6457ce02fc2bad",
+    "uv.lock": "c2f9b6ffebe98b7042ffea1455a547332c9ea2cd680a0ae99b791f50f26de031",
+    "docs/conf.py": "f777cad949850dacc14d1f81a2714a89c29cb9023e2302f7842d875ac3c59eee",
+    "docs/_static/sparklink.css": "f7677c0bcb386510fed3559d18c0b5362562e7228074958f64f6532d136f7e5f",
+    "docs/_templates/layout.html": "bc0865d03fa39a802c0d9c9a3616b79426bab9fee461b0df9cf8c86e13d71872",
+    "tools/docs_integrity.py": "e575e05373d7c447c72c9c394da6a533cea55b59e78e56b77ccb4dfee45fd9c1",
+    "tools/check_docs.py": "7d43ffd4922e59294ee8d7c486716e6ade5505c5142fdacb27b6e5c37f12fc5d",
+    "tools/check_doc_examples.py": "3e407da3f1604658d396dcd4fcdd8a88c992b1be8ac9560eb8913bd69ccb6e2b",
+    "tools/check_docs_browser.py": "2f8d9e15fc64ae2cbbbdc890c13a858dc23c488421f6f6e017f19ea8aad4dec9",
+    "tools/tests/test_docs_integrity.py": "d1c43691e9c343db019c0bf57147aadc906ac0400b56c915934df5cebe5f6204"
+  },
+  "reader_problems_fixed": [
+    "Old daemon manual advertised retired security and SSAP facade; corrected current signatures, local-only staging and explicit refusal",
+    "Python example called removed Adapter.poll_event; use real NativeAdapter calls, distinguish management and ordinary app entry",
+    "Agent documented as missing despite actual SDK111 limited path; distinguish policy, install, unauthenticated encryption, authentication and Bond",
+    "Snoop REDACTED field and obsolete WS73 policy link corrected",
+    "Contributor build and evidence audits were wrongly used as product tutorials; rehome/rewrite by actual reader intent",
+    "VM input contract and fixed-version relay experiment were misleading current how-to pages; reclassify reference/history with source compatibility",
+    "Site now builds only four categories; project/qualification/ADR/audits/history/evidence remain repository source links",
+    "GitBook-like book layout with unique visible sidebar controls, responsive tables, packaged copy buttons and light/dark palette"
+  ],
+  "checks": {
+    "inventory": {
+      "result": "PASS",
+      "scope": "109 user documents incl man/config,21 kernel dispositions incl extensionless README; coverage metadata only, not content acceptance or full kernel docs build"
+    },
+    "negative_controls": {
+      "result": "PASS",
+      "source_commit": "4a581c5fd829c4041561f21becfd2892fb2649db",
+      "cases": 15,
+      "scope": "actual helpers/source hook, missing root/page/resource,empty output,bad anchor/version,replaced page,source-only exclusion,canonical source link and absent Python method/example"
+    },
+    "tool_suite": {
+      "result": "PASS",
+      "source_commit": "2215c163ed1cf5e0238296e6b8db17d3d8724235",
+      "cases": 572,
+      "scope": "historical batch tool regression; not attributed to later theme source"
+    },
+    "clean_docs_install_and_build": {
+      "result": "PASS",
+      "install_source": "786d63523ead561538eee9f3feb5286327083435",
+      "clean_rebuild_source": "19200f7c4390558b088b53dfd907c672e5b21ca3",
+      "python": "3.12.10",
+      "uv": "0.10.3",
+      "locked": true,
+      "new_venv_install": "online, exact unchanged final uv.lock",
+      "later_offline_sync": "PASS with populated cache and existing dedicated environment; not cold-cache offline installation"
+    },
+    "final_strict_html": {
+      "result": "PASS",
+      "source_commit": "4a581c5fd829c4041561f21becfd2892fb2649db",
+      "python": "3.14.7",
+      "warnings_as_errors": true,
+      "expected_pages_links_anchors_resources_revision_hashes": true,
+      "four_categories_only": true
+    },
+    "browser": {
+      "result": "PASS",
+      "source_commit": "4a581c5fd829c4041561f21becfd2892fb2649db",
+      "tool_commit": "4a581c5fd829c4041561f21becfd2892fb2649db",
+      "firefox": "157.0",
+      "html_manifest_sha256": "71ee361240580bf22fb89721feebb1988b5ab4c55f7bb70262ee5162349c2e13",
+      "base_path": "/sparklink/",
+      "checks": {
+        "home_tasks": true,
+        "navigation": true,
+        "table": true,
+        "book_sidebars": true,
+        "dark_mode": true,
+        "code_block": true,
+        "code_copy_paste": true,
+        "product_tutorial_navigation": true,
+        "javascript_search": true,
+        "chinese_search": true,
+        "mobile_no_page_overflow": true,
+        "mobile_navigation": true,
+        "mobile_table_container": true,
+        "mermaid_rendered": true,
+        "business_evidence_navigation": true,
+        "qualification_explanation": true,
+        "source_only_pages_excluded": true,
+        "legacy_html_redirects": true
+      },
+      "screenshots_visually_reviewed": [
+        "reference-table.png",
+        "book-dark-reference.png",
+        "book-mobile-navigation.png"
+      ],
+      "scope": "Actual localhost Firefox pointer/keyboard,copy and paste,search,theme,DOM/screenshots; not user hardware workflow replay"
+    },
+    "man": {
+      "result": "PASS",
+      "command": "groff -ww -Tutf8 -man data/man/man{1/slctl.1,8/slkd.8}",
+      "warnings": 0,
+      "scope": "rendering only; not exhaustive interface semantic review"
+    },
+    "daemon_options_config": {
+      "result": "PASS",
+      "source_commit": "2215c163ed1cf5e0238296e6b8db17d3d8724235",
+      "commands": [
+        "cargo +1.96.1 run --locked --offline -p slkd -- --help",
+        "cargo +1.96.1 run --locked --offline -p slkd -- --config data/config/main.conf --check-config --dump-ws73-policies"
+      ],
+      "scope": "actual production parser, no bus or devices"
+    },
+    "external_links": {
+      "result": "UNVERIFIED_RATE_LIMIT",
+      "source_commit": "2215c163ed1cf5e0238296e6b8db17d3d8724235",
+      "working": 217,
+      "http_429": 52,
+      "other_broken": 0,
+      "exit": 2,
+      "current_reclassified_theme_source": "not rerun; internal references checked separately"
+    },
+    "ci": [
+      {
+        "conclusion": "",
+        "databaseId": 38773317222,
+        "name": "CI",
+        "status": "in_progress",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38773317222"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38773317427,
+        "name": "Documentation",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38773317427"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38773316996,
+        "name": "Qualification integrity",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38773316996"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38773303765,
+        "name": "Documentation",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38773303765"
+      }
+    ]
+  },
+  "failures_preserved": [
+    {
+      "result": "FAIL",
+      "stage": "cold-cache offline docs sync",
+      "source": "1ab660fb81faa0e77a9fa81cd23f1b1fc3b898c5",
+      "cause": "Babel wheel absent; online install later passed in a separate new environment, original failure unchanged"
+    },
+    {
+      "result": "FAIL",
+      "stage": "dirty theme prototype build",
+      "source": "precursor to786d635, not fully source-sealed",
+      "cause": "unused raw Jinja templates copied into _static; strict checker rejected them; corrected output, no warning suppression"
+    },
+    {
+      "result": "PARTIAL",
+      "source": "786d63523ead561538eee9f3feb5286327083435",
+      "cause": "mobile menu failed; private diagnostic with separately hashed tool also confirmed visible button did not open it; not acceptance"
+    },
+    {
+      "result": "FAIL",
+      "source": "19200f7c4390558b088b53dfd907c672e5b21ca3",
+      "cause": "browser visibility guard rejected hidden print h1; no final report, not a PASS; actual article selector corrected"
+    }
+  ],
+  "reference_practice": {
+    "access_date": "2026-10-16",
+    "sources": [
+      "https://diataxis.fr/",
+      "https://diataxis.fr/how-to-use-diataxis/",
+      "https://diataxis.fr/tutorials/",
+      "https://diataxis.fr/how-to-guides/",
+      "https://diataxis.fr/reference/",
+      "https://diataxis.fr/explanation/",
+      "https://sphinx-book-theme.readthedocs.io/en/stable/sections/sidebar-primary.html",
+      "https://sphinx-book-theme.readthedocs.io/en/stable/sections/sidebar-secondary.html",
+      "https://sphinx-book-theme.readthedocs.io/en/stable/sections/header.html"
+    ],
+    "application": "reader task categories and small ongoing improvements; supported book layout/template customization; no Bluetooth semantics or protocol feature expansion"
+  },
+  "not_complete": [
+    "Full API signatures/errors/permissions and validated minimal clients remain DQ2",
+    "Prepared-VM product tutorial is an explicit draft; whole authored flow and from-zero VM/discovery/connection not replayed",
+    "Mixed ADR/architecture/discovery operations still need semantic splitting; initial classification audit is not completion of all originals",
+    "Kernel RST,toctree,kernel-doc,Rust Safety,sysfs ABI,Kconfig bool and MAINTAINERS remediation remain DQ4; no new kernel docs build",
+    "Current external link review, full deployment,shared man source and milestone workflows remain open"
+  ],
+  "qualification_unchanged": {
+    "production_sources_unchanged_since": "8121ba0fc03810185120e4136481aa9bc418aba7",
+    "linux_head": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "retained_ws73_compiled_userspace_and_guest": "85cdf627d70bd239609ab0e74124b787279f139f",
+    "retained_ws73_host_tools": "db6e333814cfc2740b51b0d70c6acf52c6dbca9d",
+    "no_new_device_tests_or_formal_proofs": true,
+    "vm_only": true,
+    "full_scope": "S0-S6,19WP,10FV,12DG retained; UserHost low priority; natural recovery/RCA and unfinished issues stay OPEN"
+  },
+  "publication": {
+    "github_pages": "read-only API404; not configured or not accessible, no deployment performed",
+    "review_artifact": "Documentation CI HTML artifact; not a qualified protocol release",
+    "theme_packages": {
+      "sphinx-book-theme": "1.4.0",
+      "pydata-sphinx-theme": "0.20.0",
+      "sphinx-copybutton": "0.5.2"
+    },
+    "third_party_assets": "themes packaged by locked dependencies, theme LICENSE files copied; Mermaid11.12.1 still uses declared CDN"
+  },
+  "raw_access": {
+    "condition": "workspace owner or authorized developer with this private workspace; not included in public HTML",
+    "retention": "listed workspace files, no promise of permanent public artifact storage",
+    "replay": "checkout exact source,uv sync --locked --only-group docs,make docs; isolated Firefox with supplied tools/check_docs_browser.py and localhost /sparklink/; external links independent; no device actions"
+  },
+  "materials": [
+    {
+      "private_workspace_path": ".dev/docs-dq1-2215c16-all-tools.log",
+      "sha256": "b9c6072d786c32da1fec2f8c69b0ea2c0a3573c1ba7f46e422174ea59dd74f0a",
+      "bytes": 93084
+    },
+    {
+      "private_workspace_path": ".dev/docs-dq1-clean-sync.log",
+      "sha256": "1c0dd0987ccc62f21bbbe0a6d766e6c2f0ae18fc25650b34988cd7175d630843",
+      "bytes": 616
+    },
+    {
+      "private_workspace_path": ".dev/docs-dq1-clean-online-sync.log",
+      "sha256": "ff7e1b56930d3c7878f3cb100910cb0e77fec6b8e7904294f264d67573146e1b",
+      "bytes": 1464
+    },
+    {
+      "private_workspace_path": ".dev/docs-dq1-4130765-clean-build.log",
+      "sha256": "0e0afac5a21a0ea9f1bf5e1a33e3722b9db748a46df5601ffab3103ae1a1491d",
+      "bytes": 17783
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-first-build.log",
+      "sha256": "532fc45f4f103d18ec71f2e8c4dc8bf301c76dded7e31e75d84cf20a0b3d63a8",
+      "bytes": 17503
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-clean-sync.log",
+      "sha256": "c86fdbbb93dd4504d108d6b66b5b3f2a71ca031d3ff34451bc1a57cf600508fe",
+      "bytes": 1299
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-clean-build.log",
+      "sha256": "dc3f5c270eb63094fbe3ceb57c55f487828d663535e8a756a5eb8fdf80e8ee40",
+      "bytes": 17535
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-final-offline-sync.log",
+      "sha256": "e2bc9fededb70dfdc803607734771edffd5b2da43358e91c2392091218dae2c7",
+      "bytes": 61
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-final-clean-build.log",
+      "sha256": "89c7fbd42a539eca68503b48cbf08277874ba3e8db43e143d46e98d2bf5a6401",
+      "bytes": 16837
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-heading-exact-build.log",
+      "sha256": "316f257119f329fe25d2a1d54f79076c328e301cd4d6099c0285ff74dc8b7793",
+      "bytes": 16384
+    },
+    {
+      "private_workspace_path": ".dev/docs-dq1-2215c16-linkcheck.log",
+      "sha256": "f4c16de394b31b6af0efba8c641edab06038827711a7b164b77bfb552581465d",
+      "bytes": 60441
+    },
+    {
+      "private_workspace_path": ".dev/docs-dq1-missing-root-negative.json",
+      "sha256": "ae158c4efa0c99509ab8138a8765be99dfd6c954feaae5a8b3aa23f52451d285",
+      "bytes": 169
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v1-786d635-browser/report.json",
+      "sha256": "1dd896992decaefa490b88c712d344e60346a1515cf71424c395963944c0f9ee",
+      "bytes": 2928
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-nav-diag-786d635-browser/report.json",
+      "sha256": "0803e109d54f3451bd0a55db13190227da377912be2c04137dad05c52ebcc970",
+      "bytes": 4850
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-nav-diagnostic.py",
+      "sha256": "02d3a19f80ca6c13941086eca7c076fb1701498e249b79cd51c7f10eb2b6957b",
+      "bytes": 11313
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-final-browser-command.log",
+      "sha256": "01578a57d96e6c67b281277a1304bc60f22626f9f5dd1a033b2b497da9ac4e55",
+      "bytes": 2866
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/report.json",
+      "sha256": "60606e342f02aa6a523dc57ec021800da2363d754bfa9fc19d310b33a79c7b53",
+      "bytes": 2924
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-browser-identity.json",
+      "sha256": "72c58e7027d6b9ffa326f7135d9aa747e3b41f9f07a6b2cbd6afb0b7893a0b3f",
+      "bytes": 465
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-preview/sparklink/documentation-build.json",
+      "sha256": "71ee361240580bf22fb89721feebb1988b5ab4c55f7bb70262ee5162349c2e13",
+      "bytes": 3135
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/desktop-home.png",
+      "sha256": "d51ba0728a6ebcb35ccc231220571d6198823685152869ada97a1d467ac159fa",
+      "bytes": 249561
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/book-dark-reference.png",
+      "sha256": "efbef502df1bfdf1dbec643777dd40616142842d4cd38c8a8c0b6c9a9811dd3c",
+      "bytes": 257796
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/reference-table.png",
+      "sha256": "14f738870b1632fc745e7c7501533f9b1659880a7a186af939a016b2ad1a0b26",
+      "bytes": 256967
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/tutorial-code.png",
+      "sha256": "387e0aa4f09c88637c22e5fe3952c5dccc41d9f4c3fe34729c487596cc0e4103",
+      "bytes": 228319
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/product-tutorial.png",
+      "sha256": "7737c1832c5bcaaa064281ab4d99f9386bff5824128cd026d7a4e10838111ea6",
+      "bytes": 323770
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/search-results.png",
+      "sha256": "97c802c20d3e31736997bac8c49071a73f096b2a3698a7bc35adb29048921092",
+      "bytes": 225511
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/chinese-search-results.png",
+      "sha256": "637187d85637c081a4f910adf75f659be21c4a206d6aa555b3a99021843a7d93",
+      "bytes": 203220
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/mobile-home.png",
+      "sha256": "05036127871919a6c1f8022bb91d1f7f3a632cdc5f6e668e5a8d464259d58230",
+      "bytes": 113237
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/book-mobile-navigation.png",
+      "sha256": "0a6b44bedb6ee44fa11988267fb37b331fee90f7e32e6dd82757a4ba97ce12a3",
+      "bytes": 100684
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/mobile-reference.png",
+      "sha256": "c66b7640961460e6a0c52b023f6a54a79d442bd0a1ac002fe3cb559be025bfe6",
+      "bytes": 78179
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/architecture-diagram.png",
+      "sha256": "1044f0ccdd29e231caaab8f64495d52f3ced2ff2698ffc41cc99291ddcb1be6c",
+      "bytes": 296392
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/business-evidence-task.png",
+      "sha256": "53291fe95ae218ccc7dc294dcf435a20b52b88350d1de01ba7ad5e761a21d542",
+      "bytes": 335784
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/qualification-explanation.png",
+      "sha256": "8de5647ce0f104139e2b33eb349f5350ff311b9a11dea57635bea4c0bfb36cbd",
+      "bytes": 307371
+    },
+    {
+      "private_workspace_path": ".dev/docs-book-theme-v3-4a581c5-browser/four-category-home.png",
+      "sha256": "e406ee6abdc2d330265807cb8c6a9f168eba49b2fa6e8bf62ec0356bb06fd176",
+      "bytes": 249709
+    }
+  ]
+}

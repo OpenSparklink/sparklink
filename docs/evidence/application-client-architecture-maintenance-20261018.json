@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "result": "MAINTENANCE_SLICE_ONLY_NOT_ARCHITECTURE_EXIT",
+  "kernel_head": "c39686a8095818d8aed9e42ac1d15e0eee47e1e6",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "compiled_userspace": "3ff5296145a16798dd4a13ce231a63486280b946",
+  "executed_guest_and_host_tools": "004c74624b9455a83ce3c3bf4ca83562dd77d45a",
+  "public_basic_report": "docs/evidence/application-client-basic-real-20261018.json",
+  "public_preservation_report": "docs/evidence/application-client-preservation-real-20261018.json",
+  "public_preservation_report_commit": "31943423989a2081410f8470e2ba00b82b4b63bb",
+  "changes": [
+    "Canonical R5f/R6 section now separates source-bound qualified slices, original failure reports and required remaining gates; old chronological text retained verbatim under exact40f50 historical identity.",
+    "Goal linked state removes staged-only deployment and already-resolved package findings from active summaries; qualification_view remains generated from the one structured registry.",
+    "Added basic public SDK and original preservation records, each locally checking exact sources, original artifacts, report scope and complete required gates. Full language-client real scope stays MISSING; selected earlier Agent artifact remains unchanged.",
+    "Corrected remaining historical reference to fixed vendord framework: UserHost/vendor Host adaptation stays P4 planning only; no new implementation or proof."
+  ],
+  "verification": {
+    "real_basic": "2 peer-validated independent request/reply pairs through public C/Python Client, 1543 USB packets, 8 evidence negatives. Finite dup/closeClient/finalclose only.",
+    "real_preservation": "7 real VM runs; 56 peer roundtrips, seven application lengths, 32361 USB packets, 35 evidence negatives, original SSAP/Owned in the short gate.",
+    "qualification_negatives": "6 for basic and6 for preservation; reject stale source, missing/bad artifact, false scope, missing orUNPROVED gate.",
+    "offline_tools": "703 WS73 tool tests passed with explicit sibling kernel source/UAPI. First run omitted worktree kernel source and retained4 configuration errors, not SKIP or assertion changes. Four application-verifier methods separately passed; their printed FAIL is the intentional preflight negative.",
+    "bindings": "53 actual-library/ABI/Python binding checks passed on the exact bundle. First guessed library path run failed and is preserved; corrected path is manifest-derived.",
+    "docs": "Strict warning-as-error HTML and inventory116 passed; only four reader quadrants built. No new browser or external-link acceptance.",
+    "metadata": "Global metadata check errors0; METADATA_ONLY_NOT_REVERIFIED, whole current tree NOT_REVALIDATED and overallINCOMPLETE.",
+    "ci": "Read-only observation:40f50 CI, docs, qualification and boundedcodec-fuzz completed success. Not transferred to the later documentation commits.",
+    "wip": "All10 current in-progress runner files byte-identical to retained004c receipt; original reversible-migration proof preserved. No lifecycle WIP dropped."
+  },
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f2-original-matrix-audit-v1.py",
+      "sha256": "7ef49dd7bfe2de4911485e6565b666b21a2cdf8f6a419218ada54e393e1dcca7",
+      "bytes": 7173,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-original-matrix-audit-v1.json",
+      "sha256": "281e70251ba647f952871d598b2bd0eaced982e4b94a9209ca3ead958a9b5cc9",
+      "bytes": 12914936,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-basic-registry-preflight-v1.json",
+      "sha256": "c07645d25958a2fd72afa30e341d97255cfb22c10670dc8233d77fdb1c7ed04f",
+      "bytes": 1270,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-preservation-registry-preflight-v1.json",
+      "sha256": "d32ba5c2406cefd3e4e9a5ee79d623290c702bf0ae924a6db756d8f2d855d2ad",
+      "bytes": 1320,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-final-global-metadata-v1.json",
+      "sha256": "125ca3ef597073f2167f97f73d81c98596fbb41b70ec122dfa223d8fe3edfbe2",
+      "bytes": 1076165,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-final-ws73-tools-v1.log",
+      "sha256": "b2476ae5add5c13614f84e61ffdce21d5652e418675d586e6ea2991dcdcd4043",
+      "bytes": 122404,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-final-ws73-tools-v2.log",
+      "sha256": "5968ff97f0ced30093cbce9e7c650adceca97525310e07c62613c9ade6e865bd",
+      "bytes": 116834,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-final-client-tests-v1.log",
+      "sha256": "a6fa47d18003a0c2c58c987a8d15d8430b58a59f8dc41e4fb62d309b20b03902",
+      "bytes": 910,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-bindings-v1.log",
+      "sha256": "33961dbac6e56963d5b4bee2ee8b550c5cce6749a00548330b44d7b3ba42ff89",
+      "bytes": 15154,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-bindings-v2.log",
+      "sha256": "b7f11589595ad6e2370a7527f4a223d5381ed5a3b1f7d31a43d04674a86483b7",
+      "bytes": 152,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-final-docs-v2.log",
+      "sha256": "f1146e2d859b49df70a026317ff45a51ac54fa9fc0181197dfb6b69757c5f4a4",
+      "bytes": 1083910,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-post-matrix-wip-preserved-v1.json",
+      "sha256": "695110902e9c5c5dc7d3fc76cb62847ad7da104893d1acefe4f2e4cc7687e569",
+      "bytes": 1262,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-envfix-wip-preserved-v1.json",
+      "sha256": "dc786a094796ceec0ed083398b825d5055df276bacf8fedfe9a2412f3bc32ee7",
+      "bytes": 3277,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-issues-v1.json",
+      "sha256": "2b174a56115fa0c9695538f7b497b64651f9c8906f087c40acdcdea767e52490",
+      "bytes": 903,
+      "access": "private local originals; not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f2-ci-final-observation-v1.json",
+      "sha256": "619b827ac6bce37372f0fd7d2695b398d1ad2788344ba2a001bd1da6e525fa43",
+      "bytes": 2117,
+      "access": "private local originals; not publicly copied"
+    }
+  ],
+  "remaining": [
+    "Actual public client fulldeploymentroles/release/revoke/Down/originaldeadline/peerisolation remain.",
+    "High-level C/Python broker/SSAP/Owned/Agent, shared common APIs and application discovery are still architecture remediation scope.",
+    "R6c crossversionupgrade/rollback,debug/dependency/thirdpartylicense/source/SBOM/provenance and release gates remain.",
+    "No whole issue closed, no duplicate goal; active fullS0-S6/19WP/10FV/12DG unchanged. Natural fault causes/nonmanual recovery remainOPEN; manual/QMP/hub/injected recovery do not substitute."
+  ]
+}

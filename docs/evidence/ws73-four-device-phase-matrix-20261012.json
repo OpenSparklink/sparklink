@@ -1,0 +1,130 @@
+{
+  "status": "FOUR_DEVICE_PHASE_DIAGNOSTIC_MATRIX_SEALED",
+  "scope": "four actual VM attempts plus preceding timed-out physical gate; default failure and all rejected attempts retained",
+  "vm_only": true,
+  "all_producers_terminal": true,
+  "compiled_kernel_source_head": "060011963b5e3f45e9312399d2f68b8077a33353",
+  "kernel_source_head": "4ee4af55f38c0f2a470962978357ce3460f12d21",
+  "actual_service_source_head": "ab1a34b07f1c9183dd08f0d36e83bfa47c2d02a3",
+  "qualified_tools_head": "af0756d7a484737bf20299fcc8dc509120b57bf2",
+  "firmware_version": "combined-1.10.111",
+  "firmware_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "source_ci": {
+    "conclusion": "success",
+    "headSha": "af0756d7a484737bf20299fcc8dc509120b57bf2",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541252088"
+      },
+      {
+        "conclusion": "success",
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541252247"
+      },
+      {
+        "conclusion": "success",
+        "name": "cargo check",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541252284"
+      },
+      {
+        "conclusion": "success",
+        "name": "rustfmt",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541252359"
+      },
+      {
+        "conclusion": "success",
+        "name": "Python bindings and kernel ABI conformance",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541252369"
+      },
+      {
+        "conclusion": "success",
+        "name": "clippy",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541323100"
+      },
+      {
+        "conclusion": "success",
+        "name": "C header generation",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541323108"
+      },
+      {
+        "conclusion": "success",
+        "name": "cargo test",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541323128"
+      },
+      {
+        "conclusion": "success",
+        "name": "release build",
+        "status": "completed",
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668/job/114541610397"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38163536668"
+  },
+  "cases": [
+    {
+      "path": "ws73-current-physical-gate-timeout-20261012.json",
+      "status": "PHYSICAL_GATE_TIMEOUT_REJECTED",
+      "sha256": "5e9a2b68d61090492ff03df57b86cf1e5e08794e20a804d27e097fa18ace1980"
+    },
+    {
+      "path": "ws73-four-device-default-rejected-20261012.json",
+      "status": "FOUR_DEVICE_DEFAULT_PARALLEL_RF_REJECTED",
+      "sha256": "3cc1bfe46964b3ab97cc8540bf6f7972ce1774c8c4cf5587d47cbbde9b01e584"
+    },
+    {
+      "path": "ws73-four-device-offset-verifier-rejected-20261012.json",
+      "status": "FIRST_TIMING_CONTRAST_VERIFIER_REJECTED",
+      "sha256": "363e557c512daacec9ada2a1457306f266cbdfd8769b596ebb7f5811d7c81054"
+    },
+    {
+      "path": "ws73-four-device-offset-real-20261012.json",
+      "status": "REAL_FOUR_DEVICE_OFFSET_CONTRAST_CORROBORATED",
+      "sha256": "385eb1f08a948e5c20583f3ecff79b111f6f5c45c1b0af7a8cee93e5b55f1858"
+    },
+    {
+      "path": "ws73-four-device-default-cleanup-rejected-20261012.json",
+      "status": "DEFAULT_PARALLEL_TIMEOUT_REPRODUCED_WITH_REAL_CLEANUP",
+      "sha256": "044d230fcb2c33915c7b733fca8e7c00f9253970809a969948f70902af364040"
+    }
+  ],
+  "counters": {
+    "normal_vm_cumulative": 59,
+    "maintenance_cumulative": 20,
+    "four_device_attempts": 4,
+    "four_device_contrast_accepted": 1,
+    "four_device_default_accepted": 0,
+    "four_device_default_failed": 2,
+    "four_device_contrast_verifier_rejected": 1,
+    "accepted_contrast_rf_rounds": 40,
+    "accepted_contrast_overlap_rounds": 20,
+    "all_four_case_completed_rf_observations": 88,
+    "physical_gate_initial_rf_only": 20
+  },
+  "observations": {
+    "same_af0756d_image_37ms_contrast_passed": true,
+    "same_image_default0_third_round_timeout_reproduced": true,
+    "bounded_peer_abort_real_cleanup_passed": true,
+    "four_actual_off_confirmations_after_failure": true,
+    "failure_shutdown_forced_kill": false,
+    "original_artifacts_unchanged": true,
+    "historical_actual_rf22_proofs_exactly_preserved": true
+  },
+  "default_parallel_gate_acceptance": false,
+  "whole_managed_acceptance": false,
+  "whole_concurrency_acceptance": false,
+  "current_physical_unplug_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "full_goal_complete": false
+}

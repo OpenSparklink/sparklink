@@ -1,0 +1,758 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "compiled_userspace": "81bd754073ae9cc3b3bb6b66bb0987cd24193cc9",
+  "executed_guest_tools": "81bd754073ae9cc3b3bb6b66bb0987cd24193cc9",
+  "executed_host_tools": "81bd754073ae9cc3b3bb6b66bb0987cd24193cc9",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "scope": [
+    "Existing dynamic basic burst/credit/slot refusal and cli-approve native mechanism gates under exact moved creator only. No fullAgent,standardscrypto,NOCPtruth/reuse,fullfairness,lifetime/deadline/perappauthority,RFtiming,naturalrecovery or architecturequalification.",
+    "Exact VM-only81bd artifact and SDK110 explicitUS/U2/U3. Dynamic/protected paths use the moved original creator. No new protocol/ABI/security support;no feature inference from architecture names.",
+    "Actual peer application checks/replies and USB/connection/credit evidence remain distinct;NOCP truth,duplicate/late/reuse and natural recovery unproved.",
+    "cli-approve is the existing reference Native mechanism and kernel epoch requirement;not standards authentication/Bond/fullAgent,not a ServiceAuthorizer approval."
+  ],
+  "bounds": {
+    "real_runs": 2,
+    "ordinary_round_trips": 16,
+    "dynamic_round_trips": 80,
+    "usb_packets": 22006,
+    "radio_matches": 44,
+    "evidence_negative_controls": 12,
+    "new_formal_proofs": 0
+  },
+  "gates": [
+    {
+      "name": "Actual existing dynamic basic2042burst/slot refusal/peer reply/postclose debt observation under moved creator",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual existing cli-approve reference mechanism/protected fixed channel and ordinary peer business under moved creator",
+      "status": "PASS"
+    },
+    {
+      "name": "Exact source/artifact/original process/both-end capture and negative controls recomputed",
+      "status": "PASS"
+    }
+  ],
+  "runs": [
+    {
+      "name": "dynamic",
+      "status": "FINITE_NEW_ARTIFACT_FACTORY_PATH_RECOMPUTED",
+      "capture_packets": 17775,
+      "radio_matches": 22,
+      "ordinary_round_trips": 8,
+      "negative_controls": [
+        {
+          "name": "missing-specific-connection-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-opposite-usb",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-actual-channel-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-original-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "burst-length-scope-mismatch",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-logical-channel",
+          "result": "REJECTED"
+        },
+        {
+          "name": "foreign-physical-owner",
+          "result": "REJECTED"
+        }
+      ],
+      "manifest": ".dev/architecture-r5f5-factory-dynamic-real-v1/manifest.json",
+      "proof_summary": {
+        "status": "DYNAMIC_BASIC_CHANNEL_BURST_CREDIT_SCOPED_PASS",
+        "round_trips": 80,
+        "mode": "dynamic-basic-burst",
+        "actual_protected_channel_required": false,
+        "scope": "Actual dynamic C16x2042burst per role,softwarepressure/fullpool/NOCP-resumption/finaldrain and actual peer application replies;NOCP truth/duplicate/late/reuse,fullconcurrency/naturalrecovery not proved"
+      }
+    },
+    {
+      "name": "protected",
+      "status": "FINITE_NEW_ARTIFACT_FACTORY_PATH_RECOMPUTED",
+      "capture_packets": 4231,
+      "radio_matches": 22,
+      "ordinary_round_trips": 8,
+      "negative_controls": [
+        {
+          "name": "missing-specific-connection-role",
+          "result": "REJECTED"
+        },
+        {
+          "name": "missing-opposite-usb",
+          "result": "REJECTED"
+        },
+        {
+          "name": "failed-actual-channel-phase",
+          "result": "REJECTED"
+        },
+        {
+          "name": "wrong-original-message-count",
+          "result": "REJECTED"
+        },
+        {
+          "name": "substituted-agent-mode",
+          "result": "REJECTED"
+        }
+      ],
+      "manifest": ".dev/architecture-r5f5-factory-protected-real-v1/manifest.json",
+      "proof_summary": {
+        "status": "REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS",
+        "round_trips": 8,
+        "mode": "cli-approve/reference-mechanism1",
+        "actual_protected_channel_required": true,
+        "scope": "Actual ordinary control user Agent callbacks, original owner/reference/deadline, real dual-controller wire and subsequent peer-checked business. Not authentication/Bond/full deployment/udev/systemd/natural recovery."
+      }
+    }
+  ],
+  "failures": [
+    {
+      "original_status": "RUNNING_NOT_QUALIFIED",
+      "original_aggregate_exit": 1,
+      "reason": "Generic aggregation incorrectly expected the ordinary terminal and nonexistent Agent acceptance flag. Both original VM runner exits0;exact actual production run_exit_code and original frozen verifiers separately rechecked;no raw report/status rewritten or device retry.",
+      "production_verdict_source": "81bd754:tools/ws73_target.py::run_exit_code"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f5-factory-specific-audit-v2.py",
+      "sha256": "01b2c21bc4cfc5082a01e457c851e8678dc88a11c480e4666d6473c73fe75543",
+      "bytes": 7142
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-prepared-v1/manifest.json",
+      "sha256": "2eaa0dac95c65d48c3588332c21b8d5d599e15d2e787af5b93cd0ad4ac433629",
+      "bytes": 297522
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/manifest.json",
+      "sha256": "30c0f92c41e1f03b51d7cc02f5ed7510b3b4548255c76263b18ec3f698ceb5fd",
+      "bytes": 31402
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-specific-matrix-v1.json",
+      "sha256": "41691c574c9b615dc6e7a66c0921235cdc62dcf11bd0cf26e7b99c0aacd6c86b",
+      "bytes": 2154
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-specific-matrix-v1.py",
+      "sha256": "1a80beeb13570178d34f6461e28b1ee1eda32841813e6422e722cdda905565e4",
+      "bytes": 2381
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-specific-matrix-v1.log",
+      "sha256": "3135514640c2139cec14d0921dcdad877216faa125d6a9bf02b45831323edafe",
+      "bytes": 615
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-specific-audit-v1.py",
+      "sha256": "73d906b3278a8271e8ac3e455a0a57c624d9db9b0879190bbedce883a0ace0ab",
+      "bytes": 6022
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-prepared-v1/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-prepared-v1/root.btrfs",
+      "sha256": "19af6f66cd351eb2389019442ae5b5a9ef582e80ee3d7ac2e239993deb9bb950",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/81bd754073ae/slkd",
+      "sha256": "3ccab971803ad3d7b25f2979b5daf7871a6f009eb6f046b84519f9248489a658",
+      "bytes": 9965008
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/81bd754073ae/slkconfig",
+      "sha256": "a603451f78cf937a51b72bc250055d2db33a52ad737c1cc0d268afaf3234d6b7",
+      "bytes": 1338104
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/81bd754073ae/slctl",
+      "sha256": "f17b05b274d0e778ac78f26f4487f211c651a6bedc960e4850373df8b43c50da",
+      "bytes": 8444192
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/81bd754073ae/slktest",
+      "sha256": "ba4c593e13bf9da6c801c3eb516812f4f80b25c4b88f96e9f82729c4ee6e6d39",
+      "bytes": 5754544
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/81bd754073ae/slkmon",
+      "sha256": "5e8029e0c5d7f182c58a01346a05995e85d593682e01fb585a232c13d18f4c46",
+      "bytes": 1660736
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/81bd754073ae/slkdump",
+      "sha256": "0eae96a39f5584605a0986a4611689b6b1469574aec886e4ab99a94d1e63e284",
+      "bytes": 1660520
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/81bd754073ae/liblibsparklink.so",
+      "sha256": "7445a7401e608aca3462f33ac61b1c28331f579bb437ece2c75c95ef2b6a4ad7",
+      "bytes": 4516632
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/81bd754073ae/libslk_native.so",
+      "sha256": "f66c933cf126c9f8bd296ab4a8d8d06e8508b981a83992729db9841daddd47da",
+      "bytes": 530880
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "8b70d0f8ac2738c97df0db8808dbdfa40e45b423f3cd8c64d45e766a7b15d9bf",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "a7cca4144522bf1a1d1c3a0368fa70b6a52a0d40beeed6602d50441fac65e30e",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/architecture-r5f5-native-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "91373719bf92c513aead8be46cfdec40d6690be26c7147b697fa5b9de0f4db53",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "a758e4f90c0ce810dbca64c60130145c43a9b93990298b2c41138d28484af01c",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "5e9cc516ab1c2b5dac90c1c21c015de41ee1a743ccff1c95bf1cb6821a04970d",
+      "bytes": 2582
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "90508a968366b837d93ed353dd8fa23d0fa2d32308f9badb22be18e5652b72f5",
+      "bytes": 5088
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "4f5c8110294c7ee2d7a10833c3be0c4a186864d783b26d73320d8b3602736a08",
+      "bytes": 2035
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "8abaae40fe36af8b5afc75c83a79a5cd319d6fb17e1b359a65bc2d8e9c2ed0a0",
+      "bytes": 1973
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "f7509319716ee60d46674360df355e8c7ef905e744755b96fc4086b464928fac",
+      "bytes": 7450
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "48d29608d46e312f12668fcf4ebf62968d2eba7e1dea14669c8651cdc0230376",
+      "bytes": 7163
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "a60f550396181cd36ed3a19069ac7d76369a5fabb684261b267f5165bc6f138e",
+      "bytes": 135346
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "0755d15a81ca3134af75ad219cb5a4d1ec58fbb22916dd82de1f3fd44f3d45c5",
+      "bytes": 132651
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "29b761ff53dbdc980662c5410cf675d94fa505ca7276b7224e742937025d7e2e",
+      "bytes": 2038
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "ae50f25566466fb6b46cb189e7d8b222bf52af0429a210e83e9610ed3a40abe1",
+      "bytes": 1975
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "e923d88ef1866d0c339bd859d6d5b4f02e48b85b4dc4c28efee3ebb8465889a8",
+      "bytes": 7453
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "d09cade5aa65dd145603e06d685c9f01596cd2e0742d80628c550f8cd396ca84",
+      "bytes": 7165
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "3b4d8828defcda6506cbe316f2bd26496f6733a467c60a53e82eec027dde1310",
+      "bytes": 135364
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "819e8059e17b78770041939ffe08dfa19a600f997a6c0884865b9e0028b2e664",
+      "bytes": 132653
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "859dfcc47232ccf2003b5f4abefa4953ed583ca34fed4e8871253e53691f7d60",
+      "bytes": 1583460
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/capture-process-status.txt",
+      "sha256": "448374dda04850f33c1084998631729e8428a98f6fa6ab5bd8fcd2f93046a8a9",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/capture-stats.txt",
+      "sha256": "a3375838b226bb0479ff9da9aa3692bceca6da868e5cd424128a8a4aeb7c7cde",
+      "bytes": 229
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/kernel.log",
+      "sha256": "c4f68116cc8c10c053681ca41c5cf64e67ef48da5b84bd81d0cfaec5ebcdfa8f",
+      "bytes": 50117
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "92d7f9c306b7e073f46ed274b402f1ff7ba8aa8ac6d1ce2273ee1eba22f17109",
+      "bytes": 478484
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/pending-observations-0.json",
+      "sha256": "49852b5dca9cb459096a801952c13d7edb27b39ba1b0031e1916c9f5a0b40001",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/pending-observations-1.json",
+      "sha256": "8f204615c2f6ac5228b5fe3e333abde76be08bd01ba0527faaf34f5c23d728e2",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/ready-progress-0.json",
+      "sha256": "c5f3ddf0d10d7e298a2561d736c4edb665d7021c559357adaefe69491b4fa114",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/ready-progress-1.json",
+      "sha256": "8039bd429b652ef1f0297b9c195b0f65a88bf84108667b60917d026145682b87",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/slkd-process-status.txt",
+      "sha256": "5232577608984d98b4d9f35d373e882ac7cae968e7cda5709fd40c5cf3929489",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/slkd.log",
+      "sha256": "9ba1bb8e8cbaa2e856d0bbbb40f473c3e395ab77cae63a5b3a3d28ca1c3b7e69",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/ws73.pcap",
+      "sha256": "90865bbf2cb835f3f601c87df0fd489f8601c3a3273866190c8059ffad17674f",
+      "bytes": 3007008
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "d939edaeccd0d8a2349e5ff84a0772560ac3be19edb2d6c1ab399154c912f029",
+      "bytes": 288
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/guest-output/xhci-trace.log",
+      "sha256": "381ce824ead76f34ef818dd8d7ae32715a108e82cc8352958682c20ce60bb413",
+      "bytes": 3823719
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-dynamic-real-v1/manifest.json",
+      "sha256": "7d63f4ca93327b5ac22500a5f576f4c06230a339aa076ccca00517495080b8b3",
+      "bytes": 7153963
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "b80fefb10806a174a36e910380fa71612dd5c6f5247a3b6a034251150694d1c6",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "c5cb47d75c017172aa014a1fa98cf2657777cc8223c0607fe38eb6883e3f16e2",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "4dc5ba5bebe62e50371541a69d556f6659df75d6a88b4cc63afc6a9c1b4c10de",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "3cdfcd2b460f473e52d78064c269915107bec926cdeff3538c0bbb9e3e3a7960",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "5ebdeb1174ff6c5b4a7f2a89d7515abde2b56efbc838a6a9e7ae9cd795fbf8b5",
+      "bytes": 921977
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/capture-process-status.txt",
+      "sha256": "936dbf024c1df916e94921573a8bbee9d58599433ba563ff8fa6526d1fb37b65",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/capture-stats.txt",
+      "sha256": "9b0e9f3475f8e564c0163d9f29e8968fa6bc044617ee1dd70826d143d5d1875f",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/kernel.log",
+      "sha256": "7d01aee0dc8e98af57ff1410c9ca4057b27c6e1edbdd373b7b31c287914c2411",
+      "bytes": 49867
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "640180b65671d355080d9b61cb4f890808897d74f1a535f20953fe69ae64a967",
+      "bytes": 477383
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/pending-observations-0.json",
+      "sha256": "4e414110f69ad83780207c066efd3e0f284248b4d906dc5f3508eb15667d5e0d",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/pending-observations-1.json",
+      "sha256": "e78de64cd5a320775e459e5b090fd6b59403560c52815590819dd8973a991bf8",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/ready-0.json",
+      "sha256": "07ebe42b44c16c663ce59707a2e5eccedd3426bcbb5e8376cab7d019e063aef1",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/ready-1.json",
+      "sha256": "31d69d707158c83c31b7b7783c544b50ba057c8c011e4883e1ffa6c959634682",
+      "bytes": 859
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/ready-progress-0.json",
+      "sha256": "0c80d8de2d0c3ef8a216ab577012427b14abe22cbbd4a698f86b4e88f3b5c932",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/ready-progress-1.json",
+      "sha256": "6e31d52831019f15d35975e28cbf56aed931fb1d920d3b90f6284cbed0ee62d8",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/slkd-process-status.txt",
+      "sha256": "283bac7b31605d4dc22b8dd40a32a99ce5854b45fa95ed840be29aab93f6363e",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/slkd.log",
+      "sha256": "cc88b7b0bebc53ac4c89cf3dda035cf614ba7412b548b9a2f3b7056267126191",
+      "bytes": 5536
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/ws73.pcap",
+      "sha256": "1b75d8de48e6e82faae017f4eea26029ef2c04f6f90d86b8338b8348f0824d88",
+      "bytes": 649696
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "b3ab47d0bf0ff49108a3c7e7063f8c4ac2528021504e59ecd95d1f248cc7f14b",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/guest-output/xhci-trace.log",
+      "sha256": "020242199b93f9a9654044bba7774379e0661d30d254bff3cff24b216024dbc0",
+      "bytes": 2317862
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-protected-real-v1/manifest.json",
+      "sha256": "62f6e9d58bce24ebf883ff2cb4de3c0a5aa23f2b6dacdaa463692a6e8c60d08c",
+      "bytes": 1580467
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-specific-audit-v2.json",
+      "sha256": "95530206ff201c1c8e80a38976294ccef0daa230f203cc0ce6660d666bbfb3b0",
+      "bytes": 6103914
+    },
+    {
+      "path": ".dev/architecture-r5f5-factory-specific-audit-v2.log",
+      "sha256": "00c8ce0d5f756dc7612af390b2c6d7a7431230934729cfbee0da49c78d7e2c92",
+      "bytes": 128
+    },
+    {
+      "path": ".dev/architecture-r5f5-write-real-reports-v1.py",
+      "sha256": "2e40a91c78672b7942c1f17748c001fbc5ea354f143cef02f2133c2a65657eac",
+      "bytes": 6185
+    },
+    {
+      "path": ".dev/architecture-r5f5-public-evidence-summary-v1.py",
+      "sha256": "3aa7e9efcc8ed759b07d7c95651f2e00e65d7bcd491b45cc8e2585e4f7890f5c",
+      "bytes": 1364
+    }
+  ],
+  "private_material_access": "Retained local .dev originals;authorized workspace access required. Public hashes/limited reports omit firmware,SDK,restricted standard and fulllarge captures;not all raw files publicly downloadable.",
+  "replay": "Use exact81bd frozen production verifiers and retained uniqueVM outputs;bothrawruns,all attempts and declared exclusions retained.",
+  "remaining": [
+    "Full public release/revocation/Down/originaldeadline/independentpeer isolation/commonAPI/higherSDK/perappDiscovery andR6c remain.",
+    "ENODATA/naturalRCA/nonmanualrecovery and entireS0-S6/19WP/10FV/12DG unchanged;no wholeissueclosure or newformal/detector qualification."
+  ],
+  "public_summary": "Packet-expanded proof stays in the private immutable audit material;public document contains finite result/bounds/source/material hashes only. The unpushedexpandedpublication was retained locally as e135ff8680c88c3cdda466087a780dc4dbfbcfda,never used as compiled or execution identity."
+}

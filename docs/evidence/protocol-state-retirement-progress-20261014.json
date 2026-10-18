@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL_TARGET_STATE_MIGRATION_WITH_LEGACY_CONN_ADV_MODELS_RETIRED",
+  "recorded_at_utc": "2026-10-13T19:22:25.409178+00:00",
+  "compiled_kernel": "5582a10c5ec8af89da302e946e30446e04a01041",
+  "compiled_service_and_runner": "cd77ed935740f52187a51f014fc1f5212bd8617f",
+  "audit": "docs/evidence/protocol-state-retirement-audit-20261014.json",
+  "removed_default": [
+    "ConnManager/AdvScanInner/local_role Runtime fields",
+    "sle_conn/sle_adv/sle_phy/sle_pdu default modules; four exact files archived100%",
+    "legacy Host reply projection fields and duplicate connection/discovery/DTAP/sync worker consumers",
+    "inline protocol drain and unused routing helper",
+    "unused global max/adv/scan defaults; show/root store explicitly unsupported",
+    "mixed SubsysStats36-byte0x86 and unused SDK wrapper; updated authorization observation35"
+  ],
+  "retained": [
+    "Native Host/Session unique real RX, CMTC/TCID/DTAP/credit/ticket/socket/Grant and actual driver codecs",
+    "crypto/security mechanisms pending per-session owner and real qualification",
+    "exact historical model/TX/CRC/PHY/SSAP regressions; not current RX qualification"
+  ],
+  "caller_migrations": [
+    "daemon ConnCount uses actual guarded LinkSummary",
+    "global role D-Bus NotSupported; no controller-wide software role staging",
+    "direct CLI stats uses explicit registration identity and known links",
+    "early fault inventory uses actual Core-backed D-Bus registration rows, bounded exact inventory stabilization; not atomic multi-device snapshot"
+  ],
+  "offline": {
+    "strict_clippy_and_Rust_all_features": "PASS",
+    "python_cross_language_actual_layout": 35,
+    "tools_before_parser_migration": 459,
+    "tools_parser_boundary_addition": 1,
+    "authorization_contract": 4,
+    "daemon_lifecycle_offline": 78,
+    "actual_ingress_functions": 9,
+    "actual_management_release_functions": 55,
+    "actual_native_connection_host_functions": 51,
+    "actual_diagnostic_scoped_source": "PASS; fixture environment, not whole IRQ/module/hardware proof",
+    "historical_model_sender_boundaries": 11,
+    "historical_ssap_semantics": 8,
+    "historical_phy": "PASS",
+    "cbindgen_header": "unchanged after actual0.29.4 comparison",
+    "initial_failure_records": [
+      {
+        "workspace_relative_path": ".dev/protocol-state-kernel-object.log",
+        "sha256": "e33a352fb2c58fa3afbeb49a7daf8da6cf31bccbd430fe180f8ca2eb5df2a042",
+        "availability": "workspace-private original; not uploaded to public site"
+      },
+      {
+        "workspace_relative_path": ".dev/protocol-state-clippy.log",
+        "sha256": "fab4af8b90e8b4ca1ee9f0230a1afd9605b31c2356f1db2833add151b19687cf",
+        "availability": "workspace-private original; not uploaded to public site"
+      },
+      {
+        "workspace_relative_path": ".dev/protocol-state-clippy-v2.log",
+        "sha256": "52c20a042bced6232e9e7d35255d533c98220e2e7394a6e5125e018a92df9064",
+        "availability": "workspace-private original; not uploaded to public site"
+      },
+      {
+        "workspace_relative_path": ".dev/protocol-state-management.log",
+        "sha256": "130b015436989afb8f2c4cbb1e71f996a2f583d6e72129db291d84ccc13ad412",
+        "availability": "workspace-private original; not uploaded to public site"
+      }
+    ],
+    "corrected_kernel_object": {
+      "workspace_relative_path": ".dev/protocol-state-kernel-object-v3.log",
+      "sha256": "587109c710c448494af95f38783866ada6d778f5c7a6176d583c457eac376461",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "first_real_pipeline_failure": {
+      "workspace_relative_path": ".dev/protocol-state-retirement-pipeline.json",
+      "sha256": "f55b24e3552f32ce235192c03ec9496600676c64f0afb7cdd4dbdf8084e54fee",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "first_real_failed_manifest": {
+      "workspace_relative_path": ".dev/native-protocol-state-retirement-fault-real/manifest.json",
+      "sha256": "6598c44d5958879fdd3c3e3a6f7b25b7848c3203bdb5a5bb6b860a9217dfaef7",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "first_real_failure_reason": "both peers Ready but early-fault verifier still parsed removed mixed-stat CLI; fixed test consumer, did not restore old API",
+    "new_comprehensive_formal_proof": false
+  },
+  "build": {
+    "workspace_relative_path": ".dev/native-protocol-state-retirement-build-record.json",
+    "sha256": "964b0eb8db4f51da4c3c2b4d3e5a14e1504acbf7629a364e7b421a214c21be80",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "config_sha256": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7",
+  "vm": {
+    "actual_virtual": {
+      "workspace_relative_path": ".dev/native-protocol-state-retirement-virtual-vm/manifest.json",
+      "sha256": "bdc394ef2f5f975721e2fe9f47f5aefb2d0e93df771937aa5f2b08648ce104fb",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "module_rounds": 2,
+    "query_results": [
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1",
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1"
+    ],
+    "actual_legacy_refusals": [
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=53 unchanged=53 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=53 unchanged=53 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=53 unchanged=53 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=53 unchanged=53 mixed_stats=ENOTTY"
+    ],
+    "legacy_syscall_checks": 212,
+    "root_eopnotsupp": 106,
+    "ordinary_observe_eopnotsupp": 16,
+    "ordinary_protected_eperm": 90,
+    "buffers_unchanged": 212,
+    "mixed_stats_enotty": 4,
+    "registry_and_pm_receipts": [
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=1000 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=1 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=0 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=1000 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=1 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=2 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "GENL_REGISTRY_PASS: uid=0 count=0 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1",
+      "VIRTUAL_POWER_UNSUPPORTED_PASS: uid=0 commands=6 unchanged=6",
+      "VIRTUAL_GLOBAL_POWER_POLICY_PASS: show=EOPNOTSUPP store=EOPNOTSUPP",
+      "VIRTUAL_POWER_UNSUPPORTED_PASS: uid=1000 commands=6 unchanged=6",
+      "VIRTUAL_POWER_UNSUPPORTED_PASS: uid=0 commands=6 unchanged=6",
+      "VIRTUAL_GLOBAL_POWER_POLICY_PASS: show=EOPNOTSUPP store=EOPNOTSUPP",
+      "VIRTUAL_POWER_UNSUPPORTED_PASS: uid=1000 commands=6 unchanged=6"
+    ],
+    "scope": "actual VFS/Runtime/workqueue/module/known refusal subset, not full IRQ/callback/PM/RF or implementation refinement"
+  },
+  "real_reports": [
+    "docs/evidence/protocol-state-retirement-real-short-20261014.json",
+    "docs/evidence/protocol-state-retirement-real-boundary-20261014.json",
+    "docs/evidence/protocol-state-retirement-fault-real-20261014.json"
+  ],
+  "normal_total": {
+    "round_trips": 48,
+    "boundary_rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "actual_link_summaries": 8,
+    "actual_protocol_refusal_receipts": 8,
+    "ordinary_legacy_syscall_checks": 424,
+    "ordinary_genl_receipts": 4,
+    "actual_current_guarded_copy_faults": 32,
+    "capture_drops": 0
+  },
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38453454013",
+    "head": "cd77ed935740f52187a51f014fc1f5212bd8617f",
+    "kernel_pin": "5582a10c5ec8af89da302e946e30446e04a01041",
+    "jobs_success": 9
+  },
+  "still_open": [
+    "SecurityInner/RPA and default-selection/debugfs/legacy diagnostic observation routing",
+    "remaining unsupported unpublished UAPI/facade caller removal or proper mechanism migration",
+    "canonical loss/resync/topology/owner-death full scopes and complete IRQ/module/PM/callback",
+    "real controller PM/PHY/security/Bond policies and hardware mechanisms",
+    "mixed real/Virtual and actual standard typed/ticketed data",
+    "long PDU/credit exhaustion/backpressure/multi-channel/four pairs/unique SSAP/S5/S6",
+    "natural timeout/reenumeration/disappearance RCA and non-human automatic recovery"
+  ],
+  "not_claimed": "No full goal completion, real unsupported features, comprehensive formal proof or natural recovery. NOCP is not peer receipt. Test/IRQ/firmware assumptions remain explicit.",
+  "goal": "fullS0-S6 active; UserHost P4 planning only; no whole issue closed",
+  "actual_taint_check": "Both normal current consoles explicitly contain WS73_TARGET_NATIVE_VM_TAINT: 0",
+  "issues": [
+    {
+      "repo": "linux",
+      "issue": 2,
+      "id": 6153446854,
+      "url": "https://github.com/OpenSparklink/linux/issues/2#issuecomment-6153446854",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 3,
+      "id": 6153447803,
+      "url": "https://github.com/OpenSparklink/linux/issues/3#issuecomment-6153447803",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 4,
+      "id": 6153448760,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6153448760",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "id": 6153449677,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6153449677",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "id": 6153450693,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6153450693",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "id": 6153451527,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6153451527",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "id": 6153452541,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6153452541",
+      "state": "OPEN",
+      "body_sha256": "c8e994f57f45212978f56f7980c3682f41924587ed167effb8568fb6235b9842",
+      "readback_exact": true
+    }
+  ]
+}

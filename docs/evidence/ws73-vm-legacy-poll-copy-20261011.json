@@ -1,0 +1,2561 @@
+{
+  "status": "WS73_REGRESSION_PASS_LEGACY_POLL_FAULT_GATES_OPEN",
+  "scope": "Production legacy DLI poll copy-before-commit/backend staging fix: actual-source dependency fixtures15 (read9/poll6), clean new kernel image/modules, VM-only ordinary dual-device RF20+2/read7/diagnostic16+copyout2+eviction33+CLI4 regression. Legacy poll/fallback live copy-fault, full event/transaction and natural recovery acceptance remain open.",
+  "kernel_head": "54621800ee4c171a6642f6b8d065b692a4d31408",
+  "compiled_userspace_head": "dc8745986044b97bbd803fb3dbf833543454f68f",
+  "userspace_production_unchanged_from": "df9cff7d750dd889ea7403d8a53906f92d3faf46",
+  "kernel_release": "7.0.0-rc6-opensparklink-native-lab+",
+  "host_installation": false,
+  "native_host_acceptance": false,
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "systemd_sandbox_acceptance": false,
+  "board_qualification": "NOT_ASSERTED",
+  "firmware_runtime_version_qualification": "NOT_ASSERTED",
+  "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "kernel_image_sha256": "ad665ec0a5da82f509f0100155dcbd12d64a65902106b3281d7620323d8bb560",
+  "qemu_sha256": "d27bb224e2ea95b8246033fab7058c13f30e817bd978343441321934fc9e042e",
+  "started_at": "2026-10-10T22:54:03.561153+00:00",
+  "finished_at": "2026-10-10T22:55:02.322328+00:00",
+  "application_identity": {
+    "uids": [
+      1000,
+      1000,
+      1000,
+      1000
+    ],
+    "cap_eff": "0000000000000000",
+    "cap_prm": "0000000000000000",
+    "cap_amb": "0000000000000000",
+    "groups": [
+      1000,
+      1002
+    ]
+  },
+  "initial": [
+    {
+      "port": "1-1",
+      "bus": 1,
+      "device": 2,
+      "index": 0,
+      "generation": 1,
+      "path": "/org/sparklink/slk0_g1",
+      "address": "00:01:09:32:54:F9",
+      "version": "016c00a100"
+    },
+    {
+      "port": "1-2",
+      "bus": 1,
+      "device": 3,
+      "index": 1,
+      "generation": 2,
+      "path": "/org/sparklink/slk1_g2",
+      "address": "00:01:09:32:54:CD",
+      "version": "016c00a100"
+    }
+  ],
+  "replacement": {
+    "port": "1-1",
+    "bus": 1,
+    "device": 2,
+    "index": 0,
+    "generation": 3,
+    "path": "/org/sparklink/slk0_g3",
+    "address": "00:01:09:32:54:F9",
+    "version": "016c00a100"
+  },
+  "daemon_before": {
+    "pid": 649,
+    "start_ticks": 1567
+  },
+  "daemon_after": {
+    "pid": 649,
+    "start_ticks": 1567
+  },
+  "bus_owner_unchanged": true,
+  "cleanup": [
+    {
+      "port": "1-1",
+      "status": "STOP_CONFIRMED"
+    },
+    {
+      "port": "1-2",
+      "status": "STOP_CONFIRMED"
+    }
+  ],
+  "fault_method": "QMP_GUEST_TRANSPORT_ERROR_ONCE",
+  "fault_command_to_new_ready_ms": 10298.321713,
+  "capture_packets": 1411,
+  "capture_drops": 0,
+  "rx_proofs": 22,
+  "capture_scope": "Actual WS73 USB/HCC/DLI command/reply and received RF discovery data, not an independent PHY sniffer",
+  "kernel_warning_count": 0,
+  "vm_taint": 0,
+  "trace_overruns": 0,
+  "qmp_records": 13,
+  "qmp_device_del_used": false,
+  "host_after": {
+    "devices_present_unbound": 4,
+    "kernel_journal_records": 0,
+    "scope": "Read-only host inventory; not native-host driver qualification"
+  },
+  "rounds": [
+    {
+      "phase": "initial",
+      "round": 1,
+      "marker": "04134fd1a484530780b0a8a7108f4491",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 1,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -17,
+        "marker": "04134fd1a484530780b0a8a7108f4491",
+        "data": "ff290101010b24736c6b2d3034313334666431613438343533303738306230613861373130386634343931",
+        "kernel_boottime_ns": 29091736239,
+        "elapsed_ms": 163,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 2,
+      "marker": "b8a1799de071cf5151c6e00dd7477d6c",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "b8a1799de071cf5151c6e00dd7477d6c",
+        "data": "ff290101010b24736c6b2d6238613137393964653037316366353135316336653030646437343737643663",
+        "kernel_boottime_ns": 29309639895,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 3,
+      "marker": "871cfad1a552486df777c5dd4d73d2b9",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 2,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -12,
+        "marker": "871cfad1a552486df777c5dd4d73d2b9",
+        "data": "ff290101010b24736c6b2d3837316366616431613535323438366466373737633564643464373364326239",
+        "kernel_boottime_ns": 29542837729,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 4,
+      "marker": "c46556334671d633e48811142f8b7de5",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 2,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -14,
+        "marker": "c46556334671d633e48811142f8b7de5",
+        "data": "ff290101010b24736c6b2d6334363535363333343637316436333365343838313131343266386237646535",
+        "kernel_boottime_ns": 30225110855,
+        "elapsed_ms": 621,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 5,
+      "marker": "c2737b9e487e54866ec99fc67033a464",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 3,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -12,
+        "marker": "c2737b9e487e54866ec99fc67033a464",
+        "data": "ff290101010b24736c6b2d6332373337623965343837653534383636656339396663363730333361343634",
+        "kernel_boottime_ns": 30758054392,
+        "elapsed_ms": 469,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 6,
+      "marker": "82c6673554a8dc802cc26a5eee37718b",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 3,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -11,
+        "marker": "82c6673554a8dc802cc26a5eee37718b",
+        "data": "ff290101010b24736c6b2d3832633636373335353461386463383032636332366135656565333737313862",
+        "kernel_boottime_ns": 31287096669,
+        "elapsed_ms": 471,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 7,
+      "marker": "02da0609e2e993a164f2ec2c5552ff39",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 4,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -16,
+        "marker": "02da0609e2e993a164f2ec2c5552ff39",
+        "data": "ff290101010b24736c6b2d3032646130363039653265393933613136346632656332633535353266663339",
+        "kernel_boottime_ns": 31953495575,
+        "elapsed_ms": 618,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 8,
+      "marker": "cd4ab6e8e1e4aab520588fdd624d7532",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 4,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -13,
+        "marker": "cd4ab6e8e1e4aab520588fdd624d7532",
+        "data": "ff290101010b24736c6b2d6364346162366538653165346161623532303538386664643632346437353332",
+        "kernel_boottime_ns": 32186957236,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 9,
+      "marker": "c3f4e5b9d5316b6ff14556ef5d58fb29",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 5,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -16,
+        "marker": "c3f4e5b9d5316b6ff14556ef5d58fb29",
+        "data": "ff290101010b24736c6b2d6333663465356239643533313662366666313435353665663564353866623239",
+        "kernel_boottime_ns": 32712381666,
+        "elapsed_ms": 467,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 10,
+      "marker": "f9cf88d560543aebf4f754164195b189",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 5,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "f9cf88d560543aebf4f754164195b189",
+        "data": "ff290101010b24736c6b2d6639636638386435363035343361656266346637353431363431393562313839",
+        "kernel_boottime_ns": 32946291651,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 11,
+      "marker": "4c9a77a10298bb79c47cf4331e8b96ff",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 6,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -17,
+        "marker": "4c9a77a10298bb79c47cf4331e8b96ff",
+        "data": "ff290101010b24736c6b2d3463396137376131303239386262373963343763663433333165386239366666",
+        "kernel_boottime_ns": 33621287245,
+        "elapsed_ms": 621,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 12,
+      "marker": "52190645411ec82196ae994931f60447",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 6,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "52190645411ec82196ae994931f60447",
+        "data": "ff290101010b24736c6b2d3532313930363435343131656338323139366165393934393331663630343437",
+        "kernel_boottime_ns": 33851329272,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 13,
+      "marker": "2a7b20f00fd2e0440f975cb49293c853",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 7,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -11,
+        "marker": "2a7b20f00fd2e0440f975cb49293c853",
+        "data": "ff290101010b24736c6b2d3261376232306630306664326530343430663937356362343932393363383533",
+        "kernel_boottime_ns": 34086512056,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 14,
+      "marker": "f57347cc8ade1b946c7f28cc241e65f4",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 7,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -11,
+        "marker": "f57347cc8ade1b946c7f28cc241e65f4",
+        "data": "ff290101010b24736c6b2d6635373334376363386164653162393436633766323863633234316536356634",
+        "kernel_boottime_ns": 34319380109,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 15,
+      "marker": "64c4f9e629f9a225db94f45c1a48d2bb",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 8,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "64c4f9e629f9a225db94f45c1a48d2bb",
+        "data": "ff290101010b24736c6b2d3634633466396536323966396132323564623934663435633161343864326262",
+        "kernel_boottime_ns": 34555789544,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 16,
+      "marker": "04220579ea386b72e7a6ca71e642268a",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 8,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "04220579ea386b72e7a6ca71e642268a",
+        "data": "ff290101010b24736c6b2d3034323230353739656133383662373265376136636137316536343232363861",
+        "kernel_boottime_ns": 34796782776,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 17,
+      "marker": "41df2fbb1e86211a3cefd4deebbeea39",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 9,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -12,
+        "marker": "41df2fbb1e86211a3cefd4deebbeea39",
+        "data": "ff290101010b24736c6b2d3431646632666262316538363231316133636566643464656562626565613339",
+        "kernel_boottime_ns": 35337314942,
+        "elapsed_ms": 470,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 18,
+      "marker": "6325c4db2456604a79a988e18d42dc10",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 9,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -15,
+        "marker": "6325c4db2456604a79a988e18d42dc10",
+        "data": "ff290101010b24736c6b2d3633323563346462323435363630346137396139383865313864343264633130",
+        "kernel_boottime_ns": 35893017342,
+        "elapsed_ms": 467,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 19,
+      "marker": "488a135f3e20f26dc087ae29fbd54977",
+      "tx_generation": 1,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 10,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "488a135f3e20f26dc087ae29fbd54977",
+        "data": "ff290101010b24736c6b2d3438386131333566336532306632366463303837616532396662643534393737",
+        "kernel_boottime_ns": 36439395323,
+        "elapsed_ms": 470,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "initial",
+      "round": 20,
+      "marker": "b0d147bbdf55e4997829826d6bf93874",
+      "tx_generation": 2,
+      "rx_generation": 1,
+      "match": {
+        "generation": 1,
+        "seq": 10,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -13,
+        "marker": "b0d147bbdf55e4997829826d6bf93874",
+        "data": "ff290101010b24736c6b2d6230643134376262646635356534393937383239383236643662663933383734",
+        "kernel_boottime_ns": 36688820192,
+        "elapsed_ms": 141,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 1,
+      "marker": "7203f7135c3a84d28da4f8ed1b642df9",
+      "tx_generation": 3,
+      "rx_generation": 2,
+      "match": {
+        "generation": 2,
+        "seq": 11,
+        "address": "00:01:09:32:54:F9",
+        "rssi": -15,
+        "marker": "7203f7135c3a84d28da4f8ed1b642df9",
+        "data": "ff290101010b24736c6b2d3732303366373133356333613834643238646134663865643162363432646639",
+        "kernel_boottime_ns": 49747600569,
+        "elapsed_ms": 317,
+        "lost": 0
+      }
+    },
+    {
+      "phase": "recovery",
+      "round": 2,
+      "marker": "e49b5d7c9ee6ae6edff2e1abbf5a2f0b",
+      "tx_generation": 2,
+      "rx_generation": 3,
+      "match": {
+        "generation": 3,
+        "seq": 1,
+        "address": "00:01:09:32:54:CD",
+        "rssi": -12,
+        "marker": "e49b5d7c9ee6ae6edff2e1abbf5a2f0b",
+        "data": "ff290101010b24736c6b2d6534396235643763396565366165366564666632653161626266356132663062",
+        "kernel_boottime_ns": 50024820179,
+        "elapsed_ms": 140,
+        "lost": 0
+      }
+    }
+  ],
+  "development_tests": {
+    "status": "EVENT_RECORD_COPY_BOUNDARY_PASS",
+    "rust_tests": 15,
+    "read_iter_tests": 9,
+    "legacy_dli_poll_tests": 6,
+    "scope": "actual complete event/read_iter, canonical legacy DLI event and ring/poll handler; copy/lock/controller-codec dependencies are fixtures",
+    "live_vfs_fault_acceptance": false,
+    "physical_acceptance": false,
+    "sources": {
+      "sle_event.rs": "406cf69542a18de7b3f1827a117429f2ff3e1e613ff3bc0b0cfd332b026f9bbd",
+      "sparklink_core.rs": "092cea7cf6484b489ec8e2a5e1fb6326f003960b9d90de2a4927774fb1c973e3",
+      "sle_uapi.rs": "d6469d5a6920ed856687aab25cff94b76dab118dad7b850417c64997cd4abcc3"
+    },
+    "remaining": [
+      "Legacy DLI_POLL_EVENT consumer migration and shared projection deletion",
+      "Live legacy poll usercopy and qualified backend fallback gates",
+      "Removal wakeup, actual kernel concurrency/locks and complete event ownership gates"
+    ]
+  },
+  "remote_ci": {
+    "conclusion": "success",
+    "databaseId": 38093030937,
+    "headSha": "dc8745986044b97bbd803fb3dbf833543454f68f",
+    "jobs": [
+      {
+        "completedAt": "2026-10-10T22:52:54Z",
+        "conclusion": "success",
+        "databaseId": 114333182716,
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "startedAt": "2026-10-10T22:52:38Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:52:40Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:52:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:42Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:52:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:45Z",
+            "conclusion": "success",
+            "name": "Check out matching kernel lab helpers",
+            "number": 3,
+            "startedAt": "2026-10-10T22:52:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:45Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 4,
+            "startedAt": "2026-10-10T22:52:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:51Z",
+            "conclusion": "success",
+            "name": "Run python -m unittest discover -s tools/tests -v",
+            "number": 5,
+            "startedAt": "2026-10-10T22:52:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:51Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 8,
+            "startedAt": "2026-10-10T22:52:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:51Z",
+            "conclusion": "success",
+            "name": "Post Check out matching kernel lab helpers",
+            "number": 9,
+            "startedAt": "2026-10-10T22:52:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "startedAt": "2026-10-10T22:52:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "startedAt": "2026-10-10T22:52:52Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333182716"
+      },
+      {
+        "completedAt": "2026-10-10T22:53:27Z",
+        "conclusion": "success",
+        "databaseId": 114333182875,
+        "name": "Python bindings and kernel ABI conformance",
+        "startedAt": "2026-10-10T22:52:38Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:52:39Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:52:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:40Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:52:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:41Z",
+            "conclusion": "success",
+            "name": "Check out matching canonical kernel UAPI",
+            "number": 3,
+            "startedAt": "2026-10-10T22:52:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:44Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 4,
+            "startedAt": "2026-10-10T22:52:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:44Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 5,
+            "startedAt": "2026-10-10T22:52:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:21Z",
+            "conclusion": "success",
+            "name": "Prepare 32-bit header compilation and actual cdylib",
+            "number": 6,
+            "startedAt": "2026-10-10T22:52:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:21Z",
+            "conclusion": "success",
+            "name": "Run python -m py_compile bindings/python/sparklink/__init__.py",
+            "number": 7,
+            "startedAt": "2026-10-10T22:53:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:21Z",
+            "conclusion": "success",
+            "name": "Run python -m py_compile bindings/python/sparklink/structs.py",
+            "number": 8,
+            "startedAt": "2026-10-10T22:53:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:21Z",
+            "conclusion": "success",
+            "name": "Run python -m py_compile bindings/python/sparklink/adapter.py",
+            "number": 9,
+            "startedAt": "2026-10-10T22:53:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:22Z",
+            "conclusion": "success",
+            "name": "Run python -m py_compile bindings/python/sparklink/native.py",
+            "number": 10,
+            "startedAt": "2026-10-10T22:53:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:25Z",
+            "conclusion": "success",
+            "name": "Run Python unit and compiled C/Rust ABI tests",
+            "number": 11,
+            "startedAt": "2026-10-10T22:53:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:25Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 20,
+            "startedAt": "2026-10-10T22:53:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:25Z",
+            "conclusion": "success",
+            "name": "Post Check out matching canonical kernel UAPI",
+            "number": 21,
+            "startedAt": "2026-10-10T22:53:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:25Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 22,
+            "startedAt": "2026-10-10T22:53:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:25Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 23,
+            "startedAt": "2026-10-10T22:53:25Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333182875"
+      },
+      {
+        "completedAt": "2026-10-10T22:52:44Z",
+        "conclusion": "success",
+        "databaseId": 114333182937,
+        "name": "rustfmt",
+        "startedAt": "2026-10-10T22:52:38Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:52:39Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:52:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:40Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:52:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:41Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T22:52:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:43Z",
+            "conclusion": "success",
+            "name": "Run cargo fmt --all -- --check",
+            "number": 4,
+            "startedAt": "2026-10-10T22:52:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:43Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 8,
+            "startedAt": "2026-10-10T22:52:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:43Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "startedAt": "2026-10-10T22:52:43Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333182937"
+      },
+      {
+        "completedAt": "2026-10-10T22:52:54Z",
+        "conclusion": "success",
+        "databaseId": 114333182949,
+        "name": "cargo check",
+        "startedAt": "2026-10-10T22:52:38Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:52:41Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:52:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:42Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:52:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:42Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T22:52:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:46Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T22:52:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:51Z",
+            "conclusion": "success",
+            "name": "Run cargo check --workspace --all-targets --all-features",
+            "number": 5,
+            "startedAt": "2026-10-10T22:52:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:51Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 9,
+            "startedAt": "2026-10-10T22:52:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "startedAt": "2026-10-10T22:52:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "startedAt": "2026-10-10T22:52:52Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333182949"
+      },
+      {
+        "completedAt": "2026-10-10T22:53:13Z",
+        "conclusion": "success",
+        "databaseId": 114333183047,
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "startedAt": "2026-10-10T22:52:38Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:52:40Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:52:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:43Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:52:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:43Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T22:52:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:43Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 4,
+            "startedAt": "2026-10-10T22:52:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:00Z",
+            "conclusion": "success",
+            "name": "Install compiler and sanitizer runtimes",
+            "number": 5,
+            "startedAt": "2026-10-10T22:52:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:10Z",
+            "conclusion": "success",
+            "name": "Execute actual source failure boundaries (not RF or crypto vectors)",
+            "number": 6,
+            "startedAt": "2026-10-10T22:53:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:11Z",
+            "conclusion": "success",
+            "name": "Compile live VFS probe (not executed without a qualified VM)",
+            "number": 7,
+            "startedAt": "2026-10-10T22:53:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:11Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 13,
+            "startedAt": "2026-10-10T22:53:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:11Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 14,
+            "startedAt": "2026-10-10T22:53:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:11Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "startedAt": "2026-10-10T22:53:11Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333183047"
+      },
+      {
+        "completedAt": "2026-10-10T22:53:10Z",
+        "conclusion": "success",
+        "databaseId": 114333233971,
+        "name": "clippy",
+        "startedAt": "2026-10-10T22:52:56Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:52:59Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:52:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:59Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:52:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:01Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T22:52:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:03Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T22:53:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:08Z",
+            "conclusion": "success",
+            "name": "Run cargo clippy --workspace --all-targets --all-features -- -W clippy::all",
+            "number": 5,
+            "startedAt": "2026-10-10T22:53:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:08Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 9,
+            "startedAt": "2026-10-10T22:53:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:08Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "startedAt": "2026-10-10T22:53:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:08Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "startedAt": "2026-10-10T22:53:08Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333233971"
+      },
+      {
+        "completedAt": "2026-10-10T22:54:06Z",
+        "conclusion": "success",
+        "databaseId": 114333233974,
+        "name": "cargo test",
+        "startedAt": "2026-10-10T22:52:56Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:52:58Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:52:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:59Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:52:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:52:59Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T22:52:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:02Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T22:52:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:07Z",
+            "conclusion": "success",
+            "name": "Install private D-Bus regression dependency",
+            "number": 5,
+            "startedAt": "2026-10-10T22:53:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:04Z",
+            "conclusion": "success",
+            "name": "Run cargo test --workspace --all-features",
+            "number": 6,
+            "startedAt": "2026-10-10T22:53:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:04Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 11,
+            "startedAt": "2026-10-10T22:54:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:04Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 12,
+            "startedAt": "2026-10-10T22:54:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:04Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 13,
+            "startedAt": "2026-10-10T22:54:04Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333233974"
+      },
+      {
+        "completedAt": "2026-10-10T22:53:07Z",
+        "conclusion": "success",
+        "databaseId": 114333233997,
+        "name": "C header generation",
+        "startedAt": "2026-10-10T22:52:56Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:52:58Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:52:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:00Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:52:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:00Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T22:53:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:03Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T22:53:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:03Z",
+            "conclusion": "success",
+            "name": "Run cargo install cbindgen --version 0.29.4 --locked",
+            "number": 5,
+            "startedAt": "2026-10-10T22:53:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:04Z",
+            "conclusion": "success",
+            "name": "Generate sparklink.h",
+            "number": 6,
+            "startedAt": "2026-10-10T22:53:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:04Z",
+            "conclusion": "success",
+            "name": "Verify header unchanged",
+            "number": 7,
+            "startedAt": "2026-10-10T22:53:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:04Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 13,
+            "startedAt": "2026-10-10T22:53:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:04Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 14,
+            "startedAt": "2026-10-10T22:53:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:53:04Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "startedAt": "2026-10-10T22:53:04Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333233997"
+      },
+      {
+        "completedAt": "2026-10-10T22:54:37Z",
+        "conclusion": "success",
+        "databaseId": 114333440105,
+        "name": "release build",
+        "startedAt": "2026-10-10T22:54:08Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T22:54:11Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T22:54:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:12Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-10T22:54:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:12Z",
+            "conclusion": "success",
+            "name": "Run dtolnay/rust-toolchain@stable",
+            "number": 3,
+            "startedAt": "2026-10-10T22:54:12Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:15Z",
+            "conclusion": "success",
+            "name": "Run Swatinem/rust-cache@v2",
+            "number": 4,
+            "startedAt": "2026-10-10T22:54:12Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:32Z",
+            "conclusion": "success",
+            "name": "Run cargo build --release --workspace",
+            "number": 5,
+            "startedAt": "2026-10-10T22:54:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:34Z",
+            "conclusion": "success",
+            "name": "Upload binaries",
+            "number": 6,
+            "startedAt": "2026-10-10T22:54:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:34Z",
+            "conclusion": "success",
+            "name": "Post Run Swatinem/rust-cache@v2",
+            "number": 11,
+            "startedAt": "2026-10-10T22:54:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:35Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 12,
+            "startedAt": "2026-10-10T22:54:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T22:54:35Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 13,
+            "startedAt": "2026-10-10T22:54:35Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937/job/114333440105"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38093030937",
+    "actual_test_counts": {
+      "rust": 170,
+      "python": 34,
+      "tools": 165
+    },
+    "logs_verified": true,
+    "kernel_event_fixture_tests": 15,
+    "live_probe_execution_in_ci": false
+  },
+  "live_event_copy": {
+    "status": "LIVE_EVENT_COPY_PASS",
+    "application_identity": {
+      "uids": [
+        1000,
+        1000,
+        1000,
+        1000
+      ],
+      "cap_eff": "0000000000000000",
+      "cap_prm": "0000000000000000",
+      "cap_amb": "0000000000000000",
+      "groups": [
+        1000,
+        1002
+      ]
+    },
+    "probe": {
+      "path": "/bin/event-copy-probe",
+      "sha256": "8bf5fe06fadd0196c30ca6ea88c56f06d809383f5dd7949975f466b04d5ca97c"
+    },
+    "sources": [
+      {
+        "path": "/usr/share/sparklink/tools/ws73_event_copy_probe.py",
+        "sha256": "4a49d83c64d01f4429f9d72a2d713929dc6ab54b4df6f7e25c55273acde9289c"
+      }
+    ],
+    "cases": [
+      {
+        "case": "zero",
+        "result": 0,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "short",
+        "result": -1,
+        "errno": 22,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "bad_address",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_first",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 22,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_later",
+        "result": 44,
+        "errno": 0,
+        "partial_prefix": 22,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 2,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 1
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "07240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "capacity_tail",
+        "result": 44,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 2,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 1
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "07240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "complete_batch",
+        "result": 132,
+        "errno": 0,
+        "partial_prefix": 0,
+        "before": {
+          "pending": 3,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 0
+        },
+        "after": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "final": {
+          "pending": 0,
+          "enqueued": 3,
+          "dropped": 0,
+          "delivered": 3
+        },
+        "reference": "072401100000000000000000000000000000000000000000000000000000000000000000000000000000000007240210000000000000000000000000000000000000000000000000000000000000000000000000000000000724021000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": ""
+      }
+    ],
+    "daemon_before": {
+      "pid": 649,
+      "start_ticks": 1567
+    },
+    "daemon_after": {
+      "pid": 649,
+      "start_ticks": 1567
+    },
+    "probe_exit": 0,
+    "cleanup": "STOP_CONFIRMED"
+  },
+  "live_diagnostic": {
+    "format_version": 3,
+    "status": "DIAGNOSTIC_RESULT_LIVE_PASS",
+    "uid": 0,
+    "euid": 0,
+    "probe": {
+      "path": "/bin/diagnostic-result-probe",
+      "sha256": "0ceaba90268ae6f7de21e7461fa37133721fa75e109c34b3430fdc8ee9d26d0a"
+    },
+    "sources": [
+      {
+        "path": "/usr/share/sparklink/tools/ws73_diagnostic_probe.py",
+        "sha256": "233a860140e0e709f6cbce9ba79ba06744c6c07d98168f3783f1894cf68e3b89"
+      }
+    ],
+    "records": [
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 1,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861342259937,
+        "end_wall_ns": 1791672861352407838,
+        "data": "0001093254f9"
+      },
+      {
+        "admission": "submit_read_only_output",
+        "result": -1,
+        "errno": 14,
+        "generation": 1,
+        "request_id": 1,
+        "seq": 1,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861342259937,
+        "end_wall_ns": 1791672861352407838,
+        "partial_prefix": 0,
+        "user_address_mod8": 0,
+        "input": "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+        "fault_output": "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+        "retry_outputs": [
+          "01000000000000000100000000000000010000000000000088130000060400000100000001000000",
+          "01000000000000000100000000000000010000000000000088130000060400000100000001000000",
+          "01000000000000000100000000000000010000000000000088130000060400000100000001000000"
+        ],
+        "submitted_before": 0,
+        "submitted_after": 1,
+        "resolved_before": 0,
+        "resolved_after": 1,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 2,
+        "opcode": 1027,
+        "start_wall_ns": 1791672861352494241,
+        "end_wall_ns": 1791672861362631151,
+        "data": "23155000120000010000"
+      },
+      {
+        "admission": "submit_partial_output",
+        "result": -1,
+        "errno": 14,
+        "generation": 1,
+        "request_id": 2,
+        "seq": 2,
+        "opcode": 1027,
+        "start_wall_ns": 1791672861352494241,
+        "end_wall_ns": 1791672861362631151,
+        "partial_prefix": 36,
+        "user_address_mod8": 4,
+        "input": "01000000000000000100000000000000020000000000000088130000030400000000000001000000",
+        "fault_output": "01000000000000000100000000000000020000000000000088130000030400000200000001000000",
+        "retry_outputs": [
+          "01000000000000000100000000000000020000000000000088130000030400000200000001000000",
+          "01000000000000000100000000000000020000000000000088130000030400000200000001000000",
+          "01000000000000000100000000000000020000000000000088130000030400000200000001000000"
+        ],
+        "submitted_before": 1,
+        "submitted_after": 2,
+        "resolved_before": 1,
+        "resolved_after": 2,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 3,
+        "opcode": 1028,
+        "start_wall_ns": 1791672861362713126,
+        "end_wall_ns": 1791672861372787678,
+        "data": "016c00a100"
+      },
+      {
+        "case": "metadata",
+        "generation": 1,
+        "seq": 4,
+        "opcode": 1026,
+        "start_wall_ns": 1791672861372798909,
+        "end_wall_ns": 1791672861382877409,
+        "data": "fe0005000000"
+      },
+      {
+        "identity": "inherited_fd_child",
+        "uid": 1000,
+        "euid": 1000,
+        "cap_eff": 0,
+        "cap_prm": 0
+      },
+      {
+        "case": "inherited_fd_cap0",
+        "result": -1,
+        "errno": 1
+      },
+      {
+        "case": "read_only_output",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 0,
+        "reference": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "partial_output",
+        "result": -1,
+        "errno": 14,
+        "partial_prefix": 56,
+        "reference": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retry": "010000000000000001000000000000000100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "case": "version",
+        "result": -1,
+        "errno": 95
+      },
+      {
+        "case": "flags",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "reserved",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "zero_seq",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "zero_generation",
+        "result": -1,
+        "errno": 22
+      },
+      {
+        "case": "wrong_generation",
+        "result": -1,
+        "errno": 19
+      },
+      {
+        "case": "missing_sequence",
+        "result": -1,
+        "errno": 2
+      },
+      {
+        "case": "foreign_author_with_lease",
+        "result": -1,
+        "errno": 1
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 1,
+        "seq": 5,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861383545017,
+        "end_wall_ns": 1791672861393885531,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000010000000000000088130000060400000500000001000000",
+        "result_bytes": "010000000000000001000000000000000500000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 4,
+        "submitted_after": 5,
+        "resolved_before": 4,
+        "resolved_after": 5,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 2,
+        "seq": 6,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861393897844,
+        "end_wall_ns": 1791672861403983167,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000020000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000020000000000000088130000060400000600000001000000",
+        "result_bytes": "010000000000000001000000000000000600000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 5,
+        "submitted_after": 6,
+        "resolved_before": 5,
+        "resolved_after": 6,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 3,
+        "seq": 7,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861404007503,
+        "end_wall_ns": 1791672861414112142,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000030000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000030000000000000088130000060400000700000001000000",
+        "result_bytes": "010000000000000001000000000000000700000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 6,
+        "submitted_after": 7,
+        "resolved_before": 6,
+        "resolved_after": 7,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 4,
+        "seq": 8,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861414144683,
+        "end_wall_ns": 1791672861424230587,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000040000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000040000000000000088130000060400000800000001000000",
+        "result_bytes": "010000000000000001000000000000000800000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 7,
+        "submitted_after": 8,
+        "resolved_before": 7,
+        "resolved_after": 8,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 5,
+        "seq": 9,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861424259241,
+        "end_wall_ns": 1791672861434334545,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000050000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000050000000000000088130000060400000900000001000000",
+        "result_bytes": "010000000000000001000000000000000900000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 8,
+        "submitted_after": 9,
+        "resolved_before": 8,
+        "resolved_after": 9,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 6,
+        "seq": 10,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861434357509,
+        "end_wall_ns": 1791672861444430749,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000060000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000060000000000000088130000060400000a00000001000000",
+        "result_bytes": "010000000000000001000000000000000a00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 9,
+        "submitted_after": 10,
+        "resolved_before": 9,
+        "resolved_after": 10,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 7,
+        "seq": 11,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861444452710,
+        "end_wall_ns": 1791672861454532833,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000070000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000070000000000000088130000060400000b00000001000000",
+        "result_bytes": "010000000000000001000000000000000b00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 10,
+        "submitted_after": 11,
+        "resolved_before": 10,
+        "resolved_after": 11,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 8,
+        "seq": 12,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861454558251,
+        "end_wall_ns": 1791672861464634006,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000080000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000080000000000000088130000060400000c00000001000000",
+        "result_bytes": "010000000000000001000000000000000c00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 11,
+        "submitted_after": 12,
+        "resolved_before": 11,
+        "resolved_after": 12,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 9,
+        "seq": 13,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861464702565,
+        "end_wall_ns": 1791672861474778570,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000090000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000090000000000000088130000060400000d00000001000000",
+        "result_bytes": "010000000000000001000000000000000d00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 12,
+        "submitted_after": 13,
+        "resolved_before": 12,
+        "resolved_after": 13,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 10,
+        "seq": 14,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861474802255,
+        "end_wall_ns": 1791672861484877980,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000a0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000a0000000000000088130000060400000e00000001000000",
+        "result_bytes": "010000000000000001000000000000000e00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 13,
+        "submitted_after": 14,
+        "resolved_before": 13,
+        "resolved_after": 14,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 11,
+        "seq": 15,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861484900082,
+        "end_wall_ns": 1791672861494976237,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000b0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000b0000000000000088130000060400000f00000001000000",
+        "result_bytes": "010000000000000001000000000000000f00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 14,
+        "submitted_after": 15,
+        "resolved_before": 14,
+        "resolved_after": 15,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 12,
+        "seq": 16,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861494998549,
+        "end_wall_ns": 1791672861505073502,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000c0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000c0000000000000088130000060400001000000001000000",
+        "result_bytes": "010000000000000001000000000000001000000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 15,
+        "submitted_after": 16,
+        "resolved_before": 15,
+        "resolved_after": 16,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 13,
+        "seq": 17,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861505095243,
+        "end_wall_ns": 1791672861515176869,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000d0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000d0000000000000088130000060400001100000001000000",
+        "result_bytes": "010000000000000001000000000000001100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 16,
+        "submitted_after": 17,
+        "resolved_before": 16,
+        "resolved_after": 17,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 14,
+        "seq": 18,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861515198971,
+        "end_wall_ns": 1791672861525280887,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000e0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000e0000000000000088130000060400001200000001000000",
+        "result_bytes": "010000000000000001000000000000001200000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 17,
+        "submitted_after": 18,
+        "resolved_before": 17,
+        "resolved_after": 18,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 15,
+        "seq": 19,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861525312277,
+        "end_wall_ns": 1791672861535398191,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000000f0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000000f0000000000000088130000060400001300000001000000",
+        "result_bytes": "010000000000000001000000000000001300000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 18,
+        "submitted_after": 19,
+        "resolved_before": 18,
+        "resolved_after": 19,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 16,
+        "seq": 20,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861535421014,
+        "end_wall_ns": 1791672861545702195,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000100000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000100000000000000088130000060400001400000001000000",
+        "result_bytes": "010000000000000001000000000000001400000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 19,
+        "submitted_after": 20,
+        "resolved_before": 19,
+        "resolved_after": 20,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 17,
+        "seq": 21,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861545728605,
+        "end_wall_ns": 1791672861555804090,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000110000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000110000000000000088130000060400001500000001000000",
+        "result_bytes": "010000000000000001000000000000001500000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 20,
+        "submitted_after": 21,
+        "resolved_before": 20,
+        "resolved_after": 21,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 18,
+        "seq": 22,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861555826782,
+        "end_wall_ns": 1791672861565902237,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000120000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000120000000000000088130000060400001600000001000000",
+        "result_bytes": "010000000000000001000000000000001600000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 21,
+        "submitted_after": 22,
+        "resolved_before": 21,
+        "resolved_after": 22,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 19,
+        "seq": 23,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861565924479,
+        "end_wall_ns": 1791672861575999542,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000130000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000130000000000000088130000060400001700000001000000",
+        "result_bytes": "010000000000000001000000000000001700000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 22,
+        "submitted_after": 23,
+        "resolved_before": 22,
+        "resolved_after": 23,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 20,
+        "seq": 24,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861576021784,
+        "end_wall_ns": 1791672861586096757,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000140000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000140000000000000088130000060400001800000001000000",
+        "result_bytes": "010000000000000001000000000000001800000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 23,
+        "submitted_after": 24,
+        "resolved_before": 23,
+        "resolved_after": 24,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 21,
+        "seq": 25,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861586119059,
+        "end_wall_ns": 1791672861596193732,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000150000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000150000000000000088130000060400001900000001000000",
+        "result_bytes": "010000000000000001000000000000001900000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 24,
+        "submitted_after": 25,
+        "resolved_before": 24,
+        "resolved_after": 25,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 22,
+        "seq": 26,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861596215984,
+        "end_wall_ns": 1791672861606289445,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000160000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000160000000000000088130000060400001a00000001000000",
+        "result_bytes": "010000000000000001000000000000001a00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 25,
+        "submitted_after": 26,
+        "resolved_before": 25,
+        "resolved_after": 26,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 23,
+        "seq": 27,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861606311426,
+        "end_wall_ns": 1791672861616386670,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000170000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000170000000000000088130000060400001b00000001000000",
+        "result_bytes": "010000000000000001000000000000001b00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 26,
+        "submitted_after": 27,
+        "resolved_before": 26,
+        "resolved_after": 27,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 24,
+        "seq": 28,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861616408852,
+        "end_wall_ns": 1791672861626483374,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000180000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000180000000000000088130000060400001c00000001000000",
+        "result_bytes": "010000000000000001000000000000001c00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 27,
+        "submitted_after": 28,
+        "resolved_before": 27,
+        "resolved_after": 28,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 25,
+        "seq": 29,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861626506347,
+        "end_wall_ns": 1791672861636585909,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000190000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000190000000000000088130000060400001d00000001000000",
+        "result_bytes": "010000000000000001000000000000001d00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 28,
+        "submitted_after": 29,
+        "resolved_before": 28,
+        "resolved_after": 29,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 26,
+        "seq": 30,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861636611257,
+        "end_wall_ns": 1791672861646709735,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001a0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001a0000000000000088130000060400001e00000001000000",
+        "result_bytes": "010000000000000001000000000000001e00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 29,
+        "submitted_after": 30,
+        "resolved_before": 29,
+        "resolved_after": 30,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 27,
+        "seq": 31,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861646736315,
+        "end_wall_ns": 1791672861656909874,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001b0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001b0000000000000088130000060400001f00000001000000",
+        "result_bytes": "010000000000000001000000000000001f00000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 30,
+        "submitted_after": 31,
+        "resolved_before": 30,
+        "resolved_after": 31,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 28,
+        "seq": 32,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861656932387,
+        "end_wall_ns": 1791672861667044800,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001c0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001c0000000000000088130000060400002000000001000000",
+        "result_bytes": "010000000000000001000000000000002000000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 31,
+        "submitted_after": 32,
+        "resolved_before": 31,
+        "resolved_after": 32,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 29,
+        "seq": 33,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861667066561,
+        "end_wall_ns": 1791672861677143909,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001d0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001d0000000000000088130000060400002100000001000000",
+        "result_bytes": "010000000000000001000000000000002100000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 32,
+        "submitted_after": 33,
+        "resolved_before": 32,
+        "resolved_after": 33,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 30,
+        "seq": 34,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861677167734,
+        "end_wall_ns": 1791672861687243108,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001e0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001e0000000000000088130000060400002200000001000000",
+        "result_bytes": "010000000000000001000000000000002200000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 33,
+        "submitted_after": 34,
+        "resolved_before": 33,
+        "resolved_after": 34,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 31,
+        "seq": 35,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861687265180,
+        "end_wall_ns": 1791672861697343439,
+        "data": "0001093254f9",
+        "input": "010000000000000001000000000000001f0000000000000088130000060400000000000001000000",
+        "output": "010000000000000001000000000000001f0000000000000088130000060400002300000001000000",
+        "result_bytes": "010000000000000001000000000000002300000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 34,
+        "submitted_after": 35,
+        "resolved_before": 34,
+        "resolved_after": 35,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 32,
+        "seq": 36,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861697366192,
+        "end_wall_ns": 1791672861707441927,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000200000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000200000000000000088130000060400002400000001000000",
+        "result_bytes": "010000000000000001000000000000002400000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 35,
+        "submitted_after": 36,
+        "resolved_before": 35,
+        "resolved_after": 36,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "fill",
+        "generation": 1,
+        "request_id": 33,
+        "seq": 37,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861707464620,
+        "end_wall_ns": 1791672861717540705,
+        "data": "0001093254f9",
+        "input": "01000000000000000100000000000000210000000000000088130000060400000000000001000000",
+        "output": "01000000000000000100000000000000210000000000000088130000060400002500000001000000",
+        "result_bytes": "010000000000000001000000000000002500000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 36,
+        "submitted_after": 37,
+        "resolved_before": 36,
+        "resolved_after": 37,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "eviction": "old_id_and_result_rejected",
+        "generation": 1,
+        "request_id": 1,
+        "seq": 5,
+        "opcode": 1030,
+        "start_wall_ns": 1791672861717563388,
+        "end_wall_ns": 1791672861818501176,
+        "quiet_observation_ms": 100,
+        "retry_results": [
+          -1,
+          -1,
+          -1
+        ],
+        "retry_errnos": [
+          116,
+          116,
+          116
+        ],
+        "old_input": "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+        "retry_outputs": [
+          "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+          "01000000000000000100000000000000010000000000000088130000060400000000000001000000",
+          "01000000000000000100000000000000010000000000000088130000060400000000000001000000"
+        ],
+        "result_query_return": -1,
+        "result_query_errno": 2,
+        "result_query_input": "0100000000000000010000000000000005000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "result_query_output": "0100000000000000010000000000000005000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "retained_input": "01000000000000000100000000000000020000000000000088130000060400000000000001000000",
+        "retained_output": "01000000000000000100000000000000020000000000000088130000060400000600000001000000",
+        "retained_result": "010000000000000001000000000000000600000002000000000000000604000006000000000000000001093254f900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "submitted_before": 37,
+        "submitted_after": 37,
+        "resolved_before": 37,
+        "resolved_after": 37,
+        "pending_before": 0,
+        "pending_after": 0,
+        "timeouts_before": 0,
+        "timeouts_after": 0
+      },
+      {
+        "phase": "BEFORE_DAEMON_PASS"
+      },
+      {
+        "case": "retired_fd",
+        "result": -1,
+        "errno": 19
+      },
+      {
+        "phase": "DIAGNOSTIC_RESULT_LIVE_PASS"
+      }
+    ],
+    "cli_queries": [
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "mac"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0406 admission_seq=38 status=0x00 data=0001093254f9\n",
+        "stderr": "",
+        "start_wall_ns": 1791672861824889132,
+        "end_wall_ns": 1791672861841952964
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "features"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0403 admission_seq=39 status=0x00 data=23155000120000010000\n",
+        "stderr": "",
+        "start_wall_ns": 1791672861844928982,
+        "end_wall_ns": 1791672861858958947
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "version"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0404 admission_seq=40 status=0x00 data=016c00a100\n",
+        "stderr": "",
+        "start_wall_ns": 1791672861862344606,
+        "end_wall_ns": 1791672861877431944
+      },
+      {
+        "args": [
+          "/bin/slkconfig",
+          "--adapter",
+          "0",
+          "--generation",
+          "1",
+          "query",
+          "buffers"
+        ],
+        "exit": 0,
+        "stdout": "NativeDiagnosticQuery: index=0 generation=1 opcode=0x0402 admission_seq=41 status=0x00 data=fe0005000000\n",
+        "stderr": "",
+        "start_wall_ns": 1791672861881442701,
+        "end_wall_ns": 1791672861894991430
+      }
+    ],
+    "probe_exit": 0
+  },
+  "diagnostic_wire_command_reply_pairs": 41,
+  "diagnostic_eviction_live_acceptance": true,
+  "idempotent_submit_copyout_live_acceptance": true,
+  "diagnostic_result_full_acceptance": false,
+  "diagnostic_cancel_on_wire_live_acceptance": false,
+  "legacy_dli_poll_fault_live_acceptance": false,
+  "legacy_backend_fallback_live_acceptance": false,
+  "legacy_dli_poll_migration_complete": false,
+  "full_event_acceptance": false,
+  "remaining": [
+    "Real legacy DLI_POLL_EVENT bad-address/read-only/partial-copy retry and qualified backend fallback fault gates",
+    "Migrate legacy EventReceiver/profile0 C/Python/slkd, monitors and raw selftests then delete shared ring/fallback/unpublished UAPI",
+    "State mutex spans legacy usercopy; real concurrency/liveness/lockdep/removal wakeup and complete event ownership remain open",
+    "Actual queued/active cancellation, late replies, absolute deadlines and concurrent ownership/CAP/removal/32-bit Diagnostic gates",
+    "Natural startup timeout/disappearance/re-enumeration RCA, autonomous recovery, historical physical xHCI warning; NorthStar7/8",
+    "Single/multiple/four-device recovery and two-pair RF matrix; VM-only does not qualify native-host comparison",
+    "Per-channel socket, standard userspace SSAP, per-connection security/Bond/Agent/Profile, other Native/Proxy/sandbox and complete S0-S6"
+  ],
+  "artifact_sha256": {
+    "capture": "0b2edd7fc7d227100d710ec600de0fb1f820c91b0c2363cb6dc437a295895c27",
+    "control": "f8f7521c5dca0ccb469e4ac4a7d4180f19195bfb56698ee3ca58993f21fc798a",
+    "run_manifest": "ad84f0d703eb9efe1b0c96afaba3665964d5cf9ba680a5e466bf7af71b8f6472",
+    "prepared_manifest": "2b10d256738f30ae82fd339f528da3df0af13d9e6bad212b777996dfdda1399f",
+    "build_record": "308bd239b290021c95f10355359b5bccd605b41aa544537c40e3d497d9eda81c",
+    "build_log": "b8741c510d5fab0bbb522716a93fe37e2f3158b22b8f142209ef92ecccd296e7",
+    "service_manifest": "ee57ada17e68b1a1b33ad2221c4cdcaa72dcbc032a4cec4871854f5354ee0dcd",
+    "root_smoke": "99634a225e8e925d9d9bb340dfa2967649eb3b67da902cf9a93c719eab8fb729",
+    "development": "d157a3d00241c5a70916cbaa4c7dc7a4811c72640c0af9681e48139724ef954a",
+    "independent_proofs": "af71ace45709372fa323284952f716af1c40ac98f801334705a9e5cd05a539ad",
+    "kernel_log": "7898fd3ef09c75823b972cb74b79762cb4e3b83e04b6131f5c893d92b79046f7",
+    "qmp": "70c22cd2bd79ffb3270aae3506c1c73aafb1e1076d4391fd4105f9edab21818b",
+    "qemu_stderr": "5d2ce26f36bb2852cac0c6699fa7469756785d0da688ccb95441090e25cdc80b",
+    "host_diagnostics": "bd7190237f1c1d67ed46ea7ac3f67406b02d86d47f1932d7ca7927f0b92e4714",
+    "ci_jobs": "b2fd6c3ea49e1873307663d090c768f5124a2915b9e23c4e00d47a1c807dc663",
+    "event_transcript": "caa329d09811634a9d66456ced921c55cab769269acc0572140ba25560cd333f",
+    "diagnostic_transcript": "e7815e5ac4cd80a7beee57e3d332f7038aa90fef50f21db1bab3e95e1bd72f9f",
+    "ci_rust": "3b1f1b893ba986274c16bfd5fa5e0a6e91ac35eacb811d5fa46cc71aeb2ebf35",
+    "ci_kernel": "8f660cffaaacc1e7f463a2d25b55191dddac398d47fd7ba613f90f760a709e87",
+    "ci_python": "3ea26f945b9cacbdcd6a470f47774e1092aa58848f317f9a8aa55c98dd5b402a",
+    "ci_tools": "93b9ffd3fe787272e9c10bcd565a19e92a0727293226a74ef51b4a00834e2ca8"
+  }
+}

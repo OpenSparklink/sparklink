@@ -1,0 +1,15 @@
+[package]
+name = "ws73-channel-fd-probe"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# Disposable VM-only client; deliberately outside the production workspace.
+[workspace]
+
+[dependencies]
+anyhow = "1"
+nix = { version = "0.30", features = ["socket", "uio", "fs"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt", "macros", "time"] }
+zbus = { version = "5", default-features = false, features = ["tokio"] }

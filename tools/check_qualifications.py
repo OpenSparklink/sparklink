@@ -142,6 +142,14 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
             errors.append(f'{ident}: missing/extra/duplicate gate')
         if any(gate['result'] not in RESULTS for gate in gates.values()):
             errors.append(f'{ident}: invalid gate result')
+        if binding and (report := documents.get(binding['material'])) is not None and 'gate_rows_pointer' in binding:
+            for row in select(report, binding['gate_rows_pointer']):
+                status = row.get('status')
+                if isinstance(status, str) and status in RESULTS and row['name'] in gates:
+                    # Legacy records may conservatively lower an offline PASS
+                    # when its broader integration remains unproved.
+                    if status != 'PASS' and gates[row['name']]['result'] == 'PASS':
+                        errors.append(f'{ident}/{row["name"]}: gate/report verdict mismatch')
         if record['result'] == 'PASS':
             if any(gate['result'] != 'PASS' for gate in gates.values()):
                 errors.append(f'{ident}: PASS hides a required non-PASS gate')

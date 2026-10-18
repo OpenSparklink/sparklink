@@ -107,6 +107,23 @@ class QualificationTests(unittest.TestCase):
         self.update_report()
         self.assertIn('one/gate: gate/report verdict mismatch', self.run_check()['errors'])
 
+    def test_removing_optional_bindings_cannot_launder_a_failed_gate(self):
+        record = self.typed_failed_matrix()
+        for gate in record['gates']:
+            for key in ['result_binding_version', 'report_pointer', 'reported_status']:
+                del gate[key]
+        record['gates'][1]['result'] = 'PASS'
+        self.assertIn('one/failed: gate/report verdict mismatch', self.run_check()['errors'])
+
+    def test_legacy_conservative_downgrade_is_retained(self):
+        record = self.typed_failed_matrix()
+        gate = record['gates'][0]
+        for key in ['result_binding_version', 'report_pointer', 'reported_status']:
+            del gate[key]
+        gate['result'] = 'UNPROVED'
+        self.assertEqual(self.run_check()['errors'], [])
+        self.assertNotEqual(self.run_check()['overall'], 'PASS')
+
     def test_gate_result_binding_requires_known_version_and_report_pointer(self):
         record = self.typed_failed_matrix()
         gate = record['gates'][0]

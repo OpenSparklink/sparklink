@@ -20,7 +20,9 @@ PASS/FAIL/UNPROVED/MISSING/SKIP 分开。某个必需项非 PASS 则整组不能
 unsupported、timeout、未展开/缺性质不得靠退出0、计数或其他局部 PASS 升级。
 `INCOMPLETE` 的完整目标不会因保留21组或算术100检查通过变为完成。
 
-枚举状态的门禁采用 `result_binding_version: 1`：报告行的 `status` 必须是上述
+完整报告矩阵中已知非PASS结果按名称约束门禁，不能通过删除单行pointer或版本字段
+将其升级为PASS。旧记录可保守降级局部离线PASS，不能因此宣布更广集成通过。
+新门禁采用 `result_binding_version: 1`：报告行的 `status` 必须是上述
 五种结果之一，且与该门禁的 `result` 完全一致，未知版本拒绝。整体已经 FAIL
 也不能放过局部标签漂移；例如将失败尺寸单独改成 PASS，或把报告 PASS 改为
 UNPROVED，均须拒绝绑定。它不改变历史 opaque 状态记录的含义，也不将 metadata

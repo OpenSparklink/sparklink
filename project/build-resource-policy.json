@@ -2,7 +2,7 @@
   "schema_version": 1,
   "solo_jobs": 12,
   "with_real_device_vm_jobs": 8,
-  "coordination": "One top-level main-thread kernel/Cargo build at a time under workspace .dev/main-build.lock;VM regression may run alongside with explicit VM mode.",
+  "coordination": "Across both threads, one coordinated heavy build under shared workspace .dev/main-build.lock; total at most12 jobs,or8 with any real VM. VM launch and budget selection handshake through .dev/real-device-vm.lock. Uncoordinated legacy builders require read-only inspection/coordination; never interrupt them or assume this lock covers them.",
   "kernel_development_output": ".dev/session-wake-kernel-build-v1",
   "cargo_native_development_target": ".dev/cargo-native-dev",
   "qualification": "Freeze artifacts and exact manifests outside the fixed development directories. Never edit old records,prepared roots or frozen tools to adopt new defaults.",

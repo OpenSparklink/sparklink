@@ -21,6 +21,32 @@
 Installed、transport 可用和每设备 Ready 分开观察。内核及所有真实 WS73 操作保持
 VM-only，主机不安装实验内核、驱动或服务。普通应用业务权限与环境管理/捕获权限分开。
 
+## 当前共享硬件边界
+
+本线程的 [资源配置](../../project/lab-resource-policy.json)固定允许 U
+`1-1.1.1`、`1-1.1.2` 与 E `1-2.1.1`、`1-2.1.2`；两 hub 的 `.3/.4`
+是另一线程专用。端口不是外壳编号，声明型号还需新 VM 的实际 HCC 核对。
+新 runner 不接受任选设备、旧端口回退或枚举编号。每次 QMP 附加（包括重枚举）
+重查端口、序列 hash、上游 hub、PCI 归属及占用；变化即停止，不能强制解绑。
+每端口共享 lease、独立 VM 运行锁和目录用于协调，不防御不合作的特权操作者；
+root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
+
+`prepare --board-model U|E` 要求对应 SDK110 的主固件与两份校准全部 hash 一致；
+新物理执行要求此 provenance 和新 guest 的 HCC 检查。纯 support 模拟入口不需
+物理配置。新 prepared/run 必须位于该配置的线程独立运行根；旧封存根保持原样。
+当前驱动只有一个固件目录，同一个 guest 只允许同型号；混合 E/U 及无法证明
+每设备 RAM 固件来源的 runtime-only 接管拒绝。不得修改旧 manifest 来绕过检查。
+板级 `bsle_custom.bin`／`pm_config.bin` 仍须显式提供并记录，型号匹配不证明板级资格。
+新 guest 先记录实际 `HCC_GET_CHIP_TYPE`，与显式型号和 USB 总线不符则失败。
+这不是冷 ROM 自动选择，也不是芯片认证。历史三设备 SDK111 reference 诊断
+无法满足此分配下同型号/SDK110约束，须等待明确适配；原代码及证据保留。
+
+禁止整 hub／主控制器透传、复位、切电；单口恢复若无法证明无连带影响先协调。
+现有构建 wrapper 与物理 runner 通过共享 build lock 和 VM lease 握手：合计
+最多12路，有任一真实 VM 最多8路；旧工具不持该锁时须另行核对，不能各开12路。
+设备冲突不抢占，构建不因提速被中断。新拓扑、E和混合结果分别授予准确 artifact，
+旧 PASS 和人工/受控操作不能充当新资格或自然恢复。
+
 ## 公共 C/Python 客户端的专用门禁
 
 `run --qmp-hotplug --connection-verify --connection-advertising negotiable-t --application-client-verify` 选择独立的

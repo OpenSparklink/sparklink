@@ -29,13 +29,27 @@ def configuration():
     return json.loads((HERE.parent / 'project/build-resource-policy.json').read_text())
 
 
+def real_vm_active():
+    path = workspace() / '.dev/real-device-vm.lock'
+    if not path.exists():
+        return False
+    with path.open('a+') as stream:
+        try:
+            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return True
+    return False
+
+
 def environment(environ=None):
     env = dict(os.environ if environ is None else environ)
     policy = configuration()
     mode = env.get('SPARKLINK_BUILD_WITH_VM', '0')
     if mode not in ('0', '1'):
         raise ValueError('SPARKLINK_BUILD_WITH_VM must be 0 or 1')
-    limit = policy['with_real_device_vm_jobs' if mode == '1' else 'solo_jobs']
+    detected_vm = real_vm_active()
+    with_vm = mode == '1' or detected_vm
+    limit = policy['with_real_device_vm_jobs' if with_vm else 'solo_jobs']
     cpus = len(os.sched_getaffinity(0))
     jobs = int(env.get('SPARKLINK_BUILD_JOBS', min(limit, cpus)))
     if not 1 <= jobs <= min(limit, cpus):
@@ -53,7 +67,7 @@ def environment(environ=None):
         env.pop(key)
     memory = next((line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines()
                    if line.startswith('MemAvailable:')), None)
-    return env, dict(jobs=jobs, with_real_device_vm=mode == '1', logical_cpus=os.cpu_count(),
+    return env, dict(jobs=jobs, with_real_device_vm=with_vm, detected_shared_vm_lease=detected_vm, logical_cpus=os.cpu_count(),
                      affinity_cpus=cpus, mem_available_kib=int(memory) if memory else None,
                      policy_sha256=hashlib.sha256((HERE.parent / 'project/build-resource-policy.json').read_bytes()).hexdigest(),
                      inherited_top_level_jobserver_cleared=inherited,
@@ -73,6 +87,23 @@ def build_lock():
         # copy must not unlock a build still running after supervisor death.
         # Last close releases flock; explicit LOCK_UN would release all copies.
         yield stream.fileno()
+
+
+@contextmanager
+def real_device_vm():
+    """Budget handshake, not a USB lease. Multiple device-disjoint VMs may run.
+
+    Refuse launch during an existing coordinated build; never interrupt it.
+    Build budget is sampled under the same lock. Child QEMU inherits the shared
+    marker so supervisor death cannot prematurely restore the 12-job budget.
+    Uncoordinated tools must be checked/arranged separately, not presumed safe.
+    """
+    path = workspace() / '.dev/real-device-vm.lock'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('a+') as marker:
+        with build_lock():
+            fcntl.flock(marker, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        yield marker.fileno()
 
 
 def command_with_jobs(command, jobs):
@@ -109,6 +140,11 @@ def main():
         raise ValueError('refuse to overwrite build record')
     try:
         with build_lock() as build_fd:
+            # A VM may have started after argument parsing; recompute inside
+            # the launch handshake, before any compiler or shared-target use.
+            env, budget = environment(supplied)
+            command = command_with_jobs(args.command[1:] if args.command[:1] == ['--'] else args.command, budget['jobs'])
+            record.update(command=command,budget=budget)
             if args.record:
                 args.record.write_text(json.dumps(record, indent=2) + '\n')
             print('Build budget: ' + json.dumps(budget), flush=True)

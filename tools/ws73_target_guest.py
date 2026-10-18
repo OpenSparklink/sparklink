@@ -74,6 +74,12 @@ def ready(slot):
                       'bus':int((root/'busnum').read_text()),'device':int((root/'devnum').read_text()),
                       'address':address[1],'view':result.stdout,'native_runtime':state,
                       'controller_information':(p/'controller_information').read_text().strip()}
+                models=[t.split('=',1)[1] for t in Path('/proc/cmdline').read_text().split() if t.startswith('ws73.expected_models=')]
+                if models:
+                    if len(models)!=1 or slot>=len(models[0].split(',')):
+                        raise ValueError('one expected board model per physical guest slot required')
+                    from ws73_lab_resources import check_hcc
+                    data['hcc_chip']=check_hcc((p/'chip_information').read_text().strip(),models[0].split(',')[slot])
                 if data['bus']!=1:raise ValueError('capture bus and actual guest WS73 bus differ')
                 (EVIDENCE/f'ready-{slot}.json').write_text(json.dumps(data,indent=2)+'\n')
                 return

@@ -26,6 +26,7 @@ from types import SimpleNamespace
 from ws73_north_star import file_record, ordinary_identity
 from ws73_capture import check_capture_stats, read_capture
 import ws73_vm_native_root as native_vm
+import ws73_lab_resources as resources
 from build_resources import build_lock, configuration as build_configuration, workspace as build_workspace, environment as build_environment
 
 USERSPACE = Path(__file__).resolve().parents[1]
@@ -106,6 +107,9 @@ def prepare_locked(args, build_fd):
         lab = lab_module()
         images = lab.firmware(args)
         board = board_files(args.runtime_config_dir)
+        if getattr(args, 'board_model', None):
+            manifest['explicit_firmware'] = resources.explicit_firmware(args.board_model, args.firmware_dir)
+            manifest['resource_contract_version'] = 1
         inputs = [args.kernel_build/'arch/x86/boot/bzImage',args.kernel_build/'.config',
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
@@ -142,7 +146,7 @@ def prepare_locked(args, build_fd):
             if not module_profile:raise ValueError('daemon fd client requires native VM profile')
             inputs.append(args.native_channel_fd_probe)
         manifest['inputs'] = [file_record(p) for p in inputs]
-        manifest['inputs'] += [file_record(HERE / 'build_resources.py'),
+        manifest['inputs'] += [file_record(HERE / 'ws73_lab_resources.py'), file_record(resources.POLICY), file_record(HERE / 'build_resources.py'),
                                file_record(USERSPACE / 'project/build-resource-policy.json')]
         source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
         source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates','bindings/python/sparklink'],cwd=USERSPACE,text=True).splitlines()
@@ -261,6 +265,8 @@ def prepare_locked(args, build_fd):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
+        for name in ['ws73_lab_resources.py', 'build_resources.py']:
+            shutil.copy2(HERE/name, share/name)
         for name in ['ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
@@ -821,6 +827,7 @@ def _run(args):
     if active_gate:
         m['active_deadline_verifier']=file_record(HERE/'ws73_active_deadline.py')
     process=monitor=channel=None
+    physical_boundary=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
@@ -871,6 +878,14 @@ def _run(args):
             raise ValueError('active retirement requires qualified scratch-root VM')
         if diagnostic:
             raise ValueError('legacy poll-dependent live diagnostic matrix is retired; current Native queries remain available')
+        if not support:
+            if package.get('resource_contract_version') != 1:
+                raise ValueError('old prepared guest lacks explicit model/HCC resource contract; prepare a new artifact')
+            physical_boundary=resources.PhysicalBoundary(args.ports, package, args.prepared.resolve())
+            m['physical_resource_allocation']={'policy':file_record(resources.POLICY),
+                'guard':file_record(HERE/'ws73_lab_resources.py'),
+                'firmware':physical_boundary.firmware,'observations':physical_boundary.observations,
+                'model_basis':'USER_PLACEMENT_UNTIL_GUEST_HCC_CHECK', 'vm_only':True}
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
         if not support:
             native_vm.check_runtime_only(package, devices, args.ports)
@@ -894,7 +909,9 @@ def _run(args):
                      '-chardev',f'socket,id=console,path={serial},server=on,wait=off','-serial','chardev:console',
                      '-qmp',f'unix:{qmp},server=on,wait=off','-kernel',str(args.prepared.resolve()/'bzImage'),
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
-                     '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+(' ws73.support=1' if support else '')+
+                     '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+
+                     (' ws73.expected_models='+','.join(physical_boundary.models) if physical_boundary else '')+
+                     (' ws73.support=1' if support else '')+
                      (' ws73.passthrough=1' if passthrough else '')+
                      (' ws73.parallel=1' if parallel else '')+
                      (' ws73.parallel_business=1' if business else '')+
@@ -982,13 +999,16 @@ def _run(args):
                 m['native_vm'] = package['native_vm']
             m['qemu_args']=command;write_json(output/'manifest.json',m)
             with (output/'qemu-stderr.log').open('wb') as stderr,(output/'console.log').open('wb') as log:
-                process=subprocess.Popen(command,stdout=subprocess.DEVNULL,stderr=stderr)
+                process=subprocess.Popen(command,stdout=subprocess.DEVNULL,stderr=stderr,
+                                         pass_fds=getattr(args,'_resource_fds',()))
                 deadline=time.monotonic()+args.timeout
                 while not serial.exists() or not qmp.exists():
                     if process.poll() is not None or time.monotonic()>deadline:raise ValueError('QEMU socket startup failed')
                     time.sleep(0.05)
                 channel=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);channel.connect(str(serial));channel.setblocking(False)
                 monitor=lab.Qmp(qmp,output/'qmp.jsonl')
+                if physical_boundary:
+                    monitor=physical_boundary.monitor(monitor)
                 hold=None
                 install_hold=None
                 if agent_mode=='install-cancel':
@@ -1183,6 +1203,14 @@ def _run(args):
                         address=':'.join(f'{v:02X}' for v in value.address),path=f'1-{n+1}') for n,value in enumerate(snapshots)]
                 else:
                     identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(selected_count)]
+                if physical_boundary:
+                    checks=[]
+                    for slot,model in enumerate(physical_boundary.models):
+                        observed=json.loads((share/f'ready-{slot}.json').read_text())
+                        chip=resources.check_hcc(observed['hcc_chip']['raw'],model)
+                        checks.append(dict(host_port=args.ports[slot],guest_port=observed['port'],
+                                           generation=observed['generation'],**chip))
+                    m['physical_resource_allocation']['hcc_checks']=checks
                 if getattr(args,'hotplug',False) or passthrough:
                     if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
                     pattern=r'^WS73_TARGET_PASSTHROUGH_(REMOVE|READD)_READY$' if passthrough else r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$'
@@ -1794,8 +1822,19 @@ def run(args):
     # Share the actual flock inode with the existing firmware lab. A lock file
     # alone is never treated as evidence that another process is live.
     lab=lab_module()
-    with lab.lab_lock(SimpleNamespace(action='target-'+args.command,build_dir=args.prepared)):
-        return _run(args)
+    if args.command == 'support':
+        with lab.lab_lock(SimpleNamespace(action='target-support',build_dir=args.prepared)):
+            return _run(args)
+    allocation=resources.policy()
+    resources.selected(args.ports, allocation)
+    resources.check_paths(args.output, args.prepared, allocation)
+    root=build_workspace()/allocation['run_root'];root.mkdir(parents=True,exist_ok=True)
+    # Per-thread VM/run inode; the shared per-port leases still exclude races.
+    from build_resources import real_device_vm
+    with resources.port_leases(args.ports, allocation) as port_fds, real_device_vm() as vm_fd:
+        args._resource_fds=(*port_fds,vm_fd)
+        with lab.lab_lock(SimpleNamespace(action='target-run',build_dir=args.prepared),path=root/'lab.lock'):
+            return _run(args)
 
 
 def main():
@@ -1803,6 +1842,7 @@ def main():
     pack=commands.add_parser('prepare')
     for name in ['kernel-build','qemu','busybox','dbus-daemon','firmware-dir','runtime-config-dir','output']:
         pack.add_argument('--'+name,type=Path,required=True)
+    pack.add_argument('--board-model',choices=['U','E'],help='explicit SDK110 three-image selection; required for new physical runs; no cold ROM auto selection')
     pack.add_argument('--tcpdump',type=Path,default=Path('/usr/bin/tcpdump'))
     pack.add_argument('--python',type=Path,default=Path(sys.executable))
     for name in native_vm.OPTIONS:

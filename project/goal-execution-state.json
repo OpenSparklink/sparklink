@@ -3706,5 +3706,31 @@
     "authority": "project/qualification-records.json selected_qualification;generated view in current-capabilities/implementation-plan/qualification_view",
     "history": "history/current-capabilities-before-registry-retirement-20261017.md;verbatim23f body,not current qualification",
     "limits": "All original records and required failures/unproved remain;selection never qualifies entire working tree"
+  },
+  "hardware_resource_allocation": {
+    "policy": "project/lab-resource-policy.json",
+    "owner": "01a120fe-main-thread",
+    "allowed_U": [
+      "1-1.1.1",
+      "1-1.1.2"
+    ],
+    "allowed_E": [
+      "1-2.1.1",
+      "1-2.1.2"
+    ],
+    "forbidden": [
+      "1-1.1.3",
+      "1-1.1.4",
+      "1-2.1.3",
+      "1-2.1.4"
+    ],
+    "model_basis": "USER_PLACEMENT_NOT_YET_INDIVIDUALLY_HCC_RECHECKED",
+    "runtime_directory": ".dev/main-thread-01a120fe",
+    "source_worktree": ".dev/architecture-r4f2e-userspace-worktree",
+    "usb_actions": "VM-only individual leaf passthrough;nohub/controller reset,power,detach or takeover;conflict/missing/identitychange stops for coordination",
+    "firmware": "Explicit SDK110U/us orE/e full3-file hash set. Global-image driver permits homogeneous guest only. Mixed cold boot and unproven runtime-only adoption refused. ColdROM automatic choice NOT_QUALIFIED.",
+    "qualification": "Old ports2/3 US results retain historical source/tool/artifact identities only. This is a resource change,no new hardware PASS. New U/E/mixed artifacts separate.",
+    "build_budget": "Shared global build lock; across both threads total<=12 or<=8 with real VM; legacy outside lock requires coordination",
+    "scope_and_goal_changed": false
   }
 }

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "owner": "01a120fe-main-thread",
+  "run_root": ".dev/main-thread-01a120fe",
+  "worktree": ".dev/architecture-r4f2e-userspace-worktree",
+  "controller": "0000:c5:00.3",
+  "hubs": {
+    "1-1.1": {
+      "vid": "05e3",
+      "pid": "0610"
+    },
+    "1-2.1": {
+      "vid": "1a40",
+      "pid": "0101"
+    }
+  },
+  "ports": {
+    "1-1.1.1": {
+      "expected_model": "U",
+      "serial_sha256": "464b765948adf5e5f81a79fb25868102340222848fa72eb347e3f0a8cf97b6d9",
+      "model_basis": "USER_PLACEMENT_NOT_HCC_VERIFIED"
+    },
+    "1-1.1.2": {
+      "expected_model": "U",
+      "serial_sha256": "89425f1f2b6f9ef2db07100c874c17ac49bc829039cbc2f6d18aa59fb156d19c",
+      "model_basis": "USER_PLACEMENT_NOT_HCC_VERIFIED"
+    },
+    "1-2.1.1": {
+      "expected_model": "E",
+      "serial_sha256": "b19caf10aa9987ef80f99e67786ec09ff7ba8d982dbb64c135120656cb78553d",
+      "model_basis": "USER_PLACEMENT_NOT_HCC_VERIFIED"
+    },
+    "1-2.1.2": {
+      "expected_model": "E",
+      "serial_sha256": "2c72bfbca2faecbfd8c9c3a492194b68d6e157d0bd2cad0392c7e6ed2d152b81",
+      "model_basis": "USER_PLACEMENT_NOT_HCC_VERIFIED"
+    }
+  },
+  "forbidden_ports": [
+    "1-1.1.3",
+    "1-1.1.4",
+    "1-2.1.3",
+    "1-2.1.4"
+  ],
+  "firmware": {
+    "U": {
+      "sdk": "1.10.110",
+      "variant": "us",
+      "images": {
+        "ws73.bin": {
+          "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+          "bytes": 143956
+        },
+        "wifi_cali.bin": {
+          "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+          "bytes": 21044
+        },
+        "btc_cali.bin": {
+          "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+          "bytes": 7772
+        }
+      }
+    },
+    "E": {
+      "sdk": "1.10.110",
+      "variant": "e",
+      "images": {
+        "ws73.bin": {
+          "sha256": "6a0c322668d67a7e8c5cab9bff5d7af1f737e30ed4d9258975e8068054e4377b",
+          "bytes": 137644
+        },
+        "wifi_cali.bin": {
+          "sha256": "ac55f1a2e1d1466a02123c21e50204e108fe4660c587566e63798de648bd1390",
+          "bytes": 21060
+        },
+        "btc_cali.bin": {
+          "sha256": "601b143db64ef6e70bf882fd5a998ecff59f19ede85f477cdc8967b21a8a472f",
+          "bytes": 34120
+        }
+      }
+    }
+  }
+}

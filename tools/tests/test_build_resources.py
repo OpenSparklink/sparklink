@@ -12,6 +12,25 @@ import build_resources as build
 
 
 class BuildResources(unittest.TestCase):
+    def test_shared_vm_budget_lease_including_inherited_child(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(build,'workspace',return_value=Path(directory)):
+            self.assertFalse(build.real_vm_active())
+            with build.real_device_vm() as fd:
+                self.assertTrue(build.real_vm_active())
+                with patch.object(build.os,'sched_getaffinity',return_value=set(range(16))):
+                    self.assertEqual(build.environment({})[1]['jobs'],8)
+                    with self.assertRaises(ValueError):build.environment({'SPARKLINK_BUILD_JOBS':'12'})
+                child=subprocess.Popen([sys.executable,'-c','print("armed",flush=True);input()'],
+                    stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True,pass_fds=(fd,))
+                self.assertEqual(child.stdout.readline(),'armed\n')
+                with build.real_device_vm():pass
+            try:self.assertTrue(build.real_vm_active())
+            finally:child.communicate('done\n',timeout=5)
+            self.assertFalse(build.real_vm_active())
+            with build.build_lock():
+                with self.assertRaises(RuntimeError):
+                    with build.real_device_vm():self.fail('VM launch stole existing build')
+
     def test_solo_vm_affinity_and_explicit_budget_share_one_cargo_limit(self):
         with patch.object(build.os, 'sched_getaffinity', return_value=set(range(16))):
             for supplied, expected in [({}, 12), ({'SPARKLINK_BUILD_WITH_VM': '1'}, 8),

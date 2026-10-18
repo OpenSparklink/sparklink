@@ -11,6 +11,7 @@ from pathlib import Path
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE))
 import ws73_target as target
+import ws73_lab_resources as resources
 from ws73_capture import read_capture,check_capture_stats
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--prepared',type=Path,required=True)
@@ -28,6 +29,13 @@ args=parser.parse_args()
 if (args.failure_wire_index==0x133)!=args.diagnostic_class_control:parser.error('wire133 requires explicit diagnostic class control and its isolated kernel image')
 if len(os.fsencode(str(args.output.resolve()/'native/qmp.sock')))>=108:parser.error('output path too long for Unix QMP socket')
 target.ordinary_identity()
+ports=[args.native_port,args.survivor_port,args.oracle_port]
+resources.selected(ports)
+resources.check_paths(args.output,args.prepared)
+resources.check_firmware(target.prepared(args.prepared),ports,args.prepared)
+# This historical three-radio SDK111 diagnostic cannot satisfy the present
+# allocation (only two radios of each model). Refuse before build/USB access;
+# do not copy it into a new SDK110 flow or reinterpret its historical results.
 base=args.prepared.resolve(strict=True)
 out=args.output.resolve();out.mkdir(exist_ok=False,mode=0o700)
 reference=args.reference.resolve(strict=True)

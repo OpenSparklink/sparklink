@@ -223,9 +223,10 @@ class Run:
             raise ValueError('provided PID disagrees with bus-authenticated slkd owner')
         return {'owner':match[1], 'pid':int(match[2]), 'uid':int(match[3])}
 
-    def command(self, command, timeout, *, collection=None, field=None):
+    def command(self, command, timeout, *, collection=None, field=None, on_started=None):
         if (collection is None) == (field is None):
             raise ValueError('one evidence location required for a command')
+        original_deadline=time.monotonic()+timeout
         record = {'args': command, 'start_wall_ns': time.time_ns(), 'start_monotonic_ns': time.monotonic_ns(), 'start_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)}
         if collection is not None:
             self.data.setdefault(collection, []).append(record)
@@ -243,7 +244,10 @@ class Run:
             record['pid'] = p.pid
             self.save()
             try:
-                stdout, stderr = p.communicate(timeout=timeout)
+                if on_started is not None:
+                    on_started(p,record)
+                    record['barrier_completed_wall_ns']=time.time_ns();self.save()
+                stdout, stderr = p.communicate(timeout=timeout if on_started is None else max(0,original_deadline-time.monotonic()))
             except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
                 # Killing the CLI does not revoke an operation already admitted
                 # by slkd. Reap it and retain all output before the caller runs
@@ -262,6 +266,20 @@ class Run:
             if 'exit' not in record:
                 record.update({'exit': 'collector_error', 'error': str(error),
                                'error_type': type(error).__name__})
+            # A failed barrier/save is not a successful request. Preserve the
+            # actual child's output as well as its original exception; the
+            # existing finally still owns unconditional reaping and closure.
+            if p is not None and ('stdout' not in record or 'stderr' not in record):
+                if p.poll() is None:
+                    p.kill()
+                try:
+                    stdout, stderr = p.communicate()
+                except BaseException as capture_error:
+                    record['output_capture_error'] = {
+                        'type': type(capture_error).__name__, 'error': str(capture_error)}
+                else:
+                    record.update({'stdout': stdout, 'stderr': stderr,
+                                   'child_returncode': p.returncode})
             raise
         finally:
             # Also reap on an unexpected collector/save error after launch.

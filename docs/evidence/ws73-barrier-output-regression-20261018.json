@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "result": "LOCAL_TEST_RUNNER_REGRESSION_PASS_NOT_DEVICE_QUALIFICATION",
+  "source_parent": "4b122d91996aa4ff3250499447018929f2f1f315",
+  "source_files": {
+    "tools/ws73_north_star.py": "f927f41c2695dadca0c6c352fb3cde4415b188716d2778b238a2ce9760487dc1",
+    "tools/tests/test_ws73_command_failure.py": "5cfd6ab87ef25abb1ac3935c533938698ec7090f7fad115413e97a19e2e8c832"
+  },
+  "scope": [
+    "Adopts only existing on_started draft from preserved main work;does not overwrite original main WIP. Actual local Run.command/subprocess/pipe execution only.",
+    "A barrier is test coordination,not protocol success or a second Engine. Existing production Runtime/Session/Grant/credit/Ticket,SSAP and socket semantics unchanged.",
+    "No new binary/firmware/driver/RF or formal qualification;old e776 frozen-tool real records remain bound to e776. Controlled owner/caller/deadline/partialinit/late-response/peer-business VM gates remain OPEN."
+  ],
+  "production_behavior": "Barrier and command share original supervisor budget. Timeout/interrupt retain existing terminal classification. Unexpected barrier/save exception retains original exception,actual child stdout/stderr and actual returncode;existing finally retains unconditional child reap/stream closure. Failure to capture is explicit output_capture_error,never fabricated empty success.",
+  "before": {
+    "state": "Two confirmed failures against preserved draft",
+    "observed": "16 methods:13 existing and original-budget pass;missing stdout and interrupted misclassified collector_error fail. Child already reaped by existing finally;no process leak claim.",
+    "retention": "Exact original module/test files and failing log plus separate durable actual child evidence retained."
+  },
+  "after": {
+    "state": "16 actual local methods PASS",
+    "properties": [
+      "Original barrier RuntimeError object propagates;complete real stdout/stderr and negative child returncode retained",
+      "KeyboardInterrupt remains interrupted;complete child output retained and child reaped",
+      "Barrier consumes original supervisor budget;expired remaining wait iszero,no fresh wait",
+      "Existing13 command failure/cleanup/confirmation methods unchanged and pass"
+    ]
+  },
+  "environment": {
+    "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+    "device_actions": false,
+    "host_install": false
+  },
+  "remaining": [
+    "Wire current owner/caller lifecycle tools through this sole runner;new exact execution-tool identity and VM gates required.",
+    "Incomplete native initialization/drain,full public lifecycle/Grant/fd transfer and all original architecture conditions remain OPEN.",
+    "NaturalRCA/nonmanual recovery unaffected;no issue closed."
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f6-barrier-output-counterexample-v1.py",
+      "sha256": "4d079500cad15f162a3bb02adb849f93b061f5cf5cf165c8da0153571f360cac",
+      "bytes": 2785
+    },
+    {
+      "path": ".dev/architecture-r5f6-barrier-output-counterexample-v1.log",
+      "sha256": "185f3aa7132cf45a4f06f6d835ea4752263d0f41fea6b3b84f98545d3b6f2b30",
+      "bytes": 94
+    },
+    {
+      "path": ".dev/architecture-r5f6-barrier-output-counterexample-v1/report.json",
+      "sha256": "f840f070e2e1848572ed6063d4418e14c94dfc9733da31f01b822b08c238f126",
+      "bytes": 1298
+    },
+    {
+      "path": ".dev/architecture-r5f6-barrier-output-counterexample-v1/original-source.py",
+      "sha256": "77105557bc930d48d3e94a20962ff2731f6c06f3a2e8fe09b8688f709054d80c",
+      "bytes": 32334
+    },
+    {
+      "path": ".dev/architecture-r5f6-barrier-output-counterexample-v1/run/run.json",
+      "sha256": "9674b341e6d4256be63d67400e06bff7e626ff185fedf53de8a8a3db977c77fe",
+      "bytes": 979
+    },
+    {
+      "path": ".dev/architecture-r5f7-barrier-before-v1.log",
+      "sha256": "b36eae15116f560a40d28660847dd8592ebf4e0e0afba6b22f05482a398cb096",
+      "bytes": 4730
+    },
+    {
+      "path": ".dev/architecture-r5f7-barrier-after-v1.log",
+      "sha256": "d420ad21c3a676a033588e073e8072cba4e06cc22e79b912f3acf9405c2aaf74",
+      "bytes": 2790
+    },
+    {
+      "path": ".dev/architecture-r5f7-barrier-before-v1/original-tool.py",
+      "sha256": "77105557bc930d48d3e94a20962ff2731f6c06f3a2e8fe09b8688f709054d80c",
+      "bytes": 32334
+    },
+    {
+      "path": ".dev/architecture-r5f7-barrier-before-v1/regression-tests.py",
+      "sha256": "5cfd6ab87ef25abb1ac3935c533938698ec7090f7fad115413e97a19e2e8c832",
+      "bytes": 14782
+    },
+    {
+      "path": ".dev/architecture-r5f7-barrier-before-v1/run.log",
+      "sha256": "b36eae15116f560a40d28660847dd8592ebf4e0e0afba6b22f05482a398cb096",
+      "bytes": 4730
+    },
+    {
+      "path": ".dev/architecture-r5f7-barrier-before-v1/report.json",
+      "sha256": "03f338e01601a220c7fc4c484a63e1231561364f6da69c5ed6b4f0aef17611e3",
+      "bytes": 1172
+    }
+  ]
+}

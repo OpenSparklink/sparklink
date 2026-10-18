@@ -4,9 +4,11 @@ import errno
 import json
 import os
 from pathlib import Path
+import select
 import subprocess
 import sys
 import tempfile
+import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -81,6 +83,65 @@ class CommandFailureTests(unittest.TestCase):
                 run.ctl(self.identity, 'scan', 'on')
         record = self.assert_record(run, 'timeout')
         self.assertLess(record['child_returncode'], 0)
+
+    def output_barrier(self, process):
+        # Observe actual pipe readiness without consuming either stream. The
+        # fixture has printed both lines before the controlled failure occurs.
+        pending = [process.stdout, process.stderr]
+        deadline = time.monotonic() + 2
+        while pending:
+            ready, _, _ = select.select(pending, [], [], max(0, deadline-time.monotonic()))
+            self.assertTrue(ready, 'fixture did not reach the output barrier')
+            pending = [stream for stream in pending if stream not in ready]
+
+    def test_barrier_error_keeps_original_exception_and_complete_child_output(self):
+        run = self.run_object()
+        error = RuntimeError('controlled barrier failure')
+
+        def barrier(process, record):
+            self.output_barrier(process)
+            raise error
+
+        with self.assertRaises(RuntimeError) as observed:
+            run.command([str(self.binary)], 5, collection='commands', on_started=barrier)
+        self.assertIs(observed.exception, error)
+        record = self.assert_record(run, 'collector_error')
+        self.assertEqual(record['error_type'], 'RuntimeError')
+        self.assertLess(record['child_returncode'], 0)
+
+    def test_barrier_interrupt_reaps_and_preserves_complete_child_output(self):
+        run = self.run_object()
+
+        def barrier(process, record):
+            self.output_barrier(process)
+            raise KeyboardInterrupt()
+
+        with self.assertRaises(KeyboardInterrupt):
+            run.command([str(self.binary)], 5, collection='commands', on_started=barrier)
+        record = self.assert_record(run, 'interrupted')
+        self.assertLess(record['child_returncode'], 0)
+
+    def test_barrier_consumes_original_supervisor_budget(self):
+        run = self.run_object()
+        communicate = subprocess.Popen.communicate
+        waits = []
+
+        def barrier(process, record):
+            self.output_barrier(process)
+            # This is a supervisor fixture budget, not a protocol timeout.
+            release = record['start_monotonic_ns']/1_000_000_000 + .1
+            while time.monotonic() < release:
+                time.sleep(min(.01, max(0, release-time.monotonic())))
+
+        def actual_wait(process, *args, **kwargs):
+            waits.append(kwargs.get('timeout'))
+            return communicate(process, *args, **kwargs)
+
+        with patch.object(subprocess.Popen, 'communicate', actual_wait):
+            with self.assertRaisesRegex(ValueError, 'admitted operation may still exist'):
+                run.command([str(self.binary)], .05, collection='commands', on_started=barrier)
+        self.assertEqual(waits[0], 0)
+        self.assert_record(run, 'timeout')
 
     def test_interrupt_reaps_cli_and_preserves_complete_output(self):
         run = self.run_object()

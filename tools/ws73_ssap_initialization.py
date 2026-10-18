@@ -268,12 +268,26 @@ def execute(run, a, b):
             raise CaptureError('all added daemon socket inodes must retire after actual two-end Down')
         phase['management_after'] = run.ctl(target, 'management')
         management_observed(phase['management_after'], target, 1)
+        restore_beacons(run, phase)
         phase['end_wall_ns'] = time.time_ns()
         previous = phase['typed_objects']
         run.save()
     record['status'] = 'CMTC_REVOCATION_EVIDENCE_PENDING'
     verify_guest(run.data)
     run.save()
+
+
+def restore_beacons(run, phase):
+    # The shared connection gate requires a fresh beacon -> connectable set
+    # transition. Reusing its advertiser without this real policy transaction
+    # leaves an OFF connectable set and correctly fails that original assertion.
+    from ws73_north_star import parse_result
+    phase['beacon_restoration'] = []
+    for owner in [phase['caller'], phase['peer']]:
+        row = run.ctl(owner, 'advertise', 'on')
+        parse_result(row['stdout'], owner, 1, allow_recreate=True)
+        phase['beacon_restoration'].append(dict(owner=owner, command=len(run.data['commands'])-1))
+        run.save()
 
 
 def observe_owner_failure(run, owner, reference):

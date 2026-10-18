@@ -28,6 +28,10 @@ EACCES 返回后被成功专用的 `ctl` 包装提前中止，整轮 FAIL 原样
 `.dev/main-thread-01a120fe/ssap-initialization-us-v2`，不授资格。负向调用改用原始
 command collector 并继续准确校验非零退出及 EACCES；普通调用者凭据复用现有
 四项 capability 观察器，不放宽为缺字段通过。修复后需新 guest/Host artifact 重跑。
+59ce 工具第二轮在首个真实撤权/旧回复/fd收敛完成后，因第二次沿用 OFF connectable
+广播集而失败，整轮保留于 `ssap-initialization-us-v3`。每个切片结束后通过实际
+管理事务恢复两端 beacon，再复用原连接门禁；保留“必须重建”断言，不接受少一步
+初始化来迁就当前状态。首个切片不升级为完整双端门禁通过。
 单 bulk RX URB 持有 CMTC 时，后续同端 Down 也不能进入 guest，故使用真实 Managed
 lease Revoking 作原始屏障：原 lifetime 在该端规范快照中尚为 Up（Down仍被hold），
 旧 Engine 报当前 EACCES 并收敛 fd；

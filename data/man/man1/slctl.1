@@ -61,6 +61,15 @@ All experimental driver and real WS73 operations remain VM-only.
 .B list
 List available adapters.
 .TP
+.B controller-events [count] [milliseconds]
+Observe the original daemon's bounded adapter directory using the ordinary Rust
+Client. Count is 1..512 (default 1, the initial snapshot); milliseconds is the
+original budget per next call, 1..30000 (default 5000). Reports publication and
+withdrawal, not Native events, Ready, physical Down or completed resource drain.
+Gap, timeout and errors exit nonzero; no silent resnapshot or daemon replacement.
+No controller management lease is obtained. C/Python stream bindings and full
+state-event qualification remain separate.
+.TP
 .B show
 Show adapter information and status.
 .TP

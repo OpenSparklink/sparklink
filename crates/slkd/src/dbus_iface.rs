@@ -50,11 +50,31 @@ impl Root {
         .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
     }
 
+    /// Bounded daemon-directory hints only, not Native event or Ready authority.
+    async fn get_controller_changes(
+        &self,
+        after: u64,
+        wait: bool,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::controller_events::Batch> {
+        let caller = header
+            .sender()
+            .ok_or_else(|| zbus::fdo::Error::AccessDenied("bus sender required".into()))?;
+        let deadline =
+            slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+                .and_then(|d| d.capped(std::time::Duration::from_secs(5)))
+                .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        self.adapters
+            .changes(after, wait, deadline, caller.as_str())
+            .await
+    }
+
     /// List registrations still live in the kernel, even before the background
     /// manager removes their cached D-Bus objects. Held observer fds cannot keep
     /// a removed controller available. No business/directory lock crosses I/O.
     async fn list_adapters(&self) -> zbus::fdo::Result<Vec<String>> {
-        let registrations = self.adapters.lock().await.clone();
+        let registrations = self.adapters.entries().await;
         tokio::task::spawn_blocking(move || {
             let mut paths = Vec::new();
             for (path, registration) in registrations {

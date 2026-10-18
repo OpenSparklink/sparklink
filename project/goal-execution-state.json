@@ -1990,16 +1990,16 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP18-R6c-distinct-package-revisions",
-      "production_behavior": "Actual247old/db724new development packages and matching SDKs: install0.1.0-1/upgrade0.1.0-2/rollback0.1.0-1/remove in independent noUSB vendorVM;74 actual gates,35payloadfiles/stage,three loaded owners/config/state/modes. 368Rust/883tools/17evidence negatives;original failures/warnings retained. No new RF/formalproof or architecture/scope change.",
-      "state": "DISTINCT_DEVELOPMENT_REVISION_PAIR_SCOPED_VM_PASS_FULL_ARCHITECTURE_AND_RELEASE_OPEN",
+      "id": "WP03-WP18-R5f10-controller-directory-observer",
+      "production_behavior": "Bounded same-directory journal/Root wait/Rust Client/actual slctl are implemented. Eleven new targeted production/SDK checks,379 default Rust tests, strict Clippy and887 tooling scope observed; exact signed new artifact VM NOT_RUN,formal NOT_PROVEN. Prior qualified artifacts/source identities unchanged;no new qualification inferred.",
+      "state": "IMPLEMENTED_OFFLINE_CHECKED_NEW_VM_AND_FORMAL_QUALIFICATION_PENDING",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Continue original lifecycle/dynamic/release/last-fd/dup/fd-transfer/deadline/credit-Ticket combinations with same owner/Session;bounded original gates,not all control permutations as prerequisites. R6 debug/dwz/usrmerge/dependency/supportmatrix/thirdpartylicense/SBOM/provenance/CI release and broader migration remain. Preserve actual data/security/SSAP/multichannel/four-device vertical delivery,all S0-S6/19WP/10FV/12DG/originalscopes/UserHostP4/VM-only/strictfourleaves/SDK110/shared12or8. E/mixed/coldROM andnaturalRCA/nonmanual recovery OPEN."
+      "next": "Seal exact signed observer source; build using shared stable target and global12/8 budget, then new SDK default-observer two-role U-only VM evidence plus original RF/connection/data/length/SSAP preservation. Afterwards continue original bounded lifecycle and architecture API/DiscoverySession/C-Python stream/full EventStream work. No control-combination census prerequisite;fullS0-S6/19WP/10FV/12DG/UserHostP4/VM-only/strictallocation/SDK110/naturalRCA/nonmanualrecovery unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -4185,6 +4185,12 @@
       "report": "docs/evidence/debian-upgrade-rollback-20261018.json",
       "scope": "Finite actual development revision pair, matching SDK and retained administrator data only; no RF/new native permissions, arbitrary migration or release. Original tool/build/audit failures and warnings retained.",
       "remaining_ref": "qualification-records.json#debian-upgrade-rollback-r6c.remaining"
+    },
+    "controller_directory": {
+      "execution_ref": "qualification_view.current_batch",
+      "plan_ref": "implementation-plan.md#r5f10共享应用目录观察本批有限退出完整架构仍开放",
+      "qualification": "No new real-device or formal record yet; source-bound historical records stay unchanged.",
+      "full_scope_unchanged": true
     }
   },
   "owned_ssap_c6_historical_batch": {

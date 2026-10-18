@@ -44,6 +44,11 @@ daemon的Native通道创建在阻塞线程执行，实际工作持有同一管�
 冒充已中止内核调用。它不改变D-Bus签名、Grant或socket完成语义，也不提供独立
 进程故障域；准确实机范围仍以[资格入口](../../project/current-capabilities.md)为准。
 
+Rust的目录观察由`Client::controller_events(Deadline)`提供，实际`slctl controller-events`
+复用该接口。它只观察原daemon的Runtime adapter目录；C／Python暂未提供stream方法。
+Gap、原期限、owner退出及与Native事件的区别见[事件契约](controller-events.md)。
+这不表示应用发现租约、完整通用EventStream或新artifact实机资格已经完成。
+
 ### C/Python 同步应用入口
 
 `slk_client_open_system` 创建一个调用者 bus 连接，固定当前 daemon unique owner；

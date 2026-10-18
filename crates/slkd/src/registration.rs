@@ -175,7 +175,7 @@ mod tests {
     #[tokio::test]
     async fn real_dbus_objects_never_replace_core_errors_with_cached_success() {
         let bus = Bus::start();
-        let adapters = Arc::new(Mutex::new(Default::default()));
+        let adapters = crate::state::AdapterDirectory::default();
         let directory: RegistrationDirectory = Arc::new(Mutex::new(Default::default()));
         let server = zbus::connection::Builder::address(bus.address.as_str())
             .unwrap()

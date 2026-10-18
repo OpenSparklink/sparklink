@@ -582,7 +582,7 @@ pub struct AdapterRegistration {
     pub adapter: Arc<Adapter>,
     pub generation: u64,
 }
-pub type AdapterDirectory = Arc<Mutex<BTreeMap<String, AdapterRegistration>>>;
+pub type AdapterDirectory = crate::controller_events::Directory;
 
 /// Published registration topology only. State/availability comes from Core
 /// on every read; this unselected fd has no management lease or radio resources.

@@ -77,6 +77,16 @@ e776准确产物的有限正向与原路径保持按唯一资格入口读取；�
    其崩溃会释放管理 fd，当前 epoch 撤销作用于相应 Binding，不能承诺所有业务 fd
    跨 daemon 崩溃存活。重启以 kernel 注册/实际 snapshot 收敛，不复活旧授权。
 
+## 应用目录观察与真实状态分开
+
+复用既有Runtime adapter目录作为D-Bus对象成员事实，在同一锁下记录有界身份变化。
+追加journal不是新的Ready／物理连接权威，也不持Native fd或lease；初始化前注册
+观察、Kernel ControllerEvent及snoop仍有各自用途。目录撤回先于owner或Native drain
+完成是允许的，不能用它替代直接owner屏障。游标绑定daemon owner，缺口显式终止，
+初始查询及后续变化的重叠明确记录，不伪装成原子Kernel快照。每caller等待预算、
+原期限、通知arm／重查及最终释放均单独回归；对象删除只取消观察。源码接通不授
+实机、形式化或完整状态同步资格，也不是数据／安全／SSAP交付的前置全集。
+
 ## Managed File 与业务 Binding 的撤权边界
 
 控制File的release或最终引用释放撤销所属Managed epoch；dup的第一次close不能

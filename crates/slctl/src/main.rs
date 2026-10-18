@@ -115,6 +115,7 @@ Commands:
   registration <path>           Read exact Core lifecycle (Installed is not Ready)
   daemon                        Show the bus-authenticated slkd owner/PID/UID
   list                          List adapters
+  controller-events [count] [ms] Observe bounded daemon-directory changes (not Native Ready/Down)
   select <path>                 Select a live adapter registration
   reports                       Show exact native discovery reports
   show                          Show adapter details

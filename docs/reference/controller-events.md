@@ -4,13 +4,14 @@
 描述已实现接口，不转授历史镜像的资格；精确实机范围仍从
 [当前能力](../../project/current-capabilities.md) 查找。UAPI 尚未发布。
 
-## 三种不同用途
+## 不同事件来源与用途
 
 | 用途 | 接口／来源 | 边界 |
 |---|---|---|
 | 获取完整事件 | `ControllerEventGet`／Rust、C、Python Native 接口 | controller 注册身份与独立读取游标；不是旧 `read(2)` |
 | 查询注册内的位置 | D-Bus `org.sparklink.Controller.GetControllerEventPosition`；`slctl events` | 返回 `(index: u16, generation: u64, sequence: u64)` |
 | 诊断复制流量 | 独立 snoop 订阅 | 单独权限；不能消费或替代 Host 的协议处理 |
+| 应用目录变化 | Rust `Client::controller_events(Deadline)`、`slctl controller-events [count] [ms]` | daemon 的现有 `ListAdapters` 目录发布／撤回；不是 Native 事件、Ready、物理 Down 或资源 drain |
 
 位置查询复制当前 adapter／generation 后释放 daemon 业务锁，再调用
 `native_link_snapshot(generation)`。返回值来自实际 `LinkSnapshot.event_seq`，
@@ -45,3 +46,30 @@ Python `NativeAdapter.poll_event` 是现有非消费完整事件接口，名称�
 Linux `net/sparklink/sparklink_core.rs` 与 `include/uapi/linux/sparklink.h`。
 [本批准确证据](../evidence/read-retirement-progress-20261014.json) 和
 [历史 read 审计](../../history/diagnostics/event-copy-remediation.md) 分开阅读。
+
+## 应用目录观察（Rust／slctl源码入口，资格另验）
+
+`org.sparklink.Manager.GetControllerChanges(after, wait, deadline)`接受原绝对期限，
+`deadline`使用既有五uint64时钟域绑定。返回版本、最早保留序号、当前尾序号、Gap
+及至多64行`(sequence, index, generation, action)`；action 1为目录发布，2为目录撤回。
+游标仅属于原daemon唯一总线owner，不是Kernel ControllerEvent序号。
+此处只跟随已有Runtime adapter目录；初始化前的注册故障观察仍用`ListRegistrations`，
+Supported／Enabled／Available／Powered和完整状态变化资格不由此补齐。
+
+同一锁保护目录更新与journal追加。history只保存身份，不持Native fd、lease或连接。
+SDK先取游标，再执行原Core校验的成员查询；初始Snapshot后的行可能重复该查询已见
+的身份，不承诺原子Native快照。撤回在目录移除时产生，不能当owner退休、物理断链、
+callback排空或fd清理完成的屏障。查询实际Ready、连接和安全状态仍走其各自来源。
+
+慢观察者落后于64行窗口会收到明确Gap，当前stream终止，调用者须显式重新快照。
+未知版本、未来游标、非连续序号、错误identity和序号耗尽不能静默跳过或重置。
+每次服务端等待至多5秒，全局16个等待、每个真实总线caller至多2个；SDK对空响应
+复用同一原期限，不延长等待。`next(Deadline)`的本地超时不推进游标；其他错误或
+owner丢失会终止stream。取消等待／丢弃stream仅结束观察，不停止扫描、controller
+或他人的通道；服务端未取消的等待可保留其预算至本次有界期限。
+
+`slctl`的count为1..512，默认1（初始Snapshot）；ms为每次next的1..30000ms，
+默认5000。输出`ControllerDirectorySnapshot`／`ControllerDirectoryEvent`；Gap、
+超时和错误非零退出。它复用普通Rust Client，既不取得管理lease，也不自动重连。
+C／Python尚未开放这个stream入口，没有同名NotSupported门面。本分项实机／形式化
+资格仍以[唯一能力入口](../../project/current-capabilities.md)的准确artifact记录为准。

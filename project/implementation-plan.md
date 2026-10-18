@@ -3008,3 +3008,21 @@ R3c准入隔离修复：b0f首次Client把所有controller属性查询作为选�
 原无缓存负对照从列表失败移到更强的实际open_channel拒绝，副作用计数仍不增加；
 新增同行不可查询但选中请求可达的生产入口回归，不接受Unix替代fd。b0f准备镜像保留，
 不执行/授予最新修复资格，使用修复后准确artifact实机回归。
+
+##### R5f10：共享应用目录观察（本批有限退出，完整架构仍开放）
+
+生产行为：原adapter目录同锁追加64行身份journal；Root有界按cursor等待，Rust Client
+和实际slctl消费。仅已有Runtime目录，非Kernel事件／Ready／Down／owner drain；
+扫描租约协调器、C/Python stream、完整状态变化及公共EventStream仍待后续纵向接通。
+
+本批门禁：生产journal／waiter／fd引用及实际Root私有总线；独立字面signature和SDK
+旧owner／Gap／完整帧／取消／原期限；默认workspace、严格all-features/targets构建
+及工具负对照。新artifact VM要求默认observer实际slctl读取Snapshot→旧代际撤回→
+新代际发布，保持原daemon，复用原单叶QMP／Native返回检查及两端普通业务验证。
+再按准确产物回归已取得的长度／适用SSAP；这些门禁当前尚未记作新实机资格。
+
+Root观察者复用现有pipe记录器，真实子进程、UID/GID/caps、实际映像与源hash、
+退出及缺失／过期／错误输入必须核对。两U仅本线程白名单、SDK110US及共享12/8锁；
+不操作E／其他线程／整坞／PCI。非人工恢复与自然根因继续开放，原失败保留。
+新增journal通知的组合证明／实际VM资格分别记录；单测和旧实机结果不升级新HEAD。
+WP03／WP18，关联U#6／U#8／K#19；不创建新goal或总跟踪，不修改19WP/10FV/12DG。

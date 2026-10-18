@@ -328,13 +328,15 @@ impl Node {
                 invalidate_properties(&init_connection, &init_path, &["InitializationError"]).await;
             }
         });
-        directory.lock().await.insert(
-            path.clone(),
-            AdapterRegistration {
-                adapter: control.clone(),
-                generation: snapshot.generation,
-            },
-        );
+        directory
+            .register(
+                path.clone(),
+                AdapterRegistration {
+                    adapter: control.clone(),
+                    generation: snapshot.generation,
+                },
+            )
+            .await;
         info!(%path, "adapter registered");
         Ok(Self {
             path,
@@ -390,7 +392,7 @@ impl Node {
         Ok(())
     }
     async fn remove(mut self, connection: &zbus::Connection, directory: &AdapterDirectory) {
-        directory.lock().await.remove(&self.path);
+        directory.withdraw(&self.path).await;
         let registrations = {
             let mut st = self.state.lock().await;
             st.present = false;
@@ -737,13 +739,15 @@ mod retired_interface_tests {
                     (state.object_path.clone(), state.adapter.clone())
                 };
                 publish(&server, &path, &state).await.unwrap();
-                directory.lock().await.insert(
-                    path,
-                    AdapterRegistration {
-                        adapter,
-                        generation,
-                    },
-                );
+                directory
+                    .register(
+                        path,
+                        AdapterRegistration {
+                            adapter,
+                            generation,
+                        },
+                    )
+                    .await;
                 states.push(state);
             }
             let state = states[0].clone();
@@ -832,8 +836,8 @@ mod retired_interface_tests {
             );
             assert!(owner.is_retiring());
             assert!(!state.lock().await.present);
-            assert!(!directory.lock().await.contains_key(&path));
-            assert!(directory.lock().await.contains_key(&other_path));
+            assert!(!directory.entries().await.contains_key(&path));
+            assert!(directory.entries().await.contains_key(&other_path));
             assert!(states[1].lock().await.present);
             assert_eq!(states[1].lock().await.controller.generation, 8);
             {

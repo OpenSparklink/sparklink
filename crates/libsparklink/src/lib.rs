@@ -3,6 +3,7 @@
 pub mod agent;
 mod client;
 pub mod controller;
+pub mod controller_events;
 pub mod ffi;
 pub mod ffi_client;
 pub mod ffi_connection;

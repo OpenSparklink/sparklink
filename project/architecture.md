@@ -84,6 +84,12 @@ Connection 的物理观察不等待用户态服务初始化。唯一资源 owner
 实际 Native 工作及未消费 fd 结果、原初始化器和 Engine；任务等待取消不等于排空。
 这些顺序约束不制造服务 Ready，不代替 Kernel Grant、引用或 USB callback 的验证。
 
+应用的`controller_events`可以观察同一Runtime adapter目录的有界变化，journal与目录
+更新共用锁且只保存身份。它不是Kernel事件或Ready／Down／退休drain权威，不能
+取代初始化前注册观察。首次成员查询与变化可重叠，缺口必须显式重快照；游标绑定
+daemon owner。原期限和每caller预算限制等待，释放观察者不清理controller资源。
+具体接口和资格分层维护，不由目标API树推定全部事件或语言绑定已完成。
+
 ### 唯一职责
 
 | 层 | 唯一所有者 | 禁止跨越 |

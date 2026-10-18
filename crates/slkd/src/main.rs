@@ -7,6 +7,7 @@ mod config;
 mod connection;
 mod connection_object;
 mod controller;
+mod controller_events;
 mod dbus_iface;
 mod event_loop;
 #[cfg(test)]
@@ -94,7 +95,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Validate before publishing D-Bus objects or acquiring controller authority.
 
-    let directory: AdapterDirectory = Arc::new(Mutex::new(Default::default()));
+    let directory = AdapterDirectory::default();
     let registrations: RegistrationDirectory = Arc::new(Mutex::new(Default::default()));
     let builder = if cli.session {
         zbus::connection::Builder::session()?

@@ -283,6 +283,57 @@ impl Context {
                 self.cmd_ssap_info(args[1]).await
             }
 
+            "controller-events" if args.len() <= 3 => {
+                let count: usize = args.get(1).map(|s| s.parse()).transpose()?.unwrap_or(1);
+                let timeout: u64 = args.get(2).map(|s| s.parse()).transpose()?.unwrap_or(5000);
+                if !(1..=512).contains(&count) || !(1..=30000).contains(&timeout) {
+                    anyhow::bail!("controller-events count1..512, per-next timeout1..30000ms");
+                }
+                let client = self.application().await?;
+                let budget =
+                    || libsparklink::Deadline::after(std::time::Duration::from_millis(timeout));
+                let mut events = client.controller_events(budget()?).await?;
+                for _ in 0..count {
+                    use libsparklink::controller_events::ControllerEvent;
+                    match events.next(budget()?).await? {
+                        ControllerEvent::Snapshot {
+                            before,
+                            controllers,
+                        } => println!(
+                            "ControllerDirectorySnapshot: cursor={before} controllers={}",
+                            controllers
+                                .into_iter()
+                                .map(|id| id.path())
+                                .collect::<Vec<_>>()
+                                .join("|")
+                        ),
+                        ControllerEvent::Published {
+                            sequence,
+                            controller,
+                        } => println!(
+                            "ControllerDirectoryEvent: sequence={sequence} action=published path={}",
+                            controller.path()
+                        ),
+                        ControllerEvent::Withdrawn {
+                            sequence,
+                            controller,
+                        } => println!(
+                            "ControllerDirectoryEvent: sequence={sequence} action=withdrawn path={}",
+                            controller.path()
+                        ),
+                        ControllerEvent::Gap {
+                            after,
+                            oldest,
+                            current,
+                        } => anyhow::bail!(
+                            "ControllerDirectoryGap: after={after} oldest={oldest} current={current}; resnapshot required"
+                        ),
+                    }
+                    use std::io::Write;
+                    std::io::stdout().flush()?;
+                }
+                Ok(())
+            }
             "list" => self.cmd_list().await,
             "registrations" if args.len() == 1 => self.cmd_registrations().await,
             "registration" if args.len() == 2 => self.cmd_registration(args[1]).await,

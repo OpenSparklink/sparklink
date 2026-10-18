@@ -85,6 +85,29 @@ def fixture():
 
 
 class InitializationGate(unittest.TestCase):
+    def test_expected_error_uses_actual_nonzero_child_without_success_wrapper(self):
+        import os
+        from ws73_north_star import Run, daemon_identity
+        # Real collector/subprocess; the executable supplies only diagnostic
+        # text, not a controller or protocol success. No VM qualification.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            program = root/'slctl'
+            program.write_text('#!/bin/sh\nprintf "Selected %s\\n" "$2"\n'
+                'printf "error: broker: org.freedesktop.DBus.Error.Failed: Permission denied (os error 13)\\n" >&2\nexit 1\n')
+            program.chmod(0o700)
+            run = Run(SimpleNamespace(output=root/'run', slctl=program, slkd_pid=os.getpid()))
+            run.pid = daemon_identity(os.getpid())
+            owner = dict(path='/org/sparklink/slk0_g1')
+            reference = dict(path=owner['path']+'/peer_t00_010203040506/link_1')
+            row = init.observe_owner_failure(run, owner, reference)
+            self.assertIs(run.data['commands'][0], row)
+            self.assertEqual(row['exit'], 1)
+            self.assertGreaterEqual(row['end_wall_ns'], row['start_wall_ns'])
+            for key, value in [('exit', 0), ('exit', True), ('stderr', 'original deadline')]:
+                bad = dict(row, **{key: value})
+                with self.assertRaises(ValueError):init.owner_failure(bad, owner, reference)
+
     def test_selection_release_uses_same_original_hold_two_targets(self):
         with tempfile.TemporaryDirectory() as tmp, patch.object(init, 'validate_qemu'):
             record = {}

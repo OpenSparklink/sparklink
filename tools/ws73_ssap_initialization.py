@@ -185,7 +185,7 @@ def observe_fds(root, pid):
 def execute(run, a, b):
     from ws73_connection_control import connect_phase, observe_phase_down
     from ws73_connection_objects import info
-    from ws73_channel_socket import credentials
+    from ws73_application_client import process_identity
     record = dict(status='RUNNING', mode=METHOD, phases=[], new_engine=False,
                   physical_acceptance=False, automatic_recovery_acceptance=False)
     run.data['ssap_initialization'] = record
@@ -222,7 +222,7 @@ def execute(run, a, b):
             raise CaptureError('two actual daemon socket additions after both eager SMTC binds required')
         pending = Invocation([str(run.args.slctl), '--adapter', target['path'], 'cancel-discovery'], 'cancel')
         phase['cancel'] = pending.row
-        phase['cancel']['credentials'] = credentials(pending.process.pid)
+        phase['cancel']['credentials'], phase['cancel']['process_status'] = process_identity(pending.process.pid)
         phase['disconnect_command'] = len(run.data['commands'])
         run.data['commands'].append(pending.row)
         run.save()
@@ -243,8 +243,7 @@ def execute(run, a, b):
             if phase['still_connected']['exit'] or phase['still_connected']['stderr']:
                 raise CaptureError('successful current physical-link observation before release required')
             info(phase['still_connected']['stdout'], selected)
-            phase['failed_owner'] = run.ctl(target, 'ssap-info', selected['path'])
-            owner_failure(phase['failed_owner'], target, selected)
+            phase['failed_owner'] = observe_owner_failure(run, target, selected)
             phase['fds_withdrawn'] = fd_observer.snapshot(n, 'withdrawn')
             before, bound, withdrawn = map(inodes, [phase['fds_before'], phase['fds_bound'], phase['fds_withdrawn']])
             if not before <= withdrawn <= bound or not (bound-before)-withdrawn:
@@ -277,10 +276,21 @@ def execute(run, a, b):
     run.save()
 
 
+def observe_owner_failure(run, owner, reference):
+    # ctl deliberately requires success. This negative scenario must retain
+    # the actual nonzero child result and validate its precise failure below.
+    run.alive()
+    row = run.command([str(run.args.slctl), '--adapter', owner['path'], 'ssap-info', reference['path']],
+                      3, collection='commands')
+    run.alive()
+    owner_failure(row, owner, reference)
+    return row
+
+
 def owner_failure(row, owner, reference):
     # Runtime session admission rejects the revoked epoch with EACCES (sle_sessions::session_limits).
     # A timeout, absent object or successful cached negotiation cannot substitute.
-    if (not isinstance(row.get('exit'), int) or row['exit'] <= 0
+    if (type(row.get('exit')) is not int or row['exit'] <= 0
             or row['args'][-2:] != ['ssap-info', reference['path']]
             or row['stdout'] != f"Selected {owner['path']}\n"
             or 'org.freedesktop.DBus.Error.Failed' not in row['stderr']

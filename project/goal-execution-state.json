@@ -3795,7 +3795,14 @@
         "methods": 847,
         "scope": "Offline fixtures/localsyscalls,actual helper/exact oldwire preservation only;not new physical or implementation formal proof"
       },
-      "pending_gate_cases": "Explicit original guestport/physical QMPslot0 owner role0 andslot1 owner role1;notfull2x2. Nativecontroller index isidentity only,neverQMPslot selection. Then normal two-role actualbusiness8RT sameVM."
+      "pending_gate_cases": "Explicit original guestport/physical QMPslot0 owner role0 andslot1 owner role1;notfull2x2. Nativecontroller index isidentity only,neverQMPslot selection. Then normal two-role actualbusiness8RT sameVM.",
+      "first_vm_failure": {
+        "path": ".dev/main-thread-01a120fe/ssap-initialization-us-v2",
+        "executed_tools": "67cd97d345f5d1b2a5b9a3b16aee1c1d3db57fe6",
+        "status": "FAIL",
+        "reason": "Expected EACCES reached success-only ctl wrapper; no assertion relaxed; new exact artifact rerun required",
+        "qualification": false
+      }
     }
   },
   "owned_ssap_c6_historical_batch": {

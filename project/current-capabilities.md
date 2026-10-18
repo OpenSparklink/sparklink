@@ -6,6 +6,8 @@ R5f9 目前只有测试专用 CMTC 选择器的离线检查及其对旧捕获的
 原artifact不变。新opt-in Managed撤销/原能力回复/daemon fd观察门禁已接入，847工具
 fixtures通过；初始化/退休/drain仍待准确 artifact 的 VM 门禁。fd 创建、CMTC Ready、
 SSAP Ready 分阶段检查，fd观察不证明内核引用/UAF/bind内部交错。
+67cd 新工具 VM 首轮因预期 EACCES 经过成功专用调用包装而提前退出，整体 FAIL
+证据保留，未授本批资格；修复负向 collector 后仍须重跑新 artifact。
 
 R5f8 的[新独立记录](../docs/evidence/ssap-requester-drain-held-business-20261018.json)已登记：
 B847 guest/Host、DA服务、2fc内核，两角色真实 requester 死亡后旧写回复排空、

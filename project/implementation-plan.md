@@ -23,7 +23,11 @@ CapabilityRsp 选择器。它只识别完整有界 aggregate 中的当前基本�
 物理 Down 会结束同一条链路两端，不将其解释为同行 controller 故障；另一只
 controller 的独立 Ready/管理推进与后续实际业务需分别检查。E/混合不授旧 PASS。
 
-已接入的首个实测切片是 `--ssap-initialization-verify`，尚待新 artifact 执行。
+已接入的首个实测切片是 `--ssap-initialization-verify`。67cd 工具首轮 VM 在预期
+EACCES 返回后被成功专用的 `ctl` 包装提前中止，整轮 FAIL 原样保留于
+`.dev/main-thread-01a120fe/ssap-initialization-us-v2`，不授资格。负向调用改用原始
+command collector 并继续准确校验非零退出及 EACCES；普通调用者凭据复用现有
+四项 capability 观察器，不放宽为缺字段通过。修复后需新 guest/Host artifact 重跑。
 单 bulk RX URB 持有 CMTC 时，后续同端 Down 也不能进入 guest，故使用真实 Managed
 lease Revoking 作原始屏障：原 lifetime 在该端规范快照中尚为 Up（Down仍被hold），
 旧 Engine 报当前 EACCES 并收敛 fd；

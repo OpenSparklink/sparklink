@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R6C_DISTINCT_REVISION_PAIR_VM_SCOPE_FULL_PLAN_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F10_DIRECTORY_OBSERVER_SCOPED_REAL_PASS_FULL_SCOPE_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:finite0.1.0-1/db724-2/rollback pair qualified;broader migration/debug/dwz/usrmerge/dependencies/supportmatrix/license/SBOM/provenance/CI release remain. New package actual-kernel/WS73 gates separate.",
@@ -1986,20 +1986,24 @@
       "debian-upgrade-rollback-r6c": {
         "level": "virtual_integration",
         "result": "PASS"
+      },
+      "controller-directory-observer-r5f10": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP03-WP18-R5f10-controller-directory-observer",
-      "production_behavior": "Bounded same-directory journal/Root wait/Rust Client/actual slctl are implemented. Eleven new targeted production/SDK checks,379 default Rust tests, strict Clippy and887 tooling scope observed; exact signed new artifact VM NOT_RUN,formal NOT_PROVEN. Prior qualified artifacts/source identities unchanged;no new qualification inferred.",
-      "state": "IMPLEMENTED_OFFLINE_CHECKED_NEW_VM_AND_FORMAL_QUALIFICATION_PENDING",
+      "production_behavior": "Same-directory bounded Root journal/typed Rust Client/actualslctl;fd0 compiledservice/4d9 host-guesttools/2fc kernel/SDK110US. Two actual default-observer roles plus seven preserved lengths/OwnedSSAP,72actualpeerreplies/198RF/zero capture drops. Original pre-QEMU toolFAIL preserved;379 cleanfd0 allfeatures/888tools/11targeted/116docs. No newformalproof;not NativeReady/Down/drain or complete state/EventStream;C/Python stream and per-app DiscoverySession stillmissing.",
+      "state": "EXACT_NEW_OBSERVER_TWO_ROLE_AND_SEVEN_LENGTH_PRESERVATION_SCOPED_REAL_PASS_FORMAL_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Seal exact signed observer source; build using shared stable target and global12/8 budget, then new SDK default-observer two-role U-only VM evidence plus original RF/connection/data/length/SSAP preservation. Afterwards continue original bounded lifecycle and architecture API/DiscoverySession/C-Python stream/full EventStream work. No control-combination census prerequisite;fullS0-S6/19WP/10FV/12DG/UserHostP4/VM-only/strictallocation/SDK110/naturalRCA/nonmanualrecovery unchanged."
+      "next": "Continue bounded architecture API/DiscoverySession and C/Python shared client stream, Native creator/parent cleanup and related Grant-credit-Ticket/deadline compositions. Preserve actual data/security/SSAP/multichannel/four-device delivery;do not wait for all control permutations. Journal notification/source refinement remains NOT_PROVEN. Natural startup/reenumeration/disappearance RCA and nonmanual recovery OPEN;UserHostP4;fullS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -4189,8 +4193,16 @@
     "controller_directory": {
       "execution_ref": "qualification_view.current_batch",
       "plan_ref": "implementation-plan.md#r5f10共享应用目录观察本批有限退出完整架构仍开放",
-      "qualification": "No new real-device or formal record yet; source-bound historical records stay unchanged.",
-      "full_scope_unchanged": true
+      "qualification": "Only source-bound finite Runtime directory observer and original preservation. No new formalproof;full state/EventStream,C/Python and per-app scan leases incomplete.",
+      "full_scope_unchanged": true,
+      "qualification_record": "controller-directory-observer-r5f10",
+      "report": "docs/evidence/controller-directory-observer-20261018.json",
+      "new_formal_proofs": 0,
+      "qualification_validation_receipt": {
+        "path": ".dev/main-thread-01a120fe/controller-directory-qualification-preflight-v2.json",
+        "sha256": "42e5a3791a07466a746879bc0427175bdce4a28c507f29cb2923f5f84b6ea280",
+        "scope": "Eight rejected source/artifact/scope/gate identity mutations. First noncanonical report-status preflight remains in source-bound report; no validator weakening or new formal proof."
+      }
     }
   },
   "owned_ssap_c6_historical_batch": {
@@ -4245,7 +4257,7 @@
       "1-2.1.3",
       "1-2.1.4"
     ],
-    "model_basis": "Actual26bVM HCC U/USB on1-1.1.1/.2;E1-2.1.1/.2 stilluserplacement/serialpinonly,nonewHCC.",
+    "model_basis": "Fresh physical snapshots use user placement/serial pins only; per-startup HCC U/USB belongs to current_finite_gate_ref exact artifacts. E still lacks new HCC qualification.",
     "runtime_directory": ".dev/main-thread-01a120fe",
     "source_worktree": ".dev/architecture-r4f2e-userspace-worktree",
     "usb_actions": "VM-only individual leaf passthrough;nohub/controller reset,power,detach or takeover;conflict/missing/identitychange stops for coordination",
@@ -4351,14 +4363,25 @@
         },
         "configuration_change": "No operational policy change: existing strict allocation and callers already match the requested four leaves. Do not replace current model mapping with historical U234.",
         "continuation": "R5f9g followed by original controller/dynamic creation retirement and related fd/deadline gates; use homogeneous U pair first, explicit E guest separately; mixed download refused until qualified per-device image routing exists."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/allocation-thread-shared-refresh-v2.json",
+        "sha256": "d7c55413ee8a302b7ea37b6b1c22cf61a8f9a91c39040102138231349cfa4176",
+        "scope": "Four allocated serial pins/hubs/shared PCI match; U5EP/E2EP. Visible USB fds/drivers and actual libvirt hostdev XML show no conflict; privileged fd visibility incomplete. All cooperative port leases/global build lock available. No USB operation, no E/mixed/cold-ROM qualification. Existing policy and caller constraints unchanged."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-thread-shared-refresh-v2.json",
-      "sha256": "d7c55413ee8a302b7ea37b6b1c22cf61a8f9a91c39040102138231349cfa4176",
-      "scope": "Four allocated serial pins/hubs/shared PCI match; U5EP/E2EP. Visible USB fds/drivers and actual libvirt hostdev XML show no conflict; privileged fd visibility incomplete. All cooperative port leases/global build lock available. No USB operation, no E/mixed/cold-ROM qualification. Existing policy and caller constraints unchanged."
+      "path": ".dev/main-thread-01a120fe/hardware-share-postflight-v1.json",
+      "sha256": "909d5d0a97344d1b86bad2f2016190199102ec6ffa578355ae83acb24e9f3aa5",
+      "scope": "Fresh original user allocation recheck after seven newU-onlypreservationVMs and prior twoobserverVMs. Four serialpins/hubs/sharedPCIstillmatch;U5EP/E2EP,visiblefds/libvirt/leases/buildlock noconflictobserved,privilegedfdvisibilitylimited. NoE/forbidden/hub/controlleroperation,noE/mixed/coldROMorotherthreadbusinessqualification.",
+      "guard_tests": {
+        "path": ".dev/main-thread-01a120fe/hardware-share-resource-tests-v1.log",
+        "sha256": "6295b930cb08dd4af701496d53d8f48116e48bcd5885f4be59afc82de1d9c3bc",
+        "methods": 15
+      },
+      "configuration_change": "Existing active worktree runner/config/callers already match requested strict four-leaf allocation and SDK110sets;no second selector/fallback, sourceWIP or sealed artifacts modified. Refreshed read-only current-state record only."
     },
-    "current_finite_gate_ref": "native-controller-user-return-r5f9h"
+    "current_finite_gate_ref": "controller-directory-observer-r5f10"
   },
   "native_return_controlled_gate": {
     "id": "R5f9g",

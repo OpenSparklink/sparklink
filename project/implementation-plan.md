@@ -600,6 +600,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 26b服务/ae40工具：四个真实Native返回/Connection退休切片及旧发布耦合反向FAIL | `real_device` | `PASS` |
 | 77服务/143工具：真实User返回跨controller退休两角色、新generation业务；原两FAIL保留 | `real_device` | `PASS` |
 | U247→Udb724→U247：实际开发Debian修订升级/回滚、匹配SDK和状态保留限定通过 | `virtual_integration` | `PASS` |
+| fd0服务/4d9工具：默认observer真实目录变化，两角色与七尺寸/Owned保持；原启动前FAIL保留 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -3019,10 +3020,13 @@ R3c准入隔离修复：b0f首次Client把所有controller属性查询作为选�
 旧owner／Gap／完整帧／取消／原期限；默认workspace、严格all-features/targets构建
 及工具负对照。新artifact VM要求默认observer实际slctl读取Snapshot→旧代际撤回→
 新代际发布，保持原daemon，复用原单叶QMP／Native返回检查及两端普通业务验证。
-再按准确产物回归已取得的长度／适用SSAP；这些门禁当前尚未记作新实机资格。
+再按准确产物回归已取得的长度／适用SSAP；本批有限结果已登记于
+[准确报告](../docs/evidence/controller-directory-observer-20261018.json)及结构化资格，
+编译服务、执行工具、内核与报告提交分别记录，不转授最新整树资格。
 
 Root观察者复用现有pipe记录器，真实子进程、UID/GID/caps、实际映像与源hash、
 退出及缺失／过期／错误输入必须核对。两U仅本线程白名单、SDK110US及共享12/8锁；
 不操作E／其他线程／整坞／PCI。非人工恢复与自然根因继续开放，原失败保留。
-新增journal通知的组合证明／实际VM资格分别记录；单测和旧实机结果不升级新HEAD。
+新增journal通知的组合证明仍未证明；实际VM限定资格与离线结果分别记录，
+不补齐C/Python、扫描租约或完整状态流，也不以单测和旧实机结果升级新HEAD。
 WP03／WP18，关联U#6／U#8／K#19；不创建新goal或总跟踪，不修改19WP/10FV/12DG。

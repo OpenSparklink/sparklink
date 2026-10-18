@@ -5,6 +5,7 @@
 
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
+| 普通观察者 Runtime 目录流 | [fd0服务／4d9工具的目录观察与原路径保持](../docs/evidence/controller-directory-observer-20261018.json) | 实际 Rust/slctl、同daemon与两角色新generation；不是Native Ready、Down或drain。C/Python stream、pre-Runtime完整状态和每应用扫描租约仍缺；新增形式化证明未取得 |
 | User Native 返回跨 controller 退休 | [77服务／143工具两角色与原两FAIL](../docs/evidence/native-controller-return-20261018.json) | 固定target slot0、User CUTC；精确owner屏障、迟到fd拒绝、真实peer结清、同daemon新generation后16次回复。不是Service/dynamic、完整fd组合、Kernel ref/callback/UAF或自然恢复资格 |
 | 实际 Native 返回与 Connection 退休 | [26b服务／ae40工具的四切片与旧版反向FAIL](../docs/evidence/native-return-connection-retirement-20261018.json) | Service/User各发起/接受，真实peer Down、迟到fd拒绝、旧对象/OS fd收敛及原业务；SDK live拒绝不是直接broker探针。Dynamic/controller移除、完整fd/期限及Kernel ref/callback/UAF/drain仍缺 |
 | Connection 创建排空与独立物理投影 | [生产函数／原反例及限定离线](../docs/evidence/native-creation-drain-offline-20261018.json)、[26b原路径实机保持](../docs/evidence/native-creation-drain-real-20261018.json) | 同一owner创建guard、惰性初始化及物理发布解耦；原有限fixture/保持范围不变，后续真实切片见上行，原fd失败未归因 |
@@ -20,18 +21,12 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
 接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
 
-Controller User 返回现有两角色独立 VM 限定通过：编译服务77f7953、执行工具1433132、
-原2fc内核及SDK110US；4次尝试中2次当前工具成功、2次原FAIL保留。精确原owner
-拒绝是返回释放屏障；先结清仍通电peer的连接，再执行原扫描断言与重新Ready后的
-普通业务。新16次回复/44次发现/8072 USB包零捕获丢包、36输入及8资格负对照见
-[准确来源及原失败](../docs/evidence/native-controller-return-20261018.json)。
-原77的Core/owner混淆、543的扫描EBUSY及清理0x0b没有被改成PASS；本地ObjectServer
-离线检查也没有升级为Kernel引用/callback排空或自然恢复证明。
-
-下一批继续Service/dynamic creator跨controller、另一物理target及相关取消、fd引用、
-撤权/原期限纵向组合；本批固定target User两角色和原四Connection切片不替代这些
-验收，不新增Engine或状态来源。
-数据／SSAP／安全／多通道和四设备继续并行，完整S0–S6及所有原始验收范围不变。
+各批准确身份、计数、原失败和限制只在对应报告及下方结构化记录维护；
+后续顺序以唯一实施计划和 `qualification_view.current_batch` 为准，避免历史批次的
+“下一批”文字成为第二套当前计划。目录撤回、精确owner拒绝、物理Down和引用排空
+分别验收；原Core/owner混淆、扫描EBUSY/清理0x0b及共同5秒Down失败仍保留。
+数据／SSAP／安全／多通道和四设备继续并行，不新增Engine或状态来源；
+完整S0–S6及所有原始验收范围不变。
 
 逐轮旧说明保留于[准确176f077快照](https://github.com/OpenSparklink/sparklink/blob/176f077b627c19b8be947075968d95a440a643b5/project/current-capabilities.md)
 及证据/历史入口；以下生成记录保留原PASS、FAIL和UNPROVED及全部required范围。
@@ -283,6 +278,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 26b服务/ae40工具：四个真实Native返回/Connection退休切片及旧发布耦合反向FAIL | `real_device` | `PASS` |
 | 77服务/143工具：真实User返回跨controller退休两角色、新generation业务；原两FAIL保留 | `real_device` | `PASS` |
 | U247→Udb724→U247：实际开发Debian修订升级/回滚、匹配SDK和状态保留限定通过 | `virtual_integration` | `PASS` |
+| fd0服务/4d9工具：默认observer真实目录变化，两角色与七尺寸/Owned保持；原启动前FAIL保留 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

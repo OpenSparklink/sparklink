@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+- [ExchangeInfo 等待期间撤权及实际请求／回复证据](ssap-initialization-exchange-revocation-20261018.json)：
+  1cd2bfd guest/Host、DA服务、2fc内核，仅U两口；两端CMTC先决、请求TX/对端RX/响应TX、
+  撤权后的原响应RX、fd收敛和后续8次应用回复/22次发现分别核对，4179USB记录／零丢包。
+  27证据负对照；私有审计初版的无效变异失败保留，v2确认每次输入确有改变。整项仍开放。
+
 - [CMTC 等待期间撤权、旧回复与 daemon fd 收敛](ssap-initialization-cmtc-revocation-20261018.json)：
   7b90092 guest/Host、DA服务、2fc内核，仅新分配 U 两口；两个实际角色切片、后续8次
   应用回复、22次发现，4143USB包／零丢包、21负对照。五个整体FAIL原样保留。

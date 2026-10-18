@@ -47,6 +47,24 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 设备冲突不抢占，构建不因提速被中断。新拓扑、E和混合结果分别授予准确 artifact，
 旧 PASS 和人工/受控操作不能充当新资格或自然恢复。
 
+## Down 期限失败后的被动观察
+
+`--connection-down-failure-observe-seconds` 仅用于现有真实双设备 Native VM 的
+`--qmp-hotplug --connection-verify --channel-socket-verify` 普通门禁。
+取值为0（默认关闭）、6或12秒，不能叠加其他故障、Agent或生命周期子门禁。
+新选项需要重新封存包含匹配 Host／guest 工具的 prepared root；旧镜像不会自动获得。
+
+原两端 canonical Down 共同5秒判定保持不变。只有它失败后，工具先保存原FAIL，
+再在清理前休眠并继续已有抓包，期间不发起测试控制请求；随后仍抛出原失败。
+失败记录的 `down_property_observation.passive_failure_capture` 含实际起止时刻、
+请求时长、前后命令数及完成／中断状态。中断不是完整观察，迟到Down不补为原期限内成功。
+没有触发原失败时，该选项不增加等待；一次成功也不能覆盖旧失败或证明根因消失。
+
+工具自身没有发命令不等于总线静默；必须核对两端原始USB，排除daemon、内核及
+其他控制流量的混杂。被动窗口、后续清理和实际Down分别标时，不能将清理触发的
+流量解释为自然事件。此观察不授RF时延、自动恢复或多URB优化资格，实机范围按
+准确 artifact 的[能力记录](../../project/current-capabilities.md)核对。
+
 ## 公共 C/Python 客户端的专用门禁
 
 `run --qmp-hotplug --connection-verify --connection-advertising negotiable-t --application-client-verify` 选择独立的

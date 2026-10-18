@@ -485,6 +485,15 @@ def validate_channel_death_mode(args, package):
         raise ValueError('dedicated actual daemon-channel death native VM required')
 
 
+def validate_down_failure_inputs(package):
+    # A new Host flag must not silently run an older guest without its hook.
+    for name in ['ws73_connection_control.py', 'ws73_target_control.py', 'ws73_target_init.sh']:
+        expected = file_record(HERE/name)
+        rows = [r for r in package.get('inputs', []) if Path(r['path']).name == name]
+        if len(rows) != 1 or rows[0]['sha256'] != expected['sha256']:
+            raise ValueError('passive Down capture requires freshly matched guest input: '+name)
+
+
 def _run(args):
     ordinary_identity()
     output=args.output.resolve()
@@ -545,6 +554,8 @@ def _run(args):
     if ssap_owned and (not channel_socket or channel_close or channel_burst or channel_boundaries or dynamic_channels or fairness):raise ValueError('owned SSAP requires separate ordinary socket baseline')
     if type(channel_bytes) is not int or not 29<=channel_bytes<=2042 or ((channel_bytes!=61 or channel_boundaries) and not channel_socket):raise ValueError('message size and boundaries require explicit supported socket gate')
     channel_rounds=getattr(args,'channel_socket_rounds',4)
+    from ws73_connection_control import requested_down_failure_observation
+    down_failure_observe=requested_down_failure_observation(args,passthrough=passthrough)
     if type(channel_rounds) is not int or not 1<=channel_rounds<=20 or (channel_rounds!=4 and not channel_socket):raise ValueError('bounded socket rounds require explicit socket gate')
     if channel_close and (not channel_socket or channel_bytes!=2042 or channel_rounds!=1 or channel_boundaries):raise ValueError('prefix-close requires explicit one-round 2042-byte socket gate')
     if channel_burst and (not channel_socket or channel_bytes!=2042 or channel_rounds!=16 or channel_close or channel_boundaries):raise ValueError('burst requires explicit16-round2042-byte socket gate')
@@ -734,6 +745,7 @@ def _run(args):
         m['application_client_verifier']=file_record(HERE/'ws73_application_client.py')
         m['application_role_verifier']=file_record(HERE/'ws73_application_role.py')
     m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
+    m['connection_down_failure_observe_seconds']=down_failure_observe
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
     m['channel_socket_close_prefix_requested']=channel_close
     m['channel_socket_burst_requested']=channel_burst
@@ -842,6 +854,8 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if down_failure_observe:
+            validate_down_failure_inputs(package)
         if ssap_initialization:
             from ws73_ssap_initialization import validate_qemu
             validate_qemu(package['qemu']['path'], initialization_stage)
@@ -955,6 +969,7 @@ def _run(args):
                      (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
+                     (f' ws73.down_failure_observe={down_failure_observe}' if down_failure_observe else '')+
                      (f' ws73.security_agent={agent_mode}' if agent_mode else '')+
                      (' ws73.recovery=1' if recovery else '')+
                      (' ws73.early_bootstrap_fault=1' if early_fault else '')+
@@ -1976,6 +1991,8 @@ def main():
             cmd.add_argument('--channel-socket-close-prefix',action='store_true',help='require captured first USB submit, final fd close, remaining PDU and actual peer/other-channel traffic')
             cmd.add_argument('--channel-socket-boundaries',action='store_true',help='require original EMSGSIZE and no USB traffic for oversized messages')
             cmd.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4,help='bounded application rounds per connection role')
+            cmd.add_argument('--connection-down-failure-observe-seconds',type=int,choices=[0,6,12],default=0,
+                             help='passive capture before cleanup after original Down timeout; original gate remains failed')
             cmd.add_argument('--dynamic-channel-burst',action='store_true',help='require actual dynamic C16x2042 burst/credit/peer-reply evidence;requires dynamic2042 gate')
             cmd.add_argument('--dynamic-channel-long-bytes',type=int,choices=[249,250,253,254,255,1024,2042],help='extend dynamic gate with long C channel and explicit lifetime slot exhaustion;requires --dynamic-channel-verify')
             cmd.add_argument('--channel-fairness-verify',action='store_true',help='separate short20/long16x2042 real concurrent channel progress,not fullfairness/performance proof')

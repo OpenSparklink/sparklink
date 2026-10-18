@@ -66,6 +66,55 @@ def canonical_link_state(text,owner,remote):
 DOWN_OBSERVATION_BUDGET_SECONDS = 5
 
 
+def requested_down_failure_observation(args, *, passthrough=None):
+    seconds = getattr(args, 'connection_down_failure_observe_seconds', 0)
+    if type(seconds) is not int or seconds not in (0, 6, 12):
+        raise ValueError('explicit passive Down failure observation must be 0,6,12 seconds')
+    if not seconds:
+        return 0
+    real = getattr(args, 'passthrough', False) if passthrough is None else passthrough
+    allowed = {'passthrough', 'qmp_hotplug', 'connection_verify', 'channel_socket_verify'}
+    if (not real or not getattr(args, 'connection_verify', False)
+            or not getattr(args, 'channel_socket_verify', False)
+            or any(value is True and key not in allowed for key, value in vars(args).items())
+            or any(getattr(args, key, None) for key in [
+                'security_agent', 'channel_benchmark', 'managed_partial_case',
+                'managed_connected_case', 'daemon_hold_case'])):
+        raise ValueError('passive Down failure capture requires a dedicated real ordinary socket gate')
+    return seconds
+
+
+def fail_down_observation(run, observation, message):
+    """Keep the original failure; optional quiet capture precedes cleanup.
+
+    This observer sleeps/saves only. Actual USB silence must separately be
+    checked in the two-end capture, not assumed from command counters.
+    """
+    seconds = getattr(getattr(run, 'args', None), 'connection_down_failure_observe_seconds', 0)
+    if seconds:
+        if type(seconds) is not int or seconds not in (6, 12):
+            raise ValueError('invalid passive Down failure observation')
+        row = dict(version=1, mode='PASSIVE_AFTER_ORIGINAL_DOWN_FAILURE', seconds=seconds,
+                   original_error=message, original_budget_seconds=observation['budget_seconds'],
+                   status='RUNNING_ORIGINAL_GATE_FAIL', start_wall_ns=time.time_ns(),
+                   start_monotonic_ns=round(time.monotonic()*1_000_000_000),
+                   command_count_before=len(run.data['commands']))
+        observation['passive_failure_capture'] = row
+        run.data.update(status='FAIL', error=message)
+        run.save()
+        complete = False
+        try:
+            time.sleep(seconds)
+            complete = True
+        finally:
+            row.update(end_wall_ns=time.time_ns(),
+                       end_monotonic_ns=round(time.monotonic()*1_000_000_000),
+                       command_count_after=len(run.data['commands']),
+                       status='FINISHED_ORIGINAL_GATE_FAIL' if complete else 'INTERRUPTED_ORIGINAL_GATE_FAIL')
+            run.save()
+    raise CaptureError(message)
+
+
 def await_down_properties(run, phase, caller, peer):
     """One original diagnostic deadline for both asynchronous physical ends.
 
@@ -81,11 +130,13 @@ def await_down_properties(run, phase, caller, peer):
     for owner, remote in [(caller, peer), (peer, caller)]:
         while True:
             if time.monotonic() >= deadline:
-                raise CaptureError('both real Down events must reach known canonical snapshots within shared budget')
+                fail_down_observation(run, observation,
+                    'both real Down events must reach known canonical snapshots within shared budget')
             row = run.ctl(owner, 'connections')
             if canonical_link_state(row['stdout'],owner,remote['address']) is False:
                 if time.monotonic() >= deadline:
-                    raise CaptureError('Down property receipt exceeded original shared budget')
+                    fail_down_observation(run, observation,
+                        'Down property receipt exceeded original shared budget')
                 observation['receipts'].append(dict(owner=owner, remote_address=remote['address'],
                                                      command=len(run.data['commands'])-1))
                 run.save()

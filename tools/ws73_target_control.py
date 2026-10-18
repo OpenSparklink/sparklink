@@ -59,6 +59,11 @@ class PassthroughControlRun(Run):
 
 
 class ConnectionControlRun(PassthroughControlRun):
+    def __init__(self, args):
+        super().__init__(args)
+        self.data['connection_down_failure_observe_seconds'] = getattr(args, 'connection_down_failure_observe_seconds', 0)
+        self.save()
+
     def phase(self, a, b, count, label):
         if label == 'initial':
             if getattr(self.args, 'ssap_initialization_verify', False):
@@ -138,6 +143,8 @@ def main():
     parser.add_argument('--channel-socket-close-prefix',action='store_true')
     parser.add_argument('--channel-socket-boundaries',action='store_true')
     parser.add_argument('--channel-socket-rounds',type=int,choices=range(1,21),default=4)
+    parser.add_argument('--connection-down-failure-observe-seconds',type=int,choices=[0,6,12],default=0,
+                        help='passive capture before cleanup only after original Down failure; does not extend its deadline')
     parser.add_argument('--dynamic-channel-burst',action='store_true')
     parser.add_argument('--dynamic-channel-long-bytes',type=int,choices=[249,250,253,254,255,1024,2042])
     parser.add_argument('--dynamic-channel-verify',action='store_true')
@@ -157,6 +164,9 @@ def main():
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
     parser.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t')
     args=parser.parse_args()
+    from ws73_connection_control import requested_down_failure_observation
+    try:requested_down_failure_observation(args)
+    except ValueError as error:parser.error(str(error))
     if args.application_client_verify and (not args.passthrough or not args.connection_verify or any(getattr(args,key,False) for key in ['channel_socket_verify','acb_transport_probe','security_agent','daemon_link_resync','channel_benchmark','dynamic_channel_verify','channel_fairness_verify'])):parser.error('application clients require a dedicated real connection gate')
     if args.application_client_verify and any(value for key,value in vars(args).items() if type(value) is bool and key not in ['passthrough','connection_verify','application_client_verify']):parser.error('application clients cannot combine independent lifecycle/fault gates')
     from ws73_ssap_initialization import requested

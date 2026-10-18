@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9C_STABLE_OWNER_FINITE_PASSES_ORIGINAL253_DOWN_FAILURE_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9D_PASSIVE_DOWN_FAILURE_CAPTURE_IMPLEMENTING_ORIGINAL253FAIL_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -4041,6 +4041,14 @@
           "path": ".dev/main-thread-01a120fe/native-owner-final-main-wip-preserved-v1.json",
           "sha256": "5f27e02909de70b50a08d5db1149f647d31185b348a848b8a6db992387129c2b",
           "bytes": 1559
+        },
+        "passive_down_followup": {
+          "id": "R5f9d",
+          "status": "IMPLEMENTED_TOOLS863_AND_STRICT_DOCS_OFFLINE_PASS_REAL_VM_PENDING",
+          "scope": "Original5s Down failure unchanged;optin6/12s quiet capture beforecleanup,no testcontrol commands;recordactualtiming/interruption. No newHost/Engine orRuntime change.",
+          "original_failure": "docs/evidence/native-service-owner-preservation-20261018.json",
+          "exit": "Accurate newtools/guest VM bounded diagnosis,independenttwo-endUSB window/cleanup/Down mapping. Noreproduction/activewindow remainsUNPROVED;oldFAILneveroverwritten.",
+          "full_scope_preserved": "S0-S6/19WP/10FV/12DG,VM-only,portpolicy,SDK110,shared12/8budget,UserHostP4,naturalRCA/nonmanualrecoveryallunchanged."
         }
       }
     }

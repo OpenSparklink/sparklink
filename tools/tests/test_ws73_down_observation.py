@@ -7,7 +7,8 @@ import sys
 import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_connection_control import await_down_properties, corroborate_down_property
+from ws73_connection_control import (await_down_properties, corroborate_down_property,
+                                    requested_down_failure_observation)
 from ws73_capture import CaptureError
 
 
@@ -41,6 +42,69 @@ def execute(delays):
 
 
 class Observation(unittest.TestCase):
+    def test_old_missing_or_duplicate_guest_inputs_are_rejected(self):
+        import ws73_target as target
+        rows=[target.file_record(target.HERE/name) for name in [
+            'ws73_connection_control.py','ws73_target_control.py','ws73_target_init.sh']]
+        target.validate_down_failure_inputs({'inputs':rows})
+        for selected in [[],rows[:-1],rows+[rows[0]],
+                         [dict(r,sha256='0'*64)if i==0 else r for i,r in enumerate(rows)]]:
+            with self.subTest(rows=len(selected)),self.assertRaises(ValueError):
+                target.validate_down_failure_inputs({'inputs':selected})
+
+    def test_passive_capture_is_explicit_bounded_and_separate_from_other_gates(self):
+        args=SimpleNamespace(connection_down_failure_observe_seconds=6,passthrough=True,
+                             connection_verify=True,channel_socket_verify=True)
+        self.assertEqual(requested_down_failure_observation(args),6)
+        self.assertEqual(requested_down_failure_observation(SimpleNamespace()),0)
+        for key,value in [('connection_down_failure_observe_seconds',True),
+                          ('connection_down_failure_observe_seconds',7),
+                          ('passthrough',False),('channel_socket_verify',False),
+                          ('ssap_initialization_verify',True),('security_agent','approve')]:
+            with self.subTest(key=key,value=value):
+                bad=SimpleNamespace(**vars(args));setattr(bad,key,value)
+                with self.assertRaises(ValueError):requested_down_failure_observation(bad)
+
+    def test_passive_window_keeps_original_failure_and_issues_no_control_command(self):
+        clock=Clock();run=Run(clock,{'/a':0,'/b':6});phase={}
+        run.args=SimpleNamespace(connection_down_failure_observe_seconds=6)
+        a={'path':'/a','address':'AA:AA:AA:AA:AA:AA','generation':1}
+        b={'path':'/b','address':'BB:BB:BB:BB:BB:BB','generation':2}
+        windows=[]
+        def sleep(seconds):
+            if seconds==6:
+                self.assertEqual(run.data['status'],'FAIL')
+                windows.append(len(run.data['commands']))
+            clock.sleep(seconds)
+        with patch('ws73_connection_control.time',SimpleNamespace(
+                monotonic=clock.monotonic,time_ns=clock.time_ns,sleep=sleep)):
+            with self.assertRaisesRegex(CaptureError,'shared budget'):
+                await_down_properties(run,phase,a,b)
+        observation=phase['down_property_observation'];row=observation['passive_failure_capture']
+        self.assertEqual(observation['budget_seconds'],5)
+        self.assertEqual(len(observation['receipts']),1)
+        self.assertEqual(row['status'],'FINISHED_ORIGINAL_GATE_FAIL')
+        self.assertEqual(row['command_count_before'],row['command_count_after'])
+        self.assertEqual(windows,[len(run.data['commands'])])
+        self.assertEqual(row['end_monotonic_ns']-row['start_monotonic_ns'],6_000_000_000)
+        with self.assertRaises(CaptureError):
+            corroborate_down_property(run.data,phase,b,{'wall_ns':7_000_000_000})
+
+    def test_interrupting_passive_window_is_not_a_completed_observation(self):
+        clock=Clock();run=Run(clock,{'/a':0,'/b':6});phase={}
+        run.args=SimpleNamespace(connection_down_failure_observe_seconds=6)
+        a={'path':'/a','address':'AA:AA:AA:AA:AA:AA','generation':1}
+        b={'path':'/b','address':'BB:BB:BB:BB:BB:BB','generation':2}
+        def sleep(seconds):
+            if seconds==6:raise KeyboardInterrupt()
+            clock.sleep(seconds)
+        with patch('ws73_connection_control.time',SimpleNamespace(
+                monotonic=clock.monotonic,time_ns=clock.time_ns,sleep=sleep)):
+            with self.assertRaises(KeyboardInterrupt):await_down_properties(run,phase,a,b)
+        self.assertEqual(run.data['status'],'FAIL')
+        self.assertEqual(phase['down_property_observation']['passive_failure_capture']['status'],
+                         'INTERRUPTED_ORIGINAL_GATE_FAIL')
+
     def test_delayed_physical_peer_has_original_bounded_receipt(self):
         run,phase,a,b=execute({'/a':0,'/b':1.11})
         self.assertEqual(phase['down_property_observation']['budget_seconds'],5)

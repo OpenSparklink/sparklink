@@ -808,8 +808,8 @@
   ],
   "issue_sync_status": "R5f8 newrequester plusindependentoldownerpreservation andactualpartialinit sourceaudit:fiveexistingissuesOPEN,originalbodyandoriginalcommentprefixpreserved;no partialclosure.",
   "issue_sync_receipt": {
-    "path": ".dev/main-thread-01a120fe/requester-issue-receipts-v2.json",
-    "sha256": "8c86b5a76d689c1b9ded9fe263b4d4df2a0fa8a5c755fc19c02852a1e3734e95",
+    "path": ".dev/main-thread-01a120fe/allocation-r5f9-issue-receipts-v1.json",
+    "sha256": "1bf47f22c0ea59a824a66801a0188e1eee42758208a115d19e72a6f99c351ba4",
     "comments": [
       "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245729849",
       "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245730189",
@@ -3776,7 +3776,14 @@
       "remaining": "All originalS0-S6/19WP/10FV/12DG,fullR5f9initcleanup,otherarchitecture,lifetimes,RCA/nonmanual recovery OPEN;goal active;E/mixed qualification notinherited.",
       "production_changed": false,
       "new_formal_proofs": 0,
-      "new_device_qualifications": 0
+      "new_device_qualifications": 0,
+      "source_commit": "457d05ce97dbdf385c79783f2a2f40b20ab5c653",
+      "strict_docs": {
+        "path": ".dev/main-thread-01a120fe/ssap-init-selector-docs-v1.log",
+        "sha256": "1ebd3a9d10b8019974772df5de2a8b5224b2e68ae2cc397d94982b4c12e5d965",
+        "scope": "116-document inventory,example/static checks,nitpicky warning-as-error HTML only;no new reader/device/browser/external-link qualification"
+      },
+      "latest_shared_build_observation": "Other-thread ws73-upstream run-kunit.py --jobs4 now holds same global lock;no local QEMU compile begun. Continue independent work and recheck before build;do not bypass/interrupt."
     }
   },
   "owned_ssap_c6_historical_batch": {

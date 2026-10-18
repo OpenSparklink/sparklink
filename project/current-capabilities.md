@@ -5,6 +5,7 @@
 
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
+| User Native 返回跨 controller 退休 | [77服务／143工具两角色与原两FAIL](../docs/evidence/native-controller-return-20261018.json) | 固定target slot0、User CUTC；精确owner屏障、迟到fd拒绝、真实peer结清、同daemon新generation后16次回复。不是Service/dynamic、完整fd组合、Kernel ref/callback/UAF或自然恢复资格 |
 | 实际 Native 返回与 Connection 退休 | [26b服务／ae40工具的四切片与旧版反向FAIL](../docs/evidence/native-return-connection-retirement-20261018.json) | Service/User各发起/接受，真实peer Down、迟到fd拒绝、旧对象/OS fd收敛及原业务；SDK live拒绝不是直接broker探针。Dynamic/controller移除、完整fd/期限及Kernel ref/callback/UAF/drain仍缺 |
 | Connection 创建排空与独立物理投影 | [生产函数／原反例及限定离线](../docs/evidence/native-creation-drain-offline-20261018.json)、[26b原路径实机保持](../docs/evidence/native-creation-drain-real-20261018.json) | 同一owner创建guard、惰性初始化及物理发布解耦；原有限fixture/保持范围不变，后续真实切片见上行，原fd失败未归因 |
 | 历史6dc Native 创建离开异步 worker | [生产 helper／guard／fd 离线](../docs/evidence/native-bind-offload-offline-20261018.json)、[原路径限定实机](../docs/evidence/native-bind-offload-real-20261018.json) | 原服务和VM执行源为6dc，终态修复d538仅离线；它们的资格不转授26b或整个当前HEAD |
@@ -19,16 +20,17 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
 接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
 
-Controller 受控返回前两轮 VM 均为 FAIL：首轮混淆 Core 与 owner 屏障；第二轮已
-观察精确 owner 退休及迟到 fd 拒绝，但 peer 连接未先结清，原扫描检查报 EBUSY，
-清理 scan-off 的0x0b亦保留。见[唯一计划](implementation-plan.md)，不记作整轮通过。
+Controller User 返回现有两角色独立 VM 限定通过：编译服务77f7953、执行工具1433132、
+原2fc内核及SDK110US；4次尝试中2次当前工具成功、2次原FAIL保留。精确原owner
+拒绝是返回释放屏障；先结清仍通电peer的连接，再执行原扫描断言与重新Ready后的
+普通业务。新16次回复/44次发现/8072 USB包零捕获丢包、36输入及8资格负对照见
+[准确来源及原失败](../docs/evidence/native-controller-return-20261018.json)。
+原77的Core/owner混淆、543的扫描EBUSY及清理0x0b没有被改成PASS；本地ObjectServer
+离线检查也没有升级为Kernel引用/callback排空或自然恢复证明。
 
-Controller 父级退休现有[补充离线检查](implementation-plan.md)
-仅覆盖生产调用链的有限依赖；尚无新的 controller 实机拔出/Native 返回排空资格，
-不将本地接口仍存在写成另一只设备业务通过。
-
-下一批继续controller/dynamic返回及相关取消、fd引用、撤权/原期限纵向组合；
-四个Connection切片不替代这些验收，不新增Engine或状态来源。
+下一批继续Service/dynamic creator跨controller、另一物理target及相关取消、fd引用、
+撤权/原期限纵向组合；本批固定target User两角色和原四Connection切片不替代这些
+验收，不新增Engine或状态来源。
 数据／SSAP／安全／多通道和四设备继续并行，完整S0–S6及所有原始验收范围不变。
 
 逐轮旧说明保留于[准确176f077快照](https://github.com/OpenSparklink/sparklink/blob/176f077b627c19b8be947075968d95a440a643b5/project/current-capabilities.md)
@@ -279,6 +281,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 连接级Native创建排空与独立物理投影：限定离线通过 | `offline` | `PASS` |
 | 26b十轮原路径实机保持：真实Native返回/parent屏障仍缺 | `real_device` | `PASS` |
 | 26b服务/ae40工具：四个真实Native返回/Connection退休切片及旧发布耦合反向FAIL | `real_device` | `PASS` |
+| 77服务/143工具：真实User返回跨controller退休两角色、新generation业务；原两FAIL保留 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -1,6 +1,17 @@
 # SparkLink / Linux 联合实施方案
 
-### R5f9h：实际 User Native 返回跨 controller 退休（首两轮实机FAIL保留，修正观察与peer结清顺序）
+### R5f9h：实际 User Native 返回跨 controller 退休（两角色限定通过，原两FAIL保留）
+
+准确服务77f7953／工具1433132／内核2fc及SDK110US的两独立角色VM已完成本批
+有限退出；[来源、原FAIL、原件hash与限定范围](../docs/evidence/native-controller-return-20261018.json)
+及结构化记录 `native-controller-user-return-r5f9h` 关联同一结果。固定target slot0，
+分别作为实际发起/接受者；精确原owner拒绝后释放真实bind返回，原申请得到退休错误，
+peer真实Disconnect/known Down及4→7→4个OS socket fd收敛后，原同行扫描启停
+断言通过。原daemon未重启，重新HCC/新generation后两角色共16次实际对端校验回复，
+44次发现，8072 USB包/零捕获丢包；原始HCC三次/VM，独立raw封装复核。
+13定向、879工具、116严格文档及36输入负对照通过；8项资格源码/缺产物/hash/范围/
+门禁负对照拒绝。登记器第一次因status用了说明字符串而拒绝，保留该日志，将说明
+移入detail后继续原v1枚举绑定，未削弱检查器。新增形式化证明0。
 
 本批复用既有单叶子 QMP remove/re-add、唯一 Native 返回库及 Root 观察器。
 每 VM 显式选择发起或接受角色；真实 `SYS_bind` 成功后保留原返回不超过两秒，
@@ -22,9 +33,9 @@ Kernel 或原期限；C库仍先执行真实 syscall，不伪造结果或协议�
 实际到达，但通电 peer 尚有物理连接，原 parent survivor scan 先执行并报 EBUSY；
 随后 scan-off 的0x0b亦保留。将同一真实 peer Disconnect/known Down/fd drain
 前移到 removed()，再执行原扫描断言；不把EBUSY/0x0b视为成功，不改生产Kernel。
-离线定向11项、工具877项通过；原ae40/26b四Connection切片、8业务回复及22
+初版离线定向11项、工具877项通过；随后修正的13/879见上。原ae40/26b四Connection切片、8业务回复及22
 发现匹配的原始输入经新公共解码器重放通过，不转授新运行资格。
-退出：两角色各一独立 VM、原 Root C bytes/加载库/daemon身份、真实两端 Up、
+本批有限退出（已逐项取得，不是完整生命周期退出）：两角色各一独立 VM、原 Root C bytes/加载库/daemon身份、真实两端 Up、
 peer Down、QMP单叶子证据及新注册 HCC/原业务均闭合；首 FAIL 与 expiry 原样保留。
 本项是受控 guest controller 移除，不是物理断电、Kernel ref/callback/UAF 证明或
 自然恢复资格；fd inode 收敛与 SDK 旧选择拒绝的范围分别表达。缺 lease/event 的
@@ -587,6 +598,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 连接级Native创建排空与独立物理投影：限定离线通过 | `offline` | `PASS` |
 | 26b十轮原路径实机保持：真实Native返回/parent屏障仍缺 | `real_device` | `PASS` |
 | 26b服务/ae40工具：四个真实Native返回/Connection退休切片及旧发布耦合反向FAIL | `real_device` | `PASS` |
+| 77服务/143工具：真实User返回跨controller退休两角色、新generation业务；原两FAIL保留 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9G_REAL_NATIVE_RETURN_FOUR_SLICES_AND_OLD_COUNTEREXAMPLE_SCOPED",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9H_USER_CONTROLLER_RETURN_TWO_ROLES_SCOPED",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1978,20 +1978,24 @@
       "native-return-connection-retirement-r5f9g": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "native-controller-user-return-r5f9h": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP17-WP18-R5f9g-actual-native-return",
-      "production_behavior": "Production26bunchanged;ae40VM-onlyrealSYSbindreturnlibrary/rootobserver. Service/Userxinitiating/accepting4slices:actualpeerDownwhileheld,oldobjectDownobservablebeforehandoff,lateUserfdrefused,fd/objectconverged,otherReady;8actualappreplies/22radio/4411USBdrop0,21evidencenegatives. Old6dcVMoriginalFAILwith479USBdrop0/realbindandtwoUpbutemptyphysicalviewbeforeactualreturn. FirstpreparesourceguardFAILpreserved,exactoldproduction/newtoolsoverlayusedwithoutweakeningguard. Tools871/directCprobe5offline;no newformalproof.",
-      "state": "R5F9G_FOUR_ACTUAL_RETURN_CONNECTION_DOWN_SLICES_PASS_OLD_PUBLICATION_COUNTEREXAMPLE_FAIL_RETAINED",
+      "id": "WP03-WP06-WP08-WP17-WP18-R5f9h-user-controller-return",
+      "production_behavior": "No production Rust/Kernel change;77service/143testtools/2fcKernel/SDK110US. Exact direct original-owner retiring barrier, actual held SYS_bind return and old user fd refusal, real peer settlement before original survivor scan, same daemon/new generation/HCC and16actualappreplies/44radio/8072USBdrop0. First77 Core/owner conflation FAIL and second543 scan-before-peer-settlement EBUSY/cleanup0x0b FAIL preserved. 13targeted/879tools/36input negatives/116docs;zero newformalproof.",
+      "state": "TWO_REAL_USER_CONTROLLER_ROLES_POST_READD_BUSINESS_SCOPED_PASS_TWO_RAW_FAILS_RETAINED",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Continueactualcontrollerretirement/dynamicNativecreatorandrelatedauthorcancel/release/finalfd/dup/SCM/originaldeadline/reusecompositionsusingsoleowner/tasks/Session/Grant-credit-Ticket. CurrentfourConnectionDownslicesandknown6dcpublicationcounterexamplearenotKernelref/callback/UAFdrain,controllerremoval,directbrokernewadmissionorfullfdproof. Keepdata/SSAP/security/multichannel/fourdeviceparallel,nofullcontrolprerequisite;old253FAIL/v4fdunattributed/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/deployment/releaseOPEN,UserHostP4,VM-only/strictports/SDK110/shared12or8unchanged."
+      "next": "Continue original dynamic Native creator/author cancel/release/last-fd/dup/SCM_RIGHTS/original deadline and Grant-credit-Ticket/late NOCP compositions with the same owner/Session. Two slot0 User controller roles do not complete service/dynamic/all device combinations or Kernel ref/callback/drain/UAF/firmware reuse proof. Keep real data/security/SSAP/multichannel/four-device vertical delivery parallel;not all control permutations as prerequisites. Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;UserHost P4;fullS0-S6/19WP/10FV/12DG/VM-only/strictports/SDK110/shared12or8unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -4305,36 +4309,41 @@
         "path": ".dev/main-thread-01a120fe/allocation-native-return-readonly-v3.json",
         "sha256": "52b7b62a2be91f9c240d49da6fc1d7e5f9bbb7f9016418cf8a58dad2b0e5efa1",
         "scope": "Fourpins/parents/PCIstillmatchafterpositiveandnegativeU-onlyVMs,no visibleWS73occupancy;E2EP/noHCC,rootfdvisibilitylimited,nototherthreadbusinessproof."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/allocation-thread-resource-refresh-v1.json",
+        "sha256": "548c0b9cfd4ff3d1a972e3f170ab5489bbb23d98b8b4f7d15a04b0faf503eb54",
+        "bytes": 4622,
+        "scope": "Four current user-allocated serial pins/hubs/shared PCI match; U5EP/E2EP; live libvirt XML and visible driver/fds show no allocated WS73/shared PCI occupancy; root fd visibility incomplete. All four cooperative port leases/build lock free. No USB open/download/reset/power/unbind/VM termination; no E/mixed/cold-ROM qualification or historical PASS transfer.",
+        "guard_tests": [
+          {
+            "path": ".dev/main-thread-01a120fe/allocation-thread-resource-guards-v1.log",
+            "sha256": "ff7f421153748c5c8fcbe92d884349e9bb1fb1521860a09c91e4760ae7a0ae84",
+            "bytes": 1809,
+            "methods": 10
+          },
+          {
+            "path": ".dev/main-thread-01a120fe/allocation-thread-build-guards-v1.log",
+            "sha256": "94b67c077419e2cd10580c6413cb45e29f92ed71d86c096da2e3849aed0f0746",
+            "bytes": 921,
+            "methods": 5
+          }
+        ],
+        "preserved_wip": {
+          "path": ".dev/main-thread-01a120fe/allocation-thread-resource-wip-v1.json",
+          "sha256": "6123ab48bb11556158ea3012f4f42ec0fe2971d2aa3c2b66a6edcc3db730051d",
+          "bytes": 1643
+        },
+        "configuration_change": "No operational policy change: existing strict allocation and callers already match the requested four leaves. Do not replace current model mapping with historical U234.",
+        "continuation": "R5f9g followed by original controller/dynamic creation retirement and related fd/deadline gates; use homogeneous U pair first, explicit E guest separately; mixed download refused until qualified per-device image routing exists."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-thread-resource-refresh-v1.json",
-      "sha256": "548c0b9cfd4ff3d1a972e3f170ab5489bbb23d98b8b4f7d15a04b0faf503eb54",
-      "bytes": 4622,
-      "scope": "Four current user-allocated serial pins/hubs/shared PCI match; U5EP/E2EP; live libvirt XML and visible driver/fds show no allocated WS73/shared PCI occupancy; root fd visibility incomplete. All four cooperative port leases/build lock free. No USB open/download/reset/power/unbind/VM termination; no E/mixed/cold-ROM qualification or historical PASS transfer.",
-      "guard_tests": [
-        {
-          "path": ".dev/main-thread-01a120fe/allocation-thread-resource-guards-v1.log",
-          "sha256": "ff7f421153748c5c8fcbe92d884349e9bb1fb1521860a09c91e4760ae7a0ae84",
-          "bytes": 1809,
-          "methods": 10
-        },
-        {
-          "path": ".dev/main-thread-01a120fe/allocation-thread-build-guards-v1.log",
-          "sha256": "94b67c077419e2cd10580c6413cb45e29f92ed71d86c096da2e3849aed0f0746",
-          "bytes": 921,
-          "methods": 5
-        }
-      ],
-      "preserved_wip": {
-        "path": ".dev/main-thread-01a120fe/allocation-thread-resource-wip-v1.json",
-        "sha256": "6123ab48bb11556158ea3012f4f42ec0fe2971d2aa3c2b66a6edcc3db730051d",
-        "bytes": 1643
-      },
-      "configuration_change": "No operational policy change: existing strict allocation and callers already match the requested four leaves. Do not replace current model mapping with historical U234.",
-      "continuation": "R5f9g followed by original controller/dynamic creation retirement and related fd/deadline gates; use homogeneous U pair first, explicit E guest separately; mixed download refused until qualified per-device image routing exists."
+      "path": ".dev/main-thread-01a120fe/allocation-native-controller-postflight-v1.json",
+      "sha256": "0c7673b258177a3f25e8ef2795cfbcb91ad63f0520d73f25dda95910d2659c71",
+      "scope": "Fourallocatedserialpins/hubs/sharedPCIstillmatchafter4U-onlyVMattempts. NoE/forbidden/hub/controllerreset/power/detach/takeover;U5EP/E2EP,rootFDvisibilitylimited. Nototherthreadbusiness,E/mixed/coldROMqualification."
     },
-    "current_finite_gate_ref": "native-return-connection-retirement-r5f9g"
+    "current_finite_gate_ref": "native-controller-user-return-r5f9h"
   },
   "native_return_controlled_gate": {
     "id": "R5f9g",
@@ -4375,7 +4384,7 @@
   },
   "controller_native_return_gate": {
     "id": "R5f9h",
-    "status": "TWO_RAW_VM_FAILURES_RETAINED_PEER_SETTLEMENT_ORDER_CORRECTION_PENDING",
+    "status": "TWO_REAL_USER_CONTROLLER_ROLES_SCOPED_PASS_BOTH_ORIGINAL_VM_FAILS_RETAINED",
     "plan": "project/implementation-plan.md",
     "production_change": false,
     "production_service": "77f7953e1273065e9a538ab554d2fad6a90c3067",
@@ -4390,7 +4399,7 @@
     ],
     "exit": "Actual original user SYS_bind held across the existing one-leaf QMP removal; original controller retirement and other Ready before explicit return; late fd refused; same daemon, new generation/HCC then ordinary two-role real random payload validation/replies with original RF/capture proofs.",
     "limits": "Controlled VM guest removal only; physical power is unchanged. Root OS fd/inode observations are not kernel ref/callback/UAF/drain or automatic recovery proof. E/mixed/cold-ROM and all uncompleted original scopes remain OPEN.",
-    "new_real_runs": 2,
+    "new_real_runs": 4,
     "new_formal_proofs": 0,
     "offline_checks": {
       "targeted_methods": 11,
@@ -4405,10 +4414,11 @@
       "observed_cli_error": "immutable identity unavailable or changed: registration removed",
       "actual_bind_hold_ns": 127232790,
       "reason": "ListAdapters queries Core directly; SDK old selection refusal is not evidence that the daemon owner has observed retirement. Existing slktest re-resolves Connection after obtaining fd. Original strict owner refusal assertion retained; new direct old-owner OpenChannel refusal will provide the correct release barrier. No observed business stray/UAF or confirmed production revoke defect.",
-      "original_inputs_retained": true
+      "original_inputs_retained": true,
+      "historical_attempt_only": true
     },
     "owner_barrier_correction_checks": {
-      "status": "OFFLINE_SOURCE_BOUND_PASS_REAL_PENDING",
+      "status": "HISTORICAL_543_OFFLINE_PASS_REAL_OUTCOME_SEPARATELY_BOUND_TO143",
       "targeted_methods": 12,
       "tool_methods": 878,
       "strict_documents": 116,
@@ -4418,7 +4428,9 @@
         "tools/ws73_target.py": "61a44f1ad22078dc7809f680549b6862d0e4c69b61efc21500e5c635d3b90ffd",
         "tools/tests/test_ws73_native_controller_return.py": "c1ffaef1dc26f162f9c410ac1924b562cfa46984af835193bdfcaf0a55c4eb67"
       },
-      "rule": "Only exact original-broker owner-retiring error releases the hold; Core/SDK refusal, other errors and new fd success do not. Original late-fd assertion unchanged."
+      "rule": "Only exact original-broker owner-retiring error releases the hold; Core/SDK refusal, other errors and new fd success do not. Original late-fd assertion unchanged.",
+      "source": "543b370bed9c3c9c9acca73c1bedf07a1f5ba2d5",
+      "current_result_ref": "native-controller-user-return-r5f9h"
     },
     "second_failure": {
       "manifest": ".dev/main-thread-01a120fe/native-controller-initiator-us-v2/manifest.json",
@@ -4429,7 +4441,14 @@
       "error": "parent survivor scan EBUSY before live peer connection settlement",
       "cleanup_failure": "scan off returned firmware0x0b; not converted to success",
       "reason": "Guest detach leaves chip radio powered. Existing parent Run scans the survivor before before_readd; peer Disconnect/known Down/drain must occur in removed() before that original assertion. Move the same real settlement, keep scan assertion and both original failures.",
-      "acceptor_not_run": true
-    }
+      "acceptor_not_run": true,
+      "historical_attempt_only": true
+    },
+    "successful_current_tool_vms": 2,
+    "executed_tools": "14331322d9dfd824a25e98405f992c7266b443c9",
+    "report": "docs/evidence/native-controller-return-20261018.json",
+    "qualification_record": "native-controller-user-return-r5f9h",
+    "remaining": "Continue original dynamic Native creator/author cancel/release/last-fd/dup/SCM_RIGHTS/original deadline and Grant-credit-Ticket/late NOCP compositions with the same owner/Session. Two slot0 User controller roles do not complete service/dynamic/all device combinations or Kernel ref/callback/drain/UAF/firmware reuse proof. Keep real data/security/SSAP/multichannel/four-device vertical delivery parallel;not all control permutations as prerequisites. Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;UserHost P4;fullS0-S6/19WP/10FV/12DG/VM-only/strictports/SDK110/shared12or8unchanged.",
+    "next": "Continue original dynamic Native creator/author cancel/release/last-fd/dup/SCM_RIGHTS/original deadline and Grant-credit-Ticket/late NOCP compositions with the same owner/Session. Two slot0 User controller roles do not complete service/dynamic/all device combinations or Kernel ref/callback/drain/UAF/firmware reuse proof. Keep real data/security/SSAP/multichannel/four-device vertical delivery parallel;not all control permutations as prerequisites. Natural startup/reenumeration/disappearance RCA and nonmanual recovery remain OPEN;UserHost P4;fullS0-S6/19WP/10FV/12DG/VM-only/strictports/SDK110/shared12or8unchanged."
   }
 }

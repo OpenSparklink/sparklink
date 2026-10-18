@@ -20,6 +20,68 @@ def application_environment(root=Path('/')):
     return dict(PYTHONPATH=os.pathsep.join(str(root/p) for p in ['usr/share/sparklink/python','usr/share/sparklink/tools']),LIBSPARKLINK_PATH=str(root/'usr/lib/libsparklink.so.0'))
 
 
+def process_identity(pid):
+    identity=credentials(pid)
+    status=Path(f'/proc/{pid}/status').read_text()
+    fields=dict(line.split(':',1) for line in status.splitlines() if ':' in line)
+    identity['capabilities']['CapInh']=fields['CapInh'].strip()
+    identity['gids']=list(map(int,fields['Gid'].split()))
+    identity['groups']=list(map(int,fields['Groups'].split()))
+    return identity,status
+
+
+def ssap_receipt(app,entry):
+    if app['environment']!=application_environment() or app['exit'] or app['stderr']:
+        raise CaptureError('actual successful SSAP consumer and staged SDK required')
+    identity=app['credentials']
+    if identity['uids']!=[1000]*4 or set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in identity['capabilities'].values()):
+        raise CaptureError('ordinary cap-zero SSAP application required')
+    lines=app['stdout'].splitlines()
+    if len(lines)!=2 or json.loads(lines[0])!=dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):
+        raise CaptureError('original retained-caller start barrier required')
+    operation,path,handle,expected=app['ssap_operation'],app['ssap_path'],app['ssap_handle'],app['ssap_expected']
+    if operation not in ('ssap-read','ssap-write') or path!=entry['object']['path'] or not 1<=handle<=65535 or len(bytes.fromhex(expected))!=32:
+        raise CaptureError('original exact SSAP caller identity and bounded value required')
+    if lines[1]!=f'SsapPeerValue: operation={operation} path={path} handle={handle} value={expected}':
+        raise CaptureError('actual SDK must validate the complete peer result')
+    prefix=['/bin/ws73-application-client-c'] if app['api']=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+    args=prefix+['ssap',str(entry['owner']['index']),str(entry['owner']['generation']),path,operation,str(handle),expected]
+    if operation=='ssap-write':args.append(expected)
+    if app['api']not in ('c','python') or app['args']!=args:
+        raise CaptureError('exact actual SSAP executable and arguments required')
+
+
+def ssap_command(run,row,entry,args,expected):
+    if not isinstance(expected,bytes) or len(expected)!=32:raise CaptureError('original random expected SSAP value required')
+    position=row['owners'].index(entry);api='c' if position==row['phase'] else 'python'
+    command=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['ssap',str(entry['owner']['index']),str(entry['owner']['generation']),args[1],args[0],args[2],expected.hex()]
+    if args[0]=='ssap-write':command.append(args[3])
+    items=row.setdefault('ssap_language_clients',[]);number=len(items)
+    stdout=run.output/f'app-ssap-{row["phase"]}-{number}-{api}.stdout';stderr=run.output/f'app-ssap-{row["phase"]}-{number}-{api}.stderr'
+    app=dict(api=api,args=command,position=position,environment=application_environment(),ssap_operation=args[0],ssap_path=args[1],ssap_handle=int(args[2]),ssap_expected=expected.hex(),start_wall_ns=time.time_ns(),output_files=[str(stdout),str(stderr)])
+    items.append(app);run.data.setdefault('ssap_values',[]).append(app);run.save()
+    with stdout.open('xb')as out,stderr.open('xb')as err:
+        proc=subprocess.Popen(command,env=dict(os.environ,**app['environment']),stdin=subprocess.PIPE,stdout=out,stderr=err)
+        try:
+            app['pid']=proc.pid;app['credentials'],app['process_status']=process_identity(proc.pid);run.save()
+            end=time.monotonic()+5
+            while True:
+                lines=stdout.read_text().splitlines()
+                if len(lines)==1 and json.loads(lines[0])==dict(stage='ssap_start_barrier',api=api,client_closed=True):break
+                if proc.poll()is not None or time.monotonic()>=end:raise CaptureError('actual SDK SSAP original start barrier failed')
+                time.sleep(.01)
+            app['start_barrier_wall_ns']=time.time_ns();run.save()
+            proc.stdin.write(b'start\n');proc.stdin.flush()
+            # Supervisor budget is separate; the child retains its original5s.
+            proc.wait(timeout=7)
+        finally:
+            if proc.poll()is None:proc.kill()
+            proc.wait();proc.stdin.close()
+            app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=stdout.read_text(),stderr=stderr.read_text());run.save()
+    ssap_receipt(app,entry)
+    return app
+
+
 def receipts(app, entry):
     if app.get('environment')!=application_environment():raise CaptureError('exact staged SDK environment required')
     try:rows=[json.loads(line) for line in app['stdout'].splitlines()]
@@ -52,13 +114,8 @@ def execute(run, phase):
                 stdout=run.output/f'app-client-{n}-{api}.stdout';stderr=run.output/f'app-client-{n}-{api}.stderr'
                 app['output_files']=[str(stdout),str(stderr)];row['applications'].append(app);run.save()
                 proc=subprocess.Popen(args,env=dict(os.environ,**environment),stdin=subprocess.PIPE,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
-                processes.append((proc,app));app['pid']=proc.pid;app['credentials']=credentials(proc.pid)
-                status=Path(f'/proc/{proc.pid}/status').read_text()
-                fields=dict(line.split(':',1) for line in status.splitlines() if ':' in line)
-                app['credentials']['capabilities']['CapInh']=fields['CapInh'].strip()
-                app['credentials']['gids']=list(map(int,fields['Gid'].split()))
-                app['credentials']['groups']=list(map(int,fields['Groups'].split()))
-                app['process_status']=status;run.save()
+                processes.append((proc,app));app['pid']=proc.pid
+                app['credentials'],app['process_status']=process_identity(proc.pid);run.save()
                 end=time.monotonic()+5
                 while True:
                     lines=stdout.read_text().splitlines()
@@ -74,6 +131,11 @@ def execute(run, phase):
                 receipts(app,row['owners'][app['position']])
             run.alive()
             for entry in row['owners']:run.check(entry['owner'])
+            from ws73_ssap_value import execute as ssap_execute
+            row['ssap_language_required']=True;run.save()
+            ssap_execute(run,row,value_command=lambda entry,args,expected:ssap_command(run,row,entry,args,expected))
+            run.alive()
+            for entry in row['owners']:run.check(entry['owner'])
             row.update(status='APPLICATION_CLIENT_EVIDENCE_PENDING',end_wall_ns=time.time_ns());run.save()
         except BaseException as exc:
             row.update(status='FAIL',error=str(exc));raise
@@ -84,6 +146,35 @@ def execute(run, phase):
                 if proc.stdin:proc.stdin.close()
                 if 'exit' not in app:app.update(exit=proc.returncode,stdout=Path(app['output_files'][0]).read_text(),stderr=Path(app['output_files'][1]).read_text(),end_wall_ns=time.time_ns())
             row.setdefault('end_wall_ns',time.time_ns());run.save()
+
+
+def corroborate_ssap(rows,capture):
+    from ws73_ssap_value import corroborate as value_corroborate
+    sdus=reassemble_acb(capture);proofs=[];payloads=set()
+    for n,row in enumerate(rows):
+        if row.get('ssap_language_required')is not True:raise CaptureError('current gate requires actual SDK SSAP consumers')
+        apps=row.get('ssap_language_clients',[])
+        if len(apps)!=24:raise CaptureError('both directions/four repeated read-write-read SDK calls required')
+        used=[]
+        for item in row.get('ssap_values',[]):
+            for name in ('read_before','write','read_after'):
+                app=item[name];position=item['sender'];entry=row['owners'][position]
+                expected_api='c' if position==n else 'python'
+                if app not in apps or app in used or app['position']!=position or app['api']!=expected_api:
+                    raise CaptureError('actual independent SDK calls and swapped API roles required')
+                ssap_receipt(app,entry);used.append(app)
+        if len(used)!=24:raise CaptureError('every SSAP application must belong to one actual operation')
+        def matched(entry,direction,payload,item):
+            owner,obj=entry['owner'],entry['object']
+            found=[s for s in sdus if (s['bus'],s['device'],s['handle'],s['direction'],s['data'])==(owner['bus'],owner['device'],obj['handle'],direction,payload.hex()) and item['start_wall_ns']<=s['wall_ns']<=item['end_wall_ns']]
+            if len(found)!=1:raise CaptureError('one actual SDK SSAP TX/opposite USB RX in its original interval required')
+            return found[0]
+        values,_=value_corroborate(row,matched)
+        for value in values:
+            if value['value']in payloads:raise CaptureError('fresh SSAP payloads required across connection roles')
+            payloads.add(value['value'])
+        proofs.append(dict(phase=n,applications=apps,values=values))
+    return dict(status='C_PYTHON_SSAP_VALUE_USB_CORROBORATED',operations=16,api_calls=48,proofs=proofs)
 
 
 def corroborate(run,capture):
@@ -114,13 +205,27 @@ def corroborate(run,capture):
                 leg[direction]=matches[0]
             legs.append(leg)
         proofs.append(dict(phase=n,applications=values,legs=legs))
-    return dict(status='C_PYTHON_BASIC_APPLICATION_USB_AND_PEER_SCOPED_PASS',round_trips=2,proofs=proofs,remaining=['Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification','Other lifecycle combinations and original gates remainrequired'])
+    ssap=corroborate_ssap(rows,capture)
+    return dict(status='C_PYTHON_CHANNEL_AND_SSAP_APPLICATION_USB_SCOPED_PASS',round_trips=2,proofs=proofs,ssap=ssap,remaining=['Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification','Other lifecycle combinations and original gates remainrequired'])
 
 
 def valid_summary(proof):
     """Terminal shape check only; never substitutes for raw corroborate()."""
     try:
-        if proof['status']!='C_PYTHON_BASIC_APPLICATION_USB_AND_PEER_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
+        if proof['status']!='C_PYTHON_CHANNEL_AND_SSAP_APPLICATION_USB_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
+        ssap=proof['ssap']
+        if ssap['status']!='C_PYTHON_SSAP_VALUE_USB_CORROBORATED' or ssap['operations']!=16 or ssap['api_calls']!=48 or len(ssap['proofs'])!=2:return False
+        for n,row in enumerate(ssap['proofs']):
+            if row['phase']!=n or len(row['values'])!=8 or len(row['applications'])!=24:return False
+            for app in row['applications']:
+                if app['position']not in (0,1) or app['api']!=('c' if app['position']==n else 'python') or app['exit'] or app['stderr']:return False
+            for value in row['values']:
+                if len(value['wire'])!=6 or len(value['uuid_wire'])!=2:return False
+                legs=list(value['wire'])
+                for item in value['uuid_wire']:legs.extend([item['request'],item['response']])
+                for leg in legs:
+                    a,b=leg['tx'],leg['rx'];raw=bytes.fromhex(a['data'])
+                    if raw[:2]!=b'\x0a\0' or len(raw)<6 or int.from_bytes(raw[2:4],'little')!=len(raw)-4 or a['data']!=b['data'] or (a['bus'],a['device'])==(b['bus'],b['device']):return False
         frames=set()
         for n,row in enumerate(proof['proofs']):
             if row['phase']!=n or len(row['legs'])!=2:return False

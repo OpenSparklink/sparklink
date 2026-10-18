@@ -5,14 +5,14 @@ from ws73_ssap_value import corroborate
 from ws73_capture import CaptureError
 
 class ActualValueEvidence(unittest.TestCase):
-    def fixture(self):
+    def fixture(self,namespace=0):
         owners=[dict(owner=dict(path=f'/adapter{i}'),object=dict(path=f'/adapter{i}/link')) for i in range(2)]
         row=dict(owners=owners,ssap_values=[],ssap_local_registrations=[]);wire=[]
         previous=[bytes([1]*32),bytes([2]*32)]
         for i,o in enumerate(owners):row['ssap_local_registrations'].append(dict(owner=o,start=1,handle=2,registration=dict(exit=0,stdout='SsapLocalService: start=1 end=2 properties=2\n')))
         for n in range(4):
             for sender,target in [(0,1),(1,0)]:
-                v=n.to_bytes(4,'little')+hashlib.sha256(bytes([n,sender])).digest()[:28];before=previous[target];item=dict(sender=sender,target=target,sequence=n,handle=2,value=v.hex(),before=before.hex(),start_wall_ns=len(wire)+1,end_wall_ns=len(wire)+20)
+                v=n.to_bytes(4,'little')+hashlib.sha256(bytes([namespace,n,sender])).digest()[:28];before=previous[target];item=dict(sender=sender,target=target,sequence=n,handle=2,value=v.hex(),before=before.hex(),start_wall_ns=len(wire)+1,end_wall_ns=len(wire)+20)
                 for name,op,value in [('read_before','ssap-read',before),('write','ssap-write',v),('read_after','ssap-read',v)]:item[name]=dict(exit=0,stdout=f"SsapPeerValue: operation={op} path=/adapter{sender}/link handle=2 value={value.hex()}\n",start_wall_ns=item['start_wall_ns'],end_wall_ns=item['end_wall_ns'])
                 item['local_check']=dict(exit=0,stdout=f'SsapLocalValue: handle=2 value={v.hex()}\n');row['ssap_values'].append(item);previous[target]=v
                 packets=[(sender,target,b'\x08\x03\x02\0\0'),(target,sender,b'\x09\x03'+before),(sender,target,b'\x0d\x23\x02\0\0'+v),(target,sender,b'\x0e\x03\x02\0\0'+v),(sender,target,b'\x08\x03\x02\0\0'),(target,sender,b'\x09\x03'+v)]
@@ -38,8 +38,8 @@ class ActualValueEvidence(unittest.TestCase):
         row,matched,_=self.fixture();row['ssap_values'][1]['value']=row['ssap_values'][0]['value']
         with self.assertRaises(CaptureError):corroborate(row,matched)
 
-    def uuid_fixture(self):
-        row,matched,wire=self.fixture();row['ssap_read_uuid_required']=True
+    def uuid_fixture(self,namespace=0):
+        row,matched,wire=self.fixture(namespace);row['ssap_read_uuid_required']=True
         uuid=bytes(range(16));request=b'\x0a\x01\x10\x00\xff\xff\x00'+uuid
         for r in row['ssap_local_registrations']:r['property_uuid']=uuid.hex()
         for item in row['ssap_values']:

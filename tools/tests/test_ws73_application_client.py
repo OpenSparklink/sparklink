@@ -13,12 +13,43 @@ from ws73_application_client import corroborate, valid_summary, application_envi
 from ws73_capture import CaptureError
 from ws73_target import run_exit_code
 import ws73_target as target
+import test_ws73_ssap_value as value_cases
+
+
+def sdk_ssap_fixture(row,sdus):
+    """Adapt existing explicit SSAP golden fixture to SDK process receipts.
+
+    No successful verifier stub: the production capture and SSAP corroborators
+    consume every actual-format request/reply and both endpoint fixture records.
+    """
+    n=row['phase'];base,_,wire=value_cases.ActualValueEvidence().uuid_fixture(n)
+    owners=row['owners']
+    for i,item in enumerate(base['ssap_local_registrations']):item['owner']=owners[i]
+    row.update({k:v for k,v in base.items() if k!='owners'})
+    row['ssap_language_required']=True;row['ssap_language_clients']=[]
+    normal_count=8*12
+    for i,item in enumerate(row['ssap_values']):
+        start=n*10000+1000+i*100;item.update(start_wall_ns=start,end_wall_ns=start+60)
+        for name,offset in [('uuid_read_before',1),('read_before',10),('write',20),('read_after',30),('uuid_read_after',40)]:
+            item[name].update(start_wall_ns=start+offset,end_wall_ns=start+offset+5)
+        for name,key,operation in [('read_before','before','ssap-read'),('write','value','ssap-write'),('read_after','value','ssap-read')]:
+            position=item['sender'];entry=owners[position];api='c'if position==n else 'python';app=item[name]
+            arguments=(['/bin/ws73-application-client-c']if api=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['ssap',str(entry['owner']['index']),str(entry['owner']['generation']),entry['object']['path'],operation,str(item['handle']),item[key]]
+            if operation=='ssap-write':arguments.append(item['value'])
+            barrier=json.dumps(dict(stage='ssap_start_barrier',api=api,client_closed=True))
+            app.update(position=position,api=api,args=arguments,environment=application_environment(),ssap_operation=operation,ssap_path=entry['object']['path'],ssap_handle=item['handle'],ssap_expected=item[key],stdout=barrier+'\n'+app['stdout'],stderr='',credentials=dict(uids=[1000]*4,capabilities={k:'0'for k in ['CapEff','CapPrm','CapAmb','CapInh']}))
+            row['ssap_language_clients'].append(app)
+        normal=wire[i*12:(i+1)*12];uuid=wire[normal_count+i*8:normal_count+(i+1)*8]
+        for part,offset in [(normal[:4],10),(normal[4:8],20),(normal[8:12],30),(uuid[:4],1),(uuid[4:8],40)]:
+            for position,direction,payload,_ in part:
+                entry=owners[position];owner,obj=entry['owner'],entry['object']
+                sdus.append(dict(bus=owner['bus'],device=owner['device'],handle=obj['handle'],direction=direction,data=payload.hex(),wall_ns=start+offset+1))
 
 
 def fixture():
     rows=[];sdus=[]
     for n in range(2):
-        owners=[dict(owner=dict(index=i,generation=10+i,bus=1,device=2+i),object=dict(generation=10+i,lifetime=n+1,handle=i+3)) for i in range(2)]
+        owners=[dict(owner=dict(index=i,generation=10+i,bus=1,device=2+i,path=f'/adapter{i}'),object=dict(generation=10+i,lifetime=n+1,handle=i+3,path=f'/adapter{i}/link')) for i in range(2)]
         request=n.to_bytes(4,'little')+bytes([10+n])*57;reply=n.to_bytes(4,'little')+bytes([20+n])*57
         apps=[]
         for i in [0,1]:
@@ -27,12 +58,13 @@ def fixture():
             sent,received=(reply,request) if i else (request,reply)
             complete=dict(stage='complete',api=api,sent=sent.hex(),received=received.hex(),last_close_rebind='NotSupported')
             apps.append(dict(position=i,api=api,environment=application_environment(),stdout=json.dumps(ready)+'\n'+json.dumps(complete)+'\n',stderr='',exit=0,credentials=dict(uids=[1000]*4,capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']})))
-        row=dict(phase=n,owners=owners,request=request.hex(),reply=reply.hex(),applications=apps,start_wall_ns=100+n*100,end_wall_ns=199+n*100,status='APPLICATION_CLIENT_EVIDENCE_PENDING')
+        row=dict(phase=n,owners=owners,request=request.hex(),reply=reply.hex(),applications=apps,start_wall_ns=100+n*10000,end_wall_ns=9999+n*10000,status='APPLICATION_CLIENT_EVIDENCE_PENDING')
         rows.append(row)
         for source,target,payload in [(0,1,request),(1,0,reply)]:
             frame=(b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload).hex()
             for i,direction in [(source,'out'),(target,'in')]:
-                sdus.append(dict(bus=1,device=2+i,handle=3+i,direction=direction,data=frame,wall_ns=150+n*100))
+                sdus.append(dict(bus=1,device=2+i,handle=3+i,direction=direction,data=frame,wall_ns=150+n*10000))
+        sdk_ssap_fixture(row,sdus)
     return dict(application_clients=rows),sdus
 
 
@@ -68,10 +100,11 @@ class ApplicationClientEvidence(unittest.TestCase):
             with self.subTest(key=key):self.assertEqual(run_exit_code(bad),1)
         bad=copy.deepcopy(record);bad['application_client_corroboration']['proofs'][0]['legs'].pop();self.assertEqual(run_exit_code(bad),1)
         bad=copy.deepcopy(record);bad['qemu_exit']=1;self.assertEqual(run_exit_code(bad),1)
+        bad=copy.deepcopy(record);bad['application_client_corroboration'].pop('ssap');self.assertEqual(run_exit_code(bad),1)
 
     def test_missing_changed_duplicate_and_wrong_lifetime_rejected(self):
         def mutate(name,run,sdus):
-            if name=='missing-peer':sdus.pop()
+            if name=='missing-peer':sdus.pop(3)
             elif name=='changed-payload':sdus[0]['data']='00'
             elif name=='duplicate-capture':sdus.append(sdus[0])
             elif name=='stale-handle':sdus[0]['handle']=99
@@ -87,3 +120,16 @@ class ApplicationClientEvidence(unittest.TestCase):
         for name in ['missing-peer','changed-payload','duplicate-capture','stale-handle','truncated-app','wrong-lifetime','root','inherited-cap','diagnostic','missing-phase','failure','echo']:
             run,sdus=fixture();mutate(name,run,sdus)
             with self.subTest(name=name),patch('ws73_application_client.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(run,{})
+
+    def test_ssap_clients_wire_and_original_result_are_mandatory(self):
+        for case in ['missing-required','missing-call','wrong-api','wrong-output','wrong-args','root','late-window','missing-wire']:
+            run,sdus=fixture();row=run['application_clients'][0];app=row['ssap_values'][0]['read_before']
+            if case=='missing-required':row.pop('ssap_language_required')
+            elif case=='missing-call':row['ssap_language_clients'].pop()
+            elif case=='wrong-api':app['api']='python'
+            elif case=='wrong-output':app['stdout']=app['stdout'].replace(app['ssap_expected'],'00'*32)
+            elif case=='wrong-args':app['args'][0]='/bin/slctl'
+            elif case=='root':app['credentials']['uids']=[0]*4
+            elif case=='late-window':app['start_wall_ns']=app['end_wall_ns']+1
+            elif case=='missing-wire':sdus.pop(4)
+            with self.subTest(case=case),patch('ws73_application_client.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(run,{})

@@ -3,11 +3,14 @@ import re,secrets,time
 from ws73_channel_socket import CaptureError
 
 
-def execute(run,row):
+def execute(run,row,*,value_command=None):
     row['ssap_value_required']=True;row['ssap_read_uuid_required']=True;row['ssap_update_local_rejection_required']=True;row['ssap_values']=[]
     owners=row['owners'];local=[]
-    def command(owner,args):
-        receipt=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],*args],10,collection='ssap_values')
+    def command(owner,args,expected=None):
+        if value_command is not None and args[0] in ('ssap-read','ssap-write'):
+            receipt=value_command(owner,args,expected)
+        else:
+            receipt=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],*args],10,collection='ssap_values')
         if receipt['exit']:raise CaptureError('actual SSAP application operation failed')
         return receipt
     for owner in owners:
@@ -33,10 +36,10 @@ def execute(run,row):
                 item=dict(sequence=sequence,sender=sender,target=target,handle=prop['discovered_handle'],before=prop['value'].hex(),value=payload.hex(),start_wall_ns=time.time_ns())
                 item['property_uuid']=prop['property_uuid']
                 item['uuid_read_before']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
-                item['read_before']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])])
-                item['write']=command(source,['ssap-write',source['object']['path'],str(prop['handle']),payload.hex()])
+                item['read_before']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],prop['value'])
+                item['write']=command(source,['ssap-write',source['object']['path'],str(prop['handle']),payload.hex()],payload)
                 item['local_check']=command(destination,['ssap-local-read',str(prop['handle'])])
-                item['read_after']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])])
+                item['read_after']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],payload)
                 item['uuid_read_after']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
                 item['end_wall_ns']=time.time_ns();row['ssap_values'].append(item);run.save()
                 def peer_value(record,operation,value):

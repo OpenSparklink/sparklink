@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "result": "HARNESS_IMPLEMENTED_OFFLINE_CHECKED_NEW_VM_PENDING",
+  "production_sdk_code": "22cd8cb9794d5880ba43da417f243b77085e8603",
+  "behavior": "Existing one-shotC/Python consumers addssap mode usingpublicConnection;no Host/codec/receive loop. Clientcloses beforeexplicitstartbarrier;original5s retained. ExistingSSAPvalue/discovery/localcheck/wirecorroboration reused;onlyread/shortwrite actions replaceCLIwithactualpublicSDK.",
+  "expected_new_real_gate": "Bothconnectionroles:originalCUTCpair and16SSAPread-write-read groups/48SDKcalls,opposite localapplicationvaluecheck andbothendUSB/HCC. Currentnewverdict requiresallSSAPevidence;oldbasic004creportsneedoriginalverifier,notnewqualification.",
+  "checks": {
+    "verifier_methods": 5,
+    "tool_tests": 704,
+    "real_private_bus_consumers": "Actual C/Python positiveSSAP mode pluswrongexpectedvalue negative;original14RPC checks preserved then4consumerRPCs,explicitexit1/comparisonerrorrequired,notgenericcrash.",
+    "clippy": "strictworkspace/alltargets/allfeatures -D warnings",
+    "new_real_device_runs": 0,
+    "new_formal_proofs": 0
+  },
+  "references": [
+    {
+      "repository": "communication_nearlink_service",
+      "head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+      "path": "services/stack/src/cp/bsl/sle/servm/ssap/src/ssapc_client.c",
+      "sha256": "2cd6e88a828ecbd78f326cb2c88c728d8eb40fd1e78bca002ee34765fd5204ba"
+    },
+    {
+      "repository": "libws73-usb",
+      "head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+      "path": "src/sle73/sle73_ssaps.c",
+      "sha256": "52ae4dd4fb357500836f4c1c68165407ad5a375f5b33ef38bd8e7bc64691379c"
+    }
+  ],
+  "reference_boundary": "Compared pinnedHostreadresult/verifywriteecho semantics;ouralreadyqualifiedvaluegate usesactualpeer echoresponseandoppositelocaldatabasecheck. ThinSDKnevercopiesinputasresult. No referenceprotocolcodecopied,noreferenceimplementationtreatedasstandardjudgement.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f3-ssap-client-verifier-v1.log",
+      "sha256": "9fca728fd0568f93325a2a1754e88f30a758fc184fcc1ac8694a469607d28db0",
+      "bytes": 1088
+    },
+    {
+      "path": ".dev/architecture-r5f3-ssap-tools-v1.log",
+      "sha256": "e1acfed28dbf7e9737260a5c8a4deb5478bdbc558ba214a140c5432bda560871",
+      "bytes": 117012
+    },
+    {
+      "path": ".dev/architecture-r5f3-ssap-consumer-integration-v2.log",
+      "sha256": "3bd5d26e5e9bb75c5ce3d9fa1eacf7076c996d7daa568a06679a2af63130b3ca",
+      "bytes": 891
+    },
+    {
+      "path": ".dev/architecture-r5f3-ssap-consumer-budget-v2.json",
+      "sha256": "1054771d2db3a87fb1bf9f5c94bcce3e77929915d455eb2873b69bf66f396837",
+      "bytes": 921
+    },
+    {
+      "path": ".dev/architecture-r5f3-ssap-harness-clippy-v1.log",
+      "sha256": "440142b605654f5fdd93b88d7b49e27b41e0a2e09875b85655671c551fc8678f",
+      "bytes": 547
+    },
+    {
+      "path": ".dev/architecture-r5f3-ssap-harness-clippy-budget-v1.json",
+      "sha256": "f487b25b00068667274450876d525664fe8d1541a2705143c61f6e57989c3a5a",
+      "bytes": 954
+    }
+  ],
+  "remaining": [
+    "Newexactsource candidatebundle/VM preparation andrealpositivegate stillrequired. F7previouscandidatehash includesoldtestscope;do notbypass nativeRoot sourcehash checks.",
+    "Apps-onlySSAPpermissions andfulllifecycle/originaldeadline/highlevelclients/commonAPI/R6c remain;fulloriginalscope unchanged.",
+    "Historybasis/real3ff and004c tool identities preserved. No currentfullqualificationorissueclosure. NaturalRCA/nonmanualrecovery OPEN."
+  ]
+}

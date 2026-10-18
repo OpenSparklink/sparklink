@@ -55,7 +55,39 @@ static size_t bytes(const char *hex, uint8_t *out) {
 static void hex_print(const uint8_t *p,size_t n) {
     for (size_t i=0;i<n;i++) printf("%02x",p[i]);
 }
+/* Single existing SSAP RPC, not a wire codec or a second receive loop. */
+static int ssap_mode(int argc,char **argv) {
+    if ((argc!=8 && argc!=9) || !*argv[4] || strlen(argv[4])>256) return 2;
+    int writing=!strcmp(argv[5],"ssap-write");
+    if ((!writing && strcmp(argv[5],"ssap-read")) || argc!=(writing?9:8)) return 2;
+    uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[6]);
+    if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX) return 2;
+    uint8_t expected[2042],value[2042],received[2042];
+    size_t expected_n=bytes(argv[7],expected),value_n=writing?bytes(argv[8],value):0;
+    const uint64_t deadline=now_ns()+5000000000ULL;
+    struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
+    struct SlkClient *client=NULL;struct SlkConnection *link=NULL;int status=1;
+    int error=slk_client_open_system(deadline,&client);
+    if (error) { errno=-error;goto done; }
+    error=slk_client_connection(client,&id,(const uint8_t *)argv[4],strlen(argv[4]),deadline,&link);
+    if (error) { errno=-error;goto done; }
+    slk_client_close(client);client=NULL;
+    printf("{\"stage\":\"ssap_start_barrier\",\"api\":\"c\",\"client_closed\":true}\n");fflush(stdout);
+    char start[6];
+    if (wait_fd(STDIN_FILENO,POLLIN,deadline) || read(STDIN_FILENO,start,sizeof start)!=(ssize_t)sizeof start || memcmp(start,"start\n",sizeof start)) { errno=EPROTO;goto done; }
+    uintptr_t length=0;
+    if (writing) error=slk_connection_ssap_write(link,(uint16_t)handle,0,value,value_n,received,sizeof received,&length,deadline);
+    else error=slk_connection_ssap_read(link,(uint16_t)handle,0,received,sizeof received,&length,deadline);
+    if (error) { errno=-error;goto done; }
+    if (length!=expected_n || memcmp(received,expected,expected_n)) { errno=EPROTO;goto done; }
+    printf("SsapPeerValue: operation=%s path=%s handle=%"PRIu64" value=",argv[5],argv[4],handle);hex_print(received,length);printf("\n");fflush(stdout);
+    status=0;
+done:
+    if (status) perror("application-client-c-ssap");
+    slk_connection_close(link);slk_client_close(client);return status;
+}
 int main(int argc,char **argv) {
+    if (argc>1 && !strcmp(argv[1],"ssap")) return ssap_mode(argc,argv);
     if (argc!=7 || strlen(argv[3])>256) return 2;
     uint64_t index=number(argv[1]),generation=number(argv[2]),role=number(argv[4]);
     if (index>UINT16_MAX || !generation || role>1) return 2;

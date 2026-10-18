@@ -2,8 +2,9 @@
 //! Fixture replies are explicit denials/AF_UNIX fds, never a successful channel.
 mod support;
 use std::{
+    io::{BufRead, Read, Write},
     path::PathBuf,
-    process::Command,
+    process::{Command, Stdio},
     sync::{
         Arc,
         atomic::{AtomicU64, AtomicUsize, Ordering},
@@ -64,7 +65,7 @@ impl Link {
     async fn read_ssap_value(&self, handle: u16, minimum: u32) -> zbus::fdo::Result<Vec<u8>> {
         self.1.fetch_add(1, Ordering::SeqCst);
         match (handle, minimum) {
-            (17, 2) => Ok(vec![0x34, 0x78]),
+            (17, 0 | 2) => Ok(vec![0x34, 0x78]),
             (18, 0) => Ok(vec![0; 65536]), // Over the C output budget, not RF/MTU.
             (19, 0) => {
                 self.2.store(12, Ordering::SeqCst);
@@ -146,15 +147,33 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "C header/compile failed: {}",
         String::from_utf8_lossy(&compile.stderr)
     );
+    let sdk_probe = directory.join("sdk-ssap-probe");
+    let compiled = Command::new(std::env::var("CC").unwrap_or("cc".into()))
+        .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
+        .arg(root.join("tools/testing/application_client/client.c"))
+        .arg("-I")
+        .arg(root.join("crates/libsparklink/include"))
+        .arg(&library)
+        .arg("-o")
+        .arg(&sdk_probe)
+        .output()?;
+    anyhow::ensure!(
+        compiled.status.success(),
+        "actual SDK consumer compile: {}",
+        String::from_utf8_lossy(&compiled.stderr)
+    );
     // Explicit qualification retention keeps the actual executable and outputs;
     // recompiling a consumer later cannot reconstruct its execution identity.
     let identities = Command::new("sha256sum")
         .arg(&library)
         .arg(&runtime_library)
         .arg(&c)
+        .arg(&sdk_probe)
         .arg(root.join("crates/libsparklink/include/sparklink.h"))
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.c"))
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.py"))
+        .arg(root.join("tools/testing/application_client/client.c"))
+        .arg(root.join("tools/testing/application_client/client.py"))
         .output()?;
     anyhow::ensure!(
         identities.status.success() && identities.stderr.is_empty(),
@@ -235,6 +254,86 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         14,
         "exact finite RPC count; invalid, expired and retired inputs never retry"
     );
+    lifetime.store(11, Ordering::SeqCst);
+    // Exercise the actual VM consumer binaries/modes, not an internal wrapper.
+    // They retain the original5s deadline and wait for this explicit start.
+    for language in ["c", "python"] {
+        for correct in [true, false] {
+            let mut command = Command::new("timeout");
+            command.arg("20s");
+            if language == "c" {
+                command.arg(&sdk_probe);
+            } else {
+                command
+                    .arg("python3")
+                    .arg(root.join("tools/testing/application_client/client.py"));
+            }
+            let mut process = command
+                .args([
+                    "ssap",
+                    "2",
+                    "7",
+                    PATH,
+                    "ssap-read",
+                    "17",
+                    if correct { "3478" } else { "0000" },
+                ])
+                .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+                .env("LIBSPARKLINK_PATH", &runtime_library)
+                .env("PYTHONPATH", root.join("bindings/python"))
+                .env("LD_LIBRARY_PATH", &directory)
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()?;
+            let mut stdout = std::io::BufReader::new(process.stdout.take().unwrap());
+            let mut barrier = String::new();
+            stdout.read_line(&mut barrier)?;
+            let expected = if language == "c" {
+                r#"{"stage":"ssap_start_barrier","api":"c","client_closed":true}"#
+            } else {
+                r#"{"stage": "ssap_start_barrier", "api": "python", "client_closed": true}"#
+            };
+            assert_eq!(barrier.trim_end(), expected);
+            process.stdin.as_mut().unwrap().write_all(b"start\n")?;
+            let mut remaining = String::new();
+            stdout.read_to_string(&mut remaining)?;
+            let result = process.wait_with_output()?;
+            let label = format!(
+                "sdk-{language}-{}",
+                if correct { "positive" } else { "negative" }
+            );
+            std::fs::write(
+                directory.join(format!("{label}.stdout")),
+                barrier + &remaining,
+            )?;
+            std::fs::write(directory.join(format!("{label}.stderr")), &result.stderr)?;
+            if correct {
+                assert!(result.status.success());
+                assert!(result.stderr.is_empty());
+                assert_eq!(
+                    remaining,
+                    format!(
+                        "SsapPeerValue: operation=ssap-read path={PATH} handle=17 value=3478\n"
+                    )
+                );
+            } else {
+                assert_eq!(result.status.code(), Some(1));
+                assert!(remaining.is_empty());
+                if language == "c" {
+                    assert_eq!(
+                        result.stderr,
+                        b"application-client-c-ssap: Protocol error\n"
+                    );
+                } else {
+                    assert!(String::from_utf8_lossy(&result.stderr).ends_with(
+                        "ValueError: actual peer SSAP result differs from expected random value\n"
+                    ));
+                }
+            }
+        }
+    }
+    assert_eq!(ssap_calls.load(Ordering::SeqCst), 18);
     let unchanged = Command::new("sha256sum")
         .arg("--check")
         .arg(directory.join("materials.sha256"))

@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+- [Requester 退出、旧写回复排空与挂起期间真实业务](ssap-requester-drain-held-business-20261018.json)：
+  B847 guest/Host、DA服务、2fc内核；保留首轮整体FAIL，第二轮两角色、8次实际业务回复、
+  3963USB包／零丢包、32负对照。旧读/新读、完整复用、部分初始化和恢复仍开放。
+
+
 - [新分配 U 双设备：实际 HCC 与 owner／原期限限定门禁](shared-allocation-u-gate-20261018.json)：
   DA 服务、cd7 guest/Host、2fc 内核；4235 USB包／零丢包，8次实际业务回复、27负对照。
   E及混合未验；前后其他六口描述不变不等于另一线程业务隔离资格。

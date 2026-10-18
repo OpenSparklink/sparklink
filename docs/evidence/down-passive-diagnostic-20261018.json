@@ -1,0 +1,1625 @@
+{
+  "schema_version": 1,
+  "implementation_commit": "8f51d592f1d28234fc5fe4e02d39b4abea01545f",
+  "level": "real_device",
+  "result": "UNPROVED",
+  "compiled_userspace": "ccef31048111a87d721057cb28a058cde543b245",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "executed_host_tools": "8f51d592f1d28234fc5fe4e02d39b4abea01545f",
+  "executed_guest_tools": "8f51d592f1d28234fc5fe4e02d39b4abea01545f",
+  "architecture_complete": false,
+  "new_formal_proofs": 0,
+  "bounds": {
+    "real_vms": 4,
+    "finite_successful_vms": 4,
+    "original_down_failure_reproductions": 0,
+    "real_failure_observer_executions": 0,
+    "ordinary_round_trips": 32,
+    "radio_matches": 88,
+    "evidence_negative_controls": 24,
+    "offline_tool_tests": 863,
+    "strict_document_inventory": 116
+  },
+  "scope": [
+    "Only this thread U 1-1.1.1/1-1.1.2; runtime HCC independently U/USB; explicit SDK110US allthreeimages; warm/software ROM return,not genuinecoldboot. NoEorforbiddenport/hub/controlleroperation.",
+    "Production daemon/SDK ccef310 and kernel2fc artifacts reused unchanged. New8f51 Host/guest diagnostic tools;four normal253-byte two-role socket/connect/discovery gates,notnewprotocol capability.",
+    "Allfour originallybounded gates passed without triggering the passive failure branch. The real-VM failure observer itself was NOT exercised. Original253failedattempt and seven-size FAIL remain immutable and required.",
+    "No natural root-cause,nonmanualrecovery,physicalunplug,fullrelease/finalfd/dup/SCM/revoke/Down/deadline/reuse,Nativebind/taskjoin/ref/UAF/drain,performance/multiURB,RFtiming,E/mixed/coldROM orwholearchitecture qualification."
+  ],
+  "remaining": [
+    "Original peerDown beyond shared5s remains unexplained. Four nonreproductions do not prove stability or a fix. No extra retry beyond this declared bound.",
+    "Failure-hook5s+6s behavior has actual production-runner offline fixture checks only; needs a genuine original failure and independent all-endpoint USB-silence audit before interpreting a passive real window.",
+    "Keep Native return/parent cancellation/retirement barriers and task/reference/callback drain,full original lifecycle matrix,data/credit/security/SSAP/multichannel/four-device and installation/release work parallel.",
+    "FullS0-S6/19WP/10FV/12DG and originalissue scopes unchanged;UserHostP4. Natural startup/re-enumeration/disappearance RCA andnonmanualrecovery remainOPEN;QMP/artificialpower/plug/injection cannot substitute."
+  ],
+  "original_failure": {
+    "report": "docs/evidence/native-service-owner-preservation-20261018.json",
+    "report_commit": "bb210732d830488b9b4859a19b17ccabf98ba6f5",
+    "result": "FAIL",
+    "replaced": false
+  },
+  "gates": [
+    {
+      "name": "offline-runner-tests",
+      "result": "PASS",
+      "status": "PASS",
+      "tests": 863
+    },
+    {
+      "name": "strict-document-build",
+      "result": "PASS",
+      "status": "PASS",
+      "documents": 116
+    },
+    {
+      "name": "warm-253-diagnostic-v1",
+      "result": "PASS",
+      "status": "PASS",
+      "round_trips": 8,
+      "radio_matches": 22,
+      "capture_packets": 4223,
+      "dropped": 0
+    },
+    {
+      "name": "warm-253-diagnostic-v2",
+      "result": "PASS",
+      "status": "PASS",
+      "round_trips": 8,
+      "radio_matches": 22,
+      "capture_packets": 4223,
+      "dropped": 0
+    },
+    {
+      "name": "warm-253-diagnostic-v3",
+      "result": "PASS",
+      "status": "PASS",
+      "round_trips": 8,
+      "radio_matches": 22,
+      "capture_packets": 4223,
+      "dropped": 0
+    },
+    {
+      "name": "warm-253-diagnostic-v4",
+      "result": "PASS",
+      "status": "PASS",
+      "round_trips": 8,
+      "radio_matches": 22,
+      "capture_packets": 4223,
+      "dropped": 0
+    },
+    {
+      "name": "real-failure-observer-executed",
+      "result": "UNPROVED",
+      "status": "UNPROVED",
+      "observations": 0
+    },
+    {
+      "name": "original-down-root-cause",
+      "result": "UNPROVED",
+      "status": "UNPROVED"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "packets": 4223,
+      "drops": 0,
+      "passive_windows": [],
+      "disconnects": [
+        {
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792312438284106000,
+            "urb": 18446613941538545216,
+            "record": 1846,
+            "file_offset": 279002,
+            "usb_sha256": "778e8258f2f19f6d4f520b3dae3dad066c99ed6e12644b9f8e9b0d030ad13782",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 118,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792312438284283000,
+              "urb": 18446613941538545216,
+              "record": 1847,
+              "file_offset": 279210
+            }
+          },
+          "down": [
+            {
+              "event": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792312438287171000,
+                "urb": 18446613940535980800,
+                "record": 1850,
+                "file_offset": 279628,
+                "hcc_offset": 92,
+                "usb_sha256": "9e05c5ac0c2a744aa22fb7b985aa0e54ec565e7692091cb7fa9ba9a4ef07f72d",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000010"
+              },
+              "after_out_ns": 3065000
+            },
+            {
+              "event": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792312438287275000,
+                "urb": 18446613940545521728,
+                "record": 1852,
+                "file_offset": 279966,
+                "hcc_offset": 92,
+                "usb_sha256": "2b856c8ac810569dd382e1b05dd818ce5b726f690dc5b0e7566dcbacb4ded81b",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000011"
+              },
+              "after_out_ns": 3169000
+            }
+          ]
+        },
+        {
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792312443209059000,
+            "urb": 18446613941539952320,
+            "record": 3306,
+            "file_offset": 517434,
+            "usb_sha256": "d82e3fa18562f1ce6bdef658eea3521980e425154758ebf0597c637234fc16e6",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 217,
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792312443209249000,
+              "urb": 18446613941539952320,
+              "record": 3307,
+              "file_offset": 517642
+            }
+          },
+          "down": [
+            {
+              "event": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792312443212459000,
+                "urb": 18446613940545521728,
+                "record": 3310,
+                "file_offset": 518060,
+                "hcc_offset": 92,
+                "usb_sha256": "d492d62897421c895b7156ae72bcb31377e916a87cd8dbfb2bb00885245d2560",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000010"
+              },
+              "after_out_ns": 3400000
+            },
+            {
+              "event": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792312443212525000,
+                "urb": 18446613940535980800,
+                "record": 3312,
+                "file_offset": 518398,
+                "hcc_offset": 92,
+                "usb_sha256": "89b355f4b06f44339282e68c04ae78101f4db301a28a3c7c3bea1c56258d533d",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000011"
+              },
+              "after_out_ns": 3466000
+            }
+          ]
+        }
+      ],
+      "round_trips": 8,
+      "radio_matches": 22,
+      "timeout_reproduced": false,
+      "observation_branch_real_executed": false
+    },
+    {
+      "attempt": 2,
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "packets": 4223,
+      "drops": 0,
+      "passive_windows": [],
+      "disconnects": [
+        {
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792312514428006000,
+            "urb": 18446618564624999552,
+            "record": 1846,
+            "file_offset": 279002,
+            "usb_sha256": "778e8258f2f19f6d4f520b3dae3dad066c99ed6e12644b9f8e9b0d030ad13782",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 118,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792312514428217000,
+              "urb": 18446618564624999552,
+              "record": 1847,
+              "file_offset": 279210
+            }
+          },
+          "down": [
+            {
+              "event": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792312514431259000,
+                "urb": 18446618564068547008,
+                "record": 1850,
+                "file_offset": 279628,
+                "hcc_offset": 92,
+                "usb_sha256": "9e05c5ac0c2a744aa22fb7b985aa0e54ec565e7692091cb7fa9ba9a4ef07f72d",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000010"
+              },
+              "after_out_ns": 3253000
+            },
+            {
+              "event": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792312514431348000,
+                "urb": 18446618564554987776,
+                "record": 1852,
+                "file_offset": 279966,
+                "hcc_offset": 92,
+                "usb_sha256": "2b856c8ac810569dd382e1b05dd818ce5b726f690dc5b0e7566dcbacb4ded81b",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000011"
+              },
+              "after_out_ns": 3342000
+            }
+          ]
+        },
+        {
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792312519204111000,
+            "urb": 18446618564153813440,
+            "record": 3306,
+            "file_offset": 517434,
+            "usb_sha256": "d82e3fa18562f1ce6bdef658eea3521980e425154758ebf0597c637234fc16e6",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 217,
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792312519204387000,
+              "urb": 18446618564153813440,
+              "record": 3307,
+              "file_offset": 517642
+            }
+          },
+          "down": [
+            {
+              "event": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792312519206602000,
+                "urb": 18446618564554987776,
+                "record": 3310,
+                "file_offset": 518060,
+                "hcc_offset": 92,
+                "usb_sha256": "d492d62897421c895b7156ae72bcb31377e916a87cd8dbfb2bb00885245d2560",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000010"
+              },
+              "after_out_ns": 2491000
+            },
+            {
+              "event": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792312519206653000,
+                "urb": 18446618564068547008,
+                "record": 3312,
+                "file_offset": 518398,
+                "hcc_offset": 92,
+                "usb_sha256": "89b355f4b06f44339282e68c04ae78101f4db301a28a3c7c3bea1c56258d533d",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000011"
+              },
+              "after_out_ns": 2542000
+            }
+          ]
+        }
+      ],
+      "round_trips": 8,
+      "radio_matches": 22,
+      "timeout_reproduced": false,
+      "observation_branch_real_executed": false
+    },
+    {
+      "attempt": 3,
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "packets": 4223,
+      "drops": 0,
+      "passive_windows": [],
+      "disconnects": [
+        {
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792312589596854000,
+            "urb": 18446618774812545024,
+            "record": 1846,
+            "file_offset": 279002,
+            "usb_sha256": "778e8258f2f19f6d4f520b3dae3dad066c99ed6e12644b9f8e9b0d030ad13782",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 118,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792312589597029000,
+              "urb": 18446618774812545024,
+              "record": 1847,
+              "file_offset": 279210
+            }
+          },
+          "down": [
+            {
+              "event": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792312589600080000,
+                "urb": 18446618774692336960,
+                "record": 1850,
+                "file_offset": 279628,
+                "hcc_offset": 92,
+                "usb_sha256": "9e05c5ac0c2a744aa22fb7b985aa0e54ec565e7692091cb7fa9ba9a4ef07f72d",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000010"
+              },
+              "after_out_ns": 3226000
+            },
+            {
+              "event": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792312589600148000,
+                "urb": 18446618775066925504,
+                "record": 1852,
+                "file_offset": 279966,
+                "hcc_offset": 92,
+                "usb_sha256": "2b856c8ac810569dd382e1b05dd818ce5b726f690dc5b0e7566dcbacb4ded81b",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000011"
+              },
+              "after_out_ns": 3294000
+            }
+          ]
+        },
+        {
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792312594256393000,
+            "urb": 18446618774692226368,
+            "record": 3306,
+            "file_offset": 517434,
+            "usb_sha256": "d82e3fa18562f1ce6bdef658eea3521980e425154758ebf0597c637234fc16e6",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 217,
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792312594256596000,
+              "urb": 18446618774692226368,
+              "record": 3307,
+              "file_offset": 517642
+            }
+          },
+          "down": [
+            {
+              "event": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792312594259472000,
+                "urb": 18446618775066925504,
+                "record": 3310,
+                "file_offset": 518060,
+                "hcc_offset": 92,
+                "usb_sha256": "d492d62897421c895b7156ae72bcb31377e916a87cd8dbfb2bb00885245d2560",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000010"
+              },
+              "after_out_ns": 3079000
+            },
+            {
+              "event": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792312594259531000,
+                "urb": 18446618774692336960,
+                "record": 3312,
+                "file_offset": 518398,
+                "hcc_offset": 92,
+                "usb_sha256": "89b355f4b06f44339282e68c04ae78101f4db301a28a3c7c3bea1c56258d533d",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000011"
+              },
+              "after_out_ns": 3138000
+            }
+          ]
+        }
+      ],
+      "round_trips": 8,
+      "radio_matches": 22,
+      "timeout_reproduced": false,
+      "observation_branch_real_executed": false
+    },
+    {
+      "attempt": 4,
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "packets": 4223,
+      "drops": 0,
+      "passive_windows": [],
+      "disconnects": [
+        {
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1792312664752695000,
+            "urb": 18446619470374707776,
+            "record": 1846,
+            "file_offset": 279002,
+            "usb_sha256": "778e8258f2f19f6d4f520b3dae3dad066c99ed6e12644b9f8e9b0d030ad13782",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 118,
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1792312664752868000,
+              "urb": 18446619470374707776,
+              "record": 1847,
+              "file_offset": 279210
+            }
+          },
+          "down": [
+            {
+              "event": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792312664756636000,
+                "urb": 18446619470374177216,
+                "record": 1850,
+                "file_offset": 279628,
+                "hcc_offset": 92,
+                "usb_sha256": "9e05c5ac0c2a744aa22fb7b985aa0e54ec565e7692091cb7fa9ba9a4ef07f72d",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000010"
+              },
+              "after_out_ns": 3941000
+            },
+            {
+              "event": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792312664756765000,
+                "urb": 18446619470532164224,
+                "record": 1852,
+                "file_offset": 279966,
+                "hcc_offset": 92,
+                "usb_sha256": "2b856c8ac810569dd382e1b05dd818ce5b726f690dc5b0e7566dcbacb4ded81b",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000011"
+              },
+              "after_out_ns": 4070000
+            }
+          ]
+        },
+        {
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1792312669481246000,
+            "urb": 18446619470321522176,
+            "record": 3306,
+            "file_offset": 517434,
+            "usb_sha256": "d82e3fa18562f1ce6bdef658eea3521980e425154758ebf0597c637234fc16e6",
+            "opcode": 5123,
+            "params": "000010",
+            "sequence": 217,
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1792312669481414000,
+              "urb": 18446619470321522176,
+              "record": 3307,
+              "file_offset": 517642
+            }
+          },
+          "down": [
+            {
+              "event": {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1792312669484157000,
+                "urb": 18446619470532164224,
+                "record": 3310,
+                "file_offset": 518060,
+                "hcc_offset": 92,
+                "usb_sha256": "d492d62897421c895b7156ae72bcb31377e916a87cd8dbfb2bb00885245d2560",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000010"
+              },
+              "after_out_ns": 2911000
+            },
+            {
+              "event": {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1792312669484223000,
+                "urb": 18446619470374177216,
+                "record": 3312,
+                "file_offset": 518398,
+                "hcc_offset": 92,
+                "usb_sha256": "89b355f4b06f44339282e68c04ae78101f4db301a28a3c7c3bea1c56258d533d",
+                "usb_length": 178,
+                "event": 5,
+                "params": "00000011"
+              },
+              "after_out_ns": 2977000
+            }
+          ]
+        }
+      ],
+      "round_trips": 8,
+      "radio_matches": 22,
+      "timeout_reproduced": false,
+      "observation_branch_real_executed": false
+    }
+  ],
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
+  },
+  "access_policy": "Public metadata/hashes only;SDK/firmware/rawUSB/logs/binaries/VM images remain private at recorded workspace paths. Replay requires owner access, fixed artifacts/SDK110 files and VM-only authorized leaf ports. No newtools source is substituted for compiled production IDs.",
+  "materials": [
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "00ca62d2a1b7f4af6b7e72b0125ec543fec3d18b1c0eae8bf94929105dfbc9e1",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "ee7c389d8b5e039c41c569810ebfebadf212d828019506acc7ed95cfd6d0fc30",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "cd81f1b370c6904673ab3d2e34800e81f0b3ce862a5b581b626b38c95f24c873",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "d00e4b8bd076b1750136af658460f09a9db9d8dc4456508325f74c19f2319020",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "edc95e962fd5ea60b289aa417e705fe536e078aeee4f517085ddaa313c876c4e",
+      "bytes": 904727
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/capture-process-status.txt",
+      "sha256": "21fd795496871b104406b2a330816e9148fd296597acd31e2f0f1e772cdca161",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/kernel.log",
+      "sha256": "bff19f0cf135e6aaa72765c0443c0ceb1891bc3db208b86c741bc5b954aa714a",
+      "bytes": 50125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "4667f04625814bbdea0e01465f2952122d4c31bbe2a953f5e3c8e25ca1fc5da1",
+      "bytes": 477386
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/pending-observations-0.json",
+      "sha256": "cb31e95635410a416efdd4fdbf3a81e5fff4bdd183a0185979a02f3d2ccd49e3",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/pending-observations-1.json",
+      "sha256": "918f19bcbdbe8708e6347b85069482155d30e952a6628fd039ef57fbb66966be",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/ready-progress-0.json",
+      "sha256": "aba330f0ecaae08e60fb0ed8bca80b86ffdf158be523f3e684824b1a360968c5",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/ready-progress-1.json",
+      "sha256": "74d82cec13e4356f4bfe27a5233f948f80d10cc937216e32ef1507eb36e0bbbe",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/slkd-process-status.txt",
+      "sha256": "09c71ce0d943741c292f909ebc53fa7ecb8cd795c710954458521ef4c6ec745f",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/slkd.log",
+      "sha256": "530c18983f7cbc21b735c72b88612ce5589b30ff8b2050de772ccc4872fade2d",
+      "bytes": 6215
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/ws73.pcap",
+      "sha256": "425f806dffcd53c000ea9220b115496b14bea42b6b8128c22cf2af4cde818e11",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "2e2f149232a27c0c6e2b51592d998309bca4e64ba108fce6c79b50d36fd0b454",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/guest-output/xhci-trace.log",
+      "sha256": "7d4a8588394f5f88b5d677e51f7b81b36d2b9ef3760966baaf39e051cdbd4b53",
+      "bytes": 2312942
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/manifest.json",
+      "sha256": "d502398b6ca243500d3a9d175929c809950815a4b23a7d4b5b245720b1a892de",
+      "bytes": 1629643
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/qmp.jsonl",
+      "sha256": "1e709f3a434453eb4a913ca5fde2435e9e3adb46a338b8a13bdf87aeaa146f85",
+      "bytes": 1757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/console.log",
+      "sha256": "3f0c5695bd8fea59f952d062fbd37fa0750688e782ba22f13d809d6c15e1e586",
+      "bytes": 16267
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "d103db858d53e43d0d7fb0ba2b471c54c507c0a3b2594d2bdb36dc712f60a1a6",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "b075047897993426978f317fd7e62d4d99eff3ba64448bb4030173cfabcd441d",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "488bf88384080174d3b3b9cc42725df70860d484cb797af5d8bab742b59f823c",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "14635af639a0bff39200de5d8bccfb31ec313ee7c14b9ef45c8380c5ace272cb",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "5cc2c35097a5aae0dcf099cca3bc15525c37571891fb242543a71a9ef1c96216",
+      "bytes": 904685
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/capture-process-status.txt",
+      "sha256": "b0d3b0b37bcd97a92f6b2044deebc306d246247b714bd846c75f6e1bf5baaaba",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/kernel.log",
+      "sha256": "d5e115e088a2e0501aca001dd80d45b2ccad50d91d4e1f08ebfb7d2fb833f8f3",
+      "bytes": 49912
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/passthrough-control-proofs.json",
+      "sha256": "5b0ae218ece296f28eb69aab27f774e35b509094764eb125f1c8bfad7bd22ba3",
+      "bytes": 477386
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/pending-observations-0.json",
+      "sha256": "aac34bc5b0a8eab9e463ef5f5a374f5500f233c5d86af3b900925a106b2fe316",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/pending-observations-1.json",
+      "sha256": "71195470c174a72603d408ff74bef5431e37dcbd646b470a0778a18bd1b13fb6",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/ready-progress-0.json",
+      "sha256": "91b31ed8e1750255d21092dc769805440ee702d08d385d3fa110b62e91e161b1",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/ready-progress-1.json",
+      "sha256": "2c1f9213c86a168dfd561e52bc3c535236d88092a1709816e3cd58405d1d9c15",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/slkd-process-status.txt",
+      "sha256": "0ccacfab4f45b13dff85331929e1dae262416d01559b82661ad537ad0c9bca4e",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/slkd.log",
+      "sha256": "bab9f813276aabebb2f9bb387d268d45549c0cd6f5a931c2ceb8e02b65303647",
+      "bytes": 6215
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/ws73.pcap",
+      "sha256": "bbd1fa045b641ee901ec010ac7ae5e5289fb9780b989ea4115c427b4325d3141",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/xhci-trace-stats.txt",
+      "sha256": "6092518293d1b2a51a8c0909bc7b0e37f05a8ef32c8e19495453960eedba70c5",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/guest-output/xhci-trace.log",
+      "sha256": "deb95feccaae14a48b2caedd1c6272403ec3adb2336f3342fd477a7c07aa5358",
+      "bytes": 2313056
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/manifest.json",
+      "sha256": "db4beed408db21f6ef839359667d4a765c684f2769b2e476dfd963b29f687721",
+      "bytes": 1629644
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/qmp.jsonl",
+      "sha256": "63b7660ad19fba2812bfae05984550045a1c4b06d53573912980fd61bd03a1f0",
+      "bytes": 1757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/console.log",
+      "sha256": "8a96ae53544278ea2ccf290b210dd795796fa9002410c558b1b6676991c25a2e",
+      "bytes": 16267
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "bc49c5189e7c40becdb1fb8fa944eac9bb6db53ee91ae8fa29fb05877e466ef1",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "f5719f72ceeff55a2db4e477c76dcd940daf6595fd86dc2130d8bed639bac8cb",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "4bf449278c44ff9e7071ba95fcc1600af7a04fa4aa59f3d9fe61128004ef3c1f",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "aa774fb95bf290ff0718cdfbc4edb3d57d4686b6dc110eebbe0d8e95312f5ce2",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/passthrough-control/run.json",
+      "sha256": "49d50ffc6609d8553a7be6ed60864e9dc9971f91053f205eb52e682ec1add635",
+      "bytes": 904688
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/capture-process-status.txt",
+      "sha256": "ca659fdf83892c878608de7046b56a287d20a9ee6014c1fef13b4dc5193400ac",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/kernel.log",
+      "sha256": "0d142b1ca3959d5b20d4a2e752050c3c371902aaf00f193f0888902c071adaf1",
+      "bytes": 50236
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/passthrough-control-proofs.json",
+      "sha256": "706584a19af2112e0b5236df2bb460e04fe27d11e84d005c10cb6c0711defb27",
+      "bytes": 477386
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/pending-observations-0.json",
+      "sha256": "673b4498d80d6520a5731e25d718f8482662ef95ee61877c8f30edebb589e52d",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/pending-observations-1.json",
+      "sha256": "c5bdb0dfec20a664c278c5d357cad129f1a9add43afb34929ff59574fa3647c1",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/ready-progress-0.json",
+      "sha256": "860109392633587ffbaf88a7038d866b4042008c3dfcce56ea3d724ce8596539",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/ready-progress-1.json",
+      "sha256": "b9cc9bbfc92f2a00ebe49f018a34bf156666040cf99df2d211481ce058ee5ff9",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/slkd-process-status.txt",
+      "sha256": "3f4290d29d48f77bb479e2d81d291ce69ce0fd4fb2de74b3a439bf32f865edd8",
+      "bytes": 1455
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/slkd.log",
+      "sha256": "cfcf04d60f2237171c1904aa7e59c3be78d29fe546e1b1d385829bc795f2a48f",
+      "bytes": 4857
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/ws73.pcap",
+      "sha256": "d282ccff9de2b24821afb8445d6fc3635869ae5195b1cd214fa8b3a4f46c7b5b",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/xhci-trace-stats.txt",
+      "sha256": "90687d1064bd8292884d9c8f6f407348e23e53517e338dfd4853be8ed0225d78",
+      "bytes": 282
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/guest-output/xhci-trace.log",
+      "sha256": "fbd34f6bba00f24093ab7b7a6726bac84bf43d2bd456c12cbdecde76b3122096",
+      "bytes": 2312906
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/manifest.json",
+      "sha256": "600f8221e1ab3be60b722611b17d134d821af895a2580b48e3087f399521f479",
+      "bytes": 1629642
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/qmp.jsonl",
+      "sha256": "baa3609284f34a8c07a01b2fa359468ee115f84600da053187c826dedabcc3b1",
+      "bytes": 1757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/console.log",
+      "sha256": "2fe6586df559fc13683294fc2601ded2f89624192dc2389d970148942ea620bf",
+      "bytes": 16267
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v3/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "aa1965372a7ce06bf73f122da397936596306785807dc87c333c486d1aaacd61",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "c0d5a4ad1e5fe8d04e1c22cb7cc2e20b3e5935b36db133c857f1d36c14f0b97a",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "a66c51d935e5026e608c620965933f15765eb7b7f0f26082959b0c85037d0159",
+      "bytes": 5652
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "a79858fea77658b4441f7e5f20ce792c20b4811383dcd4dc716ad500a98e7a44",
+      "bytes": 8159
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/passthrough-control/run.json",
+      "sha256": "aa83f9faf760dd49abac0166894f7e0cdfc6e586f743768ef0ff5b5c966fc5aa",
+      "bytes": 904757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/capture-process-status.txt",
+      "sha256": "26c5e305b5392c89125f85a1d0f8ee58eb91ec7eef3956b5eb30f2ff996cea3e",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/capture-stats.txt",
+      "sha256": "c0ffb220261afa5fd185195a67e68a158c367ca82f0a82da9f2c3a47950afc91",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/kernel.log",
+      "sha256": "34f314170e834ec47b88ba44684fa76de11842c2b3b8e6b011b51de7d3a226d3",
+      "bytes": 49999
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/passthrough-control-proofs.json",
+      "sha256": "a4c03fefe6abbed90918fee2c3375b721e249652586b8508256b84a3ac743b63",
+      "bytes": 477387
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/pending-observations-0.json",
+      "sha256": "b7a0ff89f43da33b2c4f370a553a995265cf46735cae0ab5ef0ec3827ef56306",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/pending-observations-1.json",
+      "sha256": "7cfb537766b448eaeeed9a3cc163a71ad24a71a676685e5c633e1435a1e50e93",
+      "bytes": 1125
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/ready-progress-0.json",
+      "sha256": "70a2d705b1da9dd460c33d88ff8daa9b93f7c6b2f24e56c7e31d8d26f54ce759",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/ready-progress-1.json",
+      "sha256": "e42d10903efb7fc06a05f3373f61a3a8e322417a435a5df9d2880c4b49687279",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/slkd-process-status.txt",
+      "sha256": "0fa6abeccb24d4f38f8d631a8eeaf057a601267f8a6c7562e9166a155c0a6750",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/slkd.log",
+      "sha256": "a44e899434be6f9302e828e94cb02e0dbf752b566ac964fa19eba581e3c1740d",
+      "bytes": 5536
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/ws73.pcap",
+      "sha256": "c785a5f841488d2e6a64238e02d959858eff404ec2a3764ae6ad7d6c833eb549",
+      "bytes": 651584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/xhci-trace-stats.txt",
+      "sha256": "2a805ece277892baa81c9e3cbed5233f93d173c9c8f33e71d1095b9ee0a39f4e",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/guest-output/xhci-trace.log",
+      "sha256": "1f3e989a7fb644faa512a53d4d77b2b19d2e7e690a9cca65aeb20bbbfecae476",
+      "bytes": 2312822
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/manifest.json",
+      "sha256": "67aff4471285006c22ba365b573b6ad00e2da594682b62799b4811074d6fd2ff",
+      "bytes": 1629644
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/qmp.jsonl",
+      "sha256": "91eb5bd9236f83a0d38ce99f95dd6f6446a29d23e430a963672cc8ba23e3dac9",
+      "bytes": 1757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/console.log",
+      "sha256": "fc2c2b315adc36f05d1d7a496f0760dcff5ba27e8b01d1b07bc012d17d76a6d5",
+      "bytes": 16457
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-v4/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-audit-v1.py",
+      "sha256": "58007c7f333705a8f1c31b09a8179a2334a28015c0e7220141ddc98a4820ce80",
+      "bytes": 11248
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-bounded-attempts-v1.json",
+      "sha256": "55b767ddaf67ffa3c8b844b7ed164aa236180d6c79d9fd677f75f6e319026bdb",
+      "bytes": 4494
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-bounded-v1.py",
+      "sha256": "951392de6b736ff744f2527b69a104f1b053e7b2786dd4ea53b2cce542619da3",
+      "bytes": 2452
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-down-passive-command-v1.json",
+      "sha256": "3d8702007a076059f857a387361b32232ceae99c2fad1dc1721f734a91809a34",
+      "bytes": 2168
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-readonly-preflight-v1.json",
+      "sha256": "58ef2d37a9fee0a399cad8eeac7d7496374a15e6a3c92939c8998438ec1c0d3d",
+      "bytes": 89045
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-tools-v2.log",
+      "sha256": "a151b239ded151001c951a56b2c7f973388aa5194494cd4d063fb8a508042fc3",
+      "bytes": 142310
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-docs-v1.log",
+      "sha256": "a4fc58e8d99d83ddf28a8a09833671650a2b248d403be2e5b4091c9eb1e8329a",
+      "bytes": 1301033
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-prepared-v1/manifest.json",
+      "sha256": "4052a5d08dc8605490ea6906047ee366d890cfd295e6a0bc6934ee2ec9d0fbd0",
+      "bytes": 312522
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/manifest.json",
+      "sha256": "6c13db10cfb852f5c3b8c3d2d9975e1fe51ef696b0b03d5260a477ae8d0ca8a7",
+      "bytes": 31663
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-prepared-v1/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-us-prepared-v1/root.btrfs",
+      "sha256": "66cfd04282f5c7bb4ccafdf083005fb7b564eb98ce6bee5a206ea766bedb54c8",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slkd",
+      "sha256": "3ef8796b990979b5a3a30622d65ebd079d9ede7cf2f2088d4e70cb4b0f186839",
+      "bytes": 10050072
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slkconfig",
+      "sha256": "3f58a6739f8dbc9315153114be7020eb7fe9fc04890416530dfe2dc8e807b8b3",
+      "bytes": 1338168
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slctl",
+      "sha256": "fd24f53ce5372fc4229a8e88a0c374ea8508121aec8ba025b17c186969bb9690",
+      "bytes": 8431560
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slktest",
+      "sha256": "d138d3efcc92c53dffb4c2f04cbe6ef121cbf5fefeee87a999f39735ec01fbe0",
+      "bytes": 5764672
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slkmon",
+      "sha256": "d259c65a4c5fdee07b6ef8e82ae56e20833df2f85d36a88ad2c91ce51f0c64a9",
+      "bytes": 1660792
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/slkdump",
+      "sha256": "484d9ee6a6826c1da14464c2c8b6c8f60faaa81e3580d90af67485a878eab34a",
+      "bytes": 1660584
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/liblibsparklink.so",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/ccef31048111/libslk_native.so",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "60d604f5ccf0954d7dcb551b8ac89a0479db970b39192ec967640701a3aaeb4c",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "1029703ffa8eac4564775daaef5122aa6e20e0b9c45cbac04d225b0b1a46a9fc",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/native-owner-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-audit-v1.json",
+      "sha256": "27c65169b8db6ce2838935a0ba353f61071f99bb6ea7a48412af34afaff2a6c9",
+      "bytes": 59632
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/down-passive-postflight-v1.json",
+      "sha256": "2ed6236e84bb191686cd2e5578cf46e77e078534397da1e8a79d09ddf871ebfb",
+      "bytes": 3546
+    }
+  ],
+  "replay": "Use retained down-passive-audit-v1.py against immutable manifests/captures and the exact prepared8f51 tools. CLI commands and all four attempts are in down-passive-bounded-attempts-v1.json. Fresh output required;oldFAILneveroverwritten. New observer flag defaults0;6/12seconds are post-failure capture,not extensionoforiginal5s.",
+  "negative_controls": [
+    {
+      "attempt": 1,
+      "name": "missing-connection-role",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 1,
+      "name": "wrong-original-length",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 1,
+      "name": "failed-original-application-phase",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 1,
+      "name": "missing-peer-usb",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 1,
+      "name": "missing-real-nocp",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 1,
+      "name": "missing-original-radio-round",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 2,
+      "name": "missing-connection-role",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 2,
+      "name": "wrong-original-length",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 2,
+      "name": "failed-original-application-phase",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 2,
+      "name": "missing-peer-usb",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 2,
+      "name": "missing-real-nocp",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 2,
+      "name": "missing-original-radio-round",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 3,
+      "name": "missing-connection-role",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 3,
+      "name": "wrong-original-length",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 3,
+      "name": "failed-original-application-phase",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 3,
+      "name": "missing-peer-usb",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 3,
+      "name": "missing-real-nocp",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 3,
+      "name": "missing-original-radio-round",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 4,
+      "name": "missing-connection-role",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 4,
+      "name": "wrong-original-length",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 4,
+      "name": "failed-original-application-phase",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 4,
+      "name": "missing-peer-usb",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 4,
+      "name": "missing-real-nocp",
+      "result": "REJECTED"
+    },
+    {
+      "attempt": 4,
+      "name": "missing-original-radio-round",
+      "result": "REJECTED"
+    }
+  ]
+}

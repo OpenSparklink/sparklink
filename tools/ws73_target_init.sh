@@ -10,6 +10,11 @@ fail() {
     if [ -f /evidence/session-service/run.json ]; then
         /bin/python3 /usr/share/sparklink/tools/ws73_session_service.py abort > /evidence/session-service-abort.log 2>&1 || true
     fi
+    if [ -n "${application_role_supervisor:-}" ]; then
+        kill -TERM "$application_role_supervisor" 2>/dev/null
+        wait "$application_role_supervisor"
+        application_role_supervisor=''
+    fi
     # A failed bootstrap is still evidence. Stop our owned processes and
     # flush usbmon before shutdown, even when the ordinary shell never opened.
     if [ -n "${daemon:-}" ]; then
@@ -332,6 +337,9 @@ fi
 if grep -q 'ws73.event_copy=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_event_copy_probe.py --probe /bin/event-copy-probe --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/event-copy" || fail 'live event copy fault gate'
 fi
+if grep -qw ws73.application_clients=1 /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" > /evidence/application-role-supervisor.log 2>&1 & application_role_supervisor=$!
+fi
 if grep -q 'ws73.support=1' /proc/cmdline; then
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c '/bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py support-input' || fail 'ordinary serial input'
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py support || fail 'synthetic environment integration'
@@ -423,6 +431,10 @@ fi
 if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     /bin/busybox touch /run/diagnostic-retired
     wait "$diagnostic" || fail 'diagnostic retired-fd gate'
+fi
+if [ -n "${application_role_supervisor:-}" ]; then
+    wait "$application_role_supervisor" || fail 'actual SDK application-only roles'
+    application_role_supervisor=''
 fi
 kill -TERM "$daemon"
 for n in $(seq 1 100); do kill -0 "$daemon" 2>/dev/null || break; sleep 0.1; done

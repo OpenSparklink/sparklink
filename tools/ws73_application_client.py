@@ -10,7 +10,6 @@ from pathlib import Path
 import subprocess
 import time
 from ws73_capture import CaptureError, reassemble_acb
-from ws73_channel_socket import credentials
 from ws73_north_star import file_record
 
 
@@ -20,13 +19,17 @@ def application_environment(root=Path('/')):
     return dict(PYTHONPATH=os.pathsep.join(str(root/p) for p in ['usr/share/sparklink/python','usr/share/sparklink/tools']),LIBSPARKLINK_PATH=str(root/'usr/lib/libsparklink.so.0'))
 
 
-def process_identity(pid):
-    identity=credentials(pid)
+def process_identity(pid, uid=1000):
     status=Path(f'/proc/{pid}/status').read_text()
     fields=dict(line.split(':',1) for line in status.splitlines() if ':' in line)
-    identity['capabilities']['CapInh']=fields['CapInh'].strip()
+    identity=dict(uids=list(map(int,fields['Uid'].split())),
+                  capabilities={k:fields[k].strip() for k in ['CapEff','CapPrm','CapAmb','CapInh']})
+    if uid not in (1000,1004) or identity['uids']!=[uid]*4 or any(int(v,16) for v in identity['capabilities'].values()):
+        raise CaptureError('exact cap-zero test role required')
     identity['gids']=list(map(int,fields['Gid'].split()))
     identity['groups']=list(map(int,fields['Groups'].split()))
+    if uid==1004 and (identity['gids']!=[1004]*4 or identity['groups']):
+        raise CaptureError('application-only child inherited authority groups')
     return identity,status
 
 
@@ -91,18 +94,16 @@ def receipts(app, entry):
     if set(ready)!={'stage','api','index','generation','lifetime','handle','dup_alive','client_closed'} or (ready['index'],ready['generation'],ready['lifetime'],ready['handle'])!=(owner['index'],owner['generation'],obj['lifetime'],obj['handle']) or ready['dup_alive'] is not True or ready['client_closed'] is not True:raise CaptureError('actual delegated fd identity and lifetime required')
     if set(complete)!={'stage','api','sent','received','last_close_rebind'} or complete['last_close_rebind']!='NotSupported':raise CaptureError('actual final close and rebind refusal required')
     identity=app['credentials']
-    if identity['uids']!=[1000]*4 or set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in identity['capabilities'].values()) or app['exit']!=0 or app['stderr']:raise CaptureError('ordinary successful application with complete stderr required')
+    if identity['uids']!=[1004]*4 or identity['gids']!=[1004]*4 or identity['groups'] or set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in identity['capabilities'].values()) or app['exit']!=0 or app['stderr']:raise CaptureError('ordinary successful application with complete stderr required')
     return ready,complete
 
 
-def execute(run, phase):
-    n=len(run.data['connection_control']['phases'])-1
+def channel_pair(run, row):
+    """Same one-shot orchestration, executed only by the disposable root supervisor."""
+    from ws73_application_role import require_vm
+    require_vm()
+    n=row['phase'];request=bytes.fromhex(row['request']);reply=bytes.fromhex(row['reply'])
     c=Path('/bin/ws73-application-client-c');python=Path('/usr/share/sparklink/tools/ws73-application-client.py')
-    tools=dict(c=file_record(c),python=file_record(python),library=file_record(Path('/usr/lib/libsparklink.so.0')))
-    request=n.to_bytes(4,'little')+os.urandom(57);reply=n.to_bytes(4,'little')+os.urandom(57)
-    if request==reply:raise CaptureError('independent random application reply required')
-    row=dict(phase=n,owners=phase['typed_objects'],request=request.hex(),reply=reply.hex(),tools=tools,applications=[],start_wall_ns=time.time_ns(),status='RUNNING')
-    run.data.setdefault('application_clients',[]).append(row);run.save()
     processes=[]
     with ExitStack() as files:
         try:
@@ -113,9 +114,9 @@ def execute(run, phase):
                 app=dict(api=api,position=position,args=args,environment=environment,start_wall_ns=time.time_ns())
                 stdout=run.output/f'app-client-{n}-{api}.stdout';stderr=run.output/f'app-client-{n}-{api}.stderr'
                 app['output_files']=[str(stdout),str(stderr)];row['applications'].append(app);run.save()
-                proc=subprocess.Popen(args,env=dict(os.environ,**environment),stdin=subprocess.PIPE,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
+                proc=subprocess.Popen(args,user=1004,group=1004,extra_groups=[],env=dict(os.environ,**environment),stdin=subprocess.PIPE,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
                 processes.append((proc,app));app['pid']=proc.pid
-                app['credentials'],app['process_status']=process_identity(proc.pid);run.save()
+                app['credentials'],app['process_status']=process_identity(proc.pid,1004);run.save()
                 end=time.monotonic()+5
                 while True:
                     lines=stdout.read_text().splitlines()
@@ -129,14 +130,7 @@ def execute(run, phase):
                 proc.wait(timeout=max(.001,deadline-time.monotonic()))
                 app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=Path(app['output_files'][0]).read_text(),stderr=Path(app['output_files'][1]).read_text());run.save()
                 receipts(app,row['owners'][app['position']])
-            run.alive()
-            for entry in row['owners']:run.check(entry['owner'])
-            from ws73_ssap_value import execute as ssap_execute
-            row['ssap_language_required']=True;run.save()
-            ssap_execute(run,row,value_command=lambda entry,args,expected:ssap_command(run,row,entry,args,expected))
-            run.alive()
-            for entry in row['owners']:run.check(entry['owner'])
-            row.update(status='APPLICATION_CLIENT_EVIDENCE_PENDING',end_wall_ns=time.time_ns());run.save()
+            row.update(pair_status='CHANNEL_PAIR_EVIDENCE_PENDING');run.save()
         except BaseException as exc:
             row.update(status='FAIL',error=str(exc));raise
         finally:
@@ -146,6 +140,29 @@ def execute(run, phase):
                 if proc.stdin:proc.stdin.close()
                 if 'exit' not in app:app.update(exit=proc.returncode,stdout=Path(app['output_files'][0]).read_text(),stderr=Path(app['output_files'][1]).read_text(),end_wall_ns=time.time_ns())
             row.setdefault('end_wall_ns',time.time_ns());run.save()
+
+
+def execute(run, phase):
+    n=len(run.data['connection_control']['phases'])-1
+    c=Path('/bin/ws73-application-client-c');python=Path('/usr/share/sparklink/tools/ws73-application-client.py')
+    tools=dict(c=file_record(c),python=file_record(python),library=file_record(Path('/usr/lib/libsparklink.so.0')))
+    request=n.to_bytes(4,'little')+os.urandom(57);reply=n.to_bytes(4,'little')+os.urandom(57)
+    if request==reply:raise CaptureError('independent random application reply required')
+    row=dict(phase=n,owners=phase['typed_objects'],request=request.hex(),reply=reply.hex(),tools=tools,applications=[],start_wall_ns=time.time_ns(),status='RUNNING')
+    run.data.setdefault('application_clients',[]).append(row);run.save()
+    from ws73_application_role import request_pair
+    try:
+        request_pair(run,row)
+        run.alive()
+        for entry in row['owners']:run.check(entry['owner'])
+        from ws73_ssap_value import execute as ssap_execute
+        row['ssap_language_required']=True;run.save()
+        ssap_execute(run,row,value_command=lambda entry,args,expected:ssap_command(run,row,entry,args,expected))
+        run.alive()
+        for entry in row['owners']:run.check(entry['owner'])
+        row.update(status='APPLICATION_CLIENT_EVIDENCE_PENDING',end_wall_ns=time.time_ns());run.save()
+    except BaseException as exc:
+        row.update(status='FAIL',error=str(exc),end_wall_ns=time.time_ns());run.save();raise
 
 
 def corroborate_ssap(rows,capture):
@@ -182,6 +199,8 @@ def corroborate(run,capture):
     if not isinstance(rows,list) or len(rows)!=2:raise CaptureError('both connection roles required for application clients')
     sdus=reassemble_acb(capture);proofs=[];used=set()
     for n,row in enumerate(rows):
+        from ws73_application_role import verify_probe
+        verify_probe(row)
         if row['phase']!=n or row['status']!='APPLICATION_CLIENT_EVIDENCE_PENDING' or len(row['owners'])!=2 or len(row['applications'])!=2:raise CaptureError('complete actual application phase required')
         request,reply=bytes.fromhex(row['request']),bytes.fromhex(row['reply'])
         if len(request)!=61 or len(reply)!=61 or request==reply or request[:4]!=n.to_bytes(4,'little') or reply[:4]!=request[:4] or request in used or reply in used:raise CaptureError('fresh sequence and independent full random payloads required')
@@ -191,7 +210,7 @@ def corroborate(run,capture):
             if position in values or app['api']!=expected_api:raise CaptureError('both languages must exchange application roles')
             ready,complete=receipts(app,row['owners'][position]);outgoing,incoming=(reply,request) if position else (request,reply)
             if complete['sent']!=outgoing.hex() or complete['received']!=incoming.hex():raise CaptureError('opposite application must actually validate and reply')
-            values[position]=dict(api=app['api'],identity=ready)
+            values[position]=dict(api=app['api'],identity=ready,credentials=app['credentials'])
         if set(values)!={0,1}:raise CaptureError('independent application ends required')
         legs=[]
         for sender,receiver,payload in [(0,1,request),(1,0,reply)]:
@@ -204,15 +223,15 @@ def corroborate(run,capture):
                 if len(matches)!=1:raise CaptureError('one exact application USB TX/opposite RX required')
                 leg[direction]=matches[0]
             legs.append(leg)
-        proofs.append(dict(phase=n,applications=values,legs=legs))
+        proofs.append(dict(phase=n,applications=values,legs=legs,role_probe=row['role_probe'],channel_role=row['channel_role']))
     ssap=corroborate_ssap(rows,capture)
-    return dict(status='C_PYTHON_CHANNEL_AND_SSAP_APPLICATION_USB_SCOPED_PASS',round_trips=2,proofs=proofs,ssap=ssap,remaining=['Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification','Other lifecycle combinations and original gates remainrequired'])
+    return dict(status='C_PYTHON_APPS_ONLY_CHANNEL_AND_MANAGER_SSAP_USB_SCOPED_PASS',round_trips=2,proofs=proofs,ssap=ssap,remaining=['Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification','Other lifecycle combinations and original gates remainrequired'])
 
 
 def valid_summary(proof):
     """Terminal shape check only; never substitutes for raw corroborate()."""
     try:
-        if proof['status']!='C_PYTHON_CHANNEL_AND_SSAP_APPLICATION_USB_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
+        if proof['status']!='C_PYTHON_APPS_ONLY_CHANNEL_AND_MANAGER_SSAP_USB_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
         ssap=proof['ssap']
         if ssap['status']!='C_PYTHON_SSAP_VALUE_USB_CORROBORATED' or ssap['operations']!=16 or ssap['api_calls']!=48 or len(ssap['proofs'])!=2:return False
         for n,row in enumerate(ssap['proofs']):
@@ -228,11 +247,15 @@ def valid_summary(proof):
                     if raw[:2]!=b'\x0a\0' or len(raw)<6 or int.from_bytes(raw[2:4],'little')!=len(raw)-4 or a['data']!=b['data'] or (a['bus'],a['device'])==(b['bus'],b['device']):return False
         frames=set()
         for n,row in enumerate(proof['proofs']):
+            from ws73_application_role import verify_probe
+            verify_probe(row)
             if row['phase']!=n or len(row['legs'])!=2:return False
             apps={str(k):v for k,v in row['applications'].items()}
             if set(apps)!={'0','1'} or [apps[str(i)]['api'] for i in [0,1]]!=(['c','python'] if n==0 else ['python','c']):return False
             for app in apps.values():
                 identity=app['identity']
+                credential=app['credentials']
+                if credential['uids']!=[1004]*4 or credential['gids']!=[1004]*4 or credential['groups'] or any(int(v,16) for v in credential['capabilities'].values()):return False
                 if identity['dup_alive'] is not True or identity['client_closed'] is not True or identity['generation']<=0 or identity['lifetime']<=0:return False
             for leg in row['legs']:
                 a,b=leg['out'],leg['in'];raw=bytes.fromhex(a['data'])

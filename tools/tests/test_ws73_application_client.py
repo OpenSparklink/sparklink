@@ -57,8 +57,14 @@ def fixture():
             ready=dict(stage='ready',api=api,index=i,generation=owner['generation'],lifetime=obj['lifetime'],handle=obj['handle'],dup_alive=True,client_closed=True)
             sent,received=(reply,request) if i else (request,reply)
             complete=dict(stage='complete',api=api,sent=sent.hex(),received=received.hex(),last_close_rebind='NotSupported')
-            apps.append(dict(position=i,api=api,environment=application_environment(),stdout=json.dumps(ready)+'\n'+json.dumps(complete)+'\n',stderr='',exit=0,credentials=dict(uids=[1000]*4,capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']})))
+            apps.append(dict(position=i,api=api,environment=application_environment(),stdout=json.dumps(ready)+'\n'+json.dumps(complete)+'\n',stderr='',exit=0,credentials=dict(uids=[1004]*4,gids=[1004]*4,groups=[],capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']})))
         row=dict(phase=n,owners=owners,request=request.hex(),reply=reply.hex(),applications=apps,start_wall_ns=100+n*10000,end_wall_ns=9999+n*10000,status='APPLICATION_CLIENT_EVIDENCE_PENDING')
+        from ws73_application_role import DENIALS
+        lines=['AUTH_CREDENTIALS: uid=1004 gid=1004 caps=0','AUTH_CHANNEL_KERNEL_ACCESS: denied','AUTH_DENIED: own-service']
+        for destination in ['named','unique']:
+            lines+=['AUTH_CHANNEL_IDENTITY: '+destination]+['AUTH_DENIED: '+m for m in DENIALS]
+        lines+=['AUTH_CHANNEL_ROLE: sparklink-apps-only']
+        row.update(channel_role='sparklink-apps-only',role_probe=dict(args=['/bin/bus-policy-probe',owners[0]['object']['path'],'application-channel'],credentials=copy.deepcopy(apps[0]['credentials']),exit=0,stderr='',stdout='\n'.join(lines)+'\n',start_wall_ns=110+n*10000,end_wall_ns=120+n*10000))
         rows.append(row)
         for source,target,payload in [(0,1,request),(1,0,reply)]:
             frame=(b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload).hex()
@@ -93,9 +99,10 @@ class ApplicationClientEvidence(unittest.TestCase):
         run,sdus=fixture()
         with patch('ws73_application_client.reassemble_acb',return_value=sdus):proof=corroborate(run,{})
         self.assertTrue(valid_summary(proof))
-        record=dict(application_client_verification_requested=True,application_client_acceptance=True,application_client_corroboration=proof,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0)
+        supervision=dict(status='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED',uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,daemon=dict(pid=1,start_ticks=1),supervisor=dict(pid=2,start_ticks=2))
+        record=dict(application_role_supervision=supervision,application_client_verification_requested=True,application_client_acceptance=True,application_client_corroboration=proof,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0)
         self.assertEqual(run_exit_code(record),0)
-        for key in ['application_client_verification_requested','application_client_acceptance','application_client_corroboration']:
+        for key in ['application_client_verification_requested','application_client_acceptance','application_client_corroboration','application_role_supervision']:
             bad=copy.deepcopy(record);bad.pop(key)
             with self.subTest(key=key):self.assertEqual(run_exit_code(bad),1)
         bad=copy.deepcopy(record);bad['application_client_corroboration']['proofs'][0]['legs'].pop();self.assertEqual(run_exit_code(bad),1)
@@ -133,3 +140,19 @@ class ApplicationClientEvidence(unittest.TestCase):
             elif case=='late-window':app['start_wall_ns']=app['end_wall_ns']+1
             elif case=='missing-wire':sdus.pop(4)
             with self.subTest(case=case),patch('ws73_application_client.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(run,{})
+
+    def test_role_evidence_cannot_be_replaced_by_management_or_partial_success(self):
+        from ws73_application_role import verify_probe
+        for kind in ['missing','manager','group','cap','denial','raw','path','exit','stderr','interval']:
+            run,_=fixture();row=run['application_clients'][0];probe=row['role_probe']
+            if kind=='missing':row.pop('role_probe')
+            elif kind=='manager':probe['credentials']['uids']=[1000]*4
+            elif kind=='group':probe['credentials']['groups']=[1000]
+            elif kind=='cap':probe['credentials']['capabilities']['CapInh']='1'
+            elif kind=='denial':probe['stdout']=probe['stdout'].replace('AUTH_DENIED: ReadSsapValue\n','')
+            elif kind=='raw':probe['stdout']=probe['stdout'].replace('KERNEL_ACCESS: denied','KERNEL_ACCESS: allowed')
+            elif kind=='path':probe['args'][1]='/old/lifetime'
+            elif kind=='exit':probe['exit']=1
+            elif kind=='stderr':probe['stderr']='warning'
+            elif kind=='interval':probe['end_wall_ns']=1
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):verify_probe(row)

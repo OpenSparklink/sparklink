@@ -414,6 +414,19 @@ async fn main() -> anyhow::Result<()> {
         matches!(args.len(), 3..=5),
         "usage: bus_policy_probe ADAPTER observer|control [native-initial|native-business], or ADAPTER service-only|service-channel|service-observer START HANDLE"
     );
+    if args[2] == "application-channel" {
+        ensure!(
+            args.len() == 3,
+            "application role takes one Connection path"
+        );
+        tokio::time::timeout(
+            std::time::Duration::from_secs(10),
+            application_channel(&args[1]),
+        )
+        .await
+        .context("application role original deadline")??;
+        return Ok(());
+    }
     if args[2].starts_with("service-") {
         ensure!(
             args.len() == 5,
@@ -635,5 +648,159 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
         }
     }
     println!("AUTH_SERVICE_ROLE: {role}");
+    Ok(())
+}
+
+// Real guest system-bus policy on a live Connection, independent of SDK wrappers.
+async fn application_channel(path: &str) -> anyhow::Result<()> {
+    credentials(1004, 1004)?;
+    let status = std::fs::read_to_string("/proc/self/status")?;
+    ensure!(
+        status
+            .lines()
+            .find(|l| l.starts_with("Groups:"))
+            .context("groups")?
+            .split_whitespace()
+            .count()
+            == 1,
+        "application inherited extra groups"
+    );
+    for device in ["/dev/sparklink", "/dev/usbmon1"] {
+        ensure!(
+            std::fs::metadata(device).is_ok(),
+            "actual kernel device absent"
+        );
+        use std::os::unix::fs::OpenOptionsExt;
+        for (read, write) in [(true, false), (false, true), (true, true)] {
+            let result = std::fs::OpenOptions::new()
+                .read(read)
+                .write(write)
+                .custom_flags(nix::libc::O_NONBLOCK | nix::libc::O_CLOEXEC)
+                .open(device);
+            ensure!(
+                matches!(result, Err(ref e) if matches!(e.raw_os_error(),
+                Some(nix::libc::EACCES | nix::libc::EPERM))),
+                "application raw device open was not denied: {result:?}"
+            );
+        }
+    }
+    println!("AUTH_CHANNEL_KERNEL_ACCESS: denied");
+    let base = path
+        .split("/peer_")
+        .next()
+        .context("canonical Connection path")?;
+    let controller = slk_contract::ControllerId::from_path(base).context("controller identity")?;
+    let connection = Connection::system().await?;
+    let bus = DBusProxy::new(&connection).await?;
+    let owner = bus.get_name_owner(SERVICE.try_into()?).await?;
+    denied(
+        "own-service",
+        connection
+            .call_method(
+                Some("org.freedesktop.DBus"),
+                "/org/freedesktop/DBus",
+                Some("org.freedesktop.DBus"),
+                "RequestName",
+                &(SERVICE, 4u32),
+            )
+            .await,
+    )?;
+    for (label, destination) in [("named", SERVICE), ("unique", owner.as_str())] {
+        let info: slk_contract::ConnectionInfo = connection
+            .call_method(
+                Some(destination),
+                path,
+                Some(slk_contract::CONNECTION),
+                slk_contract::GET_INFO,
+                &(),
+            )
+            .await?
+            .body()
+            .deserialize()?;
+        ensure!(
+            slk_contract::matches_connection(controller, path, &info) && info.6 && info.7,
+            "actual live immutable Connection identity required"
+        );
+        println!("AUTH_CHANNEL_IDENTITY: {label}");
+        denied(
+            "StopControllerScan",
+            connection
+                .call_method(
+                    Some(destination),
+                    base,
+                    Some(ADAPTER),
+                    "StopControllerScan",
+                    &(),
+                )
+                .await,
+        )?;
+        denied(
+            "SubmitDisconnect",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "SubmitDisconnect",
+                    &(712u64,),
+                )
+                .await,
+        )?;
+        denied(
+            "ReadSsapValue",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "ReadSsapValue",
+                    &(1u16, 0u32),
+                )
+                .await,
+        )?;
+        denied(
+            "WriteSsapValue",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "WriteSsapValue",
+                    &(1u16, vec![0u8], 0u32),
+                )
+                .await,
+        )?;
+        denied(
+            "AllocateReferenceSecurity",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "AllocateReferenceSecurity",
+                    &(5000u32,),
+                )
+                .await,
+        )?;
+        denied(
+            "interface-less-GetInfo",
+            connection
+                .call_method(Some(destination), path, None::<&str>, "GetInfo", &())
+                .await,
+        )?;
+        denied(
+            "unknown-method",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some("org.sparklink.Future"),
+                    "Unapproved",
+                    &(),
+                )
+                .await,
+        )?;
+    }
+    println!("AUTH_CHANNEL_ROLE: sparklink-apps-only");
     Ok(())
 }

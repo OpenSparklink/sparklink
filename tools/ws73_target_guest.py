@@ -354,6 +354,8 @@ def verify_passthrough():
     if requested_clients != ('application_clients' in run):raise ValueError('explicit application client request/evidence mismatch')
     if requested_clients:
         from ws73_application_client import corroborate as client_corroborate
+        from ws73_application_role import verify_supervisor_artifacts
+        proofs.append({'application_role_supervision':verify_supervisor_artifacts(run,EVIDENCE)})
         proofs.append({'application_clients':client_corroborate(run,capture)})
     if requested_connection != ('connection_control' in run):
         raise ValueError('explicit connection request and evidence must agree')

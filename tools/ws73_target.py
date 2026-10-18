@@ -109,7 +109,7 @@ def prepare_locked(args, build_fd):
         inputs = [args.kernel_build/'arch/x86/boot/bzImage',args.kernel_build/'.config',
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
-                  HERE/'ws73_vm_native_root.py',
+                  HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
@@ -716,7 +716,9 @@ def _run(args):
     m['channel_socket_verification_requested']=channel_socket
     m['application_client_verification_requested']=application_clients
     m['application_client_acceptance']=False
-    if application_clients:m['application_client_verifier']=file_record(HERE/'ws73_application_client.py')
+    if application_clients:
+        m['application_client_verifier']=file_record(HERE/'ws73_application_client.py')
+        m['application_role_verifier']=file_record(HERE/'ws73_application_role.py')
     m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
     m['channel_socket_close_prefix_requested']=channel_close
@@ -1278,6 +1280,9 @@ def _run(args):
                 if application_clients:
                     from ws73_application_client import corroborate as client_corroborate
                     if file_record(HERE/'ws73_application_client.py')!=m['application_client_verifier']:raise ValueError('application client verifier changed during execution')
+                    from ws73_application_role import verify_supervisor_artifacts
+                    if file_record(HERE/'ws73_application_role.py')!=m['application_role_verifier']:raise ValueError('application role verifier changed during execution')
+                    m['application_role_supervision']=verify_supervisor_artifacts(control,share)
                     m['application_client_corroboration']=client_corroborate(control,capture)
                     for row in control['application_clients']:
                         for key in ['c','python','library']:
@@ -1610,6 +1615,8 @@ def run_exit_code(record):
     if not clients and (record.get('application_client_acceptance') or 'application_client_corroboration' in record):return 1
     if clients:
         from ws73_application_client import valid_summary
+        from ws73_application_role import valid_supervision
+        if not valid_supervision(record.get('application_role_supervision',{})):return 1
         if record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0 or record.get('application_client_acceptance') is not True or not valid_summary(record.get('application_client_corroboration',{})):return 1
     required=record.get('live_ssap_security_requirement',0)
     if type(required) is not int or required not in (0,1,2):return 1

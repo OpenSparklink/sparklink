@@ -1466,6 +1466,17 @@ C/Python Connection。两连接角色共16组、48次SDK调用；UUID发现与�
 只准入不修改状态的连接身份观察，其余管理与SSAP权限不扩大。公共入口的实际角色、
 原期限与撤权仍须单列VM验收。
 
+R5f4角色切片（实现中，未授新权限实机资格）：原C/Python单次通道循环仅抽出供
+专用VM监督器复用，实际业务子进程降为UID/GID1004、无附加组/capabilities；管理
+UID1000继续现有SSAP测试。监督器仅在QEMU和显式门禁下接收两个有界固定phase，
+无任意命令或生产提权API；结果、进程身份及原始stdout/stderr与普通控制记录独立
+核对。原5秒子进程期限和断言保留，监督等待与协议期限分开。
+本批先封存旧策略拒绝GetInfo的负对照，再仅补apps组必要的只读GetInfo规则；
+正向必须经过实际system bus、新SDK授权fd和两端真实业务/USB，且管理操作、SSAP
+RPC、interface-less调用、未知方法、own-service和裸设备打开仍拒绝。完成新artifact
+相关原路径回归后方登记有限资格；完整release/revoke/Down/原期限与R5/R6scope仍开放。
+当前只完成测试接线/离线检查，旧17b4实机资格不转授本批。
+
 C同步入口继续保持每客户端独立执行器、有界8请求队列及一个在途请求，不持有
 controller管理lease。绝对CLOCK_MONOTONIC原期限覆盖本地排队和等待；超时不
 宣布远端取消、回滚或credit退款。最后释放join本地执行器，已交付fd独立拥有。

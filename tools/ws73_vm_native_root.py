@@ -275,9 +275,12 @@ def stage(args, manifest, root, source, copy_elf):
     checked_copy(fixtures / 'client.py', python_probe)
     checked_copy(source / 'tools/ws73_application_client.py',
                  root / 'usr/share/sparklink/tools/ws73_application_client.py')
+    checked_copy(source / 'tools/ws73_application_role.py',
+                 root / 'usr/share/sparklink/tools/ws73_application_role.py')
     manifest['application_client_tools'] = dict(
         sources=[file_record(fixtures / name) for name in ('client.c', 'client.py')],
         verifier=file_record(source / 'tools/ws73_application_client.py'),
+        role_supervisor=file_record(source / 'tools/ws73_application_role.py'),
         c_compile=command, compiler=file_record(compiler),
         compiler_version=subprocess.check_output([str(compiler), '--version'],text=True),
         c=file_record(c_probe), python=file_record(python_probe))

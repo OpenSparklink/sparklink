@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9F_OFFLINE_AND_FINITE_VM_PRESERVATION_NATIVE_RETURN_BARRIER_OPEN",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9G_REAL_NATIVE_RETURN_FOUR_SLICES_AND_OLD_COUNTEREXAMPLE_SCOPED",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1974,20 +1974,24 @@
       "native-creation-drain-real-r5f9f": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "native-return-connection-retirement-r5f9g": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP17-WP18-R5f9f-native-creation-drain",
-      "production_behavior": "26bper-ownercreationguardcoveractualworkandunconsumedfdresult;shutdownfencesadmissionandretainsoriginalinitializer/Enginejoin;physicalConnectionprojectionprimessolelazyinitializerwithoutjoin,firstServiceclaimreservedbeforepublication. Original5sresourceswait,applicationbusy,protecteddefer. Targeted5/default367/allfeatures367/Clippy;threecounterexamplesandunattributedv4fdclosefailurepreserved. Tenexact26bU-onlySDK110VMs80ordinary+48dynamicactualappreplies/220radio,partial2slicesperCMTC/Exchange;notactualNative-return/parentbarrierorwholearchitecture.",
-      "state": "R5F9F_SCOPED_OFFLINE_AND_TEN_VM_PRESERVATION_PASS_ACTUAL_NATIVE_RETURN_BARRIER_OPEN",
+      "id": "WP03-WP06-WP08-WP17-WP18-R5f9g-actual-native-return",
+      "production_behavior": "Production26bunchanged;ae40VM-onlyrealSYSbindreturnlibrary/rootobserver. Service/Userxinitiating/accepting4slices:actualpeerDownwhileheld,oldobjectDownobservablebeforehandoff,lateUserfdrefused,fd/objectconverged,otherReady;8actualappreplies/22radio/4411USBdrop0,21evidencenegatives. Old6dcVMoriginalFAILwith479USBdrop0/realbindandtwoUpbutemptyphysicalviewbeforeactualreturn. FirstpreparesourceguardFAILpreserved,exactoldproduction/newtoolsoverlayusedwithoutweakeningguard. Tools871/directCprobe5offline;no newformalproof.",
+      "state": "R5F9G_FOUR_ACTUAL_RETURN_CONNECTION_DOWN_SLICES_PASS_OLD_PUBLICATION_COUNTEREXAMPLE_FAIL_RETAINED",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "AddVM-onlycontrolledactualNative-return/parentretirementbarrierthroughsameNativecall/owner/Engine,thenrelease/finalfd/dup/SCM/Down/originaldeadline/reuseandGrant-credit-Ticket/lateComplete-NOCPcompositions. V5offline367and26btenfiniteVMpreservationarenotKernelNativeinternal/ref/callback/UAFdrainproof. Originalv4fdclosefailurecauseunattributed;originalccef253FAIL/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/UserHostP4/deployment/releaseOPEN. Data/SSAP/security/multichannel/fourdeviceparallel,nocontrol全集prerequisite. Strictallocatedleaves/SDK110/shared12or8unchanged."
+      "next": "Continueactualcontrollerretirement/dynamicNativecreatorandrelatedauthorcancel/release/finalfd/dup/SCM/originaldeadline/reusecompositionsusingsoleowner/tasks/Session/Grant-credit-Ticket. CurrentfourConnectionDownslicesandknown6dcpublicationcounterexamplearenotKernelref/callback/UAFdrain,controllerremoval,directbrokernewadmissionorfullfdproof. Keepdata/SSAP/security/multichannel/fourdeviceparallel,nofullcontrolprerequisite;old253FAIL/v4fdunattributed/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/deployment/releaseOPEN,UserHostP4,VM-only/strictports/SDK110/shared12or8unchanged."
     },
     "selected_qualification": {
       "version": 1,
@@ -4291,23 +4295,33 @@
         "path": ".dev/main-thread-01a120fe/allocation-native-drain-readonly-v1.json",
         "sha256": "7c8b3e5fb056e3e1ae3c597a1fe053ce5a07aaeb2d0e8bf42bbee3058040ab92",
         "scope": "Fourserialpins/parenthubs/PCI/USBdescriptors/liveVMhostdev/visiblefds/leases/buildlockreadonlychecked;U5EP,E2EP. Rootfdvisibilitylimited;noUSBoperation,nonewE/mixed/coldROMqualification."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/allocation-native-drain-readonly-v4.json",
+        "sha256": "6e8009dec5f8f3201b81ed88377aae427b57183f16743bdb3e8a047879b218a7",
+        "scope": "Allfourpins/parents/PCI/visiblefds/liveVMhostdevsafter10U-onlyVMs;U5EP/E2EP. NoE/forbidden/hub/controlleroperation;rootfdvisibilitylimited,noproofofotherthreadbusiness."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/allocation-native-drain-readonly-v4.json",
-      "sha256": "6e8009dec5f8f3201b81ed88377aae427b57183f16743bdb3e8a047879b218a7",
-      "scope": "Allfourpins/parents/PCI/visiblefds/liveVMhostdevsafter10U-onlyVMs;U5EP/E2EP. NoE/forbidden/hub/controlleroperation;rootfdvisibilitylimited,noproofofotherthreadbusiness."
+      "path": ".dev/main-thread-01a120fe/allocation-native-return-readonly-v3.json",
+      "sha256": "52b7b62a2be91f9c240d49da6fc1d7e5f9bbb7f9016418cf8a58dad2b0e5efa1",
+      "scope": "Fourpins/parents/PCIstillmatchafterpositiveandnegativeU-onlyVMs,no visibleWS73occupancy;E2EP/noHCC,rootfdvisibilitylimited,nototherthreadbusinessproof."
     },
-    "current_finite_gate_ref": "native-creation-drain-real-r5f9f"
+    "current_finite_gate_ref": "native-return-connection-retirement-r5f9g"
   },
   "native_return_controlled_gate": {
     "id": "R5f9g",
-    "status": "IMPLEMENTING_TEST_ONLY_REAL_SYS_BIND_RETURN_GATE_NO_VM_QUALIFICATION",
+    "status": "FOUR_REAL_SERVICE_USER_CONNECTION_DOWN_SLICES_SCOPED_PASS_OLD_COUPLING_NEGATIVE_RAW_FAIL_RETAINED",
     "compiled_service": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
     "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
     "scope": "FourService/Userxinitiator/acceptorslices,actualpeerDisconnectwhileoriginalbindreturnheld;no manufacturedoffload/Engine/fd/wire/state. PublicSDKDownrefusalnotdirectbrokerprobe. Defaultslkdunchanged.",
-    "remaining": "Exactnewtool/libraryVMrawrecords,originaltwoendUp/Down,fd/parentconvergence,otherReadyand8ordinaryactualreplies. Dynamic/controllerremoval/ref/callback/UAF/fullfdcombinationsandalloriginalscopeOPEN.",
+    "remaining": "Continueactualcontrollerretirement/dynamicNativecreatorandrelatedauthorcancel/release/finalfd/dup/SCM/originaldeadline/reusecompositionsusingsoleowner/tasks/Session/Grant-credit-Ticket. CurrentfourConnectionDownslicesandknown6dcpublicationcounterexamplearenotKernelref/callback/UAFdrain,controllerremoval,directbrokernewadmissionorfullfdproof. Keepdata/SSAP/security/multichannel/fourdeviceparallel,nofullcontrolprerequisite;old253FAIL/v4fdunattributed/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/deployment/releaseOPEN,UserHostP4,VM-only/strictports/SDK110/shared12or8unchanged.",
     "plan": "project/implementation-plan.md",
-    "new_formal_proofs": 0
+    "new_formal_proofs": 0,
+    "tool_commit": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+    "fixture_commit": "ae40bddd13ab4622e69be09a63eb9e9e3548114e",
+    "report": "docs/evidence/native-return-connection-retirement-20261018.json",
+    "qualification_record": "native-return-connection-retirement-r5f9g",
+    "next": "Continueactualcontrollerretirement/dynamicNativecreatorandrelatedauthorcancel/release/finalfd/dup/SCM/originaldeadline/reusecompositionsusingsoleowner/tasks/Session/Grant-credit-Ticket. CurrentfourConnectionDownslicesandknown6dcpublicationcounterexamplearenotKernelref/callback/UAFdrain,controllerremoval,directbrokernewadmissionorfullfdproof. Keepdata/SSAP/security/multichannel/fourdeviceparallel,nofullcontrolprerequisite;old253FAIL/v4fdunattributed/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/deployment/releaseOPEN,UserHostP4,VM-only/strictports/SDK110/shared12or8unchanged."
   }
 }

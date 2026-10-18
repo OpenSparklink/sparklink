@@ -1,5 +1,11 @@
 # 证据入口与取得限制
 
+- [实际Native返回/Connection退休四切片及旧版反向FAIL](native-return-connection-retirement-20261018.json)：
+  26b服务、2fc内核、ae40 Host/guest/测试库；Service/User各发起/接受，原8次真实回复。
+  旧6dc原始FAIL和最初准备来源guard拒绝保留，不把反向检出升级为旧runtime资格。
+  SDK live拒绝、owner迟到fd拒绝、Root/OS收敛及Kernel证明范围分开；其余精确身份、
+  输入负对照、私有原件hash和剩余条件只从报告与结构化资格读取。
+
 - Connection创建排空与物理投影整改按[限定离线](native-creation-drain-offline-20261018.json)
   和[26b原路径实机保持](native-creation-drain-real-20261018.json)分别读取。原三项
   fixture反例、未归因fd失败、原253 Down失败保留；十个有限VM不证明真正Native

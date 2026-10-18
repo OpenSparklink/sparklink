@@ -5,7 +5,8 @@
 
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
-| Connection 创建排空与独立物理投影 | [生产函数／原反例及限定离线](../docs/evidence/native-creation-drain-offline-20261018.json)、[26b原路径实机保持](../docs/evidence/native-creation-drain-real-20261018.json) | 已实现同一owner创建guard、惰性初始化及物理发布解耦；Native/table为有限fixture。实际Native返回/parent退休屏障和Kernel ref/callback/UAF/drain仍缺，原fd失败未归因 |
+| 实际 Native 返回与 Connection 退休 | [26b服务／ae40工具的四切片与旧版反向FAIL](../docs/evidence/native-return-connection-retirement-20261018.json) | Service/User各发起/接受，真实peer Down、迟到fd拒绝、旧对象/OS fd收敛及原业务；SDK live拒绝不是直接broker探针。Dynamic/controller移除、完整fd/期限及Kernel ref/callback/UAF/drain仍缺 |
+| Connection 创建排空与独立物理投影 | [生产函数／原反例及限定离线](../docs/evidence/native-creation-drain-offline-20261018.json)、[26b原路径实机保持](../docs/evidence/native-creation-drain-real-20261018.json) | 同一owner创建guard、惰性初始化及物理发布解耦；原有限fixture/保持范围不变，后续真实切片见上行，原fd失败未归因 |
 | 历史6dc Native 创建离开异步 worker | [生产 helper／guard／fd 离线](../docs/evidence/native-bind-offload-offline-20261018.json)、[原路径限定实机](../docs/evidence/native-bind-offload-real-20261018.json) | 原服务和VM执行源为6dc，终态修复d538仅离线；它们的资格不转授26b或整个当前HEAD |
 | 终态检查与证据可信度 | 各自产物报告及[通用退出契约](../docs/reference/vm-gate-inputs.md#运行终态与退出凭据) | 原6dc接受篡改的反例保留；26b确由新VM执行，负对照仍属离线，不能回写旧VM身份或代替实际故障门禁 |
 | 原 Down 超时 | [原七尺寸整体FAIL](../docs/evidence/native-service-owner-preservation-20261018.json)、[四轮未复现UNPROVED](../docs/evidence/down-passive-diagnostic-20261018.json) | 后续新产物的253门禁成功不覆盖原FAIL，不证明稳定性或根因修复；实机被动失败窗口仍未取得 |
@@ -18,8 +19,8 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
 接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
 
-下一批取得真正Native返回/parent退休的受控VM屏障，继续核对实际排空、fd引用及
-撤权/断链/原期限组合；现有有限保持不能代替该验收，不新增Engine或状态来源。
+下一批继续controller/dynamic返回及相关取消、fd引用、撤权/原期限纵向组合；
+四个Connection切片不替代这些验收，不新增Engine或状态来源。
 数据／SSAP／安全／多通道和四设备继续并行，完整S0–S6及所有原始验收范围不变。
 
 逐轮旧说明保留于[准确176f077快照](https://github.com/OpenSparklink/sparklink/blob/176f077b627c19b8be947075968d95a440a643b5/project/current-capabilities.md)
@@ -269,6 +270,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 6dc服务十轮有限实机保持；d538仅离线校验，不授Native完整排空资格 | `real_device` | `PASS` |
 | 连接级Native创建排空与独立物理投影：限定离线通过 | `offline` | `PASS` |
 | 26b十轮原路径实机保持：真实Native返回/parent屏障仍缺 | `real_device` | `PASS` |
+| 26b服务/ae40工具：四个真实Native返回/Connection退休切片及旧发布耦合反向FAIL | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

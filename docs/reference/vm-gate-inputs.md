@@ -379,7 +379,7 @@ SSAP 读应软件忙且不得上 USB；既有唯一 slktest CUTC pair 在提示�
 不证明 NOCP 真值、全复用屏障、完整退出/初始化组合或自然恢复。
 
 
-## 实际 Native 返回屏障（开发中）
+## 实际 Native 返回屏障（受控验证范围）
 
 `prepare --native-return-fixture`只为 native VM 编译并封存测试库及编译器身份；
 `run --native-return-verify`要求独立真实双设备连接与普通 basic socket 保持门禁。
@@ -390,3 +390,5 @@ SSAP 读应软件忙且不得上 USB；既有唯一 slktest CUTC pair 在提示�
 普通 SDK 的 Down 拒绝、在途创建晚到 fd 拒绝、物理投影和实际应用交付分别核对。
 原生动态 creator、controller 移除、Kernel 引用/UAF/callback 排空仍不在这项范围。
 源码接线和离线通过不授实机资格；准确状态只见当前能力入口。
+当前取得的Service/User四切片、旧服务反向原始FAIL及仍缺条件，见
+[准确来源报告](../evidence/native-return-connection-retirement-20261018.json)。

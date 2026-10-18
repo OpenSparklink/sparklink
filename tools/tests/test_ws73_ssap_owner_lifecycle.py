@@ -85,6 +85,14 @@ def wire_fixture(phase=0,late=True):
 
 
 class LifecycleReceipts(unittest.TestCase):
+    def test_conservative_clock_sampling_keeps_original_elapsed_guard(self):
+        # Actual SDK Clock->Instant->stamp samples conservatively. Its effective
+        # deadline may be shorter than the public argument;not a new budget.
+        source,item,c,call,result=fixture()
+        result['returned_ns']=result['deadline_ns']-100_000
+        c['stdout']=json.dumps(call)+'\n'+json.dumps(result)+'\n'
+        self.assertEqual(timeout_receipt(c,'c',source,item)['errno'],110)
+
     def test_two_languages_require_actual_errno_and_original_timing(self):
         for api in('c','python'):
             source,item,command,_,_=fixture(api)

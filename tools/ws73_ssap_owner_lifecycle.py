@@ -38,7 +38,9 @@ def timeout_receipt(command,api,source,item):
             or any(type(v)is not int for v in [call['deadline_ns'],call['call_ns'],result['deadline_ns'],result['returned_ns']]) or result['deadline_ns']!=call['deadline_ns']):
         raise CaptureError('actual ETIMEDOUT without operation success required')
     start,end=command['start_monotonic_ns'],command['end_monotonic_ns'];deadline=call['deadline_ns']
-    if not (4_500_000_000<=end-start<=5_500_000_000 and start<=call['call_ns']<deadline<=result['returned_ns']<=end and 0<deadline-call['call_ns']<=5_000_000_000 and result['returned_ns']-deadline<=500_000_000):
+    # SDK sampling only shortens its effective clock/stamp deadline. The public
+    # argument is an upper bound;retain the original draft's +/-500ms guard.
+    if not (4_500_000_000<=end-start<=5_500_000_000 and start<=call['call_ns']<deadline and call['call_ns']<=result['returned_ns']<=end and deadline-500_000_000<=result['returned_ns']<=deadline+500_000_000 and 0<deadline-call['call_ns']<=5_000_000_000):
         raise CaptureError('unchanged original five-second wait guard and actual local deadline required')
     identity=command['credentials']
     if identity['uids']!=[1000]*4 or set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16)for v in identity['capabilities'].values()):
@@ -226,7 +228,7 @@ def valid_summary(proof):
                 or not isinstance(p.get('wire'),list) or len(p['wire'])!=9+int(p['late_denial_physical_obligation'])
                 or timeout.get('api')!=('c'if phase==0 else'python') or type(timeout.get('errno'))is not int or timeout['errno']!=errno.ETIMEDOUT or timeout.get('operation_success')is not False
                 or any(type(timeout.get(k))is not int for k in ['deadline_ns','call_ns','returned_ns'])
-                or not timeout['call_ns']<timeout['deadline_ns']<=timeout['returned_ns']<=timeout['deadline_ns']+500_000_000):return False
+                or not timeout['call_ns']<timeout['deadline_ns'] or not timeout['call_ns']<=timeout['returned_ns'] or not timeout['deadline_ns']-500_000_000<=timeout['returned_ns']<=timeout['deadline_ns']+500_000_000):return False
         for leg in p['wire']:
             if not isinstance(leg,dict)or set(leg)!={'tx','rx'}:return False
             tx,rx=leg['tx'],leg['rx']

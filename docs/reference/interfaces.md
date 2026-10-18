@@ -7,7 +7,7 @@
 | C应用 API | `crates/libsparklink/include/sparklink.h` | 当前 broker 查询/通道申请及已授权 fd 操作；无 Native 管理导出，非完整 SSAP/Agent 客户端 |
 | C Native API | `crates/slk-native/include/sparklink_native.h` | 显式管理/观察库；匹配libslk_native，不授予访问权限 |
 | Python | `bindings/python/sparklink/` 与 ABI 检查 | 与文档构建的 Python 项目分开 |
-| CLI | 当前构建的 `slctl --help`、`slkconfig --help` | 原生管理、离线诊断和迁移中的旧命令有不同限制 |
+| CLI | 当前构建的 `slctl --help`、`slktest --help`、`slkconfig --help` | slctl管理/应用授权，slktest应用通道测试，slkconfig显式Native；已退休入口不保留旧别名 |
 | 当前资格 | [CURRENT_CAPABILITIES](../../project/current-capabilities.md) | 区分源码、离线、模型、实机与未决条件 |
 | 目标设计 | [ARCHITECTURE](../../project/architecture.md) 与 ADR | 不代表接口已接通 |
 
@@ -123,8 +123,8 @@ Python `Client.connection(ControllerId, full_connection_path, deadline_ns=...)`
 和`.write(handle, bytes_like, ...)`使用同一C ABI并返回相同字节。每次只执行一次，
 不按错误长度自动重试。关闭Connection后已有SSAP视图失效；不关闭物理连接。
 
-R5f6候选源码已将**SSAP值读／短写**的原期限传到现有daemon Query；尚未取得新
-artifact的实机资格。Rust方法显式接收`libsparklink::Deadline`，C/Python仍接收绝对
+**SSAP值读／短写**的原期限已传到现有daemon Query；e776产物只有分项正向与
+原路径保持资格，受控期限、退出、部分初始化及晚到义务仍须单列验收。Rust方法显式接收`libsparklink::Deadline`，C/Python仍接收绝对
 `CLOCK_MONOTONIC`纳秒。既有五秒协议上限在SDK操作入口确定，C/Python在进入
 本地队列前确定；原期限更短时不延长。身份检查、总线排队、锁和协商等待共享该期限。
 其余Client管理、发现／订阅等入口的完整端到端期限仍未由本批接通或验收。

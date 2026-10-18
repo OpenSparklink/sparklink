@@ -229,6 +229,10 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 81bd Native创建器迁移：apps-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | 81bd Native创建器迁移：preservation-real限定通过；完整架构开放 | `real_device` | `PASS` |
 | 81bd Native创建器迁移：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
+| e776 SSAP值期限/共享初始化：offline限定通过；完整架构开放 | `offline` | `PASS` |
+| e776 SSAP值期限/共享初始化：apps-real限定通过；完整架构开放 | `real_device` | `PASS` |
+| e776 SSAP值期限/共享初始化：preservation-real限定通过；完整架构开放 | `real_device` | `PASS` |
+| e776 SSAP值期限/共享初始化：factory-real限定通过；完整架构开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 
@@ -1504,26 +1508,36 @@ private sockaddr与两项原生产函数测试已迁到Native，全部Connection
 原fa310只保留自己的资格。该有限批退出，不授完整架构或整个HEAD资格；Kernel
 Session/Grant/credit/Ticket与唯一SSAP Engine不变，不新增Host或协议状态机。
 
-R5f6正在整改**SSAP值操作端到端原期限**，尚未授新资格。
-[调用审计／三类去向／原失败](../docs/evidence/ssap-value-deadline-audit-20261018.json)绑定aa46基线；
-既有Client/contract/Connection/Query现传递同一绝对期限。五uint64显式绑定boot与
-time namespace，Kernel ktime投影还要求零偏移；不猜测或重算收到RPC后的新预算。
-原五秒协议上限在进入SDK队列前确定。共享初始化归Connection，只有一份存储任务；
-作者超时不丢Native引用，退休先拒绝starter再join实际初始化。初始化与ExchangeInfo
-共用其独立原期限，成功创建Engine不等于协议Ready。未提交过期工作删除，可能已
-提交者保留身份直到匹配回复或drain退休；清理期限不允许新TX、不退款或迟到成功。
-Native操作未返回时保留Retiring引用，不能用超时提前Free；墙钟上界仍需实测/证明。
-候选6b随后复现本地等待仍用较长调用者期限的组合缺陷；原exit101、ELF和屏障
-保留。修复将本地排队/等待和wire期限共同确定；同一受控用例约五秒拒绝且未调用
-过期操作。候选6b不授实机资格，新修复须完整重建并另验；353项旧通过未覆盖此性质。
+R5f6已接通**SSAP值操作端到端原期限**与Connection-owned初始化；准确
+`e776f3623830c31909a879cdddf8d90f8e1e0d21`的限定资格已分别登记：
+[离线](../docs/evidence/ssap-value-deadline-offline-20261018.json)、
+[新SDK正向](../docs/evidence/ssap-value-deadline-apps-real-20261018.json)、
+[原尺寸/Owned保持](../docs/evidence/ssap-value-deadline-preservation-real-20261018.json)、
+[动态/参考受保护路径](../docs/evidence/ssap-value-deadline-factory-real-20261018.json)。
+[调用审计／三类去向／原失败](../docs/evidence/ssap-value-deadline-audit-20261018.json)
+保留aa46审查、6b组合缺陷及原日志/ELF；报告提交不替代编译与执行身份。
 
-本批退出：严格default/allfeatures、实际C/Python/private bus、独立D-Bus签名/字段
-与头/ELF/绑定、生产函数及初始化取消/停止/晚到义务回归，然后封存准确新artifact，
-在VM取得真实SDK正向和受控原期限/调用者退出/部分初始化/晚到回复/同行业务证据，
-并保持原发现/连接/长度/Owned/动态/受保护路径。首轮proc路径失败、数组signature
-失败与未知C诊断失败保留，后续PASS不覆盖，也不推导根因已修复。不等待全部控制面
-竞争组合；随后继续其他方法的公共期限、lifecycle/Grant撤权与同行、higher/common API、
-每应用DiscoverySession和R6c。所有原scope、自然RCA/非人工恢复及未证明项仍OPEN。
+既有Client/contract/Connection/Query传递同一绝对期限。五uint64显式绑定boot与
+time namespace，Kernel ktime投影还要求零偏移。原五秒协议上限在进入SDK队列前
+确定，本地排队/等待和wire使用同一有效期限；6b错误地保留较长本地等待的反例已
+封存，同一屏障回归验证修复。旧353项通过没有覆盖该性质，6b bundle未执行或授资格。
+共享初始化归Connection，只有一份存储任务；作者超时不丢Native引用，退休先拒绝
+starter再join实际初始化。初始化与ExchangeInfo共用独立原期限，成功创建Engine
+不等于协议Ready。未提交过期工作删除，可能已提交者保留身份直到匹配回复或drain
+退休；清理期限不允许新TX、不退款或迟到成功。Native操作未返回时保留Retiring
+引用，不能用超时提前Free；墙钟上界仍未证明。
+
+**本批完整退出仍未达到**：上述准确产物的有限正向与原路径保持，不替代受控
+原期限/调用者退出/部分初始化/晚到回复/同行实际业务验收。保留中的main WIP未被
+覆盖；已复用其实际callback屏障并在832aece修复异常输出丢失和中断误分类，
+[16项本地回归](../docs/evidence/ws73-barrier-output-regression-20261018.json)同时保留原异常、
+完整输出和原监督预算。原finally本已回收子进程，未误报进程泄漏；新的受控VM门禁
+仍未完成。管理show可达不能充当同行业务交付。
+
+未知C诊断、proc/signature首轮失败与全部历史证据保留；后续PASS不推导其根因已
+修复。随后收敛其他方法的公共期限、lifecycle/Grant/fd传递、higher/common API、
+每应用DiscoverySession和R6c。不等待全部控制面竞争组合；自然RCA/非人工恢复及
+完整S0–S6/19WP/10FV/12DG/UserHost P4/VM-only与所有原条件保持不变。
 
 C同步入口继续保持每客户端独立执行器、有界8请求队列及一个在途请求，不持有
 controller管理lease。绝对CLOCK_MONOTONIC原期限覆盖本地排队和等待；超时不

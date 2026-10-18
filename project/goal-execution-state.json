@@ -799,14 +799,14 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F6_VALUE_ORIGINAL_DEADLINE_AND_CONNECTION_OWNED_INIT_ACTIVE",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F6_SCOPED_POSITIVE_PRESERVATION_PASS_CONTROLLED_LIFETIME_OPEN",
   "next_resume_tasks": [
-    "Finishstrictdefault/allfeatures,actualC/Python/header/bindings andsourceboundoffline gates;thenexactnewartifact SDKpositive and controlleddeadline/callerexit/partialinit/latephysicalreply/peerisolation with originalradio/connection/length/Owned/dynamic/protected gates inVM. PreserveunexplainedCfailure. Fullpubliclifecycle/commonAPI/perappDiscovery/R6c,naturalRCA/recovery OPEN.",
+    "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
   "issue_sync_status": "R6A_SIX_EXISTING_PLUS_R6B_RELEVANT_UPDATES_READBACK_OPEN_NO_SCOPE_CHANGE",
-  "issue_sync_receipt": ".dev/architecture-r6b-qualified-issues-v1.json",
+  "issue_sync_receipt": ".dev/architecture-r5f6-issue-receipts-v2.json",
   "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_R6A_EXACT_GENERIC_VM_LIMITED_QUALIFICATION_FULL_R5F_R6_OPEN",
   "current_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
   "goal_api_status_observed": "active",
@@ -1887,20 +1887,36 @@
       "native-channel-creation-factory-real-r5f5": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "ssap-value-deadline-offline-r5f6": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "ssap-value-deadline-apps-real-r5f6": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "ssap-value-deadline-preservation-real-r5f6": {
+        "level": "real_device",
+        "result": "PASS"
+      },
+      "ssap-value-deadline-factory-real-r5f6": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
       "id": "WP03-WP06-WP08-WP18-R5f6-ssap-value-original-deadline-active",
-      "production_behavior": "Currentdevelopmentcandidate forwards immutable value deadlines through existingSDK/contract/Connection/Query, separatesauthor/physicaldrain and owns onecancel-safe initializer. No newEngine/Host/ABIqualification. Existing81bd records retain only their own scope.",
-      "state": "R5F6_LOCAL_PROTOCOL_CEILING_COUNTEREXAMPLE_FIXED_NEW_SOURCE_GATES_PENDING",
+      "production_behavior": "Exact e776 existing SDK/contract/Connection/Query shares original value deadline;Connection-owned initializer and separate author/physical drain. Four finite source-bound records;no new Host/Engine or full deadline/lifetime/architecture qualification.",
+      "state": "R5F6_SCOPED_OFFLINE_POSITIVE_AND_PRESERVATION_PASS_CONTROLLED_LIFETIME_GATES_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Preserve confirmed6b queue/wait ceiling counterexample and all prior failures;seal the effective-local/wire-deadline fix, rerun source-bound default/allfeatures/actual C-Python/header/export gates, build new artifact (never qualify6b bundle), then VM SDKpositive and controlled originaldeadline/callerexit/partialinit/latephysicalreply/peerisolation plus original preservation. Full scope unchanged."
+      "next": "Wire preserved owner/caller originaldeadline cases through the sole recorder after832aece barrier/output fix (16 local methods PASS;no new controlledVM qualification). Validate actual callback/callerexit/partialNativeinit/latephysicalreply and concurrent real peer-business with accurate tools. Then other public-method/common deadlines/full lifecycle/Grant/fd-transfer/higherSDK/per-appDiscovery/R6c. All originalS0-S6/19WP/10FV/12DG/UserHostP4/VM-only/naturalRCA/nonmanualrecovery remain OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -3626,13 +3642,27 @@
       ]
     },
     "r5f6": {
-      "state": "IMPLEMENTED_CANDIDATE_NOT_QUALIFIED",
+      "state": "R5F6_SCOPED_OFFLINE_POSITIVE_AND_PRESERVATION_PASS_CONTROLLED_LIFETIME_GATES_OPEN",
       "source_parent": "aa46ae400bcabd2d107d11ad4d3e9a1198853e41",
       "audit": "docs/evidence/ssap-value-deadline-audit-20261018.json",
       "scope": "Existing value operation and connection-owned initialization/drain;no newEngine orairprotocol",
       "exit": "Sourceboundstrict/offline/actualbindings plusnewartifact VMpositive+controlleddeadline/lifetime/cleanup andoriginalpreservation;old81bd qualifiesonlyitself",
-      "remaining": "Preserve confirmed6b queue/wait ceiling counterexample and all prior failures;seal the effective-local/wire-deadline fix, rerun source-bound default/allfeatures/actual C-Python/header/export gates, build new artifact (never qualify6b bundle), then VM SDKpositive and controlled originaldeadline/callerexit/partialinit/latephysicalreply/peerisolation plus original preservation. Full scope unchanged.",
-      "counterexample": "Confirmed production6b local wait used30s despite effective5s wiredeadline;original failure and exactELF retained in existing audit. Fixed in development;no newartifact hardware qualification."
+      "remaining": "Wire preserved owner/caller originaldeadline cases through the sole recorder after832aece barrier/output fix (16 local methods PASS;no new controlledVM qualification). Validate actual callback/callerexit/partialNativeinit/latephysicalreply and concurrent real peer-business with accurate tools. Then other public-method/common deadlines/full lifecycle/Grant/fd-transfer/higherSDK/per-appDiscovery/R6c. All originalS0-S6/19WP/10FV/12DG/UserHostP4/VM-only/naturalRCA/nonmanualrecovery remain OPEN.",
+      "counterexample": "Confirmed production6b local wait used30s despite effective5s wiredeadline;original failure and exactELF retained in existing audit. Fixed in development;no newartifact hardware qualification.",
+      "implementation": "e776f3623830c31909a879cdddf8d90f8e1e0d21",
+      "reports": [
+        "docs/evidence/ssap-value-deadline-offline-20261018.json",
+        "docs/evidence/ssap-value-deadline-apps-real-20261018.json",
+        "docs/evidence/ssap-value-deadline-preservation-real-20261018.json",
+        "docs/evidence/ssap-value-deadline-factory-real-20261018.json"
+      ],
+      "controlled_barrier_review": ".dev/architecture-r5f6-main-wip-review-v1.json;confirmed output loss on barrier exception,but existingfinally already reaps child. Original tenWIP bytes preserved;not executed as new artifact qualification.",
+      "controlled_barrier_fix": {
+        "implementation": "832aeceb8924a28f164cbde222e4b41d50fecdd9",
+        "report": "docs/evidence/ws73-barrier-output-regression-20261018.json",
+        "scope": "16actual local subprocess regression methods PASS;original twofailures and main tenWIP bytes retained;no new controlled VM or device qualification",
+        "next": "Wire current owner/caller and originaldeadline cases;other actual peer-business and partialNativeinit obligations remain required."
+      }
     }
   },
   "owned_ssap_c6_historical_batch": {

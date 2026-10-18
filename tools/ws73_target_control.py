@@ -61,11 +61,17 @@ class PassthroughControlRun(Run):
 class ConnectionControlRun(PassthroughControlRun):
     def __init__(self, args):
         super().__init__(args)
+        self.native_controller_return = None
+        if getattr(args, 'native_controller_return', None):
+            from ws73_native_controller_return import Session
+            self.native_controller_return = Session(self)
         self.data['connection_down_failure_observe_seconds'] = getattr(args, 'connection_down_failure_observe_seconds', 0)
         self.save()
 
     def phase(self, a, b, count, label):
-        if label == 'initial':
+        if self.native_controller_return and label == 'replug':
+            self.native_controller_return.replug(a, b)
+        if label == ('replug' if self.native_controller_return else 'initial'):
             if getattr(self.args, 'native_return_verify', False):
                 from ws73_native_return import execute as native_return
                 native_return(self, a, b)
@@ -77,6 +83,21 @@ class ConnectionControlRun(PassthroughControlRun):
             from ws73_registry_metadata import execute as registry_metadata
             registry_metadata(self, a, b)
         return super().phase(a, b, count, label)
+
+    def confirm(self, message):
+        session = self.native_controller_return
+        if session:
+            (session.before_remove if self.confirmations == 0 else session.before_readd)()
+        super().confirm(message)
+        if session and self.confirmations == 1:
+            session.removed()
+
+    def execute(self):
+        try:
+            return super().execute()
+        finally:
+            if self.native_controller_return:
+                self.native_controller_return.close()
 
 
 class CancelRemovalRun(PassthroughControlRun):
@@ -158,6 +179,7 @@ def main():
     parser.add_argument('--channel-benchmark-bytes',type=int,default=61)
     parser.add_argument('--channel-benchmark-interval-us',type=int)
     parser.add_argument('--native-return-verify',action='store_true')
+    parser.add_argument('--native-controller-return', choices=['initiator','acceptor'])
     parser.add_argument('--ssap-initialization-verify',action='store_true',help='actual selected negotiation-stage lease revoke, fd convergence and ordinary new lifetime preservation')
     parser.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
     parser.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
@@ -175,6 +197,8 @@ def main():
     if args.application_client_verify and any(value for key,value in vars(args).items() if type(value) is bool and key not in ['passthrough','connection_verify','application_client_verify']):parser.error('application clients cannot combine independent lifecycle/fault gates')
     from ws73_native_return import requested as native_return_requested
     native_return_requested(args)
+    from ws73_native_controller_return import requested as native_controller_requested
+    native_controller_requested(args)
     from ws73_ssap_initialization import requested
     try:requested(args)
     except ValueError as error:parser.error(str(error))

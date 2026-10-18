@@ -33,7 +33,8 @@ def requested(args, *, passthrough=None):
     if type(enabled) is not bool:
         raise ValueError('boolean Native-return request required')
     real = getattr(args, 'passthrough', False) if passthrough is None else passthrough
-    if enabled and (real is not True or not getattr(args, 'connection_verify', False)
+    if enabled and (getattr(args, 'native_controller_return', None) is not None
+            or real is not True or not getattr(args, 'connection_verify', False)
             or not getattr(args, 'channel_socket_verify', False)
             or getattr(args, 'channel_socket_bytes', 61) != 61
             or getattr(args, 'channel_socket_rounds', 4) != 4
@@ -45,6 +46,18 @@ def requested(args, *, passthrough=None):
                 'channel_benchmark', 'daemon_link_resync'])):
         raise ValueError('Native return requires dedicated real ordinary basic socket preservation')
     return enabled
+
+
+def fixture_phases(tokens=None):
+    """One explicit VM scope; historical four-Connection evidence stays distinct."""
+    tokens = Path('/proc/cmdline').read_text().split() if tokens is None else tokens
+    native = tokens.count('ws73.native_return=1')
+    controller = [v.split('=', 1)[1] for v in tokens if v.startswith('ws73.native_controller_return=')]
+    if native == 1 and not controller:
+        return tuple(range(4))
+    if not native and len(controller) == 1 and controller[0] in ('initiator', 'acceptor'):
+        return (2 + ('initiator', 'acceptor').index(controller[0]),)
+    raise ValueError('one explicit Native return VM scope required')
 
 
 def decode(raw):
@@ -96,9 +109,9 @@ def wait_record(path, alive, deadline):
 
 def setup():
     import platform
-    if (os.geteuid() or '-opensparklink-native-lab+' not in platform.release()
-            or 'ws73.native_return=1' not in Path('/proc/cmdline').read_text().split()):
+    if os.geteuid() or '-opensparklink-native-lab+' not in platform.release():
         raise ValueError('explicit native test VM root required')
+    fixture_phases()
     CONTROL.mkdir(mode=0o700, exist_ok=False)
 
 
@@ -119,7 +132,8 @@ def supervise(root, pid):
     def alive():
         if time.monotonic() >= deadline or daemon_identity(pid) != original:
             raise ValueError('original daemon/finite Native supervisor required')
-    for phase in range(4):
+    phases = fixture_phases()
+    for phase in phases:
         held = None
         for stage in STAGES:
             number = phase*4+STAGES.index(stage)
@@ -188,15 +202,34 @@ def supervise(root, pid):
                 (output/f'{phase}-returned.bin').write_bytes((CONTROL/f'{phase}-returned').read_bytes())
             else:
                 (CONTROL/'selection').unlink()
+                if len(phases) == 1:
+                    # After real device removal, the peer's actual Down and
+                    # controller retirement may still be draining. Observe,
+                    # never close a daemon fd or invent a successful drain.
+                    row['drain_observations'] = []
+                    limit = time.monotonic()+2
+                    while True:
+                        observation = sockets(pid)
+                        row['drain_observations'].append(observation)
+                        if inodes(observation) == inodes(baseline):
+                            break
+                        alive()
+                        if time.monotonic() >= limit:
+                            raise TimeoutError('controller Native socket convergence')
+                        time.sleep(.01)
             row.update(sockets(pid), end_wall_ns=time.time_ns())
+            if stage == 'arm':
+                baseline = row
             inodes(row)
             write_marker(output/f'{number}.json', row)
     print('WS73_NATIVE_RETURN_SUPERVISOR_FINISHED', flush=True)
 
 
 class Client:
-    def __init__(self, run):
-        self.run, self.sequence = run, 0
+    def __init__(self, run, start_phase=0):
+        if type(start_phase) is not int or start_phase not in range(4):
+            raise ValueError('fixed Native selection phase required')
+        self.run, self.sequence = run, start_phase*4
         self.folder = run.output/'native-return-requests'
         self.folder.mkdir(exist_ok=False)
 
@@ -374,22 +407,26 @@ def verify_guest(run):
 
 
 def verify_root(run, root, expected=None):
-    root = Path(root)/'native-return-root'
     phases = verify_guest(run)
-    for n, phase in enumerate(phases):
-        for i, stage in enumerate(STAGES):
-            saved = json.loads((root/f'{n*4+i}.json').read_text())
-            if saved != phase[{'arm':'before', 'bound':'bound', 'release':'release', 'drained':'drained'}[stage]]:
-                raise CaptureError('root receipt changed/missing in original private artifact')
-            if expected is not None and saved['fixture']['sha256'] != expected:
-                raise CaptureError('actual loaded Native fixture differs from prepared artifact')
-        if (decode((root/f'{n}-held.bin').read_bytes()) != phase['bound']['held']
-                or decode((root/f'{n}-returned.bin').read_bytes()) != phase['release']['returned']):
-            raise CaptureError('original C observation bytes must match decoded root receipts')
-        selected = SELECTION.unpack((root/f'{n}-selection.bin').read_bytes())
-        s = phase['selection']
-        if selected != (b'SLKSEL1\0', n, s['controller'], s['generation'], n//2, 0):
-            raise CaptureError('original fixed C selector bytes required')
+    for phase in phases:
+        verify_root_phase(phase, root, expected)
+
+
+def verify_root_phase(phase, root, expected=None):
+    root = Path(root)/'native-return-root'
+    s = phase['selection']; n = s['phase']
+    for i, stage in enumerate(STAGES):
+        saved = json.loads((root/f'{n*4+i}.json').read_text())
+        if saved != phase[{'arm':'before', 'bound':'bound', 'release':'release', 'drained':'drained'}[stage]]:
+            raise CaptureError('root receipt changed/missing in original private artifact')
+        if expected is not None and saved['fixture']['sha256'] != expected:
+            raise CaptureError('actual loaded Native fixture differs from prepared artifact')
+    if (decode((root/f'{n}-held.bin').read_bytes()) != phase['bound']['held']
+            or decode((root/f'{n}-returned.bin').read_bytes()) != phase['release']['returned']):
+        raise CaptureError('original C observation bytes must match decoded root receipts')
+    selected = SELECTION.unpack((root/f'{n}-selection.bin').read_bytes())
+    if selected != (b'SLKSEL1\0', n, s['controller'], s['generation'], n//2, 0):
+        raise CaptureError('original fixed C selector bytes required')
 
 
 def corroborate(run, capture):

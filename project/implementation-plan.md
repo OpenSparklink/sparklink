@@ -1,5 +1,26 @@
 # SparkLink / Linux 联合实施方案
 
+### R5f9h：实际 User Native 返回跨 controller 退休（工具已接通，实机待执行）
+
+本批复用既有单叶子 QMP remove/re-add、唯一 Native 返回库及 Root 观察器。
+每 VM 显式选择发起或接受角色；真实 `SYS_bind` 成功后保留原返回不超过两秒，
+同一普通应用仍等待授权 fd 时移除 slot0，观察旧注册撤销与另一 controller 的原
+Ready/generation，再显式释放并要求实际退休错误。之后结清仍通电 peer 的真实
+连接，观察原 socket inode 收敛，再让原 runner 重新附加同一白名单叶子。
+普通两角色8次随机业务往返放在新 generation Ready 后，原广播/扫描仍保留。
+不增加额外 QMP 拔插循环，不修改生产 Host/Session/Engine、Grant/credit/Ticket、
+Kernel 或原期限；C库仍先执行真实 syscall，不伪造结果或协议字节。
+
+离线定向11项、工具877项通过；原ae40/26b四Connection切片、8业务回复及22
+发现匹配的原始输入经新公共解码器重放通过，不转授新运行资格。
+退出：两角色各一独立 VM、原 Root C bytes/加载库/daemon身份、真实两端 Up、
+peer Down、QMP单叶子证据及新注册 HCC/原业务均闭合；首 FAIL 与 expiry 原样保留。
+本项是受控 guest controller 移除，不是物理断电、Kernel ref/callback/UAF 证明或
+自然恢复资格；fd inode 收敛与 SDK 旧选择拒绝的范围分别表达。缺 lease/event 的
+上一批私有bus检查仍限定离线，不升级。仅本批相关性质门禁；动态creator、完整
+fd/期限及其他组合、数据/安全/SSAP/多通道/四设备继续按原范围并行。
+
+
 ### R5f9g：实际 Native 返回与 Connection 退休屏障（四实机切片限定通过，完整组合开放）
 
 只在显式测试 VM 加载 interposer：先执行真实 SYS_bind，成功且匹配原

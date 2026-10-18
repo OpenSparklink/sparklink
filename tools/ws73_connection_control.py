@@ -321,12 +321,8 @@ def execute(run, a, b):
         record['end_wall_ns'] = time.time_ns(); run.save()
 
 
-def corroborate_wire_operation(run, phase, capture, operation, command_row, handle, handles, reference=None, reason=0x10):
-    """Real USB OUT/Status and paired physical outcomes; no author result invented."""
-    if operation not in (1, 2) or reason not in (0x10, 0x13):
-        raise CaptureError('explicit Create/Disconnect and current or historical reason required')
-    caller, peer = phase['caller'], phase['peer']
-    opcode, event_ids = (0x1401, {0x15, 0x1401}) if operation == 1 else (0x1403, {5, 0x1405})
+def corroborate_wire_status(capture, caller, opcode, command_row):
+    """Actual command and Status; physical outcomes are checked separately."""
     start, end = command_row['start_wall_ns'], command_row['end_wall_ns']
     def within(row, owner):
         return (row['bus'],row['device']) == (owner['bus'],owner['device']) and start <= row['wall_ns'] <= end
@@ -337,11 +333,22 @@ def corroborate_wire_operation(run, phase, capture, operation, command_row, hand
             or not start<=commands[0]['completion']['wall_ns']<=end
             or statuses[0]['wall_ns']<commands[0]['wall_ns']):
         raise CaptureError('one real paired OUT and successful CommandStatus required')
+    return commands[0], statuses[0]
+
+
+def corroborate_wire_operation(run, phase, capture, operation, command_row, handle, handles, reference=None, reason=0x10):
+    """Real USB OUT/Status and paired physical outcomes; no author result invented."""
+    if operation not in (1, 2) or reason not in (0x10, 0x13):
+        raise CaptureError('explicit Create/Disconnect and current or historical reason required')
+    caller, peer = phase['caller'], phase['peer']
+    opcode, event_ids = (0x1401, {0x15, 0x1401}) if operation == 1 else (0x1403, {5, 0x1405})
+    start, end = command_row['start_wall_ns'], command_row['end_wall_ns']
+    command, status = corroborate_wire_status(capture, caller, opcode, command_row)
     if operation==1:
-        body=bytes.fromhex(commands[0]['params'])
+        body=bytes.fromhex(command['params'])
         if len(body)!=27 or body[2]!=phase['peer_address_type'] or body[3:9]!=bytes.fromhex(peer['address'].replace(':','')):
             raise CaptureError('Create body must target actual peer/type')
-    elif commands[0]['params'] != (handle.to_bytes(2,'little')+bytes([reason])).hex():
+    elif command['params'] != (handle.to_bytes(2,'little')+bytes([reason])).hex():
         raise CaptureError('Disconnect body must target exact handle/reason')
     outcomes=[]
     # Peer publication may follow the caller's terminal slightly; use
@@ -368,7 +375,7 @@ def corroborate_wire_operation(run, phase, capture, operation, command_row, hand
         elif handles.get(identity)!=handle:
             raise CaptureError('peer Down must match its independently observed Up handle')
         outcomes.append(events[0])
-    return dict(command=commands[0], status=statuses[0], outcomes=outcomes)
+    return dict(command=command, status=status, outcomes=outcomes)
 
 
 def corroborate(run, capture, *, expected_disconnect_reason=0x10):

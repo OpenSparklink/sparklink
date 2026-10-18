@@ -4372,5 +4372,30 @@
       },
       "remaining": "Actual controller removal while Native return is held, same-daemon/new-generation reattach, other real controller operation, dynamic creator and fd/deadline/Grant-credit-Ticket combinations remain OPEN; no new qualification inherited from old device tests."
     }
+  },
+  "controller_native_return_gate": {
+    "id": "R5f9h",
+    "status": "TOOLING_IMPLEMENTED_REAL_NOT_RUN",
+    "plan": "project/implementation-plan.md",
+    "production_change": false,
+    "production_service": "26b654bf525c148deca88e0c43ca41f9faf4a72d",
+    "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+    "planned_roles": [
+      "initiator",
+      "acceptor"
+    ],
+    "ports": [
+      "1-1.1.1",
+      "1-1.1.2"
+    ],
+    "exit": "Actual original user SYS_bind held across the existing one-leaf QMP removal; original controller retirement and other Ready before explicit return; late fd refused; same daemon, new generation/HCC then ordinary two-role real random payload validation/replies with original RF/capture proofs.",
+    "limits": "Controlled VM guest removal only; physical power is unchanged. Root OS fd/inode observations are not kernel ref/callback/UAF/drain or automatic recovery proof. E/mixed/cold-ROM and all uncompleted original scopes remain OPEN.",
+    "new_real_runs": 0,
+    "new_formal_proofs": 0,
+    "offline_checks": {
+      "targeted_methods": 11,
+      "tool_methods": 877,
+      "historical_raw_replay": "Original ae40/26b four Connection slices,8 business replies and22 radio matches accepted by current common decoder;not new runtime/device qualification."
+    }
   }
 }

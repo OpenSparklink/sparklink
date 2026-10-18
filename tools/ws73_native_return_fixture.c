@@ -92,7 +92,9 @@ static int vm_directory(void)
 	for (ssize_t i = 1; i <= length; i++)
 		if (command[i] == '\n' || command[i] == '\t')
 			command[i] = ' ';
-	if (!strstr(command, " ws73.native_return=1 "))
+	if (!strstr(command, " ws73.native_return=1 ") &&
+	    !strstr(command, " ws73.native_controller_return=initiator ") &&
+	    !strstr(command, " ws73.native_controller_return=acceptor "))
 		return -1;
 	int fd = open("/run/ws73-native-return", O_RDONLY | O_DIRECTORY |
 		      O_NOFOLLOW | O_CLOEXEC);

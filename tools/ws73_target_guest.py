@@ -371,6 +371,13 @@ def verify_passthrough():
         from ws73_native_return import verify_root, corroborate as native_corroborate
         verify_root(run,EVIDENCE)
         proofs.append({'native_return':native_corroborate(run,capture)})
+    controller_roles=[v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split()
+                      if v.startswith('ws73.native_controller_return=')]
+    if bool(controller_roles) != ('native_controller_return' in run):raise ValueError('controller return request/evidence mismatch')
+    if controller_roles:
+        from ws73_native_controller_return import corroborate as controller_corroborate
+        if native_requested or controller_roles != [run['native_controller_return']['role']]:raise ValueError('one exclusive controller return role required')
+        proofs.append({'native_controller_return':controller_corroborate(run,capture,EVIDENCE,Path('/expected-native-return-sha256').read_text().strip())})
     initialization_requested='ws73.ssap_initialization=1' in Path('/proc/cmdline').read_text().split()
     if initialization_requested != ('ssap_initialization' in run):raise ValueError('initialization request/evidence mismatch')
     if initialization_requested:

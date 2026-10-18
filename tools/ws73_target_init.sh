@@ -241,7 +241,12 @@ if [ -f /expected-discovery-config-sha256 ]; then
     /bin/slkd --check-config --config /etc/sparklink/main.conf > /evidence/discovery-config-validation.txt 2>&1 || fail 'guest config validation'
     config_args='--config /etc/sparklink/main.conf'
 fi
-if grep -qw ws73.native_return=1 /proc/cmdline; then
+native_return_fixture_enabled() {
+    grep -qw ws73.native_return=1 /proc/cmdline ||
+    grep -qw ws73.native_controller_return=initiator /proc/cmdline ||
+    grep -qw ws73.native_controller_return=acceptor /proc/cmdline
+}
+if native_return_fixture_enabled; then
     [ -f /expected-native-return-sha256 ] || fail 'explicit Native fixture preparation required'
     chown 0:0 /usr/lib/sparklink /usr/lib/sparklink/native-return-fixture.so /expected-native-return-sha256 || fail 'Native fixture root ownership'
     chmod 0755 /usr/lib/sparklink || fail 'Native fixture directory mode'
@@ -395,6 +400,9 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             esac
             if grep -qw ws73.ssap_initialization=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-initialization-verify"; fi
             if grep -qw ws73.native_return=1 /proc/cmdline; then connection_arg="$connection_arg --native-return-verify"; fi
+            for role in initiator acceptor; do
+                if grep -qw "ws73.native_controller_return=$role" /proc/cmdline; then connection_arg="$connection_arg --native-controller-return $role"; fi
+            done
             if grep -qw ws73.ssap_initialization_stage=exchange /proc/cmdline; then connection_arg="$connection_arg --ssap-initialization-stage exchange"; fi
             if grep -qw ws73.ssap_owner_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owner-lifecycle-verify"; fi
             if grep -qw ws73.ssap_requester_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-requester-lifecycle-verify"; fi
@@ -442,12 +450,12 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
     if grep -qw ws73.ssap_initialization=1 /proc/cmdline; then
         /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ssap-init-fds "$daemon" > /evidence/ssap-initialization-fds.log 2>&1 & initialization_fds=$!
     fi
-    if grep -qw ws73.native_return=1 /proc/cmdline; then
+    if native_return_fixture_enabled; then
         /bin/python3 /usr/share/sparklink/tools/ws73_native_return.py supervise /evidence "$daemon" > /evidence/native-return-supervisor.log 2>&1 & native_return_supervisor=$!
     fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_target_control.py --passthrough $daemon_remove_arg $initializer_arg $connection_arg --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/passthrough-control" || fail 'QMP passthrough control'
     if grep -qw ws73.ssap_initialization=1 /proc/cmdline; then wait "$initialization_fds" || fail 'partial initialization fd observer'; fi
-    if grep -qw ws73.native_return=1 /proc/cmdline; then wait "$native_return_supervisor" || fail 'actual Native return supervisor'; fi
+    if native_return_fixture_enabled; then wait "$native_return_supervisor" || fail 'actual Native return supervisor'; fi
     if grep -qw ws73.link_resync=1 /proc/cmdline; then wait "$resync_supervisor" || fail 'real subscriber overflow supervisor'; fi
     if grep -qw ws73.acb_probe=1 /proc/cmdline; then wait "$acb_supervisor" || fail 'real ACB transport supervisor'; fi
 else

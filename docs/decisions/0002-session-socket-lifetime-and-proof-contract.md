@@ -659,3 +659,14 @@ K400bd6812608复用已有物理Session、唯一RX分流、ACB credit及提交票
 工具d14的[2042字节动态PDU及槽位拒绝](../evidence/dynamic-long-2042-20261016.json)
 验证了最大基础PDU的真实分片/回复；安全复用、完整并发与其余长度仍分开验收，
 不得升级为本ADR全部性质完成。
+
+
+### Controller 退休时实际 Native 返回的受控观察（R5f9h）
+
+复用原单叶子 QMP remove/re-add 与有界 syscall-return 屏障，分别记录 USB/Kernel
+注册已消失、daemon 已撤销旧管理入口、尚在途的实际 Native 返回及 OS fd 收敛。
+设备的 USB guest 消失不代表芯片断电或 peer RF 连接清除；仍在线 peer 必须以真实
+当前连接状态及适用的 Disconnect/Down 结清，不能合成两端 Down。重新附加要求新
+controller generation、HCC 及同 daemon 普通用户对端校验回复。此为受控生命周期
+门禁，不授自然恢复或 Kernel callback/ref/UAF 证明；原 Request/Grant/credit/Ticket
+语义和两秒测试屏障、协议原期限不变，超时仍 FAIL。

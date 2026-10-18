@@ -1,128 +1,29 @@
 # 当前能力与资格
 
-R5f9d的[四轮有界诊断](../docs/evidence/down-passive-diagnostic-20261018.json)使用
-8f51 Host/guest、原ccef服务／2fc内核，仅分配U两口及SDK110US。各轮253字节两角色
-门禁通过，共32次应用校验回复／88次发现、24项证据负对照；未复现原超时，实机
-被动失败窗口执行数为0。863项工具离线与严格HTML通过不补足该分支的实机验收。
-**诊断及根因整体UNPROVED，下面原七尺寸FAIL继续有效**，不是整个HEAD或长度稳定性资格。
+本页是唯一当前资格入口。源码、编译产物、执行工具、校验工具及必需门禁从下方
+结构化记录读取；报告或文档提交不替代编译身份，局部 PASS 不授整个 HEAD 资格。
 
-R5f9c 生产资源所有权整改在 `ccef310` 接通：controller registration 在 Native 创建前
-持有唯一 SSAP owner；取消等待不移出原 initializer／Engine task，发布重试复用原
-owner，未完成退休仍占有限预算。
+| 任务 | 对应准确记录 | 必须保留的边界 |
+| --- | --- | --- |
+| Native 创建离开异步 worker | [生产 helper／guard／fd 离线](../docs/evidence/native-bind-offload-offline-20261018.json)、[原路径限定实机](../docs/evidence/native-bind-offload-real-20261018.json) | 服务和 VM 执行源为6dc；通用终态检查另为d538，仅离线重放。Native 内部、所有创建工作随 Connection 退休排空、parent/task/ref/UAF/drain仍缺 |
+| 终态检查与证据可信度 | 同一离线报告及[通用退出契约](../docs/reference/vm-gate-inputs.md#运行终态与退出凭据) | 原6dc解析器接受篡改的反例和初版审计FAIL保留；新检查拒绝，不改写原VM身份，也不授新Host VM资格 |
+| 原 Down 超时 | [原七尺寸整体FAIL](../docs/evidence/native-service-owner-preservation-20261018.json)、[四轮未复现UNPROVED](../docs/evidence/down-passive-diagnostic-20261018.json) | 后续新产物的253门禁成功不覆盖原FAIL，不证明稳定性或根因修复；实机被动失败窗口仍未取得 |
+| 普通应用、SDK、SSAP与权限 | [实际接口](../docs/reference/interfaces.md)、下方各自产物的资格及[证据入口](../docs/evidence/index.md) | 原生准入、策略批准、加密/认证、SSAP完成和对端应用处理分别表达；历史C/Python、Agent等资格不转授新产物 |
+| Runtime／Session／Grant／credit／Ticket | [唯一架构](architecture.md)与对应限定报告 | 旧代际、在途义务和未知完成不因关闭或缓存而消失；NOCP真实性、复用屏障及完整竞争组合仍需各自门禁 |
+| 部署、恢复与发布 | [唯一计划](implementation-plan.md)、原部署与分包记录 | 基础部署不等于跨版本升级回滚、发布或新硬件资格；自然故障根因和非人工恢复继续开放 |
 
-- [限定离线记录](../docs/evidence/native-service-owner-offline-20261018.json)：default/all-features 各360项、严格Clippy、实际私有D-Bus／OS fd与显式Native/table fixture。实际测试编译是旧base加dirty源码，已按字节映射到ccef；31个测试执行文件封存，不伪称干净提交编译。原环境／fixture／风格失败保留。
-- [三轮限定实机记录](../docs/evidence/native-service-owner-real-20261018.json)：ccef服务／guest／Host、2fc内核，本线程U两口、SDK110US；CMTC、ExchangeInfo撤权及SSAP owner／原期限分别通过，每轮后续8次应用校验回复／22次发现；75项证据负对照。不是完整2×2、Native bind内部、task/ref/USB drain或自然恢复证明。
-- [原七尺寸记录](../docs/evidence/native-service-owner-preservation-20261018.json)：**整体FAIL**。61／249／250／254／255／2042六轮各8次业务回复及22次发现通过，61含Owned SSAP，249含16次超限拒绝；253轮因对端Down未进入原5秒共同期限而整体失败，不计作该次尺寸资格。原矩阵后续只运行未执行尺寸；上方新工具的独立诊断不覆盖这次失败。
+本线程硬件范围仅由[资源配置](lab-resource-policy.json)授权：U两口已在上述准确
+VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收。两组其他口属于
+另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
+接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
 
-失败轮的对端Down在实际断链OUT后约5.08秒到达。完整USBmon配对显示其间RX请求
-在途，随后重提交空窗14／15µs；首个会话窗口532个成功完成／重提交样本P50=6µs、
-P99=26µs、max=46µs。它是低负载功能trace，不能据此宣称通用性能资格、固件/RF
-根因或多URB优化收益；也没有本次接收缺少已提交URB的证据。初版诊断只看Down
-最后一次提交的错误解释原样保留，v3/v4按完整流纠正。
+下一批先用实际生产入口验证所有Native创建工作的退休排空，以及物理Connection
+发布等待SSAP初始化的耦合，再以唯一有界owner和原任务整改；不会新增Engine。
+数据／SSAP／安全／多通道和四设备继续并行，完整S0–S6及所有原始验收范围不变。
 
-资格聚合新增版本化门禁结果绑定；整体FAIL也不能掩盖局部标签漂移。41项检查及
-本批20项源码／artifact／scope／失败升级负对照通过。新增形式化证明0。
-E／混合、冷ROM自动选择、原完整生命周期／长度稳定性及自然故障／非人工恢复继续开放。
-下述 DA 历史门禁仍只适用于各自准确 artifact，不转授本批或整个当前HEAD。
-
-部分初始化清理现有两份独立、准确 artifact 的有限实机记录；它们不授予整个HEAD资格：
-
-| 等待阶段 | 实际 guest／Host 工具 | 真实退出及保持门禁 | 证据 |
-| --- | --- | --- | --- |
-| CMTC | 7b90092 | 双端撤权、原回复、fd收敛；后续8次应用回复／22次发现，4143USB／零丢包、21证据负对照 | [限定记录](../docs/evidence/ssap-initialization-cmtc-revocation-20261018.json) |
-| SSAP ExchangeInfo | 1cd2bfd | CMTC先决、请求TX／对端RX／响应TX先于撤权，原响应随后释放、fd收敛；后续8次应用回复／22次发现，4179USB／零丢包、27证据负对照 | [限定记录](../docs/evidence/ssap-initialization-exchange-revocation-20261018.json) |
-
-两者均使用DA编译服务/应用、2fc内核，仅本线程U两口；每份只有slot0发起端与slot1
-接收端两个撤权切片，**不是完整2×2矩阵**。daemon fd `4→6→4→4`、同行controller
-独立RX/Ready及同daemon后续业务分别核对。Nativebind内部、initializer task join、
-对象free、内核引用/UAF/worker drain、完整release/最终fd/dup/SCM/Down/原期限/复用仍缺。
-
-上述历史批的854项离线工具检查及每份6项资格记录负对照单独记录，新增形式化证明0。CMTC五次
-整体FAIL保留；ExchangeInfo的私有审计初版无效变异FAIL保留，修正后27项变异均确认
-实际改变输入。旧报告不回写。这两份DA记录当时未新增生产Engine/Runtime/ABI，未重编服务或内核；本批ccef服务产物另见上方。
-E/混合、冷ROM自动选择、自然故障根因及非人工恢复继续开放。
-
-R5f8 的[新独立记录](../docs/evidence/ssap-requester-drain-held-business-20261018.json)已登记：
-B847 guest/Host、DA服务、2fc内核，两角色真实 requester 死亡后旧写回复排空、
-新读独立校验及提示挂起期间8次真实业务回复；32证据负对照、6资格负对照通过。
-首个e68整体FAIL原样保留，未回填升级。833工具fixtures及严格HTML只描述其离线范围，
-同一新guest的[原owner/原期限保持](../docs/evidence/ssap-requester-owner-preservation-20261018.json)
-另由准确1f15Host重验，27负对照通过；它是保持回归。
-新增形式化证明0。完整取消/旧读新读/复用、部分Native初始化等仍缺，不能扩大为
-整个当前树的资格。前批cd7及各历史资格保持原artifact范围。
-
-
-2026-10-18 资源边界调整：本线程仅使用 U `1-1.1.1/.2`、E `1-2.1.1/.2`；
-两组 `.3/.4` 属于另一线程，禁止操作。U 两口已由新 guest 的实际 HCC 确认为 U/USB，
-E 两口仍仅按用户布置，尚未 HCC 复核；
-`1-2.1.2` 不再是旧 U。旧报告保留当时拓扑和准确 artifact，不能转授给新设备。
-[资源配置](lab-resource-policy.json)只限定执行权限，不授任何功能资格。
-只读复核四只的序列号 pin 与上游 hub/PCI 一致；U 为五端点、E 为两端点 ROM。
-已有两台 libvirt VM 的配置未占用这些设备或共享 PCI，部分 root fd 不可见；
-每次直通仍需重新核对并获取端口租约。旧操作映射已归为历史，一致性检查拒绝再次
-出现；本次无 USB I/O、固件下载或新实机验收。
-[新 U 双设备记录](../docs/evidence/shared-allocation-u-gate-20261018.json)独立绑定 DA 服务、
-cd7 guest/Host 与2fc内核：实际 HCC、两角色owner/原期限及8次业务回复；
-该有限资格不覆盖 E、混合、晚到成功/drain或挂起期间的并发同行业务。
-新固件下载限同型号、显式 SDK110 三文件；混合冷启动及无逐设备固件来源的
-runtime-only 接管拒绝。冷 ROM 自动选择、自然根因及非人工恢复仍未验收。
-
-
-本页是唯一当前资格入口。选定产物、原始门禁、源码和工具身份来自结构化记录；
-报告/文档提交不替代编译身份，源码相同也不转授旧 artifact 的资格。
-
-当前产物的结果、计数、层级和源码身份统一从下方生成记录读取；不再另写一份手工
-“最新资格”计数表。以下只按任务指向接口与边界，历史 PASS 不转授新产物。
-
-| 任务/主题 | 支持范围的权威入口 | 仍需区分的边界 |
-|---|---|---|
-| 普通用户业务、长度、实际CLI、Peer观察 | 本页选定记录及其全部必需门禁/双端证据 | 功能回归不等于吞吐、可靠模式、全部地址/隐私或整个当前树资格 |
-| Rust管理/应用、Owned与Agent | [实际接口](../docs/reference/interfaces.md)、选定记录的准确新入口范围 | 本地登记、策略批准、原生准入、机制安装、对端应用处理分别表达 |
-| C/Python与显式Native | [SDK/Native边界](../docs/reference/interfaces.md)、[e776值期限整改后限定实机报告](../docs/evidence/ssap-value-deadline-apps-real-20261018.json)及原限定离线/R6a记录 | apps-only UID/GID1004、无附加组/capabilities，通过公共Client取得通道并完成独立随机回复；管理／SSAP／安全／裸设备／service所有权仍拒绝。SSAP单列管理UID1000的32字节读／短写；完整高阶Owned/Agent、逐应用策略、撤权/原期限等仍缺，不能由组门禁推导完成 |
-| 同一SDK镜像原路径保持 | [e776七VM限定报告](../docs/evidence/ssap-value-deadline-preservation-real-20261018.json)、[历史原失败](../docs/evidence/application-owned-preservation-counterexample-20261018.json) | 同一e776服务及工具的七尺寸、原Owned分别通过；不继承旧Agent等范围。ENODATA根因未明，后续PASS不覆盖失败或授完整稳定性／架构资格 |
-| Native特权创建/纯契约观察 | [81bd离线及边界](../docs/evidence/native-channel-creation-offline-20261018.json)、[动态/受保护实际路径](../docs/evidence/native-channel-creation-factory-real-20261018.json) | 原daemon创建器已删除；普通SDK无Native管理依赖。函数体/布局与有限实机不等于完整并发、NOCP准确性、所有权生命周期或安全证明 |
-| 内核Runtime、Session、Grant、credit/Ticket | [唯一架构](architecture.md)、下面各自源码映射的限定记录 | 旧代际、在途义务、有限队列、撤权及未知完成不能由缓存/关闭抹去 |
-| Codec、事件、故障与形式化 | 下方全部限定/历史记录及证明假设 | 旧codec/fixture、工具安装或模型通过不推导当前完整实现通过 |
-| 部署、恢复与发布 | [唯一计划](implementation-plan.md)的R5/R6、[实际分包基础限定资格](../docs/evidence/debian-package-base-qualification-20261018.json)及原工作包 | 准确247分包的组、普通用户、基础SDK、同版本重装/remove已验；原缺组FAIL保留；跨版本升级回滚、发布/原生权限/新WS73与自然恢复仍开放 |
-
-这些分项来自各自封存产物，未组成当前HEAD的合并资格；整体仍未完成。
-
-R5f6值原期限／共享初始化的[源码审计与原反例](../docs/evidence/ssap-value-deadline-audit-20261018.json)
-及下方四份e776限定记录分别表达离线、SDK正向、原尺寸/Owned和动态/参考受保护保持。
-候选6b已复现本地等待超过有效五秒期限，原失败保留且未授实机资格。新有限PASS不
-覆盖受控原期限、调用者退出、部分初始化、晚到义务或同行业务全集；完整架构仍缺。
-未知C诊断及clock/取消/物理drain假设保持开放。保留中的屏障草稿单列接入；其
-本地异常回归不授予最新工具的实机资格，当前工作树整体仍NOT_REVALIDATED。
-R5f7的[原审计与失败](../docs/evidence/ssap-owner-deadline-gate-audit-20261018.json)、
-[离线记录](../docs/evidence/ssap-owner-deadline-offline-20261018.json)及
-[旧拓扑实机限定记录](../docs/evidence/ssap-owner-deadline-real-20261018.json)现已分别登记。
-旧拓扑 v1 整体 FAIL 保留；独立 v2 为 DA 编译/guest、9a1 Host、2fc 内核，
-两连接角色真实服务 publisher 退出、C/Python errno110 约五秒及8次正常CUTC回复；
-没有观察到晚到 denial 物理回复，不覆盖 requester 退出、挂起期间同行业务或部分初始化。
-本次新端口、HCC、固件与 guest/Host 工具保持单列待验，不能沿用这份旧拓扑 PASS。
-离线记录仅描述原源码的离线范围，不用“实机仍缺”等相对时间标题覆盖后来的独立实机记录。
-
-选定保留产物的编译／执行／校验来源只按下方生成记录读取。R4新raw退休产物已取得
-四真实WS73路径保持及单列的模拟controller初始化、usercopy、权限交接资格；
-101旧raw入口删除，53旧布局私有测试，26当前数值不变。
-[14门禁范围报告](../docs/evidence/raw-uapi-retirement-qualification-20261018.json)保留
-原失败、原WIP及准确产物，先前[离线进度快照](../docs/evidence/raw-uapi-retirement-progress-20261018.json)
-仍保留其“待验”历史状态。高阶SDK/C-Python便利接口与R6剩余范围仍缺；当前基础部署
-的[独立限定VM资格](../docs/evidence/deployment-clean-vm-qualification-20261018.json)不改变旧实机产物身份，
-也不表示软件包、跨版本升级回滚、实际内核授权或新WS73产物通过。
-[同一新产物的原路径保持](../docs/evidence/application-client-preservation-real-20261018.json)
-单列七真实VM、七个应用尺寸及原短包/Owned条件；完整权限/撤权/原期限矩阵仍缺。
-自然启动/重枚举/设备消失根因、非人工恢复继续开放；模拟及QMP不能替代。
-
-历史R5d Typed Peer资格以[原准确记录](../docs/evidence/typed-peer-retirement-qualification-20261018.json)
-为准；[首轮漏迁runner失败](../docs/evidence/typed-peer-tool-retirement-failure-20261018.json)
-仍为FAIL。当前新增复用范围以本页生成选定记录为准；生产artifact与修正工具分开，不能将首轮失败或整个HEAD改记通过。
-
-标准parser原fixture以255代替生产240预算，原聚合已降UNPROVED并保留
-[反例](../docs/evidence/parser-budget-fixture-review-20261017.json)。新2d268工具直接
-提取生产常量/hash，14子集及2适配器单元方法重验；[修正后的限定记录](../docs/evidence/parser-budget-source-correction-20261017.json)
-复用准确旧编译/Virtual/实机原件，没有重建或重跑这些门禁。标准255完整互通仍缺，
-不把实际240预算或Native A3业务长度混为标准255资格。
+逐轮旧说明保留于[准确176f077快照](https://github.com/OpenSparklink/sparklink/blob/176f077b627c19b8be947075968d95a440a643b5/project/current-capabilities.md)
+及证据/历史入口；以下生成记录保留原PASS、FAIL和UNPROVED及全部required范围。
+本页不再堆叠逐轮进度或另维护“最新资格”计数表。
 
 ## 选定产物与来源
 
@@ -363,6 +264,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 稳定服务owner：CMTC/ExchangeInfo撤权及SSAP原期限有限实机保持 | `real_device` | `PASS` |
 | 稳定服务owner：原七尺寸整体FAIL，253迟到Down保留；六轮限定通过 | `real_device` | `FAIL` |
 | 被动Down诊断：四轮原门禁有限通过、未复现；真实失败观察与根因未证明 | `real_device` | `UNPROVED` |
+| Native创建离开异步worker：生产guard/OSfd与通用终态有限离线通过 | `offline` | `PASS` |
+| 6dc服务十轮有限实机保持；d538仅离线校验，不授Native完整排空资格 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

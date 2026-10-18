@@ -800,7 +800,7 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9E_TEN_RAW_VM_PASS_GLOBAL_TERMINAL_GUARD_FIX_AUDIT_PENDING",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9E_FINITE_OFFLOAD_REAL_PASS_TERMINAL_GUARD_FIXED_FULL_NATIVE_DRAIN_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
@@ -1958,20 +1958,28 @@
       "down-passive-diagnostic-r5f9d": {
         "level": "real_device",
         "result": "UNPROVED"
+      },
+      "native-bind-offload-offline-r5f9e": {
+        "level": "offline",
+        "result": "PASS"
+      },
+      "native-bind-offload-real-r5f9e": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP18-R5f9d-passive-down-diagnostic",
-      "production_behavior": "No productionprotocol/runtimechange;8f51 existingrunneroptin6/12s quietcapture onlyafteroriginal5sFAIL,FAILsavedbeforewaitandneverupgraded;guestinputhashesrequired. Tools863/strictdocs116offline;4exactccefservice/2fckernel,U-onlySDK110USVMs finitePASS32actualreplies88radio,24evidencenegatives;0realfailurewindows,RCAUNPROVED,original253FAILunchanged.",
-      "state": "R5F9D_FOUR_FINITE_PASSES_NO_FAILURE_WINDOW_RCA_UNPROVED_ORIGINAL253FAIL_RETAINED",
+      "id": "WP03-WP06-WP08-WP17-WP18-R5f9e-native-bind-offload",
+      "production_behavior": "6dcNative socket/bind/connectoffTokio worker;originaladmissionguardheldthroughactualreturn/cancel,sharedownerretiringflagpre/postcheck,returnedfdreject/close. Productionhelper3/default363/allfeatures363/Clippy;33executablessealed. Exact6dcservice/guest/Host,2fckernel,SDK110US allocatedUpair10VMfinitePASS80ordinary+48dynamicreplies/220discoveries,113evidencenegatives. Old6dcsupervisorexit1mutantaccepted;d538globaltypedzeroexitguard/866tools/offlinereplayfix,notnewHostVMqualification. FullNativeallwork/parent/connectiontask/refdrainandold253RCAremainOPEN.",
+      "state": "R5F9E_6DC_RUNTIME_TEN_FINITE_VM_PASS_D538_VERDICT_OFFLINE_PASS_FULL_NATIVE_DRAIN_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "R5f9d bounded4new8f51toolVMs finitePASS32actualreplies/88discoveries,0originalDownfailure reproduction and0realpassivewindow;RCA/observerremainUNPROVED,originalsevenmatrix253FAILrequiredunchanged. Stop declaredrepeatbound;nextactualNative-return/parentretirement barrier,task/reference/callbackdrain andoriginalrelease/finalfd/dup/SCM/Down/deadline/reuse;data/credit/SSAP/security/multichannel/fourdeviceparallel,noallcontrolprerequisite. FullS0-S6/19WP/10FV/12DG,VM-only/SDK110/allocatedports/shared12or8budget,UserHostP4,naturalRCA/nonmanualrecovery,E/mixed/coldROM/releaseallOPEN."
+      "next": "Validateactualproductioncounterexamplesforall-kindNativecreationdrainatConnectionretirementandphysicalConnectionpublicationblockedbySSAPNativeinitialization;fixwithsoleboundedowner/originaltasks,nosecondEngine. AddcontrolledVMactualNative-return/parentretirebarrier;retainfullrelease/finalfd/dup/SCM/Down/originaldeadline/reuseandtask/ref/callback/UAFdrain. Dataplane/SSAP/security/multichannel/fourdeviceparallel,noallcontrolprerequisite. Originalccef253FAIL/naturalRCA/nonmanualrecovery/E/mixed/coldROM/allS0-S6/19WP/10FV/12DG/UserHostP4/deployment/releaseOPEN;VM-only/allocatedports/shared12or8unchanged. d538verdictisoffline-only,actual10VMtools6dc."
     },
     "selected_qualification": {
       "version": 1,
@@ -3799,7 +3807,7 @@
         "patch_application": "Historical helper-only replay before QEMU build. Actual builtfixture andfiniteVM results referenced separately;no transfer fromoffline test."
       },
       "build": "First two attempts refused shared lock before compile;v3 acquired same global lock,8job budget/oneactualcompileunit,compile/link0,baseline binary and930linkobjects unchanged. Not device qualification.",
-      "next": "R5f9d bounded4new8f51toolVMs finitePASS32actualreplies/88discoveries,0originalDownfailure reproduction and0realpassivewindow;RCA/observerremainUNPROVED,originalsevenmatrix253FAILrequiredunchanged. Stop declaredrepeatbound;nextactualNative-return/parentretirement barrier,task/reference/callbackdrain andoriginalrelease/finalfd/dup/SCM/Down/deadline/reuse;data/credit/SSAP/security/multichannel/fourdeviceparallel,noallcontrolprerequisite. FullS0-S6/19WP/10FV/12DG,VM-only/SDK110/allocatedports/shared12or8budget,UserHostP4,naturalRCA/nonmanualrecovery,E/mixed/coldROM/releaseallOPEN.",
+      "next": "Follow qualification_view.current_batch.next; historicalstageentriesretaintheiroriginalscope.",
       "remaining": [
         "Actual SSAPExchangeInfo-pending owner retirement,Native synchronous bind-inflight andrealinitializer taskjoin/objectremoval/refworkerdrain/UAF;full2x2 FD/revoke/lifetime interleavings remain.",
         "Fullrelease/finalfd/dup/SCM_RIGHTS/Down/originaldeadline andnecessarycontrolrace matrix not completedbythis CMTClease slice;oldsource-boundreportsretaintheirscope.",
@@ -3959,7 +3967,7 @@
         "audit": "history/architecture/native-initialization-owner-audit-20261018.json",
         "sha256": "0af3bdf6ef2de9cdcbefe32cca00fb3c09e3dcc1e587e4abd65e3c5d022adacc",
         "scope": "Unpublishedinitializer ownership,parentdispatchcancel,publishretry;no claim ofactualleak/UAF/newReady",
-        "next": "Investigateunchanged5s-peerDownfailureat253withoutdeadlineextension/retryoverwrite;preservecontinuousguestRXpendingand14/15usresubmitwitness,causeunproved. ActualNative-return/parentretirement barrier andtask/reference/callbackdrain,originalrelease/finalfd/dup/SCM/Down/deadline/reuse compositions remain;keepdata/credit/SSAP/security/multichannel/fourdevices parallel,noallcontrol prerequisite. FullS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,E/mixed/coldROMandarchitecture/deployment/releaseOPEN;VM-only/allocatedports/SDK110/UserHostP4unchanged.",
+        "next": "Follow qualification_view.current_batch.next; originalstable-ownerand253failurequalificationremainimmutable.",
         "implemented": [
           "ExistingRegistration retainssameConnectionOwner beforeNativecreation;Weakcontext avoidsintroducedpermanentStatecycle;D-Busonlyreferencesresourceowner.",
           "Bound16active+retiringowners;Unknownadmitsnone;unfinishedretirementretainsbudget;actualjoin/removalbeforefreeingrecord.",
@@ -4063,7 +4071,7 @@
         },
         "native_bind_offload": {
           "id": "R5f9e",
-          "status": "PRODUCTION_HELPER3_DEFAULT363_ALLFEATURES363_CLIPPY_PASS_NEW_ARTIFACT_VM_PENDING",
+          "status": "IMPLEMENTED_OFFLINE_AND_TEN_FINITE_VM_PASS_FULL_NATIVE_CREATION_DRAIN_OPEN",
           "production_behavior": "ActualNative socket/bind/connect movedoffTokio worker;originalleaseguardretainedthroughactualreturn/cancellation;sharedoriginalretiringflag checkedbefore/after. No newEngine/Session/creditpath/deadline/ABI.",
           "exit": "Productionhelperruntime-progress/actualguard/cancel/OSfd-close/errorfixtures;strictdefault/allfeatures/Clippy;newexactserviceartifactVMoriginalpaths. RealNative-syscall-internal/parentretire/refdrain stillrequirecontrolledVMbarrier,notfixturequalification.",
           "original_failure_retained": "docs/evidence/native-service-owner-preservation-20261018.json",
@@ -4074,10 +4082,39 @@
             "scope": "Actualtested97e46ad+dirtybytes;Nativeblockingdependencyfixture,actualproductionhelper/OSfd/OwnedMutexGuard/currentthread;notNativeKernel/USB/refdrain/formalqualification. FirstselectorFAILretained."
           },
           "verdict_guard_followup": {
-            "status": "GLOBAL_INTEGER_ZERO_EXIT_GUARD_866_TOOLS_STRICT_DOCS_PASS_REPLAY_PENDING",
+            "status": "IMPLEMENTED866_OFFLINE_AND_ORIGINAL_COUNTEREXAMPLE_REPLAY_PASS_NOT_NEW_HOST_VM_QUALIFIED",
             "counterexample": ".dev/main-thread-01a120fe/native-bind-dynamic-audit-v1.log",
             "scope": "Frozen6dcdynamicverdictacceptedmutatedsupervisor_exit1;actualrawsupervisor/qemu0. Newguardrejectsfailed/missing/invalidreceiptsallmodes;explicitinternalpendingonly. Oldrawexecuted6dcidentityandcounterexampleretained;newHostVMnotqualifiedbyofflinereplay.",
-            "tools_test_receipt": ".dev/main-thread-01a120fe/native-bind-terminal-tools-v2.json"
+            "tools_test_receipt": ".dev/main-thread-01a120fe/native-bind-terminal-tools-v2.json",
+            "implementation_commit": "d5380bfd7bb7d797d99d0eb845dbd420ce9df69c",
+            "new_host_vm_qualified": false
+          },
+          "implementation_commit": "6dc4c4b946e12e0d2519f293f469626b65da8bae",
+          "compiled_service": "6dc4c4b946e12e0d2519f293f469626b65da8bae",
+          "executed_guest_tools": "6dc4c4b946e12e0d2519f293f469626b65da8bae",
+          "executed_host_tools": "6dc4c4b946e12e0d2519f293f469626b65da8bae",
+          "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+          "qualification_record_refs": [
+            "native-bind-offload-offline-r5f9e",
+            "native-bind-offload-real-r5f9e"
+          ],
+          "report_refs": [
+            "docs/evidence/native-bind-offload-offline-20261018.json",
+            "docs/evidence/native-bind-offload-real-20261018.json"
+          ],
+          "new_formal_proofs": 0,
+          "full_architecture_complete": false,
+          "next": "Follow qualification_view.current_batch.next; no newNativeinternal/refdrainqualification.",
+          "followup_source_audit": {
+            "path": ".dev/main-thread-01a120fe/native-bind-followup-source-audit-v1.json",
+            "sha256": "d15ef67cdbd69ec84704f09db0fca3674f2987df367e68f925810f5d871059a9",
+            "scope": "Sourceobservationsandneededcounterexamples,notobservedUAF/straypacket/leak orkernelproof."
+          },
+          "retired_capability_preamble": {
+            "source_commit": "176f077b627c19b8be947075968d95a440a643b5",
+            "source_path": "project/current-capabilities.md",
+            "prefix_sha256": "0c92100ee3f1bcf8bde3556dad0df6f347bbcb844687f3d2d933bb114c20a957",
+            "scope": "Historicalpreambleretainedinimmutablegit;canonicalcurrentpageusesstructuredrecords/reportlinks,noduplicatecurrentcountertable."
           }
         }
       }
@@ -4189,13 +4226,18 @@
         "path": ".dev/main-thread-01a120fe/native-owner-postflight-v1.json",
         "sha256": "644e3c3108ab9e6797b1a63313a75e807ffd1fc5991f7088ead8eb58aa196a92",
         "scope": "Fourallocatedserialpins/hubs/PCI stillmatchafterU-onlyVMs;noE/forbidden/hub/controlleroperations ornewE/mixed/coldROMqualification. Nototherthreadbusinessproof."
+      },
+      {
+        "path": ".dev/main-thread-01a120fe/down-passive-postflight-v1.json",
+        "sha256": "2ed6236e84bb191686cd2e5578cf46e77e078534397da1e8a79d09ddf871ebfb",
+        "scope": "Allfourallocatedpins/hub/PCIavailableafter4U-onlyVMs;EonlyROMdescriptor,noE/forbidden/hub/controlleroperations. Original10WIPunchanged. NototherthreadbusinessorE/HCCqualification."
       }
     ],
     "latest_readonly_recheck": {
-      "path": ".dev/main-thread-01a120fe/down-passive-postflight-v1.json",
-      "sha256": "2ed6236e84bb191686cd2e5578cf46e77e078534397da1e8a79d09ddf871ebfb",
-      "scope": "Allfourallocatedpins/hub/PCIavailableafter4U-onlyVMs;EonlyROMdescriptor,noE/forbidden/hub/controlleroperations. Original10WIPunchanged. NototherthreadbusinessorE/HCCqualification."
+      "path": ".dev/main-thread-01a120fe/native-bind-postflight-v1.json",
+      "sha256": "fa2046e235d83ec2b630c13df3ff97dd7167fc6670c46a64f46a70d2ca913dda",
+      "scope": "Fourallocatedpins/hubs/PCIavailableafter10U-onlyVMs;EonlyROM/noHCC,original10WIPunchanged. Nootherthread/hub/controlleroperations;nototherthreadbusinessproof."
     },
-    "current_finite_gate_ref": "native-service-owner-real-r5f9c"
+    "current_finite_gate_ref": "native-bind-offload-real-r5f9e"
   }
 }

@@ -1,6 +1,6 @@
 # SparkLink / Linux 联合实施方案
 
-### R5f9e：Native bind 离开异步worker（离线通过，新产物VM待验）
+### R5f9e：Native bind 离开异步worker（有限实机保持完成，完整退休排空仍缺）
 
 本批只将现有Native socket/bind/connect移动到阻塞线程，原owner退休标志和实际
 lease guard随在途工作持有，调用前后拒绝退休，实际返回的fd仍唯一拥有。
@@ -12,7 +12,13 @@ fixture不能证明真实Native syscall内部交错、parent退休或kernel引�
 待受控VM屏障，不将本批保持回归升级为完整生命周期资格。
 生产helper三项已通过，default/all-features各363项与严格Clippy通过；首轮筛选
 漏选第三项被计数门禁拒绝，原失败保留。实际测试源码为97e46ad基线加本批dirty
-字节，后续映射准确签名提交，不冒充干净提交编译。构建按共享锁单独12路执行。
+字节，已映射签名6dc提交并封存执行文件，不冒充干净提交编译。构建按共享锁单独12路执行。
+
+[离线](../docs/evidence/native-bind-offload-offline-20261018.json)与
+[实机保持](../docs/evidence/native-bind-offload-real-20261018.json)分别绑定源码和产物：
+6dc服务/guest/Host、2fc内核、显式SDK110US，只操作本线程U两口；原CMTC/Exchange
+撤权、七尺寸/Owned SSAP及双basic动态通道各自门禁完成。准确数量及范围见结构化
+记录，不把原253 FAIL、Native内部或整个当前HEAD改为通过。d538只取得终态工具离线资格。
 
 本批动态门禁的原始 `supervisor_exit` 为0，但独立篡改负对照发现旧通用verdict在
 该模式接受 `supervisor_exit=1`。原审计FAIL保留；统一终态检查要求QEMU和supervisor
@@ -20,6 +26,12 @@ fixture不能证明真实Native syscall内部交错、parent退休或kernel引�
 866项工具检查通过，完整fixture补明确终态字段，故意缺失用例继续拒绝；首轮
 fixture迁移误补故意缺失字段的失败也保留。新verdict仅离线重放旧VM，不改写其
 6dc执行身份，也不通过重跑硬件取得另一个“成功”来覆盖原反例。
+
+下一批直接验证两项生产入口：User/dynamic Native创建是否随Connection退休全部
+排空，以及物理Connection发布等待SSAP Native初始化的耦合。controller等待lease
+guard不等于连接级全部工作已join；源码风险不是已发生UAF或串包。以同一有界owner
+和原任务解决，再补实际Native返回/parent退休屏障；完整release/最终fd/dup/SCM、
+Down/原期限/复用、task/ref/callback/UAF仍开放，不追加数据/SSAP/安全的控制面全集前置。
 
 ### R5f9d：被动诊断已接通，四轮未复现；根因仍开放
 
@@ -478,6 +490,8 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 稳定服务owner：CMTC/ExchangeInfo撤权及SSAP原期限有限实机保持 | `real_device` | `PASS` |
 | 稳定服务owner：原七尺寸整体FAIL，253迟到Down保留；六轮限定通过 | `real_device` | `FAIL` |
 | 被动Down诊断：四轮原门禁有限通过、未复现；真实失败观察与根因未证明 | `real_device` | `UNPROVED` |
+| Native创建离开异步worker：生产guard/OSfd与通用终态有限离线通过 | `offline` | `PASS` |
+| 6dc服务十轮有限实机保持；d538仅离线校验，不授Native完整排空资格 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

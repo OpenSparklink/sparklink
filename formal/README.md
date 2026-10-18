@@ -224,3 +224,26 @@ buffer、begun/retired、任意期限判定和submit结果；没有始终成功�
 这只证明串行C consent，不证明Runtime epoch撤销、C/Rust组合、锁/引用、HCD、
 NOCP准确性或长期执行。锁和时钟判定、有效保留对象是显式受信任边界；必须结合
 实际Native和worker回归及VM时间交错，不能将311检查升级为完整系统证明。
+
+
+## 生产 discovery epoch 的直接 Kani 检查
+
+`formal/discovery_fence` 直接 `#[path]` 引入生产
+`crates/slkd/src/discovery_fence.rs`，没有验证专用转换或 Native 成功桩。
+初始状态、任意 u64 表示的单步转换与八步 advance/retire 序列分别检查；
+`negative_control_old_epoch_is_still_accepted` 是故意错误性质，必须被拒绝。
+这些结果不证明 Registry、Mutex/Notify、callback drain、Native/USB、credit 或
+完整 Session 的实现 refinement；实际双设备、权限和清理门禁仍须执行。
+
+重放时使用同一全局 `build_resources.build_lock/environment`，只开一个 Kani
+worker，记录 source/Cargo.lock hash、工具版本和原始结果。Kani0.68 不暴露
+`--locked`：本 crate 无依赖，要求 `CARGO_NET_OFFLINE=true` 且锁文件前后不变。
+单 harness 选择为 `cargo kani --manifest-path formal/discovery_fence/Cargo.toml
+--harness proofs::initial_state_does_not_accept_any_identity --exact --jobs 1`；
+JSON 导出需显式 `-Z unstable-options --export-json NEW_PATH`，不能因为导出参数
+失败而宣布性质通过。实际执行命令及私有原件 hash 由对应证据记录提供。
+`tools/run_formal.py:kani_export_verdict` 要求完整、指定 harness 与预期性质；
+还须结合原始日志拒绝 unsupported/timeout/未完整展开，不能只看总数或退出码。
+
+原 JSON 参数失败和数组迭代/unwrap 引出的 unsupported 结果保留为未证明；
+改用八次独立标量选择及显式 Result 断言保持同一状态空间和性质，不抑制警告。

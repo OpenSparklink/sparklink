@@ -51,6 +51,13 @@ HCC核对型号/总线；尚未合格的混合逐设备镜像流程不得下载�
 
 ## 目标分层及架构决策
 
+应用发现使用独立的 DiscoverySession 策略租约，不是物理 ConnectionSession 或
+通道 Grant。每 controller 的同一协调器管理 caller、过滤、水位、有限队列及到期，
+实际扫描仍由原 Native 管理 guard、recipe、命令 credit 与匹配结果推进。
+首个会话启动，其他会话加入固定 passive 策略；最后释放才申请真实 STOP。
+管理者 STOP、Native 撤权及退休隔离旧 epoch。未知清理不得升级 Off／Free；
+这些源码边界不等于新实机资格，完整门禁仍由唯一计划与能力入口维护。
+
 ### 总体结构
 
 ```mermaid

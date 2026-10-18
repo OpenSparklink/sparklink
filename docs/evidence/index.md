@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+- [R5f12应用发现租约限定离线与生产Fence证明](application-discovery-offline-20261019.json)：
+  2babea5 daemon／7547751 SDK与CLI／a8bf6a9证明工具；准确dirty输入映射到签名源码，
+  封存实际测试artifact。私有bus、错误依赖、原Clippy/权限/工具失败及Kani unsupported
+  保留；三项Fence性质不覆盖整个协调器，真实双应用／双WS73与system bus仍MISSING。
+
 - [共享硬件启动边界](shared-allocation-launch-guard-20261019.json)：准确527b工具、
   896项限定离线回归与真实只读libvirt/sysfs审计。仅资源边界；没有启动QEMU或访问USB，
   不授新E/混合、HCC、自然恢复或业务隔离资格。原调用环境错误和私有材料hash保留。

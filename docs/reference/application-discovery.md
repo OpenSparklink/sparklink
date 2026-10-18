@@ -1,0 +1,87 @@
+# 应用发现会话（开发接口）
+
+本页描述已接线的 Rust／D-Bus／slctl 接口，尚未取得本批新 artifact 的真实 WS73
+或 system bus 部署资格。此前管理者广播／扫描的历史 PASS 不覆盖这些入口。
+准确来源及仍缺门禁以[当前能力](../../project/current-capabilities.md)为准。
+C／Python 尚未提供这组会话 API。接口未发布，没有旧名称兼容期。
+
+## 权限与身份
+
+普通应用通过 `libsparklink::Client::discover` 申请会话，daemon 使用已有 Native
+管理凭据和 WS73 recipe。客户端不取得管理凭据、Native fd、连接或通道 Grant。
+会话绑定唯一 D-Bus caller、不可变 controller 路径及 generation；重启 daemon
+或替换 controller 后不自动恢复。派生会话保留同一 Client，关闭父 Client 不转移身份。
+
+`sparklink-apps` 精确增加 `AcquireDiscovery`、`ReadDiscovery`、`ReleaseDiscovery`。
+`StartControllerScan`、`StopControllerScan`、`CancelDiscoveryPolicies` 仍属于管理者。
+此授权不是完整逐应用／逐 Peer 策略，也不将公开广播变成私密数据；原管理观察接口
+仍有各自权限。会话过滤约束本会话输出，不能据此承诺无线流量保密。
+
+## 支持范围与预算
+
+当前仅支持 Native WS73 固定策略的 passive frame-1 扫描。不同会话共享该策略；
+没有动态合并 PHY、scan window、主动请求或 UUID filter 的能力。其他 profile 明确拒绝。
+
+| 参数／资源 | 契约 |
+| --- | --- |
+| `prefix` | 原始 vendor report data 的字节前缀，0–64 字节；空前缀接受任意数据 |
+| `minimum_rssi` | −128…20；−128 包括未知 RSSI，否则未知值不匹配 |
+| `duration_ms` | 250…60000，从 daemon 准入起计的有限租期，不在 Ready 后重新开始 |
+| 会话／owner watch | 每 controller 最多 16，每 caller 最多 2，包含 pending、active 和未排空 watch 引用 |
+| 接收队列 | 每会话最多 32 条；每条 data 最多 255 字节、当前 WS73 header 为 23 字节 |
+| 读取等待 | 每会话一个 reader，每 controller 最多 16 个；重复并发读取拒绝 |
+
+这些是接收与资源预算，不是广告发送长度、固件最大 PDU 或业务可靠性资格。
+
+加入已有扫描前重新观察 Kernel radio state，不从 daemon 布尔值制造 On。
+新会话记录 Native event watermark，忽略准入前已排队的报告；序号属于所有 Native
+事件，不要求两条广告的序号连续。重复、较旧或错误 generation 的报告不进入新队列。
+
+## D-Bus 与 Rust
+
+方法位于不可变 Adapter 路径的 `org.sparklink.Adapter`。共享类型定义在
+`slk-contract::discovery`；`Deadline` 是既有五个 uint64 的绝对时间及 clock-domain 身份。
+
+| 方法 | 输入 | 返回含义 |
+| --- | --- | --- |
+| `AcquireDiscovery` | prefix、minimum RSSI、duration、原始 Deadline | 非零 session id；首次启动须有真实匹配的最终 Complete，加入须核对现有 scope／Kernel radio state |
+| `ReadDiscovery` | session id、wait、原始 Deadline | 有界 Batch；只消费该 caller 的该会话队列 |
+| `ReleaseDiscovery` | session id、原始 Deadline | false：释放本会话，其他会话继续；true：最后会话释放且真实 STOP 在期限内确认 |
+
+Batch 包含 version、session、generation、累计 `dropped`、累计 `kernel_lost` 和报告。
+报告保留 Native sequence、Kernel boottime、地址类型／六字节地址、RSSI及其 known 标记、
+raw header／data。未知 RSSI 原值为 127；它不是有效测量。
+
+Rust `DiscoverySession::read` 校验身份、长度、过滤、header 地址一致性、单调序号
+和累计丢失计数。队列满丢弃最旧报告并计数；它不是无损或可靠业务交付通道。
+`slctl discover` 遇到 gap 失败，不将缺包变成成功。业务数据仍使用每逻辑通道 socket。
+
+RPC 最长等待五秒，且不会延长调用者原始期限。空的有界等待可返回 Timeout；
+Rust 单次 read 不隐式重试。CLI 可在同一原始截止时间内继续观察。该用户态期限
+不等于已将期限传给 Kernel recipe；Kernel 自身的监督期限与已开始物理义务仍须结清。
+
+## 关闭、失败与限制
+
+单个释放、调用者退出或租期到期只移除自己的会话；仍有其他会话时不发 STOP。
+最后一个消失后由同一 controller worker 申请真实 STOP，不释放整个管理 lease，
+不借机清理连接。管理者显式 STOP 则撤销受影响会话；Native lease 更换及设备退休
+隔离旧 epoch，迟到工作不能重新发布旧会话。
+
+显式 `close` 才能观察上述返回值。Drop 在现有 Tokio runtime 上尝试有界释放；
+runtime 已结束或回复丢失时不承诺即时关闭，daemon 仍负责 owner-loss／有限租期。
+丢失 Acquire 回复可能留下未知 id 的租约直到 caller 退出或原租期结束。
+取消 destructive read 可能使已消费回复不确定；没有自动重放或隐式 resnapshot。
+
+非法过滤／clock-domain 返回 InvalidArgs；过期、撤销或不属于该 caller 的会话返回
+UnknownObject；等待超时返回 Timeout；busy、Native 失败或未知清理结果明确失败。
+应用关闭不抹去已经开始的物理义务。不确定启动／STOP 失败会保留该 controller 的
+故障状态与日志，不能宣布 Off 或 Free；完整部分初始化和取消／原期限组合仍待实机验收。
+
+## CLI 语法
+
+`slctl --adapter PATH discover [RAW_PREFIX_HEX|-] [COUNT] [DURATION_MS] [MIN_RSSI]`
+
+COUNT 为 1…1024，CLI 租期为 250…30000ms；默认任意前缀、1 条、10000ms、RSSI −128。
+输出 `DiscoverySession` 表示 broker 会话 active，不是 Native Ready 或持续空口接收证明。
+`DiscoveryReleased` 分别显示是否拿到最后一次物理 STOP 确认。
+这是接口语法参考；新流程尚未形成已验收教程，所有实机操作继续 VM-only。

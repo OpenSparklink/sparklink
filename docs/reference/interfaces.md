@@ -8,6 +8,7 @@
 | C Native API | `crates/slk-native/include/sparklink_native.h` | 显式管理/观察库；匹配libslk_native，不授予访问权限 |
 | Python | `bindings/python/sparklink/` 与 ABI 检查 | 与文档构建的 Python 项目分开 |
 | CLI | 当前构建的 `slctl --help`、`slktest --help`、`slkconfig --help` | slctl管理/应用授权，slktest应用通道测试，slkconfig显式Native；已退休入口不保留旧别名 |
+| 应用发现租约 | [DiscoverySession参考](application-discovery.md) | Rust／D-Bus／slctl已接线；独立caller预算/过滤/释放，非管理扫描；新实机与system bus权限资格仍缺 |
 | 当前资格 | [CURRENT_CAPABILITIES](../../project/current-capabilities.md) | 区分源码、离线、模型、实机与未决条件 |
 | 目标设计 | [ARCHITECTURE](../../project/architecture.md) 与 ADR | 不代表接口已接通 |
 

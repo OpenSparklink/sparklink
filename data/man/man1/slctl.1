@@ -58,6 +58,14 @@ All experimental driver and real WS73 operations remain VM-only.
 .SH COMMANDS
 .SS Discovery and Connection
 .TP
+.B discover [RAW_PREFIX_HEX|-] [COUNT] [DURATION_MS] [MIN_RSSI]
+Acquire one caller-owned passive WS73 discovery lease. COUNT is 1..1024,
+duration is 250..30000 ms, and RSSI is -128..20 (-128 includes unknown).
+The sparklink-apps role permits only the scoped lease operations, not controller
+scan management. Closing one lease does not stop other leases. A last physical
+STOP is confirmed separately; timeout is not Off. This new entry has bounded
+offline coverage, not new-artifact RF or system-bus deployment qualification.
+.TP
 .B list
 List available adapters.
 .TP

@@ -3068,3 +3068,34 @@ S0–S6／19WP／10FV／12DG、VM-only、严格四叶资源和 SDK110、UserHost
 结构化资格：编译3bd、运行80e、内核2fc与离线修复校验器d912分别标识。原参数/审计路径
 失败及缺失proof异常保留，严格回归和原件重放不授修复工具整树新VM资格。后续按
 `qualification_view.current_batch.next`继续协调器及既有纵向链路，不另维护进度计数。
+
+
+### R5f12：应用发现租约／共享扫描（离线落地，实机退出未完成）
+
+[准确源码、artifact、限定结果与原失败](../docs/evidence/application-discovery-offline-20261019.json)
+分别记录已实现、离线、Fence证明和MISSING实机门禁；不可用旧扫描PASS补齐后者。
+
+本批生产路径：每 controller 一个协调器，通过原 Native guard/WS73 recipe/命令
+credit 和真实结果查询推进；Rust Client 与 slctl 提供 caller-scoped 会话，不暴露
+管理凭据。固定 passive 策略按需共享，独立 prefix/RSSI/Native watermark/有界队列，
+最多16个 pending/active/retiring watches、每 caller2个、每会话单 reader。
+单个释放或 caller-loss 不停另一会话；最后释放申请真实STOP。管理STOP、Native
+凭据更换和退休隔离旧epoch，迟到结果不复活旧会话；未知启动/清理保留Fault，
+不能宣布Off或Free。租期不从Ready重新开始，Kernel recipe监督期限不冒充已传播
+用户原期限；取消和超时后的物理义务继续单列验收。
+
+当前退出分层：生产纯转换/实际私有bus/SDK错误与期限、严格default/all-features/
+Clippy、工具与证明输出负对照已执行；Fence直接Kani限定性质单列，不是整个
+Coordinator/引用/Notify/Kernel/USB证明。C/Python发现会话及实际系统总线权限仍缺。
+
+下一实机批先冻结准确clean源码与SDK110US新bundle，在本线程U1-1.1.1/.2验证：
+两名仅apps组普通caller共享一只scanner，随机marker在另一只真实广播；两者独立
+校验地址/RSSI/data。一名显式release/caller退出后另一名继续收到新随机marker；
+USB核对一次共享START、仅最后释放STOP，再交换controller角色。管理STOP撤销旧id、
+原期限/部分初始化与晚到结果另作受控切片；保留所有失败，不把异常当已恢复。
+同一新artifact重跑原发现、建链/断链、短消息、已取得长度边界及适用SSAP，不能
+用这些保持门禁代替新发现租约的正向证据。未取证不关闭本批实机退出或整项issue。
+
+该批映射WP03/WP18及现有U#6/U#8/K#19；完整S0–S6/19WP/10FV/12DG不变。
+后续仍并行数据/安全/SSAP/多通道/四设备；UserHost P4、E/混合/冷ROM、自然故障
+根因和非人工恢复、部署及发布保持原未完成范围，不重设控制面全集前置。

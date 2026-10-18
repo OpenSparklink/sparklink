@@ -44,12 +44,14 @@ e776准确产物的有限正向与原路径保持按唯一资格入口读取；�
    原始期限、预算记录应用租约。最后一个有效租约才申请停止硬件扫描；强制管理
    停止是另一个操作，需要使全部受影响租约得到明确终态。
 2. 当前真实扫描接口属于管理权限，迁移为 `StartControllerScan/StopControllerScan`。
-   移除未发布的旧混淆名称并迁移调用者。**尚未实现客户端发现租约**；不把管理
-   STOP 当应用释放，也不把仅改名当共享扫描完成。未来客户端入口须先接实际租约。
+   移除未发布的旧混淆名称并迁移调用者。R5f12 已接通有界 DiscoverySession、
+   Rust Client 与 slctl；尚未取得新 artifact 实机资格。它不把管理 STOP 当应用
+   释放，也不把仅改名当共享扫描完成；当前仅共享固定 passive WS73 策略。
 3. `sparklink` 是管理组；可选 `sparklink-apps` 开放 Connection 的只读 `GetInfo`
    和 `OpenChannel`／`OpenChannelScoped`／`PrepareDynamicChannel`。`GetInfo` 仅供 SDK
    核对同一 generation/lifetime 的观察，不开启通道、创建租约或提交协议命令；
-   不开放广播/扫描/断链/控制器操作、SSAP RPC 或 service 名称所有权。
+   另精确开放 AcquireDiscovery／ReadDiscovery／ReleaseDiscovery 三个 caller 租约入口；
+   不开放管理广播/扫描/断链/控制器操作、SSAP RPC 或 service 名称所有权。
    kernel 仍要求特权创建绑定，broker 传递 scoped fd，内核强制 epoch/方向/lifetime。
    分组是粗粒度准入，**不是完整逐应用/逐 Peer 策略**；固定通道机制要求按后文安全epoch决策；动态protected仍拒绝。
 
@@ -121,7 +123,7 @@ guest按实际收到确认的单调/墙钟收据建立请求—确认—结果�
 
 | 门禁 | 实现/离线与形式化 | 实机及退出条件 |
 |---|---|---|
-| 独立应用权限 | 精确 XML 白名单、实际 RPC/跨语言调用迁移；kernel cap/方向/epoch 检查 | 仅 apps 组 UID/caps0 领取并双向业务；拒绝扫描/断链/raw/管理；不能用控制组用户代替 |
+| 独立应用权限 | 精确 XML 白名单、实际 RPC/跨语言调用迁移；kernel cap/方向/epoch 检查 | 仅 apps 组 UID/caps0 领取并双向业务；拒绝管理扫描/断链/raw/管理；新增租约权限另验，不能用控制组用户代替 |
 | 应用共享资源 | 接 client 租约/过滤/有限预算/取消，模型不许清另一作者；无需等控制竞争全集 | 两应用一只 controller，退出/超时只释放自身；管理停止明确影响范围 |
 | Binding 与在途 | 实际转换、票据、NOCP debt、dup/SCM_RIGHTS/最后关闭；unsupported/timeout 未证明 | 关闭/撤权/断链旧 life、真实 credit 压力及同行隔离；旧 wire 归属另证 |
 | 分阶段交付 | socket poll/error/linger/RX 丢弃与消息完整性文档及实现对应 | 双端随机序号/载荷、协议及应用校验和回复；不得以 USB/NOCP/ACK 代替 |

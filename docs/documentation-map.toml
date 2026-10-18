@@ -1681,3 +1681,17 @@ authority = "原提交与各自准确证据；当前资格仅project/current-cap
 disposition = "保留原文和原hash，source-only，不构建到读者站点"
 source_sha256 = "3d80c7db2cced7aba4a91fa39d1e5c1b798c5a6f5aa55169e8a5aea338f47f7e"
 publication = "source-link"
+
+[[documents]]
+path = "docs/reference/application-discovery.md"
+title = "应用发现会话（开发接口）"
+section = "reference"
+status = "active"
+reader = "应用开发者与集成人员"
+purpose = "说明Rust/D-Bus/CLI发现租约的权限、身份、预算、错误和退出边界"
+validity = "已接线并限定离线验收；新artifact实机/system bus门禁仍缺"
+applicable_version = "R5f12未发布接口；资格按准确源码和artifact读取"
+authority = "实际源码与project/current-capabilities.md"
+disposition = "保留reference；不将未实机重验命令写成教程，不复制目标架构或资格"
+source_sha256 = "e2fb6bf3017816a08254158aa13f26820ed3708cab8ded80673953c577876966"
+publication = "html"

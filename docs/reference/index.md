@@ -9,6 +9,7 @@
 interfaces
 ssap-permissions
 controller-events
+application-discovery
 documentation-build
 controller-snoop
 vm-gate-inputs

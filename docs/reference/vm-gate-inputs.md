@@ -94,6 +94,13 @@ Agent 或其他生命周期选择器组合。QMP 拔插仅是 guest 控制对照
 `negotiable-t` 与既有 SDK110 封存建链条件一致；`fixed-t` 是独立对照，已有 Ready/
 发现后连接超时失败，不能当作该已验证条件。广播参数和实际生效身份仍逐项核对。
 
+共享 discovery 的 `--application-discovery-verify` 同样要求显式
+`--connection-advertising negotiable-t` 才能执行其连接／业务保持门禁。早期 Fixed-T
+尝试的失败仍是原条件下的真实失败；不能说成相同 Negotiable-T 条件的回归退化。
+`NativeConnectionResult` 的 `flags` 位1／2／4分别表示 Status／Outcome／handle
+存在；Status0不代表连接完成。成功还要求真正的终态和对应 Outcome／handle，
+USB提交、OUT完成及控制器Status不是这些字段的替代。
+
 专用测试目录内的两个小应用调用公共 Client：固定连接对象申请 fd，dup 后关闭
 原 fd 与 Client，等待双方原期限内的 start 屏障，验证一次随机请求及不同的随机
 回复，最后关闭后确认同 lifetime 重绑拒绝。它们只做外部 SDK 消费，不提供另一个

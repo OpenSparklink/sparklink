@@ -15,6 +15,17 @@ def terminal(owner, operation, handle=0):
     return f"NativeConnectionResult: generation={owner['generation']} request={operation} operation={operation} state=4 errno=0 fault=0 command_status=0 outcome_status=0 handle={handle} flags=7\n"
 
 
+class ResultEvidenceBits(unittest.TestCase):
+    def test_status_zero_without_outcome_handle_is_not_terminal_connection_success(self):
+        owner=dict(generation=1)
+        failed='NativeConnectionResult: generation=1 request=1 operation=1 state=7 errno=-110 fault=-110 command_status=0 outcome_status=0 handle=0 flags=1\n'
+        for text in [failed,failed.replace('state=7 errno=-110 fault=-110','state=4 errno=0 fault=0')]:
+            with self.assertRaisesRegex(CaptureError,'matching Outcome/handle'):result(text,owner,1)
+        # Zero is a valid handle only with its present bit and a successful
+        # terminal record; all three field-presence bits retain their meaning.
+        self.assertEqual(result(terminal(owner,1),owner,1)['handle'],0)
+
+
 def fixture():
     owners=[dict(bus=1,device=2,generation=1,address='00:01:09:32:54:CD'),
             dict(bus=1,device=4,generation=2,address='00:01:09:32:54:F9')]

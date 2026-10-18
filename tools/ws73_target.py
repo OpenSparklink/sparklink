@@ -1823,6 +1823,9 @@ def run_exit_code(record, *, supervisor_pending=False):
     discovery_tokens=sum(arg.split().count('ws73.application_discovery=1') for arg in record.get('qemu_args',[]) if isinstance(arg,str))
     if discovery_tokens!=int(discovery):return 1
     if discovery:
+        postures=[token for arg in record.get('qemu_args',[]) if isinstance(arg,str)
+                  for token in arg.split() if token.startswith('ws73.connection_advertising=')]
+        if postures!=['ws73.connection_advertising=negotiable-t']:return 1
         if (record.get('application_discovery_acceptance')is not True or not valid_discovery(record.get('application_discovery_corroboration',{})) or
                 record.get('application_discovery_supervision')!=dict(status='ORIGINAL_DISCOVERY_ROLE_FILES_CHECKED',uid=1004,phases=2)):
             return 1

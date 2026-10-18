@@ -180,17 +180,17 @@ class DiscoveryGate(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):verify_supervisor_artifacts(run,root,expected)
 
     def test_fail_closed_exit_and_finite_mode_boundary(self):
-        opts=SimpleNamespace(application_discovery_verify=True,qmp_hotplug=True,connection_verify=True,ports=['1-1.1.1','1-1.1.2'])
+        opts=SimpleNamespace(application_discovery_verify=True,qmp_hotplug=True,connection_verify=True,connection_advertising='negotiable-t',ports=['1-1.1.1','1-1.1.2'])
         self.assertTrue(requested(opts))
-        for changes in [dict(ports=['1-1.1.1']),dict(connection_verify=False),dict(fault_recovery=True),dict(application_client_verify=True),dict(channel_benchmark='rate')]:
+        for changes in [dict(ports=['1-1.1.1']),dict(connection_verify=False),dict(fault_recovery=True),dict(application_client_verify=True),dict(channel_benchmark='rate'),dict(connection_advertising='fixed-t'),dict(connection_advertising=None)]:
             with self.subTest(changes=changes),self.assertRaises(CaptureError):requested(SimpleNamespace(**(vars(opts)|changes)))
-        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,application_discovery_requested=True,qemu_args=['qemu','-append','ws73.application_discovery=1'])
+        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,application_discovery_requested=True,qemu_args=['qemu','-append','ws73.application_discovery=1 ws73.connection_advertising=negotiable-t'])
         self.assertEqual(run_exit_code(record),1)
         run,capture=fixture();proof=corroborate(run,capture)
         record.update(application_discovery_acceptance=True,application_discovery_corroboration=proof,
                       application_discovery_supervision=dict(status='ORIGINAL_DISCOVERY_ROLE_FILES_CHECKED',uid=1004,phases=2))
         self.assertEqual(run_exit_code(record),0)
-        for changes in [dict(supervisor_exit=1),dict(application_discovery_acceptance=False),dict(application_discovery_requested=False),dict(application_discovery_corroboration={}),dict(qemu_args=[]),dict(qemu_args=['ws73.application_discovery=1 ws73.application_discovery=1'])]:
+        for changes in [dict(supervisor_exit=1),dict(application_discovery_acceptance=False),dict(application_discovery_requested=False),dict(application_discovery_corroboration={}),dict(qemu_args=[]),dict(qemu_args=['ws73.application_discovery=1 ws73.application_discovery=1']),dict(qemu_args=['ws73.application_discovery=1 ws73.connection_advertising=fixed-t']),dict(qemu_args=['ws73.application_discovery=1 ws73.connection_advertising=negotiable-t ws73.connection_advertising=fixed-t'])]:
             self.assertEqual(run_exit_code(record|changes),1)
 
     def test_refuses_non_vm_launcher(self):
@@ -202,6 +202,7 @@ class DiscoveryGate(unittest.TestCase):
         import ws73_target_control as control
         arguments=['ws73_target_control.py','--slctl','/bin/slctl','--slkd-pid','42','--output','/unused',
                    '--passthrough','--connection-verify','--application-discovery-verify',
+                   '--connection-advertising','negotiable-t',
                    '--channel-socket-verify','--channel-socket-boundaries']
         def inspect(instance):
             self.assertEqual(instance.args.ports,['1-1','1-2'])
@@ -209,6 +210,19 @@ class DiscoveryGate(unittest.TestCase):
             return 73
         with patch.object(sys,'argv',arguments),patch.object(control.ConnectionControlRun,'__init__',lambda instance,args:setattr(instance,'args',args)),patch.object(control.ConnectionControlRun,'execute',inspect):
             self.assertEqual(control.main(),73)
+
+    def test_actual_guest_cli_rejects_implicit_or_fixed_t_before_run_construction(self):
+        # Parser/preflight only, explicit no-run negative control. The default
+        # remains available for independent contrasts, not this qualified path.
+        import contextlib,io
+        import ws73_target_control as control
+        args=['ws73_target_control.py','--slctl','/bin/slctl','--slkd-pid','42','--output','/unused',
+              '--passthrough','--connection-verify','--application-discovery-verify']
+        for tail in [[],['--connection-advertising','fixed-t']]:
+            with patch.object(sys,'argv',args+tail),patch.object(control,'ConnectionControlRun')as run,contextlib.redirect_stderr(io.StringIO())as stderr:
+                with self.assertRaises(SystemExit)as error:control.main()
+                self.assertEqual(error.exception.code,2);run.assert_not_called()
+                self.assertIn('explicit negotiable-t',stderr.getvalue())
 
 
 if __name__=='__main__':unittest.main()

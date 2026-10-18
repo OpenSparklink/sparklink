@@ -20,7 +20,9 @@ def result(text, owner, operation):
     if (values[0] != owner['generation'] or not values[1] or values[2] != operation
             or values[3:8] != (4, 0, 0, 0, 0) or values[8] > 65535
             or values[9] & 7 != 7):
-        raise CaptureError('connection requires OUT, Status and matching successful outcome')
+        # UAPI flags1/2/4 mean Status/Outcome/handle, not USB submission bits.
+        # State Succeeded also requires the kernel's actual OUT completion.
+        raise CaptureError('connection requires terminal success, successful Status and matching Outcome/handle')
     return dict(zip(['generation','request','operation','state','error','fault','command_status','outcome_status','handle','flags'], values))
 
 

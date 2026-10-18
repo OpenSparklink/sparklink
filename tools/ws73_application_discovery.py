@@ -38,8 +38,10 @@ def requested(args):
             any(type(v) is bool and v and k not in allowed for k,v in vars(args).items()) or
             any(getattr(args,k,None) for k in ['security_agent','native_controller_return','channel_benchmark',
                 'managed_partial_case','managed_connected_case','managed_connected_reply','managed_real_later_step','daemon_hold_case']) or
-            getattr(args,'connection_advertising','fixed-t') != 'fixed-t'):
-        raise CaptureError('discovery explicit release requires separate two-device real connection/preservation VM')
+            getattr(args,'connection_advertising',None) != 'negotiable-t'):
+        # SDK110's source-bound connection/business baseline is negotiable-T.
+        # Fixed-T is a separate unqualified contrast, never an implicit fallback.
+        raise CaptureError('discovery explicit release requires explicit negotiable-t in a separate two-device real connection/preservation VM')
     return True
 
 

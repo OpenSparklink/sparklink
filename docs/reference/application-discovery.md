@@ -90,9 +90,14 @@ COUNT 为 1…1024，CLI 租期为 250…30000ms；默认任意前缀、1 条、
 ## 受控验收入口与限定范围
 
 现有 `ws73_target.py run` 的 `--application-discovery-verify` 是维护者验收选择器，
-要求显式两只设备、Native VM、`--qmp-hotplug --connection-verify`；可附同一
+要求显式两只设备、Native VM、
+`--qmp-hotplug --connection-verify --connection-advertising negotiable-t`；可附同一
 artifact 的普通 socket／长度边界保持门禁，不能混入独立故障、Agent 或 benchmark。
 本线程还须通过端口白名单、序列号、占用与 SDK110 全套固件校验；选项不会放开这些限制。
+
+连接保持必须复用 SDK110 封存记录中显式的 `negotiable-t` 条件。`fixed-t` 是未完成
+连接资格的独立对照；默认值、发现成功或 Command Status0 都不能代替该条件。
+不指定或选择 Fixed-T 时，本门禁在硬件启动前拒绝，不自动回退或改变模式。
 
 VM 监督器按固定命令启动两个 UID/GID1004、无附加组和 capabilities 的实际
 `slctl discover`，先等待双方 active，再允许另一只广播随机标识。第一个读者

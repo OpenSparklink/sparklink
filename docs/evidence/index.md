@@ -1,5 +1,10 @@
 # 证据入口与取得限制
 
+- [同一新guest的原owner／五秒期限保持](ssap-requester-owner-preservation-20261018.json)：
+  B847 guest、1f15 Host、DA服务、2fc内核；独立回归原C/Python errno110、两角色和8次
+  后续真实回复，27负对照。它是保持回归，不是另一份新能力或恢复资格。
+
+
 - [Requester 退出、旧写回复排空与挂起期间真实业务](ssap-requester-drain-held-business-20261018.json)：
   B847 guest/Host、DA服务、2fc内核；保留首轮整体FAIL，第二轮两角色、8次实际业务回复、
   3963USB包／零丢包、32负对照。旧读/新读、完整复用、部分初始化和恢复仍开放。

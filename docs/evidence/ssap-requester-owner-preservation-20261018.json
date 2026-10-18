@@ -1,0 +1,938 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "compiled_userspace": "da2010a93b96dc4a6270bc2a1c6f349d0792a0fc",
+  "compiled_consumer": "b847f21785e29b4dc7fbfc9d0eb2ecd47040d0b8",
+  "executed_guest_tools": "b847f21785e29b4dc7fbfc9d0eb2ecd47040d0b8",
+  "executed_host_tools": "1f15c6cd1eca3f77353452283ebbbe62deb0f622",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "scope": [
+    "One separate preservation VM after the new requester gate,using same preparedB847guest/DAservice/2fckernel andaccurate1f15Host. Tool files equalB847;docs commit isnot compiledservice identity.",
+    "Bothroles existingforeground ServiceOwner exit/currentdenial/stale-late refusal plusactualC/Python errno110 underoriginal5s,oppositeDB unchanged and8ordinaryCUTC replies afterwards. This preservation run doesnot exercise businessduringheldprompt;that is in the separate newrequester report.",
+    "Actual HCC U/USB,selected U1-1.1.1/.2 only,explicitSDK110US andbothUSBends/zero capture drops/same daemon. Not coldpower/coldROMselection,fullpermissions/reuse/partialinit/security/natural recovery orperformance/formal proof."
+  ],
+  "bounds": {
+    "new_preservation_runs": 1,
+    "connection_roles": 2,
+    "actual_sdk_errno": 110,
+    "elapsed_ns": [
+      5010474363,
+      5056726717
+    ],
+    "ordinary_round_trips": 8,
+    "capture_packets": 4027,
+    "capture_dropped": 0,
+    "radio_matches": 22,
+    "evidence_negative_controls": 27,
+    "late_denial_responses": 0,
+    "new_formal_proofs": 0
+  },
+  "phases": [
+    {
+      "sender": 0,
+      "target": 1,
+      "owner_exit_peer_error": 4,
+      "deadline_elapsed_ns": 5010474363,
+      "timeout": {
+        "api": "c",
+        "errno": 110,
+        "deadline_ns": 36406868058,
+        "call_ns": 31408321116,
+        "returned_ns": 36407034614,
+        "operation_success": false
+      },
+      "late_denial_physical_obligation": false,
+      "stale_token_rejected": true,
+      "late_token_rejected": true,
+      "scope": "Actual callbacks and unchanged opposite DB;CUTC corroborated separately. Not concurrent peer-business,cross-lifetime human replay,controller retirement,full cancellation or security/Bond proof"
+    },
+    {
+      "sender": 1,
+      "target": 0,
+      "owner_exit_peer_error": 4,
+      "deadline_elapsed_ns": 5056726717,
+      "timeout": {
+        "api": "python",
+        "errno": 110,
+        "deadline_ns": 46670578747,
+        "call_ns": 41672861630,
+        "returned_ns": 46670823601,
+        "operation_success": false
+      },
+      "late_denial_physical_obligation": false,
+      "stale_token_rejected": true,
+      "late_token_rejected": true,
+      "scope": "Actual callbacks and unchanged opposite DB;CUTC corroborated separately. Not concurrent peer-business,cross-lifetime human replay,controller retirement,full cancellation or security/Bond proof"
+    }
+  ],
+  "gates": [
+    {
+      "name": "Same newguest shared application helper standardowner callerpreservation",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual bothrole ServiceOwner cleanup andcurrent/stale/late policy refusal",
+      "status": "PASS"
+    },
+    {
+      "name": "ActualC-Python errno110 underimmutableoriginalfive-second deadline",
+      "status": "PASS"
+    },
+    {
+      "name": "Eightordinary actualpeer replies afterwards plusbothUSB/HCC andHCCU",
+      "status": "PASS"
+    },
+    {
+      "name": "Frozenactual production verifier replay and27negativecontrols",
+      "status": "PASS"
+    }
+  ],
+  "remaining": [
+    "Main newrequester gate plus this preservation total3VM attempts:oneinitiale68oracleFAIL retained,andtwoindependentsuccesses;not generalstability orsuccessrate.",
+    "PartialNativeinit andfullcancel/duplicate/reuse/NOCP/permissions,security/Bond,naturalRCA/nonmanualrecovery andalloriginalS0-S6/19WP/10FV/12DG remainOPEN."
+  ],
+  "access": "Private .dev capture/frozen tools/artifacts andoriginalfailures retained;hashes andlimits public. NoSDK/firmware/restrictedmaterial/largecapture distributed.",
+  "replay": "Run requester-owner-preservation-audit-v1.py usingfrozen1f15Host andpreparedB847guest;not arbitrarycurrenttree. Verify all27negativecontrols andseparate originalfirstfailures.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/manifest.json",
+      "sha256": "d6026380969498e86a42d16461b85adb0bc2106b5a7aacb412bff51c9d1b8dcf",
+      "bytes": 31624
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "9fbea208a015477cbb71109a301cca06abaf0869a840280b9560e8dd4d2a604d",
+      "bytes": 6550
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "d4ec09893d07586e83c95ce4f42fb6a42e89e92b3c49451e14a45c017b3e7a17",
+      "bytes": 541
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/liblibsparklink.so",
+      "sha256": "eb94fd1ba3332a646d6a7fefdf25ab8ce572f2fcf1fdf7f29c198ec70ee772a5",
+      "bytes": 4535440
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/libslk_native.so",
+      "sha256": "426be8c799f7498238cb2dbf3562535dd523ed7b4711b2d3d60c0fec99b5b048",
+      "bytes": 530936
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slctl",
+      "sha256": "fd24f53ce5372fc4229a8e88a0c374ea8508121aec8ba025b17c186969bb9690",
+      "bytes": 8431560
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slkconfig",
+      "sha256": "3f58a6739f8dbc9315153114be7020eb7fe9fc04890416530dfe2dc8e807b8b3",
+      "bytes": 1338168
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slkd",
+      "sha256": "15228e55d7002e91a4cee5e463c4e87d4efb2263ae2994cfd7f1947ff16a2af0",
+      "bytes": 10033584
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slkdump",
+      "sha256": "484d9ee6a6826c1da14464c2c8b6c8f60faaa81e3580d90af67485a878eab34a",
+      "bytes": 1660584
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slkmon",
+      "sha256": "d259c65a4c5fdee07b6ef8e82ae56e20833df2f85d36a88ad2c91ce51f0c64a9",
+      "bytes": 1660792
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/da2010a93b96/slktest",
+      "sha256": "d138d3efcc92c53dffb4c2f04cbe6ef121cbf5fefeee87a999f39735ec01fbe0",
+      "bytes": 5764672
+    },
+    {
+      "path": ".dev/architecture-r5f7-native-us-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "05dd3f7ccf68824dddc9fbe780a62e6306cc0842668ce222a5c09a5a9331773c",
+      "bytes": 188
+    },
+    {
+      "path": ".dev/architecture-r5f7-owner-deadline-real-v1/manifest.json",
+      "sha256": "5e8021cbfe1389491fe8bba09ea3dc84868fd44d8c3e4ff60005c43218443d88",
+      "bytes": 1579878
+    },
+    {
+      "path": ".dev/architecture-r5f7-pinned-identities-v1.json",
+      "sha256": "1cd169c640395a5e01bb94f1f143be1f976591aae1e2bcbd5950748f25f850a8",
+      "bytes": 469
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-post-run-v1.json",
+      "sha256": "0f449f10281abcded1f51f67b63a3716bf9127cf3f22ccebe60d44131057033a",
+      "bytes": 3510
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v1/libvirt-readonly-v2.json",
+      "sha256": "0cf0250c598dfc96728d663ed120c15e20f3389b333ecc5aa5721431b03ef88e",
+      "bytes": 815
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v1/report.json",
+      "sha256": "4d471a759e9d2339cc5fc3d10ef7e90a38af6a34537b89619823660b7f14cdd0",
+      "bytes": 8848
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v1/tasks-corrected-v2.json",
+      "sha256": "39de047023ea00a49f7fed093698732142a9c16b4dde3c3b84d90d2f5405ece6",
+      "bytes": 14021
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/frozen-requester-preservation-host-v1/project/lab-resource-policy.json",
+      "sha256": "b55b3c040c05336962c59ae724d089b51eba8ed0f6e3a50d7d84d2a5e6e074e9",
+      "bytes": 2334
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/frozen-requester-preservation-host-v1/tools/ws73_lab_resources.py",
+      "sha256": "75a687ea8a7f7ee3068fe84da7d106d3b39ae443c799f2fc0e299ddfba394a93",
+      "bytes": 10414
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/frozen-requester-preservation-host-v1/tools/ws73_target.py",
+      "sha256": "296518b622ade748b410cb25bf65f43ca9f3c1ca24e9888800e08fd8f796a20a",
+      "bytes": 177756
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/live-vm-build-budget-v1.json",
+      "sha256": "93b27ca8618f9d899a2421180f361552c81aa2178891ca232b7e03551c9460cb",
+      "bytes": 499
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/owner-deadline-audit-v1.log",
+      "sha256": "3f48ca4447dfa61305f8bafd41efe7a143adf62f490ad9b4325f928a81a4e0ef",
+      "bytes": 247
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/owner-deadline-audit-v1.py",
+      "sha256": "b50a5890f469d64888a46d1739837ed12d91467e6c547b2e6a4cf4d1a91925d5",
+      "bytes": 12071
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-us-command-v1.json",
+      "sha256": "8cfabb7b040c041626f334461edddfa807b8c4930cc45ea82586aad8c203e2c3",
+      "bytes": 2061
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-us-command-v2.json",
+      "sha256": "ee9b4195a60f86ca2187d28756bc581a0d036310a345e401b12b74f38c62911b",
+      "bytes": 2114
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-us-v1.log",
+      "sha256": "6aa0a51157032be225f8809f3bda3ff180892e9be3292ab8879bf59942326293",
+      "bytes": 587
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/prepare-us-v2.log",
+      "sha256": "facdbccb5564f7a2f24268906225cf385cdffccfb218754e3bf2d6393979407e",
+      "bytes": 552
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-audit-v1.log",
+      "sha256": "8ac83d0bf264b370f13aa61ce8103f17f1f51650e5775b300ee658e2f29f4bcf",
+      "bytes": 1224
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-audit-v1.py",
+      "sha256": "d782bb2a8f95130e06e8b24d652766eebb27eab79bba26a3c6f9214936f31ddb",
+      "bytes": 12586
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1.log",
+      "sha256": "7098e2b785f800dae64ebc474b3a2e724ef48e80cb6f617763f2c227f1034190",
+      "bytes": 16408
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "bc8323bebeb42d27a3612028f098ff0d18374883cdfd520fa1578f875607b874",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "9670f54bb01f858ad1b5201d9b841f9249ce1af603ab9f355b2337b1340e0f62",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "6d1c3bd2836dcde145061f95b51567cd767b2c8dcedb3a5ed0ad7274122e5104",
+      "bytes": 2579
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "f08c75533b2bb7b951698df96c9e08a085ea1a09a73a6f012ae7e0d4a50232d5",
+      "bytes": 5086
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "c7bf664cf13d24a87e5e5788cd9d3e935839b46731a85f2373a13fb2ffb1ca2f",
+      "bytes": 958495
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-0-0-exit-pending.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-0-0-exit-pending.stdout",
+      "sha256": "6481ef1bcbc7f0791e543be858fb963d6b9467c379088598489584b0bbbf6cfb",
+      "bytes": 289
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-0-0-guard.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-0-0-guard.stdout",
+      "sha256": "c67c231160671a76de49d3abff4a8e349631e8669ce80f4c4c8eff0b5bb37cec",
+      "bytes": 306
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-0-0-original-deadline.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-0-0-original-deadline.stdout",
+      "sha256": "5f009a7b7f106d151cca834191fa2b279c0779a7de6c5d0448741cdd5edb727c",
+      "bytes": 978
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-1-1-exit-pending.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-1-1-exit-pending.stdout",
+      "sha256": "daedf1575bb6e96522666b2818eb6750e6be926628615dc3de367ac43a1e77f7",
+      "bytes": 289
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-1-1-guard.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-1-1-guard.stdout",
+      "sha256": "122d1de3354f8a9a898370238d251c75a054b81ae02c3290c1198e6efa44a225",
+      "bytes": 306
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-1-1-original-deadline.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/passthrough-control/ssap-owned-1-1-original-deadline.stdout",
+      "sha256": "203d2162e5d65b5163e98effba11e93fbc5a321b6985180155c97893d283658f",
+      "bytes": 978
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/capture-process-status.txt",
+      "sha256": "ae9082520f7cd385c2a7421b7d8bdc899b08966a643e5478b2b510b3ed82337b",
+      "bytes": 1486
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/capture-stats.txt",
+      "sha256": "3c36aa494504aec596c4b585d3dc418eec49515340598ba75bd64c46552ae554",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/kernel.log",
+      "sha256": "c8fe0e715fdeebcf5fa42f36bcbd56589ae2a01aabff88c3a267fe24130c4a5a",
+      "bytes": 49997
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/passthrough-control-proofs.json",
+      "sha256": "c4555d0fbbf787f7362171806a11bb3ee4931991d30302b4363f051e062c86c0",
+      "bytes": 477385
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/pending-observations-0.json",
+      "sha256": "bdf87fa7ac519fb50cfb354a98d6cf2e1e6a8e7adefa9c48267a7c81ecf91b56",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/pending-observations-1.json",
+      "sha256": "2428de31b570e1f3075f6ed08456bb5d845ef5efc4da81233bee55bff2753a65",
+      "bytes": 1126
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/ready-0.json",
+      "sha256": "2288ee346450ff834500ae8d69a0d1ea6ab174eaaa3a11f2182a4d30232b4d02",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/ready-1.json",
+      "sha256": "c25b1aba64f7177591131aa99033840d38462b0545683774b85a8c1f12beec69",
+      "bytes": 1029
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/ready-progress-0.json",
+      "sha256": "152f3f7d5b571119cbcbffb6ef98e7d57b64869c20e7a00eca0484ec63e23f57",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/ready-progress-1.json",
+      "sha256": "21e4dc65224cfe5c4e304e24e2fac3cc8f875286a22ce403cdd1b1867ce49a4a",
+      "bytes": 1096
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/slkd-config.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/slkd-process-status.txt",
+      "sha256": "5f82886ea50babf58ed2a9838fd84f99559b04efb0e5580d6c4fc02080378ba9",
+      "bytes": 1454
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/slkd.log",
+      "sha256": "de1a6f8c529aa548b02f64309ba608dabbd9a2fabc5425e11a45b8db52ed99a2",
+      "bytes": 5536
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/ws73.pcap",
+      "sha256": "8403f8f3fbdc15f4a924c922c7fb05357e4da1f79f9b0bd248fad9e622b54922",
+      "bytes": 615352
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/xhci-trace-stats.txt",
+      "sha256": "84b6109ec4d847b21e2af633faaa6c692e26d57bae12cece9f77b039dbaf38b0",
+      "bytes": 281
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/guest-output/xhci-trace.log",
+      "sha256": "d2322dcf88daed5b947306419b1712fcea241cfe906fe2416213330ef1805d21",
+      "bytes": 2212521
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/manifest.json",
+      "sha256": "70a34e3fc8688e1ba543593a889a38d47a04e3d140a6fef5dc6a77c5682ffe20",
+      "bytes": 1587414
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-owner-preservation-us-v1/qmp.jsonl",
+      "sha256": "d956ad6474d8e210cc0607a97430cf548915d8a2c1d102ba8d18019c77a4cb20",
+      "bytes": 1757
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/bzImage",
+      "sha256": "1b739552316ea01c3aa057320992c38cc4b09ffc992d69d26c457dc96f50f110",
+      "bytes": 15749120
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/manifest.json",
+      "sha256": "773613034b001224f2c036cd18cb497cc0363877ae639fdb9cb4aea0b05cf893",
+      "bytes": 309106
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root.btrfs",
+      "sha256": "5c477cc2aa40c5282780b98596ae8d78f3ecb05e1641b42b9bbf60dc767e606c",
+      "bytes": 1073741824
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/build_resources.py",
+      "sha256": "3f579f699b40a51f473927285abdc110eae83204cc35de9574f69271b29421df",
+      "bytes": 7426
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_acb_transport_probe.py",
+      "sha256": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+      "bytes": 14227
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_active_deadline.py",
+      "sha256": "32282a67ef88ac48656027614176bc11623182967d46669034ae26b0ebfa988d",
+      "bytes": 30105
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_application_client.py",
+      "sha256": "f6f30121a2880fc6ef19d9606f218ce11ae9568006b3aa966b707c276ff6f407",
+      "bytes": 19591
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_application_role.py",
+      "sha256": "8fd9ba7bf6c9a168e449fb90389376fadc63878278d0a000833de11540b420e9",
+      "bytes": 12169
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_benchmark.py",
+      "sha256": "8c06a3a038c199700d407c694c79cc541628bf59775e9cc63b1da31181cd5823",
+      "bytes": 20522
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_benchmark_timeline.py",
+      "sha256": "92043a0b33bc498551636428a77a8ae63b5dadaea210921da60f9c26a880896b",
+      "bytes": 10302
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_bindings_probe.py",
+      "sha256": "71c1cdc5fbe9182cc68fb461b0ea0ae49c2d9bd12170436dc7b182180dceedcb",
+      "bytes": 6271
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_capture.py",
+      "sha256": "58f057f4927cbb7cd428375b04ad284c630efe7438c46d08294e824c530d2677",
+      "bytes": 43066
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_channel_daemon_crash.py",
+      "sha256": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+      "bytes": 17077
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_channel_deadline.py",
+      "sha256": "0f749ba7b88408fc3b6133d0302932c4bbe1d81d39f5d1fd5aa48ac7fbe91dea",
+      "bytes": 17473
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_channel_fairness.py",
+      "sha256": "240383395f03e3482e6381b41fc526e5e9a831e033e5e66b643dd04ddbb9cc4f",
+      "bytes": 14445
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_channel_grant.py",
+      "sha256": "dd6c9d6be2592cb2e80f916c33cc48568bc6e9f86e441c5841642dfc94db074e",
+      "bytes": 39420
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_channel_link_down.py",
+      "sha256": "cd135c9a675e9ca58bd4516d7a02fb1ebf62c123731f6cb94adc902cd66cf523",
+      "bytes": 12846
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_channel_prefix_hold.py",
+      "sha256": "2a6b8720777f098a6d5d7270af772b25bc46fee4dd4591cabec55459e97052a3",
+      "bytes": 10754
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_channel_socket.py",
+      "sha256": "355026365af303660c1e3214689359e5afddb9ce1dad72a00a7a6e04f5a90e58",
+      "bytes": 58600
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_connected_file_gate.py",
+      "sha256": "b2ce9f0f44a8700558566c55f519b97f61728ac4217ff53d638475cc266a927f",
+      "bytes": 46641
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_connection_control.py",
+      "sha256": "14743a4df2dea9134c678aa02305a861e907125bb1c7216da5523403c2f538b3",
+      "bytes": 26324
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_connection_objects.py",
+      "sha256": "747577a215c5f12c2ea86fc98f02f03582728fd8b0aa331a924154c45bad1ea7",
+      "bytes": 16200
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_connection_queued.py",
+      "sha256": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+      "bytes": 7951
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_credit_observation.py",
+      "sha256": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+      "bytes": 7067
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_daemon_channel_fd.py",
+      "sha256": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+      "bytes": 3430
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_daemon_crash.py",
+      "sha256": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+      "bytes": 16497
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_daemon_hold.py",
+      "sha256": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+      "bytes": 28764
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_daemon_removal.py",
+      "sha256": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+      "bytes": 21965
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_diagnostic_autonomous.py",
+      "sha256": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+      "bytes": 2596
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_diagnostic_cancel.py",
+      "sha256": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+      "bytes": 6214
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_diagnostic_deadline.py",
+      "sha256": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+      "bytes": 3240
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_diagnostic_hold.py",
+      "sha256": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+      "bytes": 7715
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_diagnostic_probe.py",
+      "sha256": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+      "bytes": 18546
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_discovery_policy_capture.py",
+      "sha256": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+      "bytes": 5586
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_dynamic_channels.py",
+      "sha256": "47f21b92b41d9e4212dd813c67e979c117df89a0c933b308f3df5c0120641bb9",
+      "bytes": 29628
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_early_fault.py",
+      "sha256": "00372b7486cb3829c704eccac412ddcc51221808c8292398d28af1475f719c64",
+      "bytes": 20591
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_event_copy_probe.py",
+      "sha256": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+      "bytes": 3060
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_host_later_hold.py",
+      "sha256": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+      "bytes": 6555
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_initialization_lifecycle.py",
+      "sha256": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+      "bytes": 18450
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_key_agreement.py",
+      "sha256": "5c96e2d98efd78d9a7bef7b9cc325a23c9dc00b6b5ea19f081d191ca266bced3",
+      "bytes": 12003
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_lab_resources.py",
+      "sha256": "75a687ea8a7f7ee3068fe84da7d106d3b39ae443c799f2fc0e299ddfba394a93",
+      "bytes": 10414
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_link_resync.py",
+      "sha256": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+      "bytes": 11109
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_management_eviction.py",
+      "sha256": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+      "bytes": 16000
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_management_partial.py",
+      "sha256": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+      "bytes": 38405
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_management_queue_ready_peer.py",
+      "sha256": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+      "bytes": 5048
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_management_queued.py",
+      "sha256": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+      "bytes": 22997
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_management_ready_peer.py",
+      "sha256": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+      "bytes": 9186
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_management_setup.py",
+      "sha256": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+      "bytes": 9310
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_model_hold.py",
+      "sha256": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+      "bytes": 7325
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_north_star.py",
+      "sha256": "56535bba8e7a4462cfa76d0f0b2624739494fa6ee9439e03f8461459b90d00d8",
+      "bytes": 33434
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_observer_policy.py",
+      "sha256": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+      "bytes": 11020
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_parallel.py",
+      "sha256": "635565aca4b179de641ffee2a70503e447e272f2eb6dc8a34e8bbe60c2b76894",
+      "bytes": 25768
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_parallel_data.py",
+      "sha256": "47f105065fdc82c6189fe51a158a33de22cc1304d615efa282beaf753b9af7c4",
+      "bytes": 27301
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_protected_grant.py",
+      "sha256": "5b81ad146009ce8d31b882f54c78df25483fd6fd1fbf959266ba80c49cd3058d",
+      "bytes": 9429
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_registry_metadata.py",
+      "sha256": "ea18a1b207291bd401ff7a60f011312dfa78178fcd3e3c1ef75abf66ee02656b",
+      "bytes": 4829
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_resource_file_gate.py",
+      "sha256": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+      "bytes": 15752
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_revoke_prefix.py",
+      "sha256": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+      "bytes": 2552
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_rf_rounds.py",
+      "sha256": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+      "bytes": 14088
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_rom_chip.py",
+      "sha256": "4fe972ec0d9c2d00451b8086a6173f31c54f1214cb46e4f69a4ab6f021837d43",
+      "bytes": 4325
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_security_agent.py",
+      "sha256": "fc028f4b01dfe177c9c7a331b4d05392d52d3021f3f2dab6a128ba4293c90133",
+      "bytes": 28603
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_security_cancel.py",
+      "sha256": "ce4323947002157e98b35b9b15032195a6f04fac6dcf15bc5b0edc8239a71c49",
+      "bytes": 7687
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_security_capabilities.py",
+      "sha256": "b874b264f963f3c54e3052e4298c61106934f257cd85d85a3dce6dc9ff02e82e",
+      "bytes": 22580
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_security_cli.py",
+      "sha256": "99bda3dfde564693382723cd00366f7e906a89647ef29edb3b06f9b0295316ce",
+      "bytes": 13439
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_security_install_hold.py",
+      "sha256": "4db016caf335641e6c58f4567058cd89971b1513d7f84381ccb7ef6389b14728",
+      "bytes": 10079
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_security_numeric.py",
+      "sha256": "309c694fd94af3a013b8c90454017eb243278090180abf80a3614ce2bd9c2a03",
+      "bytes": 12073
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_session_drain.py",
+      "sha256": "e459a71ad26b50d41b260ff6dd758ccb740c6874d5adbdb38148ecbcefa0ffc9",
+      "bytes": 8381
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_session_idle.py",
+      "sha256": "0e3ba7c5848a974872280c0e2e257c79c12c8ff4a7b33a3da44e46473f37c776",
+      "bytes": 9109
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_session_service.py",
+      "sha256": "db7d79925dc36d80141beadc76ed06e3924de55b85523dff0332be8776983694",
+      "bytes": 24624
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_socket_benchmark.py",
+      "sha256": "27b2093a8af18ddfb081c89c35a7b60e72b773351ddb309eda4ebe83b35cdc14",
+      "bytes": 18736
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_ssap_access.py",
+      "sha256": "fad9c28a2ebbec70867cd9bdc14b10376f456010bf7e38850e8b5ebcff1d7ca6",
+      "bytes": 10636
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_ssap_discovery.py",
+      "sha256": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+      "bytes": 4981
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_ssap_owned.py",
+      "sha256": "fbc5a68854b91ac02a1311b5c20001fee4b117db3ce756be7c630345585e9998",
+      "bytes": 10963
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_ssap_owner_lifecycle.py",
+      "sha256": "d62b37841a7f465bcbe8c1e4c8de0f3fcc33e4e4647fe1da534b80df84694ee8",
+      "bytes": 23071
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_ssap_requester_lifecycle.py",
+      "sha256": "abb91d5a63efe65c894eb0c12941fda1ba7793b319ce0c283ff448f97d3e0636",
+      "bytes": 16384
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_ssap_service_policy.py",
+      "sha256": "a8a051355cd0db0eef77f8932aa4bbab2267c7551fa1fe02bd928e93310e223c",
+      "bytes": 10937
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_ssap_value.py",
+      "sha256": "0904e943fb943041dc3f53f2a33edc6c57d46bb15cd37b4e045b28fcd2e7a67c",
+      "bytes": 10137
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_target_control.py",
+      "sha256": "9eaad34a9adc5a9f77000ae9ccaf6e7fa01a828858e2a6cbd8acad5daf1f1708",
+      "bytes": 13927
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_target_guest.py",
+      "sha256": "8e49287c84d1dd167eed647ae00d9c61667bf7b293846f59ee0b413869bc4ba8",
+      "bytes": 34819
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_target_recovery.py",
+      "sha256": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+      "bytes": 9737
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_trace_layout.py",
+      "sha256": "1220dd5d01e5f748585bfc0dd5646196fd0f10365d2ec791d0a065eada74633d",
+      "bytes": 929
+    },
+    {
+      "path": ".dev/main-thread-01a120fe/requester-us-prepared-v2/root/usr/share/sparklink/tools/ws73_vm_register_reset.py",
+      "sha256": "1307cf000600913038cd6b96feec56439f8fc0494593c775524d15607bf4aae7",
+      "bytes": 27775
+    }
+  ]
+}

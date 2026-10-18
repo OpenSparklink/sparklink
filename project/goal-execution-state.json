@@ -800,16 +800,16 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F9_EXACT_CMTC_FIXTURE_BUILT_GATE_WIRED_VM_PENDING",
+  "execution_phase": "ARCHITECTURE_FIRST_R5F9_CMTC_FINITE_REAL_PASS_PARTIAL_INITIALIZATION_STILL_OPEN",
   "next_resume_tasks": [
     "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
     "R6:247actualpackagebasefinitequalified;crossversionupgrade/rollback,debug_info/dwz/usrmerge/runtime-dependency/thirdpartylicense/provenance/CIrelease andnewactualkernel/WS73artifactgates remain",
     "Thenoriginalfeatureworkstreams;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery OPEN"
   ],
-  "issue_sync_status": "R5f8 newrequester plusindependentoldownerpreservation andactualpartialinit sourceaudit:fiveexistingissuesOPEN,originalbodyandoriginalcommentprefixpreserved;no partialclosure.",
+  "issue_sync_status": "Fiveexistingissuesoriginalscopeandpreviouscommentprefixpreserved;R5f9finiteCMTC/HCC/ordinarybusiness andfiveFAILs updated;allOPEN,fullscope/RCA/nonmanualrecoveryOPEN.",
   "issue_sync_receipt": {
-    "path": ".dev/main-thread-01a120fe/allocation-r5f9-issue-receipts-v1.json",
-    "sha256": "1bf47f22c0ea59a824a66801a0188e1eee42758208a115d19e72a6f99c351ba4",
+    "path": ".dev/main-thread-01a120fe/ssap-init-issue-receipts-v1.json",
+    "sha256": "6203e2b34278e450f7430e2a1379ac60b9c668242fb7e4bb8171c431ff9f94d8",
     "comments": [
       "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245729849",
       "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245730189",
@@ -1934,20 +1934,24 @@
       "ssap-requester-owner-preservation-r5f8": {
         "level": "real_device",
         "result": "PASS"
+      },
+      "ssap-initialization-cmtc-revocation-r5f9": {
+        "level": "real_device",
+        "result": "PASS"
       }
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP06-WP08-WP18-R5f8-requester-exit-held-business",
-      "production_behavior": "Existing production caller/physicalslot invariants exercised byactual killedC/Python requesters,old verifiedwrite reply,new independentread and8CUTC peerreplies whilepromptheld. B847guestHost/DAservice/2fckernel;32evidence negativecontrols;original e68overallFAIL retained. No newEngine/Runtime/ABI orformal proof.",
-      "state": "R5F8_REQUESTER_DRAIN_HELD_BUSINESS_AND_OLD_OWNER_PRESERVATION_FINITE_PASS_PARTIAL_INIT_NEXT",
+      "id": "WP03-WP06-WP08-WP18-R5f9-cmtc-withdrawal",
+      "production_behavior": "Existing soleinitializer/Engine/Session exercised:exact7b90092 tools,DA compiledservice,2fc kernel. TwoactualCMTClease revocations,unchangedlateUSB,fd4->6->4->4,otherRXduringhold,then8peerapplicationreplies/22discoveries. FivewholeFAILs/21evidencenegativesretained;no newproductioncode/formalproof.",
+      "state": "R5F9_CMTC_LEASE_LATE_REPLY_FD_CONVERGENCE_FINITE_REAL_PASS_FULL_ARCHITECTURE_OPEN",
       "exit": [
         "One owner-pinned typed application client path;CLI/SSAP callers migrate without a secondEngine or rawNative leak",
         "Current Rust/C/Python/CLI/D-Bus contract,errors,identity/deadline/cancel/close sync;retired interfaces cannot return",
         "Strict builds,independent signature/export/ABI andactualcallerVM/RF regression for accurate newartifact",
         "R6cleanVMbuild/install/systembus/permissions/externalC-Python/upgrade/rollback/uninstall/configretention;fulloriginalscope remainsOPEN"
       ],
-      "next": "Next actual partialinitialization cleanup audit/gate must distinguish Nativefd creation,synchronousnonblockingbind,kernelCMTC,SSAPExchange andowner retirement;current source doesnot route authorized_fd through genericNativeWork. Reuse actualownedinitializer/creator andexistingtestfacilities;do notclaim old Managedadv/scan initializer tests coverSSAP. Then remainingoriginalarchitecture/fullS0-S6/19WP/10FV/12DG. StrictallocatedU/SDK110/VM-only/UserHostP4,naturalRCA/nonmanualrecovery OPEN."
+      "next": "R5f9 finite CMTClease slices done,not wholepartialinit. Next actual SSAPExchangeInfo-pending owner retirement andremaining Nativebind/taskjoin/objectremoval/refdrain gates using soleproductioninitializer/Engine. Keeporiginalrelease/finalfd/dup/SCM/Down/deadline/peer isolation,current data/SSAP/security parallel andcomplete S0-S6/19WP/10FV/12DG. UserHostP4,VM-only,allocatedports/SDK110;E/mixed/coldROM/RCA/nonmanualrecovery OPEN."
     },
     "selected_qualification": {
       "version": 1,
@@ -2156,7 +2160,8 @@
       ]
     },
     ".dev/architecture-r5c-issue-receipts-v1.json",
-    ".dev/architecture-r5d-issue-receipts-v1.json"
+    ".dev/architecture-r5d-issue-receipts-v1.json",
+    ".dev/main-thread-01a120fe/allocation-r5f9-issue-receipts-v1.json"
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -3754,7 +3759,7 @@
       "next": "Choose actual per-stage controlledVM barrier beforeimplementing/refactoring. Requireoriginaldeadline,no secondinitializer,retiring prevents latepublish,real fd/guard/work references converge,peercontroller stays independentlyReady. Distinguish physicalDown effects onthe sharedlink fromothercontroller retirement. Preservefullscope andnotallcontrolcombinations asprerequisite."
     },
     "r5f9": {
-      "status": "PINNED_TEST_QEMU_BUILT_CMTC_GATE_WIRED_OFFLINE_ONLY_VM_NOT_RUN",
+      "status": "FINITE_CMTC_GATE_REAL_PASS_FULL_PARTIAL_INITIALIZATION_OPEN",
       "exit_reference": "project/implementation-plan.md / R5f9 partial initialization",
       "scope": "Existing bounded2s original real IN81 hold with narrow SDK110 CMTC CapabilityRsp selector;sole actual Engine/Session/initializer unchanged. No new protocol implementation.",
       "selector_source": {
@@ -3769,20 +3774,20 @@
         "path": ".dev/main-thread-01a120fe/ssap-init-selector-capture-audit-v2.json",
         "sha256": "a4cc5b4f0f3ae2dad266ad2777c7de2c6304bb6195d704e7be746599f043685d",
         "scope": "1171 retained actual RX transfers;4 exact CMTC aggregates;24 mutation refusals;4 C helper tests. Not new physical qualification.",
-        "patch_application": "Actual patch applied to a private copy of exact reviewed base; reproduced candidate source01461648;baselinehash4443a201 unchanged. No QEMU compile or VM qualification."
+        "patch_application": "Historical helper-only replay before QEMU build. Actual builtfixture andfiniteVM results referenced separately;no transfer fromoffline test."
       },
       "build": "First two attempts refused shared lock before compile;v3 acquired same global lock,8job budget/oneactualcompileunit,compile/link0,baseline binary and930linkobjects unchanged. Not device qualification.",
-      "next": "Freeze exact new source/guesttools;allocatedU SDK110 VM two-role real Managedwithdrawal while actual CMTC held,observe failedoldowner/fd convergence,releaseoldreply,actual cleanup/Down/reacquire;then ordinary two-role8peer replies sameVM. FDobserver VMroot read-only/fixeddaemon8requests,no duplicates/ioctls. Nativebind/ExchangeInfo-stage/kernelrefs/drain and full original remaining scope stay OPEN.",
-      "remaining": "Actual root fd observation is limited,not task join/object removal/kernel reference or UAF proof. Nativebind/SSAPExchangeInfo-stage/full2x2role matrix and alloriginalS0-S6/19WP/10FV/12DG remain OPEN;VM gate not yet run;no natural recovery qualification.",
+      "next": "R5f9 finite CMTClease slices done,not wholepartialinit. Next actual SSAPExchangeInfo-pending owner retirement andremaining Nativebind/taskjoin/objectremoval/refdrain gates using soleproductioninitializer/Engine. Keeporiginalrelease/finalfd/dup/SCM/Down/deadline/peer isolation,current data/SSAP/security parallel andcomplete S0-S6/19WP/10FV/12DG. UserHostP4,VM-only,allocatedports/SDK110;E/mixed/coldROM/RCA/nonmanualrecovery OPEN.",
+      "remaining": [
+        "Actual SSAPExchangeInfo-pending owner retirement,Native synchronous bind-inflight andrealinitializer taskjoin/objectremoval/refworkerdrain/UAF;full2x2 FD/revoke/lifetime interleavings remain.",
+        "Fullrelease/finalfd/dup/SCM_RIGHTS/Down/originaldeadline andnecessarycontrolrace matrix not completedbythis CMTClease slice;oldsource-boundreportsretaintheirscope.",
+        "EindividualHCC/SDK110board startupandregression;qualifiedperdevicefirmwareselectionforamixedVM;coldROMvalidread/automaticselectionnotqualified.",
+        "Naturalstartup/reenumeration/disappearanceRCAandnonmanualrecovery remainOPEN. Warmrecovery logsretained;QMP/hold/plug/powernot substitutes.",
+        "FullS0-S6/19WP/10FV/12DG,remainingarchitecture/SSAP/security/Bond/data/multichannel/fourdevice/performance/deployment/release remainOPEN;UserHostP4."
+      ],
       "production_changed": false,
       "new_formal_proofs": 0,
-      "new_device_qualifications": 0,
-      "source_commit": "457d05ce97dbdf385c79783f2a2f40b20ab5c653",
-      "strict_docs": {
-        "path": ".dev/main-thread-01a120fe/ssap-init-selector-docs-v1.log",
-        "sha256": "1ebd3a9d10b8019974772df5de2a8b5224b2e68ae2cc397d94982b4c12e5d965",
-        "scope": "116-document inventory,example/static checks,nitpicky warning-as-error HTML only;no new reader/device/browser/external-link qualification"
-      },
+      "new_device_qualifications": 1,
       "latest_shared_build_observation": "Exact same shared global nonblocking lock acquired for v3 and released after actual compilation;budget8/oneunit. Recheck every further build/VM launch,no bypass or task interruption.",
       "build_manifest": {
         "path": ".dev/main-thread-01a120fe/ssap-init-qemu-v3/build-manifest.json",
@@ -3790,18 +3795,75 @@
         "binary_sha256": "1622d935beca86ed20d6413e569c4e8ff676c7d262ec768b5e8d1191067cd832"
       },
       "tool_checks": {
-        "log": ".dev/main-thread-01a120fe/ssap-init-tools-v3.log",
-        "sha256": "871978f60adf8843d0567a36d13b93963a5a8d5d0cfb3418be1de036dd5e05ad",
-        "methods": 847,
-        "scope": "Offline fixtures/localsyscalls,actual helper/exact oldwire preservation only;not new physical or implementation formal proof"
+        "log": ".dev/main-thread-01a120fe/ssap-init-tools-v8.log",
+        "sha256": "1e6c725c13672ba0b103fd764ebdd496b314349e7f70efb98297cc096d1b1b02",
+        "methods": 850,
+        "scope": "Exact7b90092 offline tools/localsyscalls/fixtures;not implementationformalproof orVMconcurrencyqualification. ResourceunitrunwhileVMactivefailedv4retained;v8afterVMexitPASS."
       },
-      "pending_gate_cases": "Explicit original guestport/physical QMPslot0 owner role0 andslot1 owner role1;notfull2x2. Nativecontroller index isidentity only,neverQMPslot selection. Then normal two-role actualbusiness8RT sameVM.",
       "first_vm_failure": {
         "path": ".dev/main-thread-01a120fe/ssap-initialization-us-v2",
         "executed_tools": "67cd97d345f5d1b2a5b9a3b16aee1c1d3db57fe6",
         "status": "FAIL",
         "reason": "Expected EACCES reached success-only ctl wrapper; no assertion relaxed; new exact artifact rerun required",
         "qualification": false
+      },
+      "qualification_record": "ssap-initialization-cmtc-revocation-r5f9",
+      "report": "docs/evidence/ssap-initialization-cmtc-revocation-20261018.json",
+      "executed_tools": "7b9009279eb573d5e1bd0d930eafbefac6751872",
+      "retained_failures": [
+        {
+          "path": ".dev/main-thread-01a120fe/ssap-initialization-us-v2/manifest.json",
+          "error": "guest environment failed",
+          "result": "FAIL_RETAINED"
+        },
+        {
+          "path": ".dev/main-thread-01a120fe/ssap-initialization-us-v3/manifest.json",
+          "error": "guest environment failed",
+          "result": "FAIL_RETAINED"
+        },
+        {
+          "path": ".dev/main-thread-01a120fe/ssap-initialization-us-v4/manifest.json",
+          "error": "guest environment failed",
+          "result": "FAIL_RETAINED"
+        },
+        {
+          "path": ".dev/main-thread-01a120fe/ssap-initialization-us-v5/manifest.json",
+          "error": "guest environment failed",
+          "result": "FAIL_RETAINED"
+        },
+        {
+          "path": ".dev/main-thread-01a120fe/ssap-initialization-us-v6/manifest.json",
+          "error": "terminal success status lacks required corroborated exit contract",
+          "result": "FAIL_RETAINED"
+        }
+      ],
+      "selector_source_commit": "457d05ce97dbdf385c79783f2a2f40b20ab5c653",
+      "completed_gate_cases": "Explicit original guestport/physical QMPslot0 owner role0 andslot1 owner role1;notfull2x2. Nativecontroller index isidentity only,neverQMPslot selection. Then normal two-role actualbusiness8RT sameVM.",
+      "audits": [
+        {
+          "path": ".dev/main-thread-01a120fe/ssap-init-audit-v1.json",
+          "sha256": "ba0fce224ad69fb452a68e503f5a7af1161d172bf496394b09b752deaf9c804f"
+        },
+        {
+          "path": ".dev/main-thread-01a120fe/ssap-init-audit-v2.json",
+          "sha256": "c41b6612d09a03a0605bace16d07a5675c8df6af4c68df626be4ec8222f95d8a"
+        },
+        {
+          "path": ".dev/main-thread-01a120fe/ssap-init-source-mapping-v1.json",
+          "sha256": "363b58159fd1c223128c93e475a1f331ac73f42d70b5890d731c28168d503e75"
+        }
+      ],
+      "selector_strict_docs": {
+        "path": ".dev/main-thread-01a120fe/ssap-init-selector-docs-v1.log",
+        "sha256": "1ebd3a9d10b8019974772df5de2a8b5224b2e68ae2cc397d94982b4c12e5d965",
+        "scope": "116-document inventory,example/static checks,nitpicky warning-as-error HTML only;no new reader/device/browser/external-link qualification"
+      },
+      "strict_docs": {
+        "path": ".dev/main-thread-01a120fe/ssap-init-docs-v2.log",
+        "sha256": "80c8b92baff5b526bd1f9982a53c50aab581987ecbd74f282c28c31d22e91f94",
+        "inventory_report": ".dev/main-thread-01a120fe/ssap-init-documentation-audit-v2.json",
+        "inventory_sha256": "c9c7fe692f4dbc59e52d77b3eba97c114a63cb4153db59557500c0380372d768",
+        "scope": "116documentinventory/example/metadata/nitpickyWerrorHTMLonly;no newreaderflow/browser/external-linkorhardwarequalification"
       }
     }
   },
@@ -3862,7 +3924,7 @@
     "source_worktree": ".dev/architecture-r4f2e-userspace-worktree",
     "usb_actions": "VM-only individual leaf passthrough;nohub/controller reset,power,detach or takeover;conflict/missing/identitychange stops for coordination",
     "firmware": "Explicit SDK110U/us orE/e full3-file hash set. Global-image driver permits homogeneous guest only. Mixed cold boot and unproven runtime-only adoption refused. ColdROM automatic choice NOT_QUALIFIED.",
-    "qualification": "New allocated U finite gate in shared-allocation-u-gate-20261018.json. E andmixed NOT_RUN;oldtopology remains historical,no transfer.",
+    "qualification": "Only source-bound U records in qualification-records;E andmixed NOT_RUN;oldtopology remains historical,no transfer.",
     "build_budget": "Shared global build lock; across both threads total<=12 or<=8 with real VM; legacy outside lock requires coordination",
     "scope_and_goal_changed": false,
     "new_U_gate": "docs/evidence/shared-allocation-u-gate-20261018.json",
@@ -3870,20 +3932,28 @@
       "commit": "a08fc5d",
       "scope": "Rejection before kernel-helper load andportableCIpath fixture only;14local guard/build resource methods PASS. Actual real gate stays bound tocd7guestHost;no transfer tofollowup."
     },
-    "latest_readonly_recheck": {
-      "receipt": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v3/receipt.json",
-      "sha256": "75d7cda4228989b1549d8b1436578f0bed088907ac1371ca518b5cce2d1c7f0e",
-      "checks": ".dev/main-thread-01a120fe/allocation-checks-v3.json",
-      "checks_sha256": "f84104150c5f385c1dab9e6afbd7ca85c20c38811c98f1949a6cc7ef38ac0612",
-      "scope": "Allfourpinnedleaves present;U/runtime5endpoints,E/ROM2endpoints;nohostkernelbinding;twoexistinglibvirtVMs holdotherUSBdevices,noallocatedWS73/sharedPCIobserved;rootFDvisibilitylimited. NoUSBio/download/reset/power/claim. Offlineguard/view consistency only;new topology/E/mixed gain no new qualification.",
-      "current_authority": "project/lab-resource-policy.json;old hardware_constraint map marked historical;check_qualifications rejects stale/forbidden/currentmap drift",
-      "tool_regression": {
-        "path": ".dev/main-thread-01a120fe/allocation-tools-v4.log",
-        "sha256": "1b2711d48c335db1e049b66219a52830ad3f79ddb6c0db7fb5f994a01fc9f2eb",
-        "scope": "839 offline tool methods PASS including four current C selector methods;explicit kernel path and local credential capability;not device/formal qualification",
-        "retained_environment_failure": ".dev/main-thread-01a120fe/allocation-tools-v3.log",
-        "failure_scope": "835 methods,5errors: omitted explicit kernel worktree env and sandbox-denied local SO_PASSCRED. Original log retained; rerun doesnot overwrite it."
+    "readonly_recheck_history": [
+      {
+        "receipt": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v3/receipt.json",
+        "sha256": "75d7cda4228989b1549d8b1436578f0bed088907ac1371ca518b5cce2d1c7f0e",
+        "checks": ".dev/main-thread-01a120fe/allocation-checks-v3.json",
+        "checks_sha256": "f84104150c5f385c1dab9e6afbd7ca85c20c38811c98f1949a6cc7ef38ac0612",
+        "scope": "Allfourpinnedleaves present;U/runtime5endpoints,E/ROM2endpoints;nohostkernelbinding;twoexistinglibvirtVMs holdotherUSBdevices,noallocatedWS73/sharedPCIobserved;rootFDvisibilitylimited. NoUSBio/download/reset/power/claim. Offlineguard/view consistency only;new topology/E/mixed gain no new qualification.",
+        "current_authority": "project/lab-resource-policy.json;old hardware_constraint map marked historical;check_qualifications rejects stale/forbidden/currentmap drift",
+        "tool_regression": {
+          "path": ".dev/main-thread-01a120fe/allocation-tools-v4.log",
+          "sha256": "1b2711d48c335db1e049b66219a52830ad3f79ddb6c0db7fb5f994a01fc9f2eb",
+          "scope": "839 offline tool methods PASS including four current C selector methods;explicit kernel path and local credential capability;not device/formal qualification",
+          "retained_environment_failure": ".dev/main-thread-01a120fe/allocation-tools-v3.log",
+          "failure_scope": "835 methods,5errors: omitted explicit kernel worktree env and sandbox-denied local SO_PASSCRED. Original log retained; rerun doesnot overwrite it."
+        }
       }
-    }
+    ],
+    "latest_readonly_recheck": {
+      "path": ".dev/main-thread-01a120fe/allocation-readonly-20261018-v5/receipt.json",
+      "sha256": "49740dbfc78829cdc61bc8e8bdaf4b2bae61d646db747aa05d001cec80140ee8",
+      "scope": "Fourallowedserialpinsstillavailable;selectedUonlyactualHCC;E/mixedNOT_RUN;nototherthreadbusinessproof"
+    },
+    "current_finite_gate_ref": "ssap-initialization-cmtc-revocation-r5f9"
   }
 }

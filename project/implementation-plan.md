@@ -1,6 +1,16 @@
 # SparkLink / Linux 联合实施方案
 
-### R5f9：部分初始化清理（当前有限批次）
+### R5f9：部分初始化清理（有限 CMTC 门禁通过，整批开放）
+
+本切片[实机记录](../docs/evidence/ssap-initialization-cmtc-revocation-20261018.json)已登记：
+准确7b90092工具、DA服务/应用、2fc内核；仅分配的U两口，六轮实机保留五个整体FAIL。
+最终双端撤权、原回复、fd收敛、后续8次业务/22次发现及21证据负对照通过；850离线
+检查和6资格负对照分别记录，新增形式化证明0。完成这条有限纵向门禁后继续实际
+ExchangeInfo等待阶段的owner退休及Nativebind/taskjoin/引用排空缺口；全局release／
+最后fd／dup／SCM／Down／原期限、数据/多通道/四设备/SSAP与完整S0–S6并行，不以
+控制面竞争全集作前置。E/混合/冷ROM自动选择、自然RCA和非人工恢复继续开放。
+以下构建/离线和失败步骤为本切片历史，不是当前资格的第二权威来源。
+
 
 生产行为目标：复用唯一 initializer/Engine/Session，在 fd 已创建而内核 CMTC 或
 SSAP ExchangeInfo 尚未完成时退休 owner；不让迟到任务发布新 Ready，不分离后台任务，
@@ -350,6 +360,7 @@ executed_tools `26813e4ccaf669516ef78cbf9f5e5ae1842233e5`。
 | 服务owner/SDK原期限：allocated-u限定通过；完整架构开放 | `real_device` | `PASS` |
 | Requester进程退出／旧写回复排空／提示挂起期间业务：限定通过；完整架构开放 | `real_device` | `PASS` |
 | 同一新guest的原服务owner／五秒期限保持：限定通过；完整架构开放 | `real_device` | `PASS` |
+| CMTC等待期间撤权／原回复／daemon fd收敛：有限实机通过；完整部分初始化开放 | `real_device` | `PASS` |
 
 历史registry基线（非当前资格）：K `0cd4731dd3e673d1309a2b570b38769f9a98681f`；编译 U `83625029e313552ffe7bb87d572245e232a58a49`；执行工具 `ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1`。
 

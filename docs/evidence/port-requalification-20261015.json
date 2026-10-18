@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "user_steering": "Physical replug reported; user subsequently clarified ports2/3 may be reversed. Physical operation attribution UNKNOWN.",
+  "vm_only": true,
+  "kernel_runtime": "45c049f329643de7a9941fe664642b3f847561e0",
+  "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+  "executed_tools_commit": "b0e88bcadc0b40268a184e91212baed8a5324a2c",
+  "prepared_tools_commit": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+  "kernel_test_only_head": "239e0171b6ef0edfdb3db35eb8241308c2f43ea2",
+  "identity_note": "Kernel239 only changes authorization selftests; compiled runtime/artifacts remain45c049, never relabelled. Userb0e88bc is CI/doc-only vs compiled37f7bc2.",
+  "firmware": {
+    "selected": "original combined SDK1.10.111",
+    "sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "scope": "Selected frozen original111 bundle; no new firmware modification or execution/readback attestation. Ready/observed metadata alone does not prove full firmware content."
+  },
+  "port2": {
+    "host_path": "1-2.1.2",
+    "status": "FAIL_BEFORE_FIRMWARE_READY",
+    "runner_status": "FAIL",
+    "runner_error": "guest environment failed",
+    "qemu_exit": 0,
+    "guest_port": "1-1",
+    "failure": "Repeated device descriptor read/64 and read/8 errno-32; unable to enumerate USB device",
+    "guest_interfaces": [],
+    "second_port_attached": false,
+    "pcap_packets": 156,
+    "decoded_native_commands_events_acb": 0,
+    "capture_drops": 0,
+    "root_cause": "UNRESOLVED; host enumeration/cache and physical replug attribution do not prove live firmware/descriptor recovery",
+    "files": [
+      {
+        "path": ".dev/native-install-v7-port2-requalification/manifest.json",
+        "sha256": "90a60da8dc436ce1525e5b0e25c037f3406f9c67da0ef7db6b541eccf1926422",
+        "bytes": 38748
+      },
+      {
+        "path": ".dev/native-install-v7-port2-requalification/qmp.jsonl",
+        "sha256": "f53a1398672c46e22ee5702ee84abd18a95225c4a41446a15b5b046d039392a1",
+        "bytes": 651
+      },
+      {
+        "path": ".dev/native-install-v7-port2-requalification/console.log",
+        "sha256": "1dc4ddf26379ba328c8816c5ac2551ae6c69584aae9b68995df120a0bb703d3c",
+        "bytes": 56771
+      },
+      {
+        "path": ".dev/native-install-v7-port2-requalification/guest-output/ws73.pcap",
+        "sha256": "4d86d4ca3f3f5a54c1d4026b3bf70add5c77523b94076a1a7266f98b3f80089d",
+        "bytes": 12656
+      },
+      {
+        "path": ".dev/native-install-v7-port2-requalification/guest-output/capture-stats.txt",
+        "sha256": "380697a284b46d9288ef8672c1f0cda7c292cfe0705a8868bd0e675acc7a608f",
+        "bytes": 225
+      },
+      {
+        "path": ".dev/native-install-v7-port2-requalification/guest-output/ready-progress-0.json",
+        "sha256": "fddb3414c80695c408a70efc3bd41da83a1212ba9765d90cb39e728c4170bad2",
+        "bytes": 40
+      }
+    ]
+  },
+  "port3_and_port1": {
+    "selected_host_paths": [
+      "1-2.1.3",
+      "1-2.1.1"
+    ],
+    "status": "REAL_SHORT_BUSINESS_SCOPED_PASS",
+    "runner_status": "PASSTHROUGH_SUPPORT_PASS",
+    "runner_physical_acceptance_field": false,
+    "ordinary_socket_acceptance": true,
+    "socket_proof_status": "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+    "round_trips": 4,
+    "payload_bytes": 61,
+    "rounds_per_connection_role": 2,
+    "controllers": [
+      {
+        "host_path": "1-2.1.3",
+        "guest_port": "1-1",
+        "index": 0,
+        "generation": 2,
+        "address": "00:01:09:30:CE:85"
+      },
+      {
+        "host_path": "1-2.1.1",
+        "guest_port": "1-2",
+        "index": 1,
+        "generation": 3,
+        "address": "00:01:09:32:54:CD"
+      }
+    ],
+    "corroboration": "UID1000/caps0 applications actually verify random peer payload and reply; both USB/HCC/A3 ends and NOCP; real discovery/Create/Down and object lifecycle checks. No USB-write-only qualification.",
+    "kernel_log_markers": {
+      "BUG:": 0,
+      "WARNING:": 0,
+      "Oops:": 0,
+      "Kernel panic": 0
+    },
+    "capture_drops": 0,
+    "files": [
+      {
+        "path": ".dev/native-install-v7-port3-requalification/manifest.json",
+        "sha256": "0e2f2bdcc990686180ca1cc74fbf80356fd32b6714c3fdf050e09972e543018b",
+        "bytes": 1140174
+      },
+      {
+        "path": ".dev/native-install-v7-port3-requalification/qmp.jsonl",
+        "sha256": "cc1758428d6077fc4a662be1fa2f697efecf410ab62e82eefea8099ab257aa0c",
+        "bytes": 3156
+      },
+      {
+        "path": ".dev/native-install-v7-port3-requalification/guest-output/passthrough-control-proofs.json",
+        "sha256": "35407b4202f4d3a928c29885a5fcd495903a91447feceba5d36deff659b5c38b",
+        "bytes": 477815
+      },
+      {
+        "path": ".dev/native-install-v7-port3-requalification/guest-output/kernel.log",
+        "sha256": "dff6cb43499409eb2013f0c7a723b67048daa9de6204585c7db639cc1f793edd",
+        "bytes": 49796
+      },
+      {
+        "path": ".dev/native-install-v7-port3-requalification/guest-output/ws73.pcap",
+        "sha256": "97f173a51323d11d6ea4bd07ab43314dd4a4c3e9c27a4c78f844cbac7d71a399",
+        "bytes": 665072
+      },
+      {
+        "path": ".dev/native-install-v7-port3-requalification/guest-output/capture-stats.txt",
+        "sha256": "f63ffcee294d8bfeec3e7d23f65c599f46e6a1b36d7508767a3d12215a7aa943",
+        "bytes": 227
+      }
+    ]
+  },
+  "limits": [
+    "Raw captures and device serials remain private local artifacts; only fingerprints published.",
+    "No security cancellation or Agent qualification from this short gate.",
+    "No full 20-round, length-boundary, four-device or natural recovery qualification for new45 runtime from this 4-round result.",
+    "User manual replug, QMP attachment and enumerated USB nodes do not count as automatic recovery.",
+    "Previous failed RAM restoration and natural root-cause issues remain OPEN."
+  ]
+}

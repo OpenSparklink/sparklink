@@ -1,0 +1,231 @@
+{
+  "status": "NATIVE_ACB_IMPLEMENTED_SOURCE_BOUNDARIES_PASS",
+  "kernel_head": "1f78c540f1179aa7c8a37740b4c58eb64efb1a6b",
+  "userspace_head": "d9b2ee620186ea62deaa01f69357a4a29f669214",
+  "actual_source_contract": {
+    "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+    "tests": 17,
+    "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+    "real_data_acceptance": false,
+    "socket_acceptance": false,
+    "sources": {
+      "net/sparklink/sle_native.rs": "b85bad9d166e8e751d2efd3418461af3093ba6a038cc76ec3529e14cfdcfa0ab",
+      "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+      "net/sparklink/sle_data_credit.rs": "ee4ce512bfc1890f5710f168a3c7790c96fff541d17b6cd3d8b93ac8d4634667",
+      "net/sparklink/sle_native_data.rs": "d904f87ac0c712c1ab43464656967e5e4fe7a786499d399cb41dc739caec1ca2",
+      "tools/testing/selftests/sparklink/native-data/fixture.rs": "aed25146a2217a041fecbc138fdb1ee0ae2fd54f4769ef6896ef8678eda79420"
+    }
+  },
+  "actual_atomic_link_publisher_contract": {
+    "status": "NATIVE_LINK_OBSERVATION_SOURCE_BOUNDARIES_PASS",
+    "rust_tests": 12,
+    "scope": "actual native ingress and per-registration observation model; IRQ locks/owner lookup/log/notifications dependency fixtures, not running kernel or RF",
+    "live_kernel_acceptance": false,
+    "connection_rf_acceptance": false,
+    "automatic_recovery_acceptance": false,
+    "sources": {
+      "net/sparklink/sle_native.rs": "b85bad9d166e8e751d2efd3418461af3093ba6a038cc76ec3529e14cfdcfa0ab",
+      "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+      "tools/testing/selftests/sparklink/diagnostic/link_ingress_fixture.rs": "3fd084cfe41a4f5f081fbbeee47fd0175fa143f8489ec301374b00850dfcd83b"
+    }
+  },
+  "existing_native_connection_contract": {
+    "status": "NATIVE_CONNECTION_PRODUCTION_SOURCE_CONTRACT_PASS",
+    "scope": "actual production operation storage and WS7327/3-byte driver codec; actual Host caller dependency tests; not running kernel or RF proof",
+    "rust_tests": 12,
+    "actual_host_tests": 48,
+    "actual_host_sources": {
+      "sle_host.rs": "4577b0e481f6c53a5b02be8b069ffbb045c1c4ea91c38d4f17bed7d13618ca87",
+      "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+      "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+      "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+      "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+      "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+      "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+      "sle_dli.rs": "5a18a50b4f541115bf988626444cea9c705c77e7dc3834934f540b172098e098",
+      "sle_workers.rs": "36e040691419a2fa1a82e669e752531368be6c571ed52c1f4dd2262dbce3625a"
+    },
+    "codec_sanitizers": [
+      "address",
+      "undefined",
+      "leak"
+    ],
+    "production_connection_admission": false,
+    "connection_rf_acceptance": false,
+    "ssap_acceptance": false,
+    "automatic_recovery_acceptance": false,
+    "sources": {
+      "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+      "connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+      "connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+      "sparklink_connection.h": "206ba287da537704bef03233f598e3607c6180493d009a66b6460dfaf129047b",
+      "ws73_connection_codec_test.c": "1f41500443ce81a9c71cfb34d7def2d898a89e5b97d598f28cbcf1575a22e56e"
+    }
+  },
+  "source_ci": {
+    "conclusion": "success",
+    "headSha": "d9b2ee620186ea62deaa01f69357a4a29f669214",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "rustfmt",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Python bindings and kernel ABI conformance",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "cargo check",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "clippy",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "C header generation",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "cargo test",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "release build",
+        "status": "completed"
+      }
+    ],
+    "status": "completed"
+  },
+  "tool_tests": 406,
+  "production_c_rust_object_compile_pass": true,
+  "complete_new_vm_build_acceptance": false,
+  "real_acb_transport_acceptance": false,
+  "real_data_credit_acceptance": false,
+  "ordinary_user_channel_socket_acceptance": false,
+  "business_data_round_trip_acceptance": false,
+  "automatic_recovery_acceptance": false,
+  "whole_issue_complete": false,
+  "full_goal_complete": false,
+  "scope": "Complete actual ACB send/receive/take bodies, credit and bounded RX queue with allocation/locking/registry/USB fixtures; existing real WS73 paths retained as historical separately pinned evidence. Full VM kernel still building at this snapshot; no new USB traffic or hardware qualification.",
+  "artifacts": [
+    {
+      "path": ".dev/native-data-strict-contract-v2.log",
+      "sha256": "7f9bc550d296108041ce159b067c6daecebccb683cfb1412a4a52d490aa98857",
+      "size": 2489
+    },
+    {
+      "path": ".dev/native-data-link-regression-v2.log",
+      "sha256": "ee3cd9d113e013a4c32d8b9d070614c49dc481ed61dc1573d087a130ae6e50ce",
+      "size": 1905
+    },
+    {
+      "path": ".dev/native-data-connection-regression-unsandboxed.log",
+      "sha256": "66ae01642d9e85bf075cdb414d250fade49068a33f50e5c1f67b45d2179a3c39",
+      "size": 9360
+    },
+    {
+      "path": ".dev/native-data-pinned-module-compile-v3.log",
+      "sha256": "975a6da8b5176e90f006a43105cfbff806c0281e7182b2dca52f142074772cd2",
+      "size": 713
+    },
+    {
+      "path": ".dev/native-data-tool-tests.log",
+      "sha256": "4d8a49b57a8e7286d6c7e89ed007edbb3b3e332cea3197c5937a71f5eba3ca0a",
+      "size": 67299
+    },
+    {
+      "path": ".dev/native-data-source-ci.json",
+      "sha256": "d286f03e39796c781a7c012457c9fbbee3a11d162a2cca44463fdd5584dd9787",
+      "size": 828
+    },
+    {
+      "path": ".dev/typed-socket-final-doc-ci.json",
+      "sha256": "599d86a3ebbfc7ea07c3c5881ee0065e8767ea477d50e7d9a9f44010091a7008",
+      "size": 828
+    }
+  ],
+  "historical_event9_audit": [
+    {
+      "run": "typed-object-qualified",
+      "targets": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ]
+      ],
+      "historical_kernel": "38997dc457be",
+      "event_counts": {
+        "0x1": 4,
+        "0x2": 208,
+        "0x4": 2,
+        "0x5": 4,
+        "0x1401": 4,
+        "0x180b": 24
+      },
+      "nocp9": [],
+      "scope": "historical command/RF baseline only; does not prove new ACB transmission"
+    },
+    {
+      "run": "typed-object-loss",
+      "targets": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ]
+      ],
+      "historical_kernel": "38997dc457be",
+      "event_counts": {
+        "0x1": 4,
+        "0x2": 208,
+        "0x4": 2,
+        "0x5": 4,
+        "0x1401": 4,
+        "0x180b": 105
+      },
+      "nocp9": [],
+      "scope": "historical command/RF baseline only; does not prove new ACB transmission"
+    }
+  ],
+  "remaining": [
+    "New VM full image and signed module boot regression",
+    "Real A3/NOCP and peer receive evidence",
+    "CMTC capability and local/remote TCID/PI handling",
+    "Bounded socket TX queues, ordinary-user send/recv/poll/close/link-down",
+    "Real application bidirectional randomized payloads, boundary/SAR/credit exhaustion/four-device gates",
+    "Natural failure RCA and nonmanual hardware recovery"
+  ]
+}

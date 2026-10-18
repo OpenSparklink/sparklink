@@ -1,0 +1,11 @@
+[package]
+name = "slk-contract"
+description = "Shared SparkLink D-Bus values, names and immutable object path rules"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+slk-protocol = { workspace = true }
+serde = { workspace = true }
+zvariant = { workspace = true }

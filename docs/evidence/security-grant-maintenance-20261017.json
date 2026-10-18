@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_GRANT_AND_PLAIN_LIFECYCLE_MAINTAINED_FULL_GOAL_OPEN",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "73a2898b05e662afb1bb768fecc9e6eefce5c3f8",
+  "executed_tools": "73a2898b05e662afb1bb768fecc9e6eefce5c3f8",
+  "security_post_processing_tools": "02ac76347d42bebaddca60d54447779b368e5fc0",
+  "reports": [
+    "docs/evidence/security-grant-fixed-real-20261017.json",
+    "docs/evidence/security-grant-lifecycle-20261017.json"
+  ],
+  "qualified_scope": "VM-only U2/3;E1user-confirmed excluded;16protected+48totalpositivebatch replies and separate24plainprecontrol lifecycle replies;no protectedinvalidation qualification",
+  "registration": {
+    "new_scoped_records": 7,
+    "protected_batch_materials": 154,
+    "plain_lifecycle_materials": 134,
+    "provenance_negative_controls": 8,
+    "whole_qualification_status": "INCOMPLETE",
+    "note": "Selected one-record plain lifecycle local check can pass;it is not overall full-goal qualification."
+  },
+  "documentation": {
+    "status": "STRICT115PASS",
+    "scope": "Fourreaderquadrants only;project/ADR/evidence source-only. Canonical capability/plan/goal derived views agree;HTML success is not completecontent/protocolqualification."
+  },
+  "checker_tests": {
+    "expected": 27,
+    "completed": 27,
+    "original_wrong_pattern": "0tests ran;NOT_GATE/notPASS;original retained"
+  },
+  "ci": {
+    "commit": "24c6049c4a085d811c557941faed28240053f675",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38982639937,
+        "headSha": "24c6049c4a085d811c557941faed28240053f675",
+        "name": "Documentation",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38982639902,
+        "headSha": "24c6049c4a085d811c557941faed28240053f675",
+        "name": "Production codec bounded fuzz",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38982640058,
+        "headSha": "24c6049c4a085d811c557941faed28240053f675",
+        "name": "Qualification integrity",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38982639811,
+        "headSha": "24c6049c4a085d811c557941faed28240053f675",
+        "name": "CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38982632226,
+        "headSha": "24c6049c4a085d811c557941faed28240053f675",
+        "name": "Documentation",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38982632241,
+        "headSha": "24c6049c4a085d811c557941faed28240053f675",
+        "name": "Qualification integrity",
+        "status": "completed"
+      }
+    ],
+    "scope": "Exact documentation/registry commit,not compiled artifact identity. Doesnotverify branchprotection/requiredchecks or transferrealqualification. Initial short-SHA empty lookup not used."
+  },
+  "issues": {
+    "status": "FIVE_EXISTING_ISSUES_READBACK_OPEN",
+    "rows": [
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 7,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6226817864",
+        "comment_sha256": "4e69f86928a86f74dbe2671ab1444189fd655ba185d4a8b917953f1c19455797",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "original_scope_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 19,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6226818463",
+        "comment_sha256": "4e69f86928a86f74dbe2671ab1444189fd655ba185d4a8b917953f1c19455797",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "original_scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+      },
+      {
+        "repo": "OpenSparklink/linux",
+        "number": 17,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6226819389",
+        "comment_sha256": "4e69f86928a86f74dbe2671ab1444189fd655ba185d4a8b917953f1c19455797",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "original_scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "number": 5,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6226820337",
+        "comment_sha256": "4e69f86928a86f74dbe2671ab1444189fd655ba185d4a8b917953f1c19455797",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "original_scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a"
+      },
+      {
+        "repo": "OpenSparklink/sparklink",
+        "number": 8,
+        "state": "OPEN",
+        "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6226821255",
+        "comment_sha256": "4e69f86928a86f74dbe2671ab1444189fd655ba185d4a8b917953f1c19455797",
+        "readback_exact": true,
+        "original_scope_body_unchanged": true,
+        "original_scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+      }
+    ],
+    "wall_ns": 1792194385830589748
+  },
+  "goal": {
+    "status": "active",
+    "scope": "FullS0-S6/19WP/10FV/12DG/alloriginalacceptance retained;UserHostP4;no duplicate/completion/budget change"
+  },
+  "remaining": [
+    "Protected release/finalfd/dup/Down/originaldeadline/authority/inflight physicalobligation combinations",
+    "SoleSSAPEngine security/local authorization/CPCD consumers",
+    "ActualOwner/Hostlocks/references/callback/USB/refinement andoldKaniunsupported",
+    "FirmwareNOCPtruth/duplicate/late/reuse/drain;naturalRCA/nonmanualrecovery",
+    "Fullrelatedlengths/multichannel/fourdevice/fairness/performance/resources/securityBond/deployment/PM/release"
+  ],
+  "materials": [
+    {
+      "path": ".dev/security-grant-registry-local-v1.json",
+      "sha256": "765138a192bed02ced30b16868c057e019e3632d9c61eab8b63e6805d00584ce",
+      "bytes": 1274,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-registry-local-v1.json",
+      "sha256": "2bddf817cae067796a315a81806450ef6484cd0e69bdc441e655b654a82592b8",
+      "bytes": 951,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-views-v2.json",
+      "sha256": "c0c8c5dd7e4acad5a3a2781da0bd6f3eacebbe92c9cd1c0fea9402025f3865b5",
+      "bytes": 306654,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-issue-receipts-v1.json",
+      "sha256": "1cf2d367445992a8c7f93ce9f78fb55106878e47d96a34a3630884446359ed10",
+      "bytes": 1933,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-issue-receipts-v1.json",
+      "sha256": "0078d1d8a45ebb7509a0310d919634f1224964b2d2f29b30b421bfb46aea2e2c",
+      "bytes": 2388,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-docs-v4.log",
+      "sha256": "7bc1442602ff3436c3f941166878b8cacdd09f95e0bf59e81911453ab12de12c",
+      "bytes": 314267,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-qualification-tests-v1.log",
+      "sha256": "e70fec2825d9bf206d27463a792768195039599cb39bcca66339f47283f84cce",
+      "bytes": 108,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-qualification-tests-v2.log",
+      "sha256": "7fc870e836aef96f2edeac7aed0844c76602b488679279dbe260c2ed1c8f8a58",
+      "bytes": 126,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-ci24-v1.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-ci24-v2.json",
+      "sha256": "4edf7f83e6c16258f65a2b650f653677c2c3e5ea609c9ed5f9a2b6116c46b589",
+      "bytes": 909,
+      "access": "private"
+    },
+    {
+      "path": ".dev/security-grant-postprocess-failures-v1.json",
+      "sha256": "0647f3cf67617fcab3f453f68afaa8e9be27383ff075f15813f071f54264926e",
+      "bytes": 777,
+      "access": "private"
+    }
+  ],
+  "wall_ns": 1792194442841046589
+}

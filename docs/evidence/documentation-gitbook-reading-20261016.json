@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-10-16T06:03:32.819121+00:00",
+  "status": "SCOPED_DOCUMENTATION_THEME_PASS",
+  "documentation_source_commit": "27022005550ed4c944d8b0e51fb6bd251115be95",
+  "documentation_source_sha256": {
+    "docs/conf.py": "03b3b993bf8d1aa1dece434eab7392016812e2d1ad66e80afd3537ae47ea904e",
+    "docs/_static/sparklink.css": "a4667f23665b37c4d74d9e2b85a093fc9023842cbb39de5573588cbc7b2672d3",
+    "docs/reference/documentation-build.md": "db39ca49c4b7a1a123471d1ed96e79f95a0a3a43e6925cd17677e256f9aee74d",
+    "tools/check_docs_browser.py": "dbaced49b6c03e41a2bf232418c2f6593828f43278af02563fb2ef6cfe173540",
+    "uv.lock": "c2f9b6ffebe98b7042ffea1455a547332c9ea2cd680a0ae99b791f50f26de031"
+  },
+  "scope": "Same locked Sphinx Book Theme; GitBook-like reading surfaces, selected chapters, article spacing, readable table columns, code blocks and responsive page navigation; home plus four reader categories only.",
+  "runtime_changes": false,
+  "preserved_pre_existing_dirty_files": [
+    "project/qualification-records.json"
+  ],
+  "strict_build": "PASS: make docs; inventory 110 documents, warnings-as-errors, internal links/resources and existing qualification consistency checks",
+  "browser": {
+    "status": "PASS",
+    "checks": {
+      "home_tasks": true,
+      "task_cards_desktop": true,
+      "versioned_brand": true,
+      "navigation": true,
+      "chapter_breadcrumbs": true,
+      "breadcrumb_return": true,
+      "table": true,
+      "table_column_legibility": true,
+      "book_sidebars": true,
+      "dark_mode": true,
+      "code_block": true,
+      "code_copy_paste": true,
+      "product_tutorial_navigation": true,
+      "javascript_search": true,
+      "chinese_search": true,
+      "mobile_no_page_overflow": true,
+      "task_cards_mobile": true,
+      "mobile_navigation": true,
+      "mobile_table_container": true,
+      "mobile_breadcrumbs": true,
+      "mermaid_rendered": true,
+      "business_evidence_navigation": true,
+      "qualification_explanation": true,
+      "source_only_pages_excluded": true,
+      "legacy_html_redirects": true
+    },
+    "base_path": "/sparklink/",
+    "visually_reviewed": [
+      "desktop-home.png",
+      "reference-table.png",
+      "mobile-reference.png",
+      "book-dark-reference.png"
+    ],
+    "not_covered": "Public deployment, complete product tutorial replay, external linkcheck and all real device operations"
+  },
+  "visual_findings": [
+    {
+      "at": "023282c81767043e8a0bf7f7277a5d980b11f7bf",
+      "finding": "Prior 24 browser checks passed but visual review found table columns compressed by long API names.",
+      "resolution": "Minimum table/column width, inline wrapping rules, horizontal scrolling and new rendered column-width assertion; final 25 checks pass.",
+      "original_screenshot": ".dev/docs-gitbook-reading-023282c-browser/reference-table.png"
+    }
+  ],
+  "publication": {
+    "pages_api": "HTTP 404: unavailable or not configured under current credentials",
+    "public_deployment_confirmed": false,
+    "output": "Downloadable HTML artifact; no Pages settings changed"
+  },
+  "remaining": [
+    "DQ2-DQ5 content and full tutorial replay remain open",
+    "S0-S6, WS73 qualification and VM-only requirements unchanged"
+  ],
+  "raw_access": {
+    "condition": "Workspace owner or authorized developer; private local browser artifacts",
+    "replay": "Checkout documentation_source_commit; uv sync --locked --only-group docs; make docs; run tools/check_docs_browser.py with local Firefox BiDi and HTTP /sparklink/ preview"
+  },
+  "materials": [
+    {
+      "private_workspace_path": ".dev/docs-gitbook-reading-wrap-build.log",
+      "sha256": "d2e6b167d66a01369d4ce2bdfe18d55c08cb444bb31669eb013ac89a97568b17",
+      "bytes": 117465
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-reading-2702200-browser/report.json",
+      "sha256": "d2d280193a8bf3908bdf603ba47947d128d90e650f9fe0cc58e7ee61cebba430",
+      "bytes": 3135
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-reading-2702200-preview/sparklink/documentation-build.json",
+      "sha256": "4961869ce79c72b6c5233d0f765e865af190cb6e8e03bd29438dcbbe39bee257",
+      "bytes": 3249
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-reading-2702200-browser/reference-table.png",
+      "sha256": "26d2bb9e93b74c494c04b4f56b99ba5716447d261ae4abee5f358cd60c9c426d",
+      "bytes": 157975
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-reading-2702200-browser/mobile-reference.png",
+      "sha256": "86a3d8dacd62fc1f34095cefd13c95a22d20ce7d0b280afba7cb130b0a3e42e2",
+      "bytes": 67825
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-reading-2702200-browser/book-dark-reference.png",
+      "sha256": "c82f17b7937940f0b503a1b62c6f896dd156ffcf35bdaf8f1e34d4bf3c1717c0",
+      "bytes": 159787
+    },
+    {
+      "private_workspace_path": ".dev/docs-gitbook-reading-023282c-browser/reference-table.png",
+      "sha256": "f61a61b03fd3c79de7905c6bbb4ddbfacdcdfd3b3953ce530f6d4e4abc31c991",
+      "bytes": 153264
+    }
+  ]
+}

@@ -1,0 +1,1256 @@
+{
+  "schema_version": 1,
+  "status": "NUMERIC_MECHANISM_REAL_SCOPED_PASS_FULL_SECURITY_INCOMPLETE",
+  "compiled_kernel": "323668c6015ef69fa233c008d8ef0c4c70402686",
+  "compiled_userspace": "862b95b623c3069c5a798aeaeff7fec382c46627",
+  "executed_tools": "862b95b623c3069c5a798aeaeff7fec382c46627",
+  "post_processing_tools": "f69554ca0a41ab37985be4ae0e8b241d080d1e1f",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "virtual_result": "PASS",
+  "full_exit_result": "UNPROVED",
+  "scope": [
+    "VM-only stockSDK111 Hi3873U ports2/3;replacementEport1 excluded,no mixedfourdevice inheritance.",
+    "UniquephysicalSession/typedrelay/commandcredit/submissionTicket reused;explicitmethod0/IO1/noBond,13C,originalAuthor confirmation,onebounded sameSession earlyproof. No secondEngine.",
+    "Two actual role-swapped approvals withindependent publictranscript CMAC match;actual8 relay PDUs/8opposite receipts perapproval,realinstallaccept/0011 andordinary peer-validated random business replies.",
+    "Two originalAuthor rejections andtwo originaldeadline lateconfirm refusals;actual6 relay prefix perrun,noDHproof/installation/encryption,andordinary business stillworks. Original5s budget unchanged.",
+    "Automatedprivileged equality witness isnot human identity confirmation,productionnumeric Agent,authenticatedGrant,Bond,independent RF cipher attestation or thirdpartyinteroperability. Numericresult state11 doesnot authorize protectedsocket.",
+    "Selected retaineddefaultnoMITMAgent,249boundary and2042long gates newlyrun;not allseven lengths/tenlifecycle/performance/fourdevice onnewartifact. Oldqualification retainsoriginalidentity.",
+    "34 productionRust state regressions useexplicitcrypto dependencyfixtures;actual C crypto runsinVM. No newformal,LKMM/KCSAN/kernelconcurrency orwholecrypto protocol proof.",
+    "6 exactactualreplays and54 copiedactualevidence mutants rejected. Same frozenchecker plus explicit missingnegative fix;not an independent decoder. Original parserexception retained.",
+    "CompleteS0-S6/19WP/10FV/12DG unchanged;UserHost P4;naturalRCA/nonmanualrecovery,NOCPtruth,reuse/callbackdrain andfullinflightrelease/lastfd/dup/Down/deadline remainOPEN."
+  ],
+  "real_gates": [
+    {
+      "name": "numeric-approve-i0",
+      "status": "REAL_NUMERIC_COMPARISON_MECHANISM_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-approve-i0-v1/manifest.json",
+      "business_round_trips": 4,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "numeric-approve-i1",
+      "status": "REAL_NUMERIC_COMPARISON_MECHANISM_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-numeric-approve-i1-v1/manifest.json",
+      "business_round_trips": 4,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "numeric-reject-i0",
+      "status": "REAL_NUMERIC_COMPARISON_MECHANISM_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-numeric-reject-i0-v1/manifest.json",
+      "business_round_trips": 4,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "numeric-reject-i1",
+      "status": "REAL_NUMERIC_COMPARISON_MECHANISM_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-numeric-reject-i1-v1/manifest.json",
+      "business_round_trips": 4,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "numeric-late-i0",
+      "status": "REAL_NUMERIC_COMPARISON_MECHANISM_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-numeric-late-i0-v1/manifest.json",
+      "business_round_trips": 4,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "numeric-late-i1",
+      "status": "REAL_NUMERIC_COMPARISON_MECHANISM_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-numeric-late-i1-v1/manifest.json",
+      "business_round_trips": 4,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "retained-approve",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-retained-approve-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    },
+    {
+      "name": "retained-boundary249",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-retained-boundary249-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 16
+    },
+    {
+      "name": "retained-long2042",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-real-retained-long2042-v1/manifest.json",
+      "business_round_trips": 8,
+      "boundary_rejections": 0
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "production-session-34-with-explicit-crypto-fixtures",
+      "status": "PRODUCTION_RELAY_SESSION_REGRESSION_PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "strict-clippy-and-workspace-rust-regression",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "four-ABI-and17-real-FFI-error-cases",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "684-frozen-execution-tools-685-fixed-verifier-tools",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "six-real-replays-and54-evidence-mutants",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "virtual_gates": [
+    {
+      "name": "actual-kernel-crypto-vectors-and-fresh-numeric-materials",
+      "status": "ACTUAL_KERNEL_CRYPTO_VM_PASS",
+      "result": "PASS",
+      "manifest": ".dev/numeric-crypto-vm-v1/manifest.json"
+    },
+    {
+      "name": "isolated-noUSB-signed-module-root",
+      "status": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+      "result": "PASS",
+      "manifest": ".dev/numeric-root-smoke-v1/manifest.json"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "numeric-production-Agent-and-identity-security-level-revocableGrant-Bond",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "full-new-artifact-sevenlength-tenlifecycle-and-fairness-matrix",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "numeric-lifecycle-composition-and-physical-obligation-reuse-proof",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "natural-fault-RCA-nonmanual-recovery-fourdevice-PM-release",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "bounds": {
+    "real_vm_success": 9,
+    "numeric_vm_success": 6,
+    "numeric_actual_installs": 4,
+    "numeric_relay_submissions": 40,
+    "numeric_opposite_receipts": 40,
+    "total_peer_business_round_trips": 48,
+    "boundary_rejections": 16,
+    "original_deadline_ms": 5000,
+    "actual_evidence_negative_controls": 54,
+    "session_regressions": 34,
+    "frozen_execution_tool_tests": 684,
+    "fixed_verifier_tests": 685,
+    "workspace_rust_tests": 272
+  },
+  "numeric_phases": [
+    {
+      "mode": "numeric-approve",
+      "index": 0,
+      "status": "EXACT_REPLAY_PASS",
+      "manifest": ".dev/numeric-real-approve-i0-v1/manifest.json",
+      "manifest_sha256": "8855a2fba02942f2dcbb5fda7572212077ae701a44be228aa9a03f1240066acb",
+      "business_round_trips": 4,
+      "code": 251513,
+      "installations": 2,
+      "relay_submissions": 8,
+      "opposite_receipts": 8
+    },
+    {
+      "mode": "numeric-approve",
+      "index": 1,
+      "status": "EXACT_REPLAY_PASS",
+      "manifest": ".dev/numeric-real-numeric-approve-i1-v1/manifest.json",
+      "manifest_sha256": "99b0a729215d52ae32fe6fb96cc99e21e2031d378645bfe16e9bbacdcf4522d2",
+      "business_round_trips": 4,
+      "code": 74005,
+      "installations": 2,
+      "relay_submissions": 8,
+      "opposite_receipts": 8
+    },
+    {
+      "mode": "numeric-reject",
+      "index": 0,
+      "status": "EXACT_REPLAY_PASS",
+      "manifest": ".dev/numeric-real-numeric-reject-i0-v1/manifest.json",
+      "manifest_sha256": "9749d0f6fa033bd6ee9b177eaf316a43c6db2e941f42286e0b56152b5a01b492",
+      "business_round_trips": 4,
+      "code": 598807,
+      "installations": 0,
+      "relay_submissions": 6,
+      "opposite_receipts": 6
+    },
+    {
+      "mode": "numeric-reject",
+      "index": 1,
+      "status": "EXACT_REPLAY_PASS",
+      "manifest": ".dev/numeric-real-numeric-reject-i1-v1/manifest.json",
+      "manifest_sha256": "a90c2d5d141477efa7d832867d37aca55aa41d97486cbe727cc605919cbcdd1d",
+      "business_round_trips": 4,
+      "code": 626570,
+      "installations": 0,
+      "relay_submissions": 6,
+      "opposite_receipts": 6
+    },
+    {
+      "mode": "numeric-late",
+      "index": 0,
+      "status": "EXACT_REPLAY_PASS",
+      "manifest": ".dev/numeric-real-numeric-late-i0-v1/manifest.json",
+      "manifest_sha256": "1fcf439e4f79d70cd6904f555249e134a21eb37adbdbd186e5ade5c2fc643b87",
+      "business_round_trips": 4,
+      "code": 434731,
+      "installations": 0,
+      "relay_submissions": 6,
+      "opposite_receipts": 6
+    },
+    {
+      "mode": "numeric-late",
+      "index": 1,
+      "status": "EXACT_REPLAY_PASS",
+      "manifest": ".dev/numeric-real-numeric-late-i1-v1/manifest.json",
+      "manifest_sha256": "3bcea5d2b67a72f5c5532259417df3d5f7eab46b54b612811ffa7711df9b1e3c",
+      "business_round_trips": 4,
+      "code": 919338,
+      "installations": 0,
+      "relay_submissions": 6,
+      "opposite_receipts": 6
+    }
+  ],
+  "crypto_source_mapping": {
+    "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c",
+    "net/sparklink/sle_pair_crypto.c": "0706143298e86df6013549c2a8886b2b1b283fac82aa750d1d16cd29166900fd",
+    "net/sparklink/sle_pair_material.c": "ed8a1adfca85ea38c113c671f3c38950431fbd93bf370df2a736ef5bbc4653b9",
+    "net/sparklink/sle_pair_material.h": "32429c20a0647e8ecaa65602395a77baaf24b29958d49896835161e683d697e4",
+    "tools/testing/selftests/sparklink/security/crypto_vm_probe.c": "b488f6d98298fa85299846c363d873397999557363d2dab90a876379fbed3b19",
+    "tools/testing/selftests/sparklink/run_crypto_vm_probe.py": "0aca3ef9af3ec3c6343cbfbf711209808520b386a92ab58f9d875bf0fa7ca7fd"
+  },
+  "formal": {
+    "status": "NOT_PROVEN",
+    "scope": "ExistingFVinventoryretained;no newnumeric combinedlock/ref/credit/crypto-protocolproof claimed",
+    "next": [
+      "DirectproductionSession confirmation/cancel/deadline and actual submit composition",
+      "LKMM/VM locking/ref/drain mapping;NOCP/firmware assumptions explicit",
+      "Securitymodel forhumanAgent,identity,grade/install andcredentials independently"
+    ]
+  },
+  "original_failed_checks": [
+    {
+      "name": "sandbox-local-credentials-test",
+      "result": "FAIL",
+      "reason": "SO_PASSCRED/epoll sandboxrestriction;complete authorized runs separatelypass",
+      "status": "FAIL"
+    },
+    {
+      "name": "workspace-test-missing-private-dbus-path",
+      "result": "FAIL",
+      "reason": "First escalatedrun lacked fixeddbus path;corrected complete run preserved",
+      "status": "FAIL"
+    },
+    {
+      "name": "actual-evidence-replay-missing-negative-parser",
+      "result": "FAIL",
+      "reason": "StopIteration onmissing terminal-confirm;fixedf69554c, originaltrace retained;not regraded",
+      "status": "FAIL"
+    },
+    {
+      "name": "artifact-collection-argument-and-build-lock-refusals",
+      "result": "FAIL",
+      "reason": "Short sourceidentity and missingexplicitoptionalVirtualmodule baseline refused;corrected without changingconfig,unstagedVirtual;sharedlock preventedduplicateheavybuild",
+      "status": "FAIL"
+    },
+    {
+      "name": "862-and-f695-ci-abi-pin-and-generated-header",
+      "result": "FAIL",
+      "reason": "OriginalCI862 failed unchanged headergeneration andoldK14pin;fixed e53b237, no semantic binary upgrade or erased original result.",
+      "status": "FAIL"
+    },
+    {
+      "name": "all-binding-test-wrong-local-library-path",
+      "result": "FAIL",
+      "reason": "Bad overridepath fellback to incompatible olddevelopmentlibrary;failed asrequiredbysymbolcheck. Correctexact sealedlibrary then41passed;strictoverride-loading behavior followup inqualityworkstream.",
+      "status": "FAIL"
+    }
+  ],
+  "remaining": [
+    "numeric-production-Agent-and-identity-security-level-revocableGrant-Bond",
+    "full-new-artifact-sevenlength-tenlifecycle-and-fairness-matrix",
+    "numeric-lifecycle-composition-and-physical-obligation-reuse-proof",
+    "natural-fault-RCA-nonmanual-recovery-fourdevice-PM-release",
+    "Fullgoalandalloriginalissues remainOPEN;newdata/Agent/SSAP verticals do not wait allcontrolcombinations"
+  ],
+  "references": {
+    "status": "FIXED_LOCAL_REFERENCE_RECHECKED_NOT_ORACLE",
+    "references": [
+      {
+        "repo": "communication_nearlink_service",
+        "head": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+        "dirty": ""
+      },
+      {
+        "repo": "libws73-usb",
+        "head": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+        "dirty": ""
+      },
+      {
+        "repo": "ws73_SDK",
+        "head": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74",
+        "dirty": ""
+      }
+    ],
+    "numeric_reference_source": {
+      "path": "communication_nearlink_service/services/stack/src/cp/bsl/sle/sm/src/sm_numcmp.c",
+      "sha256": "c2b0a8ea2e35f34ead5c95556ec8e962ff10cae8ebe52fdfe2ca5163871a46fd"
+    },
+    "choices": [
+      "Unique physical Session with bounded one earlyproof slot;do not copy upstream global cache",
+      "Method0 IO1,noBond vs existingSDK111 adapter,explicit013C confirm+Rb32",
+      "libws73 onlyNoEntry path;newnumeric qualification needs actual capture,not inherited",
+      "SDK111 opaque relay envelope and stock firmware;no firmwarepatch or independent cipher attestation"
+    ],
+    "scope": "Local source/dialect comparison;not third-party interoperability or proof of reference correctness"
+  },
+  "materials": [
+    {
+      "path": ".dev/numeric-real-approve-i0-v1/manifest.json",
+      "sha256": "8855a2fba02942f2dcbb5fda7572212077ae701a44be228aa9a03f1240066acb",
+      "bytes": 88447,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-approve-i0-v1/console.log",
+      "sha256": "fe66bada12aa0978774d9d7e3ebca889bb8d1bf480ad0f10fb113e41c75903af",
+      "bytes": 13927,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-approve-i0-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-approve-i0-v1/guest-output/ws73.pcap",
+      "sha256": "36db23cd92150c019b50d7d8a2ed56b7909c69761c57d4f6b1d24a61a893fe68",
+      "bytes": 77364,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-approve-i0-v1/guest-output/capture-stats.txt",
+      "sha256": "b68832ff33ddc55b1d1680b5a84f2d3214ece09662048656e8962b030afa5173",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-approve-i0-v1/guest-output/connected-file/run.json",
+      "sha256": "dfad7298cec4cfbe5270097047d3fe2ff3f5c0996ab726e9825dd508ef786331",
+      "bytes": 45004,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-approve-i1-v1/manifest.json",
+      "sha256": "99b0a729215d52ae32fe6fb96cc99e21e2031d378645bfe16e9bbacdcf4522d2",
+      "bytes": 88662,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-approve-i1-v1/console.log",
+      "sha256": "0a860b17bcb47e94fc61ce27f58925495d5269fe8401181a883f602ec86c6919",
+      "bytes": 13927,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-approve-i1-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-approve-i1-v1/guest-output/ws73.pcap",
+      "sha256": "1ab61e93d391b8063bf2972df39387cdb50b48e23f4f41dc8103a599a7217770",
+      "bytes": 77364,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-approve-i1-v1/guest-output/capture-stats.txt",
+      "sha256": "b68832ff33ddc55b1d1680b5a84f2d3214ece09662048656e8962b030afa5173",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-approve-i1-v1/guest-output/connected-file/run.json",
+      "sha256": "c28cc1c1c1adcf001243acaf61b4ac19acf07fe9b12a9be5b8ea6403aef39946",
+      "bytes": 45004,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i0-v1/manifest.json",
+      "sha256": "9749d0f6fa033bd6ee9b177eaf316a43c6db2e941f42286e0b56152b5a01b492",
+      "bytes": 83486,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i0-v1/console.log",
+      "sha256": "32f109b12e15665a053770e000164bcef103f1f823313009f55adf577ff0d1c7",
+      "bytes": 13926,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i0-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i0-v1/guest-output/ws73.pcap",
+      "sha256": "e1bf483488b7cc0003ab21d7cde02836389f51995fb9460ee69cc4694228ae49",
+      "bytes": 73170,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i0-v1/guest-output/capture-stats.txt",
+      "sha256": "bf22c8b3fa6fb585c0b9b209688a11f3e8ec5896482ffb9dcdadb7f3b4f57cba",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i0-v1/guest-output/connected-file/run.json",
+      "sha256": "5d0c206e8256236fd1a9c1c88f99771a27b35ed5f0ce2663b41237c56984be7f",
+      "bytes": 44671,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i1-v1/manifest.json",
+      "sha256": "a90c2d5d141477efa7d832867d37aca55aa41d97486cbe727cc605919cbcdd1d",
+      "bytes": 83486,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i1-v1/console.log",
+      "sha256": "a0a1700d6b7543b2bedd784a2e34ca10b7dec569bc2e88c1fe9752e1f1b4bd62",
+      "bytes": 13926,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i1-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i1-v1/guest-output/ws73.pcap",
+      "sha256": "198a5acc23ec4ccad0d43e024c19e907c3168771f81a84488d21f6bdd2507d57",
+      "bytes": 73170,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i1-v1/guest-output/capture-stats.txt",
+      "sha256": "bf22c8b3fa6fb585c0b9b209688a11f3e8ec5896482ffb9dcdadb7f3b4f57cba",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-reject-i1-v1/guest-output/connected-file/run.json",
+      "sha256": "0c4d1bf99c54df2b55912dc3fb4673ce9c7e21612f6357ee8dd4ee3180eaf8a8",
+      "bytes": 44670,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i0-v1/manifest.json",
+      "sha256": "1fcf439e4f79d70cd6904f555249e134a21eb37adbdbd186e5ade5c2fc643b87",
+      "bytes": 83085,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i0-v1/console.log",
+      "sha256": "581312fbcb913df01686489cd3977d9c4146b00bb91cf6d4475059b49c0e82de",
+      "bytes": 13924,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i0-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i0-v1/guest-output/ws73.pcap",
+      "sha256": "5ccd581ae502a954b76cf52f7f914db90c0fd611a2364d543ea23848cb6c773a",
+      "bytes": 73170,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i0-v1/guest-output/capture-stats.txt",
+      "sha256": "bf22c8b3fa6fb585c0b9b209688a11f3e8ec5896482ffb9dcdadb7f3b4f57cba",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i0-v1/guest-output/connected-file/run.json",
+      "sha256": "dad615f4fca5e65d55ab765ccddf2734217de969e2e9726fd9dfbb1442d4fd54",
+      "bytes": 44327,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i1-v1/manifest.json",
+      "sha256": "3bcea5d2b67a72f5c5532259417df3d5f7eab46b54b612811ffa7711df9b1e3c",
+      "bytes": 83085,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i1-v1/console.log",
+      "sha256": "a040b2b37be2a6eab6c901be15f50606229b8bf24ba0a9d3d29a34a0566494b0",
+      "bytes": 13924,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i1-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i1-v1/guest-output/ws73.pcap",
+      "sha256": "107f7324bcf4947c1a114d34c291239a0969d6d5240082207458eda86cf0acee",
+      "bytes": 73170,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i1-v1/guest-output/capture-stats.txt",
+      "sha256": "bf22c8b3fa6fb585c0b9b209688a11f3e8ec5896482ffb9dcdadb7f3b4f57cba",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-numeric-late-i1-v1/guest-output/connected-file/run.json",
+      "sha256": "f617a295fefb99aec9211830666bf444efdea7f31d3ce914bea7867ba67c42cb",
+      "bytes": 44326,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-approve-v1/manifest.json",
+      "sha256": "ee9b21f59daa4bf89116aa13b51a8f3a51135486c4587d98cf04b21cd1e88069",
+      "bytes": 1221237,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-approve-v1/console.log",
+      "sha256": "ce36122988d7f9006ee5ee6082d7017785681cd490a928dca6c0bb1d559fb482",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-approve-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-approve-v1/guest-output/ws73.pcap",
+      "sha256": "1043384f485a0efa10d860959844c3e6697dcc2559e4551fc1bb482a34ac2aa0",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-approve-v1/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-approve-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "d93cb9082ac2050bb89dffc40ef975a350264aefd36a4ec55cb93522e4b84287",
+      "bytes": 697098,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-boundary249-v1/manifest.json",
+      "sha256": "44f599f5e350a3eaf7d75043be247260f8913b0ba62ecae42e06c730663f8ff6",
+      "bytes": 1263151,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-boundary249-v1/console.log",
+      "sha256": "33bbf7965f6f22d8361904f7e8bb6ddeccd639132ef9f2ae7f4e9a1c5357e33a",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-boundary249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-boundary249-v1/guest-output/ws73.pcap",
+      "sha256": "40bda9668c2be45210c183ffa8a72b3678071e7e3fbf3ac1b82a6d62f499c164",
+      "bytes": 530588,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-boundary249-v1/guest-output/capture-stats.txt",
+      "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-boundary249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "6324c930e68fa8163f8da099b335530724311da30c56b8b5e3cfe4488f7ed41e",
+      "bytes": 743016,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-long2042-v1/manifest.json",
+      "sha256": "82872a069a41c2a6b8fde5e539228dfcaa8f46bb17ea80dae44e7114e1f1848f",
+      "bytes": 2242958,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-long2042-v1/console.log",
+      "sha256": "9298d4c087bf738f48e0d8a07257cd91731c38dc1d3dccabe24d434f779b1e3a",
+      "bytes": 16213,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-long2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-long2042-v1/guest-output/ws73.pcap",
+      "sha256": "fc3957f34687b98af80decb552e48a94bf40a21f312aa05ff441d2a852bcc0c2",
+      "bytes": 1016972,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-long2042-v1/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-retained-long2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "ccd093cd64ae1a8ba52c00b7313c6a4153e01f3c45eed35bd5f4bd71781353fb",
+      "bytes": 791632,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-matrix-v1.json",
+      "sha256": "05cfa70af1d5813a2bbcc31650eeb7070eb4d5c87ca7e73f9ced898e402c73cc",
+      "bytes": 11177,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-matrix-v1.py",
+      "sha256": "8b9a658cf133658eaec260a55902adc2d12ee48bdd3477ae5385fefe831157a7",
+      "bytes": 2652,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-approve-i0-supervisor-v1.json",
+      "sha256": "f3682b1ddbed753933ef17f8f25e47c63447911474be32b37dbc1109f29f4b78",
+      "bytes": 1133,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-real-approve-i0-v1.py",
+      "sha256": "848be2c1105ebed97b63ab31e60b69f9832b14418a5dd34aaf25b66f9c025a4d",
+      "bytes": 1552,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-kernel-build-v1.json",
+      "sha256": "d5d1aa8f1c42d90ff5e36ce52978c15ac5c3518026fa631fe45b287f7b76dbe8",
+      "bytes": 1634,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-kernel-build-v1.log",
+      "sha256": "8d73836c46051eb24eb522e10499f845f8625ff82b2fc1551548617731a40aa2",
+      "bytes": 2838,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-kernel-budget-v1.json",
+      "sha256": "7d356ed7485ff60d6508ea46a7d8f6112233f8cb9357e505abb5afee3a12a289",
+      "bytes": 1070,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-kernel-artifacts-v1/manifest.json",
+      "sha256": "37539d6d7220602415b3c28f1f6eede24e0197435d3608e3d848497ab3da5be0",
+      "bytes": 229016,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-modules-v1/manifest.json",
+      "sha256": "35afffada8c1084b23c6853abae0d7b122535aa18648aa850c0156fdfe8246fd",
+      "bytes": 2346,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/manifest.json",
+      "sha256": "10b63dea76471da243cf6711b3dfa88fce0a20c31569cbe614e4c7d0d178ff26",
+      "bytes": 26284,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-prepared-v1/manifest.json",
+      "sha256": "16e4a704ccd5ce6a8a1aad737e4fafff42322c1a7cfe78c45984a07392822117",
+      "bytes": 257483,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-root-smoke-v1/manifest.json",
+      "sha256": "73f957d526e310b7ede5ec1c76e7bf3e69423df8756ca99e557a143982ec64f7",
+      "bytes": 36226,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-root-smoke-v1/console.log",
+      "sha256": "ddd60a40469bdbf922a30251996a053e10e0d019b503a9d00736a93b83bd7343",
+      "bytes": 49638,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-crypto-vm-v1/manifest.json",
+      "sha256": "28d615606f6ea6872304763b939b44e7ca096568a2986aede7c1f9e10215fd35",
+      "bytes": 2461,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-crypto-vm-v1/console.log",
+      "sha256": "53ce7e3d22df71b648e2e7c0683f32fd2fd4e99e5ad35d7ee58a15702c0a0154",
+      "bytes": 31230,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-crypto-vm-v1/build.log",
+      "sha256": "1f72531df9970e757dd74c9ff4ea84a00c4c3a09d93dd1a632deae8b0d34e3ed",
+      "bytes": 593,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-crypto-vm-v1/module/sparklink_crypto_probe.ko",
+      "sha256": "e995ba6389f04cf2dc3805504902351a60d149ac8e271bd3e44a4a451b36ceaa",
+      "bytes": 377705,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-crypto-budget-v1.json",
+      "sha256": "ac9921955566f24a8030109bee3cdf55c47feb938ee0d91e1942dab91a149855",
+      "bytes": 1474,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-reference-check-v1.json",
+      "sha256": "4b5a3dd1aa4b106dd3ff17dfb9ca0520e50aa3dd22f79c03948298d2c44465ab",
+      "bytes": 1172,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-public-vector-v1.json",
+      "sha256": "696918e035433910db2d59bc41c3b8234e15d41d9a618ef258a0cd66b1097c2b",
+      "bytes": 645,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-user-tests-v1.log",
+      "sha256": "2c7b8f23715365745d4e55e03fb1dc3a22293815b4d95e04ba810794f301816c",
+      "bytes": 4425,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-user-tests-v2.log",
+      "sha256": "81992c09c583240926b0b2962b3f978abc1774eb1a8792e73e21d2bbc605a6e4",
+      "bytes": 4694,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-user-tests-v3.log",
+      "sha256": "149dc14b5a46966211bdb98bd9940635191e7ae9a3c129a2810cb8583b0bb886",
+      "bytes": 24715,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-user-tests-v3.json",
+      "sha256": "d9f9d44be10087bad8d0e8ef62fc7693c63f91a2192f377c5ff4e0fe7a9e089d",
+      "bytes": 836,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-user-clippy-v2.log",
+      "sha256": "7dda0b2637ef9a66c6927dbfb657d670019bc58b25135c92b4987ac80784db58",
+      "bytes": 1318,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-user-clippy-v2.json",
+      "sha256": "78fe3999e4f4fab1d9acf5030d9f31be58a05708a2843a61d96563df54868669",
+      "bytes": 895,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-abi-review-v1.log",
+      "sha256": "9ce4a74d6d159c589eb0cee529353f656ee40e5f04861b6f55770af9563aedf9",
+      "bytes": 102,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-python-native-v1.log",
+      "sha256": "42e0f8db8968a646d85a7742f25969a30a439788af0b1b66c4cf035b2123532b",
+      "bytes": 116,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-frozen-tools-v1.log",
+      "sha256": "2f370ed1ed90232161cb982102beed71407449b5594ab633a6ece4746d9018d9",
+      "bytes": 819,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-verifier-full-tests-v1.log",
+      "sha256": "7969262478e5d8c0cb13c3af528a7fc873e44e9b292cd29661db3482cc12dbeb",
+      "bytes": 821,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-verifier-tests-v1.log",
+      "sha256": "9d5822f16af9b5fe0e4ad15771f3fd6c5f0262b26a6ebc83b6ec6bd52bf2d655",
+      "bytes": 102,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-relay-clean-v1.json",
+      "sha256": "0253cb4be2ac0ad38c5ac5a48cdd00df2849a1b7b660223c82c39f97ed224c4e",
+      "bytes": 639,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-relay-clean-v1.log",
+      "sha256": "6830d78b470e55612e0125945e8aeefd6662cd2e0afa4a8de27dd4565d5ce381",
+      "bytes": 3268,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-replay-first-v1.log",
+      "sha256": "029f7dce1fd4e7a5995152d8fbcda6bdf1b73b012d6fe2af056aafd922d56de4",
+      "bytes": 979,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-replay-first-v2.py",
+      "sha256": "67b9defc1306f8f0e64d41695eafed3f8a73a3e5ecfded5b6f72457e8d00109c",
+      "bytes": 4574,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-replay-first-v2.json",
+      "sha256": "482da853cbb45d7c60007d4cfcd372f8163f0fc18b8d658f896482512ddcdff2",
+      "bytes": 50081,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-replay-six-v1.log",
+      "sha256": "315d17d082ebe2630c6d3d01df0f744f3a8af29d0fc24342cd4d2745163f7f2d",
+      "bytes": 951,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-replay-six-v2.py",
+      "sha256": "26d05f5b2b5d1ea267dc51312e46f0ddeb88575161b440ea11e8499823e0f695",
+      "bytes": 3561,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-replay-six-v1.json",
+      "sha256": "ce0f4ec935ec922113afbe6d5cb6d4f9e71ae1a910036e9330e82223a88612c1",
+      "bytes": 10029,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-kernel-artifacts-v1.log",
+      "sha256": "8ad9486b66aea1bc465e7866285ccd592c99b31134f29a09daf86da974e41784",
+      "bytes": 458,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-kernel-artifacts-v2.log",
+      "sha256": "5cd93d47652218393b351169ab4901bb26d19ded810040634dff0c344b446781",
+      "bytes": 760,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-kernel-artifacts-v3.log",
+      "sha256": "ac0c6491926aa3fab5b0797551ea2e8e17529074ff8b84e695a1ec1548932071",
+      "bytes": 94,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-ffi-build-v1.log",
+      "sha256": "3321f69b90816368250b6bb08cf5e6bf83257402120e6a84f508c9751a2c70e8",
+      "bytes": 1138,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/build-manifest.json",
+      "sha256": "eb125bad7e5ff3608e46ebb85dc12d80eb6b834694ba4467ae59da7549a502d2",
+      "bytes": 313707,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/security-install-hold-qemu-v2/qemu-system-x86_64",
+      "sha256": "dea80cfc383881b83b16744904be1fff82a8e4d523dfa65f2d96d5268e885e68",
+      "bytes": 30099216,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-prepared-v1/bzImage",
+      "sha256": "786af3c89d63192b52132f3829c176b8f2a7ab6946cb3a4500253d0cb6898cd2",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-prepared-v1/root.btrfs",
+      "sha256": "0e2c479eedd73fa31ace3b3bc7e818ba7b7321a1ffbd3699a07556dedc2bf911",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/862b95b623c3/slkd",
+      "sha256": "db7767412abfa67173d9cea24914e907d5e2a2fb23ad5fa9b66c92fdf555c1cf",
+      "bytes": 10527792,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/862b95b623c3/slctl",
+      "sha256": "d175615fce56d8ed4a8ee2c69514f38f2b66116edcb557534d87239b4c328837",
+      "bytes": 7818528,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/862b95b623c3/slktest",
+      "sha256": "2957be67d7071ac7716995e0672958978ae3e767c745075084ff7079a0e2eaf0",
+      "bytes": 5236176,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/862b95b623c3/slkconfig",
+      "sha256": "d0ba8ce60cee69adcbd434a192bad21079495fe1f86437c07adca0b913ccd8c5",
+      "bytes": 1404064,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/862b95b623c3/slkmon",
+      "sha256": "45e32154825662799bc6c36e932fc42a944273c5f8f6bc569f3dafe33b37d62c",
+      "bytes": 1662256,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/862b95b623c3/slkdump",
+      "sha256": "06762e21c239aeddb37fd5233c729a4e22a31539a640574f6e497cecc6262ae6",
+      "bytes": 1662120,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/862b95b623c3/liblibsparklink.so",
+      "sha256": "6318eccf1c94da03c33f4ed7f508623083c3c72ec3f4b9c036011b7d3d85941c",
+      "bytes": 547208,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "5184c334c9a2c6ebf8789730b2709f2891147db012f4cda77f1d06d75b134627",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "1c12cc7bcfe6c1f5e50a50a1feca720715a3bbd8fdac50cd45d104c1caad398c",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Owner original workspace;no verified offsite archive. Raw captures/install buffers may contain keys,not public. Replaying requires authorized access;missing bytes/hash mismatch cannot confer current PASS."
+    },
+    {
+      "path": ".dev/numeric-ci-v2.json",
+      "sha256": "8d83c8c0d0f0fa340e6c942362e96fa5752819e211c40c18f12a1afc8b310733",
+      "bytes": 904,
+      "access": "private",
+      "retention": "Original owner workspace;not an offsitearchive orpublicrawcapture. Missingbytes/hash mismatch fails localqualification."
+    },
+    {
+      "path": ".dev/numeric-ci-v3.json",
+      "sha256": "a9eaf3cdb6f2d2d25792dcd047e6501d9fa394471036141b8febaa6e13048af1",
+      "bytes": 1817,
+      "access": "private",
+      "retention": "Original owner workspace;not an offsitearchive orpublicrawcapture. Missingbytes/hash mismatch fails localqualification."
+    },
+    {
+      "path": ".dev/numeric-ci-862-failed-v1.log",
+      "sha256": "6ed65d54feeea1d86cdb4ac97540772012c18ddfdd8fe8ed482a2cc23960d0d9",
+      "bytes": 24758,
+      "access": "private",
+      "retention": "Original owner workspace;not an offsitearchive orpublicrawcapture. Missingbytes/hash mismatch fails localqualification."
+    },
+    {
+      "path": ".dev/numeric-cbindgen-v1.log",
+      "sha256": "fc48c46417e37da1c68a988b8034b11afafbf6aaf75e1e7d96e57fdea5efd8df",
+      "bytes": 451,
+      "access": "private",
+      "retention": "Original owner workspace;not an offsitearchive orpublicrawcapture. Missingbytes/hash mismatch fails localqualification."
+    },
+    {
+      "path": ".dev/numeric-generated-sparklink-v1.h",
+      "sha256": "e0a0e244e55d44c7a88a8735f95fa4eda3f5779c64534a7fc1338e922ce9c43c",
+      "bytes": 30532,
+      "access": "private",
+      "retention": "Original owner workspace;not an offsitearchive orpublicrawcapture. Missingbytes/hash mismatch fails localqualification."
+    },
+    {
+      "path": ".dev/numeric-python-all-v1.log",
+      "sha256": "b966341bb94164000ce3642df15bcb9cd2982c6b71fca3709c7714cc8906d474",
+      "bytes": 5883,
+      "access": "private",
+      "retention": "Original owner workspace;not an offsitearchive orpublicrawcapture. Missingbytes/hash mismatch fails localqualification."
+    },
+    {
+      "path": ".dev/numeric-python-all-v2.log",
+      "sha256": "95b3efd102880b43be163016e5084c39387a2f2cb6c40262c2c99c020fdb6e69",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Original owner workspace;not an offsitearchive orpublicrawcapture. Missingbytes/hash mismatch fails localqualification."
+    }
+  ],
+  "replay": [
+    "Use exact862 compiled/guesttools andf695 fixedpostprocessor,originalmanifest,connected-file/run.json,ws73.pcap andcapturestats.",
+    "read_capture(targetUSBidentities),check_capture_stats,ws73_security_capabilities.corroborate,compareexactoriginalproof;nohardwareactionsduringreplay.",
+    "Owner-private material access required;hash/source/artifact mismatch fails localqualification. Rawinstallationkeycapture notpublishable."
+  ],
+  "created_wall_ns": 1792186027294756578,
+  "original_failures_result": "FAIL",
+  "ci_maintenance": {
+    "original_source": "862b95b623c3069c5a798aeaeff7fec382c46627",
+    "original_status": "FAIL",
+    "fix_source": "e53b237dcdeac7a15724749600d8ec0c0a7e12c0",
+    "fix": "matching canonical kernel323pin inthreejobs;actualcbindgen0.29.4 regeneratedheader",
+    "local_41_bindings": "PASS_AGAINST_SEALED862_LIBRARY_AND_K323",
+    "new_full_ci": "NOT_YET_VERIFIED",
+    "scope": "Headercomments/formatting andCIpin only;realruntime remains accuratelyK323/U862/tool862,postprocessf695,notlatestdocHEAD"
+  }
+}

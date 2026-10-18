@@ -1,0 +1,622 @@
+{
+  "schema_version": 1,
+  "status": "REAL_SHORT_LONG_CONCURRENT_PROGRESS_SCOPED_PASS_FULL_FAIRNESS_OPEN",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "full_exit_result": "UNPROVED",
+  "compiled_kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+  "compiled_userspace": "9cd53fe3053b8b7dd19645042fc7c29d06b1ee34",
+  "executed_tools": "9cd53fe3053b8b7dd19645042fc7c29d06b1ee34",
+  "scope": [
+    "ActualC4 kernel,newcompiledandfrozen9cdslktest/slkd/runtime/toolbundle,VM-only U2/3;UserconfirmedE1 excluded.",
+    "Reuse soleSession,dynamicfd,existing boundedstart parser,randommessage loops andUSB/PBcorroborators;no newHost/Engine,credit/deadline orUSBchange. AllfourordinaryUID1000/caps0endpointsexposeactualnegotiatedcapabilities beforeexactstartwrite withoriginal30s budget.",
+    "Bothphysicalroles eachshort20x61 andlong16x2042,72actualpeer-validatedRT plus8fixedCUTC/SSAPbaseline. CMTC/asymmetricTCID,fullpayload,PBcontiguity,softwarebackpressure,explicitfdlastrelease andcloseexchanges checked.",
+    "Eachdirection shortPDU progressesbetweenfirst/lastlongTX;actualcounts4/4 and3/2. This is finiteworkload PDUinterleaving,not alladmittedqueue starvationbounds,strongfairness,performance orcredittruth.",
+    "27Rusttests onclean signedsource withretainedexecutedELFs,strictworkspacealltargetclippy,669tools andstrictHTML115;16copiedactualevidencenegatives andexactfrozenreplay. Not kernelconcurrency,formal,independentdecoder orhardwarefaultinjection.",
+    "Originalnegativegenerator targetedapplication[0],whichispeerfirstinrealrecords;no-pressuremutation wasno-op andsupervisorrejected. v2selectsinitiatorbyrole andassertsactualchangedbytes,productionpredicateunchanged. Originalfailurelogretained.",
+    "Prior8attemptdynamicmatrix remainswholeFAIL(finaldrain observationboundary),sevenlengthscopedPASS;notnewfullcredit/recoveryqualification orallcontrolraceprecondition."
+  ],
+  "remaining": [
+    "FullPDUfairnessbounds undercontinuouslyadmittedqueues,slowconsumers/closing/Grant/interleavings,related formalimplementationmapping andmultichannel/fourdevice stress.",
+    "Explicitpost-close physicaldebt/observationbarrier andnewdynamicburstqualification;oldFAILretained,originalzero-drain assertion unchanged.",
+    "SameU2/3matchedbeforeafter,observeroverhead,resources/saturation/tail latency andfullP2d remainUNPROVED.",
+    "FullS0-S6/19WP/10FV/12DG andAgent/SSAP/safety/Bond/PM/release remainOPENparallel;UserHostlowpriority. NaturalRCA/nonmanualrecovery,NOCPtruth/late/duplicate/reusebarriers,callbackdrain andfullkernelconcurrency/refinement notqualified."
+  ],
+  "real_gates": [
+    {
+      "name": "bothroles-concurrent-short-long-progress",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/concurrent-channel-real-v1/manifest.json",
+        "sha256": "23829d03d4c53c79940076a219d6e0ac7bff1dbca8f8b9cf6bc74c98a26e1cee",
+        "bytes": 6601754,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+      },
+      "baseline_round_trips": 8,
+      "concurrent_round_trips": 72,
+      "progress": [
+        [
+          {
+            "role": "initiator",
+            "long_tx_window_ns": [
+              1792174556034987000,
+              1792174557968772000
+            ],
+            "short_pdus_between": 4,
+            "short_sequences": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "role": "peer",
+            "long_tx_window_ns": [
+              1792174556163011000,
+              1792174559876310000
+            ],
+            "short_pdus_between": 4,
+            "short_sequences": [
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        ],
+        [
+          {
+            "role": "initiator",
+            "long_tx_window_ns": [
+              1792174563937591000,
+              1792174565864576000
+            ],
+            "short_pdus_between": 3,
+            "short_sequences": [
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "role": "peer",
+            "long_tx_window_ns": [
+              1792174564061994000,
+              1792174567763151000
+            ],
+            "short_pdus_between": 2,
+            "short_sequences": [
+              2,
+              3
+            ]
+          }
+        ]
+      ],
+      "proof_sha256": "a98e7eb7f9fd7384f9d21df022d73415898a82abf2250d9b8251771caad5f9f6"
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "signedsource-slktest27",
+      "result": "PASS",
+      "status": "27_RUST_TESTS_PASS_RETAINED_EXECUTED_ELFS",
+      "report": {
+        "path": ".dev/fairness-frozen-test-build-v1.json",
+        "sha256": "0ea058c33889fd86a8c2003d1eda3a438d8f41cc66d55856155ff4ecf1b5e361",
+        "bytes": 848,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+      }
+    },
+    {
+      "name": "workspace-clippy-alltargets",
+      "result": "PASS",
+      "status": "NO_WARNING",
+      "report": {
+        "path": ".dev/fairness-slktest-clippy-v1.json",
+        "sha256": "c6dbce65c5fda2b86f15aba589a6eb4a779e5d701e9ddcb89e0656fb8b209a25",
+        "bytes": 875,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+      }
+    },
+    {
+      "name": "tools669",
+      "result": "PASS",
+      "status": "TOOLS_PASS_WITH_RELATED_NEGATIVES",
+      "report": {
+        "path": ".dev/fairness-all-tools-v2.log",
+        "sha256": "9cdaef2c9e42d5720a48aeedb25538dbdcad1f1594544c27f95b4d0166ba19df",
+        "bytes": 804,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+      }
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "AllAdmittedQueueFairnessBounds",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_FINITE_PROGRESS_GATE"
+    },
+    {
+      "name": "PostClosePhysicalDrainBarrier",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_FINITE_PROGRESS_GATE"
+    },
+    {
+      "name": "PairedPerformanceAndResources",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_FINITE_PROGRESS_GATE"
+    }
+  ],
+  "counts": {
+    "concurrent_peer_round_trips": 72,
+    "fixed_baseline_round_trips": 8,
+    "selected_total_peer_round_trips": 80,
+    "rust_tests": 27,
+    "tools_tests": 669,
+    "copied_evidence_negatives": 16,
+    "strict_html_documents": 115
+  },
+  "firmware": {
+    "sdk": "1.10.111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "board_qualified": false
+  },
+  "build": {
+    "kernel_rebuilt": false,
+    "bundle_jobs": 8,
+    "prepare_jobs": 8,
+    "with_real_vm_budget": 8,
+    "shared_lock": true,
+    "frozen_offline_jobs": 12,
+    "host_installation": false
+  },
+  "materials": [
+    {
+      "path": ".dev/concurrent-channel-real-v1/manifest.json",
+      "sha256": "23829d03d4c53c79940076a219d6e0ac7bff1dbca8f8b9cf6bc74c98a26e1cee",
+      "bytes": 6601754,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-real-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-real-v1/qmp.jsonl",
+      "sha256": "6f16942d0aef888f0307020e67f3bed4703fb0513db5c1f25ec81c0141107c0f",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-real-v1/console.log",
+      "sha256": "97c4ab31c259ec4a0e215e77f8d1ad67ed537114b2a43d784c7d4e2ecb6388a1",
+      "bytes": 16425,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-real-v1/guest-output/ws73.pcap",
+      "sha256": "3bbebec0a5f4460bee5fe3ab2f1374e123e2ff797c2906bd3a6b510b48265fd8",
+      "bytes": 2863452,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-real-v1/guest-output/capture-stats.txt",
+      "sha256": "2867e004c44669a5742c91bb11bab0049ffdbdd07a53cf9c0330e76864aa4ae2",
+      "bytes": 229,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-real-v1/guest-output/kernel.log",
+      "sha256": "02fe535e0a6bbfadd100673520744b6bb0bbf5076049ea1371c46cfcfc3c29db",
+      "bytes": 49151,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "7f2c0538596e92e9eb7b5ee98adb4a3b32177da90494aef5e09af7c557f82946",
+      "bytes": 1298326,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-replay-negatives-v1.py",
+      "sha256": "19f4d7f23b88f5c9182792e4b2e216cbb12a51b312da5def2935044d5e8d55c6",
+      "bytes": 4125,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-replay-negatives-v1.log",
+      "sha256": "510a8dd3f3885f102a7919493003df82e981418d16f8fa5d35f143bbfb07e9e3",
+      "bytes": 295,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-replay-negatives-v2.py",
+      "sha256": "4ef00a3832b55c37ae22bb18916d321df8a72ee1ef4a279f92a9cdd725aa1427",
+      "bytes": 4248,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-replay-negatives-v2.log",
+      "sha256": "e1a4abd12dda912d9351340ab77ca606e757562ef22049899f904692077775b1",
+      "bytes": 28,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-replay-negatives-v2.json",
+      "sha256": "e3285f5f5abd3aa76bde75f17e848129570cdb3ca858e90360ad86715b52c8ca",
+      "bytes": 5424054,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-run-v1.json",
+      "sha256": "87ef6e7283bc04b7a489da0c2a38b87a41f55b101cb4664ffd496fcb1e98f257",
+      "bytes": 1487,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-run-v1.py",
+      "sha256": "61ea4c042ecde217e3b1aeea5fa888bd2be18e121127fe68f01662398cc7629e",
+      "bytes": 2261,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-run-v2.py",
+      "sha256": "411e56651f6ce1f797e44dac15accc6127a288e8ca16de4defe0e8c3ec8d8953",
+      "bytes": 2484,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/fairness-slktest-test-build-v1.json",
+      "sha256": "2a72b2b6e7771f59eee152290a8bbc1a3c6b5a381d9f0be19f47d16b8508d4a3",
+      "bytes": 822,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/fairness-slktest-tests-v1.log",
+      "sha256": "236504930a5b20b1711865f100ee8e08c5d2b3fbf16a9ba1e729de6d0bb24191",
+      "bytes": 4496,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/fairness-slktest-clippy-v1.json",
+      "sha256": "c6dbce65c5fda2b86f15aba589a6eb4a779e5d701e9ddcb89e0656fb8b209a25",
+      "bytes": 875,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/fairness-slktest-clippy-v1.log",
+      "sha256": "2deac435530c4617bb2b365bc1cf1b5e729d94d67049df71e5de567aa8607427",
+      "bytes": 4919,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/fairness-all-tools-v2.log",
+      "sha256": "9cdaef2c9e42d5720a48aeedb25538dbdcad1f1594544c27f95b4d0166ba19df",
+      "bytes": 804,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/fairness-tools-docs-v1.log",
+      "sha256": "10bc1f2ae6c7b6af063733690833d02c8dfde2fca50d93753559326746e32fa8",
+      "bytes": 260378,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/fairness-frozen-test-build-v1.json",
+      "sha256": "0ea058c33889fd86a8c2003d1eda3a438d8f41cc66d55856155ff4ecf1b5e361",
+      "bytes": 848,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/fairness-frozen-tests-v1.log",
+      "sha256": "f461f807d39f363366c6d30b8ae083c3e9a0eb991477ae8e13db5468e6268172",
+      "bytes": 4076,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-ci-9cd53fe-v3.json",
+      "sha256": "5233e0c3868f9b5f8a1174832b17ce8823e74eba23d89ca5d2ad3f1441a03347",
+      "bytes": 765,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-offline-retained-v1/slktest-1e59463dceae0c01",
+      "sha256": "6e2db773afa302c0c197505fc5666c0a0db259e4cd91c4539a8547ac1a7f90d1",
+      "bytes": 57196832,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-offline-retained-v1/slktest-66fdb7a8edb1cfdb",
+      "sha256": "cdd74c9ba2f3e7039036bbd49517e9f9306fcc8ddd56d66d8b52023dced09225",
+      "bytes": 6886304,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-prepared-v1/manifest.json",
+      "sha256": "4880ab818d463664451f890abd6bbd4ec2ce33309393ad3bb568a93c17576eb5",
+      "bytes": 268094,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-prepared-v1/bzImage",
+      "sha256": "03f08bbabd513913620dce0625860fd23df53deb3d6d8d6e61977887c016d3ba",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-prepared-v1/root.btrfs",
+      "sha256": "b2a8b815d994f2c02435fba8fa765009614d858bb9f4f06ebce0cfa3183b4e91",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "9d7bd90c52d7cb2382bc3b8ce6fa4e20a2ac258189b6e8a17244950a8c98d2ee",
+      "bytes": 138049,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/manifest.json",
+      "sha256": "bd1649b16e70f546dafcba626a4ef70f9e5c113f825c9c7cbe299a3430951bf5",
+      "bytes": 26239,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/build.log",
+      "sha256": "1e1f7ef5a870b29ff83c7074803772e2dd160255edb467a35299c7903d08249a",
+      "bytes": 1182,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/9cd53fe3053b/slkd",
+      "sha256": "254f268b6251a82a760ee92c3f6f531247c9fec984e62dde9108a9bcd049e7a5",
+      "bytes": 10476632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/9cd53fe3053b/slctl",
+      "sha256": "76ca0d1690ed5b9d1cccc693c825b922a46cc92695f892ea42491fb0b8b44f05",
+      "bytes": 7804536,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/9cd53fe3053b/slktest",
+      "sha256": "65d4812e54368a84088cd2a07a21440045547828af7d9fbd5cdda0b30f6d2c4d",
+      "bytes": 5235496,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/9cd53fe3053b/slkconfig",
+      "sha256": "64a136d8b035453bdb15a5649a199af238770353bead5ed2553eb8e92a7a31d3",
+      "bytes": 1403944,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/9cd53fe3053b/slkmon",
+      "sha256": "dcac45cb127a41c434158c345a01eeb96e5b2ae6e8accb04cd9571a5b989d5ba",
+      "bytes": 1662136,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/9cd53fe3053b/slkdump",
+      "sha256": "6d5fa01fe056050475b635f7f6539be68c671e2e410b301b6f70a97221653674",
+      "bytes": 1662008,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/9cd53fe3053b/liblibsparklink.so",
+      "sha256": "de262e57b01e321d03c613115ffb1d19c2a29ab6a75edab771680c92b34274d7",
+      "bytes": 545432,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "26e382b99feb3eb360b5fc181312ffe1b6274c0b99ae806b74585c3cb2cb837f",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "31f5807f30fb3c66fd1c3bc32e87c7ae70d8f442acc8d8444d603085e1db5f0a",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-tools-v1/tools/ws73_target.py",
+      "sha256": "15d9490b232a71ab05709da5a909fda9be6e64d728c0af09f50288e5049b4a86",
+      "bytes": 154335,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-tools-v1/tools/ws73_channel_fairness.py",
+      "sha256": "240383395f03e3482e6381b41fc526e5e9a831e033e5e66b643dd04ddbb9cc4f",
+      "bytes": 14445,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-tools-v1/tools/ws73_channel_socket.py",
+      "sha256": "067c23d58cd236168e1693ca03735fd7122fa2acf404e835c2b5f2eb9dfb7959",
+      "bytes": 46159,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-tools-v1/tools/ws73_dynamic_channels.py",
+      "sha256": "0dc759557da137f044470a6e0f7012d2c5da87d3d9e167577d0474d553fb574f",
+      "bytes": 29043,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    },
+    {
+      "path": ".dev/concurrent-channel-tools-v1/tools/ws73_capture.py",
+      "sha256": "80590536783292b2f020b6c065c04a95a6e809af6f7098e77fcc2dc9080c562a",
+      "bytes": 42628,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only. Rawcaptures,SDK andVMpayload notpublicly downloadable;replaylisted frozen source/artifact/tool/capture inputs."
+    }
+  ]
+}

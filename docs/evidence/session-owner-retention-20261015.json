@@ -1,0 +1,532 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "EXACT_EFF620_SESSION_RETENTION_REAL_INSTALLATION_AND_RELATED_REGRESSIONS_PASS",
+  "vm_only": true,
+  "kernel": "eff62088fe572f417fbd87e4a32b8305b658b4b5",
+  "compiled_userspace": "2cd55722d483b3a651d5351d2adf58ffc8b09618",
+  "executed_vm_tools": "2cd55722d483b3a651d5351d2adf58ffc8b09618",
+  "sources": {
+    "net/sparklink/sle_sessions.rs": "c5597f3d54cd20102cc40d719abea233d976f05e8abd8dfb0dcb3a0aeb75f84e",
+    "net/sparklink/sle_security_relay.rs": "662640b07a25b89cea00a8bf0a2667d97f5fd445be8008a02e3f0ca699c33369",
+    "net/sparklink/sle_security_relay_state.rs": "38331e3af257a1861b4ecc9377605a52ddaacf4fd96d345c19230922b15e1bc6",
+    "net/sparklink/sle_native.rs": "0a2794f2a27d372cfe1debb70f9b2a1895996f91afa25e67eca21dae8f66c1d1",
+    "net/sparklink/sle_channel_socket.c": "06ed8c433faef79701938c440badeac46beaa2f0a959d95ab9291c99506ab562",
+    "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+    "drivers/sparklink/ws73/usb.c": "02fcb3675dd7bff0cec665b2eb108973276247306c6341a3754d9963f8948e81",
+    "tools/testing/selftests/sparklink/native-data/fixture.rs": "194589969e5cd8738228bea348983568cf1e14ac2fbb3927f00be0bf548c4cc9"
+  },
+  "changed_production_contract": [
+    "Registry owns one physical Session per lifetime/handle, not one per Managed epoch.",
+    "Author revoke stops work outside table/Host/gate locks but retains original table reference until canonical Down or registration retirement; successor epoch cannot replace it.",
+    "000e/0011 metadata may enter after policy revoke only for a known physical link; worker looks up existing original Session/epoch without allocation or new application data authority.",
+    "Async installation debt remains after command Status, withdrawal, unknown result or uncertain transport failure until matching known terminal event or explicit physical retirement."
+  ],
+  "physical_installation_runs": [
+    {
+      "artifact": "native-install-v5-index0",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "manifest_sha256": "044d66401c5904cf779f40f53fc5943ef5e545865d4f02808e6aab5488ede147",
+      "run_sha256": "24a95496bdd4d7e18edd8b7c2d9f33a6fcca33e02aa3c6b86067b95767325f53",
+      "private_usb_pcap_sha256": "f216d7413739877f903ee21e86675a27234981ce761cfbede4a6e96b6dd89067",
+      "installations": [
+        {
+          "controller": 0,
+          "opcode": 7171,
+          "handle": 0,
+          "parameter_length": 21,
+          "key_redacted": true,
+          "command_record": 536,
+          "accept_records": [
+            538
+          ],
+          "encryption_event_record": 548
+        },
+        {
+          "controller": 1,
+          "opcode": 7173,
+          "handle": 0,
+          "parameter_length": 20,
+          "key_redacted": true,
+          "command_record": 542,
+          "accept_records": [
+            544
+          ],
+          "encryption_event_record": 546
+        }
+      ],
+      "business_before_installation": 2,
+      "business_after_controller_encryption_on": 2,
+      "total_observation_ms": 36.396117,
+      "relay_submitted_counts": [
+        4,
+        5
+      ],
+      "opposite_peer_rx_counts": [
+        5,
+        4
+      ]
+    },
+    {
+      "artifact": "native-install-v5-index1",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "manifest_sha256": "1b3c4ebea3b5216572e95a786d1156bb5c6c3dc1c70b001e6b3ef9af4114a44d",
+      "run_sha256": "dc761a6c200f6dfa99bb1b2f4922d1ea7d6cbd4c2986c50db176f7c7c085a215",
+      "private_usb_pcap_sha256": "7bc8016a1cf6cf170d4db8b78269196dde95e9b88b9efe90933b1492fcc5c21a",
+      "installations": [
+        {
+          "controller": 0,
+          "opcode": 7173,
+          "handle": 0,
+          "parameter_length": 20,
+          "key_redacted": true,
+          "command_record": 542,
+          "accept_records": [
+            544
+          ],
+          "encryption_event_record": 546
+        },
+        {
+          "controller": 1,
+          "opcode": 7171,
+          "handle": 0,
+          "parameter_length": 21,
+          "key_redacted": true,
+          "command_record": 536,
+          "accept_records": [
+            538
+          ],
+          "encryption_event_record": 548
+        }
+      ],
+      "business_before_installation": 2,
+      "business_after_controller_encryption_on": 2,
+      "total_observation_ms": 37.207086,
+      "relay_submitted_counts": [
+        5,
+        4
+      ],
+      "opposite_peer_rx_counts": [
+        4,
+        5
+      ]
+    }
+  ],
+  "installation_business_total": 8,
+  "installation_business_before": 4,
+  "installation_business_after_controller_reported_encryption": 4,
+  "retained_gates": {
+    "status": "ALL15_REAL_REGRESSION_GATES_PASS",
+    "supervisor_sha256": "caf8ffbde84a1f5f4476c4eb00ca772ed5764c48f34266f4c2a0d1fb99d7708e",
+    "gates": 15,
+    "data_gates": 11,
+    "data_business_round_trips": 136,
+    "oversize_refusals": 32,
+    "strict_last_fd_phases": 2,
+    "lengths": [
+      61,
+      248,
+      249,
+      250,
+      253,
+      254,
+      255,
+      1024,
+      2042
+    ],
+    "steps": [
+      {
+        "name": "capabilities-index0",
+        "status": "PASS"
+      },
+      {
+        "name": "capabilities-index1",
+        "status": "PASS"
+      },
+      {
+        "name": "key-agreement-index0",
+        "status": "PASS"
+      },
+      {
+        "name": "key-agreement-index1",
+        "status": "PASS"
+      },
+      {
+        "name": "short",
+        "status": "PASS"
+      },
+      {
+        "name": "boundary",
+        "status": "PASS"
+      },
+      {
+        "name": "long",
+        "status": "PASS"
+      },
+      {
+        "name": "length248",
+        "status": "PASS"
+      },
+      {
+        "name": "length250",
+        "status": "PASS"
+      },
+      {
+        "name": "length253",
+        "status": "PASS"
+      },
+      {
+        "name": "length254",
+        "status": "PASS"
+      },
+      {
+        "name": "length255",
+        "status": "PASS"
+      },
+      {
+        "name": "length1024",
+        "status": "PASS"
+      },
+      {
+        "name": "prefix-close",
+        "status": "PASS"
+      },
+      {
+        "name": "burst",
+        "status": "PASS"
+      }
+    ]
+  },
+  "related_managed_withdrawal_gates": {
+    "status": "ALL6_REAL_MANAGED_PREFIX_WITHDRAWAL_GATES_PASS",
+    "supervisor_sha256": "91a2e03f4b07dd80689febeaee5fb7a311c973481d15bc35a5875e94ede8454a",
+    "runs": [
+      {
+        "name": "release-index0",
+        "status": "REAL_CHANNEL_GRANT_PASS",
+        "manifest_sha256": "248ee04a677fe01753cadaf32809ac62afc5a96120fc7639c54a0d74b3e05322",
+        "private_capture_sha256": "1ae6459528a511023793bdb420e479003063cbd8e59921a7ede0a7867824c859",
+        "scope": "actual begun2042 PDU, Managed withdrawal/real Down and unchanged peer lease/readiness; not a security-installation Status/event hold or full in-flight USB/reuse proof"
+      },
+      {
+        "name": "release-index1",
+        "status": "REAL_CHANNEL_GRANT_PASS",
+        "manifest_sha256": "0022f0060782ec4a731fd1a79648a8c9366c54db46c15adb20f833666a75d5d7",
+        "private_capture_sha256": "f7a0113801970a5080947c93e8e9d25dffe9ce22a9cbf037ce983c88fd2d2a4d",
+        "scope": "actual begun2042 PDU, Managed withdrawal/real Down and unchanged peer lease/readiness; not a security-installation Status/event hold or full in-flight USB/reuse proof"
+      },
+      {
+        "name": "close-index0",
+        "status": "REAL_CHANNEL_GRANT_PASS",
+        "manifest_sha256": "11555ba7490d5427bbe8748a18082d0687e379bd2f0605e579e8432540d3f0a5",
+        "private_capture_sha256": "2d007268d119c2819c14ed6c6567f0ebf0d6bbf7b8ee85dc3ebf7b4be8ef13bf",
+        "scope": "actual begun2042 PDU, Managed withdrawal/real Down and unchanged peer lease/readiness; not a security-installation Status/event hold or full in-flight USB/reuse proof"
+      },
+      {
+        "name": "close-index1",
+        "status": "REAL_CHANNEL_GRANT_PASS",
+        "manifest_sha256": "9b398a433d1ac78beba195343e7f06e205693a81f799f55b5c940f613e5ba599",
+        "private_capture_sha256": "155f8a8cbaee46603e3d4612e862548cf7fab13f706fc2cddd85b40514aa457e",
+        "scope": "actual begun2042 PDU, Managed withdrawal/real Down and unchanged peer lease/readiness; not a security-installation Status/event hold or full in-flight USB/reuse proof"
+      },
+      {
+        "name": "dup-index0",
+        "status": "REAL_CHANNEL_GRANT_PASS",
+        "manifest_sha256": "96fc9912520a20553fdbfcf249432dd84b2a3d7e52fbe3962d3d47f072e96e0d",
+        "private_capture_sha256": "2e93947369305ca0600d4f889f6997da0520537961c070b8f2def78122339d68",
+        "scope": "actual begun2042 PDU, Managed withdrawal/real Down and unchanged peer lease/readiness; not a security-installation Status/event hold or full in-flight USB/reuse proof"
+      },
+      {
+        "name": "dup-index1",
+        "status": "REAL_CHANNEL_GRANT_PASS",
+        "manifest_sha256": "d6a2ed7108dd354908d96d1ef3f1d24c8beacb23f4f1ad8fe53590b01b991375",
+        "private_capture_sha256": "c20d55a24ac99d3d3b0735c987ad8d0fa4c7c10f93338972e73337910811ab1f",
+        "scope": "actual begun2042 PDU, Managed withdrawal/real Down and unchanged peer lease/readiness; not a security-installation Status/event hold or full in-flight USB/reuse proof"
+      }
+    ]
+  },
+  "offline": {
+    "native_data": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 44,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "real_data_acceptance": false,
+      "socket_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_native.rs": "0a2794f2a27d372cfe1debb70f9b2a1895996f91afa25e67eca21dae8f66c1d1",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "4eccb8c3c4e4b954778438cd2bf911bcd12faf8a679a6e61e415ffcccd45ed88",
+        "net/sparklink/sle_sessions.rs": "c5597f3d54cd20102cc40d719abea233d976f05e8abd8dfb0dcb3a0aeb75f84e",
+        "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+        "net/sparklink/sle_dli.rs": "c2935790c9edd1167f037694318dc2d5d1531df0611410a1fa594f3715c8b981",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "194589969e5cd8738228bea348983568cf1e14ac2fbb3927f00be0bf548c4cc9"
+      }
+    },
+    "host_status": "NATIVE_CONNECTION_ACTUAL_HOST_SOURCE_PASS",
+    "host_tests": 68,
+    "snoop_redaction_status": "ACTUAL_SNOOP_REDACTION_SOURCE_PASS",
+    "old_reference_loss_counterexample": {
+      "status": "HISTORICAL_SESSION_REFERENCE_LOSS_REPRODUCED_OFFLINE",
+      "old_source_commit": "f5c79a50467b41f2e055dfea64786ce34730a4a5",
+      "old_source_file": "net/sparklink/sle_sessions.rs",
+      "old_source_sha256": "f76090c45f4f977b34eb93e2cbc51465640b44d044e96909613d46ecaf5102ca",
+      "current_kernel": "eff62088fe572f417fbd87e4a32b8305b658b4b5",
+      "method": "Run unchanged actual old sle_sessions.rs through current actual Native/data runner. Omit only new helper-dependent test so old source compiles; original table-reference test requires retention after revoke. Other source dependencies remain current and explicit.",
+      "assertion": "After author grant revoke and reconcile, old table has0 objects; required1 physical owner until actual Down.",
+      "exit": 1,
+      "log_sha256": "e5101524bdbd3f3679189e668b3ee419dde015b38285821b07a977b6406c13b8",
+      "scope": "Offline registry/ref dependency fixture; not a real controller Free publication, UAF, wire cross-delivery or hardware failure. Current44 actual-source checks pass. No production source changed."
+    }
+  },
+  "lock_reference_mapping": {
+    "status": "SOURCE_REVIEW_NOT_A_FORMAL_OR_KERNEL_RACE_PROOF",
+    "kernel": "eff62088fe572f417fbd87e4a32b8305b658b4b5",
+    "source": "net/sparklink/sle_sessions.rs; net/sparklink/sle_security_relay.rs; net/sparklink/sle_channel_socket.c",
+    "mapping": [
+      {
+        "transition": "take existing event ref",
+        "serialization": "Session table mutex; clone C kref before unlock",
+        "owner_after_unlock": "event handler retains clone through Host/gate and security state lock, then put outside scope",
+        "claim": "concurrent table detach cannot by itself release last event reference"
+      },
+      {
+        "transition": "revoke then event",
+        "serialization": "Host/gate then Owner.state; validate actual physical lifetime and stored epoch",
+        "effect": "!live calls production Session.withdraw before processing installation metadata; cannot allocate/re-authorize successor",
+        "claim": "receipt pays old obligation only"
+      },
+      {
+        "transition": "event then revoke",
+        "serialization": "Host/gate protects authorization snapshot; revoke serializes through Host",
+        "effect": "event can finish before revoke, then grant loss stops admission/materialization/query and stop clears material",
+        "claim": "no claim that earlier physical completion is retroactively canceled"
+      },
+      {
+        "transition": "Down while event ref retained",
+        "serialization": "table->Host/gate canonical physical snapshot; actual Session event ref cloned separately",
+        "effect": "late event rechecks physical lifetime after lookup; missing or replaced lifetime rejects",
+        "claim": "software-frozen old identity cannot be retargeted to new table entry"
+      },
+      {
+        "transition": "reconcile stop vs retirement",
+        "serialization": "table stopped bit and action-owned cloned kref; stop/join outside table/Host/gate",
+        "effect": "retirement can detach table entry; already queued Stop action still owns ref until join/put",
+        "claim": "does not prove actual concurrent workqueue/callback drain or C ref correctness"
+      },
+      {
+        "transition": "successor epoch allocation race",
+        "serialization": "both pre-allocation lookup and adoption recheck under table plus production session_limits",
+        "effect": "existing same physical lifetime/handle with stopped/old epoch returns ESTALE, unused inactive C candidate drops outside locks",
+        "claim": "one registry physical owner, not one per policy epoch"
+      }
+    ],
+    "unproved": [
+      "actual Linux mutex/spinlock/refcount semantics and allocation failure concurrency",
+      "all stop_sessions/generation teardown and USB callback drain interleavings",
+      "wire late/duplicate encryption/NOCP attribution and handle reuse barriers",
+      "per-device firmware state clearing and natural hardware recovery"
+    ],
+    "regression": "44 actual production Native/data function checks with explicit fake C allocator/locks; real VM normal and related Managed cases recorded separately"
+  },
+  "formal": {
+    "status": "NOT_PROVEN_UNSUPPORTED",
+    "original_run_source_head": "337eab0b6e6f939d353c505fcd8c7dcfd813db0d",
+    "unchanged_pure_production_source_sha256": "38331e3af257a1861b4ecc9377605a52ddaacf4fd96d345c19230922b15e1bc6",
+    "generated_checks": [
+      1681
+    ],
+    "tool_version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0",
+    "regression_tests": 23,
+    "scope": "Original337 bounded G installation/cancel/accept/event harness includes unchanged pure source. This is not a new proof run and does not prove eff620 Session integration, actual locks/references/USB, T role, crypto or hardware. Unsupported is not PASS."
+  },
+  "ci": {
+    "source": "2cd55722d483b3a651d5351d2adf58ffc8b09618",
+    "ci": 38713202906,
+    "documentation": [
+      38713202807,
+      38713191211
+    ],
+    "status": "success"
+  },
+  "open_conditions": [
+    "Agent/method/caller policy, authenticated levels, trusted Grant and Bond/reconnect",
+    "Controlled actual security installation reserve/revoke/Down/deadline/submit/late Status and0011 interleavings; current six Managed cases exercise data prefix withdrawal, not this whole combination",
+    "Wire NOCP accuracy/duplicates/late completion, handle reuse and real controller clearing/USB callback barriers",
+    "Dynamic channels, four-device groups and SSAP notification/indication end-application qualification",
+    "Natural startup/re-enumeration/disappearance cause and non-manual automatic recovery"
+  ],
+  "boundaries": {
+    "controller_encryption_report_is_independent_cipher_attestation": false,
+    "agent_approved": false,
+    "authenticated_identity": false,
+    "bond": false,
+    "whole_security_acceptance": false,
+    "actual_software_kref_count_observed_from_vm": false,
+    "daemon_running_in_installation_gate": false,
+    "natural_recovery_qualified": false,
+    "port2": "Ignored; original restore unverified; four-device gate not waived",
+    "private_materials": "LTK-bearing PCAP/SDK/firmware/standards not publicly copied; hashes are not independently downloadable replay."
+  },
+  "historical_qualification_preserved": "docs/evidence/security-installation-20261015.json (exactf5/3eb, not relabeled)",
+  "supplemental_pool_observation": {
+    "status": "REAL_BURST_POOL_DEPLETION_AND_NOCP_RESUMPTION_SCOPED_PASS",
+    "input_hashes": {
+      "manifest.json": "676976562dbd4b6ca96b782f0d95f7fb704b5fd5bd8e21de861a5e7a0214771c",
+      "run.json": "28b07d3a8040fb22b808b0adb18dae75a24751b54df145e6071f76ec85ba1ece",
+      "ws73.pcap": "804fbd5ea198d180509713de9e7e1bd2022c5b15233a5825b3d4e5292beab4bb"
+    },
+    "assumptions": [
+      "PCAP USB submission/NOCP observed ordering; original link interval starts drained",
+      "NOCP accuracy is firmware/hardware trust, not proven by a matching count",
+      "No duplicate/late NOCP or handle-reuse barrier qualified",
+      "USB completion is not credit return; only NOCP changes reconstructed debt"
+    ],
+    "whole_credit_proof": false,
+    "phases": [
+      {
+        "phase": 0,
+        "source_pool_refusals_delta": 30,
+        "source_full_samples": 6,
+        "endpoints": [
+          {
+            "controller": 0,
+            "generation": 1,
+            "lifetime": 1,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_nocp_resume_intervals_count": 109
+          },
+          {
+            "controller": 1,
+            "generation": 2,
+            "lifetime": 1,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_nocp_resume_intervals_count": 127
+          }
+        ]
+      },
+      {
+        "phase": 1,
+        "source_pool_refusals_delta": 29,
+        "source_full_samples": 6,
+        "endpoints": [
+          {
+            "controller": 1,
+            "generation": 2,
+            "lifetime": 3,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_nocp_resume_intervals_count": 101
+          },
+          {
+            "controller": 0,
+            "generation": 1,
+            "lifetime": 3,
+            "handle": 0,
+            "capacity": 5,
+            "usb_submissions": 206,
+            "nocp_packets": 206,
+            "wire_peak": 5,
+            "wire_final_debt": 0,
+            "full_nocp_resume_intervals_count": 129
+          }
+        ]
+      }
+    ]
+  },
+  "physical_health_scope": {
+    "install_and_managed_folders": 8,
+    "observed_vm_taint": 0,
+    "capture_kernel_drops": 0,
+    "not_extended_to_other_runs_without_inspection": true
+  },
+  "firmware": {
+    "combined_version": "1.10.111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "scope": "Original firmware selection; warm/version/upload is not cryptographic execution attestation. No retired RAM derivative or hub reset used."
+  },
+  "reproduction": {
+    "setup": "Use docs/how-to/prepare-vm-gate.md at compiled/tool commit2cd55722d483 with kernel eff62088fe57, original combined111 and matching private board inputs. VM-only, no host module install.",
+    "installation_command": [
+      "python3",
+      "tools/ws73_target.py",
+      "run",
+      "--prepared",
+      "$PREPARED",
+      "--output",
+      "$NEW_RUN",
+      "--ports",
+      "$PORT1",
+      "$PORT4",
+      "--setup-release-verify",
+      "--managed-connected-case",
+      "release",
+      "--managed-channel-grant",
+      "--managed-security-capabilities",
+      "--managed-security-kind",
+      "unauthenticated-encryption",
+      "--managed-connected-index",
+      "$ROLE_INDEX",
+      "--timeout",
+      "600"
+    ],
+    "installation_roles": [
+      0,
+      1
+    ],
+    "withdrawal_command": [
+      "python3",
+      "tools/ws73_target.py",
+      "run",
+      "--prepared",
+      "$PREPARED",
+      "--output",
+      "$NEW_RUN",
+      "--ports",
+      "$PORT1",
+      "$PORT4",
+      "--setup-release-verify",
+      "--managed-connected-case",
+      "$CASE",
+      "--managed-channel-grant",
+      "--managed-channel-revoke-prefix",
+      "--managed-connected-index",
+      "$ROLE_INDEX",
+      "--timeout",
+      "600"
+    ],
+    "withdrawal_cases": [
+      "release",
+      "close",
+      "dup"
+    ],
+    "withdrawal_roles": [
+      0,
+      1
+    ],
+    "pool_command": [
+      "python3",
+      "tools/ws73_credit_observation.py",
+      "--run-folder",
+      "$BURST_RUN",
+      "--output",
+      "$NEW_POOL_REPORT"
+    ],
+    "scope": "Every output must be a fresh folder; never overlap hardware runners or change frozen build/prepared inputs during tests. Reject any different source identity or capture drops. Original raw evidence is private and cannot be downloaded from this summary."
+  }
+}

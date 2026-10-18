@@ -1,0 +1,10 @@
+[package]
+name = "slk-channel"
+description = "Operations on already-authorized SparkLink channel fds; no controller management"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+slk-protocol = { workspace = true }
+nix = { workspace = true }

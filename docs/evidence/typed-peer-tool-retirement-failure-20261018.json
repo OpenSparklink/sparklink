@@ -1,0 +1,69 @@
+{
+  "result": "FAIL",
+  "scope": "First newVM run failed;no Peer/data/current artifact qualification",
+  "sources": {
+    "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+    "compiled_userspace": "0fe37cb549b188613ae50360d9555ab5f4d74bf1",
+    "executed_tools": "0fe37cb549b188613ae50360d9555ab5f4d74bf1"
+  },
+  "cause": "Missed real caller in ws73_connection_control.py still issued retired slctl info <address>. New CLI correctly rejected;runner failed before new Peer observation or normal RF rounds. Original run/USB/log/cleanup failures retained.",
+  "remediation": [
+    "Migrate actual Up/Down observation to typed canonical connections,not an address alias;Unknown cannot mean disconnected. Retain original 1s Up and shared5s Down diagnostic budgets;Down subrecordv2 distinctfromhistoricalv1decoder.",
+    "Actual passive connectedPeer may have no advertisement;SDK must report valid=false/RSSI unknown. New gate requires real fresh random-marked caller advertisement/RSSI in each connectionrole andpositivepaths onbothcontrollers;never force the passive side to invent reception.",
+    "Add AST guard for live ctl/command retirement patterns and copied-evidence negative controls;historical info receipt decoder remainsofflineonly. Newtools/source/newruns separately sealed;oldFAILneverrelabeled."
+  ],
+  "remaining": [
+    "Accurate corrected-tools VM rerun andindependentrawUSB proof pending",
+    "No naturalRCA/nonmanualrecovery,wholearchitecture oralladdress modes qualification"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5d-real-short-v1/manifest.json",
+      "sha256": "8b2b523ddd30128861971aa250d611301c370e447738998ed9b0ff5a2a3383bb",
+      "bytes": 47563,
+      "access": "private ownerworkspace original failure;notpublicsite"
+    },
+    {
+      "path": ".dev/architecture-r5d-real-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "95a55d61af558ff75f5fbcd3b90f20e4d50ec86705e074540ff62b569bc63e17",
+      "bytes": 22373,
+      "access": "private ownerworkspace original failure;notpublicsite"
+    },
+    {
+      "path": ".dev/architecture-r5d-real-short-v1/guest-output/ws73.pcap",
+      "sha256": "6e9d410a7d1a9e240cd32fb119ea3fffb3f03b048745e072b05ce385179329b5",
+      "bytes": 59124,
+      "access": "private ownerworkspace original failure;notpublicsite"
+    },
+    {
+      "path": ".dev/architecture-r5d-real-short-v1/guest-output/capture-stats.txt",
+      "sha256": "e796804c71472d2dbe4643c827ace3edaaa7c07fbd8a7edf5b9714ea1d12ff58",
+      "bytes": 225,
+      "access": "private ownerworkspace original failure;notpublicsite"
+    },
+    {
+      "path": ".dev/architecture-r5d-real-short-v1/guest-output/kernel.log",
+      "sha256": "9960f45aa1022d5e4a92d81fbcc896199d7d6dbb1ec5af24f5b5da694142f75f",
+      "bytes": 44780,
+      "access": "private ownerworkspace original failure;notpublicsite"
+    },
+    {
+      "path": ".dev/architecture-r5d-real-short-v1/qmp.jsonl",
+      "sha256": "4394629b6ac7ca66e944a760089fd289b46547a2808ec4fe3f5c5482730ee664",
+      "bytes": 1032,
+      "access": "private ownerworkspace original failure;notpublicsite"
+    },
+    {
+      "path": ".dev/architecture-r5d-real-short-runner-v1.log",
+      "sha256": "0d2635b5bd4aed4ed626ec13881e7e6b3d8ccb20661107f3ff6e40f3f5020521",
+      "bytes": 59513,
+      "access": "private ownerworkspace original failure;notpublicsite"
+    },
+    {
+      "path": ".dev/architecture-r5d-real-v1.json",
+      "sha256": "e3db0238269ee80bd6054a0e2061b74352de5f3bfa02dfd1ab189341e68b7703",
+      "bytes": 1351,
+      "access": "private ownerworkspace original failure;notpublicsite"
+    }
+  ]
+}

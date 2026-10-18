@@ -1,0 +1,31 @@
+{
+  "scope": "failed first ordinary dual-WS73 socket VM; partial result only",
+  "kernel_head": "21e0600c82efd88d8a29d483d61aeac04ad17930",
+  "userspace_head": "28a0d4781aaf57dea109d7016b7699bc23d0f7e6",
+  "status": "FAIL",
+  "first_phase_validated_round_trips": 3,
+  "requested_rounds": 4,
+  "role_exchange_passed": false,
+  "raw_two_end_sdu_records": 22,
+  "real_completion_counts_by_controller": {
+    "0": 6,
+    "1": 5
+  },
+  "root_cause": "Peer send admitted the final reply into bounded software TX, then last fd close discarded it before USB submission. Capture has final request TX/RX but no final reply TX/RX.",
+  "pcap_sha256": "c4caa1c4244761ebffd87ede56ec193f420793ba0d8e2d1b1660b8afb3dc0d66",
+  "application_record_sha256": "6827c1188a6fa7625501b74c92dfbc0be65fd4116da0758e83608be2316a216c",
+  "console_sha256": "98dfe39280905ee937effeb30846d092df6b49e5c20ee2838f5c9637122ff9b7",
+  "capture_packets": 527,
+  "capture_drops": 0,
+  "actual_application_uids": [
+    1000,
+    1000
+  ],
+  "actual_application_capabilities_zero": true,
+  "firmware": "SDK111",
+  "fix_kernel_head": "4a3dc86ade58fa574ce2e4c85962cab07bcf1ec2",
+  "fix_scope": "Honor explicit SO_LINGER capped at 5 seconds to drain real queued TX; no synthetic completion or peer-delivery claim.",
+  "new_fix_hardware_acceptance": false,
+  "automatic_recovery_acceptance": false,
+  "failed_evidence_retained": true
+}

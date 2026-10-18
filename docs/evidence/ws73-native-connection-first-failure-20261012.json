@@ -1,0 +1,209 @@
+{
+  "status": "REAL_NATIVE_CONNECTION_FIRST_ATTEMPT_FAILED",
+  "normal_vm_attempt": 76,
+  "actual_kernel_head": "49699d6f11a5c1802508ac748d4a5e7d0b39d1d4",
+  "actual_service_head": "5f6a4c87ef21e361ec2117047578a8708a5c93f2",
+  "actual_tool_head": "f41ddc34d732acc0615d13e392256e0bfe192205",
+  "capture_packets": 397,
+  "kernel_capture_drops": 0,
+  "qemu_exit": 0,
+  "connection_command": {
+    "args": [
+      "/usr/libexec/opensparklink/native-lab/5f6a4c87ef21/slctl",
+      "--adapter",
+      "/org/sparklink/slk0_g1",
+      "connect",
+      "00:01:09:32:54:F9",
+      "0"
+    ],
+    "start_wall_ns": 1791769900677771615,
+    "start_monotonic_ns": 28435264016,
+    "start_boottime_ns": 28435264157,
+    "pid": 590,
+    "stdout": "Selected /org/sparklink/slk0_g1\nNativeConnectionRequest: request=1 address=00:01:09:32:54:F9 address_type=0\nNativeConnectionResult: generation=1 request=1 operation=1 state=7 errno=-110 fault=-110 command_status=0 outcome_status=0 handle=0 flags=1\n",
+    "stderr": "error: connection procedure did not succeed; original request=1\n",
+    "exit": 1,
+    "end_wall_ns": 1791769910692390682,
+    "end_monotonic_ns": 38449883214,
+    "end_boottime_ns": 38449883605
+  },
+  "actual_paired_create": {
+    "bus": 1,
+    "device": 2,
+    "wall_ns": 1791769900681027000,
+    "urb": 18446616038617613632,
+    "record": 390,
+    "file_offset": 42000,
+    "usb_sha256": "a682ef6c4fd025c663f50318c11334cda5f138eba453cb16079042656125af9e",
+    "opcode": 5121,
+    "params": "0000000001093254f90101200020000c000c000000fc0100000000",
+    "sequence": 17,
+    "completion": {
+      "bus": 1,
+      "device": 2,
+      "wall_ns": 1791769900681193000,
+      "urb": 18446616038617613632,
+      "record": 391,
+      "file_offset": 42208
+    }
+  },
+  "actual_command_status": {
+    "bus": 1,
+    "device": 2,
+    "wall_ns": 1791769900681684000,
+    "urb": 18446616038714220544,
+    "record": 392,
+    "file_offset": 42288,
+    "hcc_offset": 92,
+    "usb_sha256": "97f3e03f6cdc797de758e74e65f7edac5c9d0833b087416e51508b70afa08a17",
+    "usb_length": 178,
+    "event": 1,
+    "params": "01140100"
+  },
+  "physical_outcome_count": 0,
+  "independent_peer_stop_proof": {
+    "command": {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791769910710727000,
+      "urb": 18446616038617615744,
+      "record": 394,
+      "file_offset": 42626,
+      "usb_sha256": "d77da3610f8ed5f6b09d18e91d524df178ad98acd19a36e1e36a0aebba228aed",
+      "opcode": 3077,
+      "params": "0000000000",
+      "sequence": 20,
+      "completion": {
+        "bus": 1,
+        "device": 3,
+        "wall_ns": 1791769910710919000,
+        "urb": 18446616038617615744,
+        "record": 395,
+        "file_offset": 42834
+      }
+    },
+    "reply": {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791769910711288000,
+      "urb": 18446616038714221120,
+      "record": 396,
+      "file_offset": 42914,
+      "hcc_offset": 92,
+      "usb_sha256": "7d68f8bcf084348d967eb09376fd262070f7404b44a372c32489bbbcb6c197f0",
+      "usb_length": 178,
+      "opcode": 3077,
+      "status": 0,
+      "value": ""
+    }
+  },
+  "output_flags_meaning": "bit0 CommandStatus present; bit1 outcome present; bit2 handle present. flags1 confirms Status, not OUT. Succeeded state requires OUT internally.",
+  "advertising_parameters": [
+    {
+      "bus": 1,
+      "device": 2,
+      "wall_ns": 1791769887790999000,
+      "urb": 18446616038617644608,
+      "record": 184,
+      "file_offset": 18150,
+      "usb_sha256": "c864a004ca45a83869b28db3840b1aab8b696c657e727dc3b55bff11fb188a14",
+      "opcode": 3074,
+      "params": "000002b00400b004000700000001093254cd000000000000007f0000000000000000000000000000000000c80000000000",
+      "sequence": 12,
+      "completion": {
+        "bus": 1,
+        "device": 2,
+        "wall_ns": 1791769887791585000,
+        "urb": 18446616038617644608,
+        "record": 185,
+        "file_offset": 18358
+      }
+    },
+    {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791769900105181000,
+      "urb": 18446616038714221504,
+      "record": 358,
+      "file_offset": 36992,
+      "usb_sha256": "ff23ebb7f106f91e0a36b47bb8db7405ddd1ecac2de41d51d42713285cb101f9",
+      "opcode": 3074,
+      "params": "000002b00400b004000700000001093254f9000000000000007f0000000000000000000000000000000000c80000000000",
+      "sequence": 12,
+      "completion": {
+        "bus": 1,
+        "device": 3,
+        "wall_ns": 1791769900105623000,
+        "urb": 18446616038714221504,
+        "record": 359,
+        "file_offset": 37200
+      }
+    },
+    {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791769900674208000,
+      "urb": 18446616039633470208,
+      "record": 378,
+      "file_offset": 40122,
+      "usb_sha256": "0e133d9c6c99d22d4f4704914329a72d9b656646410d3e00f33f56d17d6ea137",
+      "opcode": 3074,
+      "params": "000002b00400b004000700000001093254f9000000000000007f0000000000000000000000000000000000c80000000000",
+      "sequence": 17,
+      "completion": {
+        "bus": 1,
+        "device": 3,
+        "wall_ns": 1791769900674395000,
+        "urb": 18446616039633470208,
+        "record": 379,
+        "file_offset": 40330
+      }
+    }
+  ],
+  "root_cause": "UNDETERMINED: no asynchronous connection outcome within whole 10s budget; compare fixed-terminal advertisement request posture and firmware behavior without changing qualified discovery defaults.",
+  "real_connection_acceptance": false,
+  "connected_release_acceptance": false,
+  "last_file_acceptance": false,
+  "dup_acceptance": false,
+  "inflight_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "root_cause_closed": false,
+  "full_goal_complete": false,
+  "artifacts": [
+    {
+      "path": ".dev/native-connection-control-real/manifest.json",
+      "sha256": "ef44a874f4917596ed08219d1871a935484dce873fdb2deb9300ba702d5736fa",
+      "size": 42386
+    },
+    {
+      "path": ".dev/native-connection-control-real/console.log",
+      "sha256": "28f2409fef00ccfc5ff2efbce179eb054f84cf8affedcfc383a261b94d1c0716",
+      "size": 58717
+    },
+    {
+      "path": ".dev/native-connection-control-real/guest-output/application/passthrough-control/run.json",
+      "sha256": "e82730d438284ed561e82ee65ab49c31765c27183e5d3b14bad8fd4ba58b5bba",
+      "size": 16452
+    },
+    {
+      "path": ".dev/native-connection-control-real/guest-output/ws73.pcap",
+      "sha256": "3746d464c6d69194b35b4753d9b34b9850b5d472c3c88630aa8f2ad0866c26a1",
+      "size": 43252
+    },
+    {
+      "path": ".dev/native-connection-control-real/guest-output/capture-stats.txt",
+      "sha256": "9f5dc37dfe31cb03f8209ff0332be9b8a4905d6e0d35a7ff63a8096dc68822d6",
+      "size": 225
+    },
+    {
+      "path": ".dev/native-connection-control-real/guest-output/slkd.log",
+      "sha256": "937f23b46149c1e50cfe85b1819d993069d524ea75bdb324f4c960baf3673ceb",
+      "size": 1329
+    },
+    {
+      "path": ".dev/native-connection-control-prepared/manifest.json",
+      "sha256": "0677ac5cb136b21eb8b62bb02eec7e0ffc65a7032d6e6134a460979dabbf13b3",
+      "size": 241092
+    }
+  ]
+}

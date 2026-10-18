@@ -1,0 +1,52 @@
+{
+  "status": "MODEL_CHECKED_SCOPED",
+  "exit": 0,
+  "timed_out": false,
+  "warnings": [],
+  "weak_invalidation": false,
+  "properties": 314,
+  "failed": [],
+  "tool": "6.11.0 (cbmc-6.11.0)",
+  "source_head": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+  "source_sha256": "05c24ae0d15d43fd7ded67b97832a74ab8738f34b026c55f3b81662e7b06595c",
+  "header_sha256": "764ac209980fe55f322a416d84df0196000a188e533e2f34f2c15a6b54ece5bd",
+  "harness_sha256": "1d9b5bcde806e05538738fe7d3c23ef1e25771168e6ae17ce2adbe59f6bde946",
+  "scope": "Actual standard bootstrap and strict validator; all first18 response bytes, reported length and dependency return unrestricted; 6 sequential queries/unwind19. Coherent commit/failure invalidation, buffer schema, version/features/address provenance, bounded call count; actual combined getter under abstract mutex, no partial output on errors.",
+  "assumptions": [
+    "active retained context with io_lock held by caller",
+    "synchronous response dependency provides initialized first18 bytes in64-byte localbuffer",
+    "no concurrency/USB/module/refcount/firmware/Ready/lifetime proof"
+  ],
+  "physical_acceptance": false,
+  "source_mapping": [
+    "sle_usb_validate_init_reply",
+    "sle_usb_dev_init_controller_locked",
+    "sle_usb_dev_get_metadata"
+  ],
+  "bounds": {
+    "commands": 6,
+    "relevant_bytes_per_response": 18,
+    "lengths_and_dependency_returns": "all signed int32",
+    "unwind": 19
+  },
+  "implementation_regression": "actual44 sanitizer cases, ENODATA/no-output-overwrite after failed query",
+  "source_paths": [
+    "/home/sanchuanhehe/Documents/opensparklink/linux/net/sparklink/sle_usb_ffi.c",
+    "/home/sanchuanhehe/Documents/opensparklink/linux/include/linux/sparklink_usb.h"
+  ],
+  "tool_source_sha256": "e70b9e1cd0c30a3debab6ac0aaffe7c7967d45f5c03e1b6c92c6746ed7661ef6",
+  "command": [
+    "cbmc",
+    "/home/sanchuanhehe/Documents/opensparklink/.dev/common-standard-provider-metadata-proof/actual.c",
+    "--bounds-check",
+    "--pointer-check",
+    "--signed-overflow-check",
+    "--unsigned-overflow-check",
+    "--unwind",
+    "19",
+    "--unwinding-assertions",
+    "--json-ui"
+  ],
+  "original_budget_seconds": 60,
+  "production_proof": true
+}

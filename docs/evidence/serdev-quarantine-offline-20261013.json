@@ -1,0 +1,165 @@
+{
+  "status": "UNCONNECTED_SERDEV_PRODUCTION_QUARANTINE_OFFLINE_VM_PASS",
+  "kernel_head": "6d49b12aa6940bf79e37797e71169f84ac1a8fb7",
+  "userspace_head": "c830f0947e31e0509cc8b303a007cf7ee8e44e59",
+  "source_sha256": {
+    "net/sparklink/sparklink_core.rs": "90c1f1911fef78d95e85cf0a562c5262b58aa8965a34012ed34ed58aab4af0b6",
+    "net/sparklink/sle_dli.rs": "51f81f3a169b11112c082886750b0b4bf75d678c237ed01dc3ce14bea49ec219",
+    "net/sparklink/sle_transport.rs": "b72950d594ddf72084a5c7511b39a554921b68d47230e7236eba18bc06450465",
+    "net/sparklink/Makefile": "4db9e9170cbdb6f55eb2759716ac6e2677fba0361c9a56854884802ec38f7088"
+  },
+  "build_record": {
+    "status": "BUILD_PASSED",
+    "source_head": "6d49b12aa6940bf79e37797e71169f84ac1a8fb7",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-serdev-quarantined-final-kernel-build.log",
+      "sha256": "9379ea4930fe5b3a02e828cf3eda35c9073ffdc25952ce0820c434df6ce3fffe"
+    }
+  },
+  "warnings": 0,
+  "archive_exact_byte_hashes": {
+    "retired-serdev/sle_serdev.rs": "12e851cef7fbda7b92409752f36690d3c2d1d579a50cd1bff3eed3c98fd80ad7",
+    "retired-serdev/sle_serdev_ffi.c": "bc3168ea878af6e6bca2ed68cdcaa5d4f149f298e52413a353fafc694cabbe30",
+    "retired-transport/uart_decoder.rs": "38fb315d154f3cf7f316c8261960da417430947ee367e3a65bb8218719c7340f",
+    "retired-serdev/sle_transport.rs": "6945cb2f40ef4d7668aaf603945b97205cc28e155d8e264f0eb8bc52fadf6b95"
+  },
+  "compiled_symbol_check": {
+    "status": "COMPILED_SERDEV_SYMBOLS_ABSENT",
+    "kernel_head": "6d49b12aa6940bf79e37797e71169f84ac1a8fb7",
+    "checked": [
+      "SERDEV_PARSER",
+      "sparklink_serdev_receive",
+      "sle_serdev_dev_send",
+      "sle_serdev_dev_register"
+    ],
+    "full_backend_seam_complete": false
+  },
+  "historical_method_tests": {
+    "status": "BACKEND_CONTAINMENT_PASS",
+    "sources": {
+      "sle_uart.rs": {
+        "sha256": "73cd7d549899b04558682ee785bc6858a536e1864282830d2376999e58c15e0d",
+        "methods_sha256": "0c3b79e855cedc07c5ddbf0ea7a02ebb03f5b199e8013674064d26a08c6a573f"
+      },
+      "sle_spi.rs": {
+        "sha256": "21102a8b895f6b7ec873a6367ef6a50541753edc9d82143b17af827ab8230fe0",
+        "methods_sha256": "6852e16fcc5833de95dec4b1b44601abe8a6eb2d5e78dadbf0b122bd0029db87"
+      }
+    },
+    "tests": 2,
+    "scope": "archived unsupported trait bodies preserved outside production, fixture types; no UART/SPI hardware/framing qualification",
+    "physical_acceptance": false
+  },
+  "historical_decoder_tests": {
+    "status": "RETAINED_AND_HISTORICAL_TRANSPORT_CODEC_PASS",
+    "tests": 5,
+    "sources": {
+      "/home/sanchuanhehe/Documents/opensparklink/linux/tools/testing/selftests/sparklink/retired-transport/uart_decoder.rs": "38fb315d154f3cf7f316c8261960da417430947ee367e3a65bb8218719c7340f",
+      "/home/sanchuanhehe/Documents/opensparklink/linux/net/sparklink/sle_dli.rs": "51f81f3a169b11112c082886750b0b4bf75d678c237ed01dc3ce14bea49ec219",
+      "/home/sanchuanhehe/Documents/opensparklink/linux/tools/testing/selftests/sparklink/retired-transport/sle_uart.rs": "73cd7d549899b04558682ee785bc6858a536e1864282830d2376999e58c15e0d",
+      "/home/sanchuanhehe/Documents/opensparklink/linux/tools/testing/selftests/sparklink/retired-transport/sle_spi.rs": "21102a8b895f6b7ec873a6367ef6a50541753edc9d82143b17af827ab8230fe0"
+    },
+    "scope": "actual retained UART parser; archived UART/SPI encoder bodies; Vec allocation dependency fixture; no hardware/serdev/SPI standard interoperability or allocation-failure qualification"
+  },
+  "production_usb_and_archived_info_tests": {
+    "status": "GENERIC_USB_DESCRIPTOR_CAPABILITY_SOURCE_BOUNDARIES_PASS",
+    "c_cases": 18,
+    "rust_tests": 5,
+    "scope": "actual C register/unregister; actual Rust info structs/default, USB info and attach metadata projection, archived serdev info; descriptor lookup/allocation/URB/types/firmware getters are dependency fixtures",
+    "physical_acceptance": false,
+    "generic_dialect_acceptance": false,
+    "full_capability_provenance_contract": false,
+    "natural_fault_root_cause_closed": false,
+    "sources": {
+      "sle_usb_ffi.c": "824e74ac629dcf54274e34a6a68622b480a86eac780dfa80c382b1d465cee4b4",
+      "sle_usb.rs": "bf289d3f3cb3f5e3ad034c2cea00a4e43f96d3cb4eebe65bd15e81d0f132f108",
+      "sle_dli.rs": "51f81f3a169b11112c082886750b0b4bf75d678c237ed01dc3ce14bea49ec219",
+      "sparklink_core.rs": "90c1f1911fef78d95e85cf0a562c5262b58aa8965a34012ed34ed58aab4af0b6"
+    },
+    "archived_serdev_info_sha256": "12e851cef7fbda7b92409752f36690d3c2d1d579a50cd1bff3eed3c98fd80ad7"
+  },
+  "tools_tests": 436,
+  "actual_empty_vm": {
+    "status": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+    "checks": 3,
+    "registered_mask": 0,
+    "selector_inputs": 9,
+    "active_id": 65535,
+    "missing_select_errno": 19,
+    "unbound_snapshot_errno": 22,
+    "private_manifest_sha256": "bf0a16202d300a8d051ecb294f59cb87157c42cbde8be34031e04d968c98e3a8",
+    "private_console_sha256": "c96da0e6774ae802a888ed32088f224eb3ed5dbed0ca84f8f36d089e7606e601"
+  },
+  "scope": "Default core has no unconnected serdev FFI/global parser/ignored-ctx or init-failure fallback. Historical decoder/metadata is tested outside production. No actual new serdev provider, per-device callback barrier, registrable Backend seam or Virtual qualification.",
+  "new_formal_proof": false,
+  "initial_build_with_exposed_dead_members_preserved": true,
+  "full_backend_seam_complete": false,
+  "real_serdev_hardware_qualified": false,
+  "full_goal_complete": false,
+  "exact_ci": {
+    "run_id": 38324089652,
+    "source_head": "c830f0947e31e0509cc8b303a007cf7ee8e44e59",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo check",
+        "conclusion": "success"
+      },
+      {
+        "name": "Python bindings and kernel ABI conformance",
+        "conclusion": "success"
+      },
+      {
+        "name": "rustfmt",
+        "conclusion": "success"
+      },
+      {
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo test",
+        "conclusion": "success"
+      },
+      {
+        "name": "C header generation",
+        "conclusion": "success"
+      },
+      {
+        "name": "clippy",
+        "conclusion": "success"
+      },
+      {
+        "name": "release build",
+        "conclusion": "success"
+      }
+    ]
+  }
+}

@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_NUMERIC_AGENT_MAINTENANCE_RETAINED_FULL_GOAL_OPEN",
+  "compiled_kernel": "323668c6015ef69fa233c008d8ef0c4c70402686",
+  "compiled_userspace": "b87318bbfb5897ed5b085a30a266a8f8b26afe4f",
+  "executed_tools": "b87318bbfb5897ed5b085a30a266a8f8b26afe4f",
+  "post_processing_tools": "59c0cabb6848f9e46e02fdc383f1d722e1d031ca",
+  "real_report_commit": "9cc1d47a5589b02a86f22bad257b05ad4b4c6028",
+  "registry_commit": "5209e2243d119c4e1e0a070ddec474adce38b7fd",
+  "ci_source": "b87318bbfb5897ed5b085a30a266a8f8b26afe4f",
+  "ci_checks": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:07Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117213883661",
+      "name": "cargo check",
+      "startedAt": "2026-10-16T21:54:39Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:14Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471165/job/117213882139",
+      "name": "Strict Sphinx HTML",
+      "startedAt": "2026-10-16T21:54:38Z",
+      "status": "COMPLETED",
+      "workflowName": "Documentation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:07Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972464222/job/117213858851",
+      "name": "Strict Sphinx HTML",
+      "startedAt": "2026-10-16T21:54:35Z",
+      "status": "COMPLETED",
+      "workflowName": "Documentation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:01Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471194/job/117213882383",
+      "name": "WS73 production C corpus and bounded sanitizer exploration",
+      "startedAt": "2026-10-16T21:54:39Z",
+      "status": "COMPLETED",
+      "workflowName": "Production codec bounded fuzz"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:54:59Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471158/job/117213883142",
+      "name": "Public metadata and negative controls (no hardware qualification)",
+      "startedAt": "2026-10-16T21:54:38Z",
+      "status": "COMPLETED",
+      "workflowName": "Qualification integrity"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:54:56Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972464191/job/117213858841",
+      "name": "Public metadata and negative controls (no hardware qualification)",
+      "startedAt": "2026-10-16T21:54:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Qualification integrity"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:54:36Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471165/job/117213883716",
+      "name": "Independent external links",
+      "startedAt": "2026-10-16T21:54:37Z",
+      "status": "COMPLETED",
+      "workflowName": "Documentation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:54:32Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972464222/job/117213860150",
+      "name": "Independent external links",
+      "startedAt": "2026-10-16T21:54:32Z",
+      "status": "COMPLETED",
+      "workflowName": "Documentation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:54:54Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117213883510",
+      "name": "rustfmt",
+      "startedAt": "2026-10-16T21:54:38Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:20Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117213883345",
+      "name": "Python bindings and kernel ABI conformance",
+      "startedAt": "2026-10-16T21:54:38Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117213883654",
+      "name": "WS73 tooling and evidence validation (no hardware)",
+      "startedAt": "2026-10-16T21:54:39Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:47Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117213883638",
+      "name": "Kernel crypto/wire and archived protocol boundaries",
+      "startedAt": "2026-10-16T21:54:39Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:56:45Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117214060491",
+      "name": "cargo test",
+      "startedAt": "2026-10-16T21:55:09Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:36Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117214060550",
+      "name": "clippy",
+      "startedAt": "2026-10-16T21:55:10Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:55:29Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117214060541",
+      "name": "C header generation",
+      "startedAt": "2026-10-16T21:55:09Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T21:57:36Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/OpenSparklink/sparklink/actions/runs/38972471168/job/117214615364",
+      "name": "release build",
+      "startedAt": "2026-10-16T21:56:48Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    }
+  ],
+  "registry": {
+    "records": 4,
+    "materials": 102,
+    "local": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "metadata": "METADATA_ONLY_NOT_REVERIFIED",
+    "overall": "INCOMPLETE",
+    "negative_controls": [
+      {
+        "kind": "stale-source",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-agent-b873-real: report/source mismatch compiled_userspace",
+          "numeric-agent-b873-real/compiled_userspace: source object unavailable"
+        ]
+      },
+      {
+        "kind": "missing-capture",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-agent-b873-m3: missing material"
+        ]
+      },
+      {
+        "kind": "scope-upgrade",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-agent-b873-real: scope mismatch"
+        ]
+      },
+      {
+        "kind": "missing-mode",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-agent-b873-real: missing/extra/duplicate gate"
+        ]
+      },
+      {
+        "kind": "partial-hides-unproved",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-agent-b873-remaining: PASS hides a required non-PASS gate"
+        ]
+      }
+    ]
+  },
+  "offline": {
+    "qualification_checker_tests": 27,
+    "strict_html_documents": 115,
+    "actual_evidence_mutants": 38,
+    "postprocessor_tools": 689,
+    "frozen_tools": 688,
+    "workspace_rust_tests": 275
+  },
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 7,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6225716663",
+      "comment_sha256": "3de27bf2f2cd24cd29f459c4eb2c4bae81db5e08cf7261b2360bbd8af9b2fe3f",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "original_scope_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6225717271",
+      "comment_sha256": "3de27bf2f2cd24cd29f459c4eb2c4bae81db5e08cf7261b2360bbd8af9b2fe3f",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "original_scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 5,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6225718202",
+      "comment_sha256": "3de27bf2f2cd24cd29f459c4eb2c4bae81db5e08cf7261b2360bbd8af9b2fe3f",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "original_scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6225718882",
+      "comment_sha256": "3de27bf2f2cd24cd29f459c4eb2c4bae81db5e08cf7261b2360bbd8af9b2fe3f",
+      "readback_exact": true,
+      "original_scope_body_unchanged": true,
+      "original_scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb"
+    }
+  ],
+  "scope": [
+    "Maintenance only: no new hardware, protocol, formal or concurrency qualification",
+    "Six VM/48 actual peer replies retained at compiled K323/Ub873, not latest documentation HEAD",
+    "CI is exact Ub873; independent external-link job skipped, not counted as PASS",
+    "Postprocessor 59 audits reject/expiry through original actual Down; copied evidence is not a new physical run",
+    "Current tree not revalidated as a whole; metadata unavailable materials are not verified",
+    "No live security grade/trusted Grant/Bond/human numeric CLI/full numeric lifecycle/four-device or natural recovery qualification"
+  ],
+  "goal": {
+    "status": "active",
+    "full_S0_S6_19WP_10FV_12DG_preserved": true,
+    "natural_root_cause_open": true,
+    "non_manual_recovery_qualified": false
+  },
+  "materials": [
+    {
+      "path": ".dev/numeric-agent-registry-local-v1.json",
+      "sha256": "806bb34b06ba3217674508e21bcc82220b133b6c44674247bee8e9db24f19176",
+      "bytes": 1257,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    },
+    {
+      "path": ".dev/numeric-agent-registry-sync-v2.json",
+      "sha256": "c1bd406a3c7d278d93776326e9057c8ac49970219c53ffa564475dcb59e32e68",
+      "bytes": 292890,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    },
+    {
+      "path": ".dev/numeric-agent-issue-receipts-v1.json",
+      "sha256": "1a3b11df530095320539c1e11444cf31cb9f9ad271a5aa1c6ba92a7b612b76fc",
+      "bytes": 1933,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    },
+    {
+      "path": ".dev/numeric-agent-ci-b873-v1.json",
+      "sha256": "76cc20f54a7b1436bc6d90db7a030449b47294bd780e54801bad487b3301d727",
+      "bytes": 5030,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    },
+    {
+      "path": ".dev/numeric-agent-docs-final-v1.log",
+      "sha256": "bb7199f1ebd863dca320b03e54b5e364b2cbfd81a274d53a6b5b8130e1e5242e",
+      "bytes": 300503,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    },
+    {
+      "path": ".dev/numeric-agent-qualification-tests-v1.log",
+      "sha256": "03d2aed6288ad7c50c18634bde122a319ab7dde008fe4a5b94e977d1d18bf8a6",
+      "bytes": 126,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    },
+    {
+      "path": ".dev/numeric-agent-replay-v2.json",
+      "sha256": "006ec3a260693327a760fc9b33f0dbc48a2d0d7b7bc2703d3a238600941a3bf3",
+      "bytes": 5241,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    },
+    {
+      "path": ".dev/numeric-agent-replay-all-v2.json",
+      "sha256": "39527789e1db03a5b0455d6b7bd6a7cd9af4973b2860a839ebb02b2f755fc127",
+      "bytes": 2518,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    },
+    {
+      "path": ".dev/numeric-agent-postterminal-replay-v1.json",
+      "sha256": "a5877787ca327435e889322c3c06c903b5a144390e961bd023e6ccfb3884a827",
+      "bytes": 4488,
+      "access": "private",
+      "replay": "Use retained source and artifact mappings in primary report; maintenance checks do not execute devices"
+    }
+  ],
+  "created_wall_ns": 1792189068164777587
+}

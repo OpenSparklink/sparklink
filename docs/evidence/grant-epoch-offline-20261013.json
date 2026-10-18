@@ -1,0 +1,167 @@
+{
+  "status": "GRANT_EPOCH_OFFLINE_SCOPED_PASS_REAL_VM_FOLLOWUP_SEPARATE",
+  "kernel_head": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
+  "userspace_head": "2a9778651723fbf8f5c6f2d42450401d8331ff07",
+  "reports": {
+    "grant-epoch-native-final-v4.json": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 33,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "real_data_acceptance": false,
+      "socket_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_native.rs": "a3523a489f8061a3044f5bf896c68cf676a67aa648313e12820124eb8fb4e31e",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "net/sparklink/sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "net/sparklink/sle_sessions.rs": "10d0b90ba29449679806829a1e93e1c6eb92a9a34ab6858c511196948fa0915a",
+        "net/sparklink/sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "43916aa5660952da2627a9f6125148c5f2b11de2f7d0b66c7e8d314c63712cba"
+      }
+    },
+    "grant-epoch-host-final.json": {
+      "status": "NATIVE_CONNECTION_ACTUAL_HOST_SOURCE_PASS",
+      "tests": 51,
+      "cleanup_prepare_tests": 2,
+      "scope": "actual Host/queue/operation/link source; clock/errno/allocation/wire-event dependencies are fixtures; not VFS, running kernel or RF",
+      "live_kernel_acceptance": false,
+      "connection_rf_acceptance": false,
+      "automatic_recovery_acceptance": false,
+      "sources": {
+        "sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_dli.rs": "5a18a50b4f541115bf988626444cea9c705c77e7dc3834934f540b172098e098",
+        "sle_workers.rs": "20a2c4729a02f092c33f1a1ebc35d4f37b5a2fdcaba9438d643d7c4daed7d807",
+        "sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd"
+      }
+    },
+    "grant-epoch-managed-final-v2.json": {
+      "status": "MANAGEMENT_RELEASE_SOURCE_BOUNDARIES_PASS",
+      "rust_tests": 54,
+      "scope": "actual Host predicates/TX selection/InFlight/domain revocation and core fast-release block; source queue/operation/lease modules and opcode/timeout constants; locks, clock scaling, dependency error adapters and surrounding transport dependencies are fixtures",
+      "live_ioctl_acceptance": false,
+      "fd_close_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "sparklink_core.rs": "8db399e91a347b40ffbe3607a4776508c29a01884b4f0ec3c9c5303bc71559f7",
+        "sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_dli.rs": "5a18a50b4f541115bf988626444cea9c705c77e7dc3834934f540b172098e098",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd"
+      }
+    },
+    "grant-epoch-route-tests.json": {
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "scope": "actual single-consumer route/local TCID+PI/finite RX and atomic channel submit-consent; kernel allocation/lock/wakeup dependencies; capability reply integration separately tested",
+      "physical_acceptance": false,
+      "whole_session_proof": false,
+      "bodies_sha256": "32896bff599e402b25e9ece3102255406d1f432ae43127303d634f547498762f",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "8b1f6ddf34d16487874b923c120d9ec1ccf352a9bb0618a0edd3fc3a28161739",
+        "net/sparklink/sle_channel_state.h": "3cf939ce87b914f9cee06391029a73f8cc2b1b0cf4a793293354ad4d11221612",
+        "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+        "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+        "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "37355505596c4a2d2e261cb69cd0509ed3de0be160e4f81dccdb7f0bb1a74147"
+      }
+    },
+    "grant-epoch-socket-contract-final.json": {
+      "status": "ACTUAL_C_RUST_SOCKET_V2_LAYOUT_PASS",
+      "size": 48,
+      "scope": "actual broker struct/initializer and C UAPI; no kernel admission/VFS/RF proof",
+      "sources": {
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/crates/slkd/src/channel.rs": "f9b0a305202436d7cfc6e3a1839a947a4a36963cba5cd6060e26616e82789a73",
+        "/home/sanchuanhehe/Documents/opensparklink/linux/include/uapi/linux/sparklink_socket.h": "91e2e9989e98ea5e8a83305614c12320df61bf3bd23e0d70c71c282089043235"
+      }
+    },
+    "grant-epoch-diagnostic.json": {
+      "status": "DIAGNOSTIC_RESULT_BOUNDARY_PASS",
+      "rust_tests": 48,
+      "result_tests": 14,
+      "admission_tests": 12,
+      "host_deadline_tests": 6,
+      "connection_dependency_tests": 11,
+      "link_dependency_tests": 5,
+      "scope": "actual pending/queue modules, submit/result handlers and Host enqueue/cancel bodies; clock/lease/lock/usercopy/allocation dependencies are fixtures",
+      "live_vfs_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_uapi.rs": "b9beb87c1f98a5583cb094dbfb4649013ae04a41ab6d4e4bfea73c0aeaf30d15",
+        "sparklink_core.rs": "8db399e91a347b40ffbe3607a4776508c29a01884b4f0ec3c9c5303bc71559f7",
+        "sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_workers.rs": "20a2c4729a02f092c33f1a1ebc35d4f37b5a2fdcaba9438d643d7c4daed7d807",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e"
+      },
+      "remaining": [
+        "Actual ioctl owner/CAP/usercopy/removal gates in qualified VM",
+        "Legacy DLI event callers and shared projection removal",
+        "Live idempotent admission/cancel/deadline syscall and on-wire late reply gates"
+      ]
+    }
+  },
+  "kernel_build": {
+    "status": "BUILD_PASSED",
+    "source_head": "3ee1a60bf06fd4c8a734304aea9edf730703513d",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-grant-epoch-kernel-build.log",
+      "sha256": "ba5859c3a7ac705a9cbc35cdf758916792091309ce245fe27911f7bd3083c5c0"
+    }
+  },
+  "formal": "grant-epoch-formal-20261013/manifest.json",
+  "strict_clippy": "PASS",
+  "tooling_tests": 423,
+  "remaining": [
+    "Controlled real release/last management fd/daemon death and dup isolation",
+    "Atomic blocked-RX retirement/full VFS and work refs/lockdep/KCSAN",
+    "Direction-scoped authorization and safety/security changes",
+    "NOCP accurate attribution/reuse barrier and existing credit Kani unsupported",
+    "Natural startup/disappearance/reenumeration RCA and non-manual recovery",
+    "Whole19WP/10FV/12DG/S0-S6"
+  ],
+  "full_goal_complete": false,
+  "ci": {
+    "head": "2a9778651723fbf8f5c6f2d42450401d8331ff07",
+    "run_id": 38305067842,
+    "jobs": 9,
+    "conclusion": "success"
+  }
+}

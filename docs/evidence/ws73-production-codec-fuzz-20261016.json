@@ -1,0 +1,1223 @@
+{
+  "schema_version": 1,
+  "status": "BOUNDED_FUZZ_COMPLETED_NO_FINDING",
+  "completed": true,
+  "accepted_exploration": true,
+  "proof": false,
+  "physical_acceptance": false,
+  "source_commit": "ddea575bff556d3884375603edd9003b1cc5ffc4",
+  "source_hashes": {
+    "tools/testing/selftests/sparklink/fuzz/ws73_codec_fuzz.c": "eb5ae99705d48cd67106aec932a5a4fb8fc8dddba1cce957cba0ee439fef901a",
+    "tools/testing/selftests/sparklink/fuzz/ws73_codec_corpus.json": "849130632614491bba5268f831498645f32865ea28c4450e0ab42a1702eab46e",
+    "tools/testing/selftests/sparklink/run_ws73_codec_fuzz.py": "4f6e5fe75fab609d8ce2a4c61f81e7e45aa5595ef10758adcda706814bd2f701",
+    "tools/testing/selftests/sparklink/fuzz/test_ws73_codec_verdict.py": "f679e7c32a8474fc6a5c33da82522ea1317d5537ad0247a6358badd1997c8c56",
+    "drivers/sparklink/ws73/wire.c": "d06ce9c48621ac24ba7450b7d3295a01a1a8b4cb66328f83b0acf568ebd2956c",
+    "drivers/sparklink/ws73/wire.h": "605a35601e0ce4fe95bafd8110ca8747e44e8e845510dbb7e0bd331d57b6d0df",
+    "drivers/sparklink/ws73/dli.c": "82240cab87220acb78976e905c0162eb8ffe8947dfe71af7263fa6694381bf82",
+    "drivers/sparklink/ws73/dli.h": "a672c63618e1b49f36a53016c8c332ab7f7a7c6a7cdaa73601fcb551468cc765",
+    "drivers/sparklink/ws73/bsle.h": "c42f095992bf8851ca668354067e514239d87f5471e3154b66b327845ac58b6e"
+  },
+  "source_worktree_status": [],
+  "bounds": {
+    "runs": 20000,
+    "seed": 730111,
+    "max_input_bytes": 20480,
+    "input_timeout_seconds": 2,
+    "phase_wall_timeout_seconds": 60,
+    "software_memory_mb": 512
+  },
+  "real_dependencies": "Production wire.c/dli.c, libc malloc, Clang libFuzzer/ASAN/UBSAN and LLVM coverage; no protocol/USB/clock/lock success stubs",
+  "fixture": "Hand-authored legal/malformed input corpus and input-bounds observer callback with explicit ECANCELED outcome",
+  "excluded": [
+    "kernel allocator/locks/refcounts/USB callbacks and real concurrency",
+    "BSLE/query state machines, split/concatenation transport, data credit/tickets/Grant",
+    "full input/state proof, hardware/firmware behavior, security/trusted identity and natural recovery"
+  ],
+  "tools": {
+    "clang": "clang version 22.1.8 (Fedora 22.1.8-4.fc44)",
+    "llvm-profdata": "LLVM (http://llvm.org/):",
+    "llvm-cov": "LLVM (http://llvm.org/):"
+  },
+  "binary_sha256": "ececc4e0b4dab7bc3a5d31018d8d31d484a66a7daa751a0900dd9688f5849c61",
+  "fixed_corpus": {
+    "acb-full": "bedda237fdb590bd098fa2974680e4d4648d1a2e38d655fe608204520f95f470",
+    "acb-length-2047": "2903fac9d43b97bb53fa50cdb41586115df28f251bdb2bcb792e1c24c29869de",
+    "acb-length-253": "41da5fe43a1c84a1ee9f3a17c560d8774d3cc83743a671c673e78ee0a098b2d2",
+    "acb-length-254": "240d179fd75cbe8ceb9ef978550b97ead12118b41fccf02b2a05ad26d887b15d",
+    "acb-length-255": "e196c2a1090c23cb06d9808644218f2d483a696f16c2a21ee832655d5d2ca485",
+    "acb-start": "09c668b5a7367ea293cead98f4fe548fd66f21dfa41d814f1b2e871fbaaf351f",
+    "bad-second-slot": "cedd52d7f521060da837a1c620dd5fa37461297c72f999f44a9b2926025ed60c",
+    "customize": "dd590aff9448dcfb7b415e4f5ce1d5d9b2748068dd160a602d8fae444c319d00",
+    "empty": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encryption-event": "8caafd957e096abf9513452ae0a51d9faa6c31d7391197903bdf6b9d833e4222",
+    "hcc-bsle": "93152f8c3c17560d803f063dd2269279d8d10a8866a700ebc00ef16418ea018f",
+    "hcc-two-slots": "42dc56530e50685a15eaf1b20187d50f1065f729e5a7d712ca0d0af8659c540b",
+    "link-down": "162c45ddd24d27ae787f17576bcf4869484b37ea5249ffcb65dbf2c3b638ac3b",
+    "link-up": "10a434654265ddeff4a0d2984f7bd2c33ed16464ee02d45c59e40c507f0778c5",
+    "pm": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+    "rx-budget-zero": "cc61635da46b2c9974335ea37e0b5fd660a5c8a42a89b271fa7ec2ac4b8b26f6",
+    "security-complete": "6b0e136ce7d36049ca24d6436c7a320637d051c03ba277add1b802061214a56e",
+    "security-receipt": "6b98e33ff00fadf6439cb513b27550929281237f78f50a87982ddf475e55a8c5",
+    "short-event": "235f008d88ceaed1f3b3a4e0d96f808b7802924c24c762bd623f3698ebeacdab"
+  },
+  "final_corpus": {
+    "0d78c102d42bd21e037701df281a633b5f19d0f2": "1561d0fb035aa545ce5b425ada39898240ee577cfe86d4a0361bf6a6abea8b90",
+    "128ab90b3f68bbf1a6826724aa5515547af08e13": "60cec4024781e5fdf42e502a86b404293bfa1c4dd944cdc89aa3a8c9b695f747",
+    "1294d22ad12ae3443ffac74bfb14eae87284b1b9": "18b4a84855ae02061c3bc95a11cd45a49132add1ee1d71046ae594b1963e5c9f",
+    "1c96ffbdf5feb255c19bef8e487f4352ef492020": "70c8d2d9baa944dc29118f18d1d4336bae526f61c98f4ddfd3e4694045ad6e2e",
+    "1f1734c0a8a9b313a2b08d379479ca4002394721": "8f8071ffea85d1197d04f0b3c63fb643c6526aad1ed2f276e1dce2982fbccf58",
+    "1fd05cc80aad406b086735600ea5bfa34a384719": "af0129d9483f02cde50455db89c3fb564bcfd298de72bd11355dd0e4a7badf81",
+    "23c7d16c519a0276421f1123071aa0b1d3510544": "5ff1f1b7a3c12347ed40a48bcd1b2ee84e6064fea1c2b945da6d18409a77bbb4",
+    "2469bc4a17354a88ab9ce048bec48d4b38ae6aa2": "7a70ed31a9fab74dfc005291840bd42fc48e8d8bca3189829a3c80c6597042f1",
+    "24cc115713f4a01ab833cb6aacf5ec10f04517f7": "be9fc56afff2d6f1a5b25c46a58be6da819175ab81564f3f032481294b7ca3fe",
+    "26776ebc52647b1d0922c0f828cfc434ea3c3f4c": "a26be8f4ce5780733e1fb9938a24dbbb273684427c5244b792afe198215ac266",
+    "27c33cfc455ad80b66bb55c53e3577c4cf5d5a04": "b2320f59bb37b8014f24a373a2d2a1cdb5a0b5df0066f8a8b14dcfac83487a6f",
+    "2b1d68ade731fded83ab41177a6bb785b50c4cff": "32fa9a23bf9c41827db33e7e8b85c0a45652775b6078b0d1addac5e91c9d577d",
+    "2ce4b7ab75d7acca58df19d46dcb7b82d589806b": "3dd967f0eb4a9c4013386d89420802c8e3bc6dcebcd688bd0eded8aa7db56950",
+    "2e80bf905cddb56edbffe815f3bd2f1722b36489": "4306acc3609b02b9b1912b4ef1ed8fd92ff85d9ccdd258d5f16877d90c2c61d5",
+    "3334ac8df3803d48fcc64d8da24aba2e3011aa64": "e9b644867ab74ea71be64a4b9761bade27fbb38a0dba600a9f145c7adefc18ae",
+    "33a639b15d0ef2211c472e7e631483aff60655b4": "825dbe05b18da4064ce126f3aab6909ae430a34b9b8e823483f636c24de8a827",
+    "36136cff807a364f62dfc2bc400c1945c0998582": "4994202c4ef00192b71d5c13a0227b0cf9a46044a496e94a338fd6972c2caae9",
+    "38abc8a89b6b4954daac2948a543f1a4f6e00e8d": "29aa06747b990aa502bf30f0ea1b918f41f0735f8a3f10976554c4d8598a1248",
+    "3bace4eb776f8f180da48718b978de3022f2a959": "eb780b71549340d8b843973b3963b1bfb1375466715154175b884d88621d64da",
+    "41af50c2f760aca5c769babfc36de1789b93b934": "7ea1098e313c0bc996453053b56bf1851b0b47a40036a6439191fbfc96d1a9bf",
+    "42646b33b50b6aa15e22733c8900716f0fe19e1d": "8a76197204599702d0f07ca4bb29a6958d1c56121d2e7d652ca25e4663cb2f76",
+    "44b526dc0825195a041cff651d733b93c15a5fe2": "aaf2192b207e99639017817defcfcd87708fc32a95d8e4eb967a7c7f51751554",
+    "45dc2c90df8085152c767314822002b119a1b039": "5660b73b0fd410954fa013df68f12c06a9ac1063b3cca1d725f0255ff7f2e34c",
+    "54b564afee0328d8c7c86987a19c74f48aec2a1f": "03231e588c44a9e9676ed0d81851b6a9fb42b3401f9586c674a1144f237f7e1f",
+    "5ba93c9db0cff93f52b521d7420e43f6eda2784f": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+    "68c59d22242745bf4f96280b9c479d4c92cc6a9b": "2ce8b2253e1936dbbebc49ea1578ecf58c438592d13e64af9325bf2edfff9365",
+    "6bfeb3c33e2a53c5034c0d548c2b7cd53c01a16d": "0cdcb894149e239fbd39fbc5d38ef7a175848ee61e54947e89154e20b50a2e67",
+    "6c066b34f4db79023c0642afbc43b25a5327f710": "bbb3afa31af1adf2deb2cd3774f62df5807acf44963fc296e62de13b00380a6b",
+    "6d933f0fd1037b9260c4f9661495be98eb36bb3f": "e03288a5820a982e88dd9bf92c061e68708b88a49884da920e38c8a684c80d7e",
+    "6e62acc27d2c2dce74d151b14ee41c997001f2e6": "d763cfcc53eadc1872573259c66c47781c55d3100b1e66da1198722e201dde75",
+    "750907e0a372ee2da27f265b31e057ddf20152c1": "b11ca5a5313e16c6ab33ee6567007c3cbf18c4b7f615204086a8808ab372789a",
+    "7762eabf9387fe8ec5d648cd3b1d9eb6d820caa2": "2f0fd1e89b8de1d57292742ec380ea47066e307ad645f5bc3adad8a06ff58608",
+    "784eb4138ffd719b2e07df070454f3d3f95a7bf0": "30408a66d6b48e465ed69301df3db3d03b8652d2d50bc533c402fbe5e2052a0f",
+    "789132d56b845505dcd515199ed49cbcbef758e7": "a6b4650883569d557a28bd21426334836be38d0cd230a877a94d41ca3a49e44c",
+    "78b117f8230f5be7c9bccb81eb60ae7bad59fe6b": "7dc7d025e211e891f9657e5258a24758da3f0a514d5b2eb3ce5b072ccc76e186",
+    "7cb623fe284af1583aee7e8c9a0d93b9036d6b14": "b93289a2b965a8affe31a24bb7421670964cb3e51c7bc6d4e86355db9c465f68",
+    "7f1a0d2d0ef97e3ddbbdf8f16d765fd7f38fe9bd": "042194d897ab36c3ffb00e82e5cb3f7e79a97b168689420495f1afe241490e39",
+    "7f72db96cf10e57ce42fbe63d382599d472a5019": "6521b61026399a1815d9d36e0823ec05d6fc736b6ec732eea2d0d3aca8b67053",
+    "8169e152c4a942eaed9149ae94a7143de4f7641b": "3781f2fd95d079190e56132bb48f707fd375bc94d76d99a9955576342afa6f26",
+    "8584c9ee0b34c734738d5e257953f8ccf73a9770": "d873e5946dd0252711f463b8ab2a87b7e52a98a73003c6593d82b03f4610ce21",
+    "869ed32c72d232fa906949d74829becfdbe8a94e": "0453800a26a9b68a14005c0cdc66e3eefa209c99b22e5899380d25dbb7c94d1e",
+    "873486091523a597fa98cd334e3fab91e6d1188f": "88a0fa250e3b92f9fa3ee9455732dae9a7d87cf35efcab8baa506f73a72f46a7",
+    "877fbc555430dd183e6baade70e1c819dfc53493": "008785ffe6d7c7cd8a6bb79d08fe17e3fc077ab3cbcd6a7ef7a090d732a0d4a1",
+    "9d8a39bcd5ce5c19c517732a4633bddabbb12aa6": "53379be7e00cfc046192acdb10f415206508aee911ed7f8d1688d34cdaf4b6b9",
+    "aa1eff1e23f5ea65d7dff5ece546ea6eb020d5bb": "166fcd59843c0dc128c4986a243273e35d73e27b878cc038a94f0e125b0cab02",
+    "acb-full": "bedda237fdb590bd098fa2974680e4d4648d1a2e38d655fe608204520f95f470",
+    "acb-length-2047": "2903fac9d43b97bb53fa50cdb41586115df28f251bdb2bcb792e1c24c29869de",
+    "acb-length-253": "41da5fe43a1c84a1ee9f3a17c560d8774d3cc83743a671c673e78ee0a098b2d2",
+    "acb-length-254": "240d179fd75cbe8ceb9ef978550b97ead12118b41fccf02b2a05ad26d887b15d",
+    "acb-length-255": "e196c2a1090c23cb06d9808644218f2d483a696f16c2a21ee832655d5d2ca485",
+    "acb-start": "09c668b5a7367ea293cead98f4fe548fd66f21dfa41d814f1b2e871fbaaf351f",
+    "acdd76302b91c0fc51758468d4da13a157a482fb": "e24ad049ea51a9c6903f238d7673b105a1fa71f40c8d197525adc446e0d66625",
+    "afb557066894ef8dc92582c1e9bd4dd78618ed8a": "0f19c46d22ca0f84f97601da42a623bbee50a161febd4678b40c3e0b7c2bb796",
+    "b52758e599996462df14c11893d2cb8042f3c8ad": "b0719ad9e21394467d6a7931f3a89a69b88821b9cdea52d5028a267cb9fbd98b",
+    "bad-second-slot": "cedd52d7f521060da837a1c620dd5fa37461297c72f999f44a9b2926025ed60c",
+    "baf660fe0e29dee6843dd73c638e12b62e74203f": "9b6f6f390ec5dea441351e184fe4a6ce2e1a1557715d66ec60c9e853a5d75508",
+    "bf02c3661148a90a5ede987da07a9fcb6f708f7b": "6546c76797723358a58ce4129cd00a3aa20627a5c5236b735562c94771829eaf",
+    "c2a2e6f3881e48fa01e9ef4b8e4e678b95526db8": "0dd7516bd1c4bd7c031b7f8a67eaea61543139565d3e5d15b2e4c6f6091b0328",
+    "c2fc5cfd046884ae63c8e7cc2c1b004da1bc7a14": "b0890ab27cb47c85b3399de8f1e6803c6938f1df437090002a3f5a2f3d322b10",
+    "c3d78ec568e623ae9bfd25c0a9fe6ff2bbd9b767": "58c3b57d605c29baf44db2f4aaa42d1c93ee85007cef62fa715ef2aa19401a6d",
+    "c3efa572973c5416e96b17b3bf8fd517e873b338": "077f729c0849e7fe8abf6884bce200583cb262ec894ba7d941e83c8d35319039",
+    "c6c804f992303d676b26283bf70ffeda3ebcb856": "5474a3ddbacb5659b07a5930be95dc12b33433898f2c8f8d3e4d0f96dd639050",
+    "customize": "dd590aff9448dcfb7b415e4f5ce1d5d9b2748068dd160a602d8fae444c319d00",
+    "d0623daaff20d76e5b8b33947216f5714e0dddc8": "8de03fa69e476f5e761feffd8ebefaf2bb12efa170b1a9f8bdb07482bed7c4c4",
+    "d3c61782fcd0cfeb2bf1d3a86d885d59d3aff660": "34ee08ba62b88a43f6756eb77a5c627dcd34d6810c2e539678df2e0069f69952",
+    "dd5d527a1479e1d4bbb2bcf037d75108a8ef888d": "e0c4e6879711d2adf7849b77cdbc3abba0ad4cab4df5fcc69831a730f1711a4f",
+    "e0f492d21b48a98ccabe13e3cb0b94718152b093": "8e2bdc0563d04545f360cc72291846ca5f94b1089be8d78f9b11e08315abee52",
+    "e3864b5518476deb5fd080d71f9419956eea5b76": "dcaeff07829ff8b506f0746d1cf802f6488a29f4916824d22825936dfc0e2bb5",
+    "e3cddbd9526f71eda8e19afcc97e472c49e77005": "c86da7fb9d23f73be35fca5738cc80a915009d992f02a923f2788c42fed25e3b",
+    "e84ecb5816795c2e1725725a626b177420ee310d": "71381bd484a3b29e59a3abd085370f350363085edca9ab401deb22d303e4de8c",
+    "e882627dcec91d72384a525074d038c1d525a344": "c96a7c48a7441fd59180a388bd93ddabf17f648309b722d5a715af3b17006a3c",
+    "empty": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encryption-event": "8caafd957e096abf9513452ae0a51d9faa6c31d7391197903bdf6b9d833e4222",
+    "f5c8d72b4419db3ac22e78e8da35b569b8839268": "c5613cd14eefcd59022528044be740ac8c9769992c80ef92ef909e34808da084",
+    "f8ca845f59fec83dc338ed2257922bb6da76b4bd": "10cddb655f7ca16ac23e185bed0916027979746593f057dd16b57d2e83f8d025",
+    "f90001bfdcc52f0f1a2182f202bff05ad8dcc3a3": "fa8f2f6ce8b34e4e3e5c010c032f740100b10430e3495d17ae2c4338b6b3f8cd",
+    "fe7f75ab55c2decba187ce6cec28ce4ad3694b8d": "c4ebf770bae281220ad7bae82d64a32fd52c24e9d02865000175bf4b0815c86f",
+    "ffc01393a7e1c7313f780f6b213154f0af138fc8": "c17db53ec4eecc8219f2c6c633a75b074ffc707534baee0dba58f13995e07355",
+    "ffeec5b569f702881c9b766d71c601339e70e222": "77038e90795fe1451e51cb30c99e0d7e9b57da9029220c34bd78096783fa82cd",
+    "hcc-bsle": "93152f8c3c17560d803f063dd2269279d8d10a8866a700ebc00ef16418ea018f",
+    "hcc-two-slots": "42dc56530e50685a15eaf1b20187d50f1065f729e5a7d712ca0d0af8659c540b",
+    "link-down": "162c45ddd24d27ae787f17576bcf4869484b37ea5249ffcb65dbf2c3b638ac3b",
+    "link-up": "10a434654265ddeff4a0d2984f7bd2c33ed16464ee02d45c59e40c507f0778c5",
+    "pm": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+    "rx-budget-zero": "cc61635da46b2c9974335ea37e0b5fd660a5c8a42a89b271fa7ec2ac4b8b26f6",
+    "security-complete": "6b0e136ce7d36049ca24d6436c7a320637d051c03ba277add1b802061214a56e",
+    "security-receipt": "6b98e33ff00fadf6439cb513b27550929281237f78f50a87982ddf475e55a8c5",
+    "short-event": "235f008d88ceaed1f3b3a4e0d96f808b7802924c24c762bd623f3698ebeacdab"
+  },
+  "actual_production_execution_counts": {
+    "ws73_wire_acb_fragment": 20019,
+    "ws73_wire_acb_fragment_decode": 166232,
+    "ws73_wire_receive": 60057,
+    "ws73_dli_validate_security_event": 80384,
+    "ws73_dli_link_outcome": 80384,
+    "ws73_dli_validate_reply": 80384
+  },
+  "phases": [
+    {
+      "name": "compile",
+      "status": "COMMAND_COMPLETED",
+      "start_ns": 1792087355816788265,
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "end_ns": 1792087356261398115
+    },
+    {
+      "name": "replay",
+      "status": "BOUNDED_COMPLETED_NO_FINDING",
+      "start_ns": 1792087356281340234,
+      "exit": 0,
+      "log_sha256": "11de687b30caa1635371a736f664eae584ce8cd0926ee92edb6899a48a3c0576",
+      "end_ns": 1792087356310347666,
+      "executed_units": 19
+    },
+    {
+      "name": "explore",
+      "status": "BOUNDED_COMPLETED_NO_FINDING",
+      "start_ns": 1792087356312527924,
+      "exit": 0,
+      "log_sha256": "c80e431b4bbe36b390951012ff5da1f208ceb8342cc097d42252b8f20d78d9a2",
+      "end_ns": 1792087356660638272,
+      "executed_units": 20000
+    },
+    {
+      "name": "merge-coverage",
+      "status": "COMMAND_COMPLETED",
+      "start_ns": 1792087356661450631,
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "end_ns": 1792087356670755941
+    },
+    {
+      "name": "export-coverage",
+      "status": "COMMAND_COMPLETED",
+      "start_ns": 1792087356671247008,
+      "exit": 0,
+      "log_sha256": "c9bdb7ad82a83f2557e81e55649b197352b25a6b0511a3103087eb1b0e3bc2a8",
+      "end_ns": 1792087356687128452
+    }
+  ],
+  "materials": {
+    "report.json": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/report.json",
+      "sha256": "b169eae4b93b43d77bb7856af576d4c6c2ad8731d1ae69e9b9caa4d7f8fa2e35",
+      "bytes": 17770,
+      "access": "private",
+      "format": "json"
+    },
+    "compile.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "explore.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/explore.log",
+      "sha256": "c80e431b4bbe36b390951012ff5da1f208ceb8342cc097d42252b8f20d78d9a2",
+      "bytes": 22683,
+      "access": "private",
+      "format": "bytes"
+    },
+    "export-coverage.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/export-coverage.log",
+      "sha256": "c9bdb7ad82a83f2557e81e55649b197352b25a6b0511a3103087eb1b0e3bc2a8",
+      "bytes": 213606,
+      "access": "private",
+      "format": "bytes"
+    },
+    "merge-coverage.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/merge-coverage.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "format": "bytes"
+    },
+    "replay.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/replay.log",
+      "sha256": "11de687b30caa1635371a736f664eae584ce8cd0926ee92edb6899a48a3c0576",
+      "bytes": 746,
+      "access": "private",
+      "format": "bytes"
+    },
+    "verdict-controls.log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/verdict-controls.log",
+      "sha256": "888a0c0ed615e57d32cf72be501b0c355f33b8613c81dfdaa99db33d7959487e",
+      "bytes": 103,
+      "access": "private",
+      "format": "bytes"
+    },
+    "ws73-codec-fuzz": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/ws73-codec-fuzz",
+      "sha256": "ececc4e0b4dab7bc3a5d31018d8d31d484a66a7daa751a0900dd9688f5849c61",
+      "bytes": 3062816,
+      "access": "private",
+      "format": "bytes"
+    },
+    "merged.profdata": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/merged.profdata",
+      "sha256": "712f50fcd4285ae4a444d5245dd4aad534e0604ade96e6116d3b4709f4450e54",
+      "bytes": 5664,
+      "access": "private",
+      "format": "bytes"
+    },
+    "replay-corpus": [
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/acb-full",
+        "sha256": "bedda237fdb590bd098fa2974680e4d4648d1a2e38d655fe608204520f95f470",
+        "bytes": 8,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/acb-length-2047",
+        "sha256": "2903fac9d43b97bb53fa50cdb41586115df28f251bdb2bcb792e1c24c29869de",
+        "bytes": 2052,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/acb-length-253",
+        "sha256": "41da5fe43a1c84a1ee9f3a17c560d8774d3cc83743a671c673e78ee0a098b2d2",
+        "bytes": 258,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/acb-length-254",
+        "sha256": "240d179fd75cbe8ceb9ef978550b97ead12118b41fccf02b2a05ad26d887b15d",
+        "bytes": 259,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/acb-length-255",
+        "sha256": "e196c2a1090c23cb06d9808644218f2d483a696f16c2a21ee832655d5d2ca485",
+        "bytes": 260,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/acb-start",
+        "sha256": "09c668b5a7367ea293cead98f4fe548fd66f21dfa41d814f1b2e871fbaaf351f",
+        "bytes": 8,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/bad-second-slot",
+        "sha256": "cedd52d7f521060da837a1c620dd5fa37461297c72f999f44a9b2926025ed60c",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/customize",
+        "sha256": "dd590aff9448dcfb7b415e4f5ce1d5d9b2748068dd160a602d8fae444c319d00",
+        "bytes": 140,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/empty",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/encryption-event",
+        "sha256": "8caafd957e096abf9513452ae0a51d9faa6c31d7391197903bdf6b9d833e4222",
+        "bytes": 9,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/hcc-bsle",
+        "sha256": "93152f8c3c17560d803f063dd2269279d8d10a8866a700ebc00ef16418ea018f",
+        "bytes": 104,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/hcc-two-slots",
+        "sha256": "42dc56530e50685a15eaf1b20187d50f1065f729e5a7d712ca0d0af8659c540b",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/link-down",
+        "sha256": "162c45ddd24d27ae787f17576bcf4869484b37ea5249ffcb65dbf2c3b638ac3b",
+        "bytes": 9,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/link-up",
+        "sha256": "10a434654265ddeff4a0d2984f7bd2c33ed16464ee02d45c59e40c507f0778c5",
+        "bytes": 16,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/pm",
+        "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+        "bytes": 4,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/rx-budget-zero",
+        "sha256": "cc61635da46b2c9974335ea37e0b5fd660a5c8a42a89b271fa7ec2ac4b8b26f6",
+        "bytes": 20480,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/security-complete",
+        "sha256": "6b0e136ce7d36049ca24d6436c7a320637d051c03ba277add1b802061214a56e",
+        "bytes": 13,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/security-receipt",
+        "sha256": "6b98e33ff00fadf6439cb513b27550929281237f78f50a87982ddf475e55a8c5",
+        "bytes": 11,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/replay-corpus/short-event",
+        "sha256": "235f008d88ceaed1f3b3a4e0d96f808b7802924c24c762bd623f3698ebeacdab",
+        "bytes": 3,
+        "access": "private",
+        "format": "bytes"
+      }
+    ],
+    "explore-corpus": [
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/0d78c102d42bd21e037701df281a633b5f19d0f2",
+        "sha256": "1561d0fb035aa545ce5b425ada39898240ee577cfe86d4a0361bf6a6abea8b90",
+        "bytes": 27,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/128ab90b3f68bbf1a6826724aa5515547af08e13",
+        "sha256": "60cec4024781e5fdf42e502a86b404293bfa1c4dd944cdc89aa3a8c9b695f747",
+        "bytes": 146,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/1294d22ad12ae3443ffac74bfb14eae87284b1b9",
+        "sha256": "18b4a84855ae02061c3bc95a11cd45a49132add1ee1d71046ae594b1963e5c9f",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/1c96ffbdf5feb255c19bef8e487f4352ef492020",
+        "sha256": "70c8d2d9baa944dc29118f18d1d4336bae526f61c98f4ddfd3e4694045ad6e2e",
+        "bytes": 4,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/1f1734c0a8a9b313a2b08d379479ca4002394721",
+        "sha256": "8f8071ffea85d1197d04f0b3c63fb643c6526aad1ed2f276e1dce2982fbccf58",
+        "bytes": 3,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/1fd05cc80aad406b086735600ea5bfa34a384719",
+        "sha256": "af0129d9483f02cde50455db89c3fb564bcfd298de72bd11355dd0e4a7badf81",
+        "bytes": 6,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/23c7d16c519a0276421f1123071aa0b1d3510544",
+        "sha256": "5ff1f1b7a3c12347ed40a48bcd1b2ee84e6064fea1c2b945da6d18409a77bbb4",
+        "bytes": 6,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/2469bc4a17354a88ab9ce048bec48d4b38ae6aa2",
+        "sha256": "7a70ed31a9fab74dfc005291840bd42fc48e8d8bca3189829a3c80c6597042f1",
+        "bytes": 7,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/24cc115713f4a01ab833cb6aacf5ec10f04517f7",
+        "sha256": "be9fc56afff2d6f1a5b25c46a58be6da819175ab81564f3f032481294b7ca3fe",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/26776ebc52647b1d0922c0f828cfc434ea3c3f4c",
+        "sha256": "a26be8f4ce5780733e1fb9938a24dbbb273684427c5244b792afe198215ac266",
+        "bytes": 106,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/27c33cfc455ad80b66bb55c53e3577c4cf5d5a04",
+        "sha256": "b2320f59bb37b8014f24a373a2d2a1cdb5a0b5df0066f8a8b14dcfac83487a6f",
+        "bytes": 11,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/2b1d68ade731fded83ab41177a6bb785b50c4cff",
+        "sha256": "32fa9a23bf9c41827db33e7e8b85c0a45652775b6078b0d1addac5e91c9d577d",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/2ce4b7ab75d7acca58df19d46dcb7b82d589806b",
+        "sha256": "3dd967f0eb4a9c4013386d89420802c8e3bc6dcebcd688bd0eded8aa7db56950",
+        "bytes": 16,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/2e80bf905cddb56edbffe815f3bd2f1722b36489",
+        "sha256": "4306acc3609b02b9b1912b4ef1ed8fd92ff85d9ccdd258d5f16877d90c2c61d5",
+        "bytes": 7008,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/3334ac8df3803d48fcc64d8da24aba2e3011aa64",
+        "sha256": "e9b644867ab74ea71be64a4b9761bade27fbb38a0dba600a9f145c7adefc18ae",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/33a639b15d0ef2211c472e7e631483aff60655b4",
+        "sha256": "825dbe05b18da4064ce126f3aab6909ae430a34b9b8e823483f636c24de8a827",
+        "bytes": 6,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/36136cff807a364f62dfc2bc400c1945c0998582",
+        "sha256": "4994202c4ef00192b71d5c13a0227b0cf9a46044a496e94a338fd6972c2caae9",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/38abc8a89b6b4954daac2948a543f1a4f6e00e8d",
+        "sha256": "29aa06747b990aa502bf30f0ea1b918f41f0735f8a3f10976554c4d8598a1248",
+        "bytes": 5,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/3bace4eb776f8f180da48718b978de3022f2a959",
+        "sha256": "eb780b71549340d8b843973b3963b1bfb1375466715154175b884d88621d64da",
+        "bytes": 104,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/41af50c2f760aca5c769babfc36de1789b93b934",
+        "sha256": "7ea1098e313c0bc996453053b56bf1851b0b47a40036a6439191fbfc96d1a9bf",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/42646b33b50b6aa15e22733c8900716f0fe19e1d",
+        "sha256": "8a76197204599702d0f07ca4bb29a6958d1c56121d2e7d652ca25e4663cb2f76",
+        "bytes": 2,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/44b526dc0825195a041cff651d733b93c15a5fe2",
+        "sha256": "aaf2192b207e99639017817defcfcd87708fc32a95d8e4eb967a7c7f51751554",
+        "bytes": 98,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/45dc2c90df8085152c767314822002b119a1b039",
+        "sha256": "5660b73b0fd410954fa013df68f12c06a9ac1063b3cca1d725f0255ff7f2e34c",
+        "bytes": 6,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/54b564afee0328d8c7c86987a19c74f48aec2a1f",
+        "sha256": "03231e588c44a9e9676ed0d81851b6a9fb42b3401f9586c674a1144f237f7e1f",
+        "bytes": 94,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/5ba93c9db0cff93f52b521d7420e43f6eda2784f",
+        "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+        "bytes": 1,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/68c59d22242745bf4f96280b9c479d4c92cc6a9b",
+        "sha256": "2ce8b2253e1936dbbebc49ea1578ecf58c438592d13e64af9325bf2edfff9365",
+        "bytes": 4,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/6bfeb3c33e2a53c5034c0d548c2b7cd53c01a16d",
+        "sha256": "0cdcb894149e239fbd39fbc5d38ef7a175848ee61e54947e89154e20b50a2e67",
+        "bytes": 5,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/6c066b34f4db79023c0642afbc43b25a5327f710",
+        "sha256": "bbb3afa31af1adf2deb2cd3774f62df5807acf44963fc296e62de13b00380a6b",
+        "bytes": 2,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/6d933f0fd1037b9260c4f9661495be98eb36bb3f",
+        "sha256": "e03288a5820a982e88dd9bf92c061e68708b88a49884da920e38c8a684c80d7e",
+        "bytes": 13,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/6e62acc27d2c2dce74d151b14ee41c997001f2e6",
+        "sha256": "d763cfcc53eadc1872573259c66c47781c55d3100b1e66da1198722e201dde75",
+        "bytes": 13,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/750907e0a372ee2da27f265b31e057ddf20152c1",
+        "sha256": "b11ca5a5313e16c6ab33ee6567007c3cbf18c4b7f615204086a8808ab372789a",
+        "bytes": 8,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/7762eabf9387fe8ec5d648cd3b1d9eb6d820caa2",
+        "sha256": "2f0fd1e89b8de1d57292742ec380ea47066e307ad645f5bc3adad8a06ff58608",
+        "bytes": 1,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/784eb4138ffd719b2e07df070454f3d3f95a7bf0",
+        "sha256": "30408a66d6b48e465ed69301df3db3d03b8652d2d50bc533c402fbe5e2052a0f",
+        "bytes": 13,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/789132d56b845505dcd515199ed49cbcbef758e7",
+        "sha256": "a6b4650883569d557a28bd21426334836be38d0cd230a877a94d41ca3a49e44c",
+        "bytes": 176,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/78b117f8230f5be7c9bccb81eb60ae7bad59fe6b",
+        "sha256": "7dc7d025e211e891f9657e5258a24758da3f0a514d5b2eb3ce5b072ccc76e186",
+        "bytes": 93,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/7cb623fe284af1583aee7e8c9a0d93b9036d6b14",
+        "sha256": "b93289a2b965a8affe31a24bb7421670964cb3e51c7bc6d4e86355db9c465f68",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/7f1a0d2d0ef97e3ddbbdf8f16d765fd7f38fe9bd",
+        "sha256": "042194d897ab36c3ffb00e82e5cb3f7e79a97b168689420495f1afe241490e39",
+        "bytes": 4,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/7f72db96cf10e57ce42fbe63d382599d472a5019",
+        "sha256": "6521b61026399a1815d9d36e0823ec05d6fc736b6ec732eea2d0d3aca8b67053",
+        "bytes": 13,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/8169e152c4a942eaed9149ae94a7143de4f7641b",
+        "sha256": "3781f2fd95d079190e56132bb48f707fd375bc94d76d99a9955576342afa6f26",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/8584c9ee0b34c734738d5e257953f8ccf73a9770",
+        "sha256": "d873e5946dd0252711f463b8ab2a87b7e52a98a73003c6593d82b03f4610ce21",
+        "bytes": 5,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/869ed32c72d232fa906949d74829becfdbe8a94e",
+        "sha256": "0453800a26a9b68a14005c0cdc66e3eefa209c99b22e5899380d25dbb7c94d1e",
+        "bytes": 4,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/873486091523a597fa98cd334e3fab91e6d1188f",
+        "sha256": "88a0fa250e3b92f9fa3ee9455732dae9a7d87cf35efcab8baa506f73a72f46a7",
+        "bytes": 7646,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/877fbc555430dd183e6baade70e1c819dfc53493",
+        "sha256": "008785ffe6d7c7cd8a6bb79d08fe17e3fc077ab3cbcd6a7ef7a090d732a0d4a1",
+        "bytes": 140,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/9d8a39bcd5ce5c19c517732a4633bddabbb12aa6",
+        "sha256": "53379be7e00cfc046192acdb10f415206508aee911ed7f8d1688d34cdaf4b6b9",
+        "bytes": 2,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/aa1eff1e23f5ea65d7dff5ece546ea6eb020d5bb",
+        "sha256": "166fcd59843c0dc128c4986a243273e35d73e27b878cc038a94f0e125b0cab02",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/acb-full",
+        "sha256": "bedda237fdb590bd098fa2974680e4d4648d1a2e38d655fe608204520f95f470",
+        "bytes": 8,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/acb-length-2047",
+        "sha256": "2903fac9d43b97bb53fa50cdb41586115df28f251bdb2bcb792e1c24c29869de",
+        "bytes": 2052,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/acb-length-253",
+        "sha256": "41da5fe43a1c84a1ee9f3a17c560d8774d3cc83743a671c673e78ee0a098b2d2",
+        "bytes": 258,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/acb-length-254",
+        "sha256": "240d179fd75cbe8ceb9ef978550b97ead12118b41fccf02b2a05ad26d887b15d",
+        "bytes": 259,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/acb-length-255",
+        "sha256": "e196c2a1090c23cb06d9808644218f2d483a696f16c2a21ee832655d5d2ca485",
+        "bytes": 260,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/acb-start",
+        "sha256": "09c668b5a7367ea293cead98f4fe548fd66f21dfa41d814f1b2e871fbaaf351f",
+        "bytes": 8,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/acdd76302b91c0fc51758468d4da13a157a482fb",
+        "sha256": "e24ad049ea51a9c6903f238d7673b105a1fa71f40c8d197525adc446e0d66625",
+        "bytes": 13,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/afb557066894ef8dc92582c1e9bd4dd78618ed8a",
+        "sha256": "0f19c46d22ca0f84f97601da42a623bbee50a161febd4678b40c3e0b7c2bb796",
+        "bytes": 121,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/b52758e599996462df14c11893d2cb8042f3c8ad",
+        "sha256": "b0719ad9e21394467d6a7931f3a89a69b88821b9cdea52d5028a267cb9fbd98b",
+        "bytes": 3,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/bad-second-slot",
+        "sha256": "cedd52d7f521060da837a1c620dd5fa37461297c72f999f44a9b2926025ed60c",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/baf660fe0e29dee6843dd73c638e12b62e74203f",
+        "sha256": "9b6f6f390ec5dea441351e184fe4a6ce2e1a1557715d66ec60c9e853a5d75508",
+        "bytes": 5,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/bf02c3661148a90a5ede987da07a9fcb6f708f7b",
+        "sha256": "6546c76797723358a58ce4129cd00a3aa20627a5c5236b735562c94771829eaf",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/c2a2e6f3881e48fa01e9ef4b8e4e678b95526db8",
+        "sha256": "0dd7516bd1c4bd7c031b7f8a67eaea61543139565d3e5d15b2e4c6f6091b0328",
+        "bytes": 4,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/c2fc5cfd046884ae63c8e7cc2c1b004da1bc7a14",
+        "sha256": "b0890ab27cb47c85b3399de8f1e6803c6938f1df437090002a3f5a2f3d322b10",
+        "bytes": 3,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/c3d78ec568e623ae9bfd25c0a9fe6ff2bbd9b767",
+        "sha256": "58c3b57d605c29baf44db2f4aaa42d1c93ee85007cef62fa715ef2aa19401a6d",
+        "bytes": 8528,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/c3efa572973c5416e96b17b3bf8fd517e873b338",
+        "sha256": "077f729c0849e7fe8abf6884bce200583cb262ec894ba7d941e83c8d35319039",
+        "bytes": 11614,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/c6c804f992303d676b26283bf70ffeda3ebcb856",
+        "sha256": "5474a3ddbacb5659b07a5930be95dc12b33433898f2c8f8d3e4d0f96dd639050",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/customize",
+        "sha256": "dd590aff9448dcfb7b415e4f5ce1d5d9b2748068dd160a602d8fae444c319d00",
+        "bytes": 140,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/d0623daaff20d76e5b8b33947216f5714e0dddc8",
+        "sha256": "8de03fa69e476f5e761feffd8ebefaf2bb12efa170b1a9f8bdb07482bed7c4c4",
+        "bytes": 3,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/d3c61782fcd0cfeb2bf1d3a86d885d59d3aff660",
+        "sha256": "34ee08ba62b88a43f6756eb77a5c627dcd34d6810c2e539678df2e0069f69952",
+        "bytes": 2,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/dd5d527a1479e1d4bbb2bcf037d75108a8ef888d",
+        "sha256": "e0c4e6879711d2adf7849b77cdbc3abba0ad4cab4df5fcc69831a730f1711a4f",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/e0f492d21b48a98ccabe13e3cb0b94718152b093",
+        "sha256": "8e2bdc0563d04545f360cc72291846ca5f94b1089be8d78f9b11e08315abee52",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/e3864b5518476deb5fd080d71f9419956eea5b76",
+        "sha256": "dcaeff07829ff8b506f0746d1cf802f6488a29f4916824d22825936dfc0e2bb5",
+        "bytes": 6277,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/e3cddbd9526f71eda8e19afcc97e472c49e77005",
+        "sha256": "c86da7fb9d23f73be35fca5738cc80a915009d992f02a923f2788c42fed25e3b",
+        "bytes": 18,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/e84ecb5816795c2e1725725a626b177420ee310d",
+        "sha256": "71381bd484a3b29e59a3abd085370f350363085edca9ab401deb22d303e4de8c",
+        "bytes": 3269,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/e882627dcec91d72384a525074d038c1d525a344",
+        "sha256": "c96a7c48a7441fd59180a388bd93ddabf17f648309b722d5a715af3b17006a3c",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/empty",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/encryption-event",
+        "sha256": "8caafd957e096abf9513452ae0a51d9faa6c31d7391197903bdf6b9d833e4222",
+        "bytes": 9,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/f5c8d72b4419db3ac22e78e8da35b569b8839268",
+        "sha256": "c5613cd14eefcd59022528044be740ac8c9769992c80ef92ef909e34808da084",
+        "bytes": 4389,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/f8ca845f59fec83dc338ed2257922bb6da76b4bd",
+        "sha256": "10cddb655f7ca16ac23e185bed0916027979746593f057dd16b57d2e83f8d025",
+        "bytes": 2,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/f90001bfdcc52f0f1a2182f202bff05ad8dcc3a3",
+        "sha256": "fa8f2f6ce8b34e4e3e5c010c032f740100b10430e3495d17ae2c4338b6b3f8cd",
+        "bytes": 2851,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/fe7f75ab55c2decba187ce6cec28ce4ad3694b8d",
+        "sha256": "c4ebf770bae281220ad7bae82d64a32fd52c24e9d02865000175bf4b0815c86f",
+        "bytes": 5,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/ffc01393a7e1c7313f780f6b213154f0af138fc8",
+        "sha256": "c17db53ec4eecc8219f2c6c633a75b074ffc707534baee0dba58f13995e07355",
+        "bytes": 4,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/ffeec5b569f702881c9b766d71c601339e70e222",
+        "sha256": "77038e90795fe1451e51cb30c99e0d7e9b57da9029220c34bd78096783fa82cd",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/hcc-bsle",
+        "sha256": "93152f8c3c17560d803f063dd2269279d8d10a8866a700ebc00ef16418ea018f",
+        "bytes": 104,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/hcc-two-slots",
+        "sha256": "42dc56530e50685a15eaf1b20187d50f1065f729e5a7d712ca0d0af8659c540b",
+        "bytes": 116,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/link-down",
+        "sha256": "162c45ddd24d27ae787f17576bcf4869484b37ea5249ffcb65dbf2c3b638ac3b",
+        "bytes": 9,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/link-up",
+        "sha256": "10a434654265ddeff4a0d2984f7bd2c33ed16464ee02d45c59e40c507f0778c5",
+        "bytes": 16,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/pm",
+        "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+        "bytes": 4,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/rx-budget-zero",
+        "sha256": "cc61635da46b2c9974335ea37e0b5fd660a5c8a42a89b271fa7ec2ac4b8b26f6",
+        "bytes": 20480,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/security-complete",
+        "sha256": "6b0e136ce7d36049ca24d6436c7a320637d051c03ba277add1b802061214a56e",
+        "bytes": 13,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/security-receipt",
+        "sha256": "6b98e33ff00fadf6439cb513b27550929281237f78f50a87982ddf475e55a8c5",
+        "bytes": 11,
+        "access": "private",
+        "format": "bytes"
+      },
+      {
+        "base": "workspace",
+        "path": ".dev/ws73-codec-fuzz-ddea575/explore-corpus/short-event",
+        "sha256": "235f008d88ceaed1f3b3a4e0d96f808b7802924c24c762bd623f3698ebeacdab",
+        "bytes": 3,
+        "access": "private",
+        "format": "bytes"
+      }
+    ],
+    "explore-390490.profraw": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/explore-390490.profraw",
+      "sha256": "779867b4594bf68e427b337d368c8e034445bc852a9be86f4c7c08c98344483c",
+      "bytes": 6640,
+      "access": "private",
+      "format": "bytes"
+    },
+    "replay-390486.profraw": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ddea575/replay-390486.profraw",
+      "sha256": "f668950db79676b82720b4360198ab11137b5948980c14dcee5d6291e8d1a2ce",
+      "bytes": 6640,
+      "access": "private",
+      "format": "bytes"
+    }
+  },
+  "supervisor_negative_controls": {
+    "cases": 5,
+    "source": "tools/testing/selftests/sparklink/fuzz/test_ws73_codec_verdict.py",
+    "result": "PASS synthetic parser/coverage fixtures; not protocol acceptance"
+  },
+  "prior_failure": {
+    "status": "FAILED_OR_UNVERIFIED",
+    "classification": "environment/tool failure, not a confirmed production-code defect",
+    "reason": "LSan cannot operate under sandbox ptrace; fuzzer DONE text existed but process77 and diagnostics correctly rejected it; empty crash artifact retained",
+    "report": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-initial/report.json",
+      "sha256": "526699bcbf6889dab54a0045893c0d3073211217b5dada57c0b021dacbd48e8f",
+      "bytes": 5184,
+      "access": "private",
+      "format": "json"
+    },
+    "log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-initial/replay.log",
+      "sha256": "34cc570f757433ffd775f16ee88025f8e5927837e1f66f7b8278a20166eaedac",
+      "bytes": 4544,
+      "access": "private",
+      "format": "bytes"
+    }
+  },
+  "trusted_base": "Clang/LLVM, libFuzzer, ASAN/UBSAN/LSan, libc and OS are tools/assumptions, not verified implementations. Host C conditional includes differ from kernel environment; actual production codec bodies are unchanged.",
+  "access": "Authorized original workspace or CI downloadable artifact; no offsite/permanent retention guarantee. Corpus is synthetic public-format bytes, no key/capture/SDK/standards copied.",
+  "prior_exact_exploration": {
+    "source": "99b15feceb68cf1f43cc00f6b3d25545d4ed3124",
+    "classification": "bounded no-finding but command stage metadata still said pending; retained, not promoted to final result",
+    "report": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-99b15fe/report.json",
+      "sha256": "93705d157027f3601a731214ce0532e42612021942b58cd4e46796eda7a54c8e",
+      "bytes": 17788,
+      "access": "private",
+      "format": "json"
+    }
+  },
+  "prototypes": "Dirty prototypev2 retained separately; final exact clean ddea adds maximum legal ACB decoder and terminal command status; no previous result overwritten.",
+  "gates": [
+    {
+      "name": "compile",
+      "status": "COMMAND_COMPLETED"
+    },
+    {
+      "name": "replay",
+      "status": "BOUNDED_COMPLETED_NO_FINDING"
+    },
+    {
+      "name": "explore",
+      "status": "BOUNDED_COMPLETED_NO_FINDING"
+    },
+    {
+      "name": "merge-coverage",
+      "status": "COMMAND_COMPLETED"
+    },
+    {
+      "name": "export-coverage",
+      "status": "COMMAND_COMPLETED"
+    },
+    {
+      "name": "negative-controls",
+      "status": "PASS",
+      "cases": 5
+    }
+  ]
+}

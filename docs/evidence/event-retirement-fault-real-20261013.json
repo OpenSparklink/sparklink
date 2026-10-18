@@ -1,0 +1,36 @@
+{
+  "status": "REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS",
+  "manifest": {
+    "workspace_relative_path": ".dev/native-event-poll-retirement-v2-fault-real/manifest.json",
+    "sha256": "3b4f9737f599d37ca930d5eaa3ecf7fe7f882ca741c7fc0eb4b733ac84117488",
+    "public_raw_material": false
+  },
+  "pcap": {
+    "workspace_relative_path": ".dev/native-event-poll-retirement-v2-fault-real/guest-output/ws73.pcap",
+    "sha256": "8bc9ef25d82765b15fe367697aad540b76fae11dfe683b424138da3dff922451",
+    "public_raw_material": false
+  },
+  "console": {
+    "workspace_relative_path": ".dev/native-event-poll-retirement-v2-fault-real/console.log",
+    "sha256": "54387284d1ecc14f1749e84306dfd18dfe55be57700f29454789628626ef93c0",
+    "public_raw_material": false
+  },
+  "capture_stats": {
+    "workspace_relative_path": ".dev/native-event-poll-retirement-v2-fault-real/guest-output/capture-stats.txt",
+    "sha256": "7362df86505bcc6bf21bdc9a91dbb9ed208a72b43d83e2a06e06830d03a775a5",
+    "public_raw_material": false
+  },
+  "scope": "VM_ONLY actual hardware; controlled injection/QMP is not natural recovery",
+  "kernel": "96f18513c0a17f30c9fc2be5a28da2c36aafe710",
+  "service": "bf117ad6254feb16e07e71fc4f605128dde6b09c",
+  "ordinary_peer_round_trips": [
+    4,
+    4
+  ],
+  "proof_status": [
+    "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED",
+    "ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED"
+  ],
+  "kernel_capture_drops": 0,
+  "taint": 0
+}

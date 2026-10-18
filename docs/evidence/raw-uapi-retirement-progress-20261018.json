@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "status": "SOURCE_IMPLEMENTED_OFFLINE_PASSED_NEW_VM_AND_RF_PENDING",
+  "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "compiled_userspace": "2c8e05cf8b467bed702adabf9ba42c577a862f4e",
+  "executed_tools": "2c8e05cf8b467bed702adabf9ba42c577a862f4e",
+  "production_behavior": "101unpublished oldraw entries removed fromC/Rust/auth/dispatch;26actualtyped/registry/affinity/Diagnostic controls retained. Unknown oldencodings ENOTTY beforeCAP/Runtime/usercopy.53unused publicRust layouts becomeprivate test-only;sameSession/Runtime/Grant/credit/Ticket/soleSSAP Engine retained.",
+  "scope": "Architecture retirement progress only,not a selected current qualification or complete architecture. Exact new normalboot/Virtual/Native callback/physical preservation pending. FullR5AppSDK/CLI/C-Python/contracts andR6cleanVMdeployment remain.",
+  "offline": {
+    "kernel_build": "full incrementalfixedO,12solo,exactclean2fc,unchangedconfig308604...,zero warnings",
+    "kernel_selftests": "24programs compile;12default pureprograms run;126authorization/assessor unitchecks;independent26+101x86_64/i386 assertions and5negativecontrols",
+    "userspace": "default/allfeatures strictClippy,Cargo allfeatures tests/defaultbuild;770tools;50actualnewdebuglibrary bindings inclcurrentABI/historicalwitnesses andpermissions",
+    "sanitizer": "v1LSan rejected sandboxptrace explicitly;3same production-source subsets rerun ordinaryuser outside sandboxwithfullsanitizers,notKernelconcurrency",
+    "formal": "No newformal proof claim:production state transitions/locks unchanged;source/component/compiler checks do not establish refinement or hardwareassumptions"
+  },
+  "materials": [
+    {
+      "path": ".dev/architecture-r4f2e-command-kernel-build-v1.json",
+      "sha256": "ac71e5225319aae3669f5cc46baef600e974148a4b5a857aa6b97d7b360c08e4",
+      "bytes": 1674,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-selftest-build-budget-v1.json",
+      "sha256": "73e77b5a0e00aca7340c97ddd8f2eef7a07a1b2f21711a48579169f022e01f3a",
+      "bytes": 984,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-default-pure-v1/manifest.json",
+      "sha256": "c1519cfc43fef15edc2efd9a275ef144767f38d9a17c17f97e92c149911cb37c",
+      "bytes": 1987,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-assessors-v6.log",
+      "sha256": "d9eaacfc08a305b6198eafc8b3b7fb8286a2008e6de90dbd9cd4f1ddd8c92f6b",
+      "bytes": 12361,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-raw-guard-v3.json",
+      "sha256": "8693858a5423677582952a1574895512eb9ed7a79660446ec2bce070bbe7dfae",
+      "bytes": 28864,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-userspace-gates-v1/manifest.json",
+      "sha256": "dfb7593ac3016e2741ce2d30ec48336fa2c9d2015ed7b0e89a1f975b74b50e82",
+      "bytes": 11559,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-tools-v2.log",
+      "sha256": "54e0f18617bd6829d3efe357309d98162b9f8516772db4ebef040abd08d81690",
+      "bytes": 125860,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-bindings-v4.log",
+      "sha256": "8389af588c2284930cd46051473cceae5143ecbbf651ca7294ecb885f304e7b2",
+      "bytes": 7037,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-original-wip-v1/manifest.json",
+      "sha256": "81002d10a0853a41a935346cb6d875b55ca1814728f3aa47c342d73155d9c7c0",
+      "bytes": 2061,
+      "access": "private local;available to repository owner,not copied into public site"
+    },
+    {
+      "path": ".dev/architecture-r4f2e-sanitizers-v2/manifest.json",
+      "sha256": "f00f325a9b71e1b06c75adff77d0739f640945c474fa768009912e3948877a17",
+      "bytes": 402,
+      "access": "private local;available to repository owner,not copied into public site"
+    }
+  ],
+  "history": {
+    "test_sources": "13exact sourcefiles hash-bound inKernel retired-raw-uapi/test-migration-audit.json;oldsource/failedlogs retained,no default execution",
+    "retired_layouts": "53Rust cfgtest witnesses;5C/Rust/Python historical layouts distinct fromcurrentABI;Cpermission helper hash-bound",
+    "parser_budget": "originalaggregate remainsUNPROVED,corrected record unchanged,standard255full interoperability unqualified"
+  },
+  "preserved_wip": "10originalfiles sealed;two merged toolfiles reverse ONLY committed migration in disposable copy toverifyexactoriginalbytes;other8directhashunchanged;stash retained",
+  "remaining": [
+    "Exactnew VM syscall/auth/Nativeopen/usercopy andtwoWS73 short/boundary/long/Owned/security preservation gates",
+    "Useful oldsyntheticUSB terminal/hotplug/repeatedreply/recovery cases needtyped migration before claimingnewcoverage;Virtualdoesnotreplaceall",
+    "R5complete AppSDK/CLI/sharedcontracts/C-Python consumers andR6cleanVMinstall/upgrade/rollback/uninstall",
+    "Naturalstartup/reenumeration/disappearance RCA andnonmanualautomatic recovery,alloriginaluncompleted S0-S6/19WP/10FV/12DG issues"
+  ],
+  "physical_acceptance": false,
+  "full_goal_complete": false
+}

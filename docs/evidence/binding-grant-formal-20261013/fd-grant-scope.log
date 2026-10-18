@@ -1,0 +1,735 @@
+[
+  {
+    "program": "CBMC 6.11.0 (cbmc-6.11.0)"
+  },
+  {
+    "messageText": "CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Type-checking grant_cbmc",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generating GOTO Program",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Adding CPROVER library (x86_64)",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Removal of function pointers and virtual functions",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generic Property Instrumentation",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Starting Bounded Model Checking",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Passing problem to propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "converting SSA",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Running propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "SAT checker: instance is UNSATISFIABLE",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "result": [
+      {
+        "description": "assertion !sl_grant_permits(&initial,observed,operation)",
+        "property": "main.assertion.1",
+        "sourceLocation": {
+          "comment": "assertion !sl_grant_permits(&initial,observed,operation)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "16",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion accepted == (sl_grant_scope_valid(request) && directions && !(directions & ~3U) && !security)",
+        "property": "main.assertion.2",
+        "sourceLocation": {
+          "comment": "assertion accepted == (sl_grant_scope_valid(request) && directions && !(directions & ~3U) && !security)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "21",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion grant.directions==before.directions && grant.security==before.security",
+        "property": "main.assertion.3",
+        "sourceLocation": {
+          "comment": "assertion grant.directions==before.directions && grant.security==before.security",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "23",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion grant.scope.controller==before.scope.controller && grant.scope.generation==before.scope.generation",
+        "property": "main.assertion.4",
+        "sourceLocation": {
+          "comment": "assertion grant.scope.controller==before.scope.controller && grant.scope.generation==before.scope.generation",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "24",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion grant.scope.lifetime==before.scope.lifetime && grant.scope.epoch==before.scope.epoch && grant.scope.handle==before.scope.handle",
+        "property": "main.assertion.5",
+        "sourceLocation": {
+          "comment": "assertion grant.scope.lifetime==before.scope.lifetime && grant.scope.epoch==before.scope.epoch && grant.scope.handle==before.scope.handle",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "25",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion grant.scope.local_tcid==before.scope.local_tcid && grant.scope.remote_tcid==before.scope.remote_tcid && grant.scope.pi==before.scope.pi",
+        "property": "main.assertion.6",
+        "sourceLocation": {
+          "comment": "assertion grant.scope.local_tcid==before.scope.local_tcid && grant.scope.remote_tcid==before.scope.remote_tcid && grant.scope.pi==before.scope.pi",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "26",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion sl_grant_permits(&grant,request,SL_GRANT_TX) == !!(directions & SL_GRANT_TX)",
+        "property": "main.assertion.7",
+        "sourceLocation": {
+          "comment": "assertion sl_grant_permits(&grant,request,SL_GRANT_TX) == !!(directions & SL_GRANT_TX)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "28",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion sl_grant_permits(&grant,request,SL_GRANT_RX) == !!(directions & SL_GRANT_RX)",
+        "property": "main.assertion.8",
+        "sourceLocation": {
+          "comment": "assertion sl_grant_permits(&grant,request,SL_GRANT_RX) == !!(directions & SL_GRANT_RX)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion operation==SL_GRANT_TX || operation==SL_GRANT_RX",
+        "property": "main.assertion.9",
+        "sourceLocation": {
+          "comment": "assertion operation==SL_GRANT_TX || operation==SL_GRANT_RX",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "32",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion !grant.security && (grant.directions & operation) && !(grant.directions & ~3U)",
+        "property": "main.assertion.10",
+        "sourceLocation": {
+          "comment": "assertion !grant.security && (grant.directions & operation) && !(grant.directions & ~3U)",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "33",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion grant.scope.controller==observed.controller && grant.scope.generation==observed.generation",
+        "property": "main.assertion.11",
+        "sourceLocation": {
+          "comment": "assertion grant.scope.controller==observed.controller && grant.scope.generation==observed.generation",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "34",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion grant.scope.lifetime==observed.lifetime && grant.scope.epoch==observed.epoch && grant.scope.handle==observed.handle",
+        "property": "main.assertion.12",
+        "sourceLocation": {
+          "comment": "assertion grant.scope.lifetime==observed.lifetime && grant.scope.epoch==observed.epoch && grant.scope.handle==observed.handle",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "35",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion grant.scope.local_tcid==observed.local_tcid && grant.scope.remote_tcid==observed.remote_tcid && grant.scope.pi==observed.pi",
+        "property": "main.assertion.13",
+        "sourceLocation": {
+          "comment": "assertion grant.scope.local_tcid==observed.local_tcid && grant.scope.remote_tcid==observed.remote_tcid && grant.scope.pi==observed.pi",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/grant_cbmc.c",
+          "function": "main",
+          "line": "36",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.13",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in *grant",
+        "property": "sl_grant_init.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in *grant",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_init",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_init.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in *grant",
+        "property": "sl_grant_init.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in *grant",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_init",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_init.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in *grant",
+        "property": "sl_grant_init.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in *grant",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_init",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_init.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in *grant",
+        "property": "sl_grant_init.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in *grant",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_init",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_init.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in *grant",
+        "property": "sl_grant_init.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in *grant",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_init",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_init.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in *grant",
+        "property": "sl_grant_init.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in *grant",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_init",
+          "line": "29",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_init.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in grant->scope",
+        "property": "sl_grant_permits.pointer_dereference.1",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in grant->scope",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "36",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.1",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in grant->scope",
+        "property": "sl_grant_permits.pointer_dereference.2",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in grant->scope",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "36",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.2",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in grant->scope",
+        "property": "sl_grant_permits.pointer_dereference.3",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in grant->scope",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "36",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.3",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in grant->scope",
+        "property": "sl_grant_permits.pointer_dereference.4",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in grant->scope",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "36",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.4",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in grant->scope",
+        "property": "sl_grant_permits.pointer_dereference.5",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in grant->scope",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "36",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.5",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in grant->scope",
+        "property": "sl_grant_permits.pointer_dereference.6",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in grant->scope",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "36",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.6",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in grant->security",
+        "property": "sl_grant_permits.pointer_dereference.7",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in grant->security",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.7",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in grant->security",
+        "property": "sl_grant_permits.pointer_dereference.8",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in grant->security",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.8",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in grant->security",
+        "property": "sl_grant_permits.pointer_dereference.9",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in grant->security",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.9",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in grant->security",
+        "property": "sl_grant_permits.pointer_dereference.10",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in grant->security",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.10",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in grant->security",
+        "property": "sl_grant_permits.pointer_dereference.11",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in grant->security",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.11",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in grant->security",
+        "property": "sl_grant_permits.pointer_dereference.12",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in grant->security",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "37",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.12",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.13",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.13",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.14",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.14",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.15",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.15",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.16",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.16",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.17",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.17",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.18",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "39",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.18",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer NULL in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.19",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer NULL in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "40",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.19",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer invalid in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.20",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer invalid in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "40",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.20",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: deallocated dynamic object in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.21",
+        "sourceLocation": {
+          "comment": "dereference failure: deallocated dynamic object in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "40",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.21",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: dead object in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.22",
+        "sourceLocation": {
+          "comment": "dereference failure: dead object in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "40",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.22",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: pointer outside object bounds in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.23",
+        "sourceLocation": {
+          "comment": "dereference failure: pointer outside object bounds in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "40",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.23",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "dereference failure: invalid integer address in grant->directions",
+        "property": "sl_grant_permits.pointer_dereference.24",
+        "sourceLocation": {
+          "comment": "dereference failure: invalid integer address in grant->directions",
+          "file": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/../../../linux/net/sparklink/sle_channel_grant.h",
+          "function": "sl_grant_permits",
+          "line": "40",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:unsigned-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "pointer dereference",
+          "propertyFatal": true,
+          "propertyId": "sl_grant_permits.pointer_dereference.24",
+          "workingDirectory": "/home/sanchuanhehe/Documents/opensparklink"
+        },
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "messageText": "VERIFICATION SUCCESSFUL",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "cProverStatus": "success"
+  }
+]

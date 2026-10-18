@@ -1,0 +1,14 @@
+{
+  "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+  "tests": 20,
+  "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+  "real_data_acceptance": false,
+  "socket_acceptance": false,
+  "sources": {
+    "net/sparklink/sle_native.rs": "bbe5204a947e051159a648ec5edeab0eb2fded55133c32c21f4dc9e3a42b48dd",
+    "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+    "net/sparklink/sle_data_credit.rs": "8c880fdf7edf2ecf5340a6b8fde656bf9e4fa41c2974377bc531f378f908b005",
+    "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+    "tools/testing/selftests/sparklink/native-data/fixture.rs": "80ebbf95dddc42cb8bd30ab13f2407d55fe9d71d2d8ea0c20c46ba0aae91fb84"
+  }
+}

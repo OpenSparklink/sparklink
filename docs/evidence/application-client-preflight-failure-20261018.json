@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "result": "FAIL",
+  "scope": "Host runner preflight failed before any QEMU or USB operation;not a device failure.",
+  "compiled_image": "5bfe6fa307766d098aa98fabf6bb4822a4f1dde1",
+  "executed_tools": "5bfe6fa307766d098aa98fabf6bb4822a4f1dde1",
+  "error": "UnboundLocalError: package referenced before prepared() loaded the verified image",
+  "raw_log": {
+    "path": ".dev/architecture-r5f2-real-clients-v1.log",
+    "sha256": "0dd3f4a73013186a1b85e8e37540004123c5f2a7cd90ff13816dc1e30a600ed3",
+    "bytes": 1276
+  },
+  "correction": "Check native profile only after actual prepared-image verification;keep full guards and original assertions.",
+  "regression": "Real CLI parser/preflight/final verdict exercised with explicit invalid verified-profile fixture;QEMU must not be started.",
+  "remaining": "Actual VM/device/publicclient positive andoriginalregression gates still pending;no newqualification transferred."
+}

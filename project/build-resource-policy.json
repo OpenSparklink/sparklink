@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "solo_jobs": 12,
+  "with_real_device_vm_jobs": 8,
+  "coordination": "One top-level main-thread kernel/Cargo build at a time under workspace .dev/main-build.lock;VM regression may run alongside with explicit VM mode.",
+  "kernel_development_output": ".dev/session-wake-kernel-build-v1",
+  "cargo_native_development_target": ".dev/cargo-native-dev",
+  "qualification": "Freeze artifacts and exact manifests outside the fixed development directories. Never edit old records,prepared roots or frozen tools to adopt new defaults.",
+  "historical_build_exception": "At user-request time already-running a0e1ad7b3a1c build retains its recorded -j4 command;do not interrupt just for throughput. Current frozen f43 qualification chain retains its original Cargo jobs4."
+}

@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "status": "SCOPED_RESULTS_RECORDED_FULL_VERIFICATION_OPEN",
+  "hardware_acceptance": false,
+  "installation_is_implementation_proof": false,
+  "installation_smoke_sha256": "4c64f64da61cc8db98b08302d0a0750d585934f8afe147fabce182677d57bb84",
+  "sources": {
+    "linux/net/sparklink/sle_channel_state.h": "6a21e0ed9a8afd61195b52f8ca1e40f8d28f6146eb9db04ad3291cb9b74bd280",
+    "linux/net/sparklink/sle_channel_socket.c": "045756a704a26f1f1536f364a5db1ceb741d2402a261f101be09ffe1258b3e99",
+    "linux/net/sparklink/sle_data_credit.rs": "8c880fdf7edf2ecf5340a6b8fde656bf9e4fa41c2974377bc531f378f908b005",
+    "linux/net/sparklink/sle_native.rs": "bbe5204a947e051159a648ec5edeab0eb2fded55133c32c21f4dc9e3a42b48dd",
+    "linux/net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+    "linux/net/sparklink/sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+    "sparklink/formal/channel/progress_cbmc.c": "d09a1c9e8521f6d9e3da46ee825c3462d7a9c53ce03c874454a6c4da261c7e92",
+    "sparklink/formal/credit/src/main.rs": "916c98b4b0b321975229bb9acb20ea8c4ea42d9a985c45169d2c7f26a8286e65",
+    "sparklink/formal/lifecycle/ManagedLifetime.tla": "3109d2a9272463a7467b371400decfad74c20d502a82d3a15fe657169b18ae1f",
+    "sparklink/formal/lifecycle/NOCPReuse.tla": "549072cf094cfd829d10a5b1db6b3639256e92fbabd131035ccee252e02661c0",
+    "sparklink/formal/lifecycle/ManagedLifetime.cfg": "4537b37389b1ad890d25cf4e01774a338f9d1afdb0a1369b4d99116287094698",
+    "sparklink/formal/lifecycle/NOCPReuse.cfg": "1fd0a6449833999401976fc5a4fc5fb446fa201dbbb15ea156994666036e8da2",
+    "sparklink/formal/lkmm/ChannelCloseAdmission.litmus": "25bb99edc6343bfc7822d14f42eeab2c48a3b4e84d39f26afc487acb7baea885",
+    "sparklink/formal/lkmm/ChannelSnapshot.litmus": "98a37a51162236eaca6c8eaf547040fe9ab45eb0404465a1ceb8aa682b5c49bf",
+    "sparklink/formal/lkmm/ChannelSnapshotWeak.litmus": "487ab9985149e8f961f028492a63122318b7b11a4949f27e6cd11ecd7ffb1d38",
+    "linux/tools/memory-model/linux-kernel.cfg": "37c57d82291113c5a4a170f3f6b5b8f01bc18403d701b8e5a6db43aae62d6b32",
+    "linux/tools/memory-model/linux-kernel.cat": "250207709250d308e0a0a6f391c4eda0bbf4876cbc55eccbfbcd495676a179be",
+    "linux/tools/memory-model/linux-kernel.bell": "ab57943799d445327c3c7cf0a1ca9f9fae8e7379e45b9fc90312993bb038e23f",
+    "linux/tools/memory-model/linux-kernel.def": "a04911d85fd86f5dbcf8ed436c7a2570fcc615f768c0c19b0a101f6212d2504c",
+    "sparklink/formal/README.md": "4186ba59607c40439f90ae7ca77ff23678b824c3f345a9568dad4df69c7aef9a",
+    "sparklink/formal/credit/Cargo.toml": "429c69b169dfa8bc4092c1e56003f244a0049683dbf36d3a4c2a935ed4e5b117",
+    "sparklink/tools/run_formal.py": "f9b2074ca929803b7fa743bf3b9cb7e5cb89801356bfab9fa73e6bbc7ed1418b"
+  },
+  "repositories": {
+    "linux": {
+      "head": "d3abbdc0c13ac7fc35f9b4bd3132ad14190e7d87",
+      "worktree": ""
+    },
+    "sparklink": {
+      "head": "40c7fba71faa72ef09face6df7dd941c6789f3c6",
+      "worktree": ""
+    }
+  },
+  "checks": [
+    {
+      "name": "channel-progress",
+      "kind": "cbmc",
+      "command": [
+        "cbmc",
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/channel/progress_cbmc.c",
+        "--bounds-check",
+        "--pointer-check",
+        "--signed-overflow-check",
+        "--unsigned-overflow-check",
+        "--unwind",
+        "20",
+        "--unwinding-assertions",
+        "--json-ui"
+      ],
+      "cwd": "/home/sanchuanhehe/Documents/opensparklink",
+      "budget_seconds": 600,
+      "elapsed_seconds": 0.115,
+      "exit": 0,
+      "status": "PROVED_SCOPED",
+      "output": "channel-progress.log",
+      "output_sha256": "30a433126509979b6a0e56b6e8cc3d991d7f104ab59b64ba274049636d90b102",
+      "tool_banner": [
+        "[",
+        "  {"
+      ]
+    },
+    {
+      "name": "state-publication",
+      "kind": "lkmm",
+      "command": [
+        "herd7",
+        "-conf",
+        "/home/sanchuanhehe/Documents/opensparklink/linux/tools/memory-model/linux-kernel.cfg",
+        "-I",
+        "/home/sanchuanhehe/Documents/opensparklink/linux/tools/memory-model",
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lkmm/ChannelSnapshot.litmus",
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lkmm/ChannelSnapshotWeak.litmus",
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lkmm/ChannelCloseAdmission.litmus"
+      ],
+      "cwd": "/home/sanchuanhehe/Documents/opensparklink",
+      "budget_seconds": 600,
+      "elapsed_seconds": 0.032,
+      "exit": 0,
+      "status": "PROVED_SCOPED_WITH_WEAK_CONTROL",
+      "output": "state-publication.log",
+      "output_sha256": "68fd143a1dbff9d68459c6153683dfcf7d8f96629340e3b6e0f78b56379bd232",
+      "tool_banner": [
+        "Test ChannelSnapshot Allowed",
+        "States 2"
+      ]
+    },
+    {
+      "name": "managed-lifetime",
+      "kind": "tlc",
+      "command": [
+        "tlc",
+        "-workers",
+        "1",
+        "-metadir",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/formal-qualification-20261013-sealed/tlc-managed",
+        "-config",
+        "ManagedLifetime.cfg",
+        "ManagedLifetime.tla"
+      ],
+      "cwd": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lifecycle",
+      "budget_seconds": 600,
+      "elapsed_seconds": 0.667,
+      "exit": 0,
+      "status": "MODEL_CHECKED_SCOPED",
+      "output": "managed-lifetime.log",
+      "output_sha256": "e626def2954a5d774239ea6fee16156c266fa7cd40a448d60fa68348d914454a",
+      "tool_banner": [
+        "TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)",
+        "Running breadth-first search Model-Checking with fp 89 and seed 9034120121302697584 with 1 worker on 16 cores with 1820MB heap and 64MB offheap memory [pid: 441932] (Linux 7.2.8-200.fc44.x86_64 amd64, Red Hat, Inc. 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue)."
+      ]
+    },
+    {
+      "name": "nocp-reuse-risk",
+      "kind": "counterexample",
+      "command": [
+        "tlc",
+        "-workers",
+        "1",
+        "-metadir",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/formal-qualification-20261013-sealed/tlc-nocp",
+        "-config",
+        "NOCPReuse.cfg",
+        "NOCPReuse.tla"
+      ],
+      "cwd": "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lifecycle",
+      "budget_seconds": 600,
+      "elapsed_seconds": 0.618,
+      "exit": 12,
+      "status": "EXPECTED_COUNTEREXAMPLE_RISK_OPEN",
+      "output": "nocp-reuse-risk.log",
+      "output_sha256": "d45c03a43195c5e306f70c8953969c053f90d63226b77fd7f0be20af2114ec3f",
+      "tool_banner": [
+        "TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)",
+        "Running breadth-first search Model-Checking with fp 114 and seed 1786264614105962677 with 1 worker on 16 cores with 1820MB heap and 64MB offheap memory [pid: 441970] (Linux 7.2.8-200.fc44.x86_64 amd64, Red Hat, Inc. 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue)."
+      ]
+    },
+    {
+      "name": "credit-initialization_all_parameters",
+      "kind": "kani",
+      "command": [
+        "cargo",
+        "kani",
+        "--manifest-path",
+        "formal/credit/Cargo.toml",
+        "--harness",
+        "initialization_all_parameters"
+      ],
+      "cwd": "/home/sanchuanhehe/Documents/opensparklink/sparklink",
+      "budget_seconds": 600,
+      "elapsed_seconds": 0.366,
+      "exit": 0,
+      "status": "NOT_PROVEN_UNSUPPORTED",
+      "output": "credit-initialization_all_parameters.log",
+      "output_sha256": "730aaa4142b5a171251593c9b027d45e810af35f3c272efd173da1837ea67e01",
+      "tool_banner": [
+        "Kani Rust Verifier 0.68.0 (cargo plugin)",
+        "CBMC 6.11.0"
+      ]
+    }
+  ],
+  "tool_paths": {
+    "cbmc": "/usr/local/bin/cbmc",
+    "goto-cc": "/usr/local/bin/goto-cc",
+    "goto-instrument": "/usr/local/bin/goto-instrument",
+    "herd7": "/usr/local/bin/herd7",
+    "tlc": "/usr/local/bin/tlc",
+    "cargo-kani": "/home/sanchuanhehe/.cargo/bin/cargo-kani",
+    "ghidra": "/usr/local/bin/ghidra",
+    "ghidra-headless": "/usr/local/bin/ghidra-headless",
+    "tamarin-prover": "/usr/local/bin/tamarin-prover",
+    "proverif": "/usr/local/bin/proverif",
+    "maude": "/usr/local/bin/maude"
+  },
+  "tool_versions": {
+    "cbmc": "6.11.0 (cbmc-6.11.0)",
+    "herd7": "7.58, Rev: exported",
+    "kani": "Kani Rust Verifier 0.68.0 (cargo plugin)\nCBMC 6.11.0"
+  },
+  "sources_unchanged": true,
+  "credit_all_requested": false,
+  "unselected_credit_harnesses_proved": false
+}

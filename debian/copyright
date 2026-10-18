@@ -1,0 +1,12 @@
+SparkLink
+Upstream source: https://github.com/OpenSparklink/sparklink
+
+This development package preserves the existing upstream project license in
+the accompanying LICENSE file. Copyright attribution and per-file notices are
+recorded in the upstream source files and version-control history. Individual
+file notices and third-party dependency notices remain applicable; this file
+does not change them or assign new ownership.
+
+The dependency license/notice inventory, SBOM and release provenance review are
+still open project tasks. Installing this notice is not a claim that this
+development artifact has passed those release gates.

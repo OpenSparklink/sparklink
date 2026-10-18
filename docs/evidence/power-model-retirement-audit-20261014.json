@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "linux": "7c6d530ffe2e94bb44b55e0ba9712f61093a7f3e",
+    "userspace": "5b85a27fe8545d3b9ee959e672646a0451dc95ca"
+  },
+  "scope": "Retire unqualified power model and cross-controller global policy; remaining connection/discovery/security/RPA models not completed",
+  "immediately_remove": [
+    {
+      "code": "ControllerState.power/PowerInner, old PM ioctl execution and modeled debugfs",
+      "production_callers": "ioctl PM group; default debugfs stats; mixed SubsysStats; global synchronization on protected operations",
+      "actual_behavior": "local counters/state estimates, no qualified HW PM transaction; not true board firmware config",
+      "replacement": "explicit EOPNOTSUPP; no model PM in Runtime; actual observed LinkSnapshot summary in daemon/CLI; mixed legacy stats power=Unknown255 until final retirement",
+      "regression": "actual root/ordinary VM unsupported PM with unchanged buffers; true dualWS73/peer isolation"
+    },
+    {
+      "code": "global configfs power_mode atomic and Native submission gate",
+      "production_callers": "native connection/discovery submit and legacy helpers",
+      "actual_behavior": "one global attribute suppresses all controllers, locally simulates hardware PM",
+      "replacement": "attribute reads/root writes EOPNOTSUPP, nonprivileged write EPERM; no global Native policy effects; future per-controller PM policy requires actual mechanism",
+      "regression": "root failed legacy policy write does not block actual two-controller data/discovery"
+    }
+  ],
+  "move_to_tests": [
+    {
+      "code": "exact old power state machine and ioctl/configfs/debugfs snippets",
+      "location": "tools/testing/selftests/sparklink/retired-power",
+      "scope": "retain historical bounded interval/force-active/supervision semantics; never hardware or default backend"
+    }
+  ],
+  "wait_for_replacement": [
+    {
+      "code": "legacy conn/adv_scan/security/rpa and mixed old SubsysStats",
+      "reason": "separate caller migration; do not mechanically remove cryptographic primitives or true driver PM"
+    },
+    {
+      "code": "real controller PM/PHY policy",
+      "ownership": "per-controller Kernel mechanisms, slkd decisions, driver USB/board resources",
+      "requirements": "true completion, lifetime/generation, isolated suspend/resume/recovery gates; not local success"
+    }
+  ],
+  "keep": [
+    "driver board pm_config.bin/HCC initialization/USB resource lifetime",
+    "Native Host/Session/Channel/Grant/security mechanisms and real business socket",
+    "crypto permission semantics and evidence"
+  ],
+  "issues": [
+    "K#4",
+    "K#5",
+    "K#19",
+    "U#4",
+    "U#8"
+  ],
+  "whole_scope_complete": false
+}

@@ -1,0 +1,261 @@
+{
+  "schema": 1,
+  "status": "TWO_ROLE_REAL_PASSIVE_AUTHOR_CANCEL_SCOPED_PASS",
+  "date": "2026-10-15",
+  "kernel_runtime": "45c049f329643de7a9941fe664642b3f847561e0",
+  "kernel_test_only_head": "239e0171b6ef0edfdb3db35eb8241308c2f43ea2",
+  "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+  "prepared_and_executed_tools": "227f2f576ddf1741b2787138fbd27108acc650d9",
+  "vm_only": true,
+  "daemon_running_in_this_gate": false,
+  "firmware": "Frozen original111 bundle; no experimental RAM derivative",
+  "production_behavior": "Withdraw only the original passive security author while waiting for peer, preserve sole physical Session/credit/tickets/lease/channel and immutable terminal observation; no controller-wide release.",
+  "runs": [
+    {
+      "index": 0,
+      "g_host_port": "1-2.1.3",
+      "t_cancel_host_port": "1-2.1.1",
+      "status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+      "cancel_elapsed_ms": 20.609603,
+      "original_limit_ms": 5000,
+      "cancel_denials": {
+        "version": 95,
+        "reserved": 22,
+        "generation": 19,
+        "lifetime": 116,
+        "handle": 116,
+        "request": 2,
+        "nonowner": 1
+      },
+      "ordinary_inherited_managed_fd_cancel_errno": 1,
+      "terminal_observations": 2,
+      "terminal_state": 6,
+      "terminal_errno": -125,
+      "g_request_query_errno": 2,
+      "unchanged_links_ready_managed_leases": true,
+      "business_round_trips": 4,
+      "business_breakdown": "2 before passive arm,2 after cancellation; random application payload and actual peer validation/reply,UID1000/caps0",
+      "no_security_wire": true,
+      "strict_corroboration_status": "REAL_PASSIVE_AUTHOR_CANCEL_CORROBORATED",
+      "kernel_taint0": true,
+      "capture_kernel_drops": 0,
+      "files": [
+        {
+          "path": ".dev/native-cancel-v8-index0/manifest.json",
+          "sha256": "61ab575475958bd9dd6ac4d27975592edaee2a03ddca4fb25ed13cc02a407645",
+          "bytes": 70943
+        },
+        {
+          "path": ".dev/native-cancel-v8-index0/qmp.jsonl",
+          "sha256": "aab27e62610a7a286b115ebd15cf5915c0fc63be776a9901444a556be22f8f8e",
+          "bytes": 1032
+        },
+        {
+          "path": ".dev/native-cancel-v8-index0/guest-output/connected-file/run.json",
+          "sha256": "4fe947e4a6579a6e5f8d4b442b4d9cec74fa15f67e59779689e65fec4331209c",
+          "bytes": 40658
+        },
+        {
+          "path": ".dev/native-cancel-v8-index0/guest-output/ws73.pcap",
+          "sha256": "c4363781a7ba4e68c7225915eb255048842097d64bba14255fb35c2bf96bbfb4",
+          "bytes": 67352
+        },
+        {
+          "path": ".dev/native-cancel-v8-index0/guest-output/kernel.log",
+          "sha256": "28640560f6a02c7176547a31740419e77eef5a9bf078c2b84e7da2b50326238b",
+          "bytes": 349174
+        },
+        {
+          "path": ".dev/native-cancel-v8-index0/guest-output/capture-stats.txt",
+          "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+          "bytes": 225
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "g_host_port": "1-2.1.1",
+      "t_cancel_host_port": "1-2.1.3",
+      "status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+      "cancel_elapsed_ms": 19.369527,
+      "original_limit_ms": 5000,
+      "cancel_denials": {
+        "version": 95,
+        "reserved": 22,
+        "generation": 19,
+        "lifetime": 116,
+        "handle": 116,
+        "request": 2,
+        "nonowner": 1
+      },
+      "ordinary_inherited_managed_fd_cancel_errno": 1,
+      "terminal_observations": 2,
+      "terminal_state": 6,
+      "terminal_errno": -125,
+      "g_request_query_errno": 2,
+      "unchanged_links_ready_managed_leases": true,
+      "business_round_trips": 4,
+      "business_breakdown": "2 before passive arm,2 after cancellation; random application payload and actual peer validation/reply,UID1000/caps0",
+      "no_security_wire": true,
+      "strict_corroboration_status": "REAL_PASSIVE_AUTHOR_CANCEL_CORROBORATED",
+      "kernel_taint0": true,
+      "capture_kernel_drops": 0,
+      "files": [
+        {
+          "path": ".dev/native-cancel-v8-index1/manifest.json",
+          "sha256": "9d1cf6f380cffb87898f3d52cd8c4c9da8099d87a1b8a4f238ac47d99006167b",
+          "bytes": 70943
+        },
+        {
+          "path": ".dev/native-cancel-v8-index1/qmp.jsonl",
+          "sha256": "aab27e62610a7a286b115ebd15cf5915c0fc63be776a9901444a556be22f8f8e",
+          "bytes": 1032
+        },
+        {
+          "path": ".dev/native-cancel-v8-index1/guest-output/connected-file/run.json",
+          "sha256": "35d3bf641edb9ecc596cc4388fdc980dd18e40932f8461b0a8c8a567172248a8",
+          "bytes": 40656
+        },
+        {
+          "path": ".dev/native-cancel-v8-index1/guest-output/ws73.pcap",
+          "sha256": "c7d3710f14b1d525f2cc7698913fe250ef2a2c25d0234f6b51db57f42876c11e",
+          "bytes": 67352
+        },
+        {
+          "path": ".dev/native-cancel-v8-index1/guest-output/kernel.log",
+          "sha256": "bf98e5237358f04f7a1c1c1682737ff1dea09eec438b7a5190246ca050de40cf",
+          "bytes": 349617
+        },
+        {
+          "path": ".dev/native-cancel-v8-index1/guest-output/capture-stats.txt",
+          "sha256": "670da100882e3a125720aa2a9d1122f59ccc4db6b2bba1781fe63ade0bea51b5",
+          "bytes": 225
+        }
+      ]
+    }
+  ],
+  "total_random_application_round_trips": 8,
+  "checker_tests": {
+    "status": "PASS_OFFLINE_ONLY",
+    "tools_suite_tests": 521,
+    "log": {
+      "path": ".dev/security-cancel-passive-tools.log",
+      "sha256": "e2b4979de5b58a0785be40360e44e5dab02ade9a9a67dbfb30f16ba6d9f029ec",
+      "bytes": 656
+    },
+    "note": "Synthetic evidence rejection cases test checker integrity, not RF/formal qualification."
+  },
+  "sources": [
+    {
+      "path": "sparklink/tools/ws73_security_cancel.py",
+      "sha256": "c6143f52c130180d8f04fc185cf87b45d77fb38ecc626057f84a6efb9887c2a4",
+      "bytes": 6975
+    },
+    {
+      "path": "sparklink/tools/ws73_security_capabilities.py",
+      "sha256": "9545e2f2c7351825417e0e9b53c4bb36e7b5164fdf6442bfc71ae0c7f4148398",
+      "bytes": 18662
+    },
+    {
+      "path": "sparklink/tools/ws73_connected_file_gate.py",
+      "sha256": "23fa2149da6457561d8bac8d3b936e9eb1feba8769fdb6d2a261b56858956fc1",
+      "bytes": 42976
+    },
+    {
+      "path": "sparklink/tools/ws73_target.py",
+      "sha256": "b076fae81fce01b20a097783c52a8d5b10d678a8ade2fee172ca406e9260fb48",
+      "bytes": 121075
+    },
+    {
+      "path": "sparklink/tools/tests/test_ws73_security_cancel.py",
+      "sha256": "24efee9b4323b4986f285e1430866b1b6f748e69521f1917a8c0426721999ba9",
+      "bytes": 4812
+    }
+  ],
+  "production_source_and_unproved_formal_report": "security-author-cancel-20261015.json",
+  "formal_result": "NOT_PROVEN_UNSUPPORTED,1766 generated checks; no upgrade from RF PASS",
+  "reproduction": {
+    "prepare": "Use ws73_target.py prepare with frozen45 module tree, WS73 root-smoke and compiled37 service bundle; no host install. Manifest records input hashes.",
+    "commands": [
+      {
+        "index": 0,
+        "folder": ".dev/native-cancel-v8-index0",
+        "command": [
+          "python3",
+          "sparklink/tools/ws73_target.py",
+          "run",
+          "--prepared",
+          ".dev/native-install-v8-prepared",
+          "--output",
+          ".dev/native-cancel-v8-index0",
+          "--ports",
+          "1-2.1.3",
+          "1-2.1.1",
+          "--setup-release-verify",
+          "--managed-connected-case",
+          "release",
+          "--managed-connected-index",
+          "0",
+          "--managed-channel-grant",
+          "--managed-security-capabilities",
+          "--managed-security-kind",
+          "cancel-pending",
+          "--timeout",
+          "600"
+        ],
+        "status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+        "exit": 0,
+        "error": null
+      },
+      {
+        "index": 1,
+        "folder": ".dev/native-cancel-v8-index1",
+        "command": [
+          "python3",
+          "sparklink/tools/ws73_target.py",
+          "run",
+          "--prepared",
+          ".dev/native-install-v8-prepared",
+          "--output",
+          ".dev/native-cancel-v8-index1",
+          "--ports",
+          "1-2.1.3",
+          "1-2.1.1",
+          "--setup-release-verify",
+          "--managed-connected-case",
+          "release",
+          "--managed-connected-index",
+          "1",
+          "--managed-channel-grant",
+          "--managed-security-capabilities",
+          "--managed-security-kind",
+          "cancel-pending",
+          "--timeout",
+          "600"
+        ],
+        "status": "REAL_PASSIVE_AUTHOR_CANCEL_PASS",
+        "exit": 0,
+        "error": null
+      }
+    ]
+  },
+  "preserved_failure": {
+    "path": ".dev/security-cancel-v8-argument-rejected.json",
+    "scope": "Initial incompatible QMP-hotplug +standaloneManaged flags rejected before VM/hardware; corrected invocation preserved in commands."
+  },
+  "limits": [
+    "Passive pre-wire cancellation only; not in-flight security Status/0011/revoke/Down controlled interleavings.",
+    "No Agent/method/caller consent, MITM identity, trusted Grant, Bond or third-party interoperation.",
+    "Not a new encryption/install/length-boundary/four-device qualification for runtime45. Previouseff full regression retains exact source identity.",
+    "No claim full kernel/lock/refcount/USB/hardware formal proof.",
+    "No manual replug/QMP/hub reset counted as natural recovery; device disappearance/RCA remains OPEN.",
+    "Raw captures and serials remain private local artifacts; published only hashes."
+  ],
+  "online_ci": {
+    "commit": "227f2f576ddf1741b2787138fbd27108acc650d9",
+    "general_ci": 38729575220,
+    "documentation": 38729575509,
+    "result": "SUCCESS",
+    "scope": "Offline hosted CI; distinct from VM hardware gate and unsupported formal result"
+  }
+}

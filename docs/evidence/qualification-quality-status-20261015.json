@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "BATCH1_SCOPED_LOCAL_PASS_EXACT_7A9_CI_PASS_NO_RUNTIME_QUALIFICATION",
+  "implementation_commits": [
+    "92c75cab77ee5949ea636dee6b897b413f801fae",
+    "7a9ac120c5b60006de7864c22aa20789d467a780"
+  ],
+  "followup_parent": "7a9ac120c5b60006de7864c22aa20789d467a780",
+  "followup_behavior": "Reject unknown material formats and JSON report bindings marked as opaque bytes instead of silently skipping semantic validation.",
+  "followup_tool_hashes": {
+    "tools/check_qualifications.py": "c0fb222f7e03a9804fde721f563f967b937d731f39ee4fa61f58de25f89d711b",
+    "tools/tests/test_qualifications.py": "1aab6cc462a0c3482ddce7f2a341ad39db3aee671ef2ac0181048bb3866ad461"
+  },
+  "tests": {
+    "targeted_negative_controls": 23,
+    "log": {
+      "path": ".dev/quality-provenance-schema-negative.log",
+      "sha256": "3b98dd6f5d6b99a9f4a4bf446ae01998bd86828546ea0eb1abe9c5e561148ff2",
+      "bytes": 122,
+      "access": "private original machine"
+    },
+    "retained_154_materials": {
+      "path": ".dev/quality-provenance-schema-local.json",
+      "sha256": "2d184cd31561a27ab5d4ede64b57d53741652457cbe0bd9ab3b12b5a53219aae",
+      "bytes": 230,
+      "access": "private original machine"
+    },
+    "all_tools_baseline": "542 at92c75ca; unchanged old result, not relabeled new source",
+    "strict_docs": "104 at7a9 plus evidence-index history framing; source-specific log retained",
+    "strict_docs_log": {
+      "path": ".dev/quality-provenance-finish-docs.log",
+      "sha256": "654f2743f03228570ad56b21489fbc42e6d7a28af0ef27e95214732c5146fc9a",
+      "bytes": 11522,
+      "access": "private original machine"
+    }
+  },
+  "ci_observations": [
+    {
+      "head": "92c75cab77ee5949ea636dee6b897b413f801fae",
+      "ci": 38749647782,
+      "docs": 38749648275,
+      "qualification_metadata": 38749648556,
+      "conclusion": "success"
+    },
+    {
+      "head": "7a9ac120c5b60006de7864c22aa20789d467a780",
+      "ci": 38750325434,
+      "docs": 38750325402,
+      "qualification_metadata": 38750325375,
+      "conclusion": "success",
+      "metadata_log": {
+        "path": ".dev/quality-ci-7a9ac12-metadata.log",
+        "sha256": "89bf86ebbf65435e8e20dff5274b86f0cb14689d54f71f9cf2d07016d62a8fb3",
+        "bytes": 62111,
+        "access": "private original machine"
+      }
+    }
+  ],
+  "agent_dirty_sha256_unchanged": {
+    "main.rs": "d8f38c3d33b4e1c4b7747cfe1f63af0b8d04733346add6230338971ec779af0b",
+    "security.rs": "80acd72f152fc013f77d740461488ba64ebd795ec39defebafe86cb2e92b0256",
+    "state.rs": "275aef0b12f4f8a2bdc24c587c44f02ec138ed06b3a03fa4ed1397c09c32b38d",
+    "connection_object.rs": "e5d9173e60177d30004cce521aa70b2d35386a96169a9ba06a3caf008c31b3c4",
+    "security_policy.rs": "57192bb4dc095cc4c14ba93545b6bc54f634644397f4cdc4b5fd422481b17254"
+  },
+  "issue_receipt": "qualification-quality-issues-20261015.json",
+  "remaining": [
+    "Current Agent not committed or real-qualified, actual system bus/Agent positive and negative real-peer gates next.",
+    "Q3 production fuzz/debug VM/composed verification, multichannel/four-device/SSAP and installation/soak/release still outstanding; full S0-S6/19WP/10FV/12DG original scope unchanged.",
+    "Formal installation unsupported and arbitrary-HZ timeout remain unproved. No new formal proof.",
+    "Old21 real qualifications retain K8cbf53/compiled2d81/tools575 identity; local bytes checks not replay.",
+    "Natural fault RCA and nonmanual recovery remain open; VM-only, no hardware/host-driver operations this batch."
+  ],
+  "qualification_registry": "../../project/qualification-records.json"
+}

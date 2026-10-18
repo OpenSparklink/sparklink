@@ -1,0 +1,24 @@
+{
+  "status": "OLD_CLI_PRIVATE_BUS_CONTRACT_COUNTEREXAMPLE_NOT_RF",
+  "baseline": "a37c4cb0366b9c182e3f3b5da95146b24824e7f4",
+  "actual_old_binary": {
+    "path": ".dev/architecture-r5b-us-bundle-v1/payload/usr/libexec/opensparklink/native-lab/a37c4cb0366b/slctl",
+    "sha256": "1b90034193ff8f8ce1277eef44aa14e806e0ba9ef2d970604666a7dd20aac3ea",
+    "bytes": 7823784,
+    "access": "private owner workspace"
+  },
+  "raw_failure": {
+    "path": ".dev/architecture-r5c-old-cli-counterexample-v1.log",
+    "sha256": "d135f9445690cfebfb1b010547ca79bb793e66b196406f193964715c54c9365c",
+    "bytes": 1655,
+    "access": "private owner workspace"
+  },
+  "fixture": "Actual privateD-Bus/actualoldCLI;finiteRPCargument/replyfixture,notHost/Kernel/firmware/Complete",
+  "observed": "AdmitoneoriginalConnect,holdoriginalGetConnectionResult,replacewell-knownowner,thenreleaseoldreply. OldCLI prints terminalsuccess withold_submits1/old_results1/replacementcalls0.",
+  "property": "CurrentSDKcontract invalidatesowner-pinnedclientobservationsonownerreplacement;remainingoldCLIhadbypassedthatclient.",
+  "excluded": [
+    "Not observedhardwaremisdelivery,oldcompletioncreditedtonewKernellifetime,newownerreceivingoldrequest,oranyRFclaim.",
+    "Doesnotretroactivelyinvalidatea37qualifiedstable-ownerSSAP/dataartifactscope;fullcontroller/managementcallerclosurewasexcluded.",
+    "Doesnotundoalreadyadmittedphysicalobligations orreturncredit. Newclientrejectionis observationfailure/uncertainty,notrollback."
+  ]
+}

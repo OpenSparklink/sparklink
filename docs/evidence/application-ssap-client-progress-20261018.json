@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "status": "SOURCE_IMPLEMENTED_OFFLINE_PASS_NEW_ARTIFACT_VM_PENDING",
+  "source_parent": "5ef32b9d33d1883943e6696a1856a49cda072673",
+  "production_files": {
+    "Cargo.lock": "a9ce7be48f20ed8e08ab753489544050bd200a801b696fc63f5629f1b1ab955e",
+    "crates/libsparklink/src/client.rs": "86d7da949f9b097b9ba0149f9d3265a3635d4debf531f5963495ea86749cfceb",
+    "crates/libsparklink/src/lib.rs": "62824b9897767e6239b32ac87860ac9c09f4b6b8914c56ddf249967540b21ff1",
+    "crates/libsparklink/src/ssap.rs": "aa7e727c24c0413de3198a36cbe6f5db507b7335e6726622a625178e755fae40",
+    "crates/libsparklink/tests/remote_ssap_client.rs": "4c1c25bbbfa5dcef03b306cb0899259a3d7c5299321e87520a02b2fa46434e6d",
+    "crates/slctl/Cargo.toml": "f7589f3c0b47984ca6253879138adb1c2bb22901e1477d94a432e63b0c08af56",
+    "crates/slctl/src/commands.rs": "ebeafbfe5587b2f43d9734a74670ed280d889bb04cc44567e77024609ba07895",
+    "crates/slctl/tests/application_ssap.rs": "597216ec4b1cde0ac77ec13a00d6309a17581fdf1ebe7872392fdb57d621ec63",
+    "crates/slk-contract/src/lib.rs": "55e5cc6671ba5fe671868a5cd892fe7e89140a6c91718be7f77e86335a5938d2",
+    "crates/slkd/src/channel.rs": "54a298d0b250921c3d8ea1a70ef562c8ecea19754569f67797594a19d8376b72",
+    "crates/slkd/src/connection_object.rs": "4df11d252f3ecd81c574ae8c3eec5a04af1afc8cc7046644e000daafb01e63bd",
+    "crates/slkd/src/ssap_engine.rs": "5c1d41cca4b2388c821b0fab776013e90890eb1b96d8741745f89c9091a5d327"
+  },
+  "behavior": "Existing pinned Client now supplies existing remote SSAP and Session observation methods;slctl consumes it. Shared wire aliases moved from daemon/CLI into independentcontract,daemon soleEngine unchanged. No newNativelease/protocolEngine/transactionstate/cache/retry/fallback.",
+  "invariants": [
+    "Original unique daemon owner/controller generation/connection lifetime/handle/role/type/address are not followed to replacements",
+    "Actual server errors propagate;old or late observations cannot relabel success;not an atomic kernel/D-Bus authorization proof",
+    "Notification observation is not subscription,protocol confirmation is not peerapplication processing;cancelled clientwait does not undo physical obligations"
+  ],
+  "offline": {
+    "workspace_all_features_tests": 316,
+    "scope": "Final stable source workspace run;actual privateD-Bus SDK/CLI finite fixtures,no WS73/protocol-success claim",
+    "strict": "default/all-target andallfeatures clippy -Dwarnings;locked offline shared12budget;fmt andstrictHTML",
+    "negative_controls": "Unsupported read,late reply aftergenerationchange,rolechange,daemon replacement,currentCLI errors andretiredCLI names;actualproducer literal introspection notderivedfromsharedaliases"
+  },
+  "preserved_failures": [
+    "Sandbox privatebus socket refusal retained;ordinaryuser replay passed",
+    "Initial signaturetest lackedTokio runtime;correctedtestenvironment withoutproductionchange",
+    "ObserveSsapIncoming expectedtwo outputs initially;unchanged originalmethodandtype prove single(bay)wirecontract. Corrected expectation andsourcecomparison retained,not productionwirechange",
+    "Concurrent wrapper request rejected sharedbuildlock beforecompilation;no two independent12jobbuilds ran"
+  ],
+  "reference": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "paths": [
+      "frameworks/native/nearlink_ssap_client.cpp",
+      "frameworks/ipc/src/nearlink_ssap_client_proxy.cpp"
+    ],
+    "scope": "Client/IPC/serverresponsibility referenceonly;notimportcache/addressidentity/10second/255limits orsecondEngine"
+  },
+  "remaining": [
+    "Exactnewcompiledartifact/binary/toolidentity andrealWS73VMshort/boundary/long/Owned/mechanism2 preservation;do notinherit2c8qualification",
+    "FullR5management/localOwned/Agent/highlevelobjects/C-Python clients andR6cleanVMdeployment remain",
+    "CompleteoriginalS0-S6/19WP/10FV/12DG,naturalRCA/nonmanualrecovery,retentionincident andallunfinishedissuesremainOPEN;UserHostP4planning"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5a-workspace-test-v2.log",
+      "sha256": "2f1d0a576a01df5828d21c6eb1f308804852ea3da5aed6d60d424e45ebe2a8da",
+      "bytes": 31953,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-workspace-test-budget-v2.json",
+      "sha256": "d6d28cefb434665d2109e4afea0fdef05cd25c846e12d2741e40e318069296d8",
+      "bytes": 891,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-final-broker-v1.log",
+      "sha256": "72d1bb3903c712b7bbf00910a475283cfc8b13633966ad669bb3a4390f49f3de",
+      "bytes": 1719,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-final-check-v1.log",
+      "sha256": "8076bf99132abc1d7948c6c457d5c212c22bfa35a4a7e37b594e6868052ef45c",
+      "bytes": 805,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-final-check-budget-v1.json",
+      "sha256": "3c864c26575faea40c5e10ef95f43879e694f7d8d02d9d526d24d3916aaf387e",
+      "bytes": 950,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-default-strict-v1.log",
+      "sha256": "9dbc413bcb0704942523713b03a0febf80f716709a0fa38286d2065da547acdb",
+      "bytes": 406,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-cli-v2.log",
+      "sha256": "13af35bf13697760b1ebedf4eabde789702f4948e7e394c99872863de689356c",
+      "bytes": 3951,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-signature-v3.log",
+      "sha256": "ce7803e400c697fc8c8a289165221df805e620d9bdb7713dd1b92d132a0daece",
+      "bytes": 1140,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-signature-baseline-compare-v1.json",
+      "sha256": "8cd40ff49a7eb0c911985af967844d385b9ccd0b754636dcea9ca77a019fe0a8",
+      "bytes": 581,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-dependencies-v1.log",
+      "sha256": "aaa57004ae775b4baa0f563dffa39d6ecf250b372df3a99f6e2581d7a7cfb9cd",
+      "bytes": 1628,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-dependency-unit-v1.log",
+      "sha256": "6916085d741ab53f95894c877beb9df5a63360745ae3d09bf64385fd9a045226",
+      "bytes": 963,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-retired-unit-v1.log",
+      "sha256": "0706deb2bbd7676b63388b26bca4c644e9364a4b1a6d7e0014938a1956a62376",
+      "bytes": 452,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-docs-v1.log",
+      "sha256": "58cce36ee1ad48dcf179dc4ae83e7a44d45883abd73da85143a0218db28ba385",
+      "bytes": 5330,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-fmt-v1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-broker-v1.log",
+      "sha256": "f5fca3e686d35e3b40f5194110dfdcc67e0e1eade1bace44efd493c45dbf559b",
+      "bytes": 2359,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-signature-v1.log",
+      "sha256": "f46ff90d6906e823ad02478637f428fd041a03a898f3409e4f7cb4a0d01ebb00",
+      "bytes": 1656,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-signature-v2.log",
+      "sha256": "ff887310bb1465d44285441e5eacff9da50191e8714d06e59db97ce0a9bad2b9",
+      "bytes": 1582,
+      "access": "private owner workspace"
+    },
+    {
+      "path": ".dev/architecture-r5a-cli-v1.log",
+      "sha256": "e1a6423f52d13bbd153d9504a2ce5e40e3c731b60d0a398e60514c0de4d28ea4",
+      "bytes": 1270,
+      "access": "private owner workspace"
+    }
+  ]
+}

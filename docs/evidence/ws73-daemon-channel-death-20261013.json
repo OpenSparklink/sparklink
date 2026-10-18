@@ -1,0 +1,4531 @@
+{
+  "status": "TWO_REAL_DAEMON_CHANNEL_DEATH_CASES_PASS",
+  "scope": "VM-only two real SDK111 WS73; actual common slkd owner SIGKILL/reap and successor with ordinary retained fd, exact D-Bus owner/pid and kernel credentials, original helper/broker fd close, both actual directions before death; no physical/independent-owner/automatic recovery qualification",
+  "kernel_head": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+  "compiled_service_head": "86bfbc81ba001539c3816f72b3efc5a911cf19ee",
+  "tool_head": "82aa65a77019804e78a95c1706c461e715187314",
+  "cases": [
+    {
+      "index": 0,
+      "kernel_head": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+      "compiled_service_head": "86bfbc81ba001539c3816f72b3efc5a911cf19ee",
+      "tool_head": "82aa65a77019804e78a95c1706c461e715187314",
+      "tool_sha256": {
+        "ws73_target.py": "8f99691429bba05dcc6c35701a3ae0565c4585889dbe3c70367ba9f86a17d522",
+        "ws73_target_init.sh": "1487fd14b58340c67688e49eb5bb4b03a40c2f31f6aba2d1db49d9f046afaf00",
+        "ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+        "ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+        "ws73_connection_control.py": "8e5228012c197bd99d178a37273a11867a263f2a98cf59d5cf9f6a812f6fc5e7",
+        "ws73_channel_grant.py": "41ec4ba3fc311c880a85adff161852f72529ccf7c79bf1b7a6ce6d66e6c8b549"
+      },
+      "fd_client_sha256": "21c6123f703c0aba582562fd6c042725e8bd5d4e5261a0ab21822446b22ba3d2",
+      "raw_control_record": {
+        "format_version": 1,
+        "scope": "actual common slkd owner death with ordinary retained business fds",
+        "status": "REAL_DAEMON_CHANNEL_DEATH_EVIDENCE_PENDING",
+        "rounds": [],
+        "negatives": [],
+        "commands": [
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "show"
+            ],
+            "start_wall_ns": 1791845939220113217,
+            "start_monotonic_ns": 27948583420,
+            "start_boottime_ns": 27948583680,
+            "pid": 579,
+            "stdout": "Selected /org/sparklink/slk0_g1\nAdapter /org/sparklink/slk0_g1:\n  State:       Ready\n  Generation:  1\n  Address:     00:01:09:32:54:CD\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939223720045,
+            "end_monotonic_ns": 27952190428,
+            "end_boottime_ns": 27952190789,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 show"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "show"
+            ],
+            "start_wall_ns": 1791845939226764684,
+            "start_monotonic_ns": 27955234816,
+            "start_boottime_ns": 27955234976,
+            "pid": 581,
+            "stdout": "Selected /org/sparklink/slk1_g2\nAdapter /org/sparklink/slk1_g2:\n  State:       Ready\n  Generation:  2\n  Address:     00:01:09:32:54:F9\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939230436153,
+            "end_monotonic_ns": 27958906426,
+            "end_boottime_ns": 27958906626,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 show"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "advertise",
+              "negotiable"
+            ],
+            "start_wall_ns": 1791845939236653161,
+            "start_monotonic_ns": 27965123303,
+            "start_boottime_ns": 27965123473,
+            "pid": 583,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeAdvertisementRequest: request=18052363317148557091 marker=ba79c1281ab0a322a6f29cfa1c165d10\nNativeAdvertisementAccepted: request=18052363317148557091 marker=ba79c1281ab0a322a6f29cfa1c165d10 data=ff290101010b24736c6b2d6261373963313238316162306133323261366632396366613163313635643130\nNativeOperationResult: generation=2 request=18052363317148557091 operation=1 state=3 errno=0 status=0x00 opcode=0x0c05 step=3/4 power=20 power_valid=1 adv=2 scan=1 profile=1\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939253114867,
+            "end_monotonic_ns": 27981585450,
+            "end_boottime_ns": 27981586011,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 advertise negotiable"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "show"
+            ],
+            "start_wall_ns": 1791845939256950426,
+            "start_monotonic_ns": 27985420608,
+            "start_boottime_ns": 27985420788,
+            "pid": 586,
+            "stdout": "Selected /org/sparklink/slk1_g2\nAdapter /org/sparklink/slk1_g2:\n  State:       Ready\n  Generation:  2\n  Address:     00:01:09:32:54:F9\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939260411238,
+            "end_monotonic_ns": 27988881391,
+            "end_boottime_ns": 27988881561,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 show"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "scan",
+              "on",
+              "ba79c1281ab0a322a6f29cfa1c165d10",
+              "00:01:09:32:54:F9"
+            ],
+            "start_wall_ns": 1791845939263234109,
+            "start_monotonic_ns": 27991704281,
+            "start_boottime_ns": 27991704461,
+            "pid": 588,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeScanWindow: generation=1 request=18346283542582661837 start_boottime_ns=27995123996\nNativeScanRequest: request=18346283542582661837 enable=on\nNativeOperationResult: generation=1 request=18346283542582661837 operation=3 state=3 errno=0 status=0x00 opcode=0x1002 step=1/2 power=0 power_valid=0 adv=1 scan=2 profile=1\nNativeScanComplete: generation=1 request=18346283542582661837 completed_boottime_ns=27996110235\nNativeScanObserved: generation=1 request=18346283542582661837 observed_boottime_ns=28135335298\nNativeDiscoveryMatch: generation=1 seq=1 address=00:01:09:32:54:F9 RSSI=-13 marker=ba79c1281ab0a322a6f29cfa1c165d10 data=ff290101010b24736c6b2d6261373963313238316162306133323261366632396366613163313635643130 kernel_boottime_ns=28131144249 elapsed_ms=139 lost=0\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939407385596,
+            "end_monotonic_ns": 28135856079,
+            "end_boottime_ns": 28135856400,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 scan on ba79c1281ab0a322a6f29cfa1c165d10 00:01:09:32:54:F9"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "scan",
+              "off"
+            ],
+            "start_wall_ns": 1791845939410853893,
+            "start_monotonic_ns": 28139324186,
+            "start_boottime_ns": 28139324396,
+            "pid": 591,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeScanWindow: generation=1 request=12184100077067458709 start_boottime_ns=28142640306\nNativeScanRequest: request=12184100077067458709 enable=off\nNativeOperationResult: generation=1 request=12184100077067458709 operation=4 state=3 errno=0 status=0x00 opcode=0x1002 step=0/1 power=0 power_valid=0 adv=1 scan=1 profile=1\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939414948801,
+            "end_monotonic_ns": 28143418943,
+            "end_boottime_ns": 28143419294,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 scan off"
+            ]
+          },
+          {
+            "args": [
+              "/bin/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "connect",
+              "00:01:09:32:54:F9",
+              "0"
+            ],
+            "start_wall_ns": 1791845939417518003,
+            "start_monotonic_ns": 28145988176,
+            "start_boottime_ns": 28145988356,
+            "pid": 593,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeConnectionRequest: request=1 address=00:01:09:32:54:F9 address_type=0\nNativeConnectionResult: generation=1 request=1 operation=1 state=4 errno=0 fault=0 command_status=0 outcome_status=0 handle=0 flags=7\nConnection procedure completed for 00:01:09:32:54:F9\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939568795171,
+            "end_monotonic_ns": 28297265784,
+            "end_boottime_ns": 28297266215,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /bin/slctl --adapter /org/sparklink/slk0_g1 connect 00:01:09:32:54:F9 0"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "info",
+              "00:01:09:32:54:F9"
+            ],
+            "start_wall_ns": 1791845939573256199,
+            "start_monotonic_ns": 28301726351,
+            "start_boottime_ns": 28301726521,
+            "pid": 597,
+            "stdout": "Selected /org/sparklink/slk0_g1\nDevice 00:01:09:32:54:F9:\n  Name:      \n  RSSI:      -13 dBm\n  Connected: true\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939576839733,
+            "end_monotonic_ns": 28305309995,
+            "end_boottime_ns": 28305310166,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 info 00:01:09:32:54:F9"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "info",
+              "00:01:09:32:54:CD"
+            ],
+            "start_wall_ns": 1791845939579337510,
+            "start_monotonic_ns": 28307807633,
+            "start_boottime_ns": 28307807783,
+            "pid": 599,
+            "stdout": "Selected /org/sparklink/slk1_g2\nDevice 00:01:09:32:54:CD:\n  Name:      \n  RSSI:      0 dBm\n  Connected: true\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939582443023,
+            "end_monotonic_ns": 28310913276,
+            "end_boottime_ns": 28310913456,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 info 00:01:09:32:54:CD"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "connections"
+            ],
+            "start_wall_ns": 1791845939586146343,
+            "start_monotonic_ns": 28314616516,
+            "start_boottime_ns": 28314616676,
+            "pid": 601,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeLinksSnapshot: generation=1 event_seq=2 revision=1 flags=1 errno=0\nNativeLink: lifetime=1 handle=0 role=0 type=0 address=00:01:09:32:54:F9\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939589310186,
+            "end_monotonic_ns": 28317780339,
+            "end_boottime_ns": 28317780489,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 connections"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "connection-objects"
+            ],
+            "start_wall_ns": 1791845939593901329,
+            "start_monotonic_ns": 28322371572,
+            "start_boottime_ns": 28322371822,
+            "pid": 603,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeConnectionObjects: generation=1 event_seq=2 revision=1 known=true\nNativeConnectionObject: generation=1 lifetime=1 handle=0 role=0 type=0 address=00:01:09:32:54:F9 path=/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939598023438,
+            "end_monotonic_ns": 28326493581,
+            "end_boottime_ns": 28326493831,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 connection-objects"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "connection-info",
+              "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+            ],
+            "start_wall_ns": 1791845939601643091,
+            "start_monotonic_ns": 28330113273,
+            "start_boottime_ns": 28330113453,
+            "pid": 605,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeConnectionInfo: generation=1 lifetime=1 handle=0 role=0 type=0 address=00:01:09:32:54:F9 known=true connected=true path=/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939605678376,
+            "end_monotonic_ns": 28334148528,
+            "end_boottime_ns": 28334148709,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 connection-info /org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "peer-info",
+              "/org/sparklink/slk0_g1/peer_t00_0001093254f9"
+            ],
+            "start_wall_ns": 1791845939608823073,
+            "start_monotonic_ns": 28337293255,
+            "start_boottime_ns": 28337293416,
+            "pid": 607,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativePeerInfo: generation=1 type=0 address=00:01:09:32:54:F9 known=true connected=true path=/org/sparklink/slk0_g1/peer_t00_0001093254f9\nNativePeerConnection: path=/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939612787375,
+            "end_monotonic_ns": 28341257527,
+            "end_boottime_ns": 28341257687,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 peer-info /org/sparklink/slk0_g1/peer_t00_0001093254f9"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "connection-objects"
+            ],
+            "start_wall_ns": 1791845939616117761,
+            "start_monotonic_ns": 28344587904,
+            "start_boottime_ns": 28344588064,
+            "pid": 609,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeConnectionObjects: generation=2 event_seq=1 revision=1 known=true\nNativeConnectionObject: generation=2 lifetime=1 handle=0 role=1 type=0 address=00:01:09:32:54:CD path=/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939619183039,
+            "end_monotonic_ns": 28347653191,
+            "end_boottime_ns": 28347653381,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 connection-objects"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "connection-info",
+              "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+            ],
+            "start_wall_ns": 1791845939622008734,
+            "start_monotonic_ns": 28350478907,
+            "start_boottime_ns": 28350479077,
+            "pid": 611,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeConnectionInfo: generation=2 lifetime=1 handle=0 role=1 type=0 address=00:01:09:32:54:CD known=true connected=true path=/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939625468315,
+            "end_monotonic_ns": 28353938467,
+            "end_boottime_ns": 28353938627,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 connection-info /org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "peer-info",
+              "/org/sparklink/slk1_g2/peer_t00_0001093254cd"
+            ],
+            "start_wall_ns": 1791845939628448171,
+            "start_monotonic_ns": 28356918343,
+            "start_boottime_ns": 28356918504,
+            "pid": 613,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativePeerInfo: generation=2 type=0 address=00:01:09:32:54:CD known=true connected=true path=/org/sparklink/slk1_g2/peer_t00_0001093254cd\nNativePeerConnection: path=/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939632054779,
+            "end_monotonic_ns": 28360524921,
+            "end_boottime_ns": 28360525081,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 peer-info /org/sparklink/slk1_g2/peer_t00_0001093254cd"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "show"
+            ],
+            "start_wall_ns": 1791845940085866714,
+            "start_monotonic_ns": 28814336947,
+            "start_boottime_ns": 28814337107,
+            "pid": 644,
+            "stdout": "Selected /org/sparklink/slk0_g1\nAdapter /org/sparklink/slk0_g1:\n  State:       Ready\n  Generation:  1\n  Address:     00:01:09:32:54:CD\n  Profile:     1\n  Native links: event_seq=3 revision=2 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845940090557024,
+            "end_monotonic_ns": 28819027157,
+            "end_boottime_ns": 28819027327,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 show"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "show"
+            ],
+            "start_wall_ns": 1791845940094946177,
+            "start_monotonic_ns": 28823416309,
+            "start_boottime_ns": 28823416570,
+            "pid": 646,
+            "stdout": "Selected /org/sparklink/slk1_g2\nAdapter /org/sparklink/slk1_g2:\n  State:       Ready\n  Generation:  2\n  Address:     00:01:09:32:54:F9\n  Profile:     1\n  Native links: event_seq=2 revision=2 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845940098872467,
+            "end_monotonic_ns": 28827342649,
+            "end_boottime_ns": 28827342860,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 show"
+            ]
+          }
+        ],
+        "daemon_before": {
+          "pid": 546,
+          "start_ticks": 348
+        },
+        "slctl": {
+          "path": "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+          "sha256": "76c6ca80c9d3e138d419b19f129a90b15d143fa0155ccf6d1a46e385a784d68c"
+        },
+        "fd_probe": {
+          "path": "/bin/ws73-channel-fd-probe",
+          "sha256": "21c6123f703c0aba582562fd6c042725e8bd5d4e5261a0ab21822446b22ba3d2"
+        },
+        "automatic_recovery_acceptance": false,
+        "physical_acceptance": false,
+        "independent_owner_isolation": false,
+        "bus_observations": [
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "daemon"
+            ],
+            "start_wall_ns": 1791845939211313763,
+            "start_monotonic_ns": 27939791068,
+            "start_boottime_ns": 27939792481,
+            "pid": 577,
+            "stdout": "DaemonIdentity: owner=:1.0 pid=546 uid=0\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845939215658672,
+            "end_monotonic_ns": 27944128964,
+            "end_boottime_ns": 27944129325,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl daemon"
+            ],
+            "observed_wall_ns": 1791845939218313585
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "daemon"
+            ],
+            "start_wall_ns": 1791845940075484647,
+            "start_monotonic_ns": 28803955240,
+            "start_boottime_ns": 28803955651,
+            "pid": 642,
+            "stdout": "DaemonIdentity: owner=:1.26 pid=626 uid=0\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845940079712034,
+            "end_monotonic_ns": 28808182347,
+            "end_boottime_ns": 28808182568,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl daemon"
+            ],
+            "observed_wall_ns": 1791845940083868689
+          }
+        ],
+        "bus_before": {
+          "owner": ":1.0",
+          "pid": 546,
+          "uid": 0
+        },
+        "initial": [
+          {
+            "port": "1-1",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+            "bus": 1,
+            "device": 2,
+            "index": 0,
+            "generation": 1,
+            "path": "/org/sparklink/slk0_g1",
+            "address": "00:01:09:32:54:CD",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<17<<<;29=0;69;7:0"
+            },
+            "observed_wall_ns": 1791845939220056651
+          },
+          {
+            "port": "1-2",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+            "bus": 1,
+            "device": 3,
+            "index": 1,
+            "generation": 2,
+            "path": "/org/sparklink/slk1_g2",
+            "address": "00:01:09:32:54:F9",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<1705:229=0;6516:0"
+            },
+            "observed_wall_ns": 1791845939226717124
+          }
+        ],
+        "connection_control": {
+          "status": "DAEMON_CHANNEL_CONNECTED_GATE_PENDING",
+          "advertising_kind": "negotiable-t",
+          "owners": [
+            {
+              "port": "1-1",
+              "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+              "bus": 1,
+              "device": 2,
+              "index": 0,
+              "generation": 1,
+              "path": "/org/sparklink/slk0_g1",
+              "address": "00:01:09:32:54:CD",
+              "version": "016c00a100",
+              "features": "23155000120000010000",
+              "buffers": [
+                254,
+                5,
+                0,
+                0
+              ],
+              "attributes": {
+                "metadata_valid": "1",
+                "runtime_transport": "1",
+                "boot_error": "0",
+                "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+              },
+              "descriptors": {
+                "manufacturer": "00000000",
+                "product": "00000000",
+                "serial": ">04072<17<<<;29=0;69;7:0"
+              },
+              "observed_wall_ns": 1791845939220056651
+            },
+            {
+              "port": "1-2",
+              "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+              "bus": 1,
+              "device": 3,
+              "index": 1,
+              "generation": 2,
+              "path": "/org/sparklink/slk1_g2",
+              "address": "00:01:09:32:54:F9",
+              "version": "016c00a100",
+              "features": "23155000120000010000",
+              "buffers": [
+                254,
+                5,
+                0,
+                0
+              ],
+              "attributes": {
+                "metadata_valid": "1",
+                "runtime_transport": "1",
+                "boot_error": "0",
+                "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+              },
+              "descriptors": {
+                "manufacturer": "00000000",
+                "product": "00000000",
+                "serial": ">04072<1705:229=0;6516:0"
+              },
+              "observed_wall_ns": 1791845939226717124
+            }
+          ],
+          "phases": [
+            {
+              "caller": {
+                "port": "1-1",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                "bus": 1,
+                "device": 2,
+                "index": 0,
+                "generation": 1,
+                "path": "/org/sparklink/slk0_g1",
+                "address": "00:01:09:32:54:CD",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<17<<<;29=0;69;7:0"
+                },
+                "observed_wall_ns": 1791845939220056651
+              },
+              "peer": {
+                "port": "1-2",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                "bus": 1,
+                "device": 3,
+                "index": 1,
+                "generation": 2,
+                "path": "/org/sparklink/slk1_g2",
+                "address": "00:01:09:32:54:F9",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<1705:229=0;6516:0"
+                },
+                "observed_wall_ns": 1791845939226717124
+              },
+              "start_wall_ns": 1791845939234493150,
+              "advertisement_command": 2,
+              "policy_query_command": 3,
+              "marker": "ba79c1281ab0a322a6f29cfa1c165d10",
+              "scan_command": 4,
+              "scan_match": {
+                "generation": 1,
+                "seq": 1,
+                "address": "00:01:09:32:54:F9",
+                "rssi": -13,
+                "marker": "ba79c1281ab0a322a6f29cfa1c165d10",
+                "data": "ff290101010b24736c6b2d6261373963313238316162306133323261366632396366613163313635643130",
+                "kernel_boottime_ns": 28131144249,
+                "elapsed_ms": 139,
+                "lost": 0
+              },
+              "scan_stop_command": 5,
+              "peer_address_type": 0,
+              "connect_command": 6,
+              "connect": {
+                "generation": 1,
+                "request": 1,
+                "operation": 1,
+                "state": 4,
+                "error": 0,
+                "fault": 0,
+                "command_status": 0,
+                "outcome_status": 0,
+                "handle": 0,
+                "flags": 7
+              },
+              "links_command": 9,
+              "reference": {
+                "lifetime": 1,
+                "handle": 0,
+                "role": 0,
+                "address_type": 0,
+                "address": "00:01:09:32:54:F9"
+              },
+              "typed_objects": [
+                {
+                  "owner": {
+                    "port": "1-1",
+                    "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                    "bus": 1,
+                    "device": 2,
+                    "index": 0,
+                    "generation": 1,
+                    "path": "/org/sparklink/slk0_g1",
+                    "address": "00:01:09:32:54:CD",
+                    "version": "016c00a100",
+                    "features": "23155000120000010000",
+                    "buffers": [
+                      254,
+                      5,
+                      0,
+                      0
+                    ],
+                    "attributes": {
+                      "metadata_valid": "1",
+                      "runtime_transport": "1",
+                      "boot_error": "0",
+                      "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                      "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                    },
+                    "descriptors": {
+                      "manufacturer": "00000000",
+                      "product": "00000000",
+                      "serial": ">04072<17<<<;29=0;69;7:0"
+                    },
+                    "observed_wall_ns": 1791845939220056651
+                  },
+                  "remote": {
+                    "port": "1-2",
+                    "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                    "bus": 1,
+                    "device": 3,
+                    "index": 1,
+                    "generation": 2,
+                    "path": "/org/sparklink/slk1_g2",
+                    "address": "00:01:09:32:54:F9",
+                    "version": "016c00a100",
+                    "features": "23155000120000010000",
+                    "buffers": [
+                      254,
+                      5,
+                      0,
+                      0
+                    ],
+                    "attributes": {
+                      "metadata_valid": "1",
+                      "runtime_transport": "1",
+                      "boot_error": "0",
+                      "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                      "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                    },
+                    "descriptors": {
+                      "manufacturer": "00000000",
+                      "product": "00000000",
+                      "serial": ">04072<1705:229=0;6516:0"
+                    },
+                    "observed_wall_ns": 1791845939226717124
+                  },
+                  "object": {
+                    "generation": 1,
+                    "lifetime": 1,
+                    "handle": 0,
+                    "role": 0,
+                    "address_type": 0,
+                    "address": "00:01:09:32:54:F9",
+                    "path": "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+                  },
+                  "enumeration_commands": [
+                    10
+                  ],
+                  "info_command": 11,
+                  "peer_command": 12
+                },
+                {
+                  "owner": {
+                    "port": "1-2",
+                    "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                    "bus": 1,
+                    "device": 3,
+                    "index": 1,
+                    "generation": 2,
+                    "path": "/org/sparklink/slk1_g2",
+                    "address": "00:01:09:32:54:F9",
+                    "version": "016c00a100",
+                    "features": "23155000120000010000",
+                    "buffers": [
+                      254,
+                      5,
+                      0,
+                      0
+                    ],
+                    "attributes": {
+                      "metadata_valid": "1",
+                      "runtime_transport": "1",
+                      "boot_error": "0",
+                      "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                      "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                    },
+                    "descriptors": {
+                      "manufacturer": "00000000",
+                      "product": "00000000",
+                      "serial": ">04072<1705:229=0;6516:0"
+                    },
+                    "observed_wall_ns": 1791845939226717124
+                  },
+                  "remote": {
+                    "port": "1-1",
+                    "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                    "bus": 1,
+                    "device": 2,
+                    "index": 0,
+                    "generation": 1,
+                    "path": "/org/sparklink/slk0_g1",
+                    "address": "00:01:09:32:54:CD",
+                    "version": "016c00a100",
+                    "features": "23155000120000010000",
+                    "buffers": [
+                      254,
+                      5,
+                      0,
+                      0
+                    ],
+                    "attributes": {
+                      "metadata_valid": "1",
+                      "runtime_transport": "1",
+                      "boot_error": "0",
+                      "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                      "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                    },
+                    "descriptors": {
+                      "manufacturer": "00000000",
+                      "product": "00000000",
+                      "serial": ">04072<17<<<;29=0;69;7:0"
+                    },
+                    "observed_wall_ns": 1791845939220056651
+                  },
+                  "object": {
+                    "generation": 2,
+                    "lifetime": 1,
+                    "handle": 0,
+                    "role": 1,
+                    "address_type": 0,
+                    "address": "00:01:09:32:54:CD",
+                    "path": "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+                  },
+                  "enumeration_commands": [
+                    13
+                  ],
+                  "info_command": 14,
+                  "peer_command": 15
+                }
+              ],
+              "stale_object_rejections": []
+            }
+          ],
+          "peer_lifetime_binding": "v2-admission-selection",
+          "connection_objects": "generation-type-lifetime-v1",
+          "advertising_set_lifecycle": "remove-recreate-v1",
+          "release_acceptance": false,
+          "last_file_acceptance": false,
+          "dup_acceptance": false,
+          "inflight_acceptance": false,
+          "ssap_acceptance": false,
+          "automatic_recovery_acceptance": false,
+          "start_wall_ns": 1791845939233283981,
+          "end_wall_ns": 1791845940122904100
+        },
+        "daemon_channel": {
+          "status": "DAEMON_CHANNEL_GATE_PASS",
+          "index": 0,
+          "owners": [
+            {
+              "owner": {
+                "port": "1-1",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                "bus": 1,
+                "device": 2,
+                "index": 0,
+                "generation": 1,
+                "path": "/org/sparklink/slk0_g1",
+                "address": "00:01:09:32:54:CD",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<17<<<;29=0;69;7:0"
+                },
+                "observed_wall_ns": 1791845939220056651
+              },
+              "remote": {
+                "port": "1-2",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                "bus": 1,
+                "device": 3,
+                "index": 1,
+                "generation": 2,
+                "path": "/org/sparklink/slk1_g2",
+                "address": "00:01:09:32:54:F9",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<1705:229=0;6516:0"
+                },
+                "observed_wall_ns": 1791845939226717124
+              },
+              "object": {
+                "generation": 1,
+                "lifetime": 1,
+                "handle": 0,
+                "role": 0,
+                "address_type": 0,
+                "address": "00:01:09:32:54:F9",
+                "path": "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+              },
+              "enumeration_commands": [
+                10
+              ],
+              "info_command": 11,
+              "peer_command": 12
+            },
+            {
+              "owner": {
+                "port": "1-2",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                "bus": 1,
+                "device": 3,
+                "index": 1,
+                "generation": 2,
+                "path": "/org/sparklink/slk1_g2",
+                "address": "00:01:09:32:54:F9",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<1705:229=0;6516:0"
+                },
+                "observed_wall_ns": 1791845939226717124
+              },
+              "remote": {
+                "port": "1-1",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                "bus": 1,
+                "device": 2,
+                "index": 0,
+                "generation": 1,
+                "path": "/org/sparklink/slk0_g1",
+                "address": "00:01:09:32:54:CD",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<17<<<;29=0;69;7:0"
+                },
+                "observed_wall_ns": 1791845939220056651
+              },
+              "object": {
+                "generation": 2,
+                "lifetime": 1,
+                "handle": 0,
+                "role": 1,
+                "address_type": 0,
+                "address": "00:01:09:32:54:CD",
+                "path": "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+              },
+              "enumeration_commands": [
+                13
+              ],
+              "info_command": 14,
+              "peer_command": 15
+            }
+          ],
+          "workers": [
+            {
+              "stage": "ready",
+              "pid": 617,
+              "fd": 4,
+              "original": 3,
+              "original_errno": 9,
+              "credentials": {
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "caps": {
+                  "CapEff": "0000000000000000",
+                  "CapPrm": "0000000000000000",
+                  "CapAmb": "0000000000000000"
+                }
+              },
+              "wall_ns": 1791845939644741299,
+              "scm_rights": {
+                "before": {
+                  "stage": "awaiting_channel_fd",
+                  "pid": 617,
+                  "credentials": {
+                    "uids": [
+                      1000,
+                      1000,
+                      1000,
+                      1000
+                    ],
+                    "caps": {
+                      "CapEff": "0000000000000000",
+                      "CapPrm": "0000000000000000",
+                      "CapAmb": "0000000000000000"
+                    }
+                  },
+                  "token": "4b2c4eb3a51c40e0fee8c48cadf3906e",
+                  "wall_ns": 1791845939643990524,
+                  "open_fds": [
+                    {
+                      "fd": 0,
+                      "target": "/dev/null"
+                    },
+                    {
+                      "fd": 1,
+                      "target": "/evidence/channel-daemon-supervisor.log"
+                    },
+                    {
+                      "fd": 2,
+                      "target": "/evidence/channel-daemon-supervisor.log"
+                    },
+                    {
+                      "fd": 5,
+                      "target": "socket:[7759]"
+                    }
+                  ]
+                },
+                "received_wall_ns": 1791845939644580146,
+                "inode": 8633,
+                "close_on_exec": true
+              }
+            },
+            {
+              "stage": "ready",
+              "pid": 621,
+              "fd": 4,
+              "original": 3,
+              "original_errno": 9,
+              "credentials": {
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "caps": {
+                  "CapEff": "0000000000000000",
+                  "CapPrm": "0000000000000000",
+                  "CapAmb": "0000000000000000"
+                }
+              },
+              "wall_ns": 1791845939655842532,
+              "scm_rights": {
+                "before": {
+                  "stage": "awaiting_channel_fd",
+                  "pid": 621,
+                  "credentials": {
+                    "uids": [
+                      1000,
+                      1000,
+                      1000,
+                      1000
+                    ],
+                    "caps": {
+                      "CapEff": "0000000000000000",
+                      "CapPrm": "0000000000000000",
+                      "CapAmb": "0000000000000000"
+                    }
+                  },
+                  "token": "1e9f13c20eef2fa2f656851c195f2489",
+                  "wall_ns": 1791845939655441286,
+                  "open_fds": [
+                    {
+                      "fd": 0,
+                      "target": "/dev/null"
+                    },
+                    {
+                      "fd": 1,
+                      "target": "/evidence/channel-daemon-supervisor.log"
+                    },
+                    {
+                      "fd": 2,
+                      "target": "/evidence/channel-daemon-supervisor.log"
+                    },
+                    {
+                      "fd": 6,
+                      "target": "socket:[8650]"
+                    }
+                  ]
+                },
+                "received_wall_ns": 1791845939655759676,
+                "inode": 8648,
+                "close_on_exec": true
+              }
+            }
+          ],
+          "transfers": [
+            {
+              "client": {
+                "daemon_owner": ":1.0",
+                "daemon_pid": 546,
+                "inode": 8633,
+                "path": "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001",
+                "pid": 615,
+                "process_status": "Name:\tws73-channel-fd\nUmask:\t0000\nState:\tR (running)\nTgid:\t615\nNgid:\t0\nPid:\t615\nPPid:\t574\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1002\t1002\t1002\t1002\nFDSize:\t64\nGroups:\t1000 1002 \nNStgid:\t615\nNSpid:\t615\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t   10140 kB\nVmSize:\t   10140 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t    5288 kB\nVmRSS:\t    5288 kB\nRssAnon:\t     428 kB\nRssFile:\t    4860 kB\nRssShmem:\t       0 kB\nVmData:\t     228 kB\nVmStk:\t     132 kB\nVmExe:\t    4308 kB\nVmLib:\t    2376 kB\nVmPTE:\t      68 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/2883\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000000001006\nSigCgt:\t0000000000000440\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t3\nCpus_allowed_list:\t0-1\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t0\nnonvoluntary_ctxt_switches:\t0\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+                "stage": "daemon_channel_fd",
+                "token": "bb3569caa3e740ca8a505bf5298c256f",
+                "wall_ns": "1791845939640674665",
+                "kernel_sender": {
+                  "pid": 615,
+                  "uid": 1000,
+                  "gid": 1002
+                }
+              },
+              "client_exit": 0,
+              "client_reaped_wall_ns": 1791845939644824145,
+              "before": {
+                "stage": "awaiting_channel_fd",
+                "pid": 617,
+                "credentials": {
+                  "uids": [
+                    1000,
+                    1000,
+                    1000,
+                    1000
+                  ],
+                  "caps": {
+                    "CapEff": "0000000000000000",
+                    "CapPrm": "0000000000000000",
+                    "CapAmb": "0000000000000000"
+                  }
+                },
+                "token": "4b2c4eb3a51c40e0fee8c48cadf3906e",
+                "wall_ns": 1791845939643990524,
+                "open_fds": [
+                  {
+                    "fd": 0,
+                    "target": "/dev/null"
+                  },
+                  {
+                    "fd": 1,
+                    "target": "/evidence/channel-daemon-supervisor.log"
+                  },
+                  {
+                    "fd": 2,
+                    "target": "/evidence/channel-daemon-supervisor.log"
+                  },
+                  {
+                    "fd": 5,
+                    "target": "socket:[7759]"
+                  }
+                ]
+              },
+              "broker_closed": true,
+              "controller": 0
+            },
+            {
+              "client": {
+                "daemon_owner": ":1.0",
+                "daemon_pid": 546,
+                "inode": 8648,
+                "path": "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001",
+                "pid": 619,
+                "process_status": "Name:\tws73-channel-fd\nUmask:\t0000\nState:\tR (running)\nTgid:\t619\nNgid:\t0\nPid:\t619\nPPid:\t574\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1002\t1002\t1002\t1002\nFDSize:\t64\nGroups:\t1000 1002 \nNStgid:\t619\nNSpid:\t619\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t   10140 kB\nVmSize:\t   10140 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t    5404 kB\nVmRSS:\t    5404 kB\nRssAnon:\t     428 kB\nRssFile:\t    4976 kB\nRssShmem:\t       0 kB\nVmData:\t     228 kB\nVmStk:\t     132 kB\nVmExe:\t    4308 kB\nVmLib:\t    2376 kB\nVmPTE:\t      56 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/2883\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000000001006\nSigCgt:\t0000000000000440\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t3\nCpus_allowed_list:\t0-1\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t0\nnonvoluntary_ctxt_switches:\t0\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+                "stage": "daemon_channel_fd",
+                "token": "13c86da057cc7bc5508b879e9bdfe2b6",
+                "wall_ns": "1791845939652124014",
+                "kernel_sender": {
+                  "pid": 619,
+                  "uid": 1000,
+                  "gid": 1002
+                }
+              },
+              "client_exit": 0,
+              "client_reaped_wall_ns": 1791845939655928805,
+              "before": {
+                "stage": "awaiting_channel_fd",
+                "pid": 621,
+                "credentials": {
+                  "uids": [
+                    1000,
+                    1000,
+                    1000,
+                    1000
+                  ],
+                  "caps": {
+                    "CapEff": "0000000000000000",
+                    "CapPrm": "0000000000000000",
+                    "CapAmb": "0000000000000000"
+                  }
+                },
+                "token": "1e9f13c20eef2fa2f656851c195f2489",
+                "wall_ns": 1791845939655441286,
+                "open_fds": [
+                  {
+                    "fd": 0,
+                    "target": "/dev/null"
+                  },
+                  {
+                    "fd": 1,
+                    "target": "/evidence/channel-daemon-supervisor.log"
+                  },
+                  {
+                    "fd": 2,
+                    "target": "/evidence/channel-daemon-supervisor.log"
+                  },
+                  {
+                    "fd": 6,
+                    "target": "socket:[8650]"
+                  }
+                ]
+              },
+              "broker_closed": true,
+              "controller": 1
+            }
+          ],
+          "business": [
+            {
+              "label": "before",
+              "initiator": 0,
+              "payload": "534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad00b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+              "applications": [
+                {
+                  "stage": "business",
+                  "initiator": true,
+                  "sent": "534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad00b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+                  "received": "534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad01b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+                  "start_wall_ns": 1791845939658821046,
+                  "end_wall_ns": 1791845939718622285
+                },
+                {
+                  "stage": "business",
+                  "initiator": false,
+                  "sent": "534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad01b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+                  "received": "534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad00b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+                  "start_wall_ns": 1791845939658822218,
+                  "end_wall_ns": 1791845939695641162
+                }
+              ],
+              "start_wall_ns": 1791845939658777955,
+              "end_wall_ns": 1791845939718742001
+            },
+            {
+              "label": "before",
+              "initiator": 1,
+              "payload": "534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc100c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+              "applications": [
+                {
+                  "stage": "business",
+                  "initiator": false,
+                  "sent": "534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc101c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+                  "received": "534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc100c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+                  "start_wall_ns": 1791845939722649686,
+                  "end_wall_ns": 1791845939740622330
+                },
+                {
+                  "stage": "business",
+                  "initiator": true,
+                  "sent": "534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc100c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+                  "received": "534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc101c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+                  "start_wall_ns": 1791845939722654215,
+                  "end_wall_ns": 1791845939762593480
+                }
+              ],
+              "start_wall_ns": 1791845939722618417,
+              "end_wall_ns": 1791845939762666668
+            }
+          ],
+          "armed": {
+            "stage": "armed",
+            "pid": 617,
+            "fd": 4,
+            "wall_ns": 1791845939766287622
+          },
+          "blocking_witness": [
+            {
+              "syscall": 45,
+              "fd": 4,
+              "state": "S",
+              "wchan": "__skb_wait_for_more_packets",
+              "wall_ns": 1791845939766442805
+            },
+            {
+              "syscall": 45,
+              "fd": 4,
+              "state": "S",
+              "wchan": "__skb_wait_for_more_packets",
+              "wall_ns": 1791845939796769903
+            }
+          ],
+          "blocked_result": {
+            "stage": "blocked_denied",
+            "errno": 116,
+            "start_wall_ns": 1791845939766312148,
+            "end_wall_ns": 1791845939872110801
+          },
+          "after_withdrawal": {
+            "stage": "denied",
+            "errors": {
+              "send": 13,
+              "recv": 13
+            },
+            "poll": 24,
+            "marker": "47524e5444454e5961ba03020ea3ae1555a0ba94b52280273860038f4e8630e8d3aaff915616a42e",
+            "wall_ns": 1791845939943361480
+          },
+          "other_after_death": {
+            "stage": "denied",
+            "errors": {
+              "send": 13,
+              "recv": 13
+            },
+            "poll": 24,
+            "marker": "47524e5444454e590977808c6a90ce080391e522b6a59b58a7bafd7beefba6239ceeb7e3ce8d6a1c",
+            "wall_ns": 1791845939945694867
+          },
+          "after_successor": {
+            "stage": "denied",
+            "errors": {
+              "send": 13,
+              "recv": 13
+            },
+            "poll": 24,
+            "marker": "47524e5444454e59c7f947769eb6d1c50137e92a6f6ec75c039a21d0ab79347904a5c5184a0fe322",
+            "wall_ns": 1791845940104176544
+          },
+          "other_after_successor": {
+            "stage": "denied",
+            "errors": {
+              "send": 13,
+              "recv": 13
+            },
+            "poll": 24,
+            "marker": "47524e5444454e590c35473e73903c7e9cdacdadca3876c49293dd5a8b2cb07ace91c3410a285495",
+            "wall_ns": 1791845940105786227
+          },
+          "end_wall_ns": 1791845940107828487
+        },
+        "armed_wall_ns": 1791845939830793719,
+        "death": {
+          "pid": 546,
+          "status": 137,
+          "before_wall_ns": 1791845939857762177,
+          "reaped_wall_ns": 1791845939892682713
+        },
+        "cleanup_observations": [
+          [
+            {
+              "index": 0,
+              "generation": 1,
+              "flags": 1,
+              "error": 0,
+              "snapshot": "01000000000000000100000001000000010000000100000000000401fe0000000500016c00a100231550001200000100000001093254cd000000000000000000",
+              "management": "010000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+              "links": "010000000000000003000000000000000200000000000000010000000100000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "state": 0,
+              "management_flags": 0,
+              "link_flags": 1,
+              "link_count": 0,
+              "wall_ns": 1791845939932698603
+            },
+            {
+              "index": 1,
+              "generation": 2,
+              "flags": 1,
+              "error": 0,
+              "snapshot": "02000000000000000100000001000000010000000100000001000401fe0000000500016c00a100231550001200000100000001093254f9000000000000000000",
+              "management": "020000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+              "links": "020000000000000002000000000000000200000000000000010000000100000001000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "state": 0,
+              "management_flags": 0,
+              "link_flags": 1,
+              "link_count": 0,
+              "wall_ns": 1791845939935740827
+            }
+          ]
+        ],
+        "successor": {
+          "pid": 626,
+          "wall_ns": 1791845940070380677
+        },
+        "daemon_after": {
+          "pid": 626,
+          "start_ticks": 2872
+        },
+        "bus_after": {
+          "owner": ":1.26",
+          "pid": 626,
+          "uid": 0
+        },
+        "after_ready": [
+          {
+            "port": "1-1",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+            "bus": 1,
+            "device": 2,
+            "index": 0,
+            "generation": 1,
+            "path": "/org/sparklink/slk0_g1",
+            "address": "00:01:09:32:54:CD",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<17<<<;29=0;69;7:0"
+            },
+            "observed_wall_ns": 1791845940085815047
+          },
+          {
+            "port": "1-2",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+            "bus": 1,
+            "device": 3,
+            "index": 1,
+            "generation": 2,
+            "path": "/org/sparklink/slk1_g2",
+            "address": "00:01:09:32:54:F9",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=1 last_event=0004 controller_error=100",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<1705:229=0;6516:0"
+            },
+            "observed_wall_ns": 1791845940094901523
+          }
+        ],
+        "end_wall_ns": 1791845940124855027
+      },
+      "independent_usb_proof": {
+        "status": "REAL_DAEMON_CHANNEL_DEATH_USB_CORROBORATED",
+        "first_blocked_errno": 116,
+        "physical_down_before_wake": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845939871498000,
+            "urb": 18446615593030850048,
+            "record": 488,
+            "file_offset": 57906,
+            "hcc_offset": 92,
+            "usb_sha256": "773ca4c516cdc87201ac206131f92645e24c5c85b536769bdebfa6e07097f496",
+            "usb_length": 178,
+            "event": 5,
+            "params": "00000013"
+          }
+        ],
+        "business_round_trips": 2,
+        "legs": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845939683547000,
+            "urb": 18446615593240471232,
+            "record": 442,
+            "file_offset": 50338,
+            "usb_sha256": "ab17024d962f7679ba1437ef5f11ca5999efd72109bde0c4d043e6da40b6529f",
+            "handle": 0,
+            "boundary": 0,
+            "data": "1f003e00f1534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad00b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+            "direction": "out",
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791845939683775000,
+              "urb": 18446615593240471232,
+              "record": 443,
+              "file_offset": 50557
+            },
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845939683547000,
+                "urb": 18446615593240471232,
+                "record": 442,
+                "file_offset": 50338,
+                "usb_sha256": "ab17024d962f7679ba1437ef5f11ca5999efd72109bde0c4d043e6da40b6529f",
+                "handle": 0,
+                "boundary": 0,
+                "data": "1f003e00f1534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad00b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+                "direction": "out",
+                "completion": {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1791845939683775000,
+                  "urb": 18446615593240471232,
+                  "record": 443,
+                  "file_offset": 50557
+                }
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845939713946000,
+            "urb": 18446615593030850048,
+            "record": 458,
+            "file_offset": 52964,
+            "hcc_offset": 92,
+            "usb_sha256": "8f60978e974e923d5c6ccab54e45046a824edd3c107297e9e192f6284899f51f",
+            "usb_length": 178,
+            "handle": 0,
+            "boundary": 3,
+            "data": "1f003e00f1534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad01b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+            "direction": "in",
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845939708013000,
+                "urb": 18446615593030850048,
+                "record": 454,
+                "file_offset": 52288,
+                "hcc_offset": 92,
+                "usb_sha256": "8d8ef406e9698eaa9e7a65a63a90768d0dc478486a3e4227bb0c664892c6ac29",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 1,
+                "data": "1f003e00f1534c4b47524e5431fb63650613fd1047026ea28518b1f9",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845939711092000,
+                "urb": 18446615593030850048,
+                "record": 456,
+                "file_offset": 52626,
+                "hcc_offset": 92,
+                "usb_sha256": "b4431e434091b746d0bd84008453e497978f93db111a71278a54341c8e5143ff",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 2,
+                "data": "cb4ec39cad01b52c355741ae44125439fadc42eaa596a53c0567719e",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845939713946000,
+                "urb": 18446615593030850048,
+                "record": 458,
+                "file_offset": 52964,
+                "hcc_offset": 92,
+                "usb_sha256": "8f60978e974e923d5c6ccab54e45046a824edd3c107297e9e192f6284899f51f",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 3,
+                "data": "74226409caec72da95a6",
+                "direction": "in"
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845939706579000,
+            "urb": 18446615593827442688,
+            "record": 452,
+            "file_offset": 51989,
+            "usb_sha256": "e7b59e21c38025b15d72bc8d14489c1ec2dea08c9a5f785799f50a56be768fb0",
+            "handle": 0,
+            "boundary": 0,
+            "data": "1f003e00f1534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad01b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+            "direction": "out",
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1791845939706831000,
+              "urb": 18446615593827442688,
+              "record": 453,
+              "file_offset": 52208
+            },
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845939706579000,
+                "urb": 18446615593827442688,
+                "record": 452,
+                "file_offset": 51989,
+                "usb_sha256": "e7b59e21c38025b15d72bc8d14489c1ec2dea08c9a5f785799f50a56be768fb0",
+                "handle": 0,
+                "boundary": 0,
+                "data": "1f003e00f1534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad01b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+                "direction": "out",
+                "completion": {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1791845939706831000,
+                  "urb": 18446615593827442688,
+                  "record": 453,
+                  "file_offset": 52208
+                }
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845939688457000,
+            "urb": 18446615593043484416,
+            "record": 450,
+            "file_offset": 51651,
+            "hcc_offset": 92,
+            "usb_sha256": "ccb88ed7259b6297f9f8f588350b45a46f3b5247c2fbd859c54bc5fc592dec59",
+            "usb_length": 178,
+            "handle": 0,
+            "boundary": 3,
+            "data": "1f003e00f1534c4b47524e5431fb63650613fd1047026ea28518b1f9cb4ec39cad00b52c355741ae44125439fadc42eaa596a53c0567719e74226409caec72da95a6",
+            "direction": "in",
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845939685509000,
+                "urb": 18446615593043484416,
+                "record": 444,
+                "file_offset": 50637,
+                "hcc_offset": 92,
+                "usb_sha256": "2c6660eef7723ade8ec231a0f7acd66d7f79eef8e41bb12199a54ddfb9f4fc64",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 1,
+                "data": "1f003e00f1534c4b47524e5431fb63650613fd1047026ea28518b1f9",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845939687000000,
+                "urb": 18446615593043484416,
+                "record": 446,
+                "file_offset": 50975,
+                "hcc_offset": 92,
+                "usb_sha256": "4abe1bff4b8b324582019f471d031f45362ebef7e3121bd5780bc53f3e780c10",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 2,
+                "data": "cb4ec39cad00b52c355741ae44125439fadc42eaa596a53c0567719e",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845939688457000,
+                "urb": 18446615593043484416,
+                "record": 450,
+                "file_offset": 51651,
+                "hcc_offset": 92,
+                "usb_sha256": "ccb88ed7259b6297f9f8f588350b45a46f3b5247c2fbd859c54bc5fc592dec59",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 3,
+                "data": "74226409caec72da95a6",
+                "direction": "in"
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845939751546000,
+            "urb": 18446615593240471232,
+            "record": 472,
+            "file_offset": 55291,
+            "usb_sha256": "cf57307acf2957bb1a6f30043b3378809568264919a3ab739d6bc28d86e0cdce",
+            "handle": 0,
+            "boundary": 0,
+            "data": "1f003e00f1534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc101c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+            "direction": "out",
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791845939751775000,
+              "urb": 18446615593240471232,
+              "record": 473,
+              "file_offset": 55510
+            },
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845939751546000,
+                "urb": 18446615593240471232,
+                "record": 472,
+                "file_offset": 55291,
+                "usb_sha256": "cf57307acf2957bb1a6f30043b3378809568264919a3ab739d6bc28d86e0cdce",
+                "handle": 0,
+                "boundary": 0,
+                "data": "1f003e00f1534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc101c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+                "direction": "out",
+                "completion": {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1791845939751775000,
+                  "urb": 18446615593240471232,
+                  "record": 473,
+                  "file_offset": 55510
+                }
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845939736445000,
+            "urb": 18446615593030850048,
+            "record": 468,
+            "file_offset": 54615,
+            "hcc_offset": 92,
+            "usb_sha256": "814c738a0181fe90f8f86e5afa3e4b6382f905c8c0262d67e1a50201b38fe204",
+            "usb_length": 178,
+            "handle": 0,
+            "boundary": 3,
+            "data": "1f003e00f1534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc100c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+            "direction": "in",
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845939730497000,
+                "urb": 18446615593030850048,
+                "record": 464,
+                "file_offset": 53939,
+                "hcc_offset": 92,
+                "usb_sha256": "df1b6ffb6d130281d20d1f18a8ac729e9356eb3fe06fdd05ef7c84f79aa7db3e",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 1,
+                "data": "1f003e00f1534c4b47524e54316af724effb401a113df6b3532230ae",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845939733577000,
+                "urb": 18446615593030850048,
+                "record": 466,
+                "file_offset": 54277,
+                "hcc_offset": 92,
+                "usb_sha256": "ea49805a8d430269661105ae5b72d8e4af4880bb19a26a7fee4dcb8b11dae740",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 2,
+                "data": "aaa9c22dc100c35d8f4356eeb5a18c4400e797861912d34d9f5346fe",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845939736445000,
+                "urb": 18446615593030850048,
+                "record": 468,
+                "file_offset": 54615,
+                "hcc_offset": 92,
+                "usb_sha256": "814c738a0181fe90f8f86e5afa3e4b6382f905c8c0262d67e1a50201b38fe204",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 3,
+                "data": "a5d1fc347097e7f66962",
+                "direction": "in"
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845939728553000,
+            "urb": 18446615593240471232,
+            "record": 462,
+            "file_offset": 53640,
+            "usb_sha256": "6c22a461b45e340d7613a549930d0f63408a8628643fada6701b8441585e0bd1",
+            "handle": 0,
+            "boundary": 0,
+            "data": "1f003e00f1534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc100c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+            "direction": "out",
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1791845939728796000,
+              "urb": 18446615593240471232,
+              "record": 463,
+              "file_offset": 53859
+            },
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845939728553000,
+                "urb": 18446615593240471232,
+                "record": 462,
+                "file_offset": 53640,
+                "usb_sha256": "6c22a461b45e340d7613a549930d0f63408a8628643fada6701b8441585e0bd1",
+                "handle": 0,
+                "boundary": 0,
+                "data": "1f003e00f1534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc100c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+                "direction": "out",
+                "completion": {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1791845939728796000,
+                  "urb": 18446615593240471232,
+                  "record": 463,
+                  "file_offset": 53859
+                }
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845939755926000,
+            "urb": 18446615593043484416,
+            "record": 478,
+            "file_offset": 56266,
+            "hcc_offset": 92,
+            "usb_sha256": "bdb0981be6cace267e321e01e1b1c9e566b32a25fb67c084e031595b21b5032a",
+            "usb_length": 178,
+            "handle": 0,
+            "boundary": 3,
+            "data": "1f003e00f1534c4b47524e54316af724effb401a113df6b3532230aeaaa9c22dc101c35d8f4356eeb5a18c4400e797861912d34d9f5346fea5d1fc347097e7f66962",
+            "direction": "in",
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845939752998000,
+                "urb": 18446615593043484416,
+                "record": 474,
+                "file_offset": 55590,
+                "hcc_offset": 92,
+                "usb_sha256": "d2859a46fe1204493915fd76fe8636985c2f1d8f8b7ea013c31df5b6d1ddc6d1",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 1,
+                "data": "1f003e00f1534c4b47524e54316af724effb401a113df6b3532230ae",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845939754497000,
+                "urb": 18446615593043484416,
+                "record": 476,
+                "file_offset": 55928,
+                "hcc_offset": 92,
+                "usb_sha256": "c2b9f6fa0200dfdbe229623a6d789ec92f0a64c567404edc90245e6f070befde",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 2,
+                "data": "aaa9c22dc101c35d8f4356eeb5a18c4400e797861912d34d9f5346fe",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845939755926000,
+                "urb": 18446615593043484416,
+                "record": 478,
+                "file_offset": 56266,
+                "hcc_offset": 92,
+                "usb_sha256": "bdb0981be6cace267e321e01e1b1c9e566b32a25fb67c084e031595b21b5032a",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 3,
+                "data": "a5d1fc347097e7f66962",
+                "direction": "in"
+              }
+            ]
+          }
+        ],
+        "original_up": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845939562422000,
+            "urb": 18446615593030850048,
+            "record": 414,
+            "file_offset": 45806,
+            "hcc_offset": 92,
+            "usb_sha256": "d25fd56d32cf4776c13e9bc0192902498113d7a40f1531749c5408ae7290322a",
+            "usb_length": 178,
+            "event": 5121,
+            "params": "00000000000001093254f90000000000000000000000000c000000fc0100"
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845939562138000,
+            "urb": 18446615593043484416,
+            "record": 412,
+            "file_offset": 45468,
+            "hcc_offset": 92,
+            "usb_sha256": "e5aae7d0460cc5f7dba9ac0eaa7df706c580735c652a9dfbde5f28380ffe391b",
+            "usb_length": 178,
+            "event": 5121,
+            "params": "00000001000001093254cd0000000000000000000000000c000000fc0101"
+          }
+        ],
+        "actual_daemon_death": true,
+        "successor_does_not_renew_old_fd": true,
+        "common_owner_both_leases_withdrawn": true,
+        "independent_device_business_isolation": false,
+        "physical_acceptance": false,
+        "automatic_recovery_acceptance": false,
+        "full_grant_complete": false
+      },
+      "genuine_nocp": [
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845939652399000,
+          "urb": 18446615593030850048,
+          "record": 420,
+          "file_offset": 46770,
+          "hcc_offset": 92,
+          "usb_sha256": "20ab850ca22b96456e396616cf9c52312a28b4ef70b5728fdae4b5738c809902",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845939675124000,
+          "urb": 18446615593030850048,
+          "record": 438,
+          "file_offset": 49662,
+          "hcc_offset": 92,
+          "usb_sha256": "4e29793d5663f006464507488e009224823779a66302aa282436ba090c099647",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845939688402000,
+          "urb": 18446615593030850048,
+          "record": 448,
+          "file_offset": 51313,
+          "hcc_offset": 92,
+          "usb_sha256": "19f27131d5ca043675602a1289c6d803b2f81e75a6cff925ebbf86a33674d2e1",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845939756024000,
+          "urb": 18446615593030850048,
+          "record": 480,
+          "file_offset": 56604,
+          "hcc_offset": 92,
+          "usb_sha256": "fc6b566672aa6753e88048a2f486cbc55d4a0787b7c1a441f08eabb8a660b43e",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845939665569000,
+          "urb": 18446615593043484416,
+          "record": 430,
+          "file_offset": 48360,
+          "hcc_offset": 92,
+          "usb_sha256": "7ecb29787f75454d7d54f4b78ca4d2c6cf322073f834547ee445c9eaed22999f",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845939668762000,
+          "urb": 18446615593043484416,
+          "record": 434,
+          "file_offset": 49036,
+          "hcc_offset": 92,
+          "usb_sha256": "c02eb4c9af3003e761af474760e59fd62d0fb9fc578f97c4aa1b0af4d38f909a",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845939715117000,
+          "urb": 18446615593043484416,
+          "record": 460,
+          "file_offset": 53302,
+          "hcc_offset": 92,
+          "usb_sha256": "059b91a5c3f74d3c712dfba70ea3dbf7991cdc26dce03dc58c3544bd36ec69b5",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845939737570000,
+          "urb": 18446615593043484416,
+          "record": 470,
+          "file_offset": 54953,
+          "hcc_offset": 92,
+          "usb_sha256": "7f8ea8af088185ff3a0ed7590c96c008d79485eecf407b266cb6f32cb3b08433",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        }
+      ],
+      "real_cleanup_down": [
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845939871498000,
+          "urb": 18446615593030850048,
+          "record": 488,
+          "file_offset": 57906,
+          "hcc_offset": 92,
+          "usb_sha256": "773ca4c516cdc87201ac206131f92645e24c5c85b536769bdebfa6e07097f496",
+          "usb_length": 178,
+          "event": 5,
+          "params": "00000013"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845939871381000,
+          "urb": 18446615593043484416,
+          "record": 486,
+          "file_offset": 57568,
+          "hcc_offset": 92,
+          "usb_sha256": "994006f8d17efc8b8b082d265e5c9246ecfbcf7229098f44c717abcd01b7d9e3",
+          "usb_length": 178,
+          "event": 5,
+          "params": "00000011"
+        }
+      ],
+      "capture_packets": 493,
+      "reassembled_two_end_sdus": 16,
+      "private_original_sha256": {
+        "manifest.json": "cf7d69e8181dfd6fca529f962d8e865eab322fd1c8f9b0d476057346dceb6430",
+        "console.log": "67305d3534e3304dd28cf844eee493e61968ae8296d0b3a8fea0049f04a02e41",
+        "guest-output/ws73.pcap": "bd827b5f9d5822a02a0255fe628078140971bccfa9c3aad9408fdc73c75dbeb5",
+        "guest-output/kernel.log": "12496b182739c4b78fca0fa70325c1720d17e83a028c98e326c869709bc8e0c5",
+        "guest-output/channel-daemon-crash/control/run.json": "a509bc963f270255bfad48292fe989f9281cf1a56274cd28f26fdc39935c16c2"
+      }
+    },
+    {
+      "index": 1,
+      "kernel_head": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+      "compiled_service_head": "86bfbc81ba001539c3816f72b3efc5a911cf19ee",
+      "tool_head": "82aa65a77019804e78a95c1706c461e715187314",
+      "tool_sha256": {
+        "ws73_target.py": "8f99691429bba05dcc6c35701a3ae0565c4585889dbe3c70367ba9f86a17d522",
+        "ws73_target_init.sh": "1487fd14b58340c67688e49eb5bb4b03a40c2f31f6aba2d1db49d9f046afaf00",
+        "ws73_channel_daemon_crash.py": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+        "ws73_daemon_channel_fd.py": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+        "ws73_connection_control.py": "8e5228012c197bd99d178a37273a11867a263f2a98cf59d5cf9f6a812f6fc5e7",
+        "ws73_channel_grant.py": "41ec4ba3fc311c880a85adff161852f72529ccf7c79bf1b7a6ce6d66e6c8b549"
+      },
+      "fd_client_sha256": "21c6123f703c0aba582562fd6c042725e8bd5d4e5261a0ab21822446b22ba3d2",
+      "raw_control_record": {
+        "format_version": 1,
+        "scope": "actual common slkd owner death with ordinary retained business fds",
+        "status": "REAL_DAEMON_CHANNEL_DEATH_EVIDENCE_PENDING",
+        "rounds": [],
+        "negatives": [],
+        "commands": [
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "show"
+            ],
+            "start_wall_ns": 1791845973269981065,
+            "start_monotonic_ns": 28011047227,
+            "start_boottime_ns": 28011047478,
+            "pid": 580,
+            "stdout": "Selected /org/sparklink/slk0_g1\nAdapter /org/sparklink/slk0_g1:\n  State:       Ready\n  Generation:  1\n  Address:     00:01:09:32:54:CD\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973274721710,
+            "end_monotonic_ns": 28015787872,
+            "end_boottime_ns": 28015788163,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 show"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "show"
+            ],
+            "start_wall_ns": 1791845973277976063,
+            "start_monotonic_ns": 28019042226,
+            "start_boottime_ns": 28019042446,
+            "pid": 582,
+            "stdout": "Selected /org/sparklink/slk1_g2\nAdapter /org/sparklink/slk1_g2:\n  State:       Ready\n  Generation:  2\n  Address:     00:01:09:32:54:F9\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973281992273,
+            "end_monotonic_ns": 28023058375,
+            "end_boottime_ns": 28023058586,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 show"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "advertise",
+              "negotiable"
+            ],
+            "start_wall_ns": 1791845973287955051,
+            "start_monotonic_ns": 28029021204,
+            "start_boottime_ns": 28029021414,
+            "pid": 585,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeAdvertisementRequest: request=11024845472472277688 marker=45f4d9d450f4d368a557d27dfb83c430\nNativeAdvertisementAccepted: request=11024845472472277688 marker=45f4d9d450f4d368a557d27dfb83c430 data=ff290101010b24736c6b2d3435663464396434353066346433363861353537643237646662383363343330\nNativeOperationResult: generation=1 request=11024845472472277688 operation=1 state=3 errno=0 status=0x00 opcode=0x0c05 step=3/4 power=20 power_valid=1 adv=2 scan=1 profile=1\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973304565377,
+            "end_monotonic_ns": 28045631640,
+            "end_boottime_ns": 28045632021,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 advertise negotiable"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "show"
+            ],
+            "start_wall_ns": 1791845973307999940,
+            "start_monotonic_ns": 28049066083,
+            "start_boottime_ns": 28049066303,
+            "pid": 587,
+            "stdout": "Selected /org/sparklink/slk0_g1\nAdapter /org/sparklink/slk0_g1:\n  State:       Ready\n  Generation:  1\n  Address:     00:01:09:32:54:CD\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973312135345,
+            "end_monotonic_ns": 28053201427,
+            "end_boottime_ns": 28053201637,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 show"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "scan",
+              "on",
+              "45f4d9d450f4d368a557d27dfb83c430",
+              "00:01:09:32:54:CD"
+            ],
+            "start_wall_ns": 1791845973315538058,
+            "start_monotonic_ns": 28056604210,
+            "start_boottime_ns": 28056604401,
+            "pid": 589,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeScanWindow: generation=2 request=6861750695295927119 start_boottime_ns=28059708431\nNativeScanRequest: request=6861750695295927119 enable=on\nNativeOperationResult: generation=2 request=6861750695295927119 operation=3 state=3 errno=0 status=0x00 opcode=0x1002 step=1/2 power=0 power_valid=0 adv=1 scan=2 profile=1\nNativeScanComplete: generation=2 request=6861750695295927119 completed_boottime_ns=28060486077\nNativeScanObserved: generation=2 request=6861750695295927119 observed_boottime_ns=28200834436\nNativeDiscoveryMatch: generation=2 seq=1 address=00:01:09:32:54:CD RSSI=-11 marker=45f4d9d450f4d368a557d27dfb83c430 data=ff290101010b24736c6b2d3435663464396434353066346433363861353537643237646662383363343330 kernel_boottime_ns=28195314953 elapsed_ms=140 lost=0\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973460419100,
+            "end_monotonic_ns": 28201485363,
+            "end_boottime_ns": 28201485754,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 scan on 45f4d9d450f4d368a557d27dfb83c430 00:01:09:32:54:CD"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "scan",
+              "off"
+            ],
+            "start_wall_ns": 1791845973464527764,
+            "start_monotonic_ns": 28205593887,
+            "start_boottime_ns": 28205594077,
+            "pid": 592,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeScanWindow: generation=2 request=12365365131996122443 start_boottime_ns=28208962796\nNativeScanRequest: request=12365365131996122443 enable=off\nNativeOperationResult: generation=2 request=12365365131996122443 operation=4 state=3 errno=0 status=0x00 opcode=0x1002 step=0/1 power=0 power_valid=0 adv=1 scan=1 profile=1\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973468699336,
+            "end_monotonic_ns": 28209765389,
+            "end_boottime_ns": 28209765529,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 scan off"
+            ]
+          },
+          {
+            "args": [
+              "/bin/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "connect",
+              "00:01:09:32:54:CD",
+              "0"
+            ],
+            "start_wall_ns": 1791845973471450071,
+            "start_monotonic_ns": 28212516173,
+            "start_boottime_ns": 28212516344,
+            "pid": 594,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeConnectionRequest: request=1 address=00:01:09:32:54:CD address_type=0\nNativeConnectionResult: generation=2 request=1 operation=1 state=4 errno=0 fault=0 command_status=0 outcome_status=0 handle=0 flags=7\nConnection procedure completed for 00:01:09:32:54:CD\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973775589443,
+            "end_monotonic_ns": 28516655846,
+            "end_boottime_ns": 28516656257,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /bin/slctl --adapter /org/sparklink/slk1_g2 connect 00:01:09:32:54:CD 0"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "info",
+              "00:01:09:32:54:CD"
+            ],
+            "start_wall_ns": 1791845973779591456,
+            "start_monotonic_ns": 28520657559,
+            "start_boottime_ns": 28520657759,
+            "pid": 599,
+            "stdout": "Selected /org/sparklink/slk1_g2\nDevice 00:01:09:32:54:CD:\n  Name:      \n  RSSI:      -11 dBm\n  Connected: true\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973783038743,
+            "end_monotonic_ns": 28524104796,
+            "end_boottime_ns": 28524104956,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 info 00:01:09:32:54:CD"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "info",
+              "00:01:09:32:54:F9"
+            ],
+            "start_wall_ns": 1791845973785790299,
+            "start_monotonic_ns": 28526856382,
+            "start_boottime_ns": 28526856542,
+            "pid": 601,
+            "stdout": "Selected /org/sparklink/slk0_g1\nDevice 00:01:09:32:54:F9:\n  Name:      \n  RSSI:      0 dBm\n  Connected: true\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973789000860,
+            "end_monotonic_ns": 28530066923,
+            "end_boottime_ns": 28530067093,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 info 00:01:09:32:54:F9"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "connections"
+            ],
+            "start_wall_ns": 1791845973791802501,
+            "start_monotonic_ns": 28532868633,
+            "start_boottime_ns": 28532868824,
+            "pid": 603,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeLinksSnapshot: generation=2 event_seq=2 revision=1 flags=1 errno=0\nNativeLink: lifetime=1 handle=0 role=0 type=0 address=00:01:09:32:54:CD\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973794992653,
+            "end_monotonic_ns": 28536058736,
+            "end_boottime_ns": 28536058926,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 connections"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "connection-objects"
+            ],
+            "start_wall_ns": 1791845973799888230,
+            "start_monotonic_ns": 28540954303,
+            "start_boottime_ns": 28540954483,
+            "pid": 606,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeConnectionObjects: generation=2 event_seq=2 revision=1 known=true\nNativeConnectionObject: generation=2 lifetime=1 handle=0 role=0 type=0 address=00:01:09:32:54:CD path=/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973804929211,
+            "end_monotonic_ns": 28545995293,
+            "end_boottime_ns": 28545995464,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 connection-objects"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "connection-info",
+              "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+            ],
+            "start_wall_ns": 1791845973808184857,
+            "start_monotonic_ns": 28549250950,
+            "start_boottime_ns": 28549251140,
+            "pid": 608,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativeConnectionInfo: generation=2 lifetime=1 handle=0 role=0 type=0 address=00:01:09:32:54:CD known=true connected=true path=/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973812245671,
+            "end_monotonic_ns": 28553311813,
+            "end_boottime_ns": 28553312014,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 connection-info /org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "peer-info",
+              "/org/sparklink/slk1_g2/peer_t00_0001093254cd"
+            ],
+            "start_wall_ns": 1791845973815098628,
+            "start_monotonic_ns": 28556164750,
+            "start_boottime_ns": 28556164900,
+            "pid": 610,
+            "stdout": "Selected /org/sparklink/slk1_g2\nNativePeerInfo: generation=2 type=0 address=00:01:09:32:54:CD known=true connected=true path=/org/sparklink/slk1_g2/peer_t00_0001093254cd\nNativePeerConnection: path=/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973818623451,
+            "end_monotonic_ns": 28559689533,
+            "end_boottime_ns": 28559689724,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 peer-info /org/sparklink/slk1_g2/peer_t00_0001093254cd"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "connection-objects"
+            ],
+            "start_wall_ns": 1791845973821820376,
+            "start_monotonic_ns": 28562886439,
+            "start_boottime_ns": 28562886589,
+            "pid": 612,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeConnectionObjects: generation=1 event_seq=1 revision=1 known=true\nNativeConnectionObject: generation=1 lifetime=1 handle=0 role=1 type=0 address=00:01:09:32:54:F9 path=/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973824955986,
+            "end_monotonic_ns": 28566022049,
+            "end_boottime_ns": 28566022219,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 connection-objects"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "connection-info",
+              "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+            ],
+            "start_wall_ns": 1791845973828084944,
+            "start_monotonic_ns": 28569151096,
+            "start_boottime_ns": 28569151256,
+            "pid": 614,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativeConnectionInfo: generation=1 lifetime=1 handle=0 role=1 type=0 address=00:01:09:32:54:F9 known=true connected=true path=/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973831719474,
+            "end_monotonic_ns": 28572785556,
+            "end_boottime_ns": 28572785726,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 connection-info /org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "peer-info",
+              "/org/sparklink/slk0_g1/peer_t00_0001093254f9"
+            ],
+            "start_wall_ns": 1791845973834599111,
+            "start_monotonic_ns": 28575665243,
+            "start_boottime_ns": 28575665414,
+            "pid": 616,
+            "stdout": "Selected /org/sparklink/slk0_g1\nNativePeerInfo: generation=1 type=0 address=00:01:09:32:54:F9 known=true connected=true path=/org/sparklink/slk0_g1/peer_t00_0001093254f9\nNativePeerConnection: path=/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973838139153,
+            "end_monotonic_ns": 28579205205,
+            "end_boottime_ns": 28579205376,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 peer-info /org/sparklink/slk0_g1/peer_t00_0001093254f9"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk0_g1",
+              "show"
+            ],
+            "start_wall_ns": 1791845974334014147,
+            "start_monotonic_ns": 29075080299,
+            "start_boottime_ns": 29075080500,
+            "pid": 647,
+            "stdout": "Selected /org/sparklink/slk0_g1\nAdapter /org/sparklink/slk0_g1:\n  State:       Ready\n  Generation:  1\n  Address:     00:01:09:32:54:CD\n  Profile:     1\n  Native links: event_seq=2 revision=2 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845974338645916,
+            "end_monotonic_ns": 29079711979,
+            "end_boottime_ns": 29079712139,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk0_g1 show"
+            ]
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "--adapter",
+              "/org/sparklink/slk1_g2",
+              "show"
+            ],
+            "start_wall_ns": 1791845974342522262,
+            "start_monotonic_ns": 29083588335,
+            "start_boottime_ns": 29083588495,
+            "pid": 649,
+            "stdout": "Selected /org/sparklink/slk1_g2\nAdapter /org/sparklink/slk1_g2:\n  State:       Ready\n  Generation:  2\n  Address:     00:01:09:32:54:F9\n  Profile:     1\n  Native links: event_seq=3 revision=2 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845974346704154,
+            "end_monotonic_ns": 29087770226,
+            "end_boottime_ns": 29087770417,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl --adapter /org/sparklink/slk1_g2 show"
+            ]
+          }
+        ],
+        "daemon_before": {
+          "pid": 547,
+          "start_ticks": 352
+        },
+        "slctl": {
+          "path": "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+          "sha256": "76c6ca80c9d3e138d419b19f129a90b15d143fa0155ccf6d1a46e385a784d68c"
+        },
+        "fd_probe": {
+          "path": "/bin/ws73-channel-fd-probe",
+          "sha256": "21c6123f703c0aba582562fd6c042725e8bd5d4e5261a0ab21822446b22ba3d2"
+        },
+        "automatic_recovery_acceptance": false,
+        "physical_acceptance": false,
+        "independent_owner_isolation": false,
+        "bus_observations": [
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "daemon"
+            ],
+            "start_wall_ns": 1791845973257651617,
+            "start_monotonic_ns": 27998724963,
+            "start_boottime_ns": 27998726486,
+            "pid": 578,
+            "stdout": "DaemonIdentity: owner=:1.0 pid=547 uid=0\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845973263922466,
+            "end_monotonic_ns": 28004988659,
+            "end_boottime_ns": 28004988999,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl daemon"
+            ],
+            "observed_wall_ns": 1791845973267600037
+          },
+          {
+            "args": [
+              "/usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl",
+              "daemon"
+            ],
+            "start_wall_ns": 1791845974324168039,
+            "start_monotonic_ns": 29065234643,
+            "start_boottime_ns": 29065235144,
+            "pid": 645,
+            "stdout": "DaemonIdentity: owner=:1.26 pid=629 uid=0\n",
+            "stderr": "",
+            "exit": 0,
+            "end_wall_ns": 1791845974328617586,
+            "end_monotonic_ns": 29069683858,
+            "end_boottime_ns": 29069684069,
+            "execution_args": [
+              "/bin/su",
+              "ws73",
+              "-s",
+              "/bin/sh",
+              "-c",
+              "exec /usr/libexec/opensparklink/native-lab/86bfbc81ba00/slctl daemon"
+            ],
+            "observed_wall_ns": 1791845974332005982
+          }
+        ],
+        "bus_before": {
+          "owner": ":1.0",
+          "pid": 547,
+          "uid": 0
+        },
+        "initial": [
+          {
+            "port": "1-1",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+            "bus": 1,
+            "device": 2,
+            "index": 0,
+            "generation": 1,
+            "path": "/org/sparklink/slk0_g1",
+            "address": "00:01:09:32:54:CD",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<17<<<;29=0;69;7:0"
+            },
+            "observed_wall_ns": 1791845973269897527
+          },
+          {
+            "port": "1-2",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+            "bus": 1,
+            "device": 3,
+            "index": 1,
+            "generation": 2,
+            "path": "/org/sparklink/slk1_g2",
+            "address": "00:01:09:32:54:F9",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<1705:229=0;6516:0"
+            },
+            "observed_wall_ns": 1791845973277905611
+          }
+        ],
+        "connection_control": {
+          "status": "DAEMON_CHANNEL_CONNECTED_GATE_PENDING",
+          "advertising_kind": "negotiable-t",
+          "owners": [
+            {
+              "port": "1-2",
+              "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+              "bus": 1,
+              "device": 3,
+              "index": 1,
+              "generation": 2,
+              "path": "/org/sparklink/slk1_g2",
+              "address": "00:01:09:32:54:F9",
+              "version": "016c00a100",
+              "features": "23155000120000010000",
+              "buffers": [
+                254,
+                5,
+                0,
+                0
+              ],
+              "attributes": {
+                "metadata_valid": "1",
+                "runtime_transport": "1",
+                "boot_error": "0",
+                "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+              },
+              "descriptors": {
+                "manufacturer": "00000000",
+                "product": "00000000",
+                "serial": ">04072<1705:229=0;6516:0"
+              },
+              "observed_wall_ns": 1791845973277905611
+            },
+            {
+              "port": "1-1",
+              "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+              "bus": 1,
+              "device": 2,
+              "index": 0,
+              "generation": 1,
+              "path": "/org/sparklink/slk0_g1",
+              "address": "00:01:09:32:54:CD",
+              "version": "016c00a100",
+              "features": "23155000120000010000",
+              "buffers": [
+                254,
+                5,
+                0,
+                0
+              ],
+              "attributes": {
+                "metadata_valid": "1",
+                "runtime_transport": "1",
+                "boot_error": "0",
+                "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+              },
+              "descriptors": {
+                "manufacturer": "00000000",
+                "product": "00000000",
+                "serial": ">04072<17<<<;29=0;69;7:0"
+              },
+              "observed_wall_ns": 1791845973269897527
+            }
+          ],
+          "phases": [
+            {
+              "caller": {
+                "port": "1-2",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                "bus": 1,
+                "device": 3,
+                "index": 1,
+                "generation": 2,
+                "path": "/org/sparklink/slk1_g2",
+                "address": "00:01:09:32:54:F9",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<1705:229=0;6516:0"
+                },
+                "observed_wall_ns": 1791845973277905611
+              },
+              "peer": {
+                "port": "1-1",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                "bus": 1,
+                "device": 2,
+                "index": 0,
+                "generation": 1,
+                "path": "/org/sparklink/slk0_g1",
+                "address": "00:01:09:32:54:CD",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<17<<<;29=0;69;7:0"
+                },
+                "observed_wall_ns": 1791845973269897527
+              },
+              "start_wall_ns": 1791845973286151682,
+              "advertisement_command": 2,
+              "policy_query_command": 3,
+              "marker": "45f4d9d450f4d368a557d27dfb83c430",
+              "scan_command": 4,
+              "scan_match": {
+                "generation": 2,
+                "seq": 1,
+                "address": "00:01:09:32:54:CD",
+                "rssi": -11,
+                "marker": "45f4d9d450f4d368a557d27dfb83c430",
+                "data": "ff290101010b24736c6b2d3435663464396434353066346433363861353537643237646662383363343330",
+                "kernel_boottime_ns": 28195314953,
+                "elapsed_ms": 140,
+                "lost": 0
+              },
+              "scan_stop_command": 5,
+              "peer_address_type": 0,
+              "connect_command": 6,
+              "connect": {
+                "generation": 2,
+                "request": 1,
+                "operation": 1,
+                "state": 4,
+                "error": 0,
+                "fault": 0,
+                "command_status": 0,
+                "outcome_status": 0,
+                "handle": 0,
+                "flags": 7
+              },
+              "links_command": 9,
+              "reference": {
+                "lifetime": 1,
+                "handle": 0,
+                "role": 0,
+                "address_type": 0,
+                "address": "00:01:09:32:54:CD"
+              },
+              "typed_objects": [
+                {
+                  "owner": {
+                    "port": "1-2",
+                    "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                    "bus": 1,
+                    "device": 3,
+                    "index": 1,
+                    "generation": 2,
+                    "path": "/org/sparklink/slk1_g2",
+                    "address": "00:01:09:32:54:F9",
+                    "version": "016c00a100",
+                    "features": "23155000120000010000",
+                    "buffers": [
+                      254,
+                      5,
+                      0,
+                      0
+                    ],
+                    "attributes": {
+                      "metadata_valid": "1",
+                      "runtime_transport": "1",
+                      "boot_error": "0",
+                      "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                      "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                    },
+                    "descriptors": {
+                      "manufacturer": "00000000",
+                      "product": "00000000",
+                      "serial": ">04072<1705:229=0;6516:0"
+                    },
+                    "observed_wall_ns": 1791845973277905611
+                  },
+                  "remote": {
+                    "port": "1-1",
+                    "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                    "bus": 1,
+                    "device": 2,
+                    "index": 0,
+                    "generation": 1,
+                    "path": "/org/sparklink/slk0_g1",
+                    "address": "00:01:09:32:54:CD",
+                    "version": "016c00a100",
+                    "features": "23155000120000010000",
+                    "buffers": [
+                      254,
+                      5,
+                      0,
+                      0
+                    ],
+                    "attributes": {
+                      "metadata_valid": "1",
+                      "runtime_transport": "1",
+                      "boot_error": "0",
+                      "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                      "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                    },
+                    "descriptors": {
+                      "manufacturer": "00000000",
+                      "product": "00000000",
+                      "serial": ">04072<17<<<;29=0;69;7:0"
+                    },
+                    "observed_wall_ns": 1791845973269897527
+                  },
+                  "object": {
+                    "generation": 2,
+                    "lifetime": 1,
+                    "handle": 0,
+                    "role": 0,
+                    "address_type": 0,
+                    "address": "00:01:09:32:54:CD",
+                    "path": "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+                  },
+                  "enumeration_commands": [
+                    10
+                  ],
+                  "info_command": 11,
+                  "peer_command": 12
+                },
+                {
+                  "owner": {
+                    "port": "1-1",
+                    "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                    "bus": 1,
+                    "device": 2,
+                    "index": 0,
+                    "generation": 1,
+                    "path": "/org/sparklink/slk0_g1",
+                    "address": "00:01:09:32:54:CD",
+                    "version": "016c00a100",
+                    "features": "23155000120000010000",
+                    "buffers": [
+                      254,
+                      5,
+                      0,
+                      0
+                    ],
+                    "attributes": {
+                      "metadata_valid": "1",
+                      "runtime_transport": "1",
+                      "boot_error": "0",
+                      "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                      "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                    },
+                    "descriptors": {
+                      "manufacturer": "00000000",
+                      "product": "00000000",
+                      "serial": ">04072<17<<<;29=0;69;7:0"
+                    },
+                    "observed_wall_ns": 1791845973269897527
+                  },
+                  "remote": {
+                    "port": "1-2",
+                    "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                    "bus": 1,
+                    "device": 3,
+                    "index": 1,
+                    "generation": 2,
+                    "path": "/org/sparklink/slk1_g2",
+                    "address": "00:01:09:32:54:F9",
+                    "version": "016c00a100",
+                    "features": "23155000120000010000",
+                    "buffers": [
+                      254,
+                      5,
+                      0,
+                      0
+                    ],
+                    "attributes": {
+                      "metadata_valid": "1",
+                      "runtime_transport": "1",
+                      "boot_error": "0",
+                      "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                      "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                    },
+                    "descriptors": {
+                      "manufacturer": "00000000",
+                      "product": "00000000",
+                      "serial": ">04072<1705:229=0;6516:0"
+                    },
+                    "observed_wall_ns": 1791845973277905611
+                  },
+                  "object": {
+                    "generation": 1,
+                    "lifetime": 1,
+                    "handle": 0,
+                    "role": 1,
+                    "address_type": 0,
+                    "address": "00:01:09:32:54:F9",
+                    "path": "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+                  },
+                  "enumeration_commands": [
+                    13
+                  ],
+                  "info_command": 14,
+                  "peer_command": 15
+                }
+              ],
+              "stale_object_rejections": []
+            }
+          ],
+          "peer_lifetime_binding": "v2-admission-selection",
+          "connection_objects": "generation-type-lifetime-v1",
+          "advertising_set_lifecycle": "remove-recreate-v1",
+          "release_acceptance": false,
+          "last_file_acceptance": false,
+          "dup_acceptance": false,
+          "inflight_acceptance": false,
+          "ssap_acceptance": false,
+          "automatic_recovery_acceptance": false,
+          "start_wall_ns": 1791845973285139745,
+          "end_wall_ns": 1791845974370505513
+        },
+        "daemon_channel": {
+          "status": "DAEMON_CHANNEL_GATE_PASS",
+          "index": 1,
+          "owners": [
+            {
+              "owner": {
+                "port": "1-1",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                "bus": 1,
+                "device": 2,
+                "index": 0,
+                "generation": 1,
+                "path": "/org/sparklink/slk0_g1",
+                "address": "00:01:09:32:54:CD",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<17<<<;29=0;69;7:0"
+                },
+                "observed_wall_ns": 1791845973269897527
+              },
+              "remote": {
+                "port": "1-2",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                "bus": 1,
+                "device": 3,
+                "index": 1,
+                "generation": 2,
+                "path": "/org/sparklink/slk1_g2",
+                "address": "00:01:09:32:54:F9",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<1705:229=0;6516:0"
+                },
+                "observed_wall_ns": 1791845973277905611
+              },
+              "object": {
+                "generation": 1,
+                "lifetime": 1,
+                "handle": 0,
+                "role": 1,
+                "address_type": 0,
+                "address": "00:01:09:32:54:F9",
+                "path": "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+              },
+              "enumeration_commands": [
+                13
+              ],
+              "info_command": 14,
+              "peer_command": 15
+            },
+            {
+              "owner": {
+                "port": "1-2",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+                "bus": 1,
+                "device": 3,
+                "index": 1,
+                "generation": 2,
+                "path": "/org/sparklink/slk1_g2",
+                "address": "00:01:09:32:54:F9",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<1705:229=0;6516:0"
+                },
+                "observed_wall_ns": 1791845973277905611
+              },
+              "remote": {
+                "port": "1-1",
+                "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+                "bus": 1,
+                "device": 2,
+                "index": 0,
+                "generation": 1,
+                "path": "/org/sparklink/slk0_g1",
+                "address": "00:01:09:32:54:CD",
+                "version": "016c00a100",
+                "features": "23155000120000010000",
+                "buffers": [
+                  254,
+                  5,
+                  0,
+                  0
+                ],
+                "attributes": {
+                  "metadata_valid": "1",
+                  "runtime_transport": "1",
+                  "boot_error": "0",
+                  "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+                  "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+                },
+                "descriptors": {
+                  "manufacturer": "00000000",
+                  "product": "00000000",
+                  "serial": ">04072<17<<<;29=0;69;7:0"
+                },
+                "observed_wall_ns": 1791845973269897527
+              },
+              "object": {
+                "generation": 2,
+                "lifetime": 1,
+                "handle": 0,
+                "role": 0,
+                "address_type": 0,
+                "address": "00:01:09:32:54:CD",
+                "path": "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+              },
+              "enumeration_commands": [
+                10
+              ],
+              "info_command": 11,
+              "peer_command": 12
+            }
+          ],
+          "workers": [
+            {
+              "stage": "ready",
+              "pid": 620,
+              "fd": 4,
+              "original": 3,
+              "original_errno": 9,
+              "credentials": {
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "caps": {
+                  "CapEff": "0000000000000000",
+                  "CapPrm": "0000000000000000",
+                  "CapAmb": "0000000000000000"
+                }
+              },
+              "wall_ns": 1791845973850876730,
+              "scm_rights": {
+                "before": {
+                  "stage": "awaiting_channel_fd",
+                  "pid": 620,
+                  "credentials": {
+                    "uids": [
+                      1000,
+                      1000,
+                      1000,
+                      1000
+                    ],
+                    "caps": {
+                      "CapEff": "0000000000000000",
+                      "CapPrm": "0000000000000000",
+                      "CapAmb": "0000000000000000"
+                    }
+                  },
+                  "token": "65e5577bed13e0b4243a8406de6aef39",
+                  "wall_ns": 1791845973850258184,
+                  "open_fds": [
+                    {
+                      "fd": 0,
+                      "target": "/dev/null"
+                    },
+                    {
+                      "fd": 1,
+                      "target": "/evidence/channel-daemon-supervisor.log"
+                    },
+                    {
+                      "fd": 2,
+                      "target": "/evidence/channel-daemon-supervisor.log"
+                    },
+                    {
+                      "fd": 5,
+                      "target": "socket:[8125]"
+                    }
+                  ]
+                },
+                "received_wall_ns": 1791845973850795828,
+                "inode": 8123,
+                "close_on_exec": true
+              }
+            },
+            {
+              "stage": "ready",
+              "pid": 623,
+              "fd": 4,
+              "original": 3,
+              "original_errno": 9,
+              "credentials": {
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "caps": {
+                  "CapEff": "0000000000000000",
+                  "CapPrm": "0000000000000000",
+                  "CapAmb": "0000000000000000"
+                }
+              },
+              "wall_ns": 1791845973862161729,
+              "scm_rights": {
+                "before": {
+                  "stage": "awaiting_channel_fd",
+                  "pid": 623,
+                  "credentials": {
+                    "uids": [
+                      1000,
+                      1000,
+                      1000,
+                      1000
+                    ],
+                    "caps": {
+                      "CapEff": "0000000000000000",
+                      "CapPrm": "0000000000000000",
+                      "CapAmb": "0000000000000000"
+                    }
+                  },
+                  "token": "f5831c6f7c3c68a8e2e36cc5dfdd7924",
+                  "wall_ns": 1791845973861690802,
+                  "open_fds": [
+                    {
+                      "fd": 0,
+                      "target": "/dev/null"
+                    },
+                    {
+                      "fd": 1,
+                      "target": "/evidence/channel-daemon-supervisor.log"
+                    },
+                    {
+                      "fd": 2,
+                      "target": "/evidence/channel-daemon-supervisor.log"
+                    },
+                    {
+                      "fd": 6,
+                      "target": "socket:[8132]"
+                    }
+                  ]
+                },
+                "received_wall_ns": 1791845973862078072,
+                "inode": 8130,
+                "close_on_exec": true
+              }
+            }
+          ],
+          "transfers": [
+            {
+              "client": {
+                "daemon_owner": ":1.0",
+                "daemon_pid": 547,
+                "inode": 8123,
+                "path": "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001",
+                "pid": 618,
+                "process_status": "Name:\tws73-channel-fd\nUmask:\t0000\nState:\tR (running)\nTgid:\t618\nNgid:\t0\nPid:\t618\nPPid:\t574\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1002\t1002\t1002\t1002\nFDSize:\t64\nGroups:\t1000 1002 \nNStgid:\t618\nNSpid:\t618\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t   10140 kB\nVmSize:\t   10140 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t    5380 kB\nVmRSS:\t    5380 kB\nRssAnon:\t     432 kB\nRssFile:\t    4948 kB\nRssShmem:\t       0 kB\nVmData:\t     228 kB\nVmStk:\t     132 kB\nVmExe:\t    4308 kB\nVmLib:\t    2376 kB\nVmPTE:\t      52 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/2883\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000000001006\nSigCgt:\t0000000000000440\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t3\nCpus_allowed_list:\t0-1\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t0\nnonvoluntary_ctxt_switches:\t0\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+                "stage": "daemon_channel_fd",
+                "token": "37720abb970bb4ef9f640ecab876ecef",
+                "wall_ns": "1791845973846721188",
+                "kernel_sender": {
+                  "pid": 618,
+                  "uid": 1000,
+                  "gid": 1002
+                }
+              },
+              "client_exit": 0,
+              "client_reaped_wall_ns": 1791845973850974805,
+              "before": {
+                "stage": "awaiting_channel_fd",
+                "pid": 620,
+                "credentials": {
+                  "uids": [
+                    1000,
+                    1000,
+                    1000,
+                    1000
+                  ],
+                  "caps": {
+                    "CapEff": "0000000000000000",
+                    "CapPrm": "0000000000000000",
+                    "CapAmb": "0000000000000000"
+                  }
+                },
+                "token": "65e5577bed13e0b4243a8406de6aef39",
+                "wall_ns": 1791845973850258184,
+                "open_fds": [
+                  {
+                    "fd": 0,
+                    "target": "/dev/null"
+                  },
+                  {
+                    "fd": 1,
+                    "target": "/evidence/channel-daemon-supervisor.log"
+                  },
+                  {
+                    "fd": 2,
+                    "target": "/evidence/channel-daemon-supervisor.log"
+                  },
+                  {
+                    "fd": 5,
+                    "target": "socket:[8125]"
+                  }
+                ]
+              },
+              "broker_closed": true,
+              "controller": 0
+            },
+            {
+              "client": {
+                "daemon_owner": ":1.0",
+                "daemon_pid": 547,
+                "inode": 8130,
+                "path": "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001",
+                "pid": 621,
+                "process_status": "Name:\tws73-channel-fd\nUmask:\t0000\nState:\tR (running)\nTgid:\t621\nNgid:\t0\nPid:\t621\nPPid:\t574\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1002\t1002\t1002\t1002\nFDSize:\t64\nGroups:\t1000 1002 \nNStgid:\t621\nNSpid:\t621\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t   10140 kB\nVmSize:\t   10140 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t    5388 kB\nVmRSS:\t    5388 kB\nRssAnon:\t     432 kB\nRssFile:\t    4956 kB\nRssShmem:\t       0 kB\nVmData:\t     228 kB\nVmStk:\t     132 kB\nVmExe:\t    4308 kB\nVmLib:\t    2376 kB\nVmPTE:\t      64 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/2883\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000000001006\nSigCgt:\t0000000000000440\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t3\nCpus_allowed_list:\t0-1\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t0\nnonvoluntary_ctxt_switches:\t0\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+                "stage": "daemon_channel_fd",
+                "token": "0dac05087283664707d3bf1852c2b01a",
+                "wall_ns": "1791845973857842038",
+                "kernel_sender": {
+                  "pid": 621,
+                  "uid": 1000,
+                  "gid": 1002
+                }
+              },
+              "client_exit": 0,
+              "client_reaped_wall_ns": 1791845973862241069,
+              "before": {
+                "stage": "awaiting_channel_fd",
+                "pid": 623,
+                "credentials": {
+                  "uids": [
+                    1000,
+                    1000,
+                    1000,
+                    1000
+                  ],
+                  "caps": {
+                    "CapEff": "0000000000000000",
+                    "CapPrm": "0000000000000000",
+                    "CapAmb": "0000000000000000"
+                  }
+                },
+                "token": "f5831c6f7c3c68a8e2e36cc5dfdd7924",
+                "wall_ns": 1791845973861690802,
+                "open_fds": [
+                  {
+                    "fd": 0,
+                    "target": "/dev/null"
+                  },
+                  {
+                    "fd": 1,
+                    "target": "/evidence/channel-daemon-supervisor.log"
+                  },
+                  {
+                    "fd": 2,
+                    "target": "/evidence/channel-daemon-supervisor.log"
+                  },
+                  {
+                    "fd": 6,
+                    "target": "socket:[8132]"
+                  }
+                ]
+              },
+              "broker_closed": true,
+              "controller": 1
+            }
+          ],
+          "business": [
+            {
+              "label": "before",
+              "initiator": 1,
+              "payload": "534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb200f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+              "applications": [
+                {
+                  "stage": "business",
+                  "initiator": false,
+                  "sent": "534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb201f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+                  "received": "534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb200f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+                  "start_wall_ns": 1791845973864914768,
+                  "end_wall_ns": 1791845973915107658
+                },
+                {
+                  "stage": "business",
+                  "initiator": true,
+                  "sent": "534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb200f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+                  "received": "534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb201f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+                  "start_wall_ns": 1791845973864896033,
+                  "end_wall_ns": 1791845973934029471
+                }
+              ],
+              "start_wall_ns": 1791845973864846780,
+              "end_wall_ns": 1791845973934119501
+            },
+            {
+              "label": "before",
+              "initiator": 0,
+              "payload": "534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34200b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+              "applications": [
+                {
+                  "stage": "business",
+                  "initiator": true,
+                  "sent": "534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34200b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+                  "received": "534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34201b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+                  "start_wall_ns": 1791845973937235373,
+                  "end_wall_ns": 1791845973992011221
+                },
+                {
+                  "stage": "business",
+                  "initiator": false,
+                  "sent": "534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34201b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+                  "received": "534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34200b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+                  "start_wall_ns": 1791845973937221948,
+                  "end_wall_ns": 1791845973967050497
+                }
+              ],
+              "start_wall_ns": 1791845973937180199,
+              "end_wall_ns": 1791845973992107563
+            }
+          ],
+          "armed": {
+            "stage": "armed",
+            "pid": 623,
+            "fd": 4,
+            "wall_ns": 1791845973995492974
+          },
+          "blocking_witness": [
+            {
+              "syscall": 45,
+              "fd": 4,
+              "state": "S",
+              "wchan": "__skb_wait_for_more_packets",
+              "wall_ns": 1791845973995682070
+            },
+            {
+              "syscall": 45,
+              "fd": 4,
+              "state": "S",
+              "wchan": "__skb_wait_for_more_packets",
+              "wall_ns": 1791845974026050877
+            }
+          ],
+          "blocked_result": {
+            "stage": "blocked_denied",
+            "errno": 13,
+            "start_wall_ns": 1791845973995518492,
+            "end_wall_ns": 1791845974115609211
+          },
+          "after_withdrawal": {
+            "stage": "denied",
+            "errors": {
+              "send": 13,
+              "recv": 13
+            },
+            "poll": 24,
+            "marker": "47524e5444454e593a589e0f44eef8ff65eaccf87c2cb8e4e673f8fe76b86743ddbf3941dde2915e",
+            "wall_ns": 1791845974192219682
+          },
+          "other_after_death": {
+            "stage": "denied",
+            "errors": {
+              "send": 13,
+              "recv": 13
+            },
+            "poll": 24,
+            "marker": "47524e5444454e5946d042266ccca63265fa01ad129575fbac86dd305943cbd45463d62cc68da883",
+            "wall_ns": 1791845974194358242
+          },
+          "after_successor": {
+            "stage": "denied",
+            "errors": {
+              "send": 13,
+              "recv": 13
+            },
+            "poll": 24,
+            "marker": "47524e5444454e59d6c8463c3845fcb5ea28c4aefd960c8663805a8743667e194ed0098c79b79da0",
+            "wall_ns": 1791845974352378218
+          },
+          "other_after_successor": {
+            "stage": "denied",
+            "errors": {
+              "send": 13,
+              "recv": 13
+            },
+            "poll": 24,
+            "marker": "47524e5444454e59ab55a0b49872cda77ee6d7535bf8f315c6fa57f0f53ef802283ed4504217aa06",
+            "wall_ns": 1791845974354264563
+          },
+          "end_wall_ns": 1791845974355962664
+        },
+        "armed_wall_ns": 1791845974059770640,
+        "death": {
+          "pid": 547,
+          "status": 137,
+          "before_wall_ns": 1791845974103985804,
+          "reaped_wall_ns": 1791845974140498150
+        },
+        "cleanup_observations": [
+          [
+            {
+              "index": 0,
+              "generation": 1,
+              "flags": 1,
+              "error": 0,
+              "snapshot": "01000000000000000100000001000000010000000100000000000401fe0000000500016c00a100231550001200000100000001093254cd000000000000000000",
+              "management": "010000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+              "links": "010000000000000002000000000000000200000000000000010000000100000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "state": 0,
+              "management_flags": 0,
+              "link_flags": 1,
+              "link_count": 0,
+              "wall_ns": 1791845974182141196
+            },
+            {
+              "index": 1,
+              "generation": 2,
+              "flags": 1,
+              "error": 0,
+              "snapshot": "02000000000000000100000001000000010000000100000001000401fe0000000500016c00a100231550001200000100000001093254f9000000000000000000",
+              "management": "020000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000",
+              "links": "020000000000000003000000000000000200000000000000010000000100000001000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "state": 0,
+              "management_flags": 0,
+              "link_flags": 1,
+              "link_count": 0,
+              "wall_ns": 1791845974184005951
+            }
+          ]
+        ],
+        "successor": {
+          "pid": 629,
+          "wall_ns": 1791845974321165701
+        },
+        "daemon_after": {
+          "pid": 629,
+          "start_ticks": 2898
+        },
+        "bus_after": {
+          "owner": ":1.26",
+          "pid": 629,
+          "uid": 0
+        },
+        "after_ready": [
+          {
+            "port": "1-1",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+            "bus": 1,
+            "device": 2,
+            "index": 0,
+            "generation": 1,
+            "path": "/org/sparklink/slk0_g1",
+            "address": "00:01:09:32:54:CD",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=1 last_event=0004 controller_error=100",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<17<<<;29=0;69;7:0"
+            },
+            "observed_wall_ns": 1791845974333954154
+          },
+          {
+            "port": "1-2",
+            "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+            "bus": 1,
+            "device": 3,
+            "index": 1,
+            "generation": 2,
+            "path": "/org/sparklink/slk1_g2",
+            "address": "00:01:09:32:54:F9",
+            "version": "016c00a100",
+            "features": "23155000120000010000",
+            "buffers": [
+              254,
+              5,
+              0,
+              0
+            ],
+            "attributes": {
+              "metadata_valid": "1",
+              "runtime_transport": "1",
+              "boot_error": "0",
+              "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100",
+              "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+            },
+            "descriptors": {
+              "manufacturer": "00000000",
+              "product": "00000000",
+              "serial": ">04072<1705:229=0;6516:0"
+            },
+            "observed_wall_ns": 1791845974342470916
+          }
+        ],
+        "end_wall_ns": 1791845974372220736
+      },
+      "independent_usb_proof": {
+        "status": "REAL_DAEMON_CHANNEL_DEATH_USB_CORROBORATED",
+        "first_blocked_errno": 13,
+        "physical_down_before_wake": [],
+        "business_round_trips": 2,
+        "legs": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845973925951000,
+            "urb": 18446613174418926400,
+            "record": 452,
+            "file_offset": 51989,
+            "usb_sha256": "593963aeb3a8fcae4051342709e75dbb17ff00afcde156037381f2f7e0997d40",
+            "handle": 0,
+            "boundary": 0,
+            "data": "1f003e00f1534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb201f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+            "direction": "out",
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791845973926199000,
+              "urb": 18446613174418926400,
+              "record": 453,
+              "file_offset": 52208
+            },
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845973925951000,
+                "urb": 18446613174418926400,
+                "record": 452,
+                "file_offset": 51989,
+                "usb_sha256": "593963aeb3a8fcae4051342709e75dbb17ff00afcde156037381f2f7e0997d40",
+                "handle": 0,
+                "boundary": 0,
+                "data": "1f003e00f1534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb201f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+                "direction": "out",
+                "completion": {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1791845973926199000,
+                  "urb": 18446613174418926400,
+                  "record": 453,
+                  "file_offset": 52208
+                }
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845973905130000,
+            "urb": 18446613174208872832,
+            "record": 448,
+            "file_offset": 51313,
+            "hcc_offset": 92,
+            "usb_sha256": "0b705b9752db1e131510480a5eb0b4fa24422b03acfecfdd9b0565d5fec7b80a",
+            "usb_length": 178,
+            "handle": 0,
+            "boundary": 3,
+            "data": "1f003e00f1534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb200f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+            "direction": "in",
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845973902309000,
+                "urb": 18446613174208872832,
+                "record": 444,
+                "file_offset": 50637,
+                "hcc_offset": 92,
+                "usb_sha256": "4acb545d6bdc46c0a407fbf4b24789dce9af500af702954198309ab0a8df30c4",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 1,
+                "data": "1f003e00f1534c4b47524e54317ef9aece003e0310886f9b23f5f4e8",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845973903786000,
+                "urb": 18446613174208872832,
+                "record": 446,
+                "file_offset": 50975,
+                "hcc_offset": 92,
+                "usb_sha256": "2bf94c76983759758c782634502b6d212f2ec14987fedbf7d24f7d2e0a6c178f",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 2,
+                "data": "4a8fc6dbb200f1693f5c93aa96861ff702b96e6875d4e1590f6ca39a",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845973905130000,
+                "urb": 18446613174208872832,
+                "record": 448,
+                "file_offset": 51313,
+                "hcc_offset": 92,
+                "usb_sha256": "0b705b9752db1e131510480a5eb0b4fa24422b03acfecfdd9b0565d5fec7b80a",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 3,
+                "data": "a6b62fc732895e5845e4",
+                "direction": "in"
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845973900953000,
+            "urb": 18446613174418926400,
+            "record": 442,
+            "file_offset": 50338,
+            "usb_sha256": "f526f37b1340602de9733b9310d0eb84af66a08223a0b7c7a74bad36db2de4e1",
+            "handle": 0,
+            "boundary": 0,
+            "data": "1f003e00f1534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb200f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+            "direction": "out",
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1791845973901201000,
+              "urb": 18446613174418926400,
+              "record": 443,
+              "file_offset": 50557
+            },
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845973900953000,
+                "urb": 18446613174418926400,
+                "record": 442,
+                "file_offset": 50338,
+                "usb_sha256": "f526f37b1340602de9733b9310d0eb84af66a08223a0b7c7a74bad36db2de4e1",
+                "handle": 0,
+                "boundary": 0,
+                "data": "1f003e00f1534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb200f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+                "direction": "out",
+                "completion": {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1791845973901201000,
+                  "urb": 18446613174418926400,
+                  "record": 443,
+                  "file_offset": 50557
+                }
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845973933720000,
+            "urb": 18446613173999658688,
+            "record": 458,
+            "file_offset": 52964,
+            "hcc_offset": 92,
+            "usb_sha256": "25d09eef756840754ec8df939e60983bcc4ab38f3c3db0b85dba0d9d8466388b",
+            "usb_length": 178,
+            "handle": 0,
+            "boundary": 3,
+            "data": "1f003e00f1534c4b47524e54317ef9aece003e0310886f9b23f5f4e84a8fc6dbb201f1693f5c93aa96861ff702b96e6875d4e1590f6ca39aa6b62fc732895e5845e4",
+            "direction": "in",
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845973927772000,
+                "urb": 18446613173999658688,
+                "record": 454,
+                "file_offset": 52288,
+                "hcc_offset": 92,
+                "usb_sha256": "8ebf40c407cdfe3d7f36b2b30bcd6e4537c0ed26db95e9f1fd86f8f7ad3a9b5a",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 1,
+                "data": "1f003e00f1534c4b47524e54317ef9aece003e0310886f9b23f5f4e8",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845973930832000,
+                "urb": 18446613173999658688,
+                "record": 456,
+                "file_offset": 52626,
+                "hcc_offset": 92,
+                "usb_sha256": "622bb1279224c15e501942fda17e447b50f6ff7d4165da83cf3d9c18f3af5f45",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 2,
+                "data": "4a8fc6dbb201f1693f5c93aa96861ff702b96e6875d4e1590f6ca39a",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845973933720000,
+                "urb": 18446613173999658688,
+                "record": 458,
+                "file_offset": 52964,
+                "hcc_offset": 92,
+                "usb_sha256": "25d09eef756840754ec8df939e60983bcc4ab38f3c3db0b85dba0d9d8466388b",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 3,
+                "data": "a6b62fc732895e5845e4",
+                "direction": "in"
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845973947956000,
+            "urb": 18446613174892100608,
+            "record": 462,
+            "file_offset": 53640,
+            "usb_sha256": "57aa4cad78e741c8de3f6aa5306f6a775902a6ea6cc2ceebec41784b62748c43",
+            "handle": 0,
+            "boundary": 0,
+            "data": "1f003e00f1534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34200b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+            "direction": "out",
+            "completion": {
+              "bus": 1,
+              "device": 2,
+              "wall_ns": 1791845973948180000,
+              "urb": 18446613174892100608,
+              "record": 463,
+              "file_offset": 53859
+            },
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845973947956000,
+                "urb": 18446613174892100608,
+                "record": 462,
+                "file_offset": 53640,
+                "usb_sha256": "57aa4cad78e741c8de3f6aa5306f6a775902a6ea6cc2ceebec41784b62748c43",
+                "handle": 0,
+                "boundary": 0,
+                "data": "1f003e00f1534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34200b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+                "direction": "out",
+                "completion": {
+                  "bus": 1,
+                  "device": 2,
+                  "wall_ns": 1791845973948180000,
+                  "urb": 18446613174892100608,
+                  "record": 463,
+                  "file_offset": 53859
+                }
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845973983162000,
+            "urb": 18446613174208872832,
+            "record": 478,
+            "file_offset": 56266,
+            "hcc_offset": 92,
+            "usb_sha256": "6feb6cc134da15d39948bad09bd913ba67debce4ae345861a415db440d6838ca",
+            "usb_length": 178,
+            "handle": 0,
+            "boundary": 3,
+            "data": "1f003e00f1534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34201b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+            "direction": "in",
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845973980262000,
+                "urb": 18446613174208872832,
+                "record": 474,
+                "file_offset": 55590,
+                "hcc_offset": 92,
+                "usb_sha256": "5ba63084921a40463fde79f4b20b948f6b57191a873d7716065b0e55659c0e8e",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 1,
+                "data": "1f003e00f1534c4b47524e5431d8eca358a72376bb157f795ef145dd",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845973981753000,
+                "urb": 18446613174208872832,
+                "record": 476,
+                "file_offset": 55928,
+                "hcc_offset": 92,
+                "usb_sha256": "bbfc5152948d841c9bcfa14ddb48d8808ff83d9d8508180be90dd9a2534031f8",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 2,
+                "data": "fe6929b34201b186c834ca4d19cb640d0a2a8433aa86a196d824da5d",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 2,
+                "wall_ns": 1791845973983162000,
+                "urb": 18446613174208872832,
+                "record": 478,
+                "file_offset": 56266,
+                "hcc_offset": 92,
+                "usb_sha256": "6feb6cc134da15d39948bad09bd913ba67debce4ae345861a415db440d6838ca",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 3,
+                "data": "093b94fdfada74c35a76",
+                "direction": "in"
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845973978018000,
+            "urb": 18446613174892100608,
+            "record": 472,
+            "file_offset": 55291,
+            "usb_sha256": "13a9bc1df16e58a3dc4420e1b1c875cbf2e7224368ec0a16da77d217f4b4283a",
+            "handle": 0,
+            "boundary": 0,
+            "data": "1f003e00f1534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34201b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+            "direction": "out",
+            "completion": {
+              "bus": 1,
+              "device": 3,
+              "wall_ns": 1791845973978303000,
+              "urb": 18446613174892100608,
+              "record": 473,
+              "file_offset": 55510
+            },
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845973978018000,
+                "urb": 18446613174892100608,
+                "record": 472,
+                "file_offset": 55291,
+                "usb_sha256": "13a9bc1df16e58a3dc4420e1b1c875cbf2e7224368ec0a16da77d217f4b4283a",
+                "handle": 0,
+                "boundary": 0,
+                "data": "1f003e00f1534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34201b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+                "direction": "out",
+                "completion": {
+                  "bus": 1,
+                  "device": 3,
+                  "wall_ns": 1791845973978303000,
+                  "urb": 18446613174892100608,
+                  "record": 473,
+                  "file_offset": 55510
+                }
+              }
+            ]
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845973956211000,
+            "urb": 18446613173999658688,
+            "record": 468,
+            "file_offset": 54615,
+            "hcc_offset": 92,
+            "usb_sha256": "f90a1bbb97e5b22914ea0db418911dc7a7956c0bea7efcb966e5bab0ed5054ad",
+            "usb_length": 178,
+            "handle": 0,
+            "boundary": 3,
+            "data": "1f003e00f1534c4b47524e5431d8eca358a72376bb157f795ef145ddfe6929b34200b186c834ca4d19cb640d0a2a8433aa86a196d824da5d093b94fdfada74c35a76",
+            "direction": "in",
+            "fragments": [
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845973950277000,
+                "urb": 18446613173999658688,
+                "record": 464,
+                "file_offset": 53939,
+                "hcc_offset": 92,
+                "usb_sha256": "136329ed3482644c467aeae4eb0465a89ae8a61bf203276669a6b6cd7879295c",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 1,
+                "data": "1f003e00f1534c4b47524e5431d8eca358a72376bb157f795ef145dd",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845973953338000,
+                "urb": 18446613173999658688,
+                "record": 466,
+                "file_offset": 54277,
+                "hcc_offset": 92,
+                "usb_sha256": "1fd954be2627b72321e298176f9e6cb2aab1d046b4523b310d2c518188cdd6f8",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 2,
+                "data": "fe6929b34200b186c834ca4d19cb640d0a2a8433aa86a196d824da5d",
+                "direction": "in"
+              },
+              {
+                "bus": 1,
+                "device": 3,
+                "wall_ns": 1791845973956211000,
+                "urb": 18446613173999658688,
+                "record": 468,
+                "file_offset": 54615,
+                "hcc_offset": 92,
+                "usb_sha256": "f90a1bbb97e5b22914ea0db418911dc7a7956c0bea7efcb966e5bab0ed5054ad",
+                "usb_length": 178,
+                "handle": 0,
+                "boundary": 3,
+                "data": "093b94fdfada74c35a76",
+                "direction": "in"
+              }
+            ]
+          }
+        ],
+        "original_up": [
+          {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791845973763838000,
+            "urb": 18446613174208872832,
+            "record": 412,
+            "file_offset": 45468,
+            "hcc_offset": 92,
+            "usb_sha256": "5547115a574141d4f137067b8868e41e1bdefcb3149b2089db1cc6092c4c2fb6",
+            "usb_length": 178,
+            "event": 5121,
+            "params": "00000001000001093254f90000000000000000000000000c000000fc0101"
+          },
+          {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791845973764150000,
+            "urb": 18446613173999658688,
+            "record": 414,
+            "file_offset": 45806,
+            "hcc_offset": 92,
+            "usb_sha256": "b97e6ca21eb345e4508ddbc4992d28c5fa2de6cdc5668f95f81c997e32184c92",
+            "usb_length": 178,
+            "event": 5121,
+            "params": "00000000000001093254cd0000000000000000000000000c000000fc0100"
+          }
+        ],
+        "actual_daemon_death": true,
+        "successor_does_not_renew_old_fd": true,
+        "common_owner_both_leases_withdrawn": true,
+        "independent_device_business_isolation": false,
+        "physical_acceptance": false,
+        "automatic_recovery_acceptance": false,
+        "full_grant_complete": false
+      },
+      "genuine_nocp": [
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845973861399000,
+          "urb": 18446613174208872832,
+          "record": 422,
+          "file_offset": 47108,
+          "hcc_offset": 92,
+          "usb_sha256": "22988811fee6fc7a39b797ec7b52c821cb03bae64e63b489c33ccc20aa3231e8",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845973883888000,
+          "urb": 18446613174208872832,
+          "record": 440,
+          "file_offset": 50000,
+          "hcc_offset": 92,
+          "usb_sha256": "91fb2318cd10fe7ad21c47a7c55d26bee29e887a3009f7af838a8177a65f9c7c",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845973934837000,
+          "urb": 18446613174208872832,
+          "record": 460,
+          "file_offset": 53302,
+          "hcc_offset": 92,
+          "usb_sha256": "1ba74dd1c55b1fc7a7e3de1c1b8ba7e2e6e7cdee5c8b16dcf214efabc5fe1e46",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845973957388000,
+          "urb": 18446613174208872832,
+          "record": 470,
+          "file_offset": 54953,
+          "hcc_offset": 92,
+          "usb_sha256": "97eee8e19ade2723d48bb8c1315177737a44fe14b194d3b29f44b3e11002d94c",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845973869220000,
+          "urb": 18446613173999658688,
+          "record": 430,
+          "file_offset": 48360,
+          "hcc_offset": 92,
+          "usb_sha256": "f7ae0a2b82392305f4225c2a8907ac1124b07099b829144a88752b25718700b8",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845973870824000,
+          "urb": 18446613173999658688,
+          "record": 434,
+          "file_offset": 49036,
+          "hcc_offset": 92,
+          "usb_sha256": "bf10bc711645eabe8118e86c22760101d0a86014e2e6e2e1be56a190c3df39cc",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845973905183000,
+          "urb": 18446613173999658688,
+          "record": 450,
+          "file_offset": 51651,
+          "hcc_offset": 92,
+          "usb_sha256": "ecae1295d4b70f39427d4417922386e32cbab8ca961377bd55c1f95e1ff5009f",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845973983211000,
+          "urb": 18446613173999658688,
+          "record": 480,
+          "file_offset": 56604,
+          "hcc_offset": 92,
+          "usb_sha256": "b71534695b78d1bc23545b381cbdfb72fa1b8f6763cb53d263ea5a9c748b7163",
+          "usb_length": 178,
+          "event": 9,
+          "params": "000001"
+        }
+      ],
+      "real_cleanup_down": [
+        {
+          "bus": 1,
+          "device": 2,
+          "wall_ns": 1791845974118074000,
+          "urb": 18446613174208872832,
+          "record": 486,
+          "file_offset": 57568,
+          "hcc_offset": 92,
+          "usb_sha256": "adce827ab9f690842decd0e1db7b75c6f2ba9841764d5e8068d0b84b9dd5b337",
+          "usb_length": 178,
+          "event": 5,
+          "params": "00000013"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "wall_ns": 1791845974118127000,
+          "urb": 18446613173999658688,
+          "record": 488,
+          "file_offset": 57906,
+          "hcc_offset": 92,
+          "usb_sha256": "64a0a30c341c0fc281020f37c34553b294b31334cc016ab939035e0a10dca758",
+          "usb_length": 178,
+          "event": 5,
+          "params": "00000011"
+        }
+      ],
+      "capture_packets": 493,
+      "reassembled_two_end_sdus": 16,
+      "private_original_sha256": {
+        "manifest.json": "2d3cceb3b7c886e6e1eb8b497135b57b3801728b009cfdaa84b3a9cbd185eee0",
+        "console.log": "9bc104da0ffe4957c3f20bc18dc664c80b131e39f907b67aa474618cff9fcdf1",
+        "guest-output/ws73.pcap": "b9bd022684e49273b7c29693a175748dd87646158e0cefb12a17f21ba22c9328",
+        "guest-output/kernel.log": "5362edc02997bdb92b9e6358feae6ed48b288d7f8a07adc15e6d1c51e2069843",
+        "guest-output/channel-daemon-crash/control/run.json": "619ae183949937546ece648c5af0606981870bb662f619b601aec0478fc9e740"
+      }
+    }
+  ],
+  "actual_business_round_trips": 4,
+  "raw_first_blocked_errors": [
+    116,
+    13
+  ],
+  "reassembled_two_end_sdus": 32,
+  "genuine_nocp_packets": 16,
+  "capture_packets": 986,
+  "actual_daemon_death_acceptance": true,
+  "successor_old_fd_revoked_acceptance": true,
+  "common_owner_two_lease_cleanup_acceptance": true,
+  "scm_rights_real_dbus_grant_acceptance": true,
+  "independent_owner_business_isolation": false,
+  "inflight_usb_withdrawal_acceptance": false,
+  "trusted_security_acceptance": false,
+  "full_grant_complete": false,
+  "full_event_migration_complete": false,
+  "natural_hardware_recovery": false,
+  "natural_fault_root_cause_closed": false,
+  "full_goal_complete": false,
+  "failed_attempts_preserved": [
+    "ee854dc launcher pre-VM package variable access failure; fixed9f65ec2",
+    "9f65ec2 actual death/cleanup before successor: blocking ESTALE from peer physical Down preceding own grant revoke; old strict atomic multi-File order assumption failed; original evidence retained. Revised1a586b2/82aa65a requires matching Down before wake and strict EACCES after Free/new daemon"
+  ]
+}

@@ -1,0 +1,236 @@
+{
+  "schema": 1,
+  "status": "PARTIAL_STANDARD_DIAGNOSTIC_AND_VIRTUAL_VM_WITH_REAL_WS73_REGRESSION",
+  "recorded_at_utc": "2026-10-13T13:48:02.768662+00:00",
+  "compiled_kernel": "1ed6963f0f7f34d616a42f276efc93faa41def38",
+  "compiled_service": "231f61e03d801b22517dc7df9e7f45d16a364749",
+  "guest_selftest_commit": "4ea441ee2e3a475c629f767e8228de83c88841ae",
+  "guest_selftest_sha256": "b0ee1496bcd3c9f7083fa340dc0902fe9f77686711a43840a25edee174bc6428",
+  "test_only_commit_runtime_projection": "EMPTY git diff K1ed..K4ea -- drivers net include; no qualification transfer to a rebuilt K4ea image",
+  "implemented": [
+    "standard profile0 versioned exclusive Diagnostic acquire/submit/result/release",
+    "profile-specific fixed queries, including standard identifier type0",
+    "active reply/original deadline retained while unexecuted requests cancelled",
+    "standard Managed remains Unsupported; no typed radio/data/Ready fabricated",
+    "legacy raw production admission handler removed; legacy entry/wrapper still explicitly rejected pending final UAPI/binding deletion",
+    "SDK/CLI standard query path; remove standard legacy-management bypass"
+  ],
+  "offline": {
+    "diagnostic": {
+      "status": "DIAGNOSTIC_RESULT_BOUNDARY_PASS",
+      "rust_tests": 50,
+      "result_tests": 14,
+      "admission_tests": 14,
+      "host_deadline_tests": 6,
+      "connection_dependency_tests": 11,
+      "link_dependency_tests": 5,
+      "scope": "actual pending/queue modules, submit/result handlers and Host enqueue/cancel bodies; clock/lease/lock/usercopy/allocation dependencies are fixtures",
+      "live_vfs_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_uapi.rs": "e332156977f30b6476d920d82d90315eeaab9c129211283241bfdd042675c283",
+        "sparklink_core.rs": "7eee1bad3e992885594e12ad555b2e86899ec742ef4cfe3aa3532024bb72444d",
+        "sle_host.rs": "e607769a6f9cbd7c0f8f277c8066f7323dc6eed2bce8136a5ac639ec8f97af82",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_workers.rs": "c6b89e5fb611b10fc409c65168291b753a6efcb3bcff5665c8353553b4192ca9",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e"
+      },
+      "remaining": [
+        "Actual ioctl owner/CAP/usercopy/removal gates in qualified VM",
+        "Legacy DLI event callers and shared projection removal",
+        "Live idempotent admission/cancel/deadline syscall and on-wire late reply gates"
+      ]
+    },
+    "release": {
+      "status": "MANAGEMENT_RELEASE_SOURCE_BOUNDARIES_PASS",
+      "rust_tests": 55,
+      "scope": "actual Host predicates/TX selection/InFlight/domain revocation and core fast-release block; source queue/operation/lease modules and opcode/timeout constants; locks, clock scaling, dependency error adapters and surrounding transport dependencies are fixtures",
+      "live_ioctl_acceptance": false,
+      "fd_close_acceptance": false,
+      "automatic_fault_recovery_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "sle_host.rs": "e607769a6f9cbd7c0f8f277c8066f7323dc6eed2bce8136a5ac639ec8f97af82",
+        "sparklink_core.rs": "7eee1bad3e992885594e12ad555b2e86899ec742ef4cfe3aa3532024bb72444d",
+        "sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd"
+      }
+    },
+    "connection": {
+      "status": "NATIVE_CONNECTION_PRODUCTION_SOURCE_CONTRACT_PASS",
+      "scope": "actual production operation storage and WS7327/3-byte driver codec; actual Host caller dependency tests; not running kernel or RF proof",
+      "rust_tests": 12,
+      "actual_host_tests": 51,
+      "actual_host_sources": {
+        "sle_host.rs": "e607769a6f9cbd7c0f8f277c8066f7323dc6eed2bce8136a5ac639ec8f97af82",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_dli.rs": "ee1462fb4f874aefd879967edcac2899593414c3f3b2c2bac48425f23c9d1cf1",
+        "sle_workers.rs": "c6b89e5fb611b10fc409c65168291b753a6efcb3bcff5665c8353553b4192ca9",
+        "sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd"
+      },
+      "codec_sanitizers": [
+        "address",
+        "undefined",
+        "leak"
+      ],
+      "production_connection_admission": false,
+      "connection_rf_acceptance": false,
+      "ssap_acceptance": false,
+      "automatic_recovery_acceptance": false,
+      "sources": {
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+        "connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+        "sparklink_connection.h": "206ba287da537704bef03233f598e3607c6180493d009a66b6460dfaf129047b",
+        "ws73_connection_codec_test.c": "1f41500443ce81a9c71cfb34d7def2d898a89e5b97d598f28cbcf1575a22e56e"
+      }
+    },
+    "sdk_cli": "authorized private IPC cargo test passed; initial sandbox EPERM failed two unrelated private socket tests, retained logs; clippy -D warnings passed",
+    "build": {
+      "workspace_relative_path": ".dev/native-standard-diagnostic-build-record.json",
+      "sha256": "222295228add57f76e28adb681f4f75d703267405ff065b4217b0cb13e2a563e",
+      "public_raw_material": false
+    },
+    "config_sha256": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7"
+  },
+  "vm": {
+    "scope": "empty USB, real C test provider + production Core/Host; not RF/natural recovery/PM/callback refinement",
+    "manifest": {
+      "workspace_relative_path": ".dev/native-standard-diagnostic-fd-final-vm/manifest.json",
+      "sha256": "33350b43bf257cd9248d475de9d25b5bf03768e3c08078ef68eba0fa27acfa82",
+      "public_raw_material": false
+    },
+    "console": {
+      "workspace_relative_path": ".dev/native-standard-diagnostic-fd-final-vm/console.log",
+      "sha256": "a78eb8f24ef1f34c5a22589ed21de49009a8d8dbb1412b3fbea60947690182f5",
+      "public_raw_material": false
+    },
+    "module_rounds": 2,
+    "completed_queries": 42,
+    "diagnostic_fd_results": [
+      "VIRTUAL_DIAGNOSTIC_FD_PASS: dup_keeps_lease=1 final_close_revokes=1 queued_cancel=2 inflight_reply=1 peer=1",
+      "VIRTUAL_DIAGNOSTIC_FD_PASS: dup_keeps_lease=1 final_close_revokes=1 queued_cancel=2 inflight_reply=1 peer=1"
+    ],
+    "explicit_release": "two queued cancelled, one active retained, no typed stops, peer query, Setup preserved",
+    "provider_file": "dup, pending last close, exact retirement/reuse/stale generations, bounded drop/fail/late reply, module reload",
+    "still_missing": "deterministic entered-callback join and broad IRQ/module/PM/lifetime proofs; mixed physical/Virtual simultaneous regression"
+  },
+  "real_evidence": {
+    "fault-real": "docs/evidence/standard-diagnostic-fault-real-20261013.json",
+    "real-short": "docs/evidence/standard-diagnostic-real-short-20261013.json",
+    "real-boundary": "docs/evidence/standard-diagnostic-real-boundary-20261013.json"
+  },
+  "real_totals": {
+    "normal_short_round_trips": 40,
+    "normal_249_round_trips": 8,
+    "rejected_application_lengths": [
+      250,
+      253,
+      254,
+      255
+    ],
+    "rejections": 16,
+    "controlled_fault_peer_round_trips": 8,
+    "normal_correlated_usb_acb_sdus": 224,
+    "normal_observed_nocp_completions": 112,
+    "kernel_capture_drops": 0,
+    "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "note": "NOCP count is captured completion evidence, not peer delivery; peer application validation/reply independently checked. Does not prove duplicate/late completion assumptions."
+  },
+  "ci": {
+    "current_pin_head": "860f04f96dc3e87a35743b8e05e1cdeb914330de",
+    "kernel_pin": "1ed6963f0f7f34d616a42f276efc93faa41def38",
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38405778964",
+    "jobs": 9,
+    "status": "success"
+  },
+  "formal": "No new full formal qualification; existing codec/model scope retained; new query/cancel/fd branches have actual regression, not concurrency/refinement proof.",
+  "unresolved": [
+    "natural WS73 startup/reenumeration/disappearance RCA and nonmanual recovery",
+    "canonical events and old consumer/ring migration",
+    "standard typed policy and ticketed data",
+    "CreditLedger full proof, real exhaustion/backpressure and NOCP reuse barriers",
+    "full transport callback/IRQ/PM/module lifetime",
+    "long PDU/multichannel/four-device business/unique userspace SSAP",
+    "remaining legacy/UAPI cleanup"
+  ],
+  "close_any_issue": false,
+  "issue_publication": [
+    {
+      "repo": "linux",
+      "issue": 5,
+      "comment_id": 6147236598,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6147236598",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "linux",
+      "issue": 9,
+      "comment_id": 6147237373,
+      "url": "https://github.com/OpenSparklink/linux/issues/9#issuecomment-6147237373",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "linux",
+      "issue": 10,
+      "comment_id": 6147238329,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6147238329",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "comment_id": 6147239060,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6147239060",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "linux",
+      "issue": 8,
+      "comment_id": 6147240124,
+      "url": "https://github.com/OpenSparklink/linux/issues/8#issuecomment-6147240124",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "comment_id": 6147240967,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6147240967",
+      "state": "OPEN",
+      "readback_exact": true,
+      "body_sha256": "ff65eff94d1c9f6047199e0acf59b4320270a2ee2f4e48b9a3011ed49de36648"
+    }
+  ],
+  "independent_capture_recount": {
+    "normal_short_acb_sdus": 176,
+    "normal_short_nocp_count": 88,
+    "normal_boundary_acb_sdus": 48,
+    "normal_boundary_nocp_count": 24,
+    "method": "read_capture selected physical USB identities then reassemble_acb; sums224/112; application match independent of completion count"
+  }
+}

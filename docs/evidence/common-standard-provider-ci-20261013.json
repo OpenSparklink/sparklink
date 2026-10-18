@@ -1,0 +1,56 @@
+{
+  "status": "SUCCESS_9_JOBS",
+  "head": "168c8709cdbe0230d1a601750285a144f1610a17",
+  "kernel_pin": "a368cf5f178416d44c1ffe83536f22c074eebf5f",
+  "run_id": 38376042260,
+  "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260",
+  "jobs": [
+    {
+      "name": "WS73 tooling and evidence validation (no hardware)",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115224537577"
+    },
+    {
+      "name": "rustfmt",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115224537651"
+    },
+    {
+      "name": "cargo check",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115224537861"
+    },
+    {
+      "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115224537997"
+    },
+    {
+      "name": "Python bindings and kernel ABI conformance",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115224538092"
+    },
+    {
+      "name": "cargo test",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115224665954"
+    },
+    {
+      "name": "C header generation",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115224666001"
+    },
+    {
+      "name": "clippy",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115224666178"
+    },
+    {
+      "name": "release build",
+      "conclusion": "success",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38376042260/job/115225287239"
+    }
+  ],
+  "log_sha256": "6ac18066f6df4fb1839dec1f3f8d4adc2c3e27f6fb34485fcee065c0c70fe345",
+  "not_hardware_or_formal_proof": true
+}

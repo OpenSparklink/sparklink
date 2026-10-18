@@ -1,0 +1,7 @@
+{
+  "raw_sha256": "c56282d50b9eab10364cd3e722b5c93a7b4a19b705047a1fcf9035c8bdf2056d",
+  "gzip_sha256": "de3521806097407c5e66c1739b6824b46b78463cf0e30f44d423015c5fdd604c",
+  "raw_bytes": 1499484,
+  "encoding": "gzip; decompress to exact original JSON",
+  "path": "solver.json.gz"
+}

@@ -1,0 +1,1819 @@
+{
+  "schema_version": 1,
+  "status": "P2D_INITIAL_PRODUCTION_AND_THREE_REAL_GATES_FULL_EXIT_UNPROVED",
+  "compiled_kernel": "c4d5362276d43b6a21fc4f8f152f84f0827bf642",
+  "compiled_userspace": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+  "executed_tools": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+  "offline_result": "PASS",
+  "formal_result": "PASS",
+  "real_initial_result": "PASS",
+  "virtual_result": "PASS",
+  "p2d_full_exit_result": "UNPROVED",
+  "original_matrix_result": "FAIL",
+  "scope": [
+    "UniqueSession/Runtime/Grant/credit/Ticket unchanged;software8attempt/4096byte/next-operation2ms budget,PDU-boundary roundrobin,originaldeadlines andactualreservewait. No newEngine orUSB optimization.",
+    "48actualRust andactualC dispatch/enqueue underASan/UBSan/LSan with explicit Host/USB/locks/time/allocation/reference dependencies;retained generatedC andexecutionbinaries. Not realkernel concurrency/refinement.",
+    "CBMC6.11 actualbudget12transitions69properties,packet/byte/latch/time mutants andshortunwind rejected;clockwrap andelapsed<=48ms assumption.20stepenqueue/32and64bit deadlines/scalarfragment proofs retain their ownbounds,not full lifecycleproof.",
+    "InitialrealU2/3 threegates:short8,long2042x8,burst2042x32 peer-validated ordinaryapp RT,bothconnectionroles,twoUSB closure andexact frozen replays. No newbenchmark thresholds,fairness ortraceevent closure.",
+    "Default-disabledtracepoints compiled;emptyUSBVMboot/signedmoduleload/unload pass. RealSession trace capture/USB mapping and losschecks stillmissing;notnewReady/security authorization.",
+    "Firstburst attempt refused beforeVM for missingexplicit16rounds;originalmatrixFAIL kept. Correctednewburst doesnotrewrite original. FirstCfixture nullcallback,sandboxLSan,artifact/staging/prepareinvocation failures retained.",
+    "VM-only;userconfirmedE1 excluded,U2/3 userreported. Previousbfaa tenlifecycle gates do NOT qualify newc4. Currentnewkernel fullqualification remains incomplete.",
+    "Three exactraw replays also reject18 copiedactualevidence mutations:missingRX/TX,corruptpayload,oldgeneration,failed/missingapp. Sameverifier only,not newhardware faults orindependent decoder."
+  ],
+  "remaining": [
+    "P2d actualSession trace join/loss/observationcost,controlledVM scheduling/credit/close/revoke/Down/originaldeadline andmultichannel PDU-boundary fairness stillrequired before scopedexit.",
+    "No throughput/latency improvement,resourcepeak,RF,timeclockmapping,KCSAN/lockdep/LKMM orfullimplementationproof granted.",
+    "FullS0-S6/19WP/10FV/12DG,Agent/SSAP,multichannel/fourdevice/security/Bond/PM/release andoriginalacceptance remainOPEN;UserHostlowpriority.",
+    "NaturalRCA/nonmanualautomaticrecovery,NOCPaccuracy/late/duplicate/reusebarriers,callbackdrain andfirmwarestateclear remainOPEN;manual/hub/QMP/injection not naturalrecovery."
+  ],
+  "offline_gates": [
+    {
+      "name": "rust-native48",
+      "result": "PASS",
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "report": {
+        "path": ".dev/tx-quantum-native-v1.json",
+        "sha256": "6608087f17c649a45c096c65e1e03ee3800674bbb20345bd6de65b84e7b3165f",
+        "bytes": 2208,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    },
+    {
+      "name": "actual-C-dispatch",
+      "result": "PASS",
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "report": {
+        "path": ".dev/tx-quantum-dispatch-retained-v1/report.json",
+        "sha256": "0965400e43e09e1a6b3b46f1591e48acfb2ee38203586f6b9cfa5f532456e0a0",
+        "bytes": 2561,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    },
+    {
+      "name": "actual-C-enqueue",
+      "result": "PASS",
+      "status": "ACTUAL_SESSION_WAKE_SEQUENTIAL_DEPENDENCIES_PASS",
+      "report": {
+        "path": ".dev/tx-quantum-wake-retained-v1/report.json",
+        "sha256": "627925371ab999a46ba841fd0618b4980ea54308b9b80cd83323eaf5dbedb72b",
+        "bytes": 1341,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    }
+  ],
+  "formal_gates": [
+    {
+      "name": "budget-CBMC12",
+      "result": "PASS",
+      "status": "BOUNDED_PRODUCTION_TX_BUDGET_AND_NEGATIVES_PASS",
+      "report": {
+        "path": ".dev/tx-quantum-cbmc-v2/report.json",
+        "sha256": "026cf1f4754bd5694ed8f1838a15e13abe20363a99440905b681bef5b7239ed2",
+        "bytes": 5737,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    },
+    {
+      "name": "enqueue-CBMC20",
+      "result": "PASS",
+      "status": "ACTUAL_SESSION_WAKE_SEQUENTIAL_DEPENDENCIES_PASS",
+      "report": {
+        "path": ".dev/tx-quantum-wake-v2.json",
+        "sha256": "0d0006f14eb8cd3df3348995bc3146cc4bebdd71f303276303a4c9ec61083b78",
+        "bytes": 4872,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    },
+    {
+      "name": "deadline-CBMC32and64",
+      "result": "PASS",
+      "status": "BOUNDED_PRODUCTION_DEADLINE_SELECTION_PASS",
+      "report": {
+        "path": ".dev/tx-quantum-schedule-v1/report.json",
+        "sha256": "3d86d3784da56b279e538b0193bc8cca7a23b99637c07a75a26e2e28585abf05",
+        "bytes": 6190,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    },
+    {
+      "name": "fragment-scalars",
+      "result": "PASS",
+      "status": "SCALAR_TRANSITIONS_PASS",
+      "report": {
+        "path": ".dev/tx-quantum-fragment-v1.json",
+        "sha256": "386cb8ce25be4aa172ae7d4133a6161d42c01c7e7b18258b95ec54de75ab088a",
+        "bytes": 1570,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    }
+  ],
+  "real_gates": [
+    {
+      "name": "short",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/tx-quantum-short-v1/manifest.json",
+        "sha256": "d340e4c2ed33420ae1a0ce7f5d73718960c79e632c5f8a14abe1c756796378f4",
+        "bytes": 1174980,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      },
+      "replay": {
+        "path": ".dev/tx-quantum-short-v1-replay-v1.json",
+        "sha256": "2159dd0cbfecb9ed3f050b8a577e5061a40b8e5c6ff8433347f82a02c362f513",
+        "bytes": 1128886,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      },
+      "round_trips": 8,
+      "guest_identities": [
+        {
+          "port": "1-1",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+          "bus": 1,
+          "device": 2,
+          "index": 0,
+          "generation": 1,
+          "path": "/org/sparklink/slk0_g1",
+          "address": "00:01:09:30:D1:AC",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=1 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:d1:ac acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "8064544293<48289>64680:0"
+          },
+          "observed_wall_ns": 1792170466320716909
+        },
+        {
+          "port": "1-2",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+          "bus": 1,
+          "device": 3,
+          "index": 1,
+          "generation": 2,
+          "path": "/org/sparklink/slk1_g2",
+          "address": "00:01:09:30:CE:85",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=1 pending_generation=2 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:ce:85 acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "80645442632>2289>642<>:0"
+          },
+          "observed_wall_ns": 1792170466327418019
+        },
+        {
+          "port": "1-1",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+          "bus": 1,
+          "device": 4,
+          "index": 0,
+          "generation": 3,
+          "path": "/org/sparklink/slk0_g3",
+          "address": "00:01:09:30:D1:AC",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=0 generation=3 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=3 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:d1:ac acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "8064544293<48289>64680:0"
+          },
+          "observed_wall_ns": 1792170494023581386
+        }
+      ],
+      "canonical_proof_sha256": "2ffeaa0f047de87ab4ce357c5ab0ac50288cde616b81c534c2b955ede8ea034d",
+      "long_pdu_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "name": "long",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/tx-quantum-long-v1/manifest.json",
+        "sha256": "24a0cf23ac86ac71d07710381bbff7e7fb76c5b004c597b191fe4cdc611910ed",
+        "bytes": 2243018,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      },
+      "replay": {
+        "path": ".dev/tx-quantum-long-v1-replay-v1.json",
+        "sha256": "e61c87cf446d950cd8f398d77c7e8ebea8a313a97ef350ff8d10d66dc59261bc",
+        "bytes": 2239768,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      },
+      "round_trips": 8,
+      "guest_identities": [
+        {
+          "port": "1-1",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+          "bus": 1,
+          "device": 2,
+          "index": 0,
+          "generation": 1,
+          "path": "/org/sparklink/slk0_g1",
+          "address": "00:01:09:30:D1:AC",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=1 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:d1:ac acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "8064544293<48289>64680:0"
+          },
+          "observed_wall_ns": 1792170531307047645
+        },
+        {
+          "port": "1-2",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+          "bus": 1,
+          "device": 3,
+          "index": 1,
+          "generation": 2,
+          "path": "/org/sparklink/slk1_g2",
+          "address": "00:01:09:30:CE:85",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=1 pending_generation=2 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:ce:85 acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "80645442632>2289>642<>:0"
+          },
+          "observed_wall_ns": 1792170531313408484
+        },
+        {
+          "port": "1-1",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+          "bus": 1,
+          "device": 4,
+          "index": 0,
+          "generation": 3,
+          "path": "/org/sparklink/slk0_g3",
+          "address": "00:01:09:30:D1:AC",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=0 generation=3 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=3 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:d1:ac acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "8064544293<48289>64680:0"
+          },
+          "observed_wall_ns": 1792170563771403740
+        }
+      ],
+      "canonical_proof_sha256": "003d2b6765cd388561249ceae6e4099636a1476fdd1e4d2a3ec7843a8cdc6ab3",
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    },
+    {
+      "name": "burst",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/tx-quantum-burst-v2/manifest.json",
+        "sha256": "d46fc58d2aabad9a682df253727e610b590b4c42a4463cf09a0ccec01d6e7f16",
+        "bytes": 5677537,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      },
+      "replay": {
+        "path": ".dev/tx-quantum-burst-v2-replay-v1.json",
+        "sha256": "6bdfef3f9e95a8b399adb98bbc6a7f47a7e8a6921126cc39d040853c928a1c1e",
+        "bytes": 5813995,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      },
+      "round_trips": 32,
+      "guest_identities": [
+        {
+          "port": "1-1",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+          "bus": 1,
+          "device": 2,
+          "index": 0,
+          "generation": 1,
+          "path": "/org/sparklink/slk0_g1",
+          "address": "00:01:09:30:D1:AC",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=1 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:d1:ac acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "8064544293<48289>64680:0"
+          },
+          "observed_wall_ns": 1792170638344967484
+        },
+        {
+          "port": "1-2",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-2",
+          "bus": 1,
+          "device": 3,
+          "index": 1,
+          "generation": 2,
+          "path": "/org/sparklink/slk1_g2",
+          "address": "00:01:09:30:CE:85",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=1 pending_generation=2 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:ce:85 acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "80645442632>2289>642<>:0"
+          },
+          "observed_wall_ns": 1792170638350468321
+        },
+        {
+          "port": "1-1",
+          "sysfs_path": "/sys/devices/pci0000:00/0000:00:02.0/usb1/1-1",
+          "bus": 1,
+          "device": 4,
+          "index": 0,
+          "generation": 3,
+          "path": "/org/sparklink/slk0_g3",
+          "address": "00:01:09:30:D1:AC",
+          "version": "016c00a100",
+          "features": "23155000120000010000",
+          "buffers": [
+            254,
+            5,
+            0,
+            0
+          ],
+          "attributes": {
+            "metadata_valid": "1",
+            "runtime_transport": "1",
+            "boot_error": "0",
+            "native_runtime": "id=0 generation=3 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=3 core_pending_ret=-2 core_phase=0 core_error=0",
+            "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:30:d1:ac acb=254/5 icb=0/0 bootstrap_credits=1"
+          },
+          "descriptors": {
+            "manufacturer": "00000000",
+            "product": "00000000",
+            "serial": "8064544293<48289>64680:0"
+          },
+          "observed_wall_ns": 1792170684282080454
+        }
+      ],
+      "canonical_proof_sha256": "1c0a01a61e0345181b786359d6ddd04336db8ad222c3da10332e95ef794d3449",
+      "long_pdu_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false
+    }
+  ],
+  "virtual_gates": [
+    {
+      "name": "emptyUSB-native-root",
+      "result": "PASS",
+      "status": "PASS_ISOLATED_NATIVE_ROOT_SMOKE",
+      "report": {
+        "path": ".dev/tx-quantum-normal-smoke-v1/manifest.json",
+        "sha256": "0f874a449d869b82ffbb2cb31f6b211570040eeccf252cac7c3cf0978889edba",
+        "bytes": 36736,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "SessionTraceUSBClosure",
+      "result": "UNPROVED",
+      "status": "NOT_EXECUTED_NEW_C4"
+    },
+    {
+      "name": "ControlledReleaseCloseDupDownDeadline",
+      "result": "UNPROVED",
+      "status": "NOT_EXECUTED_NEW_C4"
+    },
+    {
+      "name": "PduBoundaryMultichannelFairness",
+      "result": "UNPROVED",
+      "status": "NOT_EXECUTED_NEW_C4"
+    },
+    {
+      "name": "PairedPerformanceAndResources",
+      "result": "UNPROVED",
+      "status": "NOT_EXECUTED_NEW_C4"
+    }
+  ],
+  "retained_failed_gates": [
+    {
+      "name": "initial-burst-command",
+      "result": "FAIL",
+      "status": "Explicit16RoundsMissingBeforeVM",
+      "report": {
+        "path": ".dev/tx-quantum-real-initial-v1.json",
+        "sha256": "fbafc33b690afbf72931af5ee860ad0779367e560d90b38bc370c2ba4a3da9aa",
+        "bytes": 3644,
+        "access": "private",
+        "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+      }
+    }
+  ],
+  "counts": {
+    "real_initial_gates": 3,
+    "application_round_trips": 48,
+    "native_tests": 48,
+    "budget_properties": 69,
+    "budget_sequence_bound": 12,
+    "budget_negative_controls": 5,
+    "copied_actual_evidence_negatives": 18
+  },
+  "build": {
+    "actual_jobs": 12,
+    "elapsed_seconds": 66.964349507,
+    "config_sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+    "source_clean_and_stable": true,
+    "compiler_warnings": 0,
+    "stable_kernel_output": ".dev/session-wake-kernel-build-v1",
+    "stable_cargo_target": ".dev/cargo-native-dev",
+    "with_real_vm_budget": 8,
+    "noheavybuildduringphysicaltests": true,
+    "virtual_not_staged": true
+  },
+  "firmware": {
+    "sdk": "1.10.111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "board_qualified": false
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
+  },
+  "materials": [
+    {
+      "path": ".dev/tx-quantum-native-v1.json",
+      "sha256": "6608087f17c649a45c096c65e1e03ee3800674bbb20345bd6de65b84e7b3165f",
+      "bytes": 2208,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-dispatch-retained-v1/report.json",
+      "sha256": "0965400e43e09e1a6b3b46f1591e48acfb2ee38203586f6b9cfa5f532456e0a0",
+      "bytes": 2561,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-retained-v1/report.json",
+      "sha256": "627925371ab999a46ba841fd0618b4980ea54308b9b80cd83323eaf5dbedb72b",
+      "bytes": 1341,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/report.json",
+      "sha256": "026cf1f4754bd5694ed8f1838a15e13abe20363a99440905b681bef5b7239ed2",
+      "bytes": 5737,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-v2.json",
+      "sha256": "0d0006f14eb8cd3df3348995bc3146cc4bebdd71f303276303a4c9ec61083b78",
+      "bytes": 4872,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/report.json",
+      "sha256": "3d86d3784da56b279e538b0193bc8cca7a23b99637c07a75a26e2e28585abf05",
+      "bytes": 6190,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-fragment-v1.json",
+      "sha256": "386cb8ce25be4aa172ae7d4133a6161d42c01c7e7b18258b95ec54de75ab088a",
+      "bytes": 1570,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/production/sle_tx_budget.h",
+      "sha256": "f75c2f9133170f40651a8addc9a8a739872e5f456ad9fe9f4847bd15a84d0ed2",
+      "bytes": 1299,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/production/harness.c",
+      "sha256": "36da228039f126e8c2077db7801aa252679e43c03a93ca2dca9aa6d3c0013782",
+      "bytes": 2117,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/production/raw.json",
+      "sha256": "8f88080a52ec0d11d9719312055327862095969ce11a26a0fbae55b2e6ba5188",
+      "bytes": 77837,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/packet-negative/sle_tx_budget.h",
+      "sha256": "48cd5779dc8c6ee7f44caa9f537d0c0a01dfa62658c95f3e14b88b858f75268b",
+      "bytes": 1298,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/packet-negative/harness.c",
+      "sha256": "36da228039f126e8c2077db7801aa252679e43c03a93ca2dca9aa6d3c0013782",
+      "bytes": 2117,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/packet-negative/raw.json",
+      "sha256": "f4601f9fe7f1c85be9743718a785688d2ec02e06c6632d90bac4ceccd302fb7b",
+      "bytes": 414912,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/byte-negative/sle_tx_budget.h",
+      "sha256": "6ad14d958c92fb61111059d41e7f5f9c8f4785863bdeb87dbbc3c49d71028068",
+      "bytes": 1265,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/byte-negative/harness.c",
+      "sha256": "36da228039f126e8c2077db7801aa252679e43c03a93ca2dca9aa6d3c0013782",
+      "bytes": 2117,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/byte-negative/raw.json",
+      "sha256": "dd0bd8d4e145c5f62504f9f11ce042df8d0ff2625e29ee62378bf380bb8a3dc5",
+      "bytes": 588940,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/latch-negative/sle_tx_budget.h",
+      "sha256": "f10bd9a4ddf26f640433609ef7d47b024f1a716ae8b7cc9f7e7737a7f971d2a8",
+      "bytes": 1276,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/latch-negative/harness.c",
+      "sha256": "36da228039f126e8c2077db7801aa252679e43c03a93ca2dca9aa6d3c0013782",
+      "bytes": 2117,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/latch-negative/raw.json",
+      "sha256": "fc50f4cfac46147cf80ab27535de85e3417ccc369e7772640372729e76f1cf6b",
+      "bytes": 409572,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/elapsed-negative/sle_tx_budget.h",
+      "sha256": "964587c222f627b2ed9f484332f58797773091001141d4b13c586bad70880a58",
+      "bytes": 1298,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/elapsed-negative/harness.c",
+      "sha256": "36da228039f126e8c2077db7801aa252679e43c03a93ca2dca9aa6d3c0013782",
+      "bytes": 2117,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/elapsed-negative/raw.json",
+      "sha256": "cbf928ad8c39a270b16bded4c503a5f7b2daf25261051b87158d0130932729b0",
+      "bytes": 566228,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/short-unwind-negative/sle_tx_budget.h",
+      "sha256": "f75c2f9133170f40651a8addc9a8a739872e5f456ad9fe9f4847bd15a84d0ed2",
+      "bytes": 1299,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/short-unwind-negative/harness.c",
+      "sha256": "36da228039f126e8c2077db7801aa252679e43c03a93ca2dca9aa6d3c0013782",
+      "bytes": 2117,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-cbmc-v2/short-unwind-negative/raw.json",
+      "sha256": "48ddfb32906d1f649086bd560a4e47e00794dfaebab5aeadad27d4b3bf717311",
+      "bytes": 179879,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-cbmc-v2/report.json",
+      "sha256": "bf73ce05bfbc90d2836aa7282c6d43cea14d45a55fd8b06259366d697a1c146f",
+      "bytes": 3175,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-cbmc-v2/production.c",
+      "sha256": "06979610f396f817622dc1fb1b6ec0d5e9472d60aba910321aade8c8c97063bc",
+      "bytes": 5979,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-cbmc-v2/production.json",
+      "sha256": "138cf12068acc6dd196a42685b2fde7b1bb13e6d512944ae78c43804ff4cc02f",
+      "bytes": 346364,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-cbmc-v2/inverted-queue-reference-negative.c",
+      "sha256": "2d269687b99578c35663f946874840667b2d351104c8b831ee14d3d1f5c5c3e6",
+      "bytes": 5980,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-cbmc-v2/inverted-queue-reference-negative.json",
+      "sha256": "a9013a7bc58f2ce6ac6373c05fedda82c14b65b6238facb50e737dc17e330462",
+      "bytes": 3947355,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-cbmc-v2/short-unwind-negative.c",
+      "sha256": "06979610f396f817622dc1fb1b6ec0d5e9472d60aba910321aade8c8c97063bc",
+      "bytes": 5979,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-cbmc-v2/short-unwind-negative.json",
+      "sha256": "a914120d098d4e0022f134aeeb231700fe9b2acc870a214bfb4aaabbcebee05b",
+      "bytes": 795120,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-production/sle_session_schedule.h",
+      "sha256": "306e26113573f3ca003dc78f73a320e06e8534220cfa4d1aae9d599e4e0c851e",
+      "bytes": 821,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-production/harness.c",
+      "sha256": "6f4f3d07dad73edbe603450d16a8abed6d675168cfcd9ed788b17d3e7a40ad92",
+      "bytes": 1464,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-production/raw.json",
+      "sha256": "2b694584ba371909abbbe916c40613775266b9803e690fafe2cb5b3e476dd15c",
+      "bytes": 33252,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-wrong-maximum-negative/sle_session_schedule.h",
+      "sha256": "43c3ffc1ff2b3b37595576a6bc89dd49bed5fafe1235dc7b9491bb3bfde89a52",
+      "bytes": 821,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-wrong-maximum-negative/harness.c",
+      "sha256": "6f4f3d07dad73edbe603450d16a8abed6d675168cfcd9ed788b17d3e7a40ad92",
+      "bytes": 1464,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-wrong-maximum-negative/raw.json",
+      "sha256": "3b3f4e93397434e57ec90e080dd8d42f06ffb685c5bfccbf68ac73cd6f538f69",
+      "bytes": 295373,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-short-unwind-negative/sle_session_schedule.h",
+      "sha256": "306e26113573f3ca003dc78f73a320e06e8534220cfa4d1aae9d599e4e0c851e",
+      "bytes": 821,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-short-unwind-negative/harness.c",
+      "sha256": "6f4f3d07dad73edbe603450d16a8abed6d675168cfcd9ed788b17d3e7a40ad92",
+      "bytes": 1464,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/32-short-unwind-negative/raw.json",
+      "sha256": "b6ae747db9a672fa4301add4baa846a1ac9adf67f817e07a615fe748fef6daa0",
+      "bytes": 114616,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-production/sle_session_schedule.h",
+      "sha256": "306e26113573f3ca003dc78f73a320e06e8534220cfa4d1aae9d599e4e0c851e",
+      "bytes": 821,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-production/harness.c",
+      "sha256": "6f4f3d07dad73edbe603450d16a8abed6d675168cfcd9ed788b17d3e7a40ad92",
+      "bytes": 1464,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-production/raw.json",
+      "sha256": "bb3ca7bcb9c9c0b59eac6b97244a7873f5a89e09c61fba9724cd916980bdb95c",
+      "bytes": 33252,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-wrong-maximum-negative/sle_session_schedule.h",
+      "sha256": "43c3ffc1ff2b3b37595576a6bc89dd49bed5fafe1235dc7b9491bb3bfde89a52",
+      "bytes": 821,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-wrong-maximum-negative/harness.c",
+      "sha256": "6f4f3d07dad73edbe603450d16a8abed6d675168cfcd9ed788b17d3e7a40ad92",
+      "bytes": 1464,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-wrong-maximum-negative/raw.json",
+      "sha256": "fdd8d60dc6d49ce7ec1123b3e4ba18b98277d4e468f2d1e6c23682e04648106d",
+      "bytes": 274752,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-short-unwind-negative/sle_session_schedule.h",
+      "sha256": "306e26113573f3ca003dc78f73a320e06e8534220cfa4d1aae9d599e4e0c851e",
+      "bytes": 821,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-short-unwind-negative/harness.c",
+      "sha256": "6f4f3d07dad73edbe603450d16a8abed6d675168cfcd9ed788b17d3e7a40ad92",
+      "bytes": 1464,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-schedule-v1/64-short-unwind-negative/raw.json",
+      "sha256": "edf741822d043bbfb988c79e423a023085867c4334357bfd851e84fd49211aa3",
+      "bytes": 118260,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-dispatch-retained-v1/compile/test.c",
+      "sha256": "a9ec4eb4449f05d3d92621bb60783bd3f25a3856ed0664744fdd1213e4914918",
+      "bytes": 108645,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-dispatch-retained-v1/compile/test",
+      "sha256": "8bd33371683806e87d8c6340754352e818b3312e26cb17476920a3472947432d",
+      "bytes": 2594712,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-retained-v1/compile/test.c",
+      "sha256": "11cfd2ea76e2ace3762a0d22eb3771b0a116b8c862305b8ad03e1fac7152e8f1",
+      "bytes": 4135,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-retained-v1/compile/test",
+      "sha256": "9fbfb8cd6d1d435a2f8dfc150c7e7afd05dfbb8a7df2983e8874133cbe7b018f",
+      "bytes": 1778152,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-native-v1.bin",
+      "sha256": "d017df883528fe90dcbfce3c8bd6f167f83fff7bb682b86888928c95c2fc0c73",
+      "bytes": 7452136,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-native-v1.fixture.rs",
+      "sha256": "9d2cb975dac1c038b26443ef5ce669ca57eb66f0d61e7c2549f96b377c01819b",
+      "bytes": 55476,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-native-v1.log",
+      "sha256": "0d6c433385573e073f8d32fa6214f3b177ef88985c1e621a5f0751133af4b768",
+      "bytes": 10424,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-c-retention-v1.json",
+      "sha256": "9d634c818c86aee5e9b8428f2b44e7254f42bc237ef5c9bb661ca3af499d1d11",
+      "bytes": 2107,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-retain-c-checks-v1.py",
+      "sha256": "dd4678e9ec2ea5f9fd9e869bdf291f2efb22a9b0e5007dba9e158e4650aba9a1",
+      "bytes": 1609,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-retain-c-checks-v1.log",
+      "sha256": "9a48a78d5365ec75fb3c4ce1c8df443c64842ffe10f8573786c113722172b73e",
+      "bytes": 4021,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-fragment-v1.cbmc.log",
+      "sha256": "da45d319e773ac69ff694d8232cc59b4a16cdbb04100ff63830bf7b95b62e98d",
+      "bytes": 6173,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1/manifest.json",
+      "sha256": "d340e4c2ed33420ae1a0ce7f5d73718960c79e632c5f8a14abe1c756796378f4",
+      "bytes": 1174980,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1-replay-v1.json",
+      "sha256": "2159dd0cbfecb9ed3f050b8a577e5061a40b8e5c6ff8433347f82a02c362f513",
+      "bytes": 1128886,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1/guest-output/ws73.pcap",
+      "sha256": "bdd0c089e0ad00c62b8cac498fffb4f86fd820269323a2b161a10a6ca2294c39",
+      "bytes": 489724,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1/guest-output/kernel.log",
+      "sha256": "8a1d93ddcf2483cfdfc85e2faf9af04d8a061cf84c24f1741d46781234d198b0",
+      "bytes": 49385,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "8fc26a2a44e34949545ee286f37495121ea7f8e9f79a78113690d69c5fe1945c",
+      "bytes": 664754,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1/qmp.jsonl",
+      "sha256": "a95759445a057df6ec274d38c5c097597220bf229be1b41f8dd5ee2ad107bc74",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-short-v1/console.log",
+      "sha256": "5f376280520b37fc20bc3ca2f6895dffd14ee4661e4a7602c9db0980c6c518dc",
+      "bytes": 16211,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1/manifest.json",
+      "sha256": "24a0cf23ac86ac71d07710381bbff7e7fb76c5b004c597b191fe4cdc611910ed",
+      "bytes": 2243018,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1-replay-v1.json",
+      "sha256": "e61c87cf446d950cd8f398d77c7e8ebea8a313a97ef350ff8d10d66dc59261bc",
+      "bytes": 2239768,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1/guest-output/ws73.pcap",
+      "sha256": "a7d43ebe04249b5dd90408b280cc982776c91de2f1fb8b19e311156ebc5c9b93",
+      "bytes": 1016972,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1/guest-output/kernel.log",
+      "sha256": "89dd8b58a53dde5b19dac044a55f7b40979398b9aa76ccee50556e1808b58837",
+      "bytes": 48980,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "2a494db70906e707f357973eb925c0e9d1929f0c3afe3a030e51bfdd84bb5d05",
+      "bytes": 791553,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1/qmp.jsonl",
+      "sha256": "8571bb56ef241e752551402db6e8d743cd6bd1dc1d8cb848feb291be2aecef56",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-long-v1/console.log",
+      "sha256": "35a5c838858e09de5ca3587419d55bb1c2367803ba3e03f1d715dfb95764ba22",
+      "bytes": 16213,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2/manifest.json",
+      "sha256": "d46fc58d2aabad9a682df253727e610b590b4c42a4463cf09a0ccec01d6e7f16",
+      "bytes": 5677537,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2-replay-v1.json",
+      "sha256": "6bdfef3f9e95a8b399adb98bbc6a7f47a7e8a6921126cc39d040853c928a1c1e",
+      "bytes": 5813995,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2/guest-output/ws73.pcap",
+      "sha256": "a48bef63678e37cf3877e1b626b504f326e860584460665d091267f2b6db1cf1",
+      "bytes": 2677964,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2/guest-output/capture-stats.txt",
+      "sha256": "6e6bca4bbbd93ebaa9c0fee46a73f78cde55bf2685ad225ccb11c3d2fc9b1c31",
+      "bytes": 229,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2/guest-output/kernel.log",
+      "sha256": "211f3e00cd3d979d1fa2f87eefc9129f5322e6d5493ce16e8501613982ea8a15",
+      "bytes": 49112,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2/guest-output/application/passthrough-control/run.json",
+      "sha256": "5b4e5114553bf6166dfb2b1acf4487fb7524bfeacfa96c86831ce3939067c71a",
+      "bytes": 1193065,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2/qmp.jsonl",
+      "sha256": "0db0d6da4217e31e136a23f09c1fe75ef17383eb31d9767db1ae0b698c944c95",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v2/console.log",
+      "sha256": "0f378c55c7b0a7f3bfcb5e4a1d6cdd7a1c9eae0081af109dc77a0611e2211b9e",
+      "bytes": 16235,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/manifest.json",
+      "sha256": "f151c4c751699c5c21a40835db48427a7544857de126123ec76635972789745a",
+      "bytes": 229019,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/retained-vmlinux",
+      "sha256": "968192ad23cad53ba0d238c888773f025bc3379b3dd0f2621ca74f37d7e91b66",
+      "bytes": 409833120,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/retained-vmlinux.json",
+      "sha256": "368f1229fab492327618a201e9fcba0f7ef6f995990a0b2c6a4857ec68387634",
+      "bytes": 340,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/System.map",
+      "sha256": "89c6484beacc00de529ca63e83d2f15c1e948f1ab6a5e078f25c550a18d5a70c",
+      "bytes": 11046692,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/Module.symvers",
+      "sha256": "e1f2c52fc892ab177c911c8d408932afed94760b08a28cf26c5198ed263086aa",
+      "bytes": 2230932,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/modules.order",
+      "sha256": "d53b40b634e494f4b474aae8e1c40885ffa259d9ae197e2ab37ed55e6a789c6d",
+      "bytes": 164269,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/modules.builtin",
+      "sha256": "45e5aba699797822a05786bfd9db9767bfdf4ee57d91d121132bd91e8c420eba",
+      "bytes": 11811,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/modules.builtin.modinfo",
+      "sha256": "b8ce08cf285c2e2a611359b4466141a41a463447cf7aecca99fd9d372c64a5d5",
+      "bytes": 205954,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "f79178b578dd676ae226a3f9d35360ba9c041695aebc43ac23b4c6ddf013c0b1",
+      "bytes": 602920,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/drivers/sparklink/sparklink_standard_usb.ko",
+      "sha256": "835466143b2682035cf29e4c050eda005c4d59097a2ebf3eee3a6ab392d73a8c",
+      "bytes": 388120,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/drivers/sparklink/sparklink_virtual.ko",
+      "sha256": "af694d1723ec093fce8eadc4317d96c9bd6e8086829bf3debec9069f29864031",
+      "bytes": 317632,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/arch/x86/boot/bzImage",
+      "sha256": "03f08bbabd513913620dce0625860fd23df53deb3d6d8d6e61977887c016d3ba",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3/artifacts/include/config/kernel.release",
+      "sha256": "0b803b3a698c61f0d7666843b770ab772fae271a2b1fa5c012279c7f2e275320",
+      "bytes": 36,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/manifest.json",
+      "sha256": "f482b16084ca27a31a9a9cc8e2d003e94c094a7141e6fce1723486462efbd310",
+      "bytes": 2361,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.order",
+      "sha256": "d53b40b634e494f4b474aae8e1c40885ffa259d9ae197e2ab37ed55e6a789c6d",
+      "bytes": 164269,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.builtin",
+      "sha256": "45e5aba699797822a05786bfd9db9767bfdf4ee57d91d121132bd91e8c420eba",
+      "bytes": 11811,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.builtin.modinfo",
+      "sha256": "b8ce08cf285c2e2a611359b4466141a41a463447cf7aecca99fd9d372c64a5d5",
+      "bytes": 205954,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.dep",
+      "sha256": "3794ccba93418ebf16101b7a8dafa89b9dfeb28386c307858ca548f3ca15c0ca",
+      "bytes": 270,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.dep.bin",
+      "sha256": "87dbcd488b36ecccbfcc8dcc2086fdbb72e8f57d773919b63592f7e123239f01",
+      "bytes": 607,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.alias",
+      "sha256": "d5790a18c149b211d1452e3c168a767dd6de41d5d144cfc62b77a4beb76ba47e",
+      "bytes": 192,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.alias.bin",
+      "sha256": "3fd323d9bc16a776acc7724afa0f636795f2a3e5ebaf9e1ba331149d6473eb6d",
+      "bytes": 413,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.softdep",
+      "sha256": "ac2de753255c506934be29e69261f1485f51ee9cf9c2bf467bcc0c4cf95f8713",
+      "bytes": 55,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.weakdep",
+      "sha256": "a1fffe1059d8150b5d402b3f284f507025a8d4b5881810cb17b3fda8b8ab9304",
+      "bytes": 55,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.symbols",
+      "sha256": "2a075e5aef83ea4559752fb888b4620e6d435abb0c898f2d7cfef0e71061be48",
+      "bytes": 6341,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.symbols.bin",
+      "sha256": "7fdd845368698f0b996b89038b57c1ab3c721afe611cd6cde43a1fffe2464b88",
+      "bytes": 8714,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.builtin.bin",
+      "sha256": "aa12c0cdeb2a7e491efaa1e6f3b5829d8a56b0b1916d8943f28337d2c99cdbde",
+      "bytes": 13782,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.builtin.alias.bin",
+      "sha256": "ebb764459019e3473cf023bedf57b1088fbe184ca50d018676a291bea241e774",
+      "bytes": 106245,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/modules.devname",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-modules-v2/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "9d7bd90c52d7cb2382bc3b8ce6fa4e20a2ac258189b6e8a17244950a8c98d2ee",
+      "bytes": 138049,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-kernel-build-v1.json",
+      "sha256": "9c1d79408254dd3173020fccd3684f121c988b2836d8b62d7c2e8e966882ba05",
+      "bytes": 1639,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-kernel-build-v1.log",
+      "sha256": "2160133665059b62514dd4713feff6a9274c41a345337dd98b02e20607f30123",
+      "bytes": 2772,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-build-v1.py",
+      "sha256": "26a255a353fa0b2c704136de2bfc543183d4fcc0903b055928dd26ce91b3c2c2",
+      "bytes": 2628,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-build-budget-v1.json",
+      "sha256": "2c525e04349aebc1e65913a269ec9d4a02ac6a1b50d899f6b766fb72b9f82782",
+      "bytes": 1070,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-build-check-input-v1.json",
+      "sha256": "7f759aa407c356439b685defc4bc9d890f12ca455fe5bffbf68de4bab3c3d8e8",
+      "bytes": 754,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-real-initial-v1.json",
+      "sha256": "fbafc33b690afbf72931af5ee860ad0779367e560d90b38bc370c2ba4a3da9aa",
+      "bytes": 3644,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-real-initial-v1.py",
+      "sha256": "4727e2e3c9ce0f2867c265b13336313d05cb9b8e01f76d787f3589793287f343",
+      "bytes": 2323,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-real-initial-v2.json",
+      "sha256": "0acc560c65950edf1245aff34a9c9ee4df9a8a111867b80dca0e70a0660994fc",
+      "bytes": 3973,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-real-initial-v2.py",
+      "sha256": "d142da74f0927b841b40ffcf6eb02e9477263c6b0f7a169613d6ad8c9a97fb29",
+      "bytes": 2660,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-burst-v1.log",
+      "sha256": "07a7eb879d359bf65587bd02f63c890c4278be9ea6056c43b88bb4107bebe27c",
+      "bytes": 1241,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-prepared-v1/manifest.json",
+      "sha256": "eb7b79da938a00a72d7b1b34014c75cb7f779af46e1adf24592d508441912316",
+      "bytes": 445,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-prepare-v1.log",
+      "sha256": "de0a814a54b6f865ea29e6ea3f375f8404b64640ba95fd2f08c7df47d35b70d0",
+      "bytes": 97,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-prepare-v2.py",
+      "sha256": "5f90b958e7010b9a184b538fc9b414c95f551d9069b008adbe98f06bf766e760",
+      "bytes": 1122,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-prepared-v2/manifest.json",
+      "sha256": "c841688983dad391867f287d32c8b743563acac76c4913db847952b3070f8765",
+      "bytes": 264465,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-prepare-v2.log",
+      "sha256": "25d4b566d742cad807195052127fd5977df8fec23521a0262710ceb151e1efaf",
+      "bytes": 312,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/manifest.json",
+      "sha256": "fa31002ea6c8eb90d804bfd512142f4be023bb2b5681e7536977a25c82826a57",
+      "bytes": 26103,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-smoke-v1/manifest.json",
+      "sha256": "0f874a449d869b82ffbb2cb31f6b211570040eeccf252cac7c3cf0978889edba",
+      "bytes": 36736,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-smoke-v1.log",
+      "sha256": "2a5fd995dc23f1d86c2fdb1658dc48378d9daaa8a8208ad424de525bd373d52b",
+      "bytes": 208,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-stage-modules-v1.log",
+      "sha256": "ff4bc5049dbc488ef1aa1c1031f0eedc883106d31ee8434dc0691fe42eb873c8",
+      "bytes": 1916,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-stage-modules-v2.py",
+      "sha256": "b25a40481bf0cbbff085467c9e932d55f5a20b2250c3ff84dc9213129e55b0b5",
+      "bytes": 1900,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-stage-modules-v2.log",
+      "sha256": "1267cddb34e5ae665a29870df4917b1dc6e5aac13c5d157d4e9bd974730b892e",
+      "bytes": 21,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v1.log",
+      "sha256": "8ad9486b66aea1bc465e7866285ccd592c99b31134f29a09daf86da974e41784",
+      "bytes": 458,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v2.log",
+      "sha256": "5cd93d47652218393b351169ab4901bb26d19ded810040634dff0c344b446781",
+      "bytes": 760,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-artifacts-v3.log",
+      "sha256": "ac0c6491926aa3fab5b0797551ea2e8e17529074ff8b84e695a1ec1548932071",
+      "bytes": 94,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-dispatch-first-v1.log",
+      "sha256": "9c8330b9df6bcd87fd430add087be7324dcdcafc5d6302fbdcb61e58d20f7258",
+      "bytes": 2047,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-dispatch-v2.log",
+      "sha256": "c115a4b0413516b30a09509b6376984aa93fef17af67b223f7955b9ab93cace9",
+      "bytes": 3028,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-dispatch-v3.log",
+      "sha256": "ba9713d8d38d29c05e4e519acc7440fdeeb6d85bcf5ba04aa28274122ba474ce",
+      "bytes": 1383,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-wake-v1.log",
+      "sha256": "ca7d5f87852b150b5cf11ea1a6d6cecfbd2bd44eaab815e1cf8cf15f4a6936f1",
+      "bytes": 1241,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-publish-progress-v1.py",
+      "sha256": "ebc629085466fa11a11bb8ff5be47ff593c705b442269f1dd0f8c4d5f8aa7558",
+      "bytes": 10641,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-prepared-v2/bzImage",
+      "sha256": "03f08bbabd513913620dce0625860fd23df53deb3d6d8d6e61977887c016d3ba",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-normal-prepared-v2/root.btrfs",
+      "sha256": "c4732e6077e1649c603d8a73d175b576a236b35a7bd255d1f6d97d94dfff0875",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkd",
+      "sha256": "254f268b6251a82a760ee92c3f6f531247c9fec984e62dde9108a9bcd049e7a5",
+      "bytes": 10476632,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slctl",
+      "sha256": "76ca0d1690ed5b9d1cccc693c825b922a46cc92695f892ea42491fb0b8b44f05",
+      "bytes": 7804536,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slktest",
+      "sha256": "9c5ecf97cd0afe2d8d288b5cc82bca978e01eee55795026a4912c817578cb2cf",
+      "bytes": 5233016,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkconfig",
+      "sha256": "64a136d8b035453bdb15a5649a199af238770353bead5ed2553eb8e92a7a31d3",
+      "bytes": 1403944,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkmon",
+      "sha256": "dcac45cb127a41c434158c345a01eeb96e5b2ae6e8accb04cd9571a5b989d5ba",
+      "bytes": 1662136,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/slkdump",
+      "sha256": "6d5fa01fe056050475b635f7f6539be68c671e2e410b301b6f70a97221653674",
+      "bytes": 1662008,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/2c23b490b976/liblibsparklink.so",
+      "sha256": "de262e57b01e321d03c613115ffb1d19c2a29ab6a75edab771680c92b34274d7",
+      "bytes": 545432,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "237b7631cdf6990ac5d6c1f45b24d0af6dd026f026ae8e149b946020f95d2f81",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "0084c9bab8fca034a4e3ad8ced53307f8e218579d11a2c28a99ea7601f026dd5",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-tools-v1/tools/ws73_target.py",
+      "sha256": "9faaa33d40a143c1e6e0a800e074cc5d4cd2a35c160ab678caa292155311671d",
+      "bytes": 149520,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-tools-v1/tools/ws73_channel_socket.py",
+      "sha256": "06e08a1170071f95cd5bad3d8c158f39d525f0e05a2556242df5274c4bf1eea5",
+      "bytes": 46060,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-tools-v1/tools/ws73_capture.py",
+      "sha256": "80590536783292b2f020b6c065c04a95a6e809af6f7098e77fcc2dc9080c562a",
+      "bytes": 42628,
+      "access": "private",
+      "retention": "Original workspace for authorized maintainers;not a public artifact. Raw USB/SDK inputs require their original access rights."
+    },
+    {
+      "path": ".dev/tx-quantum-real-negatives-v1.py",
+      "sha256": "6f2ab5462b11728871aedc73bbf4fe1a8e6fbb9fc3f420a80d16b93ce69d219d",
+      "bytes": 2442,
+      "access": "private",
+      "retention": "Authorized original workspace;not public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-real-negatives-v1.json",
+      "sha256": "b887e2e33207dc13d164546f6a6969a876f4c5f85a3c2c6ff5e92322e66da1d9",
+      "bytes": 4040,
+      "access": "private",
+      "retention": "Authorized original workspace;not public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-real-negatives-v1.log",
+      "sha256": "9429e909ee2d689cad1424b027567cfb43ba216c78881f8f61b0e29c9c750e6c",
+      "bytes": 47,
+      "access": "private",
+      "retention": "Authorized original workspace;not public artifact"
+    }
+  ]
+}

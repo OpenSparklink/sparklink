@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "source_heads": {
+    "kernel": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "compiled_service": "8e92f97e83db6058575228d2edb756f5f6b6985b",
+    "run_tools": "8e92f97e83db6058575228d2edb756f5f6b6985b"
+  },
+  "status": "REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS",
+  "vm_only": true,
+  "manifest_sha256": "868abbe24b65eaa9e80adb81439dd2d50b5423513bb781d57190efab39fd9841",
+  "accepted": {
+    "physical_acceptance": false,
+    "ordinary_channel_socket_acceptance": false,
+    "ordinary_channel_info_acceptance": false,
+    "ssap_exchange_info_acceptance": false,
+    "ssap_value_acceptance": false,
+    "ssap_discovery_acceptance": false
+  },
+  "positive_notification_indication_rf_acceptance": false,
+  "remote_subscription_acceptance": false,
+  "physical_acceptance": false,
+  "natural_recovery_acceptance": false,
+  "raw_capture_availability": "private workspace only; hashes do not imply downloadable artifacts",
+  "raw_files": [
+    {
+      "file": "guest-output/application/early-bootstrap-fault/after_retry/run.json",
+      "sha256": "b641776b07957121e6feef6eb937e3cf96c04be02578768212399de68006e775"
+    },
+    {
+      "file": "guest-output/application/early-bootstrap-fault/during_fault/run.json",
+      "sha256": "07145346b566b973649ae37469eba70a6bc799e8f55fd46f26e03f6bc7df6726"
+    },
+    {
+      "file": "guest-output/capture-stats.txt",
+      "sha256": "9bbfee84f03b105e9f0b65a0ddf4bd094dcf5df64d435975a4194f336918af70"
+    },
+    {
+      "file": "guest-output/early-bootstrap-fault/run.json",
+      "sha256": "2a135d58d21bc9c5aa0a88f75a906ca7410758842ea04f30c1e12d6195b70d8e"
+    },
+    {
+      "file": "guest-output/ws73.pcap",
+      "sha256": "4544fed00133331572f806d48bca49469bed6431e48873ac585ecef9bdbe7117"
+    }
+  ],
+  "capture_packets": 4539,
+  "qemu_exit": 0,
+  "scope": "controlled missing-BSLE peer isolation only; not natural recovery",
+  "fault_proof_sha256": "335517c197f4309e2e90b97f96c4652fcc97f8d74fa36292a2aebcdcb7529914"
+}

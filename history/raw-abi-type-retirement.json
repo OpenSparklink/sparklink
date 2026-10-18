@@ -1,0 +1,224 @@
+{
+  "schema": 1,
+  "source_commit": "5692a788f04e52ae8055e4001b456eb18d9e9cb5",
+  "source_path": "crates/slk-protocol/src/types.rs",
+  "original_sha256": "42e5fb36937f69fe51ceb635349a72743b1f6cfcdce9e2d721b45bfaa6613ecb",
+  "retired_public_types": [
+    "SleAdvParams",
+    "SleScanParams",
+    "SleScanFilter",
+    "SleInjectAdv",
+    "SleInjectRawAdv",
+    "SleExtAdvConfig",
+    "SleExtAdvData",
+    "SleExtAdvInfo",
+    "SleExtAdvEnableParams",
+    "SleConnectParams",
+    "SleConnInfo",
+    "SleConnData",
+    "SleInjectConnResp",
+    "SleConnList",
+    "SleConnMtuParams",
+    "SleAfhMapParams",
+    "SleAfhRssiReport",
+    "SleAfhClassifyParams",
+    "SleAfhHopInfo",
+    "SleAfhRetxReport",
+    "SlePskParams",
+    "SleHashTest",
+    "SleSm4BlockTest",
+    "SleHmacTest",
+    "SleOobData",
+    "SlePasskeyInput",
+    "SlePasswordParams",
+    "SlePmInfo",
+    "SlePmStateCmd",
+    "SlePmInterval",
+    "SleSyncCigConfig",
+    "SleSyncBigConfig",
+    "SleSyncCreateCmd",
+    "SleSyncDatapathCmd",
+    "SleSyncLinkInfo",
+    "SleDliInfo",
+    "SleDliCmd",
+    "SlePhyInfo",
+    "SlePhyMcsCmd",
+    "SlePhyTxPowerCmd",
+    "SlePhyMcsSelect",
+    "SlePhyHopInfo",
+    "SlePhyBwCmd",
+    "SleSinrThresholds",
+    "SleConnPeerCap",
+    "SleConnParamUpdate",
+    "SleConnPhyUpdate",
+    "SleRalAddParams",
+    "SleRalRemoveParams",
+    "SleRalQueryParams",
+    "SleMeasCap",
+    "SleMeasLinkParam",
+    "SleMeasAction"
+  ],
+  "consumers": {
+    "SleAdvParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleScanParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleScanFilter": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleInjectAdv": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleInjectRawAdv": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleExtAdvConfig": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleExtAdvData": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleExtAdvInfo": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleExtAdvEnableParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleConnectParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleConnInfo": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleConnData": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleInjectConnResp": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleConnList": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleConnMtuParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleAfhMapParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleAfhRssiReport": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleAfhClassifyParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleAfhHopInfo": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleAfhRetxReport": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePskParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleHashTest": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleSm4BlockTest": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleHmacTest": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleOobData": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePasskeyInput": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePasswordParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePmInfo": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePmStateCmd": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePmInterval": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleSyncCigConfig": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleSyncBigConfig": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleSyncCreateCmd": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleSyncDatapathCmd": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleSyncLinkInfo": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleDliInfo": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleDliCmd": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePhyInfo": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePhyMcsCmd": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePhyTxPowerCmd": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePhyMcsSelect": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePhyHopInfo": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SlePhyBwCmd": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleSinrThresholds": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleConnPeerCap": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleConnParamUpdate": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleConnPhyUpdate": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleRalAddParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleRalRemoveParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleRalQueryParams": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleMeasCap": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleMeasLinkParam": [
+      "crates/slk-protocol/src/tests.rs"
+    ],
+    "SleMeasAction": [
+      "crates/slk-protocol/src/tests.rs"
+    ]
+  },
+  "treatment": "exact definitions moved into cfg(test)-only private module;original size/field/zeroed regressions retained,not current ABI claims",
+  "remaining": "enums/normalized event constants/shared application contracts require separate actual-consumer audit;no complete architecture claim"
+}

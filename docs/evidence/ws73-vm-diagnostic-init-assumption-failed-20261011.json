@@ -1,0 +1,44 @@
+{
+  "status": "FAILED_DIAGNOSTIC_INITIALIZATION_ASSUMPTION_NO_HOLD",
+  "kernel_head": "016aa7ee68130076d692366eceaafeb815003099",
+  "compiled_userspace_head": "471dfcc41b237f947d9be0e0a34220e5ea893f49",
+  "started_at": "2026-10-11T01:57:23.189383+00:00",
+  "finished_at": "2026-10-11T01:57:50.614545+00:00",
+  "probe": {
+    "format_version": 1,
+    "status": "FAIL",
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "daemon_running_during_hold": false,
+    "host_hold_acknowledgements": [],
+    "guest_ack_receipts": [],
+    "markers": [],
+    "peer_queries": [],
+    "peer_snapshots": [],
+    "initializations": [],
+    "error": "real initialization stops did not settle Ready/Free"
+  },
+  "hold": {
+    "method": "QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT",
+    "observations": [],
+    "complete": false,
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false
+  },
+  "scope": "Diagnostic query-only lease release correctly settles Free without touching radio policy. Test incorrectly waited for initialization stops after Diagnostic release; no hold armed and no active request submitted. Change test initialization to Managed lease release, retaining subsequent Diagnostic query ownership. No production behavior changed.",
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "active_usb_deadline_live_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "host_installation": false,
+  "manual_replug_used": false,
+  "artifact_sha256": {
+    "manifest.json": "a65b87ce2cd0220e0ce3aeaed8e1b9b5421896f8d206684d49d4c4008b61faa8",
+    "console.log": "bf6b826c2d66fc5ad641bf85e45f0c0f7d0787385dc08388882cb150b1f75b5e",
+    "qemu-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qmp.jsonl": "35090110e55363afe2379e3af7ae0293bca4729e0f4224d2b7977e45be5281b0",
+    "guest-output/active-deadline-supervisor.log": "f50b252cf45d61e12633331c86eb0ec6cd4a70dd9cb297c898189464a0136e9d",
+    "guest-output/kernel.log": "836efb9d6511f2f7c398fbcd730d2f9b48e40751f691e49a915b80e89f9a49e8",
+    "guest-output/ws73.pcap": "10d1bffbfd587dcc1e400b2f3d831008a04267dd0722ebfa497555c1040c93bd"
+  }
+}

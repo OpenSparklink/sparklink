@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "result": "UNRESOLVED_COUNTEREXAMPLE_RETAINED",
+  "compiled_userspace": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+  "compiled_kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+  "original_tools": "17b4abb8bbb4713c88f67dd8dd219617904c7d96",
+  "diagnostic_tools": "071ea7321ebadd744e4f1b8dccd0b97bbde926df",
+  "findings": [
+    "FirstsevenrunsomittedOwnedflag;strictpreservationauditrefusedtoqualifyfullmatrix. Theyonlysupplyfiniteapplicationlengthresults.",
+    "FirstOwnedlaunchomittedworktreekernel-sourceenvandfailedbeforeVM;rawlogretained.",
+    "ActualOwnedVMfailedwithOSErrorENODATAafterfouractualSSAPrequestssucceededandownerprintedexpectedvalue. Exactthrowingframewasnotrecorded;neitherhardwarecause,norcollectorrootcause, norproductionfixisproved.",
+    "Diagnosticaddsoriginaltracebackonly;noassertion/deadlineweakened. LaterOwnedrunPASSretainsseparateidentityanddoesnoterasethisfailure.",
+    "Firstdiagnosticpreparepassedmanifestfilewherebundledirectorywasrequired;failedbeforeVM,rawmanifestretained."
+  ],
+  "scope": "Historicalfailedattempts;norecoveryorwholearchitecturequalification. UnknownENODATAmustremainopen.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f3-preservation-audit-v1.py",
+      "sha256": "ca2b5580b12485b8b4634c505e82108ad3bba589982346dc023e38733ecf2954",
+      "bytes": 7821
+    },
+    {
+      "path": ".dev/architecture-r5f3-preservation-audit-v1.log",
+      "sha256": "a44b66be0979b85e73312b689a8e5be7f914782378b4faa59f71525d3d13e318",
+      "bytes": 271
+    },
+    {
+      "path": ".dev/architecture-r5f3-preservation-short-owned-v2.log",
+      "sha256": "831ed4afd573bdd11671c64910a78f536237ee2722d4150a8731aa6ad4691916",
+      "bytes": 1292
+    },
+    {
+      "path": ".dev/architecture-r5f3-preservation-short-owned-v3/manifest.json",
+      "sha256": "f1597afd194f5458b8644450482e841e4140866faa812c934aa9becdbffe7243",
+      "bytes": 48045
+    },
+    {
+      "path": ".dev/architecture-r5f3-preservation-short-owned-v3/guest-output/application/passthrough-control/run.json",
+      "sha256": "8660bca1a73d7f21577e36e17cfd2b111c6925d9d33b766019db44e93648a602",
+      "bytes": 288935
+    },
+    {
+      "path": ".dev/architecture-r5f3-preservation-short-owned-v3/guest-output/ws73.pcap",
+      "sha256": "01eceb02ff67611de449d7841850fbfcb6ada5497f539303f56ae967f7fc3fce",
+      "bytes": 249606
+    },
+    {
+      "path": ".dev/architecture-r5f3-preservation-short-owned-v3/guest-output/capture-stats.txt",
+      "sha256": "89baf08a752128149142b0128a4ec1f9715371697fd0a757851d74d364c93605",
+      "bytes": 227
+    },
+    {
+      "path": ".dev/architecture-r5f3-preservation-short-owned-v3/guest-output/slkd.log",
+      "sha256": "37f241dd186ba6f38d41dcc74d1bae79ac53b5654db236f9b44655e7a7dcc0a6",
+      "bytes": 2124
+    },
+    {
+      "path": ".dev/architecture-r5f3-preservation-short-owned-v3/guest-output/kernel.log",
+      "sha256": "a912ea15dd6c5d0cec31eea4ae51bb7b7ad223d9c0717552af2b836d3460e34a",
+      "bytes": 44822
+    },
+    {
+      "path": ".dev/architecture-r5f3-prepared-diag-v1/manifest.json",
+      "sha256": "7cd9f5dfbbf891630991c2a8fe39a27e2466b9df4f8d72fe850f2c3a91a8b4a9",
+      "bytes": 66071
+    }
+  ],
+  "remaining": [
+    "ENODATAoriginunresolved;repeatundercontrolledtracingifitrecurs.",
+    "OriginalpublicSDKfullpermissions/revoke/deadline/peermatrixandallS0-S6remainrequired."
+  ]
+}

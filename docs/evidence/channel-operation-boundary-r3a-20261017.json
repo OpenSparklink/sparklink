@@ -1,0 +1,298 @@
+{
+  "schema": 1,
+  "real_result": "PASS",
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "firmware_combined_sha256": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+  "compiled_userspace": "17ed95f9f55e0732b70dbfc9f52ba2e0ae7781d3",
+  "executed_tools": "17ed95f9f55e0732b70dbfc9f52ba2e0ae7781d3",
+  "scope": [
+    "R3a moves existing authorized Channel ioctl/status/deadline/SCM send/receive implementation with original tests into slk-channel. Sole daemon Engine,slktest and C bridge use the same operation implementation. Old protocol operation exports removed,ABI and pure validation retained. No new Host/Engine,wire loop,permission fallback or changed credit/deadline contract.",
+    "Exact K0cd/compiled+tools17ed,SDK110 U2/U3,four pairedUSB real two-role preservation gates:61/249+16oversize/2042/mechanism2. Opposite actual application verifies random message and replies.24Ownedcases with96decisions/120transactions andowner SIGKILL BETWEEN operations;not in-flight owner/deadline/revoke/Down qualification.",
+    "Guest service-only UID1005/no extra groups/caps0 and actual system-bus/udev/device checks:68denials,local owner operations. Not service-only RF or clean distribution deployment.",
+    "Rust default/allfeatures/strictclippy tests actual production operations,decoder and private-bus fixtures;compile-fail denies retired operation paths. C/Rust/Python layouts and matching actual sharedlib checks separately. Failed invocations with missing test-bus/Python paths,stale default sharedlib and sandbox syscall denial are retained,not PASS. No assertion relaxed.",
+    "No new formal proof or full lifecycle/concurrency/drain/NOCP/firmware assumption proof. NaturalRCA/nonmanual recovery and full S0-S6/19WP/10FV/12DG remain OPEN. R3b Native source82109 not this compiled artifact;SDK/sharedcontract/language/deploy architecture still incomplete."
+  ],
+  "remaining": [
+    "R3b Native Rust migration82109 requires its own exact artifact real gates;R3c actual application Client/shared contract/C-Python facade migration and removal of Native default exports remain.",
+    "R4 full-chain retired APIs/events and semantic caller audit;R5 architecture gates;R6 cleanVM install/consumer/upgrade/rollback/uninstall remain.",
+    "Full Owner callbacks/deadlines/revoke/Down,cache RF stress/TTL,CPCD/notifications/indications,protected E/full Agent,full multichannel/four devices/performance/soak/trusted Bond remain.",
+    "Naturalstartup/reenumeration/disappearance RCA and nonmanual recovery OPEN;old5509ms failure and required retention incident unchanged."
+  ],
+  "bounds": {
+    "ordinary_round_trips": 32,
+    "owned_cases": 24,
+    "owner_decisions": 96,
+    "remote_owned_transactions": 120,
+    "owner_exits": 24,
+    "oversize_rejections": 16,
+    "service_role_denials": 68,
+    "real_gates": 4,
+    "exact_replays": 5,
+    "copied_negative_controls": 81,
+    "default_rust_tests": 309,
+    "all_features_rust_tests": 309,
+    "frozen_python_tests": 755,
+    "docs_inventory": 115,
+    "compile_fail_doctests": 2,
+    "c_rust_python_checks": 48
+  },
+  "real_gates": [
+    {
+      "name": "architecture-r3a-real-short-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-r3a-real-short-v1/manifest.json",
+        "sha256": "90e83eb139a9ca9170caa7622330773e811aa7c9f1e24907a4fbc6e48d281c6f",
+        "bytes": 1787480,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "run": {
+        "path": ".dev/architecture-r3a-real-short-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "c6f3d6382670d004703083eec3a6cb586e9ea15aee6585c7d7b16a795a93b765",
+        "bytes": 973159,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "capture": {
+        "path": ".dev/architecture-r3a-real-short-v1/guest-output/ws73.pcap",
+        "sha256": "13d906977d0940fd8c1b42682b52f216dc073134b250e8fa26ccb6baaabbec52",
+        "bytes": 680528,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "replay": {
+        "path": ".dev/architecture-r3a-real-short-v1-r3a-owned-audit-v1.json",
+        "sha256": "f8424ed8e2ab17d12a9d263ed9196ef528a77074e77065afd233f4a0550a32b2",
+        "bytes": 3023,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "application_bytes": 61,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": false,
+      "security_requirement": 0
+    },
+    {
+      "name": "architecture-r3a-real-long-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-r3a-real-long-v1/manifest.json",
+        "sha256": "1dfa5bb39ec4961ffc4c38b730f74db4c9ba28a9e84ced5f194357c25c9b6141",
+        "bytes": 2859837,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "run": {
+        "path": ".dev/architecture-r3a-real-long-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "55fe790f1f556f2bd156228c27b08d506648194055fc8dea60e05771a92f60bc",
+        "bytes": 1099923,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "capture": {
+        "path": ".dev/architecture-r3a-real-long-v1/guest-output/ws73.pcap",
+        "sha256": "be977f7af65bea6448cbb02926fdbbd55c2b0dda60aab917945bfcc88fea3e73",
+        "bytes": 1207776,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "replay": {
+        "path": ".dev/architecture-r3a-real-long-v1-r3a-owned-audit-v1.json",
+        "sha256": "71c8aba9c7c28ff8d3bf60ac4013c0c20004d4ed72aad668efeda3973423ce9f",
+        "bytes": 3023,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "application_bytes": 2042,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": true,
+      "security_requirement": 0
+    },
+    {
+      "name": "architecture-r3a-real-boundary-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/architecture-r3a-real-boundary-v1/manifest.json",
+        "sha256": "4c1787b99d34152056a90b6b29067efeada28a1b264ca8372c19050b8244a887",
+        "bytes": 1599079,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "run": {
+        "path": ".dev/architecture-r3a-real-boundary-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "d084bce99557a8985cd7b2edee424690a02296ec275120efaf91763c3feaa8de",
+        "bytes": 951795,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "capture": {
+        "path": ".dev/architecture-r3a-real-boundary-v1/guest-output/ws73.pcap",
+        "sha256": "528f6d125240273a68f241772e181631798345df76f4eb70200da680adec762f",
+        "bytes": 636160,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "replay": {
+        "path": ".dev/architecture-r3a-real-boundary-v1-r3a-length-audit-v1.json",
+        "sha256": "60dc7a272820a556e7a475c349b33e8c6af91e07630f3dab6be2db823ab42e5c",
+        "bytes": 1508,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "application_bytes": 249,
+      "ordinary_round_trips": 8,
+      "owned_cases": 0,
+      "service_role_acceptance": false,
+      "security_requirement": 0
+    },
+    {
+      "name": "architecture-r3a-real-sec2-v1",
+      "status": "PASS",
+      "manifest_status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": {
+        "path": ".dev/architecture-r3a-real-sec2-v1/manifest.json",
+        "sha256": "63cf5930d38995a2a996606259460172b2364306a05beff9cd4557d914bee1af",
+        "bytes": 1878007,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "run": {
+        "path": ".dev/architecture-r3a-real-sec2-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "9199f75a1ec00f257d387492ea4fa14c83e947f193b5d145c2c8553aed49e61a",
+        "bytes": 1034628,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "capture": {
+        "path": ".dev/architecture-r3a-real-sec2-v1/guest-output/ws73.pcap",
+        "sha256": "ad737372927adf5ff12960964d958f2bb00976a16a269aa16398ff8903e3b962",
+        "bytes": 741112,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "replay": {
+        "path": ".dev/architecture-r3a-real-sec2-v1-r3a-owned-audit-v1.json",
+        "sha256": "640063fec18bc578dedf762860ab967d87b0721d0c10b11e48e4b1253faf8d00",
+        "bytes": 3023,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      "application_bytes": 61,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": false,
+      "security_requirement": 2
+    }
+  ],
+  "offline": {
+    "result": "PASS",
+    "scope": "Rust default/allfeatures/strictclippy tests actual production operations,decoder and private-bus fixtures;compile-fail denies retired operation paths. C/Rust/Python layouts and matching actual sharedlib checks separately. Failed invocations with missing test-bus/Python paths,stale default sharedlib and sandbox syscall denial are retained,not PASS. No assertion relaxed.",
+    "materials": [
+      {
+        "path": ".dev/architecture-r3-channel-tests-v1.log",
+        "sha256": "71813947ece59e0f278c7a2571521151d71f5a0bf84ea521f9d22445479a14d7",
+        "bytes": 6057,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-tests-v2.log",
+        "sha256": "62344a6fef98907e8ef477f5992d983336a20a6b7b4efd753cf0539ad176e3e5",
+        "bytes": 30050,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-allfeatures-v1.log",
+        "sha256": "62d2f30e6170d882d3bbdac5a61eac215ef0597af590a68f3aeaf463052d4c10",
+        "bytes": 30050,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-clippy-default-v1.log",
+        "sha256": "f85eff0d1224ea4ffd5086a8478bdd3b9a6666e58a8bf5d2002c617db27c8dd8",
+        "bytes": 1424,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-clippy-all-v1.log",
+        "sha256": "f14db7a76c62ea5ae1b5c1160af4e67e676eaecb9fa6203bc34ff760cbca92bc",
+        "bytes": 498,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-abi-v1.log",
+        "sha256": "5f26c51b13639eb45d1cdfea0a8c1ff28c3170a3130c4060cc7fad41b6e8042d",
+        "bytes": 4783,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-abi-v2.log",
+        "sha256": "bec697cbc8a8e3c630edce41c11af016a86ddc2fadf764e6f94cbc29c93f1ec3",
+        "bytes": 8452,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-abi-v3.log",
+        "sha256": "85dc9c05ce5894ef090c227a942fc8df835e1fb5aa3b862fb2522d8ef7a3267b",
+        "bytes": 3495,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-abi-v4.log",
+        "sha256": "fd11464bbac040264770414a22a53b760c1c5310264d44a8e56e582a030c06c4",
+        "bytes": 147,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3-channel-docs-v1.log",
+        "sha256": "39e42828db73f38de88370de213bb5729be03dc26a3816d9fc2d41df571f202b",
+        "bytes": 387196,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      },
+      {
+        "path": ".dev/architecture-r3a-frozen-tools-v1.log",
+        "sha256": "78ec08ef291411e4d6113310aa4bebfd425103ae3d8bba4e77e65824ca816150",
+        "bytes": 891,
+        "access": "private retained workspace;raw USB/security materials restricted"
+      }
+    ]
+  },
+  "role_audit": {
+    "path": ".dev/architecture-r3a-service-audit-v1.json",
+    "sha256": "40e2c358f0e7c9000276349484023d0fc6ed578d1c5d97b22ac0b988458e664d",
+    "bytes": 3084,
+    "access": "private retained workspace;raw USB/security materials restricted"
+  },
+  "failure_retained": {
+    "missing_test_dbus": {
+      "path": ".dev/architecture-r3-channel-tests-v1.log",
+      "sha256": "71813947ece59e0f278c7a2571521151d71f5a0bf84ea521f9d22445479a14d7",
+      "bytes": 6057,
+      "access": "private retained workspace;raw USB/security materials restricted"
+    },
+    "missing_pythonpath": {
+      "path": ".dev/architecture-r3-channel-abi-v1.log",
+      "sha256": "5f26c51b13639eb45d1cdfea0a8c1ff28c3170a3130c4060cc7fad41b6e8042d",
+      "bytes": 4783,
+      "access": "private retained workspace;raw USB/security materials restricted"
+    },
+    "stale_default_sharedlib": {
+      "path": ".dev/architecture-r3-channel-abi-v2.log",
+      "sha256": "bec697cbc8a8e3c630edce41c11af016a86ddc2fadf764e6f94cbc29c93f1ec3",
+      "bytes": 8452,
+      "access": "private retained workspace;raw USB/security materials restricted"
+    },
+    "sandbox_syscall_and_ccache": {
+      "path": ".dev/architecture-r3-channel-abi-v3.log",
+      "sha256": "85dc9c05ce5894ef090c227a942fc8df835e1fb5aa3b862fb2522d8ef7a3267b",
+      "bytes": 3495,
+      "access": "private retained workspace;raw USB/security materials restricted"
+    },
+    "interpretation": "Environmental failed runs retained;correct explicit paths and ordinary-user syscall permissions,not sudo;matching new sharedlib;no assertion relaxation."
+  },
+  "native_bundle": {
+    "path": ".dev/architecture-r3a-us-bundle-v1/manifest.json",
+    "sha256": "8829f7953c3d1abdb8ef7f637b3a0fc7f515528e5796e49ee925cff7ef1d4b3a",
+    "bytes": 27624,
+    "access": "private retained workspace;raw USB/security materials restricted"
+  },
+  "replay": {
+    "tools_checkout": ".dev/architecture-r3a-source-v1",
+    "scripts": [
+      ".dev/architecture-r3a-owned-audit-v1.py",
+      ".dev/architecture-r3a-length-audit-v1.py",
+      ".dev/architecture-r3a-service-audit-v1.py"
+    ],
+    "command": "python3 <matching retained script> <retained run directory>;role script fixed declared run.5 exact replays and81copiednegativecontrols,not fullqualification.",
+    "raw_access": "Private raw retained .dev workspace with report hashes;full USB/security captures restricted because contain key material. Live reproduction requires matching explicit SDK110 U firmware/calibration,VM USB permissions and two known U boards. All real drivers VM-only."
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "status": "FAILED_TEST_RETIRED_RETRY_NONZERO_OUTPUT_SEQ",
+  "kernel_head": "016aa7ee68130076d692366eceaafeb815003099",
+  "compiled_userspace_head": "5c2bdcc541e30dac1e2d27b7dd2f2d86f2730829",
+  "started_at": "2026-10-11T02:23:37.763672+00:00",
+  "finished_at": "2026-10-11T02:24:12.991654+00:00",
+  "probe": {
+    "format_version": 1,
+    "status": "FAIL",
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false,
+    "daemon_running_during_hold": false,
+    "host_hold_acknowledgements": [
+      {
+        "stage": "armed",
+        "host_wall_ns": 1791685447981835377,
+        "request": {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1791685446967059072
+        },
+        "state": {
+          "test-runtime-in-hold-once": true,
+          "test-runtime-in-held": false,
+          "test-runtime-in-holds": 0,
+          "test-runtime-in-releases": 0,
+          "test-runtime-in-bounded-releases": 0,
+          "test-runtime-in-hold-drops": 0,
+          "test-runtime-in-error-once": false,
+          "test-runtime-in-errors": 0
+        }
+      },
+      {
+        "stage": "held",
+        "host_wall_ns": 1791685448092643562,
+        "request": {
+          "hold_phase": "wait_held",
+          "wall_ns": 1791685447009028982
+        },
+        "state": {
+          "test-runtime-in-hold-once": false,
+          "test-runtime-in-held": true,
+          "test-runtime-in-holds": 1,
+          "test-runtime-in-releases": 0,
+          "test-runtime-in-bounded-releases": 0,
+          "test-runtime-in-hold-drops": 0,
+          "test-runtime-in-error-once": false,
+          "test-runtime-in-errors": 0
+        }
+      },
+      {
+        "stage": "aborted",
+        "host_wall_ns": 1791685448576971378,
+        "request": {
+          "hold_phase": "abort_ready",
+          "wall_ns": 1791685447123256571
+        },
+        "state": {
+          "test-runtime-in-hold-once": false,
+          "test-runtime-in-held": false,
+          "test-runtime-in-holds": 1,
+          "test-runtime-in-releases": 0,
+          "test-runtime-in-bounded-releases": 0,
+          "test-runtime-in-hold-drops": 1,
+          "test-runtime-in-error-once": false,
+          "test-runtime-in-errors": 0
+        }
+      }
+    ],
+    "guest_ack_receipts": [
+      {
+        "stage": "armed",
+        "wall_ns": 1791685447007321956,
+        "monotonic_ns": 26749686017
+      },
+      {
+        "stage": "held",
+        "wall_ns": 1791685447120307414,
+        "monotonic_ns": 26862671165
+      },
+      {
+        "stage": "aborted",
+        "wall_ns": 1791685447604429532,
+        "monotonic_ns": 27346793253
+      }
+    ],
+    "markers": [
+      {
+        "hold_phase": "arm_ready",
+        "wall_ns": 1791685446967059072
+      },
+      {
+        "hold_phase": "wait_held",
+        "wall_ns": 1791685447009028982
+      },
+      {
+        "hold_phase": "abort_ready",
+        "wall_ns": 1791685447123256571
+      }
+    ],
+    "peer_queries": [
+      {
+        "output": "01000000000000000200000000000000010000000000000088130000060400000100000001000000",
+        "result": "010000000000000002000000000000000100000002000000000000000604000006000000000000000001093254cd00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "start_wall_ns": 1791685446957289124,
+        "end_wall_ns": 1791685446962409031
+      },
+      {
+        "output": "01000000000000000200000000000000020000000000000088130000060400000200000001000000",
+        "result": "010000000000000002000000000000000200000002000000000000000604000006000000000000000001093254cd00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "start_wall_ns": 1791685447607016246,
+        "end_wall_ns": 1791685447612121996
+      }
+    ],
+    "peer_snapshots": [
+      "02000000000000000100000001000000010000000100000001000401fe0000000500016c00a100231550001200000100000001093254cd000000000000000000",
+      "02000000000000000100000001000000010000000100000001000401fe0000000500016c00a100231550001200000100000001093254cd000000000000000000"
+    ],
+    "initializations": [
+      {
+        "initial_snapshot": "01000000000000000100000002000000010000000100000000000401fe0000000500016c00a100231550001200000100000001093254f9000000000000000000",
+        "start_wall_ns": 1791685446913828425,
+        "ready_snapshot": "01000000000000000100000001000000010000000100000000000401fe0000000500016c00a100231550001200000100000001093254f9000000000000000000",
+        "end_wall_ns": 1791685446957234531
+      },
+      {
+        "initial_snapshot": "02000000000000000100000002000000010000000100000001000401fe0000000500016c00a100231550001200000100000001093254cd000000000000000000",
+        "start_wall_ns": 1791685446913829497,
+        "ready_snapshot": "02000000000000000100000001000000010000000100000001000401fe0000000500016c00a100231550001200000100000001093254cd000000000000000000",
+        "end_wall_ns": 1791685446957252405
+      }
+    ],
+    "initializer_method": "EXISTING_SLKD_MANAGED_STANDBY",
+    "initializer_pid": 524,
+    "initializer_exit": 0,
+    "target_snapshot": "01000000000000000100000001000000010000000100000000000401fe0000000500016c00a100231550001200000100000001093254f9000000000000000000",
+    "input": "010000000000000001000000000000000100000000000000f4010000060400000000000001000000",
+    "submit_before_wall_ns": 1791685447009007131,
+    "submit_before_monotonic_ns": 26751371092,
+    "submit_after_monotonic_ns": 26751384037,
+    "submit_after_wall_ns": 1791685447009021017,
+    "output": "010000000000000001000000000000000100000000000000f4010000060400000100000001000000",
+    "initial_result": "0100000000000000010000000000000001000000010000000000000006040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "quiet_before_monotonic_ns": 26865618769,
+    "quiet_after_monotonic_ns": 27349323601,
+    "retired_result_errno": 19,
+    "retired_submit_errno": 22,
+    "error": "retired selected retry must reject ENODEV"
+  },
+  "hold": {
+    "method": "QMP_HOLD_ACTUAL_IN81_UNTIL_NATIVE_RETIREMENT",
+    "observations": [
+      {
+        "stage": "armed",
+        "host_wall_ns": 1791685447981835377,
+        "request": {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1791685446967059072
+        },
+        "state": {
+          "test-runtime-in-hold-once": true,
+          "test-runtime-in-held": false,
+          "test-runtime-in-holds": 0,
+          "test-runtime-in-releases": 0,
+          "test-runtime-in-bounded-releases": 0,
+          "test-runtime-in-hold-drops": 0,
+          "test-runtime-in-error-once": false,
+          "test-runtime-in-errors": 0
+        }
+      },
+      {
+        "stage": "held",
+        "host_wall_ns": 1791685448092643562,
+        "request": {
+          "hold_phase": "wait_held",
+          "wall_ns": 1791685447009028982
+        },
+        "state": {
+          "test-runtime-in-hold-once": false,
+          "test-runtime-in-held": true,
+          "test-runtime-in-holds": 1,
+          "test-runtime-in-releases": 0,
+          "test-runtime-in-bounded-releases": 0,
+          "test-runtime-in-hold-drops": 0,
+          "test-runtime-in-error-once": false,
+          "test-runtime-in-errors": 0
+        }
+      },
+      {
+        "stage": "aborted",
+        "host_wall_ns": 1791685448576971378,
+        "request": {
+          "hold_phase": "abort_ready",
+          "wall_ns": 1791685447123256571
+        },
+        "state": {
+          "test-runtime-in-hold-once": false,
+          "test-runtime-in-held": false,
+          "test-runtime-in-holds": 1,
+          "test-runtime-in-releases": 0,
+          "test-runtime-in-bounded-releases": 0,
+          "test-runtime-in-hold-drops": 1,
+          "test-runtime-in-error-once": false,
+          "test-runtime-in-errors": 0
+        }
+      }
+    ],
+    "complete": true,
+    "physical_acceptance": false,
+    "automatic_fault_recovery_acceptance": false
+  },
+  "cause": "Retry reused output mutated by admission with nonzero seq. Valid submit input requires seq0; library rejects EINVAL before retired fd ioctl. Test must preserve exact original input and require ENODEV, not accept EINVAL.",
+  "active_usb_deadline_live_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "physical_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "full_goal_complete": false,
+  "artifact_sha256": {
+    "manifest": "076852848561208d7f6f2efbe2d03e1f1129edab5f16ebcd2fe590d98816eddf",
+    "probe": "6b82ba470464ab62fa47cb1555c82eaab46078e8530e4dd5241d4da511d1a796",
+    "console": "f6a0f64c526367f7976c3e56181a7534500cd5b6835718a16bda5ba16be26d54",
+    "capture": "b951c37ec4310faa753962388ba53a4b7458b42e63890ed5f78b570c49481fd9",
+    "kernel": "94bf23102e176f0ed8d3da4f71ee46d2d654c56d7e0ce4080e9d98a738b7e678",
+    "qmp": "248a07ca786c2261ac6486d99b26b7a5428f9e27a0dd327d10792f9527a1b227",
+    "qemu_stderr": "de59d4a337bd0ba6216da17aac6489ffada09cab305a1df9a88ea5ad4a31ac44",
+    "initializer_log": "0bfdb745a8451b7526ae27b5298ffed7811e4c5588d88d9a299afb05ab527cfd",
+    "supervisor": "3d059e7f211307f3c15ebe396d90508932f863422ce89eb811e377f3d3cc5f10"
+  }
+}

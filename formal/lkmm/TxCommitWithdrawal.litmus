@@ -1,0 +1,22 @@
+C TxCommitWithdrawal
+
+(* actual ticket callback keeps Host through the atomic URB submit marker;
+   withdrawal uses the same Host. No claim about USB hardware ordering. *)
+{}
+P0(int *revoked, int *submitted, spinlock_t *host_lock)
+{
+    int r0;
+    spin_lock(host_lock);
+    r0 = READ_ONCE(*revoked);
+    if (r0 == 0) WRITE_ONCE(*submitted, 1);
+    spin_unlock(host_lock);
+}
+P1(int *revoked, int *submitted, spinlock_t *host_lock)
+{
+    int r1;
+    spin_lock(host_lock);
+    WRITE_ONCE(*revoked, 1);
+    r1 = READ_ONCE(*submitted);
+    spin_unlock(host_lock);
+}
+exists (0:r0=0 /\ 1:r1=0 /\ submitted=1)

@@ -1,0 +1,199 @@
+{
+  "status": "REAL_NEGOTIABLE_T_AIR_VISIBLE_CONNECTION_FAILED",
+  "normal_vm_attempt": 79,
+  "actual_kernel_head": "49699d6f11a5c1802508ac748d4a5e7d0b39d1d4",
+  "actual_service_and_tool_head": "88b9eb335b5083ae24bb639bc57055910cc0d5b8",
+  "capture_packets": 411,
+  "kernel_capture_drops": 0,
+  "qemu_exit": 0,
+  "actual_advertising_parameters": {
+    "command": {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791771945058597000,
+      "urb": 18446618503996019264,
+      "record": 378,
+      "file_offset": 40122,
+      "usb_sha256": "bfb371c273760d07f86c5939bb923604a7c23ab82deba27660e5f487fd6b156d",
+      "opcode": 3074,
+      "params": "000300b00400b004000700000001093254f9000000000000007f0000000000000000010000640064000000c80000000000",
+      "sequence": 17,
+      "completion": {
+        "bus": 1,
+        "device": 3,
+        "wall_ns": 1791771945058773000,
+        "urb": 18446618503996019264,
+        "record": 379,
+        "file_offset": 40330
+      }
+    },
+    "reply": {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791771945058915000,
+      "urb": 18446618504935143872,
+      "record": 380,
+      "file_offset": 40410,
+      "hcc_offset": 92,
+      "usb_sha256": "a4cad511b6bc2bc4a11a50a139eff3a59646b507e9ed6aec2f31a7e0652652b2",
+      "usb_length": 178,
+      "opcode": 3074,
+      "status": 0,
+      "value": "14"
+    }
+  },
+  "connectable_scan_match": {
+    "generation": 1,
+    "seq": 1,
+    "address": "00:01:09:32:54:F9",
+    "rssi": -13,
+    "marker": "7899c2829bf75894dbf991462ef2d1dd",
+    "data": "ff290101010b24736c6b2d3738393963323832396266373538393464626639393134363265663264316464",
+    "kernel_boottime_ns": 27965080113,
+    "elapsed_ms": 140,
+    "lost": 0
+  },
+  "actual_captured_report": {
+    "bus": 1,
+    "device": 2,
+    "wall_ns": 1791771945220449000,
+    "urb": 18446618504935141568,
+    "record": 398,
+    "file_offset": 43252,
+    "hcc_offset": 92,
+    "usb_sha256": "91bd1d20826fc7da09d34eab6afb49f3fa0815b04d6f7352df75b41a811f0d27",
+    "usb_length": 178,
+    "address": "00:01:09:32:54:F9",
+    "rssi": -13,
+    "header": "03000001093254f900000000000000000000000000f32b",
+    "data": "ff290101010b24736c6b2d3738393963323832396266373538393464626639393134363265663264316464"
+  },
+  "actual_scan_stop": {
+    "command": {
+      "bus": 1,
+      "device": 2,
+      "wall_ns": 1791771945240663000,
+      "urb": 18446618503996022144,
+      "record": 400,
+      "file_offset": 43590,
+      "usb_sha256": "558a0aac7bc28b0cb0f499432138d8fb2e41a4dbef072ad0a2e7343b08850d11",
+      "opcode": 4098,
+      "params": "0000",
+      "sequence": 19,
+      "completion": {
+        "bus": 1,
+        "device": 2,
+        "wall_ns": 1791771945240850000,
+        "urb": 18446618503996022144,
+        "record": 401,
+        "file_offset": 43798
+      }
+    },
+    "reply": {
+      "bus": 1,
+      "device": 2,
+      "wall_ns": 1791771945241029000,
+      "urb": 18446618504935141568,
+      "record": 402,
+      "file_offset": 43878,
+      "hcc_offset": 92,
+      "usb_sha256": "5ea01bc0a39894856cd3b659e6d807d1ac70ff9f7f59fc4e5688385e18c01cd9",
+      "usb_length": 178,
+      "opcode": 4098,
+      "status": 0,
+      "value": ""
+    }
+  },
+  "actual_create_out": {
+    "bus": 1,
+    "device": 2,
+    "wall_ns": 1791771945248198000,
+    "urb": 18446618503996018880,
+    "record": 404,
+    "file_offset": 44216,
+    "usb_sha256": "00244e8a49f6bbfb63c5fa9e11d0a9e2e16568b09e967a7aaf9e07a487e32447",
+    "opcode": 5121,
+    "params": "0000000001093254f90101200020000c000c000000fc0100000000",
+    "sequence": 20,
+    "completion": {
+      "bus": 1,
+      "device": 2,
+      "wall_ns": 1791771945248339000,
+      "urb": 18446618503996018880,
+      "record": 405,
+      "file_offset": 44424
+    }
+  },
+  "actual_create_status": {
+    "bus": 1,
+    "device": 2,
+    "wall_ns": 1791771945248609000,
+    "urb": 18446618504935141568,
+    "record": 406,
+    "file_offset": 44504,
+    "hcc_offset": 92,
+    "usb_sha256": "e8b6305dce4b588c68d6bba11d0699b4b398b19d8e3b62bf848e069fbd132505",
+    "usb_length": 178,
+    "event": 1,
+    "params": "01140100"
+  },
+  "actual_cli_terminal": {
+    "args": [
+      "/usr/libexec/opensparklink/native-lab/88b9eb335b50/slctl",
+      "--adapter",
+      "/org/sparklink/slk0_g1",
+      "connect",
+      "00:01:09:32:54:F9",
+      "0"
+    ],
+    "start_wall_ns": 1791771945244138278,
+    "start_monotonic_ns": 27988763748,
+    "start_boottime_ns": 27988764019,
+    "pid": 592,
+    "stdout": "Selected /org/sparklink/slk0_g1\nNativeConnectionRequest: request=1 address=00:01:09:32:54:F9 address_type=0\nNativeConnectionResult: generation=1 request=1 operation=1 state=7 errno=-110 fault=-110 command_status=0 outcome_status=0 handle=0 flags=1\n",
+    "stderr": "error: connection procedure did not succeed; original request=1\n",
+    "exit": 1,
+    "end_wall_ns": 1791771955257066871,
+    "end_monotonic_ns": 38001692611,
+    "end_boottime_ns": 38001693162
+  },
+  "physical_outcome_count": 0,
+  "connection_acceptance": false,
+  "connected_lifecycle_acceptance": false,
+  "automatic_recovery_acceptance": false,
+  "root_cause_closed": false,
+  "full_goal_complete": false,
+  "next_diagnosis": "Both fixed-T and reference negotiable-T announcements are air-visible. Isolate firmware/setup vs Native path using a reference Host inside VM and compare full startup/address/connection wire sequence; do not retry unexplained parameters or extend the Create budget.",
+  "artifacts": [
+    {
+      "path": ".dev/negotiable-real/manifest.json",
+      "sha256": "9e1aadb865b06bcfc3457b786416dfc51772b57a1cde3ef93f6d019c287fa4fe",
+      "size": 40350
+    },
+    {
+      "path": ".dev/negotiable-real/guest-output/application/passthrough-control/run.json",
+      "sha256": "e652cabea43baff6cf4b1a77f69981bbc346c7519993dcda8ac749d2e5d4a387",
+      "size": 20119
+    },
+    {
+      "path": ".dev/negotiable-real/guest-output/ws73.pcap",
+      "sha256": "27a5c5a7d307826dda6d5bed4d2afc4abe58307795169930e7ac9fcae6f20090",
+      "size": 45468
+    },
+    {
+      "path": ".dev/negotiable-real/guest-output/capture-stats.txt",
+      "sha256": "0d0578cdd5899c2cff1b1a0c761fd0960aa34b783bf7a2ab779d8e5e7adbe23e",
+      "size": 225
+    },
+    {
+      "path": ".dev/negotiable-real/console.log",
+      "sha256": "285344c571397747edb93629beec543262d26fdec613754f0b4a071e95c413c8",
+      "size": 58799
+    },
+    {
+      "path": ".dev/negotiable-prepared/manifest.json",
+      "sha256": "3430003b499538c81e376b16837ac73b05fb2225cced1b2cf5e6ad09243b4d06",
+      "size": 228026
+    }
+  ]
+}

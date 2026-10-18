@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "result": "FAIL",
+  "scope": "Actual publicPython Client obtained a realauthorized fd,then standard socket autodetection failed before business. No appdelivery/recovery qualification.",
+  "compiled_service": "5bfe6fa307766d098aa98fabf6bb4822a4f1dde1",
+  "image_tools": "7817ccf6bc9caeec2d3648bf2cf4d5b6b64b3a26",
+  "host_tools": "7817ccf6bc9caeec2d3648bf2cf4d5b6b64b3a26",
+  "error": "socket.socket(fileno=fd):EOPNOTSUPP;currentchannel proto_ops.getname=sock_no_getname",
+  "correction": "Wrap known delegated fixedDGRAM with explicit family46,typeSOCK_DGRAM,protocol0. Reuse normalstandard socket ownership/dup/I/O;noalternateChannel/Host.",
+  "regression": "ProductionPython method with explicitC/OS fixtures for unavailableautodetection andconstructor failure;realUnix fd ownershiponly. Exactoldbinding fails thiscounterexample,fixedbinding passes. ActualAF46+peerproof stillrequired.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v4/manifest.json",
+      "sha256": "a8e75aee67c94d8227600870fe6214a1b6113e739677446913135dbe8bd9a18e",
+      "bytes": 47624
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v4/guest-output/application/passthrough-control/run.json",
+      "sha256": "0d2b1bef88bf88e750f95dbe50b08f1c208849ad9c92fd9fd8273bd9612b4635",
+      "bytes": 49830
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v4/guest-output/application/passthrough-control/app-client-0-python.stderr",
+      "sha256": "050910b69cbd7f9fd334845785f97eee3ef0a23295fc324f80bb876d1926e70e",
+      "bytes": 742
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v4/guest-output/ws73.pcap",
+      "sha256": "844c99dd54332daad01a7eda57783b374b94489a4638aa71f1975a39f79a27a0",
+      "bytes": 59124
+    },
+    {
+      "path": ".dev/architecture-r5f2-real-clients-v4/guest-output/capture-stats.txt",
+      "sha256": "e796804c71472d2dbe4643c827ace3edaaa7c07fbd8a7edf5b9714ea1d12ff58",
+      "bytes": 225
+    }
+  ],
+  "remaining": [
+    "NewexactartifactactualPython/C peerapplicationdelivery andoriginalscope",
+    "Fullgroup-policy/lifecycle/revoke/deadline/highlevelSDK/R6c;naturalRCA/nonmanualrecoveryOPEN"
+  ]
+}

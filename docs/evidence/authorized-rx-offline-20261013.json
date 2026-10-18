@@ -1,0 +1,77 @@
+{
+  "status": "AUTHORIZED_RX_SOURCE_SCOPED_PASS_NEW_VM_SEPARATE",
+  "kernel_head": "f1034577ecc1a7f32ab393fe17586dec173ed759",
+  "userspace_head": "d5708191c38a6bc86b0dfce2db68d3a443d83b38",
+  "production_c": {
+    "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+    "scope": "actual single-consumer route/local TCID+PI/finite RX, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+    "physical_acceptance": false,
+    "whole_session_proof": false,
+    "bodies_sha256": "3ef1d05a336f2d35be99a0be1544eb11145274854c53689621b1057dd061e3f6",
+    "sources": {
+      "net/sparklink/sle_channel_socket.c": "68caa4d32325f1ca89d3712175115286a78a7c203627018fa53c657ec931a57d",
+      "net/sparklink/sle_channel_state.h": "3cf939ce87b914f9cee06391029a73f8cc2b1b0cf4a793293354ad4d11221612",
+      "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+      "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+      "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "d042d2ae1025eec234fdf2c5627517ca42995b60a89b81ee24582690d586c4be"
+    }
+  },
+  "kernel_build": {
+    "status": "BUILD_PASSED",
+    "source_head": "f1034577ecc1a7f32ab393fe17586dec173ed759",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-authorized-rx-kernel-build.log",
+      "sha256": "87e4f50a035c288be00c8679a6384cb1e3d84a14522a8ec3cbd8569ed72f9b7f"
+    }
+  },
+  "formal": "authorized-rx-formal-20261013/manifest.json",
+  "tooling_tests": 424,
+  "receive_scope": [
+    "actual sl_recvmsg/sl_take/route/admit and submit consent compiled verbatim",
+    "Host callback, IRQ/queue primitives, waiting, copy and ref dependencies are fixtures",
+    "blocked wake with revoke/late data: no dequeue/copy; no EOF success",
+    "PEEK/TRUNC/zero, EFAULT, EINTR, timeout, unknown EAGAIN without tail",
+    "reference accounting and finite RX/TX queues"
+  ],
+  "remaining": [
+    "Real controlled blocked RX release/last control fd/dup/owner death and sibling isolation",
+    "Complete per-Binding direction/security Grant and VFS refs",
+    "KCSAN/lockdep, wakeup and reference refinement",
+    "NOCP/full credit/reuse barriers and natural fault recovery",
+    "Full original S0-S6/19WP/10FV/12DG"
+  ],
+  "full_goal_complete": false,
+  "ci": {
+    "run_id": 38306731179,
+    "head": "d5708191c38a6bc86b0dfce2db68d3a443d83b38",
+    "jobs": 9,
+    "conclusion": "success"
+  },
+  "real_evidence": [
+    "ws73-authorized-rx-short-repeat-20261013.json",
+    "ws73-authorized-rx-249-boundary-20261013.json"
+  ]
+}

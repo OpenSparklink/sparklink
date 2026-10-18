@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "linux": "3d8a8aa06cdfc303d3fd49565a5bcf6617578965",
+    "userspace": "e2001df39275537eed3379cf938af035ab2c9dba"
+  },
+  "scope": "Default-controller Generic Netlink projection; not complete ControllerState retirement",
+  "immediately_remove": [
+    {
+      "code": "genl controller queries and role/radio mutations",
+      "callers": "optional C genl handlers; no daemon consumer",
+      "actual_behavior": "default_selection without explicit generation; software PM/connection snapshots; firmware actions via old control facade",
+      "replacement": "existing Native identity-bound controller/link/discovery/management APIs; unimplemented capability explicitly unsupported; deleted genl commands EOPNOTSUPP",
+      "issues": [
+        "K#3",
+        "K#4",
+        "K#5",
+        "U#2"
+      ],
+      "regression": "ordinary/root actual VM netlink legacy rejection, no reply-buffer state fake; true WS73 baseline"
+    },
+    {
+      "code": "simplified genl multicast",
+      "callers": "three standard-DLI worker notifications",
+      "actual_behavior": "event type/handle/address without controller/generation/lifetime; lossy duplicate state source",
+      "replacement": "independent complete ControllerEvent + CAP snoop; no new canonical Netlink stream claimed",
+      "regression": "complete event VFS faults plus true dual WS73"
+    }
+  ],
+  "move_to_tests": [
+    {
+      "code": "old C bridge/UAPI and global Rust exports, old test funcs",
+      "purpose": "preserve pre-migration wire/layout and failure evidence",
+      "location": "tools/testing/selftests/sparklink/retired-genl",
+      "production_dependency": false
+    }
+  ],
+  "wait_for_replacement": [
+    {
+      "code": "ControllerState.conn/adv_scan/security/rpa/power and standard normalized event processing",
+      "reason": "remaining ioctl/debugfs and standard-DLI callers must be individually audited/migrated; not deleted mechanically",
+      "replacement": "same canonical Runtime/ConnectionSession/Channel ownership; no simulation success",
+      "regression": "only relevant lifecycle/state/actual data gates; not all control races before data"
+    },
+    {
+      "code": "future canonical netlink frontend if retained",
+      "reason": "requires complete identity, cursor/loss/resync/authorization and same transaction owner, no default controller or Host duplicate",
+      "priority": "WP12 remaining; not implemented by this registry slice"
+    }
+  ],
+  "retained": "Native Host/controller events/diagnostics/data socket/Grant/security mechanisms; registry count and software version are read-only, not Ready or firmware capability",
+  "no_issue_closure": true
+}

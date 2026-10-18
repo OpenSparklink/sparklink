@@ -1,0 +1,121 @@
+{
+  "kernel": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
+  "status": "PASS_SCOPED_CORRECTED_BUILD_MATRIX",
+  "variants": [
+    {
+      "requested_usb": "n",
+      "actual_usb": "m",
+      "status": "FAIL_REQUESTED_CONFIGURATION_NOT_PRESERVED",
+      "core_y": true,
+      "config_sha256": "1626339956e0fff47fedf7df9f201aab25b73e2294a7f5099629c754ad682ff1",
+      "log_sha256": "f3b769d7f25703399127edd8ceb2ab54aea44ec6aa266cd2d951893219bc1b1c",
+      "artifacts": {
+        "arch/x86/boot/bzImage": "1ad5e98abccc7c2b11180bb2a3cf9073ca1df70edcbd2bcc3ece9e1b410a4202",
+        "net/sparklink/sparklink_core.o": "4d136e510a91a70c610c58c9759e3e7d818457887822af51e87e3a53f47bb966",
+        "net/sparklink/built-in.a": "3581c473bb9afa3103bcc47cdbe020024e8be2545ed25c49ec0618adf069d075",
+        "Module.symvers": "7e77f9377c55ba8e3ff7cbdfcdd53ea9bb1fcc38e56c3f75f7e374cc8f9bcbff",
+        "modules.order": "be0a559a6f51412325c4736e9c3b96ff7f834d1ba3f903139b921103b2318f8a"
+      },
+      "linked_modules": {
+        "sparklink_ws73_usb": {
+          "sha256": "cbbf8decda32a2587e17bfa66a3e3fd080eb2aec1a81e177638fbd01e398ba7c",
+          "depends": "usbcore"
+        },
+        "sparklink_standard_usb": {
+          "sha256": "333178e16e6b79d718f2f4a026eaf28154954a45e8a4920b25542f9a38b7c226",
+          "depends": "usbcore"
+        }
+      },
+      "warnings": 0,
+      "scope": "Full bzImage/modules compilation; no boot, hardware, module/IRQ/PM/lifetime acceptance",
+      "failure": "Other enabled Kconfig input/tablet drivers selected USB=m; make succeeded but requested n was not preserved. Do not count as n success."
+    },
+    {
+      "requested_usb": "m",
+      "actual_usb": "m",
+      "status": "PASS_BUILD_ONLY",
+      "core_y": true,
+      "config_sha256": "1626339956e0fff47fedf7df9f201aab25b73e2294a7f5099629c754ad682ff1",
+      "log_sha256": "cabb9d59b5525dd044ad0c1eceea2a87425091f0527303527d0ca4e4ce162925",
+      "artifacts": {
+        "arch/x86/boot/bzImage": "ebf64a5a7e836b1310f2676c4a811d241ab691756a042c6de76d2e2979622cdd",
+        "net/sparklink/sparklink_core.o": "e3d423dc2778bef27128fbd82d66360b2dd87e634f9113cd82c4c909bf677376",
+        "net/sparklink/built-in.a": "3581c473bb9afa3103bcc47cdbe020024e8be2545ed25c49ec0618adf069d075",
+        "Module.symvers": "7e77f9377c55ba8e3ff7cbdfcdd53ea9bb1fcc38e56c3f75f7e374cc8f9bcbff",
+        "modules.order": "be0a559a6f51412325c4736e9c3b96ff7f834d1ba3f903139b921103b2318f8a"
+      },
+      "linked_modules": {
+        "sparklink_ws73_usb": {
+          "sha256": "a567a798f68f878b70d6344ae141597403d7937450c0188764a9a79cdc877f12",
+          "depends": "usbcore"
+        },
+        "sparklink_standard_usb": {
+          "sha256": "bfc56f4947d1d4534fd2f0d11e80ef2853f12507110429fc3346298abf509d2b",
+          "depends": "usbcore"
+        }
+      },
+      "warnings": 0,
+      "scope": "Full bzImage/modules compilation; no boot, hardware, module/IRQ/PM/lifetime acceptance"
+    },
+    {
+      "requested_usb": "n",
+      "actual_usb": "n",
+      "status": "PASS_BUILD_ONLY",
+      "core_y": true,
+      "config_sha256": "6f765f3bdbb73285454a62c628a5b77cb2a23938b231cd74312a2668a88a861d",
+      "log_sha256": "c4ccab5fb210e87df5eeca5d13cea6a1b0a99a7c3c345fd21aebcb8e3f20e5e6",
+      "artifacts": {
+        "arch/x86/boot/bzImage": "ec965c4f8a42219d0a68555594c86174acd03352a32343d7dd418db758ca06e3",
+        "net/sparklink/sparklink_core.o": "7ff726de725d4c27bfbb255b7c208acbff757625201336eb6cc9ea9a4d522855",
+        "net/sparklink/built-in.a": "3581c473bb9afa3103bcc47cdbe020024e8be2545ed25c49ec0618adf069d075",
+        "Module.symvers": "021969898411cd0f9c5b0ad7e28bee80e3b075f9861858bc81a9d4c918ccdde0",
+        "modules.order": "df1771a78a687c498b053f03714e78245526e0bc34b434e70a8a574cd9c3e54d"
+      },
+      "linked_modules": {},
+      "warnings": 0,
+      "scope": "Full bzImage/modules compilation; no boot, hardware, module/IRQ/PM/lifetime acceptance",
+      "wrapper_failure": "make succeeded; original audit wrapper misclassified absent CONFIG_USB as y and raised AssertionError. Corrected independent classifier reads absence as n, verifies USB_SUPPORT=n, outputs and modules.order. Original failure retained."
+    }
+  ],
+  "failure_records_preserved": true,
+  "copied_stale_modules_not_evidence": true,
+  "scope": "Build only, host build allowed; no host installation/driver tests",
+  "whole_package_complete": false,
+  "physical_acceptance": false,
+  "independent_completion_recheck": [
+    {
+      "variant": "m",
+      "exit": 0,
+      "log_sha256": "5bae7bbc200390675ef7e20692f4da45481e88e9a776c962907ab916aa494abd",
+      "command": [
+        "make",
+        "-C",
+        "/home/sanchuanhehe/Documents/opensparklink/linux",
+        "O=/home/sanchuanhehe/Documents/opensparklink/.dev/core-usb-m-build",
+        "LLVM=1",
+        "RUSTC_BOOTSTRAP=1",
+        "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+        "-j4",
+        "bzImage",
+        "modules"
+      ]
+    },
+    {
+      "variant": "n-v2",
+      "exit": 0,
+      "log_sha256": "27072d18183b2e520d3b9c67777b835d7790195491b67c6c95b38330c7bf8dd0",
+      "command": [
+        "make",
+        "-C",
+        "/home/sanchuanhehe/Documents/opensparklink/linux",
+        "O=/home/sanchuanhehe/Documents/opensparklink/.dev/core-usb-n-v2-build",
+        "LLVM=1",
+        "RUSTC_BOOTSTRAP=1",
+        "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+        "-j4",
+        "bzImage",
+        "modules"
+      ]
+    }
+  ]
+}

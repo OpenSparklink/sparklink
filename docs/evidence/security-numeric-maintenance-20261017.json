@@ -1,0 +1,360 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_NUMERIC_MAINTENANCE_RETAINED_FULL_GOAL_OPEN",
+  "compiled_kernel": "323668c6015ef69fa233c008d8ef0c4c70402686",
+  "compiled_userspace": "862b95b623c3069c5a798aeaeff7fec382c46627",
+  "executed_tools": "862b95b623c3069c5a798aeaeff7fec382c46627",
+  "post_processing_tools": "f69554ca0a41ab37985be4ae0e8b241d080d1e1f",
+  "real_report_commit": "d9e4a66",
+  "registry_commit": "f706471",
+  "ci_source": "88fad0945420d5b0b6d875eb30437eef983e068a",
+  "kernel_selftest_source": "8757f98f105bf35545eb6e9ed8c15ce71863455b",
+  "ci_status": "ALL_LISTED_WORKFLOWS_SUCCESS",
+  "ci_runs": [
+    {
+      "conclusion": "success",
+      "databaseId": 38970585467,
+      "headSha": "88fad0945420d5b0b6d875eb30437eef983e068a",
+      "name": "Production codec bounded fuzz",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38970585461,
+      "headSha": "88fad0945420d5b0b6d875eb30437eef983e068a",
+      "name": "Qualification integrity",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38970585488,
+      "headSha": "88fad0945420d5b0b6d875eb30437eef983e068a",
+      "name": "Documentation",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38970585464,
+      "headSha": "88fad0945420d5b0b6d875eb30437eef983e068a",
+      "name": "CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38970578266,
+      "headSha": "88fad0945420d5b0b6d875eb30437eef983e068a",
+      "name": "Documentation",
+      "status": "completed"
+    }
+  ],
+  "registry": {
+    "records": 5,
+    "materials": 135,
+    "local": "RECORDED_MATERIALS_VERIFIED_NOT_NEW_RUN",
+    "metadata": "METADATA_ONLY_NOT_REVERIFIED",
+    "overall": "INCOMPLETE",
+    "negative_controls": [
+      {
+        "kind": "stale-source",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-862-real: report/source mismatch compiled_userspace",
+          "numeric-862-real/compiled_userspace: source object unavailable"
+        ]
+      },
+      {
+        "kind": "missing-capture",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-862-m3: missing material"
+        ]
+      },
+      {
+        "kind": "scope-upgrade",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-862-real: scope mismatch"
+        ]
+      },
+      {
+        "kind": "missing-mode",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-862-real: missing/extra/duplicate gate"
+        ]
+      },
+      {
+        "kind": "partial-hides-unproved",
+        "result": "REJECTED",
+        "errors": [
+          "numeric-862-remaining: PASS hides a required non-PASS gate"
+        ]
+      }
+    ]
+  },
+  "offline": {
+    "qualification_checker_tests": 27,
+    "strict_html_documents": 115,
+    "actual_sealed_library_python_tests": 41,
+    "cbindgen": "0.29.4 regeneratedexactheader",
+    "authorization_contract_tests": 4,
+    "authorization_C": "strictcompileonly;updatedguestbinarynotruninVM;realnumericCAP/nonownerdenialinseparateoriginal6VM"
+  },
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 7,
+      "state": "OPEN",
+      "issue_url": "https://github.com/OpenSparklink/linux/issues/7",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6225093794",
+      "comment_sha256": "1463093b16969c255406c1e6634e20dc43f098bd3092c406c02f0ccd7e8a4205",
+      "original_scope_body_sha256": "d1d5ec64b20587cb5fc91358ff8efae88af8a0c3ba0433d1ab096008791faa95",
+      "original_body_unchanged": true,
+      "readback_exact": true
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 19,
+      "state": "OPEN",
+      "issue_url": "https://github.com/OpenSparklink/linux/issues/19",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6225094647",
+      "comment_sha256": "1463093b16969c255406c1e6634e20dc43f098bd3092c406c02f0ccd7e8a4205",
+      "original_scope_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "original_body_unchanged": true,
+      "readback_exact": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 5,
+      "state": "OPEN",
+      "issue_url": "https://github.com/OpenSparklink/sparklink/issues/5",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6225095832",
+      "comment_sha256": "1463093b16969c255406c1e6634e20dc43f098bd3092c406c02f0ccd7e8a4205",
+      "original_scope_body_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+      "original_body_unchanged": true,
+      "readback_exact": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "state": "OPEN",
+      "issue_url": "https://github.com/OpenSparklink/sparklink/issues/8",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6225096552",
+      "comment_sha256": "1463093b16969c255406c1e6634e20dc43f098bd3092c406c02f0ccd7e8a4205",
+      "original_scope_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "original_body_unchanged": true,
+      "readback_exact": true
+    }
+  ],
+  "original_failures_preserved": [
+    "862CI oldkernelpin/generatedheader",
+    "e53CI completeioctlinventory correctlyfoundmissingprotectedguestrow;fix8757+7ed,no weakened assertions",
+    "7edCI workspaceformat founddirectedition2021 formatting;fixed88 withcargo fmt,originaldiffretained",
+    "wrongheaderincludecommand pulledunexportedkernelheaders;correctsystemheaders compilev2strictpass",
+    "wrongexplicitlocalsharedlibrarypath fallbackloadedincompatibleoldlibrary;correctsealedlibrary41pass;strictinvalidoverridefollowupremains",
+    "originalactual-evidenceparserexception andallpreviousnegative/environment/artifactrefusals remaininprimaryreport"
+  ],
+  "scope": [
+    "Only selected9VM/48peerRT inprimaryreport;thismaintenance addsnoactualphysicalrun orformalproof",
+    "K8757 differsfromcompiledK323 onlyselftestrow;Ue53/7ed/88 changegeneratedheader/CIpins/workspaceformat,notnewcompiledruntimequalification",
+    "CIresultonlylistedworkflows atspecifiedSHA,notbranchprotection,hardwarequalification orqualifiedreleaseartifact",
+    "Goalactive,S0-S6/19WP/10FV/12DG unchanged,UserHostP4,VM-only;naturalRCA/nonmanualrecovery/fullsecurity/Bond/SSAP/multichannel/fourdevice/PM/release stillopen",
+    "Originaltwo uncommittedtools developmentfiles retained unchanged;no duplicate goal orissue closure"
+  ],
+  "next": "Existingbroker/Agent originalnumericprompt,actualinstalledsecuritygrade+revocableGrant thensoleSSAPpermissions;data/lifecycle/performance parallel,noallcontrolprerequisite",
+  "materials": [
+    {
+      "path": ".dev/numeric-registry-local-v1.json",
+      "sha256": "24e9b360246ca2be78d97f84631765f8386c8a845d21e9370b4ac885b655d926",
+      "bytes": 1215,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-register-v1.py",
+      "sha256": "a3f1b344db217e709500bef3f7afb80df1a5fe98e784432914b7007beeae3e1c",
+      "bytes": 5870,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-qualification-final-v1.json",
+      "sha256": "3db4d2d379aa1890076aa15b98897bbd964015096ab5191edadeb4deed15ea2f",
+      "bytes": 290080,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-qualification-tests-v1.log",
+      "sha256": "3c5b00b4ec7350723487ab1e81c7ca5e1781c0dd09127e05a3e43d8e17b57a3e",
+      "bytes": 126,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-docs-final-v1.log",
+      "sha256": "09da93afa2015b16162e34ff977b53e01ca68026062f28f8a9d299f1a2ff898b",
+      "bytes": 297693,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-issue-receipts-v1.json",
+      "sha256": "78ef628688d59b15319825af501c0c123c1e3f6fd1f809dc9d209e847fd81f4a",
+      "bytes": 2328,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-ci-862-failed-v1.log",
+      "sha256": "6ed65d54feeea1d86cdb4ac97540772012c18ddfdd8fe8ed482a2cc23960d0d9",
+      "bytes": 24758,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-ci-e53-v2.json",
+      "sha256": "670ae316c524c48ca08ddb8d6ab85891ffcd1a062c44dd612a9ec474b6a15b44",
+      "bytes": 752,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-ci-e53-failed-v1.log",
+      "sha256": "9751991c6a4946f5ec0b012138415634f691161403f419e442d0d1dee98aa743",
+      "bytes": 303136,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-ci-88-v3.json",
+      "sha256": "c005865b25753559ac685bb7506b58049170828c0723cef44edd7684291bda66",
+      "bytes": 752,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-ci-88-run-v3.json",
+      "sha256": "20d6f02d575a62d1bcef62999c1eadc2203795853f4e23b7a11011b129774bb4",
+      "bytes": 18866,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-pr-checks-v2.json",
+      "sha256": "73314aac3253d25d375a2a6aaf62d99979e3348e70419ec9070341191378b95d",
+      "bytes": 3642,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-ci-7ed-trigger-v1.json",
+      "sha256": "915d02281b5da07ed55c5ab2b4650b19bf4741e1eb2a413aa624c42101520710",
+      "bytes": 198,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-cargo-fmt-check-v1.log",
+      "sha256": "de1deef7af960ee76748751719d8e00d15f24302bec2a07d4dd980f43047ce51",
+      "bytes": 997,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-cargo-fmt-check-v2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-kernel-production-equality-v1.json",
+      "sha256": "e5c679b67719d74daff7563bb716406c9a85be1b13e3498dab166237dd0137b7",
+      "bytes": 765,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-authorization-contract-v1.log",
+      "sha256": "120fcf1e1b1ef6883b716f1b33b4fbea79c7089f1d1ff950e98c9608d82abb42",
+      "bytes": 102,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-authorization-compile-v1.log",
+      "sha256": "1f116fd1f6edbbef82698165fe60fa695029ac88da99d63217d6eb7bd619531a",
+      "bytes": 1165,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-authorization-compile-v2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-authorization-test-v2",
+      "sha256": "36130ceb7abf5d0bf00ca2ebf6c33f0028be94d00d82b7dbe17bb8d25f44e44f",
+      "bytes": 22664,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-python-all-v1.log",
+      "sha256": "b966341bb94164000ce3642df15bcb9cd2982c6b71fca3709c7714cc8906d474",
+      "bytes": 5883,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-python-all-v2.log",
+      "sha256": "95b3efd102880b43be163016e5084c39387a2f2cb6c40262c2c99c020fdb6e69",
+      "bytes": 140,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-cbindgen-v1.log",
+      "sha256": "fc48c46417e37da1c68a988b8034b11afafbf6aaf75e1e7d96e57fdea5efd8df",
+      "bytes": 451,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-generated-sparklink-v1.h",
+      "sha256": "e0a0e244e55d44c7a88a8735f95fa4eda3f5779c64534a7fc1338e922ce9c43c",
+      "bytes": 30532,
+      "access": "private"
+    },
+    {
+      "path": ".dev/numeric-issue-receipts-ci-v2.json",
+      "sha256": "98db903c954efd3e52ee32f3f9b24934c2d86b003c866d82a306b10b062a97da",
+      "bytes": 2027,
+      "access": "private"
+    }
+  ],
+  "created_wall_ns": 1792186878880698270,
+  "issues_ci_followup": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 7,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6225093794",
+      "state": "OPEN",
+      "readback_exact": true,
+      "original_issue_body_unchanged": true,
+      "comment_sha256": "bef7c6f6826136aef86d7e743422b49ed12d5020422d3f48d33ea775138d0640",
+      "prior_comment_sha256": "1463093b16969c255406c1e6634e20dc43f098bd3092c406c02f0ccd7e8a4205"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 19,
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6225094647",
+      "state": "OPEN",
+      "readback_exact": true,
+      "original_issue_body_unchanged": true,
+      "comment_sha256": "bef7c6f6826136aef86d7e743422b49ed12d5020422d3f48d33ea775138d0640",
+      "prior_comment_sha256": "1463093b16969c255406c1e6634e20dc43f098bd3092c406c02f0ccd7e8a4205"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 5,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6225095832",
+      "state": "OPEN",
+      "readback_exact": true,
+      "original_issue_body_unchanged": true,
+      "comment_sha256": "bef7c6f6826136aef86d7e743422b49ed12d5020422d3f48d33ea775138d0640",
+      "prior_comment_sha256": "1463093b16969c255406c1e6634e20dc43f098bd3092c406c02f0ccd7e8a4205"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6225096552",
+      "state": "OPEN",
+      "readback_exact": true,
+      "original_issue_body_unchanged": true,
+      "comment_sha256": "bef7c6f6826136aef86d7e743422b49ed12d5020422d3f48d33ea775138d0640",
+      "prior_comment_sha256": "1463093b16969c255406c1e6634e20dc43f098bd3092c406c02f0ccd7e8a4205"
+    }
+  ]
+}

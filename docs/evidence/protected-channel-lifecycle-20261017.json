@@ -1,0 +1,1905 @@
+{
+  "schema_version": 1,
+  "status": "TWENTY_PROTECTED_LIFECYCLE_SCOPED_REAL_PASS_NEXT_SOLE_SSAPPERMISSIONS",
+  "batch_exit_result": "PASS",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "formal_result": "UNPROVED",
+  "full_goal_result": "UNPROVED",
+  "historical_failure_result": "FAIL",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "390a634b60320706e5fb619d3c0b1df661378261",
+  "executed_tools": "390a634b60320706e5fb619d3c0b1df661378261",
+  "scope": [
+    "VM-only SDK111 Hi3873U2/3;Hi3873E1 user-confirmed excluded. Existing K619 physicalSession/Runtime/Grant/credit/Ticket and shared current typed security orchestration,no new Host/Engine/kernelchange.",
+    "Security1 completes actual noMITM mechanism;security2 completes actual two-code numeric mechanism. Both query original current physical grade/receipt epoch before FIRST protectedCUTCbind. Privileged explicit mechanism approval is not daemonAgent/human identity/Bond/RF cipher attestation.",
+    "Twenty real bounded cases:2requirements xrelease/lastmanagementFile/dup-finalmanagementFile/directDown/original5sPDU xbothindices. OrdinaryUID1000/caps0 dataworkers,actual before-control peer validation and reply;48complete roundtrips. Applicationfd andmanagementFile are distinct.",
+    "Original pool5/1270byte incomplete2047PDU prefix,blockedRX,oldfd send/recv/poll rejection,no-post-withdrawal-submit and original5s assertions preserved. Partial2042application payload is NOT delivered longmessage. NormalrealIN2s fixture and independentdeadline8s fixture separately pinned;no protocoldeadline relaxation.",
+    "Othercontroller isolation is unchanged generation/Ready/independentlease andactualscan only. Not another surviving businesspair,fourdevices orwholeprocessfault isolation.",
+    "Sharedwire checker requires actual170relay submissions/Completes/oppositeRX,40role installations/acceptance/0011;only these exactcheckedcommandrecords join originalall-command accounting,not opcodewide exceptions.",
+    "Twenty complete frozen390verifier replays and360copied actualdecoded evidence negatives. Six initialfailedrun mutants andsix historicalnumeric replays separate. Same decoder/replay isnot independent implementation,newhardwareinjection orformalproof.",
+    "New700/701tool input andartifactsource identities keptdistinct;42newsealed390library Python/CABI passes,32bit layoutcompile only. Rustcrates/Cargo sourcebytes unchangedfrom73;newbundle independentlyrebuilt,not declared bit-reproducible.",
+    "NO NEW formalproof. Earlier K619 Granthelper79boundedchecks retained onlyatthatpureboundary;actualOwner/Hostlocks/refs/USBcallback,physicalNOCPaccuracy/late/reuse/drain remain UNPROVED. Observedhardwarematrix doesnotdischarge those assumptions.",
+    "Currentbatch planned20-case exit achieved. RemainingfullS0-S6/19WP/10FV/12DG,livecipheroff/rekey/unknown/queryinvalidation,install-inflightcancel,strongerpermissions/soleSSAP consumers,relatedlengths/multi/fourdevice/fairness/performance/Bond/deployment/PM/recovery remainOPEN.",
+    "Firstc51wholehardwareattempt staysFAIL dueparentexactcommandaccounting;correctedoffline replay never rewritesit. New390runs independentlyPASS. Originalfixture-alias/no-opmutant/headerpath errors retained,not qualification.",
+    "Naturalstartup/re-enum/disappearance RCA andnonmanualautomaticrecovery remainOPEN;manual/hub/QMP/heldframes/injected tests cannot substitute. Captures contain actual installkeys/privatefirmware,only hashes/metadata publiclyrecorded."
+  ],
+  "real_gates": [
+    {
+      "name": "sec1-release0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec1-release0-v2/manifest.json"
+    },
+    {
+      "name": "sec1-release1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec1-release1-v2/manifest.json"
+    },
+    {
+      "name": "sec1-close0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec1-close0-v2/manifest.json"
+    },
+    {
+      "name": "sec1-close1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec1-close1-v2/manifest.json"
+    },
+    {
+      "name": "sec1-dup0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 4,
+      "manifest": ".dev/protected-lifecycle-sec1-dup0-v2/manifest.json"
+    },
+    {
+      "name": "sec1-dup1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 4,
+      "manifest": ".dev/protected-lifecycle-sec1-dup1-v2/manifest.json"
+    },
+    {
+      "name": "sec1-down0",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec1-down0-v2/manifest.json"
+    },
+    {
+      "name": "sec1-down1",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec1-down1-v2/manifest.json"
+    },
+    {
+      "name": "sec1-deadline0",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec1-deadline0-v2/manifest.json"
+    },
+    {
+      "name": "sec1-deadline1",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "security_requirement": 1,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec1-deadline1-v2/manifest.json"
+    },
+    {
+      "name": "sec2-release0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec2-release0-v2/manifest.json"
+    },
+    {
+      "name": "sec2-release1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec2-release1-v2/manifest.json"
+    },
+    {
+      "name": "sec2-close0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec2-close0-v2/manifest.json"
+    },
+    {
+      "name": "sec2-close1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec2-close1-v2/manifest.json"
+    },
+    {
+      "name": "sec2-dup0",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 4,
+      "manifest": ".dev/protected-lifecycle-sec2-dup0-v2/manifest.json"
+    },
+    {
+      "name": "sec2-dup1",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 4,
+      "manifest": ".dev/protected-lifecycle-sec2-dup1-v2/manifest.json"
+    },
+    {
+      "name": "sec2-down0",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec2-down0-v2/manifest.json"
+    },
+    {
+      "name": "sec2-down1",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec2-down1-v2/manifest.json"
+    },
+    {
+      "name": "sec2-deadline0",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec2-deadline0-v2/manifest.json"
+    },
+    {
+      "name": "sec2-deadline1",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "result": "PASS",
+      "security_requirement": 2,
+      "actual_ordinary_peer_round_trips_before_control": 2,
+      "manifest": ".dev/protected-lifecycle-sec2-deadline1-v2/manifest.json"
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "701-frozen-tools-and700-pre-fix-inputs-separated",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "42-new-sealed390library-Python-CABI-32bit-compileonly",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "20exact-replays-360copiedactualnegatives",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "sixhistoricalnumeric-exactproofs-and6initialfailure-mutants",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "115strict-documents-canonicalviews",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "formal_gates": [
+    {
+      "name": "actual-lock-reference-submit-revoke-late-NOCP-reuse-combination",
+      "status": "NOT_PROVEN_NO_NEW_FORMAL_RUN",
+      "result": "UNPROVED"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "SoleSSAP-firstSMTCbind-policy-and-security-authorization-CPCD-consumers",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "livecipheroff-rekey-unknown-nativequery-andinstall-inflightmatrix",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "fullrelatedlengths-multi-fourdevice-fairness-performance-resources",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "NOCPfirmwaretruth-reuse-drain-actual-refinement",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "fullS0-S6-securityBond-deployment-PM-release-naturalRCA-nonmanualrecovery",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "failed_gates": [
+    {
+      "name": "first-c51-sec1-release0-wholegate",
+      "status": "FAIL",
+      "result": "FAIL",
+      "manifest": ".dev/protected-lifecycle-sec1-release0-v1/manifest.json"
+    }
+  ],
+  "original_failed_attempt": {
+    "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+    "compiled_userspace": "c51d8dd36763fdb911ae59d4d3fc0bf01b7ecf43",
+    "executed_tools": "c51d8dd36763fdb911ae59d4d3fc0bf01b7ecf43",
+    "manifest": ".dev/protected-lifecycle-sec1-release0-v1/manifest.json",
+    "error": "unrecorded reset, disconnect or peer command in connected File gate",
+    "status": "FAIL"
+  },
+  "bounds": {
+    "real_cases": 20,
+    "grade1_before_control_peer_round_trips": 24,
+    "grade2_before_control_peer_round_trips": 24,
+    "total_complete_round_trips": 48,
+    "relay_submissions": 170,
+    "opposite_relay_receipts": 170,
+    "installations": 40,
+    "independent_scope_queries": 80,
+    "exact_replays": 20,
+    "copied_evidence_negatives": 360,
+    "initial_failedrun_mutants": 6,
+    "historical_numeric_replays": 6,
+    "frozen_tool_tests": 701,
+    "actual_newlibrary_CABI": 42
+  },
+  "remaining": [
+    "Same soleSSAPconsumer:Service binding currentlydrops security argument;unconditionalplainSMTCautostart mustnotpreclude firstprotectedbind;do notlate-rebind orduplicateEngine.",
+    "SSAP operations are independent ofperpropertyauthentication/encryption/localauthorization;do not treatmechanismlevel2 asnamedidentity or weakenCPCD.",
+    "Completeoriginalgoalscope andall pending_gates retained;current20-caseexitdoesnotcloseanywholeissue."
+  ],
+  "materials": [
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v2/manifest.json",
+      "sha256": "5eacea2fd9dc0d2258415fb9f9e678148e9b3688ba9a8686a964959c707242ec",
+      "bytes": 113641,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v2/console.log",
+      "sha256": "65df383954d3c1e1d79cb2edb97a6a6a4de3148511de3e33526cb0f2db140872",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v2/qemu-stderr.log",
+      "sha256": "a5074166e3ab553723e732eeb05c4ab6e3b4838e131490d07f6f37b27b2db04e",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v2/guest-output/ws73.pcap",
+      "sha256": "b1581d73903e7c1732f156cacf41b7715e42799a3f8cae3d2269f34465474896",
+      "bytes": 94439,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v2/guest-output/capture-stats.txt",
+      "sha256": "6a825326c4593f305cd82cb53804fb40b3f55b8d00357a00b1e4a9fe865d3d3d",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v2/guest-output/connected-file/run.json",
+      "sha256": "bdd71c9a258e733f952834b59329a0f0ab33c034fcb220e14e6abe03d9daa502",
+      "bytes": 49473,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-replay-v1.json",
+      "sha256": "59ced4f147b3b3b4a4df53a5e2a9e97cf96df23b756c830ede335b9fe2ab0d32",
+      "bytes": 69955,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-release0-v1.json",
+      "sha256": "c5070ad5c9d65b1ef3614669048e8acdc664667837b6102c04711931dfcc7068",
+      "bytes": 4163,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release1-v2/manifest.json",
+      "sha256": "5678af843e086bb091e17f2eaf6b728b308e222312182587bb3fa9eeb22a3908",
+      "bytes": 113641,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release1-v2/console.log",
+      "sha256": "91ef44ba33393c6d24d2ac729a32d1ddd9632a46db2b3e135b8b02c7b4ec8482",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release1-v2/qemu-stderr.log",
+      "sha256": "b34f296eefe17bddf9026fb01953c85a7d9ab529f22510f690d303fe32b30ce5",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release1-v2/guest-output/ws73.pcap",
+      "sha256": "565c8c69ce2280c383a3bb295ffc73d61f6c7ddc3a8c186f3cfd4d111c58f9b0",
+      "bytes": 94439,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release1-v2/guest-output/capture-stats.txt",
+      "sha256": "6a825326c4593f305cd82cb53804fb40b3f55b8d00357a00b1e4a9fe865d3d3d",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release1-v2/guest-output/connected-file/run.json",
+      "sha256": "57e657f1eaf0106be554c76124eea3eddaf274eaf70717b36ceae9e8b3fd5fa8",
+      "bytes": 49472,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release1-replay-v1.json",
+      "sha256": "1d316df9db1aa28a61a6724de0dd555df3ae6d8d14c15dae23ba45b134bbd51d",
+      "bytes": 69955,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-release1-v1.json",
+      "sha256": "82c3a955d45a443b7e07140aabcfa564feaa940d39fd15f4fddf60aace6d4b87",
+      "bytes": 4163,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close0-v2/manifest.json",
+      "sha256": "3f37c61fcd1b73b9c49a480a841662bee402ad3370356690076edc9ef2ac04c8",
+      "bytes": 113571,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close0-v2/console.log",
+      "sha256": "91729cea2dae4bc87c75af338a93d066061cc0395f969ef8c3d66ab3d96e2293",
+      "bytes": 13911,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close0-v2/qemu-stderr.log",
+      "sha256": "2b5d12fae4a5b07d1d0e1cb87af80e4ea3b87d5ccf156cff6e2b39adbc94c19a",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close0-v2/guest-output/ws73.pcap",
+      "sha256": "ee0f76a3377f8c2b8eaf4972adac931266e90dbd9cc9a6a06af63698a511bb81",
+      "bytes": 94439,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close0-v2/guest-output/capture-stats.txt",
+      "sha256": "6a825326c4593f305cd82cb53804fb40b3f55b8d00357a00b1e4a9fe865d3d3d",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close0-v2/guest-output/connected-file/run.json",
+      "sha256": "6f9825c011eba56b72c5d1de7581497dbe8c08f0764ee3310587fa160c49a01c",
+      "bytes": 49369,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close0-replay-v1.json",
+      "sha256": "bd50dd01715baa02c8637b2471dbcef8e33299b5ace97258807c5d694c2facd6",
+      "bytes": 69951,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-close0-v1.json",
+      "sha256": "3ee50855666fdc1a6ffa67c659265b2da843528096001becd894a32c5297c399",
+      "bytes": 4125,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close1-v2/manifest.json",
+      "sha256": "6535f2fed1de1841f362c5106666c6ff5cffbc265ae939a0704fe68d6d50aa34",
+      "bytes": 113571,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close1-v2/console.log",
+      "sha256": "d25792b6f0492a6ee88a9105ae320d3247605deb90ab32230e2c4da7a0655d6a",
+      "bytes": 13911,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close1-v2/qemu-stderr.log",
+      "sha256": "fb4e1b4656bf787bc07cbaa72cbb6b79abfce54d7f4c8a1b0dbd030d5a1777b5",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close1-v2/guest-output/ws73.pcap",
+      "sha256": "c3c983c27cdf64d42e5a1fb4361297598a38b84583e5aef545f7cf452fc41b2b",
+      "bytes": 94439,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close1-v2/guest-output/capture-stats.txt",
+      "sha256": "6a825326c4593f305cd82cb53804fb40b3f55b8d00357a00b1e4a9fe865d3d3d",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close1-v2/guest-output/connected-file/run.json",
+      "sha256": "8d584adb2de078bef10d1761bdb4b16e1fcbfb37163895217600df3715b4271d",
+      "bytes": 49369,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-close1-replay-v1.json",
+      "sha256": "33c7b8e2394ae7934289aebcdb73aa3fc9cc55f9660affb1f66d4ac46cd13ebc",
+      "bytes": 69951,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-close1-v1.json",
+      "sha256": "bba07243e4c1c781d950e58fcf96268152578a9ba94547b27c81096e47239d7d",
+      "bytes": 4125,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup0-v2/manifest.json",
+      "sha256": "53d388dcc01eaa345a09d0b12531f7b19066a3d671054472b58ef91d669ed370",
+      "bytes": 129145,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup0-v2/console.log",
+      "sha256": "f076343678a7107ba022f80a6993d7a9077855f5ab15848df064b606e874d096",
+      "bytes": 13909,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup0-v2/qemu-stderr.log",
+      "sha256": "7aebb86dd99af187bc2802f0c19e8777a9b39026051febc56d30db5947374617",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup0-v2/guest-output/ws73.pcap",
+      "sha256": "c65f9ff8a0b4658dfe5471d08167df51f49509688d1151a17f95bfca11481562",
+      "bytes": 101043,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup0-v2/guest-output/capture-stats.txt",
+      "sha256": "785110a0f00b557d9b3d2aef682bf62ee073a92f7d699204b4cd666b272812c3",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup0-v2/guest-output/connected-file/run.json",
+      "sha256": "08dd0833b2a210bd6b8525498c0c9b375a9fd26889de70738c1b0d70e6073eef",
+      "bytes": 52418,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup0-replay-v1.json",
+      "sha256": "46b489f39547ede0c2624753254ff7425b81b1c609d788fc30ca9cae5619df98",
+      "bytes": 86440,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-dup0-v1.json",
+      "sha256": "88c316d23206462fe4d8601b9681765838c9ec08889de339ca2799429814df76",
+      "bytes": 4087,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup1-v2/manifest.json",
+      "sha256": "cadc977c34ef5a4a08a0e434a32dc199a05cee023cd9abe68afbbabd35e02cd8",
+      "bytes": 129145,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup1-v2/console.log",
+      "sha256": "b2aa029d4b8ccae4275ae8991aea0ba621b2b900b9e5af410cba7f7cd31b3abb",
+      "bytes": 13909,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup1-v2/qemu-stderr.log",
+      "sha256": "8c11cdfda617a4e4a412c7766c8742a47e2e4bac006266924fbded4a91362bfa",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup1-v2/guest-output/ws73.pcap",
+      "sha256": "a553c6f0844fa9c495f0773ea0f72675cb1ded1a3f4f8dfc54caaf4d55543335",
+      "bytes": 101043,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup1-v2/guest-output/capture-stats.txt",
+      "sha256": "785110a0f00b557d9b3d2aef682bf62ee073a92f7d699204b4cd666b272812c3",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup1-v2/guest-output/connected-file/run.json",
+      "sha256": "d1dcc4c2bc7b62d2a331f1976429eea6ae2124cbe478c4ef1df98580a2e4a5c7",
+      "bytes": 52420,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-dup1-replay-v1.json",
+      "sha256": "05ca0a5f442de9e7b69897d4bbe4be9dfd8dac1917f6a763fcff6e18b204a886",
+      "bytes": 86440,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-dup1-v1.json",
+      "sha256": "00a7548e2f60547583ab5b40859a9a537d02d1530cb79d37e52263e2c726ee19",
+      "bytes": 4087,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down0-v2/manifest.json",
+      "sha256": "226f044bc9c44f1ad14992f6712ff96f5f454166646123152c51f6da0fe488ac",
+      "bytes": 85538,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down0-v2/console.log",
+      "sha256": "caaf33329536175d4b3544aff1e8b9134db8f6245c07293b66578a8549de22d6",
+      "bytes": 14128,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down0-v2/qemu-stderr.log",
+      "sha256": "1c97d9f436595f2a21eb077167425aa2b9c3bd0929c1b4f9bbb42ce5ee4d5eeb",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down0-v2/guest-output/ws73.pcap",
+      "sha256": "64f9fe8a64587a926e083b3b0022df2a04ce6f0da741caa4f26ae1bdf455dadc",
+      "bytes": 84521,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down0-v2/guest-output/capture-stats.txt",
+      "sha256": "a474b0d6449b0a6b777c471c6abb550b233c2d596f7faf9290f68c7d2a4cfd66",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down0-v2/guest-output/connected-file/run.json",
+      "sha256": "83a404ed0d5ac01b977037de278b6fd3101b5d3eb69ef1e8c99a1f09b1ddcdfe",
+      "bytes": 56209,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down0-replay-v1.json",
+      "sha256": "5c4e845260014d825364b6f275dbcce0784ae2f3f87fd2febc1489faa1f08b7d",
+      "bytes": 39889,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-down0-v1.json",
+      "sha256": "eff12b7d4157a10ae56ca011d61db315bfe4c31deab95a851fc6d9331c54e6f3",
+      "bytes": 4094,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down1-v2/manifest.json",
+      "sha256": "fef39969b2080b658cfa9c6a2dccc528f2a9319f0281fb7fd74d0cb0da27e403",
+      "bytes": 85538,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down1-v2/console.log",
+      "sha256": "67961b6768bf19587197cc9801d610cfd192e9e890a7eb62c9f6b963c742a7b6",
+      "bytes": 13938,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down1-v2/qemu-stderr.log",
+      "sha256": "19c26821b8cc4291dcd44e7f774b553efea37aa345e5389a4e25925a66ac87c3",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down1-v2/guest-output/ws73.pcap",
+      "sha256": "a006efaa9bce698574f7614db3f0de0b65cf483e3bbcd3ca9b9fbab97f79a86a",
+      "bytes": 82871,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down1-v2/guest-output/capture-stats.txt",
+      "sha256": "34f84e708d74e1e51353b8edc554c856a41412625a22421f0d3146c986e5576e",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down1-v2/guest-output/connected-file/run.json",
+      "sha256": "aaf0e0b070f198076344acd09df96d8882fa91b80249095e6cc71151eb30ab5e",
+      "bytes": 56208,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-down1-replay-v1.json",
+      "sha256": "5ce0dae937c6a5ba02339cf5433b452e89ad3c0636da664cb33241503afa317e",
+      "bytes": 39889,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-down1-v1.json",
+      "sha256": "37a6d939d8c7bc04e017e1d8cbbf40430eab35645903ea8fae328beb90966cee",
+      "bytes": 4117,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline0-v2/manifest.json",
+      "sha256": "213b90efb5f9ea46a0d86560b38c74c22e811a5759001907c9ef6a9ad76b5356",
+      "bytes": 84295,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline0-v2/console.log",
+      "sha256": "99a0af8d7910a02968db3cd77b6347463f05b0ab4e27cadc78b5cc79b805a12a",
+      "bytes": 13937,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline0-v2/qemu-stderr.log",
+      "sha256": "088e121ada88f3c922db238e76a79fceb655b0ea5ffd32bfc77c094c72de2392",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline0-v2/guest-output/ws73.pcap",
+      "sha256": "566051a44ff9be1727e0c2ca92ac284ef141eb3272fe239c2b5f9a5384ef8d8e",
+      "bytes": 94439,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline0-v2/guest-output/capture-stats.txt",
+      "sha256": "6a825326c4593f305cd82cb53804fb40b3f55b8d00357a00b1e4a9fe865d3d3d",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline0-v2/guest-output/connected-file/run.json",
+      "sha256": "82db667ccf11ce2bcf7978e937c66970debd3039bedaf7864113e93e7961d951",
+      "bytes": 55827,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline0-replay-v1.json",
+      "sha256": "4f9923fe569734dd1b0b5ea87d48f0399a7a525e848e601a139e6159e844980c",
+      "bytes": 38542,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-deadline0-v1.json",
+      "sha256": "cb3d9676100c9c91f6667ed337b5439f2d6a0db9ad3dfaad8ac165ce8db95aaf",
+      "bytes": 4136,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline1-v2/manifest.json",
+      "sha256": "8d4e71b435c5fd3b3c168c096e60108fdde43c875eea8a2ee5aae389660f6406",
+      "bytes": 84295,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline1-v2/console.log",
+      "sha256": "26ec7d86b4cc6f398c4e47af95358f779aa79ff5c5625ec7c4967ebdac4ea850",
+      "bytes": 13937,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline1-v2/qemu-stderr.log",
+      "sha256": "4e50a3a5f093a2d46a330560deb09b2381edc13de1ccac233fbfc768388b2934",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline1-v2/guest-output/ws73.pcap",
+      "sha256": "4b3b13fc110097d08f8e0af788507f62ed94c1fa0c45c1dca95fc6f89c50ea91",
+      "bytes": 94439,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline1-v2/guest-output/capture-stats.txt",
+      "sha256": "6a825326c4593f305cd82cb53804fb40b3f55b8d00357a00b1e4a9fe865d3d3d",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline1-v2/guest-output/connected-file/run.json",
+      "sha256": "b8f6cbcc20fc3216e708c29ba68aeea83b6cc4c126849173b906fed22625db6c",
+      "bytes": 55828,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-deadline1-replay-v1.json",
+      "sha256": "2e02969b313916597b683e34b04c7ee52447bd77c84fc89444313b69c4f7c6a9",
+      "bytes": 38542,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec1-deadline1-v1.json",
+      "sha256": "a2f90679ef04b5838b75b7ad312a418b0e05e987123d6cc4da81b9da1788aee7",
+      "bytes": 4136,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release0-v2/manifest.json",
+      "sha256": "47826d69f96ac47f135caf02bfce171f0759b747a184ed928ebc71ca25129d14",
+      "bytes": 112951,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release0-v2/console.log",
+      "sha256": "df8d76e379407ff7d8fe8d45b70cc5d71aaca47bf698ae0a2a410fc443f91dcc",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release0-v2/qemu-stderr.log",
+      "sha256": "9098a12b770849ab5f055e81c99a3eef52937be4c4c6689b9a76831ec5f56ca8",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release0-v2/guest-output/ws73.pcap",
+      "sha256": "93f06df531cb38078ce8748d9d21405f6e7e415ca9925ae2b6639c4be59abbb2",
+      "bytes": 93475,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release0-v2/guest-output/capture-stats.txt",
+      "sha256": "7dbe87964d9bceb6a6cacbcf84f5fd787d08ce5e14c95a1a30a97e6670bb9d04",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release0-v2/guest-output/connected-file/run.json",
+      "sha256": "6232c03251c1dfa3e62b5770766d3bbfe22392ca89df2429d6742856b9a202f7",
+      "bytes": 54498,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release0-replay-v1.json",
+      "sha256": "14ecfab7d38740fd7add2ea21e641ec3771bc7223479efc72da651bf7d5cbf2d",
+      "bytes": 69217,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-release0-v1.json",
+      "sha256": "9a22ab4bbb037eea3109bfaa856b2287be050cf2fb5d2ae480901c9faa2ea3e1",
+      "bytes": 4163,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release1-v2/manifest.json",
+      "sha256": "d49a68814b90c151c4aaaeba8d1e56a03d90c85f42acc72382364da32c974005",
+      "bytes": 112952,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release1-v2/console.log",
+      "sha256": "716ee467d792b68c1756cd3d946d5c194f8898c2236649428e31ded0fbdd7eb5",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release1-v2/qemu-stderr.log",
+      "sha256": "0760bbf9788316227b391b8158bf70e12115589c4f0c552aa2aedd482960badf",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release1-v2/guest-output/ws73.pcap",
+      "sha256": "57374ab6c63ecde3034ae1bed3f6bc7d115f4b1d97cc8ff25c416732544be674",
+      "bytes": 93475,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release1-v2/guest-output/capture-stats.txt",
+      "sha256": "7dbe87964d9bceb6a6cacbcf84f5fd787d08ce5e14c95a1a30a97e6670bb9d04",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release1-v2/guest-output/connected-file/run.json",
+      "sha256": "e761af46a52ef1bcabb59eb5cd5d59d826a372d54ad3e63faced03d5226c3daa",
+      "bytes": 54498,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-release1-replay-v1.json",
+      "sha256": "73ca5f697f78439db95703911a796eecebc91e4359c85437b8db852cc6906ad6",
+      "bytes": 69218,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-release1-v1.json",
+      "sha256": "5ac8830d2e2b46a4f420e604618557024c548b3df229a40f956192f52cd612b3",
+      "bytes": 4163,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close0-v2/manifest.json",
+      "sha256": "133860b1c3bccdc1072d168962d6383e2002f218d5c585ecb36420f2b4e14417",
+      "bytes": 112882,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close0-v2/console.log",
+      "sha256": "a937a16c68059f08f3bce76dfb006bad6d2279eedea5adcbd83c02775e8df0a4",
+      "bytes": 13911,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close0-v2/qemu-stderr.log",
+      "sha256": "666df88675a45f1c209d23795062fa88877867c8077da095151ff8b3ee4639d1",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close0-v2/guest-output/ws73.pcap",
+      "sha256": "55cbedd407340f560f1971d3d7b628ef40cfde69b3f3cf2010d94a9b85cea517",
+      "bytes": 93475,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close0-v2/guest-output/capture-stats.txt",
+      "sha256": "7dbe87964d9bceb6a6cacbcf84f5fd787d08ce5e14c95a1a30a97e6670bb9d04",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close0-v2/guest-output/connected-file/run.json",
+      "sha256": "53fe136e89705a734eda50a254b4a9e6510f2942e5ac81673acdf30d61d539d4",
+      "bytes": 54396,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close0-replay-v1.json",
+      "sha256": "2376e8097c077ab1ede8f995b6b2bea99f0a7f2f30a9ad132b96d3b077053582",
+      "bytes": 69214,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-close0-v1.json",
+      "sha256": "fbae8e618c4fb16d4c7f51a6d2bd2a0304ef5c18e7b973f4b3277b1d4d28a26a",
+      "bytes": 4125,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close1-v2/manifest.json",
+      "sha256": "90e8d51cf76bafede720a095967fdc03ae301f9ca4ac69481c431f220ad3628e",
+      "bytes": 112882,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close1-v2/console.log",
+      "sha256": "c10407403ce935bcfba78d0a713287df9c4476b4d612b1b3aa373da50d2e59cc",
+      "bytes": 13911,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close1-v2/qemu-stderr.log",
+      "sha256": "986860f58f1e510a28bbbcdd9703246d1c704bd513ab52eed7a1f96072fe45d0",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close1-v2/guest-output/ws73.pcap",
+      "sha256": "3156f01e08bfa7f49e680886c82c34a980435a4a0cee0e9af34c54282900df29",
+      "bytes": 93475,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close1-v2/guest-output/capture-stats.txt",
+      "sha256": "7dbe87964d9bceb6a6cacbcf84f5fd787d08ce5e14c95a1a30a97e6670bb9d04",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close1-v2/guest-output/connected-file/run.json",
+      "sha256": "9a8e140c375b0ff29aa290020bcc329ac285f7b75768e189cb7341ccbe7db532",
+      "bytes": 54396,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-close1-replay-v1.json",
+      "sha256": "133a45fa23f012786dc005a3abbb416a851aea2c018d517b51ca5ae5bcabaac1",
+      "bytes": 69214,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-close1-v1.json",
+      "sha256": "54d26e3b15070b9e570e02ba34e87224089032644dd37e944bc302a35bfa91d0",
+      "bytes": 4125,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup0-v2/manifest.json",
+      "sha256": "cb46ae02e9a4bfc5a893799e3caf8bf6dec74926f44d5d00d70ab7a062315a4a",
+      "bytes": 128452,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup0-v2/console.log",
+      "sha256": "331f0fb5237f0c2baf670679f96f2238fa30d5d3c1a4093e764069b323465308",
+      "bytes": 13909,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup0-v2/qemu-stderr.log",
+      "sha256": "6527840dda0aa2d927a15f3d40091c6057edbf1126c7ff5500e495fb6417715e",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup0-v2/guest-output/ws73.pcap",
+      "sha256": "5da6a55316c6454657e39b91ffa4c234cd76e998914f310cac52725e73391f78",
+      "bytes": 100079,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup0-v2/guest-output/capture-stats.txt",
+      "sha256": "0ad34d0b3c26d9bb88832df3fef21e727eb31f8f9ec8902ac819ee4e76d283e5",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup0-v2/guest-output/connected-file/run.json",
+      "sha256": "a8a610b813755843e130b5f6531603650f17cfc19c79a4ca3278019dda10bc8d",
+      "bytes": 57445,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup0-replay-v1.json",
+      "sha256": "c38e1df0f29f5ac6080d87f37ae141dbab5f666c92be976b3d4bcc37bbd4eda6",
+      "bytes": 85699,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-dup0-v1.json",
+      "sha256": "b1cc54705f3b0af552e65ded1ac9e095c0fcc1a988c680b062f39553bc07ed3a",
+      "bytes": 4087,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup1-v2/manifest.json",
+      "sha256": "ffb59cc24564e01d9f50eef27e4546969e0cfaec6d5aedac7ae8ac1b6744844b",
+      "bytes": 128452,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup1-v2/console.log",
+      "sha256": "1ac89f189af3bd024fcad9ce00beb0e9534e7378532e9e957e3949065a0c35b9",
+      "bytes": 13909,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup1-v2/qemu-stderr.log",
+      "sha256": "18a8808ba778482b55ee3260d475e309ce4540fa29409e74e2872237f115f7b4",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup1-v2/guest-output/ws73.pcap",
+      "sha256": "ac2882172760c4542bbb1c12953efa9193fbaae7055b19f6a7b74bdf00b6f75c",
+      "bytes": 100079,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup1-v2/guest-output/capture-stats.txt",
+      "sha256": "0ad34d0b3c26d9bb88832df3fef21e727eb31f8f9ec8902ac819ee4e76d283e5",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup1-v2/guest-output/connected-file/run.json",
+      "sha256": "3f837dba7bf598875d664f9a2082eacec84d59e14e763cdc887f65888d64ca87",
+      "bytes": 57446,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-dup1-replay-v1.json",
+      "sha256": "f08d5e75b4e7004a2e53c152f6aa111379500a2ab8553bcddfa846cbc8391727",
+      "bytes": 85699,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-dup1-v1.json",
+      "sha256": "bcb343937cabae0f130e2214a51c908ea3b3c7d8c4f6f46f7cad96ac92e18f44",
+      "bytes": 4087,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down0-v2/manifest.json",
+      "sha256": "396eb79511eff6825bfdc9a9dd378459f158a2085ab175e89ea8e49eba0dc1c6",
+      "bytes": 84850,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down0-v2/console.log",
+      "sha256": "2747ae545c71bb6a48671987d638c16647930f1854b88f7f9f3722a81d8f0bee",
+      "bytes": 13938,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down0-v2/qemu-stderr.log",
+      "sha256": "19d7b716e74ac0af35faebfa4b38a6d65cd02f560f226f05b52e5d0aa70b89d5",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down0-v2/guest-output/ws73.pcap",
+      "sha256": "d8b4082f0f3e459e5b1642cdddd9ebb9fb625f74160111a8d4d8d19ea8a29bca",
+      "bytes": 86032,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down0-v2/guest-output/capture-stats.txt",
+      "sha256": "9f4cbecdd51c08451cf01fd91159bd201db450dab7f3d9da9caa6ca87b1b4d8b",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down0-v2/guest-output/connected-file/run.json",
+      "sha256": "3afd26988d8ecd3b7e50807c43b4718b37a830a7fa11bb78787c3c6a1214a244",
+      "bytes": 61235,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down0-replay-v1.json",
+      "sha256": "60010a50273bbdf694a63a6c4111b2d376855b0af9a060b31cb377c8dafc9455",
+      "bytes": 39153,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-down0-v1.json",
+      "sha256": "27851f522cd74eb0dc4d6a2c8e5b99c28ac8b6d32a88345cfbf26720cbef4c1f",
+      "bytes": 4094,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down1-v2/manifest.json",
+      "sha256": "63ef8600b1ba66b680ed5ebd4a47f909fd09152cecfefbbb3df1253d39a468f7",
+      "bytes": 84850,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down1-v2/console.log",
+      "sha256": "39c32fb5d3446f303e35789f0ae3181e4a38d31ea5ea874bc7cd3465dca94c4a",
+      "bytes": 14128,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down1-v2/qemu-stderr.log",
+      "sha256": "d78ff93ea59ed2fc5d01393efa58fd7d75e0d86adb291a64f52ed26b76f1ed72",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down1-v2/guest-output/ws73.pcap",
+      "sha256": "2eecc0cce86c6eafb66881f75f751429176507cf62b863d3c29ca66ae41db360",
+      "bytes": 84382,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down1-v2/guest-output/capture-stats.txt",
+      "sha256": "78d33580d9988bd32a34eacdd9d97336029d9d5b5eaa121e04b51db268f4b371",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down1-v2/guest-output/connected-file/run.json",
+      "sha256": "fb9baa9a9cc4090ce3f81bb71b285ee742b8fd497a3a1d2dba48143a93db4a37",
+      "bytes": 61235,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-down1-replay-v1.json",
+      "sha256": "cc69d94ed306e0d040844977d73b01e2bb93cb9f7a76e9054465c1b0dd84485a",
+      "bytes": 39153,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-down1-v1.json",
+      "sha256": "f69e6374eb65f532e8a2db4bceeb168b0ed5584a2cd9dda91a71ba616a4cf2ee",
+      "bytes": 4094,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline0-v2/manifest.json",
+      "sha256": "fc8d71dd923ddc9b641f70b937e95e98ec83c7992b6360182f910cd261ac8b4c",
+      "bytes": 83606,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline0-v2/console.log",
+      "sha256": "b7d0c5f00c119bbf0e3115f4fefc5b5f5adabc56b1446a5aedc6589c858569eb",
+      "bytes": 13937,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline0-v2/qemu-stderr.log",
+      "sha256": "f6aa92b45dc4ac0042690c36612a8b623c4d0569d7ac46220e836a5b34333774",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline0-v2/guest-output/ws73.pcap",
+      "sha256": "6b1a7cac21ca83abdb1105ea75e123e027fc47e201001ac741e0a845f9c5da8d",
+      "bytes": 93475,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline0-v2/guest-output/capture-stats.txt",
+      "sha256": "7dbe87964d9bceb6a6cacbcf84f5fd787d08ce5e14c95a1a30a97e6670bb9d04",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline0-v2/guest-output/connected-file/run.json",
+      "sha256": "64d8bfe6eb09df843ffd3586107c7902da9f92e72981878180c617fec6e8d6ef",
+      "bytes": 60855,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline0-replay-v1.json",
+      "sha256": "a21daf0baaeeafa55117a41e6f3c9a77863c5766eef8f7a21b52e9059303a98a",
+      "bytes": 37805,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-deadline0-v1.json",
+      "sha256": "6fca8b8aaf3f305a8cb1882a059b89793e51bc80642e7732d944fc0bbcebba17",
+      "bytes": 4136,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline1-v2/manifest.json",
+      "sha256": "a9fe15f62993e9c65e42239dfc642465f4e54b49aa5bd93029eab5289dfebd98",
+      "bytes": 83606,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline1-v2/console.log",
+      "sha256": "fa36626ef42758ac71ac8a19b6d39427e42a8fc6f1227dc4651633447a9a68a4",
+      "bytes": 13937,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline1-v2/qemu-stderr.log",
+      "sha256": "6385b7c5e641b09e5b7076aa8423a9ef135b325cf21ad446237ec8172e4c81d3",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline1-v2/guest-output/ws73.pcap",
+      "sha256": "2f3df6df84e083f208ed3678b353458e4fe9f30df2678b1f1deb78ed151d227d",
+      "bytes": 93475,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline1-v2/guest-output/capture-stats.txt",
+      "sha256": "7dbe87964d9bceb6a6cacbcf84f5fd787d08ce5e14c95a1a30a97e6670bb9d04",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline1-v2/guest-output/connected-file/run.json",
+      "sha256": "9a22e4989cba6b99d0a8638796a4321a44066de83760eea4d83d8563df573af4",
+      "bytes": 60854,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec2-deadline1-replay-v1.json",
+      "sha256": "e250d3cfb3026c8e20d673107528fb6d606f6223b51ec1452531049902354a82",
+      "bytes": 37805,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-sec2-deadline1-v1.json",
+      "sha256": "1e008745486eda15387281e2fe78e25ad8dacd73aada299418ca2de170b64146",
+      "bytes": 4136,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-qualification-v2.json",
+      "sha256": "7042f4a37e87489e0de1104e6b9003823839cd3a7b0c4382c0e181a88e0a0106",
+      "bytes": 27496,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-qualify-v2.py",
+      "sha256": "600b9f4272d388b965f8343a9ea42b641112206fe97d1119bcc0637879350329",
+      "bytes": 3997,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-build-prepare-v2.json",
+      "sha256": "83d35f03b2170b1c92952f9243e54a3ade7abedb2b11b5379809d9c45437e616",
+      "bytes": 4803,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-build-prepare-v2.py",
+      "sha256": "0bd05e73ae29c11393ff607cee3875593f269eb07dc719f24e1f630d9ed6ff62",
+      "bytes": 2849,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/manifest.json",
+      "sha256": "6ef7b4d1937047cf8d9180231a053869a47b8c032c136485717172497bec7ed0",
+      "bytes": 26523,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-normal-prepared-v2/manifest.json",
+      "sha256": "89c8dcfe523ec214ef7c24bd4ed0fa399fad8b3af0626aa3422e76448d30fb91",
+      "bytes": 277576,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-deadline-prepared-v2/manifest.json",
+      "sha256": "e024141d812cdd162b3635c72a0692a1812afdde0289584b687805cb5faf6518",
+      "bytes": 279422,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-artifacts-v1/manifest.json",
+      "sha256": "1ccf3d01364acb2fb673d837fd41e3e42cddaed629d4d7b4bfa9446477e7cbb7",
+      "bytes": 229023,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-modules-v1/manifest.json",
+      "sha256": "ff09ea1cac0c96aea94c04f5f9031cb2f252508e97f31005d473301e28b4e079",
+      "bytes": 2381,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-smoke-v2/manifest.json",
+      "sha256": "51c51999218a7762c4696caf75374fb12a09d6f9e2a3cdaeb0ffe609bbd0f85b",
+      "bytes": 37497,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/security-grant-deadline-smoke-v1/manifest.json",
+      "sha256": "40e922bb578f3c25ed3e6b942c28fbd7d211944dafeca21ae66d204a026139d6",
+      "bytes": 37391,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-frozen-tools-tests-v1.log",
+      "sha256": "8a77c4aecd2830f07935181449226cb010165ab54da72772cc2ab3d984ce7391",
+      "bytes": 836,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-frozen-tools-tests-v2.log",
+      "sha256": "381f0a41da3436644fb577b95c4eb7232bdad7dedf5f44e289e2be73a8b68560",
+      "bytes": 837,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-tools-tests-v1.log",
+      "sha256": "ea0d4de075e776364c25bf4746b5e3eeab57f1671f74129ec4ea661839474268",
+      "bytes": 830,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-tools-tests-v2.log",
+      "sha256": "83ec092af96e07038a5cac73f536b93486c35362fbdd956963344a8821d69048",
+      "bytes": 834,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-tools-tests-v3.log",
+      "sha256": "f0f0923e365a4498b5c8abfc8039a3383ff52622a82eb69f81eec770fdc515a8",
+      "bytes": 835,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-tools-tests-v4.log",
+      "sha256": "aa4b8316fb9f41657fe77ebdef5f431a5c031f3fe45edaf99076dde23261117a",
+      "bytes": 836,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-python-CABI-v1.log",
+      "sha256": "b906ab33b27efbe5191e40c66828cb48c9f464d2d4373b1e3189cb6052d9240e",
+      "bytes": 7215,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-python-CABI-v2.log",
+      "sha256": "23b1bbdf9d4b2b11c34dcdc43632d3bcae7f0873568f6e574486ba7a29d4a59f",
+      "bytes": 5470,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-python-CABI-v3.log",
+      "sha256": "7271eefd9cd449d07db8e59adcdfea8e8f65de143eb85a16ec81e04eb69941fb",
+      "bytes": 5470,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-docs-v1.log",
+      "sha256": "172ea50b9c5988d30a9bb8236890cd62a1e2bb3f2134e1902d8ea94b93817863",
+      "bytes": 314267,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-docs-v2.log",
+      "sha256": "7cb3a10046d303b3f2cf784ae821337c5a6de164b1d125b9013a1494a1e2638e",
+      "bytes": 314267,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-historical-replay-v1.json",
+      "sha256": "a66e5dde9746866655b6704e1ed9a56408ae90492b3bcec4cc6a0219e13125ed",
+      "bytes": 1247,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-offline-inputs-v1.json",
+      "sha256": "440ddf92adf4ef77600e4a7d1d812b80bd470aa8f64a00ed2d1d3969975fb8e6",
+      "bytes": 1390,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-source-mapping-v1.json",
+      "sha256": "920fb4b2a5ea7d2e6dc4edde58733ef954873adfd7f08d3ab135e0c0d57fd19f",
+      "bytes": 1439,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-original-failure-replay-v1.json",
+      "sha256": "aacae53bc6a228c535dc3ac3b150551a7065f15e0164d91efe6fe53edf7a9f55",
+      "bytes": 65773,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-original-failure-negatives-v2.json",
+      "sha256": "06246df25f83e9b16e259a8896daf1f59f58e5c87093dc53f65bade925c0d166",
+      "bytes": 1145,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-failure-negatives-v2.py",
+      "sha256": "7f3c72ab84713a8d4a91d0e0d7c36c5851486d20c951f6a33831da6c96591b1d",
+      "bytes": 2428,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-negative-caller-failure-v1.json",
+      "sha256": "c63528f842946055396f39c1bbd6994ef4c35606750c85d8401bfe4f611080bd",
+      "bytes": 786,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-preparation-failures-v1.json",
+      "sha256": "5c61eb8c429ab9b8e3eaf8dc749934ab8d6c4b5e237ed1750911346b3de97d73",
+      "bytes": 1045,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-qualification-v1.json",
+      "sha256": "e59654d0a226f58a99004f6bf2d2101c364c49e128a7bd31ec6b7a5d5996e8fc",
+      "bytes": 2022,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v1/manifest.json",
+      "sha256": "b5585285698d55fd136a86207d98d3bee6e31a9db313db85688edb21dff6af04",
+      "bytes": 47998,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v1/guest-output/ws73.pcap",
+      "sha256": "e3dfc6e3b92f975da11786873d2c0d20737e0e14c2a38f90fb4f8279dbb65b30",
+      "bytes": 94439,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v1/guest-output/capture-stats.txt",
+      "sha256": "6a825326c4593f305cd82cb53804fb40b3f55b8d00357a00b1e4a9fe865d3d3d",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-sec1-release0-v1/guest-output/connected-file/run.json",
+      "sha256": "1de8c3f64d95e364bca6d10d3143fd7fb086e94e6d0bead8d92adbb9505d13a2",
+      "bytes": 49472,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-replay-summary-v1.json",
+      "sha256": "9c6de8395b48b6ac9195c2d4e047a98b7360a125d7c627390e7c8fac34582b4c",
+      "bytes": 4178,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-replay-all-v1.py",
+      "sha256": "cc1144502b05e698eea9e6fdae8737b0ec3f555608fc2c2ed31b316aa02c36fa",
+      "bytes": 1735,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-evidence-negatives-v1.py",
+      "sha256": "f0468e2c2a7d85852dde2d54709a78a91020e0f0e7dc88202c8709773fc57402",
+      "bytes": 5214,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/session-event-replay-case-v2.py",
+      "sha256": "12e4ad6d265c4d582aef4485fa42b6d4d171ebcb34a7b91a3daafd61c01b25b3",
+      "bytes": 3031,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-ssap-consumer-audit-v2.json",
+      "sha256": "9a780f14b81b8f196957ddc80ce4c99031a9d9b93108425089de57dd6498179f",
+      "bytes": 2676,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/data-deadline-qemu/qemu-system-x86_64",
+      "sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-normal-prepared-v2/root.btrfs",
+      "sha256": "51889c09951439baf81cdf216a8e4dc2732b2f74620bae6a14e74faa89364729",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-normal-prepared-v2/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-normal-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-normal-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-deadline-prepared-v2/root.btrfs",
+      "sha256": "29dc80a9b94e90280c7e43095721a918a688af5bac12d9f2eff17814c0cba264",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-deadline-prepared-v2/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-deadline-prepared-v2/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-deadline-prepared-v2/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/390a634b6032/slkd",
+      "sha256": "246e3ae2f71cd96a5378b753d0cc902f2b3ba9bd1964911dc458e7d0fcb68946",
+      "bytes": 10579552,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/390a634b6032/slctl",
+      "sha256": "a6c0c7432f2f85cd8473a1639603b464208dc9a38dbbdfee2c3d34f21826deef",
+      "bytes": 7828432,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/390a634b6032/slktest",
+      "sha256": "5bb2e137ac1139f528ec0ccfa06e2285fb6f99a72e089792ca717c3a88c42dab",
+      "bytes": 5264304,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/390a634b6032/slkconfig",
+      "sha256": "09560f3e0b4263d08b220ee0dad8a0bf0fd84532cf244bf92bce9dac92acea3d",
+      "bytes": 1404136,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/390a634b6032/slkmon",
+      "sha256": "b29f1cf8f8e81a3c87d253911b93dfe79d916fcf8fa0c24384d6537c9a14e4ae",
+      "bytes": 1662328,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/390a634b6032/slkdump",
+      "sha256": "93929b9aaa903d2039077a59a399b978266c461889a5f9251be42f776a40e744",
+      "bytes": 1662200,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/libexec/opensparklink/native-lab/390a634b6032/liblibsparklink.so",
+      "sha256": "3126822aa5dc51cb00a823d0f9641c33ce22cdbe7fb4e95fd1ecc81fb74460bd",
+      "bytes": 548536,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "833f51baa399353d7b8cc20e7c0cad3b131d05723042ce739ced2732178d4ae8",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "0186812dc8fac048bd71bc0bc6196f89cd40de25edfe43be57672f62d4140687",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-service-bundle-v2/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Owner workspace originals,no verified offsite archive;USB/firmware/key-install materials stay private. Missing/hash mismatch cannot verify PASS."
+    },
+    {
+      "path": ".dev/protected-lifecycle-publish-v1.py",
+      "sha256": "413f892690e50255abbb6e152d1132ed7e2a403133bd88bfe2e569a9c0a1e76e",
+      "bytes": 11372,
+      "access": "private",
+      "retention": "Private source-of-publication helper;not production/real controller evidence itself"
+    },
+    {
+      "path": ".dev/protected-lifecycle-historical-replay-v2.json",
+      "sha256": "8f49e496fbafc150e60a91ead2d75cad821b80494eba334c6b088a81debae3a1",
+      "bytes": 1286,
+      "access": "private",
+      "retention": "Owner workspace retained original;missing/hash mismatch cannot verify claimed result"
+    }
+  ],
+  "replay": [
+    "Frozen390 tools:read_capture/check_capture_stats -> ws73_connected_file_gate.corroborate with originalrealhold/QEMUstderr/hostidentity;compare completeJSON value,then18copieddecodedevidence negatives percase.",
+    "Originalbuild/preparemanifests bindSDK111 7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3;QEMU05a3b654...normal ande4bcb57...deadline;K619 five signedmodules,Virtualnotstaged.",
+    "Workspace originals maintaineronly,no verifiedoffsitearchive. Missingreport/artifact,captureloss/hash/identity/scopemismatchcannotshowcurrentPASS."
+  ],
+  "wall_ns": 1792196673631533397
+}

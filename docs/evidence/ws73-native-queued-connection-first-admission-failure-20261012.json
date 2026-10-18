@@ -1,0 +1,65 @@
+{
+  "status": "REAL_NATIVE_CONNECTION_QUEUE_ADMISSION_FAILED",
+  "normal_vm_attempt": 81,
+  "actual_kernel_head": "49699d6f11a5c1802508ac748d4a5e7d0b39d1d4",
+  "actual_service_head": "88b9eb335b5083ae24bb639bc57055910cc0d5b8",
+  "actual_tool_head": "903e11cce1ed2d0adcbadf84801d30095e58119e",
+  "capture_packets": 533,
+  "kernel_capture_drops": 0,
+  "qemu_exit": 0,
+  "probe_stderr": "line 110: !ioctl(writer,SL_IOCTL_CONNECTION_SUBMIT,&input) errno=16\n",
+  "completed_original_discovery_cases": 6,
+  "completed_native_connection_cases": 0,
+  "original_peer_records_independently_checked": true,
+  "no_create_or_disconnect_out": true,
+  "native_connection_queue_acceptance": false,
+  "root_cause": "Host.revoking retained after settled cleanup and new lease commit; fix46db23b pending new-kernel VM qualification",
+  "connected_lifecycle_acceptance": false,
+  "inflight_reply_acceptance": false,
+  "automatic_recovery_acceptance": false,
+  "root_cause_closed": false,
+  "whole_managed_acceptance": false,
+  "full_goal_complete": false,
+  "artifacts": [
+    {
+      "path": ".dev/native-queued-connection-real/manifest.json",
+      "sha256": "099ebac22738431a02f84dcde6459514ca43ed641462298c4db68608f97a0e8a",
+      "size": 43384
+    },
+    {
+      "path": ".dev/native-queued-connection-real/console.log",
+      "sha256": "d22b0417f520985046ba4cf8594364a722c328024abeaf873266ff7437705fb7",
+      "size": 367657
+    },
+    {
+      "path": ".dev/native-queued-connection-real/guest-output/managed-queue/run.json",
+      "sha256": "87ce50dc325fb1f9f523787be7fc7e6bcd3ab0f2f6d0dcd48d51f46d8dbe8ba8",
+      "size": 73467
+    },
+    {
+      "path": ".dev/native-queued-connection-real/guest-output/managed-queue/probe.jsonl",
+      "sha256": "d59b875a0a5ce5d03416f9a2a0de3e54053c7c557beb67218ad55a19f04e7838",
+      "size": 68371
+    },
+    {
+      "path": ".dev/native-queued-connection-real/guest-output/managed-queue/probe-stderr.txt",
+      "sha256": "ff2fe08a8df9b30106d265885b5e0fa0c6f427297d294974577ca0134bf20375",
+      "size": 68
+    },
+    {
+      "path": ".dev/native-queued-connection-real/guest-output/ws73.pcap",
+      "sha256": "7ac7daf6967f22a2c0588b34a1c3a0105a2d254c65a5de2d394aaddc6f643ae9",
+      "size": 64536
+    },
+    {
+      "path": ".dev/native-queued-connection-real/guest-output/capture-stats.txt",
+      "sha256": "41276337ea342d26415b3a860292ca8cda6aa31d5dda7095278ad21bc8b9c5f7",
+      "size": 225
+    },
+    {
+      "path": ".dev/native-queued-connection-prepared/manifest.json",
+      "sha256": "b85d0fde6a2c022ede8efd3085e4260a5b83af9a4512ec593a8d47a01184e39e",
+      "size": 240656
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "kernel_test_commit": "ccc26618105bfe32450c6bcc975e9cbe3fa3ae61",
+  "production_artifact_qualification_unchanged": "7025d21cf7be00d978ec959aab49708d58741c26",
+  "result": "OFFLINE_COMPILE_AND_RELOCATION_LIMITED_PASS",
+  "change": "Two stale absolute host UAPI links become relative to the same canonical include/uapi/linux headers. No production source or UAPI byte changes.",
+  "checks": [
+    {
+      "name": "current-relative-target",
+      "command": [
+        "clang",
+        "-std=gnu11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-c",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/architecture-r4e-command-worktree/tools/testing/selftests/sparklink/sparklink_no_ghost_backend_test.c",
+        "-o",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/architecture-r4f2-header-path-gate-v3/consumer.o"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "relocated-current-consumer",
+      "command": [
+        "clang",
+        "-std=gnu11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-c",
+        "/tmp/sparklink-relocated-headers-jeraoiwn/tools/testing/selftests/sparklink/sparklink_no_ghost_backend_test.c",
+        "-o",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/architecture-r4f2-header-path-gate-v3/relocated-consumer.o"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "relocated-both-headers",
+      "command": [
+        "clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-c",
+        "/tmp/sparklink-relocated-headers-jeraoiwn/tools/testing/selftests/sparklink/both.c",
+        "-o",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/architecture-r4f2-header-path-gate-v3/both.o"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "restored-exact-old-absolute-target-negative",
+      "command": [
+        "clang",
+        "-std=gnu11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-c",
+        "/tmp/sparklink-relocated-headers-jeraoiwn/tools/testing/selftests/sparklink/sparklink_no_ghost_backend_test.c",
+        "-o",
+        "/home/sanchuanhehe/Documents/opensparklink/.dev/architecture-r4f2-header-path-gate-v3/relocated-consumer.o"
+      ],
+      "exit": 1,
+      "log_sha256": "a5e5d072528651f306839a99eaffea6a9c7aee5231bffc92a56988325cd0bd58"
+    }
+  ],
+  "source_mapping": {
+    "path": ".dev/architecture-r4f2-test-link-source-mapping-v1.json",
+    "sha256": "933dea107a77bc9f0d385efd2ae15b3a328cacdbea0d5128c45c5457680db286",
+    "bytes": 8890,
+    "access": "private retained workspace;compile-only logs/source identities;matching checkout and clang required to replay"
+  },
+  "manifest": {
+    "path": ".dev/architecture-r4f2-header-path-gate-v3/manifest.json",
+    "sha256": "c79a125ab1a25563db0957a353c49170d6d6b7079df0d6e2c9a0a58cd62b02d7",
+    "bytes": 3768,
+    "access": "private retained workspace;compile-only logs/source identities;matching checkout and clang required to replay"
+  },
+  "tool": {
+    "path": ".dev/architecture-r4f2-header-path-gate-v3.py",
+    "sha256": "201bfefeee838d7eff8fad51762009be48e8a98dddaef0b7fbf0ed1b0c2b93de",
+    "bytes": 3694,
+    "access": "private retained workspace;compile-only logs/source identities;matching checkout and clang required to replay"
+  },
+  "failed_attempts": [
+    {
+      "path": ".dev/architecture-r4f2-header-path-gate-v1/original-broken-target.log",
+      "sha256": "a619cda0caa9db8403a0f8c9e1c948d9933c7672d3a05827e24a667fda702583",
+      "bytes": 135,
+      "access": "private retained workspace;compile-only logs/source identities;matching checkout and clang required to replay"
+    },
+    {
+      "path": ".dev/architecture-r4f2-header-path-gate-v1/current-relative-target.log",
+      "sha256": "c2ddb0876185e440dd4d949c06b47175a33c0e395dccfb03228d01d03a5679ea",
+      "bytes": 135,
+      "access": "private retained workspace;compile-only logs/source identities;matching checkout and clang required to replay"
+    },
+    {
+      "path": ".dev/architecture-r4f2-header-path-gate-v2/manifest.json",
+      "sha256": "060b2f845922add1f457568120022e22190ab0705afe3aa4efc89e16d9593685",
+      "bytes": 1782,
+      "access": "private retained workspace;compile-only logs/source identities;matching checkout and clang required to replay"
+    },
+    {
+      "path": ".dev/architecture-r4f2-header-path-gate-v2/current-relative-target.log",
+      "sha256": "bf13851a6dface08480df45d0c452caddae99bc414434c9ab40cc57249acfaba",
+      "bytes": 737,
+      "access": "private retained workspace;compile-only logs/source identities;matching checkout and clang required to replay"
+    }
+  ],
+  "limits": [
+    "Compile-only,not execution of empty-registry probe or kernel/VM/RF tests.",
+    "v1failed at sandbox ccache,does not establish intended missing-header negative. v2wrong raw include path correctly triggered kernel exported-header Werror. v3 uses actual public headers and system exported Linux types;no warning disabled.",
+    "Three positive compiles and one exact restored-old-link missing-header negative,not arbitrary nonzero accepted as intended failure.",
+    "Selected artifact remains7025/Uc032/tools997;only declared75production files equalccc,not transfer of all7025qualification to wholecccHEAD.",
+    "No raw ioctl removed in this two-link patch. Remaining DLI event/raw ABI/permissions/test migration and complete architecture still open."
+  ]
+}

@@ -1,0 +1,440 @@
+{
+  "schema_version": 1,
+  "status": "IMPLEMENTED_OFFLINE_AND_SCOPED_REAL_NEW_CONFIG_PASS; complete scopes open",
+  "kernel": "dfc641ae112d872b154e75bbb3ec1ef51399ea3c",
+  "service_and_runner": "78fd3f14f5fb177dc2b728675160044e41036bfa",
+  "source_audit": "docs/evidence/measurement-config-retirement-audit-20261014.json",
+  "build": {
+    "workspace_relative_path": ".dev/native-measurement-config-v3-retirement-build-record.json",
+    "sha256": "13fb06beebe4d3deb25e122826f2a998b6b3ded16663adca25385d48f9d325d3",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "pipeline": {
+    "workspace_relative_path": ".dev/measurement-config-v2-retirement-pipeline.json",
+    "sha256": "23ca18fb858129e54dbac728f444d00330e28944670ed26ad61bffc8d378cb9f",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "configuration": {
+    "status": "PASS_EXPLICIT_RETIRED_SYMBOL_DELTA",
+    "source_head": "654216743b68c7aa6d6f6dec0c360628277ef1cd",
+    "old_sha256": "37e9ce68829eb00ed007bbe1f8a158ee4bc5c78b3b750d3c7813143fdde6b9e7",
+    "new_sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+    "allowed_removed_symbols": [
+      "SPARKLINK_SLE",
+      "SPARKLINK_DEBUGFS"
+    ],
+    "diff": [
+      "--- \n",
+      "+++ \n",
+      "@@ -2199,8 +2199,6 @@\n",
+      " ",
+      " CONFIG_SPARKLINK=y",
+      " CONFIG_SPARKLINK_GENL=y",
+      "-CONFIG_SPARKLINK_SLE=y",
+      "-CONFIG_SPARKLINK_DEBUGFS=y",
+      " CONFIG_SPARKLINK_DRIVERS=y",
+      " CONFIG_SPARKLINK_STANDARD_USB=m",
+      " CONFIG_SPARKLINK_WS73_USB=m"
+    ],
+    "scope": "explicit retired-symbol delta only; no silent driver/compiler/hardening/crypto option changes"
+  },
+  "core_only_config": {
+    "report": {
+      "status": "PASS_CORE_DOES_NOT_FORCE_CRYPTO",
+      "scope": "actual Kconfig evaluation only; not build or hardware",
+      "config_sha256": "05018d466e42ef4800b8c63de5de0a80cfe455a0cc406b96dcf2f66df2bd7e6b",
+      "values": {
+        "RUST": "y",
+        "SPARKLINK": "y",
+        "SPARKLINK_DRIVERS": "n",
+        "CRYPTO_SM3_GENERIC": "n",
+        "CRYPTO_SM4_GENERIC": "n",
+        "CRYPTO_ECDH": "n",
+        "SPARKLINK_SLE": "n",
+        "SPARKLINK_DEBUGFS": "n"
+      }
+    },
+    "source_kernel": "654216743b68c7aa6d6f6dec0c360628277ef1cd",
+    "scope": "actual Kconfig evaluation only; identical net Kconfig in qualified kernel, not build/security/hardware proof"
+  },
+  "vm": {
+    "manifest": {
+      "workspace_relative_path": ".dev/native-measurement-config-v2-retirement-virtual-vm/manifest.json",
+      "sha256": "b4018a3be4a4e630c447213f5a2faa9d2717f9f7088f85a8c5229baa89259e65",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "module_rounds": 2,
+    "queries": [
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1",
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1"
+    ],
+    "refusals": [
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=83 unchanged=83 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=83 unchanged=83 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=83 unchanged=83 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=83 unchanged=83 mixed_stats=ENOTTY"
+    ],
+    "syscall_checks": 332,
+    "root_eopnotsupp": 166,
+    "ordinary_observe_eopnotsupp": 34,
+    "ordinary_protected_eperm": 132,
+    "buffers_unchanged": 332,
+    "mixed_stats_enotty": 4,
+    "removed_config_receipts": [
+      "VIRTUAL_GLOBAL_POWER_POLICY_PASS: removed_attrs=5 ENOENT",
+      "VIRTUAL_GLOBAL_POWER_POLICY_PASS: removed_attrs=5 ENOENT"
+    ],
+    "scope": "actual VFS/Runtime/workqueue/module/source-mapped refusal/independent File subset; standard transaction/expiry/cancel preserved; not complete IRQ or hardware recovery"
+  },
+  "no_ghost": {
+    "ws73": {
+      "workspace_relative_path": ".dev/native-measurement-config-v2-retirement-root-smoke/manifest.json",
+      "sha256": "ba701187fec30f5d707b889cd0024924f1c54ad03879d631117345345bb97ceb",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "standard": {
+      "workspace_relative_path": ".dev/native-measurement-config-v2-retirement-standard-root-smoke/manifest.json",
+      "sha256": "2dbf3014e23ed8c4aa2801eed504b1f43a960193109cde166ca2ef153cc1aebc",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "removed_attrs": 5,
+    "checks_per_module": 3,
+    "registered": 0,
+    "unbound_snapshot": "EINVAL",
+    "scope": "empty-USB isolated VM only; removed paths ENOENT cannot attach a backend"
+  },
+  "real_reports": [
+    "docs/evidence/measurement-config-retirement-real-short-20261014.json",
+    "docs/evidence/measurement-config-retirement-real-boundary-20261014.json",
+    "docs/evidence/measurement-config-retirement-fault-real-20261014.json"
+  ],
+  "normal_total": {
+    "round_trips": 48,
+    "boundary_rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "ordinary_refusal_and_affinity_receipts": 8,
+    "ordinary_refusal_syscall_checks": 664,
+    "capture_drops": 0,
+    "taint": 0
+  },
+  "offline": {
+    "backend_install19": {
+      "workspace_relative_path": ".dev/measurement-config-backend-bootstrap-final.log",
+      "sha256": "3a5e3d948c0fbc1944ec3deefc080d0dbee2807ced1e596a3684a82d95a12804",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "ingress9": {
+      "workspace_relative_path": ".dev/measurement-config-ingress-v3.log",
+      "sha256": "993cd04f92bceacbc16bce4a8fa52c73feee0fabd42fe15bd90711c967b39d57",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "native_host": {
+      "workspace_relative_path": ".dev/measurement-config-native-host-v3.log",
+      "sha256": "fb6c08bf8a4236254965cae88e5959da795e661650c56213aa8a3785bf02221f",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "diagnostic": {
+      "workspace_relative_path": ".dev/measurement-config-diagnostic-v2.log",
+      "sha256": "e3d0a171539ea258f2d7d506477a1b0c3720b8ae864fae6af6506ac53d1875ea",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "managed": {
+      "workspace_relative_path": ".dev/measurement-config-management.log",
+      "sha256": "2d2c6e1fc8d158bb8400810a4d7c546b11334c5328c77b6a690aad77f7f6a232",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "rust_tests": {
+      "workspace_relative_path": ".dev/measurement-config-user-tests.log",
+      "sha256": "e43e88b12c7dfa3b9f8d537250d8c127c7e1cbe47b026e270dbbaa4a43d84358",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "clippy": {
+      "workspace_relative_path": ".dev/measurement-config-clippy.log",
+      "sha256": "e800f1894ea3bf41d0cae9a17e644cc3a4c5037662cf44340f04e402c7d57c39",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "python_abi35": {
+      "workspace_relative_path": ".dev/measurement-config-abi.log",
+      "sha256": "42c1d990d5341ada363a996def7ace7f7e4eee4e1c4051cd35bb132e14654a0f",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "tools460": {
+      "workspace_relative_path": ".dev/measurement-config-tools.log",
+      "sha256": "f6eeebf6ac87ad05145440709b229629b77bedeb1419e309a1c61afbb863fcfe",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "history_power": {
+      "workspace_relative_path": ".dev/measurement-config-power-offline/report.json",
+      "sha256": "5f0d7e3fa0a77c963ff6588b62e74f21724ad5e3c8d08eb059b0b6a130ea2ef5",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "docs": {
+      "workspace_relative_path": ".dev/measurement-config-docs.log",
+      "sha256": "f43cc9dad648124d913e02077fb014f2c8f0a4930f7b780892adc7339c5d5f32",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "formal": "no new proof; config evaluation and fixture tests do not imply per-session credit/security implementation proof",
+    "actual_authorization4": {
+      "workspace_relative_path": ".dev/measurement-config-authorization-final.log",
+      "scope": "actual required config/entire UAPI access classes; not hardware"
+    }
+  },
+  "failures_retained": [
+    {
+      "workspace_relative_path": ".dev/native-measurement-config-retirement-kernel-build.log",
+      "sha256": "4c5b81d9bc3095a4c6e3d2e74ba5984216ed3f7d38a7e53497af1524a34c9351",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/native-measurement-config-v2-retirement-kernel-build.log",
+      "sha256": "5fa743cee9704825d58cd079068b85f3362b53036a94e5fe5aacd5b7428aadfe",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/measurement-config-backend-bootstrap.log",
+      "sha256": "b277d151ec6c0f95493ceb73117abd55dd23bf7f7baee701c6832e5cf309ff9a",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/measurement-config-retirement-pipeline.json",
+      "sha256": "718c9476df67728dc855eded2f331a3599cd57631b6ce753e681a13cbf78f9dd",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/native-measurement-config-retirement-root-smoke/manifest.json",
+      "sha256": "1e2f78de85171b73f4d39c577e5f6ee1755ce6d345070d7ab17fba7db68afb5b",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/measurement-config-ci-failure-v2.log",
+      "sha256": "11f3e590bfc978ec3c60851619a238761c1dce236753435954e0ec99d66fd62d",
+      "availability": "workspace-private original; not uploaded to public site"
+    }
+  ],
+  "ci": {
+    "frozen_source_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38469578021",
+    "head": "78fd3f14f5fb177dc2b728675160044e41036bfa",
+    "kernel_pin": "dfc641ae112d872b154e75bbb3ec1ef51399ea3c",
+    "status": "corrected exact-source CI all9SUCCESS; original frozen-source test failure retained",
+    "test_only_kernel_head": "94d84d39b6d2a3452287d67c2afd871989d202c5",
+    "runtime_diff_from_qualified_source": [
+      "tools/testing/selftests/sparklink/test_authorization_contract.py"
+    ],
+    "corrected_ci_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38471587159",
+    "corrected_ci_head": "45bb87c8b08890360cb6c05b0aad900a99d07a14",
+    "corrected_ci_kernel_pin": "94d84d39b6d2a3452287d67c2afd871989d202c5",
+    "corrected_kernel_boundaries": "success",
+    "jobs_success": 9
+  },
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "state": "OPEN",
+      "comment_id": 6155433217,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6155433217",
+      "body_sha256": "3a84a8be433994b1537434f67b62fea0b96fa2b3ba7c7f01fd0a44be04159ec2",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "state": "OPEN",
+      "comment_id": 6155434158,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6155434158",
+      "body_sha256": "3a84a8be433994b1537434f67b62fea0b96fa2b3ba7c7f01fd0a44be04159ec2",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 7,
+      "state": "OPEN",
+      "comment_id": 6155435432,
+      "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6155435432",
+      "body_sha256": "3a84a8be433994b1537434f67b62fea0b96fa2b3ba7c7f01fd0a44be04159ec2",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 11,
+      "state": "OPEN",
+      "comment_id": 6155436598,
+      "url": "https://github.com/OpenSparklink/linux/issues/11#issuecomment-6155436598",
+      "body_sha256": "3a84a8be433994b1537434f67b62fea0b96fa2b3ba7c7f01fd0a44be04159ec2",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 16,
+      "state": "OPEN",
+      "comment_id": 6155437632,
+      "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6155437632",
+      "body_sha256": "3a84a8be433994b1537434f67b62fea0b96fa2b3ba7c7f01fd0a44be04159ec2",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6155438840,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6155438840",
+      "body_sha256": "3a84a8be433994b1537434f67b62fea0b96fa2b3ba7c7f01fd0a44be04159ec2",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 4,
+      "state": "OPEN",
+      "comment_id": 6155439888,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/4#issuecomment-6155439888",
+      "body_sha256": "3a84a8be433994b1537434f67b62fea0b96fa2b3ba7c7f01fd0a44be04159ec2",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6155440972,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6155440972",
+      "body_sha256": "3a84a8be433994b1537434f67b62fea0b96fa2b3ba7c7f01fd0a44be04159ec2",
+      "readback_exact": true
+    }
+  ],
+  "still_open": [
+    "remaining unpublished old facades and standard complete event/result/loss/resync migration",
+    "finish public CI test migration; no CI PASS inherited",
+    "long PDU/credit exhaustion/backpressure/multichannel/four devices/unique SSAP",
+    "per-session trusted security/Bond/PHY/PM and full IRQ/callback/refinement",
+    "natural timeout/reenumeration/disappearance RCA and non-human automatic recovery/S6 release"
+  ],
+  "vm_only": true,
+  "natural_recovery_qualified": false,
+  "whole_issue_closed": false,
+  "goal_complete": false,
+  "no_transfer": "NOCP is not peer receipt; QMP/injection/manual operation is not natural recovery; config/source/model/hardware boundaries remain explicit",
+  "terminal_issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "state": "OPEN",
+      "comment_id": 6155700269,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6155700269",
+      "body_sha256": "b92fe6a5c72806b62ffe87075a3343094f917169b3091585157e828ff8e831eb",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "state": "OPEN",
+      "comment_id": 6155701210,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6155701210",
+      "body_sha256": "b92fe6a5c72806b62ffe87075a3343094f917169b3091585157e828ff8e831eb",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 7,
+      "state": "OPEN",
+      "comment_id": 6155702323,
+      "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6155702323",
+      "body_sha256": "b92fe6a5c72806b62ffe87075a3343094f917169b3091585157e828ff8e831eb",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 11,
+      "state": "OPEN",
+      "comment_id": 6155703272,
+      "url": "https://github.com/OpenSparklink/linux/issues/11#issuecomment-6155703272",
+      "body_sha256": "b92fe6a5c72806b62ffe87075a3343094f917169b3091585157e828ff8e831eb",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 16,
+      "state": "OPEN",
+      "comment_id": 6155704082,
+      "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6155704082",
+      "body_sha256": "b92fe6a5c72806b62ffe87075a3343094f917169b3091585157e828ff8e831eb",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6155705001,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6155705001",
+      "body_sha256": "b92fe6a5c72806b62ffe87075a3343094f917169b3091585157e828ff8e831eb",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 4,
+      "state": "OPEN",
+      "comment_id": 6155706119,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/4#issuecomment-6155706119",
+      "body_sha256": "b92fe6a5c72806b62ffe87075a3343094f917169b3091585157e828ff8e831eb",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6155706999,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6155706999",
+      "body_sha256": "b92fe6a5c72806b62ffe87075a3343094f917169b3091585157e828ff8e831eb",
+      "readback_exact": true
+    }
+  ],
+  "ci_terminal_issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6155735690",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 5,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6155736233",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 7,
+      "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6155736744",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 11,
+      "url": "https://github.com/OpenSparklink/linux/issues/11#issuecomment-6155737352",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 16,
+      "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6155738037",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6155738709",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/4#issuecomment-6155739324",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6155740024",
+      "readback_exact": true
+    }
+  ]
+}

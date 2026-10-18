@@ -1,0 +1,482 @@
+Kani Rust Verifier 0.68.0 (cargo plugin)
+CBMC 6.11.0
+   Compiling sparklink-production-credit-proof v0.0.0 (/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/credit)
+warning: method `maximum` is never used
+  --> src/../../../../linux/net/sparklink/sle_data_credit.rs:23:19
+   |
+22 | impl DataCredits {
+   | ---------------- method in this implementation
+23 |     pub(crate) fn maximum(&self) -> Result<u16, CreditError> {
+   |                   ^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: use of an unstable feature
+ --> <crate attribute>:1:12
+  |
+1 | #![feature(register_tool)]
+  |            ^^^^^^^^^^^^^
+  |
+  = note: requested on the command line with `--force-warn unstable-features`
+
+warning: Found the following unsupported constructs:
+             - caller_location (1)
+             - foreign function (1)
+         
+         Verification will fail if one or more of these constructs is reachable.
+         See https://model-checking.github.io/kani/rust-feature-support.html for more details.
+
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+Checking harness ledger::verification::initialization_all_parameters...
+CBMC 6.11.0 (cbmc-6.11.0)
+CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux
+Reading GOTO program from file /home/sanchuanhehe/Documents/opensparklink/.dev/formal-credit-system-target/kani/x86_64-unknown-linux-gnu/debug/build/sparklink-production-credit-proof/a4340d17f759b80d/out/sparklink_production_credit_proof__RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification29initialization_all_parameters.out
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Running with 16 object bits, 48 offset bits (user-specified)
+Starting Bounded Model Checking
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 1 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 2 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 3 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 4 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 5 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 6 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 7 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 8 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 9 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 10 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 11 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 12 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 13 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 14 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 15 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Unwinding loop _RNvNtNtCskq3vwapy43e_33sparklink_production_credit_proof6ledger12verification9invariant.1 iteration 16 file src/../../../../linux/net/sparklink/sle_data_credit.rs line 153 column 9 function ledger::verification::invariant thread 0
+Runtime Symex: 0.044279s
+size of program expression: 3060 steps
+slicing removed 2235 assignments
+Generated 578 VCC(s), 18 remaining after simplification
+Runtime Postprocess Equation: 0.000344357s
+Passing problem to propositional reduction
+converting SSA
+Runtime Convert SSA: 0.00174566s
+Running propositional reduction
+Post-processing
+Runtime Post-process: 4.038e-06s
+Solving with CaDiCaL 3.0.0
+4639 variables, 4684 clauses
+SAT checker: instance is SATISFIABLE
+Runtime Solver: 5.1508e-05s
+Runtime decision procedure: 0.00183633s
+
+RESULTS:
+Check 1: core::panicking::panic_nounwind_fmt::runtime.unsupported_construct.1
+	 - Status: SUCCESS
+	 - Description: "call to foreign "Rust" function `_RNvCskSgPeDzUGbv_7___rustc17rust_begin_unwind` is not currently supported by Kani. Please post your example at https://github.com/model-checking/kani/issues/new/choose"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs:110:17 in function core::panicking::panic_nounwind_fmt::runtime
+
+Check 2: std::fmt::Arguments::<'_>::from_str.assertion.1
+	 - Status: UNREACHABLE
+	 - Description: "attempt to shift left with overflow"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs:820:38 in function std::fmt::Arguments::<'_>::from_str
+
+Check 3: std::option::Option::<ledger::Debt>::is_some_and::<{closure@src/../../../../linux/net/sparklink/sle_data_credit.rs:158:47: 158:52}>.unreachable.1
+	 - Status: SUCCESS
+	 - Description: "unreachable code"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs:660:15 in function std::option::Option::<ledger::Debt>::is_some_and::<{closure@src/../../../../linux/net/sparklink/sle_data_credit.rs:158:47: 158:52}>
+
+Check 4: ledger::verification::initialization_all_parameters.assertion.1
+	 - Status: SUCCESS
+	 - Description: "assertion failed: invariant(&c)"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:193:9 in function ledger::verification::initialization_all_parameters
+
+Check 5: ledger::verification::initialization_all_parameters.assertion.2
+	 - Status: SUCCESS
+	 - Description: "assertion failed: c.outstanding == 0"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:194:9 in function ledger::verification::initialization_all_parameters
+
+Check 6: std::panic::Location::<'_>::caller.unsupported_construct.1
+	 - Status: SUCCESS
+	 - Description: "caller_location is not currently supported by Kani. Please post your example at https://github.com/model-checking/kani/issues/374"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panic/location.rs:181:9 in function std::panic::Location::<'_>::caller
+
+Check 7: ledger::verification::invariant.assertion.1
+	 - Status: SUCCESS
+	 - Description: "index out of bounds: the length is less than or equal to the given index"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:30 in function ledger::verification::invariant
+
+Check 8: ledger::verification::invariant.assertion.2
+	 - Status: UNREACHABLE
+	 - Description: "attempt to add with overflow"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:156:17 in function ledger::verification::invariant
+
+Check 9: ledger::verification::invariant.unreachable.1
+	 - Status: SUCCESS
+	 - Description: "unreachable code"
+	 - Location: src/main.rs:0:0 in function ledger::verification::invariant
+
+Check 10: ledger::verification::invariant.assertion.3
+	 - Status: UNREACHABLE
+	 - Description: "index out of bounds: the length is less than or equal to the given index"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:24 in function ledger::verification::invariant
+
+Check 11: core::num::<impl usize>::unchecked_add.arithmetic_overflow.1
+	 - Status: SUCCESS
+	 - Description: "attempt to compute `unchecked_add` which would overflow"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/num/uint_macros.rs:1013:17 in function core::num::<impl usize>::unchecked_add
+
+Check 12: ledger::verification::invariant::{closure#0}.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:67 in function ledger::verification::invariant::{closure#0}
+
+Check 13: ledger::verification::invariant::{closure#0}.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:67 in function ledger::verification::invariant::{closure#0}
+
+Check 14: ledger::verification::invariant::{closure#0}.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:67 in function ledger::verification::invariant::{closure#0}
+
+Check 15: ledger::verification::invariant::{closure#0}.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:67 in function ledger::verification::invariant::{closure#0}
+
+Check 16: ledger::verification::invariant::{closure#0}.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:67 in function ledger::verification::invariant::{closure#0}
+
+Check 17: ledger::verification::invariant::{closure#0}.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:67 in function ledger::verification::invariant::{closure#0}
+
+Check 18: ledger::verification::invariant.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:30 in function ledger::verification::invariant
+
+Check 19: ledger::verification::invariant.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:30 in function ledger::verification::invariant
+
+Check 20: ledger::verification::invariant.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:30 in function ledger::verification::invariant
+
+Check 21: ledger::verification::invariant.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:30 in function ledger::verification::invariant
+
+Check 22: ledger::verification::invariant.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:30 in function ledger::verification::invariant
+
+Check 23: ledger::verification::invariant.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:30 in function ledger::verification::invariant
+
+Check 24: ledger::verification::invariant.array_bounds.1
+	 - Status: SUCCESS
+	 - Description: "index out of bounds: the length is less than or equal to the given index"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:30 in function ledger::verification::invariant
+
+Check 25: ledger::verification::invariant.pointer_dereference.7
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:25 in function ledger::verification::invariant
+
+Check 26: ledger::verification::invariant.pointer_dereference.8
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:25 in function ledger::verification::invariant
+
+Check 27: ledger::verification::invariant.pointer_dereference.9
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:25 in function ledger::verification::invariant
+
+Check 28: ledger::verification::invariant.pointer_dereference.10
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:25 in function ledger::verification::invariant
+
+Check 29: ledger::verification::invariant.pointer_dereference.11
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:25 in function ledger::verification::invariant
+
+Check 30: ledger::verification::invariant.pointer_dereference.12
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:25 in function ledger::verification::invariant
+
+Check 31: ledger::verification::invariant.array_bounds.2
+	 - Status: SUCCESS
+	 - Description: "index out of bounds: the length is less than or equal to the given index"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:154:25 in function ledger::verification::invariant
+
+Check 32: ledger::verification::invariant.pointer_dereference.13
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:24 in function ledger::verification::invariant
+
+Check 33: ledger::verification::invariant.pointer_dereference.14
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:24 in function ledger::verification::invariant
+
+Check 34: ledger::verification::invariant.pointer_dereference.15
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:24 in function ledger::verification::invariant
+
+Check 35: ledger::verification::invariant.pointer_dereference.16
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:24 in function ledger::verification::invariant
+
+Check 36: ledger::verification::invariant.pointer_dereference.17
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:24 in function ledger::verification::invariant
+
+Check 37: ledger::verification::invariant.pointer_dereference.18
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:24 in function ledger::verification::invariant
+
+Check 38: ledger::verification::invariant.array_bounds.3
+	 - Status: SUCCESS
+	 - Description: "index out of bounds: the length is less than or equal to the given index"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:158:24 in function ledger::verification::invariant
+
+Check 39: ledger::verification::invariant.pointer_dereference.19
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:16 in function ledger::verification::invariant
+
+Check 40: ledger::verification::invariant.pointer_dereference.20
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:16 in function ledger::verification::invariant
+
+Check 41: ledger::verification::invariant.pointer_dereference.21
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:16 in function ledger::verification::invariant
+
+Check 42: ledger::verification::invariant.pointer_dereference.22
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:16 in function ledger::verification::invariant
+
+Check 43: ledger::verification::invariant.pointer_dereference.23
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:16 in function ledger::verification::invariant
+
+Check 44: ledger::verification::invariant.pointer_dereference.24
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:16 in function ledger::verification::invariant
+
+Check 45: ledger::verification::invariant.pointer_dereference.25
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:40 in function ledger::verification::invariant
+
+Check 46: ledger::verification::invariant.pointer_dereference.26
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:40 in function ledger::verification::invariant
+
+Check 47: ledger::verification::invariant.pointer_dereference.27
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:40 in function ledger::verification::invariant
+
+Check 48: ledger::verification::invariant.pointer_dereference.28
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:40 in function ledger::verification::invariant
+
+Check 49: ledger::verification::invariant.pointer_dereference.29
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:40 in function ledger::verification::invariant
+
+Check 50: ledger::verification::invariant.pointer_dereference.30
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:40 in function ledger::verification::invariant
+
+Check 51: ledger::verification::invariant.pointer_dereference.31
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:57 in function ledger::verification::invariant
+
+Check 52: ledger::verification::invariant.pointer_dereference.32
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:57 in function ledger::verification::invariant
+
+Check 53: ledger::verification::invariant.pointer_dereference.33
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:57 in function ledger::verification::invariant
+
+Check 54: ledger::verification::invariant.pointer_dereference.34
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:57 in function ledger::verification::invariant
+
+Check 55: ledger::verification::invariant.pointer_dereference.35
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:57 in function ledger::verification::invariant
+
+Check 56: ledger::verification::invariant.pointer_dereference.36
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: src/../../../../linux/net/sparklink/sle_data_credit.rs:162:57 in function ledger::verification::invariant
+
+Check 57: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1101:23 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 58: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1101:23 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 59: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1101:23 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 60: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1101:23 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 61: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1101:23 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 62: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1101:23 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 63: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.7
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1103:13 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 64: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.8
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1103:13 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 65: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.9
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1103:13 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 66: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.10
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1103:13 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 67: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.11
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1103:13 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 68: <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next.pointer_dereference.12
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/iter/range.rs:1103:13 in function <std::ops::Range<usize> as std::iter::range::RangeIteratorImpl>::spec_next
+
+Check 69: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.1
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:50 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 70: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.2
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:50 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 71: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.3
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:50 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 72: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.4
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:50 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 73: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.5
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:50 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 74: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.6
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:50 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 75: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.7
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer NULL"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:59 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 76: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.8
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer invalid"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:59 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 77: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.9
+	 - Status: SUCCESS
+	 - Description: "dereference failure: deallocated dynamic object"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:59 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 78: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.10
+	 - Status: SUCCESS
+	 - Description: "dereference failure: dead object"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:59 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 79: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.11
+	 - Status: SUCCESS
+	 - Description: "dereference failure: pointer outside object bounds"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:59 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+Check 80: std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt.pointer_dereference.12
+	 - Status: SUCCESS
+	 - Description: "dereference failure: invalid integer address"
+	 - Location: ../../../../runner/.rustup/toolchains/nightly-2026-08-21-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs:2192:59 in function std::cmp::impls::<impl std::cmp::PartialOrd for usize>::lt
+
+
+SUMMARY:
+ ** 0 of 80 failed (3 unreachable)
+
+VERIFICATION:- SUCCESSFUL
+Verification Time: 0.09197311s
+
+Manual Harness Summary:
+Complete - 1 successfully verified harnesses, 0 failures, 1 total.

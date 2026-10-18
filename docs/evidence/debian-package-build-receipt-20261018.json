@@ -1,0 +1,625 @@
+{
+  "schema": 1,
+  "status": "BUILD_COMPLETED_WITH_WARNINGS_NOT_INSTALL_OR_RELEASE_QUALIFIED",
+  "compiled_source": "6cbf6eda4947bec9ae67f83be011e529ffe56a99",
+  "source_archive_sha256": "37d33b3ad41131741d32d48fd46584851c343ccbbdc38c840eb2fc59d3f63726",
+  "scope": "Actualdefaultworkspace build/tests andDebianbinaryartifactgeneration inrootDebian13VMwithrealpinnedcompilerpackage. NoUSB/experimentaldriver/hostinstallation/newRF/formalproof. Notaninstallation,upgrade/rollback orreleasequalification.",
+  "bounds": {
+    "vm_runs": 1,
+    "workspace_tests": 338,
+    "rust_suite_results": 37,
+    "failed_or_ignored_tests": 0,
+    "deb_artifacts": 5,
+    "buildinfo_and_changes": 2,
+    "build_warning_lines": 10,
+    "real_ws73_runs": 0,
+    "new_formal_proofs": 0
+  },
+  "gates": [
+    {
+      "name": "apt-update",
+      "command": [
+        "apt-get",
+        "update"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "apt-install",
+      "command": [
+        "apt-get",
+        "install",
+        "-y",
+        "--no-install-recommends",
+        "build-essential",
+        "pkgconf",
+        "python3-venv",
+        "python3-setuptools",
+        "python3-wheel",
+        "python3-dbus",
+        "debhelper",
+        "git",
+        "binutils"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "source-extract",
+      "command": [
+        "tar",
+        "-xf",
+        "/opt/slkr6/source.tar",
+        "-C",
+        "/opt/slkr6/package-source-v4"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "toolchain-package-install",
+      "command": [
+        "dpkg",
+        "-i",
+        "/opt/slkr6/package-outputs-v2/opensparklink-lab-rust-toolchain_1.96.1-1_amd64.deb"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "real-packaged-rustc",
+      "command": [
+        "/usr/bin/rustc",
+        "-vV"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "real-packaged-cargo",
+      "command": [
+        "/usr/bin/cargo",
+        "-vV"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "real-package-files",
+      "command": [
+        "dpkg-query",
+        "-L",
+        "opensparklink-lab-rust-toolchain"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "build-dependencies",
+      "command": [
+        "dpkg-checkbuilddeps"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "package-build",
+      "command": [
+        "dpkg-buildpackage",
+        "-us",
+        "-uc",
+        "-b"
+      ],
+      "exit": 0
+    }
+  ],
+  "artifacts": {
+    "libsparklink-dev_0.1.0-1_amd64.deb": {
+      "sha256": "53d532d554dcdcec93a1b13245bc22970c8c48388190a9ae94709403985c74d6",
+      "bytes": 8408,
+      "control": "Package: libsparklink-dev\nSource: sparklink\nVersion: 0.1.0-1\nArchitecture: amd64\nMaintainer: sanchuanhehe <wyihe5220@gmail.com>\nInstalled-Size: 46\nDepends: libsparklink0 (= 0.1.0-1)\nSection: libdevel\nPriority: optional\nHomepage: https://github.com/OpenSparklink/sparklink\nDescription: SparkLink development headers\n C header file (sparklink.h) for developing applications against\n libsparklink.\n"
+    },
+    "libsparklink0-dbgsym_0.1.0-1_amd64.deb": {
+      "sha256": "7db0303217318e2aeeb0f1aabf125363160215ab548785c91d36bdb36c89c379",
+      "bytes": 43984,
+      "control": "Package: libsparklink0-dbgsym\nSource: sparklink\nVersion: 0.1.0-1\nAuto-Built-Package: debug-symbols\nArchitecture: amd64\nMaintainer: sanchuanhehe <wyihe5220@gmail.com>\nInstalled-Size: 357\nDepends: libsparklink0 (= 0.1.0-1)\nSection: debug\nPriority: optional\nDescription: debug symbols for libsparklink0\nBuild-Ids: 186d5442cde8af7c3110dffd51769818ded3e539 823d3de5b42d3322bfaf12bcd44800b0457e9467\n"
+    },
+    "libsparklink0_0.1.0-1_amd64.deb": {
+      "sha256": "732435452e63ed16a0841038261741f9b7031dc0ba4b89f49c4acb9603429fce",
+      "bytes": 258972,
+      "control": "Package: libsparklink0\nSource: sparklink\nVersion: 0.1.0-1\nArchitecture: amd64\nMaintainer: sanchuanhehe <wyihe5220@gmail.com>\nInstalled-Size: 943\nDepends: libc6 (>= 2.34), libgcc-s1 (>= 4.2)\nSection: libs\nPriority: optional\nHomepage: https://github.com/OpenSparklink/sparklink\nDescription: SparkLink shared library\n Authorized-channel C API (libsparklink.so.0) and separate explicit Native\n library (libslk_native.so.0). Application calls do not grant controller\n management authority. Full broker/SSAP language clients remain incomplete.\n"
+    },
+    "sparklink-dbgsym_0.1.0-1_amd64.deb": {
+      "sha256": "42b0e61c3afc752794ea84ae8ee43283e6376bfb9fd03a798ba9a1e179336a67",
+      "bytes": 564284,
+      "control": "Package: sparklink-dbgsym\nSource: sparklink\nVersion: 0.1.0-1\nAuto-Built-Package: debug-symbols\nArchitecture: amd64\nMaintainer: sanchuanhehe <wyihe5220@gmail.com>\nInstalled-Size: 5333\nDepends: sparklink (= 0.1.0-1)\nSection: debug\nPriority: optional\nDescription: debug symbols for sparklink\nBuild-Ids: 2ca45fb0bd28d90d0035ff8acc09fdfc1fc241eb 2d8fe166e7dd7b675a74d1066e1067ca2990cd28 321a06923230e90a102dbeaba26f382c2a7598d6 49703cdf93e4825e0950fc92d6c969136e62fe37 913a9b1b1a32f0a63440f7a27c1cc98bbd477562 968ac647a266dc4bb2dc6e3103af94978308367a\n"
+    },
+    "sparklink_0.1.0-1_amd64.deb": {
+      "sha256": "82a5f60bc91f3b2138a803c51d1cbf30ea719e459ac66e97cc82c540f4748da7",
+      "bytes": 3777096,
+      "control": "Package: sparklink\nVersion: 0.1.0-1\nArchitecture: amd64\nMaintainer: sanchuanhehe <wyihe5220@gmail.com>\nInstalled-Size: 21564\nDepends: libc6 (>= 2.39), libgcc-s1 (>= 4.2), dbus, systemd | systemd-standalone-sysusers\nSection: net\nPriority: optional\nHomepage: https://github.com/OpenSparklink/sparklink\nDescription: SparkLink wireless protocol userspace stack\n Development userspace infrastructure for SparkLink (\u661f\u95ea). Includes the\n management daemon and command-line tools. Capability and device qualification\n are limited to the source-bound project records; full protocol support is\n not implied by package installation.\n"
+    }
+  },
+  "confirmed_observations": [
+    "CleanusesactualinstalledCargo,notrustupdispatcher;build/versiondependencies/fulldefaultworkspace testsexecuted",
+    "Rootmode000negativeactuallyrunsandpasseswithordinaryreader;original9cefixturefailure retained",
+    "Fiveactualdebs andbuildinfo/changes preserved;source/compiler/probe/8CPU/8jobidentityretained"
+  ],
+  "unresolved": [
+    "dwz warnings:projectreleaseELFslack.debug_info;debugsymbol/supportscope mustbereviewed,notgloballysuppressed",
+    "dpkg-shlibdeps diversionwarnings underactuallibc6usrmerge;runtime dependency/ELF checks andfreshinstall remain",
+    "Copyright/license noticeabsentfromthreeprimarypackages;thirdpartylicense/provenance/SBOM/release remainOPEN",
+    "Projectpostinstlacksysusers integrationdespiteinstalledconf;helper13.24existsbutnotdefaultinvoked. Systemtrigger/actualfreshinstallationmustbecheckedbeforereportingrealgroupfailure",
+    "Actualpackageinstall/systembusroles/udev/ordinaryconsumers,upgrade/rollback/remove/configretention andnewartifactWS73/nativepermission matricesremainOPEN",
+    "R5f higherclients/commonAPI/perappdiscovery;fullS0-S6/19WP/10FV/12DG/UserHostP4/naturalRCA/nonmanualrecovery unchanged"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r6b-package-v4/console.log",
+      "sha256": "4b974919827a4374d455c43a423c9a250aa96f46be7b4ca07b5eeb23bd0852ea",
+      "bytes": 65078,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/artifacts/libsparklink-dev_0.1.0-1_amd64.deb",
+      "sha256": "53d532d554dcdcec93a1b13245bc22970c8c48388190a9ae94709403985c74d6",
+      "bytes": 8408,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/artifacts/libsparklink0-dbgsym_0.1.0-1_amd64.deb",
+      "sha256": "7db0303217318e2aeeb0f1aabf125363160215ab548785c91d36bdb36c89c379",
+      "bytes": 43984,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/artifacts/libsparklink0_0.1.0-1_amd64.deb",
+      "sha256": "732435452e63ed16a0841038261741f9b7031dc0ba4b89f49c4acb9603429fce",
+      "bytes": 258972,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/artifacts/sparklink-dbgsym_0.1.0-1_amd64.deb",
+      "sha256": "42b0e61c3afc752794ea84ae8ee43283e6376bfb9fd03a798ba9a1e179336a67",
+      "bytes": 564284,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/artifacts/sparklink_0.1.0-1_amd64.buildinfo",
+      "sha256": "f37e2fe5999b0ade2f5d6ee86a78230f4c2180fee32b2a22139e0b8b7d4859a4",
+      "bytes": 6421,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/artifacts/sparklink_0.1.0-1_amd64.changes",
+      "sha256": "5c6da7db2ca072c7d7d6055888cccbbaf286ba92cc29fc843c19787ec4c6e5f0",
+      "bytes": 2545,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/artifacts/sparklink_0.1.0-1_amd64.deb",
+      "sha256": "82a5f60bc91f3b2138a803c51d1cbf30ea719e459ac66e97cc82c540f4748da7",
+      "bytes": 3777096,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-content-inspection-v1.json",
+      "sha256": "c86ac2e43e40bb66b609d0f397e35aa3f41620733f996352ff22c00d8bcbe814",
+      "bytes": 5571,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/apt-install.log",
+      "sha256": "957a31f2bd510cff67984bac98f63267fecc5e49f62183472b2d793afd92adff",
+      "bytes": 32931,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/apt-update.log",
+      "sha256": "27b86155b4fdb5c83bbcb45279190597a09719348a68d6d05581bbce747a3ec5",
+      "bytes": 1427,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/build-dependencies.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/package-build.log",
+      "sha256": "94670c453755965482fca805cb376e17f05e830b63dda2a971732f59ff8def39",
+      "bytes": 55831,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/real-package-files.log",
+      "sha256": "426f013e0e002bf4459e80c3f32674d5954684a7fcf75a74f1e3057abad09869",
+      "bytes": 283374,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/real-packaged-cargo.log",
+      "sha256": "b1e146f4c74466cbfc3f0c9ab7f510ec1c325df3538507bbd86a4433d57a8d3e",
+      "bytes": 337,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/real-packaged-rustc.log",
+      "sha256": "2af3376cb254e69564e00978cada767f05432a299af78300c47d14c103366c1e",
+      "bytes": 196,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/result.json",
+      "sha256": "77e978ed41136fff4920d041c96edd73a209c1e2f1d620a226a844a437345e28",
+      "bytes": 2891,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/source-extract.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/package-outputs-v4/toolchain-package-install.log",
+      "sha256": "56c794534ff1e7ebc1b7951432962b86ad52d49fb902cd9deb209a8ae3948f4c",
+      "bytes": 343,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink-dev_0.1.0-1_amd64.deb/control/control",
+      "sha256": "018a656e19711828c53b6c3adc6df0f6360a0edf82916c5c763ef860ca0d2ead",
+      "bytes": 395,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink-dev_0.1.0-1_amd64.deb/control/md5sums",
+      "sha256": "e025c9ec91dae00e100fc6ffd3134d5a70aed5da0609969e1201d1b9e584f0c5",
+      "bytes": 379,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink-dev_0.1.0-1_amd64.deb/data/usr/include/sparklink.h",
+      "sha256": "475214480b0fa05ec72d42fb7ab922b67f12cc8517cca2564511c12a05a8a7ba",
+      "bytes": 6189,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink-dev_0.1.0-1_amd64.deb/data/usr/include/sparklink_native.h",
+      "sha256": "9f8460f36e8e4febfbfff681d5f747bcce4a05224d210a315afff7b1159445f7",
+      "bytes": 24050,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink-dev_0.1.0-1_amd64.deb/data/usr/lib/x86_64-linux-gnu/pkgconfig/sparklink-native.pc",
+      "sha256": "8cab9bfacd302dcf6d4869fca8e8578dd69afe05ba288b7170fa6d0b6cdae3e0",
+      "bytes": 285,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink-dev_0.1.0-1_amd64.deb/data/usr/lib/x86_64-linux-gnu/pkgconfig/sparklink.pc",
+      "sha256": "14132531b098d380bfd503f1fdca5caece179279b50472748dde8b1e470cea3e",
+      "bytes": 264,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink-dev_0.1.0-1_amd64.deb/data/usr/share/doc/libsparklink-dev/changelog.Debian.gz",
+      "sha256": "f9d4d9d26823b6a1799acb33b75170640133bde7da89884d206bf1b6d8467c1f",
+      "bytes": 307,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0-dbgsym_0.1.0-1_amd64.deb/control/control",
+      "sha256": "07b4e340a18c6d279eedc91baa965f074729b85b01130b011f8d12a037a59922",
+      "bytes": 393,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0-dbgsym_0.1.0-1_amd64.deb/control/md5sums",
+      "sha256": "f8fe30ffe8d51064af4c58009d61e4e18737a90f6731f32bc5d13e744dfcb013",
+      "bytes": 212,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0-dbgsym_0.1.0-1_amd64.deb/data/usr/lib/debug/.build-id/18/6d5442cde8af7c3110dffd51769818ded3e539.debug",
+      "sha256": "bf08f8b2d7252833c9080a76c2eb551196598424de122bad1c726a334945281f",
+      "bytes": 216240,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0-dbgsym_0.1.0-1_amd64.deb/data/usr/lib/debug/.build-id/82/3d3de5b42d3322bfaf12bcd44800b0457e9467.debug",
+      "sha256": "a2578e2b166e7f9b37e152d866be5c79227d5b41a5447937282f9928f92bdff5",
+      "bytes": 136864,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/control/control",
+      "sha256": "81369a65a6ba8671ebf8ae2b706e01e6a4c0c515fc00be1c9f336535cd0461ca",
+      "bytes": 538,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/control/md5sums",
+      "sha256": "ee9e57e588f6fa7eafd83f47c7afca278924c274983f7aca94662aefea557db3",
+      "bytes": 245,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/control/shlibs",
+      "sha256": "eb9920d9e91b65a0e1e81ab22330b84d67e714b5d46f406d0d1f04c6d659b5c6",
+      "bytes": 81,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/control/triggers",
+      "sha256": "c67ab4558a59eb1e96d899a5bdbb153d6a2ab0e580f4acf5bfb1e4e6150ad2f4",
+      "bytes": 68,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/data/usr/lib/x86_64-linux-gnu/libslk_native.so.0",
+      "sha256": "73e0ef40cf92b71de87097f3e60cab4fb1850ff5d2eacb88f63f388e897aa3fc",
+      "bytes": 381304,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/data/usr/lib/x86_64-linux-gnu/libslk_native.so.0.1.0",
+      "sha256": "73e0ef40cf92b71de87097f3e60cab4fb1850ff5d2eacb88f63f388e897aa3fc",
+      "bytes": 381304,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/data/usr/lib/x86_64-linux-gnu/libsparklink.so.0",
+      "sha256": "a5964e3cd10e7eb0bf65ef10caccb06705d10dc0b84ea5eca5a500ac6bd4bcb7",
+      "bytes": 569648,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/data/usr/lib/x86_64-linux-gnu/libsparklink.so.0.1.0",
+      "sha256": "a5964e3cd10e7eb0bf65ef10caccb06705d10dc0b84ea5eca5a500ac6bd4bcb7",
+      "bytes": 569648,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/libsparklink0_0.1.0-1_amd64.deb/data/usr/share/doc/libsparklink0/changelog.Debian.gz",
+      "sha256": "f9d4d9d26823b6a1799acb33b75170640133bde7da89884d206bf1b6d8467c1f",
+      "bytes": 307,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink-dbgsym_0.1.0-1_amd64.deb/control/control",
+      "sha256": "deaa38c8a6ec9c3d17fa1cec451ab1b1ecec5c8f7c2181e651d8bf833ea1591e",
+      "bytes": 546,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink-dbgsym_0.1.0-1_amd64.deb/control/md5sums",
+      "sha256": "79773ff60e2997ba7fcd978b61d0e7c8558ba58d51778b879c79892313257136",
+      "bytes": 636,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink-dbgsym_0.1.0-1_amd64.deb/data/usr/lib/debug/.build-id/2c/a45fb0bd28d90d0035ff8acc09fdfc1fc241eb.debug",
+      "sha256": "ad49a3db99de90dd0827f02deb7f5a160e58d655b5faa1ac5db247ad9ded0f4b",
+      "bytes": 377624,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink-dbgsym_0.1.0-1_amd64.deb/data/usr/lib/debug/.build-id/2d/8fe166e7dd7b675a74d1066e1067ca2990cd28.debug",
+      "sha256": "edd116a245fed8ce6824d1dfa2cd0a51b41c5d02f19c897e196ed94c1cd37f4c",
+      "bytes": 278760,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink-dbgsym_0.1.0-1_amd64.deb/data/usr/lib/debug/.build-id/32/1a06923230e90a102dbeaba26f382c2a7598d6.debug",
+      "sha256": "d65efe6cd6b2d2968617778e2fe73b916e203f761f1d8103ac7828ff8ea3d6a3",
+      "bytes": 1925496,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink-dbgsym_0.1.0-1_amd64.deb/data/usr/lib/debug/.build-id/49/703cdf93e4825e0950fc92d6c969136e62fe37.debug",
+      "sha256": "d18d4f15429fb3c7d005b01a48da7397a0e7b2bb2a0860a885bd3450c25ff252",
+      "bytes": 1115808,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink-dbgsym_0.1.0-1_amd64.deb/data/usr/lib/debug/.build-id/91/3a9b1b1a32f0a63440f7a27c1cc98bbd477562.debug",
+      "sha256": "4977319ed758bdb34c5b6ec59303bccfbb8f09bfe4f801c102c69e94c05a3aef",
+      "bytes": 377520,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink-dbgsym_0.1.0-1_amd64.deb/data/usr/lib/debug/.build-id/96/8ac647a266dc4bb2dc6e3103af94978308367a.debug",
+      "sha256": "c836f6c3a125211eab55f045da4d7ddc60b472221ce50426b32ae9a24cfd572a",
+      "bytes": 1367696,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/control/conffiles",
+      "sha256": "ee0daa04463b07f8221dc0e30cb2a638088164a03015df67988a230d7b2b2d73",
+      "bytes": 25,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/control/control",
+      "sha256": "3028cfb31156cca3df4594d4ffb1efa74dda76be7c1e585ed9b05d9f05fa89c6",
+      "bytes": 624,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/control/md5sums",
+      "sha256": "78dd6566e84f1e7d9e0ff24691c14d35d2d4977aebc15f6868cf78236bf9d8ca",
+      "bytes": 1094,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/control/postinst",
+      "sha256": "90b5493cecdb46e7546bde5eef23a09a7ff92d274251612e7a21eafe10da438f",
+      "bytes": 1337,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/control/postrm",
+      "sha256": "a3792996b4fdfe0c2014c7a7fe58054891643cf67abc0b22376013e7228b60a9",
+      "bytes": 449,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/control/prerm",
+      "sha256": "446825c037c279e04cbaae9343ef64f16f517e33f743008c2050ee27b6cb65b4",
+      "bytes": 250,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/bin/slctl",
+      "sha256": "5be4f163d3c494ecbd14cb2f5ed58a8bf62b0238199455cf6a116e2af4364128",
+      "bytes": 6553192,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/bin/slkconfig",
+      "sha256": "c3db2838ded53ba7e7faae6ef9e2fdc06cb9de1ef85b21258a28b9d25dfdf324",
+      "bytes": 1023768,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/bin/slkdump",
+      "sha256": "2ca7523d8d5d3c4095e5ddb24af73e1d9c5a7df4bf8a1bcdd0fe449f5e1bf8d9",
+      "bytes": 1239264,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/bin/slkmon",
+      "sha256": "6f32b73125d5d361dea61ecdb9505ee56d227fcfcc9532f5f44df4e56f40b8f1",
+      "bytes": 1239456,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/bin/slktest",
+      "sha256": "6be0114c3d19e0c3e312c9eebcffa45420b56b29297040da6ea96bff4f84e49e",
+      "bytes": 4285240,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/lib/systemd/system/sparklink.service",
+      "sha256": "c81dcc695826505bf2426a0bd22abc6d694f4de6a8e11d111f6502b0c1b1f134",
+      "bytes": 500,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/lib/sysusers.d/sparklink.conf",
+      "sha256": "4fd6e1b2d3ef278894005e03c7deab4e6b23563776cea6396edd57784df29ca4",
+      "bytes": 115,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/lib/udev/rules.d/99-sparklink.rules",
+      "sha256": "ac934dba8ac43a9f2ed06431c92872d8afb296c0cab49e6cd4a0b8ad152f3886",
+      "bytes": 305,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/sbin/slkd",
+      "sha256": "bd454aa37b325bf799b44b5f293729f8c541fe7ae4e304320db6f428f5dc75d9",
+      "bytes": 7675920,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "a6bdbf224e713be0bf0f27d27289927662ebd9d979bf218f23ba879b0dcaaa9f",
+      "bytes": 132,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/share/dbus-1/system.d/sparklink.conf",
+      "sha256": "5b629a5da1be0cdf91a76787ad3229c7127e4776d9b87895ee1bba2b86fe1b66",
+      "bytes": 6216,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/share/doc/sparklink/changelog.Debian.gz",
+      "sha256": "f9d4d9d26823b6a1799acb33b75170640133bde7da89884d206bf1b6d8467c1f",
+      "bytes": 307,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/share/man/man1/slctl.1.gz",
+      "sha256": "51c5334ab5c86ff72b3a5c7bb031fbfba281d7a9df2c6257208c0ce24b025a51",
+      "bytes": 3080,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/share/man/man1/slktest.1.gz",
+      "sha256": "4bac93fc823cce66bbb9cb01bccc934e239608c41e62d22fc19303c955cb7e4d",
+      "bytes": 1927,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/share/man/man5/sparklink.conf.5.gz",
+      "sha256": "69e77eb5c204041ee41d33da61f283123de05fd2e5042a47796158e7f88cdc8d",
+      "bytes": 931,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/share/man/man8/slkd.8.gz",
+      "sha256": "989bae77a5625f726a4f40800463a16fd396290860af24788cb87a22f062a246",
+      "bytes": 4800,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/export/unpacked/sparklink_0.1.0-1_amd64.deb/data/usr/share/sparklink/main.conf.example",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/guest.py",
+      "sha256": "54e7a355fe52ddd1252f7f53c5b6010f42cec9707eafd79deca2864bcbcb8e96",
+      "bytes": 3117,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/helper-availability-v1.log",
+      "sha256": "0823bd24a3b200a27310872ca7794008d70b316ae5841675b1acf789e4169aec",
+      "bytes": 16,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/input-manifest.json",
+      "sha256": "cb133194126ac9932476ee43b1866255c6568dc6b64a6cd1e2d5ea39f0b4f595",
+      "bytes": 688,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/populate-data.log",
+      "sha256": "3b6ffd100bad489dffa4b499feb071daaa6a557fa1f46670a7f52d19948b17aa",
+      "bytes": 150,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/prepare.py",
+      "sha256": "07f63660f656d98c10fc76fc042339a096440694b456e6a53e48abdb1341bd5e",
+      "bytes": 3140,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/run.json",
+      "sha256": "f57e7a3b5a1f4e2dd04ca72c75fc9d1c52739fc570066d2c1f53dcc38dfab7a0",
+      "bytes": 1105,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/run.py",
+      "sha256": "b74dc60797d182e441ef5c39f7086c1a7093dddb62100d0f7be3bddd39c791e8",
+      "bytes": 1486,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v4/sysusers-helper-source-v1.log",
+      "sha256": "6c51fe61df1c67cd64dcd4130fbf472b63a2965b0db296b3280775eababcea8d",
+      "bytes": 3090,
+      "access": "private workspace;artifacts/probes/source-boundlogs retained;no SDK/firmware/publicrelease uploaded"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "status": "TWO_EXISTING_ISSUES_UPDATED_AND_READ_BACK_OPEN",
+  "qualification_record": "cmtc-identifier-codec-d75f7bd",
+  "report": "docs/evidence/cmtc-identifier-zero-20261016.json",
+  "scope": "Actual identifier0 production fix+bounded pure codec proof only;newkernel real regression and dynamic channels still pending;original issues remain open",
+  "body_sha256": "6e58a7b66b3874777dd52623eb0cd32e52de541c479657393bc54fb23305948e",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6206631112",
+      "id": 6206631112,
+      "state": "OPEN",
+      "readback_verified": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6206631855",
+      "id": 6206631855,
+      "state": "OPEN",
+      "readback_verified": true
+    }
+  ],
+  "exact_tools_ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38839820856,
+      "headSha": "033a576505c81903f5ba3e9112d96bd82b8cbab9",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38839820856",
+      "workflowName": "Qualification integrity"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38839820902,
+      "headSha": "033a576505c81903f5ba3e9112d96bd82b8cbab9",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38839820902",
+      "workflowName": "Documentation"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38839820831,
+      "headSha": "033a576505c81903f5ba3e9112d96bd82b8cbab9",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38839820831",
+      "workflowName": "Production codec bounded fuzz"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38839820841,
+      "headSha": "033a576505c81903f5ba3e9112d96bd82b8cbab9",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38839820841",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38839815253,
+      "headSha": "033a576505c81903f5ba3e9112d96bd82b8cbab9",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38839815253",
+      "workflowName": "Documentation"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38839815249,
+      "headSha": "033a576505c81903f5ba3e9112d96bd82b8cbab9",
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38839815249",
+      "workflowName": "Qualification integrity"
+    }
+  ],
+  "ci_scope": "Observed actual033a576 job statuses,not hardware/formal qualification or branch-protection validation"
+}

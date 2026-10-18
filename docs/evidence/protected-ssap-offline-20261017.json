@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_OFFLINE_SOURCE_ARTIFACT_CHECKS_PASS_REAL_BATCH_FAIL_RETAINED",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+  "executed_tools": "f46f740c985c2e37621470b7011452ae73ab5c97",
+  "offline_result": "PASS",
+  "full_goal_result": "UNPROVED",
+  "scope": [
+    "90 actualdaemon unit/privatebus/AF_UNIX tests onclean frozen331;12jobs alone,fixeddevtarget,sealedactualELF. Runtime metadata andnative/devnull dependencies remain explicit;not actualkernelUSBconcurrency.",
+    "704 tool tests onclean frozenf46,actualsockettests outside sandbox;originaldirtytwoWIP excluded. No claimthatmain dirtytree orentirelatestHEAD isqualified.",
+    "Rustcrates/data/Cargo sourcebytes331=f46;f46 changes checker/docs,not newcompiledhardwareartifact orbitreproducibility proof. Actualpositivehardwarecompiledandtool331.",
+    "Six accurate331remoteCIrunscompletedSUCCESS;not branchprotection/requiredchecks/supplychain/hardwarequalification. No new formalrun.",
+    "OriginalwholedefaultbaselineFAIL andnotrun249/2042 remainauthoritative;future newtool VM andboundedreasoncomparison required. Goalactive fullscope,issuesOPEN."
+  ],
+  "offline_gates": [
+    {
+      "name": "90-clean331-daemon-and-sealed-actual-test-ELF",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "704-cleanf46-tool-tests",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "331-f46-production-source-byte-mapping",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "six-actual331-CI-completed-success",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "two-f46-full-window-replays-and-six-copied-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "FullS0-S6-and-newartifact-regressions",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "bounds": {
+    "daemon_tests": 90,
+    "tool_tests": 704,
+    "ci_runs": 6,
+    "formal_new_runs": 0
+  },
+  "remaining": [
+    "OriginaldefaultDownFAIL/249and2042unrun;newauditorphysicalexecutionmissing",
+    "NaturalRCA/nonmanualrecovery,fullsecurity/SSAP/Bond/multichannel/fourdevice/performance/deployment/PM/releaseOPEN"
+  ],
+  "materials": [
+    {
+      "path": ".dev/protected-ssap-offline-artifacts-v1/slkd-tests",
+      "sha256": "283dd199493c7288e273c78ebe3ea031bf1347fd28adddf5bfe34e0f6c2efb59",
+      "bytes": 137897656,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    },
+    {
+      "path": ".dev/protected-ssap-frozen-daemon-v1.log",
+      "sha256": "e57e9fac1703314fb6e8a8e965eb9c2658f9bd340518e15c3acf44901c96b45c",
+      "bytes": 8446,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    },
+    {
+      "path": ".dev/protected-ssap-frozen-tools-v1.log",
+      "sha256": "3121e8aa60872df531ffb2d0e8b71f92fbf28e74478876d4f0fb7f8456e784c1",
+      "bytes": 840,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    },
+    {
+      "path": ".dev/protected-ssap-clippy-v2.log",
+      "sha256": "d53d6e2ebc27a35bc20c54ff56b46b377825bdeade2aafd640f99117e2bb2f44",
+      "bytes": 406,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    },
+    {
+      "path": ".dev/protected-ssap-full-window-replay-v1.json",
+      "sha256": "8889bc3d527e0bddb687fc401ab6be54926547591a34daaa3e807f5c3e5c385d",
+      "bytes": 2460620,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    },
+    {
+      "path": ".dev/protected-ssap-ci331-v1.json",
+      "sha256": "0ce129d42690bdfe2a66937ac27675d572f96d6baa3c38226338a9ab4d2cc665",
+      "bytes": 1413,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    },
+    {
+      "path": ".dev/protected-ssap-disconnect-reference-audit-v1.json",
+      "sha256": "c70765e92b2ab4ae65932568bb17e9d91a19752d6a3dda5a3dd8e7d52be0bffc",
+      "bytes": 1939,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    },
+    {
+      "path": ".dev/protected-ssap-user-tests-v1.log",
+      "sha256": "7e44e81a0bdd35ffc1da36e9d70d8f7991c8a34d3809a7cc6a6f466b65fe5373",
+      "bytes": 23974,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    },
+    {
+      "path": ".dev/protected-ssap-tools-v2.log",
+      "sha256": "95e729b8275d18de8e00e1980a4822fbe4a230a3283c4e9bbcecc0336e379ba8",
+      "bytes": 1538,
+      "access": "private",
+      "retention": "Authorizedmaintainers ownerworkspace original;missing/hashmismatch notPASS;no verifiedoffsitearchive"
+    }
+  ],
+  "wall_ns": 1792198702184663345
+}

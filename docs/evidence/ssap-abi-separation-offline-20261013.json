@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "status": "OFFLINE_PASS_HARDWARE_FOLLOWUP_SEPARATE",
+  "kernel_head": "770364dcc15284c081477dea1bab174506821281",
+  "userspace_head": "7d8857b78b849f240bb06b1d4a451660cde76605",
+  "scope": "unpublished SSAP ABI removal and caller migration; not whole target architecture completion",
+  "real_device_qualification": false,
+  "formal_qualification": "no new proof claimed; prior qualified production mappings unchanged only where exact hashes match",
+  "checks": {
+    "workspace_tests": 196,
+    "python_tests": 34,
+    "strict_all_features_clippy": "PASS",
+    "rustfmt": "PASS",
+    "historical_fixture_tests": 8,
+    "native_data_tests": 20,
+    "connection_tx": "sanitizer PASS outside ptrace sandbox",
+    "native_connection": "sanitizer PASS outside ptrace sandbox",
+    "four_c_programs": "strict compile only; no host device execution",
+    "retired18_syscalls": "VM_PENDING",
+    "tooling_tests": 423
+  },
+  "logs": {
+    "ssap-uapi-removal-workspace-tests.log": {
+      "sha256": "18d2c854527a1bb832e99b7403fbed0106ae7c7596f3de5abb4734d4cd901e4f",
+      "private_path": ".dev/ssap-uapi-removal-workspace-tests.log"
+    },
+    "ssap-uapi-final-python.log": {
+      "sha256": "112186947f1966989ce3667e62e6e88297660fa3968f0b21973aa8b98bc09220",
+      "private_path": ".dev/ssap-uapi-final-python.log"
+    },
+    "ssap-uapi-final-clippy.log": {
+      "sha256": "ee1d3fffa2022e962e63e0dbe4d35c9c198450a20c29fc09030f635dbb38bfcd",
+      "private_path": ".dev/ssap-uapi-final-clippy.log"
+    },
+    "ssap-uapi-final-kernel-object.log": {
+      "sha256": "87318d882402d1ef6e528c43a4ee4bf6cfb9b47d7c0174a79c75347b5c6a8d24",
+      "private_path": ".dev/ssap-uapi-final-kernel-object.log"
+    },
+    "ssap-uapi-final-native-data.json": {
+      "sha256": "e9c3af2b0172946d7543b4dc546bb84842c73006d7c582d320b2f7b9f4df9e71",
+      "private_path": ".dev/ssap-uapi-final-native-data.json"
+    },
+    "ssap-uapi-final-historical.json": {
+      "sha256": "c21ff377da4f687ff39271823177c418e591c96a544f123fd22776675f28e08d",
+      "private_path": ".dev/ssap-uapi-final-historical.json"
+    },
+    "ssap-uapi-final-connection-tx-unsandboxed.json": {
+      "sha256": "82cf853703b98c72160864f256c8366adc8010ade4f6559bde1c2577d80d0c81",
+      "private_path": ".dev/ssap-uapi-final-connection-tx-unsandboxed.json"
+    },
+    "ssap-uapi-final-native-connection-unsandboxed.json": {
+      "sha256": "2a7cb10ced589cb48ef156325e44d3beb2af5c18f2d28e6e51105b03ba6e419b",
+      "private_path": ".dev/ssap-uapi-final-native-connection-unsandboxed.json"
+    },
+    "ssap-uapi-final-signed-historical.json": {
+      "sha256": "83875f19a60bea305b9eecf920ebeae7a1214eba133ef19b9184111807977c31",
+      "private_path": ".dev/ssap-uapi-final-signed-historical.json"
+    }
+  },
+  "remaining": [
+    "New precise-version full kernel/service VM RF/connection/40short/249 regression",
+    "Session unique RX and session/fd separation",
+    "Ticket/handle reuse barrier",
+    "Revocable Grant and socket contract",
+    "Backend/events/legacy authority cleanup",
+    "Natural fault RCA and non-manual recovery"
+  ],
+  "original_issues_closed": false,
+  "source_mapped_reports": {
+    "ssap-uapi-final-native-data.json": {
+      "status": "NATIVE_ACB_PRODUCTION_SOURCE_BOUNDARIES_PASS",
+      "tests": 20,
+      "scope": "actual ingress/send/take and credit/queue modules; allocation, locks, owner registry and USB dependencies are fixtures",
+      "real_data_acceptance": false,
+      "socket_acceptance": false,
+      "sources": {
+        "net/sparklink/sle_native.rs": "bbe5204a947e051159a648ec5edeab0eb2fded55133c32c21f4dc9e3a42b48dd",
+        "net/sparklink/sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "net/sparklink/sle_data_credit.rs": "8c880fdf7edf2ecf5340a6b8fde656bf9e4fa41c2974377bc531f378f908b005",
+        "net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+        "tools/testing/selftests/sparklink/native-data/fixture.rs": "80ebbf95dddc42cb8bd30ab13f2407d55fe9d71d2d8ea0c20c46ba0aae91fb84"
+      }
+    },
+    "ssap-uapi-final-historical.json": {
+      "status": "SSAP_LEGACY_CONTAINMENT_PASS",
+      "rust_tests": 8,
+      "production_dependency_audit": "PASS",
+      "retired_ioctl_syscall_check": "separate ssap_removed_uapi_test in VM; not asserted by this runner",
+      "scope": "test-only historical staging/session and codec with allocator fixture; former rejection tests replaced by removed API audit; no production service DB or wire Engine",
+      "standard_ssap_acceptance": false,
+      "physical_acceptance": false,
+      "sources": {
+        "legacy_staging.rs": "18ea4e2f197c856cd9ab733b4501f803c605879a437e8007d9cbafa999471bf4",
+        "sparklink_core.rs": "008b39e6ad401d929d0434a26e83b003dfec51171029d04862862e5d4a370aee",
+        "sle_workers.rs": "a80436181c010ab58792b696aa43e4e4fc4b85982391d249fac71f787fd4282b",
+        "sle_conn.rs": "7b625a362843ec43283e773d0d8d315ab25b74cd7388c86a0c820b85f052fe70",
+        "sle_uapi.rs": "b9beb87c1f98a5583cb094dbfb4649013ae04a41ab6d4e4bfea73c0aeaf30d15",
+        "sle_authorization.rs": "c2090d0fc8f1fbe489df9489920f6eafc8819c48fdecc30bf9cb0af6dd854f34",
+        "sparklink_ioctl.h": "d90a0cdfbd089eb239f97c46ad9d78472e1502cad6ac330d036e3598cde4c430"
+      },
+      "remaining": [
+        "Userspace standard codec/fragment controls, permissions and authenticated per-peer database",
+        "PDU socket owner, deadline/budget/credit/commit semantics and real peer interoperability"
+      ]
+    },
+    "ssap-uapi-final-connection-tx-unsandboxed.json": {
+      "status": "CONNECTION_TX_SUBMISSION_BOUNDARY_PASS",
+      "scope": "actual sender/ioctl/legacy USB bodies with dependency fixtures; not socket/protocol/RF qualification",
+      "physical_acceptance": false,
+      "socket_acceptance": false,
+      "rust_tests": 11,
+      "usb_boundaries": [
+        "range",
+        "allocation",
+        "errno",
+        "all short completions",
+        "exact completion",
+        "max length"
+      ],
+      "sources": {
+        "sle_conn.rs": "7b625a362843ec43283e773d0d8d315ab25b74cd7388c86a0c820b85f052fe70",
+        "sparklink_core.rs": "008b39e6ad401d929d0434a26e83b003dfec51171029d04862862e5d4a370aee",
+        "sle_usb_ffi.c": "824e74ac629dcf54274e34a6a68622b480a86eac780dfa80c382b1d465cee4b4"
+      }
+    },
+    "ssap-uapi-final-native-connection-unsandboxed.json": {
+      "status": "NATIVE_CONNECTION_PRODUCTION_SOURCE_CONTRACT_PASS",
+      "scope": "actual production operation storage and WS7327/3-byte driver codec; actual Host caller dependency tests; not running kernel or RF proof",
+      "rust_tests": 12,
+      "actual_host_tests": 48,
+      "actual_host_sources": {
+        "sle_host.rs": "4577b0e481f6c53a5b02be8b069ffbb045c1c4ea91c38d4f17bed7d13618ca87",
+        "sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+        "sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+        "sle_discovery_operation.rs": "3cb792ec1ca157af1ed93ffaa7b64ac61ad5d2b4971df6aad6d171d3acc92917",
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "sle_link_observation.rs": "fd0b31a4c633054d2b3e1850bccab38de212ec5edc8aac63893f355aa368756e",
+        "sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+        "sle_dli.rs": "5a18a50b4f541115bf988626444cea9c705c77e7dc3834934f540b172098e098",
+        "sle_workers.rs": "a80436181c010ab58792b696aa43e4e4fc4b85982391d249fac71f787fd4282b"
+      },
+      "codec_sanitizers": [
+        "address",
+        "undefined",
+        "leak"
+      ],
+      "production_connection_admission": false,
+      "connection_rf_acceptance": false,
+      "ssap_acceptance": false,
+      "automatic_recovery_acceptance": false,
+      "sources": {
+        "sle_connection_operation.rs": "864aef0577b64c23df1d0637cbdeeec7c848beb9c6061bdf74cf06a04cccfcae",
+        "connection.c": "443c27ad3627dd45560a087aabb13368faa93f75739d9cd4c28ebc1b4c3275af",
+        "connection.h": "eef16325aaddd1e752a083941d48908c6f2588951780e98c67f25ae61a32ec9c",
+        "sparklink_connection.h": "206ba287da537704bef03233f598e3607c6180493d009a66b6460dfaf129047b",
+        "ws73_connection_codec_test.c": "1f41500443ce81a9c71cfb34d7def2d898a89e5b97d598f28cbcf1575a22e56e"
+      }
+    }
+  },
+  "source_mapping_note": "Historical audit rerun at the clean signed kernel after whitespace-only router formatting; earlier raw report preserved privately.",
+  "online_ci": {
+    "run_id": 38293197093,
+    "head": "96ac9681d260196ab437a9c33905f00d7fc88459",
+    "conclusion": "success",
+    "jobs_passed": 9
+  },
+  "hardware_followup": {
+    "qualified_source": {
+      "kernel": "770364dcc15284c081477dea1bab174506821281",
+      "userspace": "96ac9681d260196ab437a9c33905f00d7fc88459"
+    },
+    "evidence": [
+      "ws73-ssap-separated-short-repeat-20261013.json",
+      "ws73-ssap-separated-249-boundary-20261013.json"
+    ],
+    "retired_syscalls": "18 commands x2 argument variants, root and ordinary, both VMs ENOTTY",
+    "natural_recovery": false
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "scope": "Exact comment readback;original scope and OPEN retained;partial real dynamic only",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "cca8a20107a2b65274a65b7967640ce5690ad63e",
+  "tools": "4b337331fa1959a86fb01f3cca2449be63371e11",
+  "receipts": [
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6208507285",
+      "exact_readback": true,
+      "state": "OPEN",
+      "original_scope_unchanged": true,
+      "comment_sha256": "799f822e246570ee48650a3e33c20cab84e95df516775f9abee197dafcddb59b"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6208507579",
+      "exact_readback": true,
+      "state": "OPEN",
+      "original_scope_unchanged": true,
+      "comment_sha256": "799f822e246570ee48650a3e33c20cab84e95df516775f9abee197dafcddb59b"
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "EXACT_F5_TWO_ROLE_UNAUTHENTICATED_INSTALLATION_AND_RETAINED_DATA_SCOPED_PASS",
+  "vm_only": true,
+  "production_kernel": "f5c79a50467b41f2e055dfea64786ce34730a4a5",
+  "compiled_userspace": "3eb3c459c68686479a95b6942dbe5a736a2c3a9b",
+  "executed_vm_tools": "3eb3c459c68686479a95b6942dbe5a736a2c3a9b",
+  "sources": {
+    "net/sparklink/sle_security_relay_state.rs": "7ebb7fe688d0b2c8de2f32242346c3ffa18c40332f789d0391fc95dfd789298e",
+    "net/sparklink/sle_security_relay.rs": "2905a900763cc4e1ed347c42c2f4d874f58249e0ecf31274963d11957a36e85c",
+    "net/sparklink/sle_sessions.rs": "f76090c45f4f977b34eb93e2cbc51465640b44d044e96909613d46ecaf5102ca",
+    "net/sparklink/sle_native.rs": "18899e8363d6c870438219611c7fac3ae3ec9373a8f65fd4ea30ea65e786b92e",
+    "net/sparklink/sle_pair_material.c": "151abb8c59512dc0cebb62b58d291708ba0dee27e2ae2424f4ac147e4599c9fd",
+    "net/sparklink/sle_pair_material.rs": "9a564388b898be4fc1a0c09c0f353a7159bc24d835480135b67afc11bdf659ed",
+    "net/sparklink/sle_dli.rs": "c2935790c9edd1167f037694318dc2d5d1531df0611410a1fa594f3715c8b981",
+    "net/sparklink/sle_snoop.rs": "d2a7d85f841066d8ea735d990b80281d01135a8488eb9c60778c790600ea8e73"
+  },
+  "firmware": "Original combined1.10.111; file selection/upload/warm version is not execution attestation",
+  "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+  "ports": [
+    "1-2.1.1",
+    "1-2.1.4"
+  ],
+  "runs": [
+    {
+      "artifact_name": "native-install-v3-index0",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "manifest_sha256": "b43bdd2d4579661e9b27fb530672d8451ef940a2de839f0e85b9e546ef856bc4",
+      "run_sha256": "a56812a14d7f313e78ddcc2fc8468096cd040d3e470dffeef0b4ad7ac0ba2c99",
+      "private_usb_pcap_sha256": "7b2445e8f3f748fa0be66fc533c9688b29d0b834ec511babf22da58eab80bf6b",
+      "capture_packet_count": 613,
+      "business_round_trips": 4,
+      "business_before_installation": 2,
+      "business_after_controller_encryption_on": 2,
+      "daemon_running": false,
+      "installations": [
+        {
+          "controller": 0,
+          "opcode": 7171,
+          "handle": 0,
+          "parameter_length": 21,
+          "key_redacted": true,
+          "command_record": 536,
+          "accept_records": [
+            538
+          ],
+          "encryption_event_record": 548
+        },
+        {
+          "controller": 1,
+          "opcode": 7173,
+          "handle": 0,
+          "parameter_length": 20,
+          "key_redacted": true,
+          "command_record": 542,
+          "accept_records": [
+            544
+          ],
+          "encryption_event_record": 546
+        }
+      ],
+      "relay_submitted_counts": [
+        4,
+        5
+      ],
+      "peer_rx_counts": [
+        5,
+        4
+      ],
+      "total_observation_ms": 37.413485
+    },
+    {
+      "artifact_name": "native-install-v3-index1",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "manifest_sha256": "12fd297a254bcb607186dc9f51d2472e33c8f96386c7aa4dcfdc5baf4601eec0",
+      "run_sha256": "a1800450a155eb7697ff5d4b9442fd3ccb06911a5126dcfbfb4be1dc1e32ecc7",
+      "private_usb_pcap_sha256": "bef239fd37fa12cb12405daed9194aaae04e6386cb4a4d4d15f8edfd2bd79803",
+      "capture_packet_count": 613,
+      "business_round_trips": 4,
+      "business_before_installation": 2,
+      "business_after_controller_encryption_on": 2,
+      "daemon_running": false,
+      "installations": [
+        {
+          "controller": 0,
+          "opcode": 7173,
+          "handle": 0,
+          "parameter_length": 20,
+          "key_redacted": true,
+          "command_record": 542,
+          "accept_records": [
+            544
+          ],
+          "encryption_event_record": 546
+        },
+        {
+          "controller": 1,
+          "opcode": 7171,
+          "handle": 0,
+          "parameter_length": 21,
+          "key_redacted": true,
+          "command_record": 536,
+          "accept_records": [
+            538
+          ],
+          "encryption_event_record": 548
+        }
+      ],
+      "relay_submitted_counts": [
+        5,
+        4
+      ],
+      "peer_rx_counts": [
+        4,
+        5
+      ],
+      "total_observation_ms": 35.932823
+    }
+  ],
+  "qualification": {
+    "same_physical_session_and_command_credit_and_ticket": true,
+    "local_command_acceptance": "Actual command Status0, separate from asynchronous0011; relay1812 requires actual Complete",
+    "controller_reported_unauthenticated_initial_encryption": true,
+    "peer_application_random_reply_round_trips": 8,
+    "before_installation_round_trips": 4,
+    "after_controller_reported_encryption_round_trips": 4,
+    "uid": 1000,
+    "application_capabilities": 0,
+    "agent_consent": false,
+    "authenticated_peer_identity": false,
+    "trusted_grant": false,
+    "bond": false,
+    "independent_radio_cipher_attestation": false,
+    "third_party_interop": false,
+    "daemon_crash_survival": false,
+    "whole_security_acceptance": false
+  },
+  "retained_regressions": {
+    "status": "ALL15_REAL_REGRESSION_GATES_PASS",
+    "supervisor_sha256": "f979aa5f5a48c659a625aea4005b80f96f4ec7e3a7593f56c48ee509fc1da933",
+    "gates": 15,
+    "old_capability_roles": 2,
+    "old_candidate_roles": 2,
+    "data_gates": 11,
+    "data_peer_replied_round_trips": 136,
+    "oversize_refusals": 32,
+    "strict_last_fd_phases": 2,
+    "lengths": [
+      61,
+      248,
+      249,
+      250,
+      253,
+      254,
+      255,
+      1024,
+      2042
+    ],
+    "steps": [
+      {
+        "name": "capabilities-index0",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "capabilities-index1",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "key-agreement-index0",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "key-agreement-index1",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "short",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "boundary",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "long",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "length248",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "length250",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "length253",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "length254",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "length255",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "length1024",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "prefix-close",
+        "status": "PASS",
+        "exit": 0
+      },
+      {
+        "name": "burst",
+        "status": "PASS",
+        "exit": 0
+      }
+    ]
+  },
+  "subsequent_changes_not_inherited": {
+    "observed_kernel_head": "337eab0b6e6f939d353c505fcd8c7dcfd813db0d",
+    "pending_dirty_files": [
+      "net/sparklink/sle_native.rs",
+      "net/sparklink/sle_security_relay.rs",
+      "net/sparklink/sle_sessions.rs",
+      "tools/testing/selftests/sparklink/native-data/fixture.rs"
+    ],
+    "scope": "337 tracks async installation debt after command Status and T000e. Dirty Session retention preserves original physical owner on policy withdrawal. Neither inherits f5 real qualification. Build/test exact new commit, then repeat two-role installation and retained data.",
+    "formal": {
+      "source_head": "337eab0b6e6f939d353c505fcd8c7dcfd813db0d",
+      "tests": 23,
+      "status": "NOT_PROVEN_UNSUPPORTED",
+      "generated_checks": [
+        1681
+      ],
+      "log_sha256": "24b193f7efc53c9c3ef7d8f98c41cbb1cf8149ef863dbff72fd9750e739b1474",
+      "tool_version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0",
+      "excluded": "Kani unsupported constructs remain unproved; bounded G conversion harness does not prove actual C crypto, locks/references, USB drain, firmware, NOCP duplicate/late accuracy or handle reuse. Dirty integration changes are not covered."
+    }
+  },
+  "materials": "Private immutable lab artifacts named above are not publicly uploaded. USB captures contain LTK: never publish raw PCAP/key payloads. Public summary/hash is not an independently downloadable hardware replay.",
+  "open_conditions": [
+    "Agent/method/caller policy and authenticated security levels",
+    "post-Status revoke/Down/deadline and actual Session-reference composition, exact new VM qualification",
+    "late/duplicate NOCP and real handle reuse/controller state clearing barriers",
+    "dynamic channels/four-device groups/SSAP notification-indication application delivery",
+    "natural startup/re-enumeration/disappearance root cause and non-manual automatic recovery"
+  ],
+  "ignored_port": "1-2.1.2 remains ignored, previous failed restore unverified; four-device gate not waived"
+}

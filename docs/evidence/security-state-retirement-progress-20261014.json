@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "status": "IMPLEMENTED_OFFLINE_AND_SCOPED_REAL_VM_PASS; full security and goal incomplete",
+  "kernel": "6f2f712980295cef424884884059ed07655c40c2",
+  "service": "4b949027d171795d14af60a9edb82d63d4dacab0",
+  "source_audit": "docs/evidence/security-state-retirement-audit-20261014.json",
+  "compiled_sources_clean": true,
+  "build": {
+    "workspace_relative_path": ".dev/native-security-state-v2-retirement-build-record.json",
+    "sha256": "b2ab585ac6b6f3d86afc87223422d7ad9d0f4c4dafeb00a67e41d0e7d8ed5fd3",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "pipeline": {
+    "workspace_relative_path": ".dev/security-state-retirement-pipeline.json",
+    "sha256": "5f45d207c57ee234f2f6f137bfe54e415d540523214b1205c88acd7df2f4f92c",
+    "availability": "workspace-private original; not uploaded to public site"
+  },
+  "vm": {
+    "manifest": {
+      "workspace_relative_path": ".dev/native-security-state-retirement-virtual-vm/manifest.json",
+      "sha256": "44fd902103ce7b4aaedd1ab746200e50ffb91f21ce37a65e57744f2abac14f5a",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "module_rounds": 2,
+    "queries": [
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1",
+      "VIRTUAL_RUNTIME_PASS: query=21 dup=1 pending_last_close=1 reuse=1 stale=1 faults=3 empty=1 no_physical=1"
+    ],
+    "refusals": [
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=76 unchanged=76 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=76 unchanged=76 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=0 cases=76 unchanged=76 mixed_stats=ENOTTY",
+      "PROTOCOL_STATE_REFUSAL_PASS: uid=1000 cases=76 unchanged=76 mixed_stats=ENOTTY"
+    ],
+    "syscall_checks": 304,
+    "root_eopnotsupp": 152,
+    "ordinary_observe_eopnotsupp": 30,
+    "ordinary_protected_eperm": 122,
+    "buffers_unchanged": 304,
+    "mixed_stats_enotty": 4,
+    "scope": "actual VFS/Runtime/workqueue/module/refusal subset; not full IRQ or pairing/PM"
+  },
+  "real_reports": [
+    "docs/evidence/security-state-retirement-real-short-20261014.json",
+    "docs/evidence/security-state-retirement-real-boundary-20261014.json",
+    "docs/evidence/security-state-retirement-fault-real-20261014.json"
+  ],
+  "normal_total": {
+    "round_trips": 48,
+    "boundary_rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "ordinary_refusal_receipts": 8,
+    "ordinary_refusal_syscall_checks": 608,
+    "capture_drops": 0,
+    "taint": 0
+  },
+  "offline": {
+    "historical_model_and_crypto_faults": {
+      "workspace_relative_path": ".dev/security-state-retirement-offline.json",
+      "sha256": "a2dc0c47d5d12bbc3970c51f5c07279512426b1ab616efbd7d277d0d7feff5ed",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "rust_tests": {
+      "workspace_relative_path": ".dev/security-state-userspace-final-tests.log",
+      "sha256": "a604349867966e96b94384281711ab2dc3d9e3c22a46ed5a4ed6a8a63059f383",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "clippy": {
+      "workspace_relative_path": ".dev/security-state-clippy-final.log",
+      "sha256": "55a977d1d66a336a7d0f8576504f9c9cab4eeb5f2a195fec3a61317a6c6ccd10",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "python_abi": {
+      "workspace_relative_path": ".dev/security-state-python-abi-corrected.log",
+      "sha256": "d7b6183d93a354922d2c50af528b0fe4f0301e8074364550c2aa93b4ed485f47",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "tools_460": {
+      "workspace_relative_path": ".dev/security-state-tools-full-unsandboxed.log",
+      "sha256": "552fb92a4db0b45b9efc48ec247a924d67f114e6d601557bd545b12e4073d4ba",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "actual_python_c_ffi": {
+      "status": "ACTUAL_PYTHON_C_SECURITY_REFUSAL_PASS",
+      "scope": "actual compiled cdylib + actual ctypes Adapter, /dev/null only; no device or crypto qualification",
+      "python_calls": 3,
+      "c_output_unchanged": true,
+      "library_sha256": "84bd4b2a33d9f4e6852cf7ebdc6bc845fdddada4deecc5d97c571b3dc5aafada"
+    },
+    "docs": {
+      "workspace_relative_path": ".dev/security-state-docs-corrected.log",
+      "sha256": "e5ee69dedf3ba5b6cc33b94c6be988283f3940d85728543b58778763d15e1218",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    "formal": "no new proof claimed; model/crypto fixture tests are not current runtime or hardware security"
+  },
+  "failures_retained": [
+    {
+      "workspace_relative_path": ".dev/native-security-state-retirement-kernel-build.log",
+      "sha256": "fe1ae4fe7273783aeeb31a9e208d9bf2226210e0d023a2fb36dcb5f9a886a517",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/security-state-retirement-offline.log",
+      "sha256": "5a5354d3ac10d4e8c0eb24fc038a1cfd8a0d390fd0aaecaeebb73af3b5984a24",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/security-state-dbus-test.log",
+      "sha256": "9479bdfdaa3f7dc20ecdaf8ba8ddcefb21dd86791ad8350625721693cc500b63",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/security-state-python-abi.log",
+      "sha256": "514d12835c65e5c0bece3c0b7bcf22effe97e216ba58620afc1d374c88051176",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/security-state-tools-full.log",
+      "sha256": "d8f58fff2f5d88409d37ed78bfbcc30703246e9e499390af9a9b47f67b4ae7cd",
+      "availability": "workspace-private original; not uploaded to public site"
+    },
+    {
+      "workspace_relative_path": ".dev/security-state-docs.log",
+      "sha256": "6be8cfc7a283bb3b135339c2e86758aad861622f87a1b315239e056f25fd42da",
+      "availability": "workspace-private original; not uploaded to public site"
+    }
+  ],
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38459081956",
+    "head": "4b949027d171795d14af60a9edb82d63d4dacab0",
+    "kernel_pin": "6f2f712980295cef424884884059ed07655c40c2",
+    "jobs_success": 9
+  },
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 7,
+      "state": "OPEN",
+      "id": 6154038671,
+      "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6154038671",
+      "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 18,
+      "state": "OPEN",
+      "id": 6154039480,
+      "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6154039480",
+      "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 5,
+      "state": "OPEN",
+      "id": 6154040318,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6154040318",
+      "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "id": 6154041272,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6154041272",
+      "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "id": 6154042256,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6154042256",
+      "body_sha256": "89f4ab9e9d7304068925155845d6253c1a790a4b27fd7989b514099e4891753e",
+      "readback_exact": true
+    }
+  ],
+  "still_open": [
+    "remaining default-selection/debugfs/legacy diagnostic observation routing",
+    "unreleased old security declarations/facades and unused crypto Kconfig dependencies",
+    "canonical loss/resync/topology/full IRQ/owner-death/callback scopes",
+    "real per-connection authenticated pairing/key installation/Agent/Bond/PHY/PM",
+    "long PDU/credit/backpressure/multichannel/four pairs/unique SSAP/S5/S6",
+    "natural startup timeout/reenumeration/disappearance RCA and non-human automatic recovery"
+  ],
+  "vm_only": true,
+  "natural_recovery_qualified": false,
+  "whole_issue_closed": false,
+  "goal_complete": false,
+  "no_transfer": "QMP/injection/manual interventions are not natural recovery; NOCP is not peer receipt; source and hardware assumptions remain explicit",
+  "terminal_issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 7,
+      "state": "OPEN",
+      "comment_id": 6154181472,
+      "url": "https://github.com/OpenSparklink/linux/issues/7#issuecomment-6154181472",
+      "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 18,
+      "state": "OPEN",
+      "comment_id": 6154182413,
+      "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6154182413",
+      "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 5,
+      "state": "OPEN",
+      "comment_id": 6154183370,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6154183370",
+      "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6154184314,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6154184314",
+      "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6154185302,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6154185302",
+      "body_sha256": "c436bc3d63d522e5c8b29d34635dfa9620ae4af23c51d2d8fdc85937e55a52f1",
+      "readback_exact": true
+    }
+  ]
+}

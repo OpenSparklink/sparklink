@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "status": "FOUR_EXISTING_ISSUES_READBACK_AND_SCOPED_INTEGRITY_PASS",
+  "report": "lifecycle-u23-hardware-change-20261017.json",
+  "report_commit": "955a8858308b4cc0d21c59cb46fa95bfd4eaa00c",
+  "qualification_state_commit": "0969f90508adb3a4f51b8f417bd78f38e7a80bbd",
+  "scope": [
+    "273new materials checked;not allhistoricalbytes orindependent decoder",
+    "10freshU/U lifecyclegates andinitialmixedhardware interruptedbatch keptseparate;no newer dirtykernelqualification",
+    "4registry and10report negatives;100copiedactualevidence negatives;offlinechecks notformal proofs",
+    "Originalissuebodies unchanged,all4OPEN;fullgoal active andoverallINCOMPLETE",
+    "StrictHTMLfourcategories115entries;notnewbrowser/readerflow orrealdevicequalification"
+  ],
+  "checks": {
+    "materials": 273,
+    "registry_negatives": 4,
+    "report_negatives": 10,
+    "copied_evidence_negatives": 100,
+    "offline_tests": 22,
+    "strict_html": "PASS",
+    "documentation_inventory": 115,
+    "metadata_verification": "METADATA_ONLY_NOT_REVERIFIED",
+    "overall": "INCOMPLETE"
+  },
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 4,
+      "title": "让每个控制器独立拥有协议状态与工作队列",
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6220427827",
+      "comment_id": 6220427827,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "e7eb98b5657cb8f625863b8a2cb61df69d8c35ecf5a62a7e8389489438cb8b97"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 17,
+      "title": "补齐 WS73 TCID 数据通道、ACB 重组与发送 credit",
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6220429369",
+      "comment_id": 6220429369,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "e7eb98b5657cb8f625863b8a2cb61df69d8c35ecf5a62a7e8389489438cb8b97"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "title": "建立厂商 Backend 回归矩阵、WS73 硬件 gates 与维护文档",
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6220430992",
+      "comment_id": 6220430992,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "e7eb98b5657cb8f625863b8a2cb61df69d8c35ecf5a62a7e8389489438cb8b97"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "title": "跟踪：Linux 与用户态 SparkLink 全部 issues 的联合实施和验收",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6220432504",
+      "comment_id": 6220432504,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "e7eb98b5657cb8f625863b8a2cb61df69d8c35ecf5a62a7e8389489438cb8b97"
+    }
+  ],
+  "ci_observed_for_executed_tools": [
+    {
+      "name": "Production codec bounded fuzz",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38931811198",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "33f17a8978eec24cfd596fe08dfc1b82c5570135"
+    },
+    {
+      "name": "Qualification integrity",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38931810903",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "33f17a8978eec24cfd596fe08dfc1b82c5570135"
+    },
+    {
+      "name": "Documentation",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38931810953",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "33f17a8978eec24cfd596fe08dfc1b82c5570135"
+    },
+    {
+      "name": "CI",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38931810911",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "33f17a8978eec24cfd596fe08dfc1b82c5570135"
+    },
+    {
+      "name": "Qualification integrity",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38931789090",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "33f17a8978eec24cfd596fe08dfc1b82c5570135"
+    },
+    {
+      "name": "Documentation",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38931789124",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "33f17a8978eec24cfd596fe08dfc1b82c5570135"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/revoke-u23-lifecycle-final-issue-receipts-v1.json",
+      "sha256": "a57b780d94a170eb47082549ceb2bed9d6af7e9105d87f8bd975261c7aa114d0",
+      "bytes": 2275,
+      "access": "private",
+      "retention": "Authorized local workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/revoke-u23-lifecycle-issues-v1.log",
+      "sha256": "c1a53ee516e0dfd14e085ba5ca3058bc1f4ce45fe607ec6b01574bf2bc80e388",
+      "bytes": 364,
+      "access": "private",
+      "retention": "Authorized local workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/revoke-u23-lifecycle-update-issues-v1.py",
+      "sha256": "8fb75c6e304a15861276e85a2ff5a5a8cb61e0c0d8a71d29554bf8ef562e9b1e",
+      "bytes": 5451,
+      "access": "private",
+      "retention": "Authorized local workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/revoke-u23-lifecycle-registry-local-v1.json",
+      "sha256": "f817d43a600c56bed406ffbc0e23161b80082c5cc058376d863f5e1d500bf581",
+      "bytes": 1193,
+      "access": "private",
+      "retention": "Authorized local workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/revoke-u23-lifecycle-report-contract-v1.json",
+      "sha256": "9a11aef7e5752a012adbaf9256f5cd41d497c26e4685bf9f1f867cf28ff93c9d",
+      "bytes": 995,
+      "access": "private",
+      "retention": "Authorized local workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/revoke-u23-lifecycle-metadata-final-v1.json",
+      "sha256": "8b3f1fbc4875bcef66160508fc90ce4f3b68b82a79f2c49026d78593ba588e09",
+      "bytes": 239475,
+      "access": "private",
+      "retention": "Authorized local workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/revoke-u23-lifecycle-strict-docs-v1.log",
+      "sha256": "cd3e7fbca0595739b3fa2e199efd5fef7ef53fde214ba9b08dfc2a80829b70e6",
+      "bytes": 247088,
+      "access": "private",
+      "retention": "Authorized local workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/revoke-lifecycle-ci-33f17a8-v1.json",
+      "sha256": "85acaca09eff192e36ada7bbf00cb83b751d36c6edba2d8c386fc828a82316ea",
+      "bytes": 81135,
+      "access": "private",
+      "retention": "Authorized local workspace;not a public artifact"
+    }
+  ]
+}

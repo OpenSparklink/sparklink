@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "source_heads": {
+    "kernel": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "compiled_service": "7d87d183bd1c2b745430dbeca75c1a7909225d31",
+    "run_tools": "7d87d183bd1c2b745430dbeca75c1a7909225d31"
+  },
+  "status": "REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS",
+  "vm_only": true,
+  "manifest_sha256": "c8b1475a88bf16f97bbba75bc2f63cc7a857a270c083b01ae1eb9d7131a8ec13",
+  "accepted": {
+    "physical_acceptance": false,
+    "ordinary_channel_socket_acceptance": false,
+    "ordinary_channel_info_acceptance": false,
+    "ssap_exchange_info_acceptance": false,
+    "ssap_value_acceptance": false,
+    "ssap_discovery_acceptance": false
+  },
+  "physical_acceptance": false,
+  "natural_recovery_acceptance": false,
+  "raw_capture_availability": "private workspace only; hashes do not imply downloadable artifacts",
+  "raw_files": [
+    {
+      "file": "guest-output/application/early-bootstrap-fault/after_retry/run.json",
+      "sha256": "69231ccd06ff2f51147a7c7dbebf1e97a3eecd64cdf46c198365f8031853517c"
+    },
+    {
+      "file": "guest-output/application/early-bootstrap-fault/during_fault/run.json",
+      "sha256": "aab415bf3615ed5862a2c5dbd243b1134a1cb61e1cbee60e2c33aaf22d978876"
+    },
+    {
+      "file": "guest-output/capture-stats.txt",
+      "sha256": "fa681d98213e4ba1d7ddf3af973d640a66a34c756a8ab3a29abac05c80f1fe93"
+    },
+    {
+      "file": "guest-output/early-bootstrap-fault/run.json",
+      "sha256": "94d34d3b5668cac2c9b47f21e07ffcc049fecb45a18c45240cc5bc9eb3773ccc"
+    },
+    {
+      "file": "guest-output/ws73.pcap",
+      "sha256": "983a2ae2c87ece351d8ca391d63c73ad625510245dbeeaa56ba757868fb7e300"
+    }
+  ],
+  "capture_packets": 3643,
+  "qemu_exit": 0,
+  "scope": "controlled missing-BSLE peer isolation only, not natural recovery",
+  "fault_proof_sha256": "739d15f4d17ad8ad456e0c1bed66f597fefe77b24cb0151fe022c24b1e37577d"
+}

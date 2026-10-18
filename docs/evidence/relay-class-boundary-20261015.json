@@ -1,0 +1,789 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-10-15T02:02:03.414967+00:00",
+  "status": "CLASS_SPECIFIC_REAL_TRANSPORT_CONTROL_POSITIVE_PRODUCTION_DENIAL_STILL_MISSING",
+  "vm_only": true,
+  "tool_source": "86e8cd81f4d18b4a26fcfca8d06832c38927f6e8",
+  "production": {
+    "artifact": "r1ff-public-cold",
+    "manifest_sha256": "dd17e5206779faf272fb076f507bfbe75b859e955e0bc277605df250a0c64809",
+    "status": "REAL_PEER_DELIVERY_FAIL",
+    "kernel": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+    "reference": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "exits": [
+      0,
+      0
+    ],
+    "captures": {
+      "native": {
+        "sha256": "cd59cd2656a71b7991483e82d3f5eb197f089a7021cb8eb9a8e0ae9e7faba3db",
+        "packets": 905,
+        "commands": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029415281134000,
+            "urb": 18446615792153897216,
+            "record": 892,
+            "file_offset": 280184,
+            "usb_sha256": "b3272da3c4c8942116a1e84a0149fa5c36f24f831e94db85430d56bc417b0415",
+            "opcode": 6162,
+            "params": "0000ff010102",
+            "sequence": 24,
+            "completion": {
+              "bus": 1,
+              "device": 4,
+              "wall_ns": 1792029415281638000,
+              "urb": 18446615792153897216,
+              "record": 893,
+              "file_offset": 280392
+            }
+          }
+        ],
+        "complete": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029415281653000,
+            "urb": 18446615791676076416,
+            "record": 894,
+            "file_offset": 280472,
+            "hcc_offset": 92,
+            "usb_sha256": "3f1c046c5600b445ceb2347477b3c1db90b0cdae01f700a1da6f75dcc79ca138",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "0000ff01"
+          }
+        ],
+        "received": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029415280914000,
+            "urb": 18446615791676076416,
+            "record": 890,
+            "file_offset": 279846,
+            "hcc_offset": 92,
+            "usb_sha256": "9b871020873181249308f5ff9cdb2dc43cec9629da3b08783f1fd92dbaad7478",
+            "usb_length": 178,
+            "event": 20,
+            "params": "000034010a03000510000202020200"
+          }
+        ]
+      },
+      "oracle": {
+        "sha256": "98c6eed21fc8439c1841c0f88ba588fdfba6f9afb2710a2bece89f854867e167",
+        "packets": 593,
+        "commands": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029415416790000,
+            "urb": 18446618649332231168,
+            "record": 586,
+            "file_offset": 236890,
+            "usb_sha256": "21e04457adeb6d3e3257f0c0dab3ead5184c4de2a0d5b3b62ec27f017106d9ad",
+            "opcode": 6162,
+            "params": "000034010a03000510000202020200",
+            "sequence": 13,
+            "completion": {
+              "bus": 1,
+              "device": 4,
+              "wall_ns": 1792029415416956000,
+              "urb": 18446618649332231168,
+              "record": 587,
+              "file_offset": 237098
+            }
+          }
+        ],
+        "complete": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029415417109000,
+            "urb": 18446618649332230592,
+            "record": 588,
+            "file_offset": 237178,
+            "hcc_offset": 92,
+            "usb_sha256": "bd4f5c68f925d8592cf02757d7cf85ac0324e067d940fa5f29b00c43958141c4",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401"
+          }
+        ],
+        "received": []
+      }
+    },
+    "firmware_uploads": {
+      "native": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "image": "ws73.bin",
+            "load_address": 4194304,
+            "bytes": 144540,
+            "image_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+            "payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5",
+            "chunks": [
+              {
+                "address": 4194304,
+                "state": 0,
+                "command_record": 312,
+                "data_record": 316,
+                "completion_record": 317,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4227072,
+                "state": 1,
+                "command_record": 320,
+                "data_record": 324,
+                "completion_record": 325,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4259840,
+                "state": 1,
+                "command_record": 328,
+                "data_record": 332,
+                "completion_record": 333,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4292608,
+                "state": 1,
+                "command_record": 336,
+                "data_record": 340,
+                "completion_record": 341,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4325376,
+                "state": 2,
+                "command_record": 344,
+                "data_record": 348,
+                "completion_record": 349,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          },
+          {
+            "image": "wifi_cali.bin",
+            "load_address": 4390912,
+            "bytes": 20980,
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229",
+            "chunks": [
+              {
+                "address": 4390912,
+                "state": 3,
+                "command_record": 352,
+                "data_record": 356,
+                "completion_record": 357,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          },
+          {
+            "image": "btc_cali.bin",
+            "load_address": 4456448,
+            "bytes": 7676,
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6",
+            "chunks": [
+              {
+                "address": 4456448,
+                "state": 3,
+                "command_record": 360,
+                "data_record": 364,
+                "completion_record": 365,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          }
+        ],
+        "scope": "Successful USB boot-mode OUT bytes match supplied images; not firmware execution/air delivery/secure attestation/natural recovery"
+      },
+      "oracle": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "image": "ws73.bin",
+            "load_address": 4194304,
+            "bytes": 144540,
+            "image_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+            "payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5",
+            "chunks": [
+              {
+                "address": 4194304,
+                "state": 0,
+                "command_record": 310,
+                "data_record": 314,
+                "completion_record": 315,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4227072,
+                "state": 1,
+                "command_record": 318,
+                "data_record": 322,
+                "completion_record": 323,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4259840,
+                "state": 1,
+                "command_record": 326,
+                "data_record": 330,
+                "completion_record": 331,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4292608,
+                "state": 1,
+                "command_record": 334,
+                "data_record": 338,
+                "completion_record": 339,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4325376,
+                "state": 2,
+                "command_record": 342,
+                "data_record": 346,
+                "completion_record": 347,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          },
+          {
+            "image": "wifi_cali.bin",
+            "load_address": 4390912,
+            "bytes": 20980,
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229",
+            "chunks": [
+              {
+                "address": 4390912,
+                "state": 3,
+                "command_record": 350,
+                "data_record": 354,
+                "completion_record": 355,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          },
+          {
+            "image": "btc_cali.bin",
+            "load_address": 4456448,
+            "bytes": 7676,
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6",
+            "chunks": [
+              {
+                "address": 4456448,
+                "state": 3,
+                "command_record": 358,
+                "data_record": 362,
+                "completion_record": 363,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          }
+        ],
+        "scope": "Successful USB boot-mode OUT bytes match supplied images; not firmware execution/air delivery/secure attestation/natural recovery"
+      }
+    },
+    "denial_delivery_qualified": false,
+    "pairing_qualification": false,
+    "automatic_recovery_qualification": false
+  },
+  "supported_class_diagnostic": {
+    "artifact": "r133-public-cold",
+    "manifest_sha256": "3ebcec1778701bbd69025b039776e95d403895939535410a829de0b50e18ad2e",
+    "status": "REAL_SUPPORTED_CLASS_CONTROL_POSITIVE",
+    "kernel": "0b4b311336c45f82741fc323d339761545dd2132",
+    "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+    "reference": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "exits": [
+      0,
+      0
+    ],
+    "captures": {
+      "native": {
+        "sha256": "59c3acb66af506a56f61a8e08f92999d80bd658b516f2bd926f2730ef4bca0fd",
+        "packets": 903,
+        "commands": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029257500965000,
+            "urb": 18446615225730363776,
+            "record": 890,
+            "file_offset": 280196,
+            "usb_sha256": "851268585304fddbbf5fd228d7a41349029d53ffcf0d3ba9d07e173d4dea8b84",
+            "opcode": 6162,
+            "params": "000033010102",
+            "sequence": 24,
+            "completion": {
+              "bus": 1,
+              "device": 4,
+              "wall_ns": 1792029257501208000,
+              "urb": 18446615225730363776,
+              "record": 891,
+              "file_offset": 280404
+            }
+          }
+        ],
+        "complete": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029257501396000,
+            "urb": 18446615225091613056,
+            "record": 892,
+            "file_offset": 280484,
+            "hcc_offset": 92,
+            "usb_sha256": "5433913e25352147c7ac2bb574443fde84fd1e5bbef7d7dde03100282f1d27d1",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003301"
+          }
+        ],
+        "received": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029257500831000,
+            "urb": 18446615225091613056,
+            "record": 888,
+            "file_offset": 279858,
+            "hcc_offset": 92,
+            "usb_sha256": "4f1fbaf8d9e2dc78250cdabe06be177490c1ec29cf9bc3565cf8dd8a688a59c2",
+            "usb_length": 178,
+            "event": 20,
+            "params": "000034010a03000510000202020200"
+          }
+        ]
+      },
+      "oracle": {
+        "sha256": "84b4f1a0cee677befb157cb0ebb88465004bdc1fd3cf8b2782aa550e79d611d8",
+        "packets": 603,
+        "commands": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029257620676000,
+            "urb": 18446617562809401536,
+            "record": 590,
+            "file_offset": 237216,
+            "usb_sha256": "21e04457adeb6d3e3257f0c0dab3ead5184c4de2a0d5b3b62ec27f017106d9ad",
+            "opcode": 6162,
+            "params": "000034010a03000510000202020200",
+            "sequence": 13,
+            "completion": {
+              "bus": 1,
+              "device": 4,
+              "wall_ns": 1792029257620859000,
+              "urb": 18446617562809401536,
+              "record": 591,
+              "file_offset": 237424
+            }
+          },
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029257648230000,
+            "urb": 18446617562809404608,
+            "record": 596,
+            "file_offset": 238180,
+            "usb_sha256": "974d9358c9ea3ab46f3660f3f43c56e2349896d5f5b2c0c112f69eac8f1cef33",
+            "opcode": 6162,
+            "params": "0000ff010108",
+            "sequence": 14,
+            "completion": {
+              "bus": 1,
+              "device": 4,
+              "wall_ns": 1792029257648367000,
+              "urb": 18446617562809404608,
+              "record": 597,
+              "file_offset": 238388
+            }
+          }
+        ],
+        "complete": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029257620997000,
+            "urb": 18446617562809403840,
+            "record": 592,
+            "file_offset": 237504,
+            "hcc_offset": 92,
+            "usb_sha256": "bd4f5c68f925d8592cf02757d7cf85ac0324e067d940fa5f29b00c43958141c4",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "00003401"
+          },
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029257648506000,
+            "urb": 18446617562809403264,
+            "record": 598,
+            "file_offset": 238468,
+            "hcc_offset": 92,
+            "usb_sha256": "d6d5836e82bf3bcc86c29972b969c7a1f50c245f7a9b630fafe48a19d5671ce9",
+            "usb_length": 178,
+            "opcode": 6162,
+            "status": 0,
+            "value": "0000ff01"
+          }
+        ],
+        "received": [
+          {
+            "bus": 1,
+            "device": 4,
+            "wall_ns": 1792029257633383000,
+            "urb": 18446617562809403840,
+            "record": 594,
+            "file_offset": 237842,
+            "hcc_offset": 92,
+            "usb_sha256": "b57addfcd3500e30f1eeb95647127c42f400c0ccc52f5e98452ebcf24bf11943",
+            "usb_length": 178,
+            "event": 20,
+            "params": "000033010102"
+          }
+        ]
+      }
+    },
+    "firmware_uploads": {
+      "native": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "image": "ws73.bin",
+            "load_address": 4194304,
+            "bytes": 144540,
+            "image_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+            "payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5",
+            "chunks": [
+              {
+                "address": 4194304,
+                "state": 0,
+                "command_record": 308,
+                "data_record": 312,
+                "completion_record": 313,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4227072,
+                "state": 1,
+                "command_record": 316,
+                "data_record": 320,
+                "completion_record": 321,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4259840,
+                "state": 1,
+                "command_record": 324,
+                "data_record": 328,
+                "completion_record": 329,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4292608,
+                "state": 1,
+                "command_record": 332,
+                "data_record": 336,
+                "completion_record": 337,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4325376,
+                "state": 2,
+                "command_record": 340,
+                "data_record": 344,
+                "completion_record": 345,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          },
+          {
+            "image": "wifi_cali.bin",
+            "load_address": 4390912,
+            "bytes": 20980,
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229",
+            "chunks": [
+              {
+                "address": 4390912,
+                "state": 3,
+                "command_record": 348,
+                "data_record": 352,
+                "completion_record": 353,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          },
+          {
+            "image": "btc_cali.bin",
+            "load_address": 4456448,
+            "bytes": 7676,
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6",
+            "chunks": [
+              {
+                "address": 4456448,
+                "state": 3,
+                "command_record": 356,
+                "data_record": 360,
+                "completion_record": 361,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          }
+        ],
+        "scope": "Successful USB boot-mode OUT bytes match supplied images; not firmware execution/air delivery/secure attestation/natural recovery"
+      },
+      "oracle": {
+        "status": "ACTUAL_RAM_UPLOAD_BYTES_MATCH",
+        "images": [
+          {
+            "image": "ws73.bin",
+            "load_address": 4194304,
+            "bytes": 144540,
+            "image_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+            "payload_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5",
+            "chunks": [
+              {
+                "address": 4194304,
+                "state": 0,
+                "command_record": 310,
+                "data_record": 314,
+                "completion_record": 315,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4227072,
+                "state": 1,
+                "command_record": 318,
+                "data_record": 322,
+                "completion_record": 323,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4259840,
+                "state": 1,
+                "command_record": 326,
+                "data_record": 330,
+                "completion_record": 331,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4292608,
+                "state": 1,
+                "command_record": 334,
+                "data_record": 338,
+                "completion_record": 339,
+                "bus": 1,
+                "device": 3
+              },
+              {
+                "address": 4325376,
+                "state": 2,
+                "command_record": 342,
+                "data_record": 346,
+                "completion_record": 347,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          },
+          {
+            "image": "wifi_cali.bin",
+            "load_address": 4390912,
+            "bytes": 20980,
+            "image_sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+            "payload_sha256": "d216299f3c2c7a16ec0643c7a274bb5ec73a43422b9478bc917f81ecd5f4a229",
+            "chunks": [
+              {
+                "address": 4390912,
+                "state": 3,
+                "command_record": 350,
+                "data_record": 354,
+                "completion_record": 355,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          },
+          {
+            "image": "btc_cali.bin",
+            "load_address": 4456448,
+            "bytes": 7676,
+            "image_sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+            "payload_sha256": "f2ae6d6af2aa58601087ff9f168b4575767f20f683b8015022698f2b6626f4d6",
+            "chunks": [
+              {
+                "address": 4456448,
+                "state": 3,
+                "command_record": 358,
+                "data_record": 362,
+                "completion_record": 363,
+                "bus": 1,
+                "device": 3
+              }
+            ]
+          }
+        ],
+        "scope": "Successful USB boot-mode OUT bytes match supplied images; not firmware execution/air delivery/secure attestation/natural recovery"
+      }
+    },
+    "denial_delivery_qualified": false,
+    "pairing_qualification": false,
+    "automatic_recovery_qualification": false,
+    "supported_class_positive_control": {
+      "matching_actual_usb_and_complete_and_peer": true,
+      "peer_application_payload_checked": true,
+      "denial_semantics": false,
+      "production_mapping": false
+    }
+  },
+  "peer_application_log": {
+    "sha256": "bb03966e1464eae5c1de57f62b3933c6ccd5b9bb0c90550944476a0d52fb87b0",
+    "actual_check": "RELAY_CONTROL_RX_MATCH handle=0 index=0133 bytes=02",
+    "real_protocol_result": "PAIR_RESULT status2147508236; RELAY_ORACLE_FAIL requested=1 done=1",
+    "scope": "Physical class control delivery only; real SM correctly fails unexpected protocol message. Not denial or approved pairing."
+  },
+  "diagnostic_source": {
+    "branch": "codex/ws73-canonical-relay-diagnostic",
+    "canonical147": "2652b64103d6cc41df9d095c0c85bd1d0ec8cb56",
+    "supported133": "0b4b311336c45f82741fc323d339761545dd2132",
+    "merged_into_production": false,
+    "same_path": "Session security relay -> Host command credit -> actual submit ticket -> WS73/HCC; only diagnostic wire index differs",
+    "prohibition": "Do not ship supported133 as refusal or infer security success from this diagnostic."
+  },
+  "controlled_counterexamples": [
+    {
+      "artifact": "relay-494-111-rx-table-1ff-upload-verified",
+      "manifest_sha256": "e0860c46016b0e664cc4f6cf044cca470eed4f2e1bff8e7aeb6f465e459659bc",
+      "kernel": "49467d4df595f8988a7ad6310b53932f37d68283",
+      "compiled_service": "d74421c210eeb1b706dbd90f3500442e28a214dc",
+      "status": "REAL_PEER_DELIVERY_FAIL",
+      "scope": "receiver table146 replaced by1ff, same handler/type; actual derivative upload"
+    },
+    {
+      "artifact": "relay-canonical147-original111-receiver",
+      "manifest_sha256": "0f5e01d0b70dd449741d2c414557daef14ab58add58548cede039cfe98c1f428",
+      "kernel": "2652b64103d6cc41df9d095c0c85bd1d0ec8cb56",
+      "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+      "status": "REAL_PEER_DELIVERY_FAIL",
+      "scope": "isolated canonical147 sender; original receiver actual upload"
+    },
+    {
+      "artifact": "relay-canonical147-derived147-receiver",
+      "manifest_sha256": "13294557c24eddeacc28f3f0ce99bba8b3f71d0c2baf6414e8fcf83af188cbc7",
+      "kernel": "2652b64103d6cc41df9d095c0c85bd1d0ec8cb56",
+      "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+      "status": "REAL_PEER_DELIVERY_FAIL",
+      "scope": "isolated canonical147 sender; receiver table146 replaced by147, same handler/type; actual derivative upload"
+    }
+  ],
+  "not_exercised": [
+    {
+      "artifact": "relay-494-111-rx-table-1ff-experiment",
+      "reason": "warm firmware skipped upload; staging derivative is not loading it"
+    },
+    {
+      "artifact": "relay-494-111-rx-table-1ff-forced-reload",
+      "reason": "only /usr/lib changed; driver loaded original /lib copy; not derivative exercise"
+    },
+    {
+      "artifact": "relay-supported133-original111-positive-control",
+      "reason": "QMP socket path too long, rejected before hardware"
+    },
+    {
+      "artifact": "r1ff-both-reloaded",
+      "reason": "pre-VM template assertion; no hardware evidence"
+    }
+  ],
+  "findings": [
+    "Original111 bytes on BOTH endpoints confirmed in actual successful USB boot transfers; two file-search paths and warm skip cannot explain latest production failure.",
+    "Actual native1812 with wire1ff reason02 receives matching real Complete; no opposite0014 before finite reference timeout. Complete is not peer delivery.",
+    "With same existing Session/credit/ticket path, diagnostic supported133 is delivered to actual peer0014 and application checks handle/index/length/byte. General native relay TX is not universally broken.",
+    "Visible RAM dispatch table contains133-146 type6 handler0x41a6a4; replacing receiver146 with147/1ff did not repair delivery. Merely adding that visible entry is insufficient.",
+    "SDK archive1ff and OHOS canonical147 do not prove actual111 firmware ABI; local SDK image differs from pinned libws73 original.",
+    "Remaining boundary is class-specific firmware TX/ROM/dispatch or air/RX behavior; exact root not yet identified. Custom ISA/ROM decompilation limits remain NOT_ANALYZED, not positive proof."
+  ],
+  "source_references": {
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "combined111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "earlier_investigation": "relay-index-investigation-20261015.json"
+  },
+  "offline": {
+    "tool_tests": 491,
+    "status": "PASS",
+    "scope": "Actual tools plus negative evidence-parser/option tests, not firmware proof",
+    "diagnostic_dli_checks": 533352,
+    "diagnostic_dli_source": "2652b64103d6cc41df9d095c0c85bd1d0ec8cb56",
+    "diagnostic_dli_scope": "Clang ASan/UBSan synthetic actual codec IO, not air/security or formal proof"
+  },
+  "formal": {
+    "new_whole_security_proof": false,
+    "existing_consent311": "limited actual494 scalar checks only; locks/references/Runtime/HCD/NOCP excluded",
+    "credit_kani": "NOT_PROVEN: unsupported/timeout retained",
+    "vendor_isa": "NOT_ANALYZED_VENDOR_ISA_UNSUPPORTED"
+  },
+  "next_exits": [
+    "Map class-specific firmware TX/ROM dispatch or acquire discriminating real air evidence, not rerun identical147/1ff matrix.",
+    "Actual matching production refusal peer0014 and reference rejection callback; then authorized pairing/Agent/key install/encrypted application reply separately.",
+    "In parallel controlled begun withdrawal/down/original-deadline and ledger/ticket composition; existing six withdrawal subsets do not prove all races."
+  ],
+  "remaining": [
+    "approved pairing/real trusted key installation/encryption/Bond/Profile",
+    "complete revoke/down/deadline/NOCP reuse proof",
+    "natural startup/reenumeration/disappearance RCA and nonhuman recovery",
+    "full S0-S6,19WP,10FV,12DG and original scopes"
+  ],
+  "limitations": [
+    "Private full captures/source snapshots retained at named artifacts; public report contains hashes and packet metadata, no SDK/firmware/restricted standards.",
+    "USB byte identity is not authenticated execution or secure attestation. Guest timestamps across two VMs do not establish cross-machine exact order.",
+    "Guest register reset/QMP/derivative injection is diagnostic, never natural recovery.",
+    "Diagnostic peer is reference lib host in VM, not a claim of native-native approved pairing.",
+    "Survivor Ready/actual scan retained, not four-device independent concurrent business qualification."
+  ],
+  "issue_closure_allowed": false,
+  "goal_complete": false
+}

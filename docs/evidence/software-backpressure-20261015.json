@@ -1,0 +1,383 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "REAL_SOFTWARE_QUEUE_BACKPRESSURE_AND_APPLICATION_DELIVERY_PASS",
+  "kernel_head": "40474895224799879cf63d74b85b17932121f726",
+  "compiled_userspace_head": "89f30157b6f23428a02354853cd1bd2f43a6e629",
+  "vm_only": true,
+  "host_driver_installed": false,
+  "behavior": "Actual ordinary socket16-message burst, bounded software queue EAGAIN/POLLOUT withdrawal and resumed admission, exact opposite application replies",
+  "scope": "Software queue pressure only. Kernel unchanged404; no artificial credit/refill/fake reply or alternate Engine. Full packet-credit depletion still unqualified.",
+  "real_runs": [
+    {
+      "gate": "real-short",
+      "manifest_sha256": "761cf725e763932a8599a944e38f825f48cdb87c77f0291644f615e6864f6d4b",
+      "private_folder": "native-software-burst-real-short",
+      "raw_artifacts_public": false,
+      "round_trips": 40,
+      "application_bytes": [
+        61
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0
+    },
+    {
+      "gate": "real-boundary",
+      "manifest_sha256": "440fb26948ca7b82801774fc19f326ea8ba59e5a18449f809c88fd68acd4962c",
+      "private_folder": "native-software-burst-real-boundary",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        249
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 16
+    },
+    {
+      "gate": "real-long",
+      "manifest_sha256": "acb94a3db18c71efbba0e82d52fa80449fd9ecd149c92d1d707a25d72efe8758",
+      "private_folder": "native-software-burst-real-long",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        2042
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 16
+    },
+    {
+      "gate": "real-prefix-close",
+      "manifest_sha256": "8c143b27450f9bb6ecba6d0dc0e660a94191e2f801b6fdac38d9ed4c82dc808e",
+      "private_folder": "native-software-burst-real-prefix-close",
+      "raw_artifacts_public": false,
+      "round_trips": 0,
+      "application_bytes": [
+        2042
+      ],
+      "prefix_close_phases": 2,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "prefix_timing": [
+        {
+          "phase": 0,
+          "exit_to_last_ms": 61.315288,
+          "other_channel_after_close": true
+        },
+        {
+          "phase": 1,
+          "exit_to_last_ms": 59.890102,
+          "other_channel_after_close": true
+        }
+      ]
+    },
+    {
+      "gate": "real-burst",
+      "manifest_sha256": "910505959f8c8a04abc18c1fcd0c348deaf503e240c9f530d0d6239c95380e19",
+      "private_folder": "native-software-burst-real-burst",
+      "raw_artifacts_public": false,
+      "round_trips": 32,
+      "application_bytes": [
+        2042
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": true,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0,
+      "pressure": [
+        {
+          "eagain": 8,
+          "poll_not_writable": 8,
+          "resumed_sequences": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "replies": 16,
+          "scope": "Software finite queue pressure; not controller packet-credit depletion"
+        },
+        {
+          "eagain": 8,
+          "poll_not_writable": 8,
+          "resumed_sequences": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "replies": 16,
+          "scope": "Software finite queue pressure; not controller packet-credit depletion"
+        }
+      ],
+      "physical_usb_fragments_per_pdu": [
+        9
+      ]
+    },
+    {
+      "gate": "real-length248",
+      "manifest_sha256": "5b90317173371754b793b48d562962d545df8eb968b6fce39eb221ae1b1d7044",
+      "private_folder": "native-software-burst-length248",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        248
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0
+    },
+    {
+      "gate": "real-length250",
+      "manifest_sha256": "80e295dee793b0c249fc1fa39a3ac704e361b0e60afadffdfd3964331652c845",
+      "private_folder": "native-software-burst-length250",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        250
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0
+    },
+    {
+      "gate": "real-length253",
+      "manifest_sha256": "41299d319f8ea0a94b683ef3fe889b81a338a9f00fd931314d431289a5e5c217",
+      "private_folder": "native-software-burst-length253",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        253
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0
+    },
+    {
+      "gate": "real-length254",
+      "manifest_sha256": "6f3f1009ac1cb936fd6858804c1eeef3971a6973d8407699a0214594943ad633",
+      "private_folder": "native-software-burst-length254",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        254
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0
+    },
+    {
+      "gate": "real-length255",
+      "manifest_sha256": "7430618e6d85e93d68faf4764a4639df386ca7e75f64c3f70514843b426a0dcd",
+      "private_folder": "native-software-burst-length255",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        255
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0
+    },
+    {
+      "gate": "real-length1024",
+      "manifest_sha256": "73e8fd77240593ac7d5e513210a57eaae1d5d13953d78337b8132f6d032c233e",
+      "private_folder": "native-software-burst-length1024",
+      "raw_artifacts_public": false,
+      "round_trips": 8,
+      "application_bytes": [
+        1024
+      ],
+      "prefix_close_phases": 0,
+      "capture_kernel_drops": 0,
+      "vm_taint": 0,
+      "software_backpressure_acceptance": false,
+      "credit_exhaustion_acceptance": false,
+      "four_device_acceptance": false,
+      "boundary_refusals": 0
+    }
+  ],
+  "total_application_round_trips": 136,
+  "burst_application_round_trips": 32,
+  "source_application_round_trips_from_closed_fd": 0,
+  "regressions": "All original104 peer-validated app rounds on exact404/89 selected61/248/249/250/253/254/255/1024/2042 lengths and32 oversize;2 strict final-fd phases plus original SSAP;32 new burst app rounds separately",
+  "offline": {
+    "strict_clippy": true,
+    "tool_tests": 475,
+    "local_fd_test": "Actual AF_UNIX bounded send-buffer pressure and16 peer-validated replies; app control flow only, never WS73 credit/RF",
+    "kernel_proof": "No kernel change; prior actual C consent311 stays mapped to404, no new combination proof",
+    "tool_log_sha256": "2bccac046aa0c5b3df6adc11cb1c327212800c43b7b62de8d2e8879033c05a3e",
+    "clippy_log_sha256": "f14e621416f81d1703c1f1ed8d6437c2410692b2dae8cfab6e12250518131f61",
+    "cli_log_sha256": "7b2f00ec4c0b30520be3a473bdcfe6029579f9e8ab1778383f6047e3f2a43607"
+  },
+  "hardware_credit_depletion": false,
+  "full_goal_complete": false,
+  "natural_recovery_qualified": false,
+  "original_issues_closed": false,
+  "remaining": [
+    "True controller packet-credit depletion and bounded debt/NOCP validation",
+    "Managed revoke/down/original deadline during begun PDU, complete C/Rust/credit/Grant composition",
+    "Full dup/fork/SCM_RIGHTS/linger, dynamic channels and four-device business",
+    "Actual SMP peer delivery/key/Agent/encryption/Bond/Profile and original S0-S6",
+    "Natural fault RCA/non-human recovery, partial initialization/events/cleanup; UserHost P4 only planning"
+  ],
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "reference_difference": "Reference global credit adds count/default1 and clamps pool; native exact debt/lifetime and malformed/excess failure deliberately preserved",
+    "firmware_combined111_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3"
+  },
+  "raw_artifact_availability": "Private workspace only; public summaries/hashes cannot substitute independently obtaining original pcap/console/stats",
+  "ci": {
+    "source_head": "89f30157b6f23428a02354853cd1bd2f43a6e629",
+    "code_run": 38625653415,
+    "code_status": "ALL9_JOBS_SUCCESS",
+    "documentation_run": 38625653502,
+    "documentation_status": "SUCCESS",
+    "external_linkcheck": "SKIPPED_NOT_PASS"
+  },
+  "issue_sync": {
+    "status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+    "receipts": [
+      {
+        "repo": "linux",
+        "issue": 4,
+        "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6177199153",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+        "comment_sha256": "eab7afffb3ed625a7f377969f3f4ff4f9e95e607f065531b51af5db122d83b5c"
+      },
+      {
+        "repo": "linux",
+        "issue": 6,
+        "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6177200490",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+        "comment_sha256": "9154a7d4f21cbf3917d8f4c919a347195205856ca25742e2e59323f5ff73b925"
+      },
+      {
+        "repo": "linux",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/linux/issues/8#issuecomment-6177201933",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "4f21d2d59b7c708fd549ebb6720237e037b939f97d628531f4659bbd247b4b93",
+        "comment_sha256": "6403e5e0d640479358140634ec793c223f591ea2d43260392ad1c0700b8c875a"
+      },
+      {
+        "repo": "linux",
+        "issue": 14,
+        "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6177203487",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+        "comment_sha256": "bf973d16fd1420dc72155f558a9cbc4562d27582e30a655285ef24f4f16f76e7"
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6177204838",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+        "comment_sha256": "5a87bc8943bfd63d8e0e1e7867184c5ff43ce132a560c8a02c4d9fdcfec2521e"
+      },
+      {
+        "repo": "linux",
+        "issue": 18,
+        "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6177206102",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "5c2dbee1928dff3ce3caecac72d05f6c37a8509549022002c7911376ed40132b",
+        "comment_sha256": "1bbfebb7d003450756c530df266c73d3d80c0208fca7686cc27fc797b338557f"
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6177207613",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+        "comment_sha256": "7e893a960b7ea086efee1da638c66b5d1277d66e3daf5f432f69a17ea8ee2339"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6177209157",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41",
+        "comment_sha256": "518b404019557ca4f08ff374ca2d3c2b6d566a4c8dcd549d5050a66b340463f2"
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6177210725",
+        "state": "OPEN",
+        "body_unchanged": true,
+        "comment_verified": true,
+        "original_scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+        "comment_sha256": "30a6a81313f600f0e3a09cdde1f0c4c15584bd343b2b3a3fb1a3087e3cf470ba"
+      }
+    ]
+  }
+}

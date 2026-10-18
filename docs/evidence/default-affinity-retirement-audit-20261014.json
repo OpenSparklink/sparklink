@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "source_baseline": {
+    "linux": "6f2f712980295cef424884884059ed07655c40c2",
+    "userspace": "a01294596c09f7a5597522d694c9ed686a67fb07"
+  },
+  "source_sha256": "4034a6bd63cfe2a657494258083d01e8f4b7c22b2e0ccd0deac678ce2fd10f5a",
+  "immediate_delete": [
+    {
+      "item": "active_dev_id/default_selection/DEV_SWITCH routing",
+      "callers": "legacy switch and unselected ioctl/poll fallback; all Native production callers explicitly select",
+      "replacement": "per-File exact registration Arc; -1 clears only this File",
+      "issues": [
+        "K#4",
+        "K#5",
+        "U#6"
+      ],
+      "regression": "unselected rejection; dup-shared clear/rebind; independent peer fd unchanged; stale lifetime refuses"
+    },
+    {
+      "item": "debugfs writable adv/scan/conn/ioctl counters",
+      "actual_function": "no producer, writable fake values",
+      "replacement": "remove files; no capability or current-state substitute"
+    },
+    {
+      "item": "DLI_INFO legacy aggregate/default debug projections and Native use of MGMT_STATS",
+      "actual_function": "backend aggregate is not qualified Native metadata; standard transaction counters have real consumers",
+      "replacement": "ControllerSnapshot/author DiagnosticResult; Native legacy stats EOPNOTSUPP",
+      "issues": [
+        "K#3",
+        "K#4",
+        "K#5",
+        "U#6"
+      ],
+      "regression": "retain actual standard counters and passive expiry/queued cancellation tests; do not fake Native quiescence"
+    },
+    {
+      "item": "legacy DLI_RESET direct Backend reset",
+      "actual_function": "reset without Native Host/ticket/session/generation transition; not a qualified recovery path",
+      "replacement": "explicit unsupported pending Runtime-owned validated recovery",
+      "issues": [
+        "K#5",
+        "K#10",
+        "K#19"
+      ],
+      "regression": "privileged refusal/ordinary CAP denial/buffer unchanged; real data remains usable; no natural recovery claim"
+    }
+  ],
+  "move_to_tests": [
+    {
+      "item": "exact retired switch/default/debug/ioctl bodies",
+      "destination": "tools/testing/selftests/sparklink/retired-default-selection",
+      "scope": "history only; no default runtime inclusion"
+    }
+  ],
+  "await_replacement": [
+    {
+      "item": "standard Diagnostic CmdPendingQueue plus its selected per-registration stats",
+      "actual_function": "real author request/timer/copy-result bookkeeping",
+      "condition": "retain until all standard result consumers migrate; do not mechanically delete protocol mechanics"
+    },
+    {
+      "item": "unpublished old ioctl/facade declarations",
+      "condition": "remove after remaining CLI/C/Python callers migrate; no compatibility period"
+    }
+  ],
+  "preserved": [
+    "Native Runtime/Host/Session/Channel/Grant/credit",
+    "standard Diagnostic transactions",
+    "registered metadata and explicit ControllerSnapshot"
+  ],
+  "hardware_qualification": false,
+  "closure_allowed": false,
+  "adjustment": "Caller audit found real standard autonomous timeout/cancellation tests consume MGMT_STATS. Retain only profile0 selected live owner; Native profile1 refuses. Do not weaken/remove existing counter regression."
+}

@@ -1,0 +1,22 @@
+--- a/src/sle73/sle73_sm.c
++++ b/src/sle73/sle73_sm.c
+@@ -172,7 +172,8 @@
+ 	int rc;
+ 
+ 	put16(body, sm.conn);
+-	put16(body + 2, idx);
++	/* TEST SDK111 dialect adaptation; original reference checkout stays clean. */
++	put16(body + 2, idx == SLE73_SM_IDX_PAIR_FAIL ? 0x01ff : idx);
+ 	body[4] = (unsigned char)n;
+ 	if (n)
+ 		memcpy(body + 5, pdu, n);
+@@ -812,6 +813,9 @@
+ 	n = pl[4];
+ 	if (plen < 5u + n)
+ 		return;
++	/* SDK111 Host table uses1ff/one byte, standard/OHOS use147. */
++	if (idx == 0x01ff && n == 1)
++		idx = SLE73_SM_IDX_PAIR_FAIL;
+ 
+ 	if (!sm_active()) {
+ 		uint16_t lconn;

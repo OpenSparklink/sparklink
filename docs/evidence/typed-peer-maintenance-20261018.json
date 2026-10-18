@@ -1,0 +1,54 @@
+{
+  "scope": "Maintenance receipt only;not newRF/formal/wholecurrentHEADqualification",
+  "qualified_sources": {
+    "kernel": "2fc210af68ee3bce0eed3553117d8be635dfdd15",
+    "compiled_userspace": "0fe37cb549b188613ae50360d9555ab5f4d74bf1",
+    "executed_tools": "8aa7dbd1d6d226997978ff04b272eadd6cf183df"
+  },
+  "report_commit": "9f815f9",
+  "canonical_commit": "7945950",
+  "checks": [
+    "All2282new materialrows/scopedsource local preflight and5registrynegatives",
+    "32 qualification validator tests",
+    "metadata completed/errors0,METADATA_ONLY_NOT_REVERIFIED,overallINCOMPLETE",
+    "116document inventory andstrictHTML;only4readerquadrants built",
+    "Sixexistingissues originalbodies unchanged andOPEN;goalactive/fullscope retained",
+    "Original10WIP preserved;currentkernelbranch unchanged"
+  ],
+  "remaining": [
+    "R5eexistingservice/Agent clients/sharedcontract thenremainingC-Python andR6deployment",
+    "Originalfailures/retentionincident/naturalRCA/nonmanualrecovery andalloriginalscopeOPEN"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5d-issue-receipts-v1.json",
+      "sha256": "9ae41d96eceb9d857b15a7332cd6fdfec6672a1183d5af0f6c9a082b851f5fb2",
+      "bytes": 2817,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5d-global-metadata-v1.json",
+      "sha256": "792e897635b00933c151694e4b023a60edf9821290e3ce017085eea3c81dab63",
+      "bytes": 961040,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5d-registry-preflight-v1.json",
+      "sha256": "c82246f09d9f88240d79bac7c18f54dcaabc7d1e12a736b26bea2cc7002c2ba3",
+      "bytes": 1328,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5d-qualification-tests-v1.log",
+      "sha256": "de08d79861d82b792524adbd9f56ca1d68a096c12fbca250f39a9a6ace2f50e7",
+      "bytes": 131,
+      "access": "private ownerworkspace"
+    },
+    {
+      "path": ".dev/architecture-r5d-sealed-docs-v1.log",
+      "sha256": "d1965423b9f7b2e57b1b21d0b49293375bbe75b5ac402662c084f4bfc028c0eb",
+      "bytes": 968785,
+      "access": "private ownerworkspace"
+    }
+  ]
+}

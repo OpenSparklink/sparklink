@@ -1,8 +1,9 @@
-.TH SLCTL 1 "2025-04-05" "SparkLink" "User Commands"
+.TH SLCTL 1 "2026-10-18" "SparkLink" "User Commands"
 .SH NAME
 slctl \- SparkLink device control utility
 .SH SYNOPSIS
 .B slctl
+.RI [ options ]
 .RI [ command ]
 .RI [ arguments ]
 .SH DESCRIPTION
@@ -10,8 +11,7 @@ slctl \- SparkLink device control utility
 is an interactive command\-line tool for controlling SparkLink wireless
 devices. It communicates with the
 .BR slkd (8)
-daemon over D\-Bus or directly through
-.BR libsparklink .
+daemon over D\-Bus.
 .PP
 When invoked without arguments,
 .B slctl
@@ -19,6 +19,42 @@ enters an interactive shell with a
 .B [slk]#
 prompt. Command history is saved to
 .IR ~/.slctl_history .
+.SS Owned SSAP service
+.B ssap-serve SERVICE_HEX PROPERTY_HEX OPS ACCESS VALUE_HEX [ask|allow|deny]
+keeps one local service owned by its foreground D-Bus connection. Registration
+is local staging, not remote publication success. The default ask policy prints
+an original identity/deadline and accepts yes TOKEN or no TOKEN for that prompt;
+local tokens are not reused within this process. value reads the same owner's
+local value and quit unregisters. Owner exit revokes the registration.
+Explicit allow/deny is local service policy, not security Agent approval,
+authentication, encryption or Bond. Existing channel and Engine limits apply.
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show usage and commands without connecting to D\-Bus.
+.TP
+.B \-V, \-\-version
+Show the version without connecting to D\-Bus.
+.TP
+.B \-\-session
+Use the session bus for isolated tests. The system bus is the default.
+.TP
+.BI \-\-adapter " path"
+Select a live adapter registration for a one\-shot command. A command is required.
+For example, use the path returned by
+.B list
+with
+.B scan on
+or
+.BR "advertise on" .
+.SH SUPPORT BOUNDARY
+Unpublished controller-wide pair/security, legacy PHY/role/PM/AFH/ExtAdv,
+privacy, sync, measurement and bare-handle service spellings are removed.
+Current Connection security uses security-request and Agent.
+Current SSAP operations
+use the distinct ssap-* commands and canonical Connection objects. Consult
+project/current-capabilities.md for exact source/artifact qualifications.
+All experimental driver and real WS73 operations remain VM-only.
 .SH COMMANDS
 .SS Discovery and Connection
 .TP
@@ -31,135 +67,74 @@ Show adapter information and status.
 .B scan on|off
 Start or stop device scanning.
 .TP
-.B devices
-List discovered devices.
+.B peers
+List typed peers under the selected controller generation. Advertisement validity,
+unknown RSSI and unknown connection state are explicit. This grants no channel
+or security authority.
 .TP
-.BI info " address"
-Show detailed information for a device.
+.BI peer-observation " typed-peer-path"
+Read the pinned daemon observation: raw vendor header/data, original Native
+sequence and kernel boottime. RSSI is unknown for an unavailable or expired
+observation or the SDK sentinel. This does not discover SSAP services or certify
+physical connectivity. Old devices/info commands and address-only objects are removed.
 .TP
-.BI pair " address"
-Pair with a device.
-.TP
-.BI connect " address"
-Connect to a device.
+.BI connect " address address-type"
+Request an explicitly typed physical connection; controller management permission
+is required. A Peer advertisement is not an authentication credential.
 .TP
 .BI disconnect " [address]"
 Disconnect the current or specified device.
+.SS Read-only Session Observation
+.TP
+.BI transport-status " connection-path"
+Read the existing authorized Session transport snapshot through its current
+SMTC owner. Does not start an Engine or open a channel. Missing owner returns
+NotSupported; retirement, changed identity and the original one-second deadline
+fail. Zero queues or debt do not prove callback drain, future idleness, firmware
+completion accuracy or safe handle reuse. This unreleased API has no compatibility
+promise; consult the exact artifact qualification.
+.SS Explicit Reference Security
+.TP
+.BI agent " [method]"
+Run one foreground, explicit human Agent for the selected controller. Method
+is sdk111-no-mitm (default) or sdk111-numeric-comparison; no automatic approval.
+Enter approve or reject followed by the exact current request id for initial
+consent. Numeric comparison then requires confirm, request id and the exact
+displayed six-digit code, or reject with that id. Compare with the intended peer.
+Both callbacks share the original deadline; no renewal is allowed.
+Quit, EOF and Ctrl-C unregister only this Agent, without stopping the controller.
+A pollable terminal or pipe is required; input lines are limited to 512 bytes.
+.TP
+.BI security-request " connection-path [timeout-ms] [method]"
+Allocate, begin and observe one author-owned request on the same bus connection.
+Timeout is 1 through 5000 milliseconds, default 5000, including policy waiting;
+approval never renews it. Start the passive T request before active G, with
+explicit Agents on both controllers. Ctrl-C only attempts this request's cancel.
+Both commands pin the original daemon owner and canonical connection identity.
+These experimental commands require management/Agent permission, not just an
+application channel grant. Exact CLI real-device qualifications are listed in project/current-capabilities.md;
+they do not imply complete security or deployment support.
+.PP
+Success reports the selected limited SDK111 mechanism and observed installation.
+The no-MITM method is unauthenticated. Numeric comparison needs separate local
+confirmation and real peer proof; neither operation grants a trusted channel,
+Bond or application delivery. The five-second budget includes both prompts;
+general human pairing and numeric CLI physical qualification remain separate.
+Rejection, timeout, ownership loss and incomplete native results exit nonzero.
+Legacy Pair/Encrypt do not invoke this workflow.
 .SS SSAP Services
-.TP
-.B services
-List local SSAP services and properties.
-.TP
-.B remote\-services
-List remote SSAP services from a connected peer.
-.TP
-.BI read " handle"
-Read a service property by handle.
-.TP
-.BI write " handle hex_data"
-Write data to a service property.
-.SS PHY and Radio Control
-.TP
-.BI role " [g|t]"
-Get or set role (GL or T).
-.TP
-.B phy
-Show current PHY parameters.
-.TP
-.BI mcs " index"
-Set MCS (modulation/coding scheme) index.
-.TP
-.BI txpower " dBm"
-Set transmit power in dBm.
-.TP
-.BI bandwidth " MHz"
-Show or set channel bandwidth.
-.SS Adaptive Frequency Hopping
-.TP
-.B afh get
-Get current AFH channel map.
-.TP
-.BI afh " set hex_map"
-Set AFH channel map.
-.TP
-.BI afh " hop handle"
-Trigger a frequency hop on a connection.
-.SS Resolving Address List
-.TP
-.B ral size
-Show RAL capacity and usage.
-.TP
-.B ral clear
-Clear the resolving address list.
-.TP
-.BI ral " add irk_hex addr_hex"
-Add an entry to the RAL.
-.TP
-.BI ral " remove addr_hex"
-Remove an entry from the RAL.
-.SS Resolvable Private Address
-.TP
-.B rpa on|off
-Enable or disable RPA generation.
-.TP
-.BI rpa " timeout seconds"
-Set RPA rotation timeout.
-.SS Sync Links
-.TP
-.BI sync " info id"
-Show sync link information.
-.TP
-.BI sync " ucast\-rm id"
-Remove a unicast sync link.
-.TP
-.BI sync " mcast\-rm id"
-Remove a multicast sync link.
-.SS Peer Information
-.TP
-.BI peer " features handle"
-Query supported features of a connected peer.
-.TP
-.BI peer " version handle"
-Query version information of a connected peer.
-.SS Measurement
-.TP
-.B meas cap
-Show measurement capabilities.
-.TP
-.B meas on
-Enable measurement reporting.
-.TP
-.B meas off
-Disable measurement reporting.
-.SS Extended Advertising
-.TP
-.BI extadv " enable handle"
-Enable an extended advertising instance.
-.TP
-.BI extadv " disable handle"
-Disable an extended advertising instance.
-.TP
-.BI extadv " remove handle"
-Remove an extended advertising instance.
-.TP
-.BI extadv " info handle"
-Get extended advertising instance information.
+The unpublished services, remote-services, read and write legacy commands
+are removed. Use the distinct ssap-list/register/serve/remove/local-read
+operations for local state and ssap-discover/read/write with an exact
+Connection path for the implemented remote protocol. Local registration
+is not proof of remote delivery; Owned authorization is separate from pairing.
 .SS Statistics and Diagnostics
 .TP
-.B power
-Show power management status.
-.TP
-.B dli
-Show data\-link indicator information.
-.TP
 .B stats
-Show controller statistics.
+Show the native LinkSnapshot summary; not mixed legacy subsystem counters.
 .TP
 .B events
-Show event statistics.
-.TP
-.B mgmt
-Show management statistics.
+Show the selected registration event position; not delivered/ACK/pending counts.
 .SS Interactive Shell
 .TP
 .B help
@@ -183,5 +158,10 @@ Success.
 .B 1
 Error communicating with slkd or invalid command.
 .SH SEE ALSO
+.BR slktest (1),
 .BR slkd (8),
 .BR sparklink.conf (5)
+
+.SH APPLICATION TESTS
+Application correctness and performance exercises use slktest channel.
+slctl manages devices, connections and authorization; it has no benchmark aliases.

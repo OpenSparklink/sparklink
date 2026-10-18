@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "status": "CI_ARTIFACT_AND_SOURCE_BOUNDED_RESULT_VERIFIED",
+  "run_id": 38782753748,
+  "run_url": "https://github.com/OpenSparklink/sparklink/actions/runs/38782753748",
+  "workflow_source": "d85dd9c1d2053a80ae34117d8ce57b7c0aefc41b",
+  "kernel_fuzz_source": "ddea575bff556d3884375603edd9003b1cc5ffc4",
+  "event": "push",
+  "tools": {
+    "clang-18": "Ubuntu clang version 18.1.3 (1ubuntu1)",
+    "llvm-profdata-18": "Ubuntu LLVM version 18.1.3",
+    "llvm-cov-18": "Ubuntu LLVM version 18.1.3"
+  },
+  "bounds": {
+    "runs": 20000,
+    "seed": 730111,
+    "max_input_bytes": 20480,
+    "input_timeout_seconds": 2,
+    "phase_wall_timeout_seconds": 60,
+    "software_memory_mb": 512
+  },
+  "actual_production_execution_counts": {
+    "ws73_wire_acb_fragment": 20019,
+    "ws73_wire_acb_fragment_decode": 165831,
+    "ws73_wire_receive": 60057,
+    "ws73_dli_validate_security_event": 80568,
+    "ws73_dli_link_outcome": 80568,
+    "ws73_dli_validate_reply": 80568
+  },
+  "complete_and_clean_phases": [
+    "compile",
+    "replay",
+    "explore",
+    "merge-coverage",
+    "export-coverage"
+  ],
+  "replay_executions": 19,
+  "exploration_executions": 20000,
+  "negative_controls": 5,
+  "binary_sha256": "34c7cd1d3d699a24024c4368e16a448ec1547fe367a2d930c9923326cd72e8d0",
+  "artifact_checks": [
+    "source hashes equal exact local ddea source",
+    "each phase exit0 and log hash",
+    "actual libFuzzer complete summaries without sanitizer diagnostics",
+    "required actual LLVM function counts",
+    "binary hash",
+    "all fixed and final corpus hashes",
+    "negative-control job step and actual five-test log"
+  ],
+  "materials": {
+    "report": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/report.json",
+      "sha256": "35a60fe433f654368832e16af8e0c59907b0e4acb013906af981987187c790c7",
+      "bytes": 17623,
+      "access": "private",
+      "format": "json"
+    },
+    "metadata": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748-metadata.json",
+      "sha256": "620fe0dcdd84317997e6d6400f0a3e5a5a80fb7e444754536bb81d7d89b0b805",
+      "bytes": 2822,
+      "access": "private",
+      "format": "json"
+    },
+    "job_log": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748-job.log",
+      "sha256": "d7556dcc51c18c037bd9ecc95c369c55bb4482807fb5538430fd49b39ed7b546",
+      "bytes": 47593,
+      "access": "private",
+      "format": "bytes"
+    },
+    "binary": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/ws73-codec-fuzz",
+      "sha256": "34c7cd1d3d699a24024c4368e16a448ec1547fe367a2d930c9923326cd72e8d0",
+      "bytes": 2249216,
+      "access": "private",
+      "format": "bytes"
+    },
+    "coverage": {
+      "base": "workspace",
+      "path": ".dev/ws73-codec-fuzz-ci-38782753748/export-coverage.log",
+      "sha256": "3ac8c7ed1a22f8bd05661aa50813676d00f58764d09570baa9afeff054f1ea0e",
+      "bytes": 183875,
+      "access": "private",
+      "format": "bytes"
+    }
+  },
+  "limitations": [
+    "GitHub CI and compiler/sanitizer/library/runtime are trusted infrastructure, not formally verified",
+    "bounded exploration only; no full parser proof or kernel allocator/locks/concurrency/USB/firmware acceptance",
+    "CI Clang18 is separate from local Clang22 result; neither upgrades hardware or formal qualification",
+    "daily longer schedule configured; no actual scheduled100000 result in this report",
+    "cross-repo pin requires explicit review/update for later codec changes"
+  ],
+  "proof": false,
+  "physical_acceptance": false,
+  "artifact_access": "Downloaded private workspace copy; authenticated or public GitHub run artifact subject to14-day retention. No permanent external retention guarantee.",
+  "gates": [
+    {
+      "name": "source-hashes",
+      "status": "VERIFIED_BOUNDED_RESULT"
+    },
+    {
+      "name": "phase-results",
+      "status": "VERIFIED_BOUNDED_RESULT"
+    },
+    {
+      "name": "production-coverage",
+      "status": "VERIFIED_BOUNDED_RESULT"
+    },
+    {
+      "name": "binary-hash",
+      "status": "VERIFIED_BOUNDED_RESULT"
+    },
+    {
+      "name": "corpus-hashes",
+      "status": "VERIFIED_BOUNDED_RESULT"
+    },
+    {
+      "name": "negative-controls",
+      "status": "VERIFIED_BOUNDED_RESULT"
+    }
+  ]
+}

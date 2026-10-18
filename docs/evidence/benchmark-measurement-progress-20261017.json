@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "status": "MATRIX_RUNNING_NOT_QUALIFIED",
+  "observed_at_utc": "2026-10-16T16:04:47.575755+00:00",
+  "compiled_kernel": "bfaa93b674d0b46fd866e4ddbe0cfe38392db3f9",
+  "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+  "executed_tools": "e34c7b76b469c01f6afbdbe82e73a53f6a39e278",
+  "previous_attempt": "benchmark-trace-rounding-failure-20261016.json",
+  "previous_result": "FAIL_RETAINED",
+  "scope": [
+    "655 pureoffline tests/strictHTML115 pass at e34 code;no new formal proof",
+    "Snapshot only:exact supervisor RUNNING,12newcases stillrequired;accepted individual gates do not establish wholematrix orfullperformance",
+    "Four existing issues updated andreadback,alloriginalscope/checklists andOPEN retained",
+    "Only VM-only xHCI observation/window controls changed,not productionHost/Runtime/USB/Grant/credit/Ticket"
+  ],
+  "snapshot": {
+    "supervisor": ".dev/benchmark-observation-qualification-v2.json",
+    "operational_exec_session": 66655,
+    "accepted": 3,
+    "required": 12,
+    "cases": [
+      {
+        "name": "w1-on-r1",
+        "status": "PASS"
+      },
+      {
+        "name": "w1-off-r1",
+        "status": "PASS"
+      },
+      {
+        "name": "w4-off-r1",
+        "status": "PASS"
+      }
+    ],
+    "running_stage": "w4-on-r1"
+  },
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6219451822",
+      "comment_id": 6219451822,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "cd9cb0aa3880a5fc98f68734ea7c5bc10b45e8dd898c34600cc312161487a33e"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6219452797",
+      "comment_id": 6219452797,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "cd9cb0aa3880a5fc98f68734ea7c5bc10b45e8dd898c34600cc312161487a33e"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6219453852",
+      "comment_id": 6219453852,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "cd9cb0aa3880a5fc98f68734ea7c5bc10b45e8dd898c34600cc312161487a33e"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6219454980",
+      "comment_id": 6219454980,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "cd9cb0aa3880a5fc98f68734ea7c5bc10b45e8dd898c34600cc312161487a33e"
+    }
+  ],
+  "remaining": [
+    "Finish original12cells at exacte34 source,samecompiledbfaa/9385,allfailures/materials retained",
+    "Do notinterpretlowload/successfulpartialrun asfullperformance,naturalrecovery orNOCPtruth",
+    "S0-S6/19WP/10FV/12DG,VM-only,UserHostlowpriority unchanged;Agent/SSAP/fourdevice andlifecycle parallel"
+  ],
+  "materials": [
+    {
+      "path": ".dev/benchmark-observation-progress-issue-receipts-v1.json",
+      "sha256": "7285d70058908aefdc988a429f82a773942f1c9f0fd8fc3c634351dfee486aa6",
+      "bytes": 1666,
+      "access": "private",
+      "scope": "Immutable progress/offline snapshot,not final matrix qualification"
+    },
+    {
+      "path": ".dev/benchmark-observation-progress-snapshot-v1.json",
+      "sha256": "0e4b3561bbc88c2079938d0438f7335c45f16edc0a9c5c2bb16caa0532ffdd02",
+      "bytes": 8667,
+      "access": "private",
+      "scope": "Immutable progress/offline snapshot,not final matrix qualification"
+    },
+    {
+      "path": ".dev/benchmark-observation-rounding-full-v1.log",
+      "sha256": "52d9fa74b9639d58bdec226da935f3c70e16b6996e27ee57d9ce721b7b563861",
+      "bytes": 790,
+      "access": "private",
+      "scope": "Immutable progress/offline snapshot,not final matrix qualification"
+    },
+    {
+      "path": ".dev/benchmark-observation-rounding-docs-v1.log",
+      "sha256": "f53c7bcd674eb90c01f4ef5c43558acbabccd606c761ea869c0d5e103f066a89",
+      "bytes": 223438,
+      "access": "private",
+      "scope": "Immutable progress/offline snapshot,not final matrix qualification"
+    },
+    {
+      "path": ".dev/benchmark-observation-ci-e34-first.json",
+      "sha256": "aea3a663829b104d62a03c47b574437595686f934f61e6b68d5005eb6ff791a2",
+      "bytes": 97089,
+      "access": "private",
+      "scope": "Immutable progress/offline snapshot,not final matrix qualification"
+    }
+  ]
+}

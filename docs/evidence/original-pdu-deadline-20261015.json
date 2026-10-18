@@ -1,0 +1,404 @@
+{
+  "format_version": 1,
+  "status": "REAL_TWO_ROLE_ORIGINAL5S_PDU_DEADLINE_SCOPED_PASS",
+  "recorded_at_utc": "2026-10-15T04:21:59.105716+00:00",
+  "sources": {
+    "linux": "49467d4df595f8988a7ad6310b53932f37d68283",
+    "compiled_service": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+    "executed_tools": "eb4dffa7153a9228c66dc94d92c8d63cd225b409",
+    "failed_first_tools": "1c1313651fbac8a8a669a8930552931b52c1def6"
+  },
+  "production_runtime_changed": false,
+  "vm_only": true,
+  "host_installation": false,
+  "fixture": {
+    "default_2s_changed": false,
+    "budget_ms": 8000,
+    "baseline_source_sha256": "4443a20194d4b2584cd234306c43deedb5a3f77d396c44f79370054e495955ed",
+    "public_linux_patch_chain_reconstructed_baseline": true,
+    "source_sha256": "03947141c679d47d5103aaef0701723a4f4eb3f262fb22af3b2ff468c1d226e9",
+    "qemu_sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+    "original_link_closure_unchanged": true,
+    "reset_detach_guards_unchanged": true,
+    "read_only_budget_property": "test-runtime-in-hold-ms",
+    "behavior": "Retain one original successful IN81 transfer; normal callback explicitly releases the identical buffer. No reply/nonce/key generation.8s automatic bounded release remains a failure for this gate.",
+    "build": {
+      "private_artifact": ".dev/data-deadline-qemu/build-manifest.json",
+      "sha256": "1f7b25b56578148f8d3059c05cf93a2efbbeb324215f7e3b53a6aa6d7989415f",
+      "publicly_downloadable": false
+    },
+    "boot_smoke": {
+      "private_artifact": ".dev/native-data-deadline-root-smoke/manifest.json",
+      "sha256": "9c1e866841699eb81ff2f0875328806727d5b2dc644f8f4acb042a0eed66d4b6",
+      "publicly_downloadable": false
+    }
+  },
+  "runs": [
+    {
+      "index": 0,
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "capture_packets": 625,
+      "capture_kernel_drops": 0,
+      "kernel_taint": 0,
+      "host_ports": [
+        "1-2.1.1",
+        "1-2.1.4"
+      ],
+      "identities": [
+        {
+          "bus": 1,
+          "device": 2,
+          "index": 0,
+          "generation": 1,
+          "address": "00:01:09:32:54:CD",
+          "path": "1-1"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "index": 1,
+          "generation": 2,
+          "address": "00:01:09:32:54:F9",
+          "path": "1-2"
+        }
+      ],
+      "elapsed_monotonic_ns": 5006321686,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "admitted_application_bytes": 2042,
+      "business_round_trips_before_hold": 2,
+      "partial_pdu_application_round_trips": 0,
+      "actual_budget": {
+        "capacity": 5,
+        "outstanding": 5,
+        "connection_debt": 5,
+        "active_pdu_bytes": 2047,
+        "active_pdu_offset": 1270,
+        "flags": 3,
+        "pool_exhaustions": 17
+      },
+      "blocked_errno": 110,
+      "old_fd_before_release": {
+        "send": 107,
+        "recv": 107
+      },
+      "old_fd_after_release": {
+        "send": 107,
+        "recv": 107
+      },
+      "poll": 24,
+      "both_managed_leases_preserved": true,
+      "host_hold": {
+        "status": "ACTUAL_HOST_HOLD_CORROBORATED",
+        "host_transfer_sha256": "1ab542351dfac10c3d00c31fdb3b4ad87d445c24bb3dae00dfd5deba9493e2d7",
+        "host_transfer_bytes": 178,
+        "delivered_usb_record": 592,
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false
+      },
+      "delayed_nocp_records": [
+        592,
+        594,
+        596,
+        598,
+        600
+      ],
+      "actual_down": [
+        {
+          "event": 5,
+          "params": "00000011",
+          "generation": 1,
+          "seq": 3,
+          "lost": 0,
+          "wall_ns": 1792037964094828223
+        },
+        {
+          "event": 5,
+          "params": "00000013",
+          "generation": 2,
+          "seq": 2,
+          "lost": 0,
+          "wall_ns": 1792037964094836589
+        }
+      ],
+      "guest_causal_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792037958894407220,
+          "monotonic_ns": 29654799984
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792037959221572430,
+          "monotonic_ns": 29981961658
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792037963932581340,
+          "monotonic_ns": 34692970588
+        }
+      ],
+      "host_observations_wall_ns": [
+        1792037959448914081,
+        1792037959777335001,
+        1792037964484849115
+      ],
+      "artifacts": [
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0-v2/manifest.json",
+          "sha256": "eab5a40544a0bbaf9fb3c6bdcc19a075002620aad46d9629a4e9b93cb0d4f6e1",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0-v2/guest-output/connected-file/run.json",
+          "sha256": "cfe403ec76a19988a41bbea9ca8d3f62f315cb26eb5dedc80b10faf7abab61f0",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0-v2/guest-output/ws73.pcap",
+          "sha256": "32ef4ba28ca7e1bc9050bbcf46637d9a9d064182d429ed311a9199c7d4e95e7b",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0-v2/guest-output/kernel.log",
+          "sha256": "2a1fbce835fd555462ae02ad4521b1394fb4eab21d3549a8246eafe3bdf63a97",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0-v2/qemu-stderr.log",
+          "sha256": "e7f2ebd595d6d74233f484b5cc89443528cbdc8a8c08da150a7c21cddc68334d",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0-v2/guest-output/capture-stats.txt",
+          "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+          "publicly_downloadable": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "capture_packets": 625,
+      "capture_kernel_drops": 0,
+      "kernel_taint": 0,
+      "host_ports": [
+        "1-2.1.1",
+        "1-2.1.4"
+      ],
+      "identities": [
+        {
+          "bus": 1,
+          "device": 2,
+          "index": 0,
+          "generation": 1,
+          "address": "00:01:09:32:54:CD",
+          "path": "1-1"
+        },
+        {
+          "bus": 1,
+          "device": 3,
+          "index": 1,
+          "generation": 2,
+          "address": "00:01:09:32:54:F9",
+          "path": "1-2"
+        }
+      ],
+      "elapsed_monotonic_ns": 5008938028,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "admitted_application_bytes": 2042,
+      "business_round_trips_before_hold": 2,
+      "partial_pdu_application_round_trips": 0,
+      "actual_budget": {
+        "capacity": 5,
+        "outstanding": 5,
+        "connection_debt": 5,
+        "active_pdu_bytes": 2047,
+        "active_pdu_offset": 1270,
+        "flags": 3,
+        "pool_exhaustions": 18
+      },
+      "blocked_errno": 110,
+      "old_fd_before_release": {
+        "send": 107,
+        "recv": 107
+      },
+      "old_fd_after_release": {
+        "send": 107,
+        "recv": 107
+      },
+      "poll": 24,
+      "both_managed_leases_preserved": true,
+      "host_hold": {
+        "status": "ACTUAL_HOST_HOLD_CORROBORATED",
+        "host_transfer_sha256": "c488a1acf555a2bdfbb2bf30328ac8f762f373406dddc69549f4ecf44baa8694",
+        "host_transfer_bytes": 178,
+        "delivered_usb_record": 592,
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false
+      },
+      "delayed_nocp_records": [
+        592,
+        594,
+        596,
+        598,
+        600
+      ],
+      "actual_down": [
+        {
+          "event": 5,
+          "params": "00000013",
+          "generation": 1,
+          "seq": 2,
+          "lost": 0,
+          "wall_ns": 1792038041232239857
+        },
+        {
+          "event": 5,
+          "params": "00000011",
+          "generation": 2,
+          "seq": 3,
+          "lost": 0,
+          "wall_ns": 1792038041232258072
+        }
+      ],
+      "guest_causal_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792038036030836633,
+          "monotonic_ns": 29805092733
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792038036358985888,
+          "monotonic_ns": 30133237991
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792038041070371648,
+          "monotonic_ns": 34844623631
+        }
+      ],
+      "host_observations_wall_ns": [
+        1792038037014014464,
+        1792038037344706849,
+        1792038042053472251
+      ],
+      "artifacts": [
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index1/manifest.json",
+          "sha256": "6fbd081f7fff7cd3a1fc5d792ed4f2356b1de829d4d036b6b6f6aa6d17d4a495",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index1/guest-output/connected-file/run.json",
+          "sha256": "9cbb9c8de4cda6a7329b16b09dbb58dda5d9bc6de528480f587eaecfc657460e",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index1/guest-output/ws73.pcap",
+          "sha256": "ad3e5e1d26e0fb1d64ead98bc0798d236e9e6d8a0a96364ae0b1af751d225afd",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index1/guest-output/kernel.log",
+          "sha256": "e696326b975fca15faa6941a12f6999af944d67ad5b28302cb884535fc702ba8",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index1/qemu-stderr.log",
+          "sha256": "69fa77f8fdfae49d6002181d1e9636db5772e4d1f3ac044564cb957b6dfba8b6",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index1/guest-output/capture-stats.txt",
+          "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+          "publicly_downloadable": false
+        }
+      ]
+    }
+  ],
+  "total_qualified_pre_hold_application_round_trips": 4,
+  "failures_retained": [
+    {
+      "status": "FAIL_NOT_QUALIFIED",
+      "scope": "First real gate observed actual timeout but verifier compared independent host/guest wall clocks. New guest ack receipts were absent; do not upgrade or fabricate old evidence.",
+      "observed_elapsed_monotonic_ns": 5005040943,
+      "observed_errno": 110,
+      "fix": "eb4dffa7153a9228c66dc94d92c8d63cd225b409",
+      "artifacts": [
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0/manifest.json",
+          "sha256": "b071462e50ed1a07d4974f411a1388fccfd870917ea8f336841f82313a8487c6",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0/guest-output/connected-file/run.json",
+          "sha256": "68f167fd6ad23c8cc787eeb2e6f498bbf26427262c8ce55c8db5c91e264a5434",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0/guest-output/ws73.pcap",
+          "sha256": "d421270d319263f74c8e6316a160290a70d95ac7fe3b3db57f65959647f54443",
+          "publicly_downloadable": false
+        },
+        {
+          "private_artifact": ".dev/native-pdu-deadline-index0/guest-output/connected-file-supervisor.log",
+          "sha256": "dd2546ff6e3fdc28575150cb26c19b8812df3fc3a5bd02015452b8a26743da6a",
+          "publicly_downloadable": false
+        }
+      ]
+    },
+    {
+      "status": "PREPARE_REJECTED_BEFORE_USB",
+      "scope": "New QEMU differed from old scratch-root boot proof; identity guard refused, then accurate new boot smoke was obtained. No guard relaxed.",
+      "artifact": {
+        "private_artifact": ".dev/native-deadline-prepared/manifest.json",
+        "sha256": "42fe00fcbd1937d39c3d81a8467ee293e4d4324692498d75209697a12f09a831",
+        "publicly_downloadable": false
+      }
+    }
+  ],
+  "offline": {
+    "tests": 511,
+    "status": "PASS",
+    "artifact": {
+      "private_artifact": ".dev/channel-deadline-tools-tests-final.log",
+      "sha256": "27b46a198807102cf0f2f449590ed81065eafb6efd3a26365fc48e22c3f61705",
+      "publicly_downloadable": false
+    },
+    "clock_regression": "Both positive and negative host wall offsets preserve actual guest ack causality; invented/missing guest receipt and8s recv timeout cannot substitute."
+  },
+  "formal": {
+    "new_proof": false,
+    "scope": "No new Runtime/locks/refcount/firmware proof;511 test cases and controlled USB delay are distinct. Consent311 scalar-only and Kaniunsupported/timeout limitations remain."
+  },
+  "scope": "Both roles at original admission5s with actual pool5/prefix and delayed realNOCP, failed Session not revived, separate physicalcleanup and peer Ready/scan; no original stock security, full debt/reuse/submit-barrier or natural recovery qualification.",
+  "not_qualified": [
+    "Stock111 security1ff/147 positive or approved pairing/Agent/key install/encrypted peer reply",
+    "Exact kernel submit linearization, all outstanding ticket/Grant/Down races",
+    "Post-failure budget readback: existing binding view intentionally returns ENOTCONN after Session failure; no claim it directly proves remaining ledger conservation",
+    "NOCP hardware accuracy/duplicates/late reuse barrier or callback drain",
+    "Another independent peer business link, multi-channel/four-device two groups and fullSSAP",
+    "Port1-2.1.2 original restoration or natural/nonmanual recovery"
+  ],
+  "reproduce": {
+    "source_fixture": "Apply Linux494 qemu-sle-dli public USB patch chain; verify baseline4443a201; use tools/ws73_qemu_hold_budget.py with exclusive output, build separately; run new scratch-root boot smoke. Existing default2s binary untouched.",
+    "run_flags": [
+      "--ports",
+      "1-2.1.1",
+      "1-2.1.4",
+      "--setup-release-verify",
+      "--managed-connected-case",
+      "release",
+      "--managed-channel-grant",
+      "--managed-channel-revoke-prefix",
+      "--managed-channel-deadline",
+      "--managed-connected-index",
+      "0 or1"
+    ],
+    "replay": "ws73_channel_deadline.corroborate(run,capture,manifest.channel_deadline_hold,qemu_stderr,manifest.channel_deadline_hold.host_identity_at_arm)",
+    "access": "Raw captures/VM disks are private lab artifacts, not published download artifacts; hashes and public summary do not let an outside reader independently reproduce raw evidence."
+  }
+}

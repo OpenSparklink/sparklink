@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "status": "METADATA_AND_MAINTENANCE_COMPLETE_FULL_ARCHITECTURE_OPEN",
+  "qualification_report": "docs/evidence/deployment-clean-vm-qualification-20261018.json",
+  "published_report_commit": "9214562544d92289747a6842022d5c298d9cb627",
+  "registry": "project/qualification-records.json",
+  "selected_real_artifact_unchanged": true,
+  "new_record_private_bytes_and_source_maps": "PASS;finite genericVM only;6 negativecontrols reject stale source/missing material/scope/bounds/gate/hiddenfailure",
+  "all_registry": "METADATA_ONLY_NOT_REVERIFIED,completed/errors empty,overall INCOMPLETE;not global privatebytes orcurrenttree qualification",
+  "offline": "35 actualqualification checker tests andstrictHTML116;earlierwrong testpattern ran0 andisretained,not PASS",
+  "ci": "668 exactsource four workflows success;not release/native/hardware qualification",
+  "issues": [
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6241079691",
+      "comment_id": 6241079691,
+      "body_sha256": "de2a9363e469437a0a9b743fccd2cf26a62d653c841e4179b1144ef548ef4527",
+      "original_issue_body_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41",
+      "original_body_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6241080702",
+      "comment_id": 6241080702,
+      "body_sha256": "e75bd6129418cbe79f6f5565a68018e8c293dce9a70437d16da868dcd3f51e68",
+      "original_issue_body_sha256": "df0560c7a43f09ec1f84f7db8003d97c294b823d83c53da75fc517ce115a3b2b",
+      "original_body_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6241081856",
+      "comment_id": 6241081856,
+      "body_sha256": "31b5dae421e7dd866aa873bead68cc01635a0d4fdaa3fb2633145cede0a740e6",
+      "original_issue_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "original_body_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 6,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6241083106",
+      "comment_id": 6241083106,
+      "body_sha256": "d4b93eefde4fee3d9cd0d8d8480c576692fa122400263e4fa0ffc39549baa749",
+      "original_issue_body_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+      "original_body_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6241083995",
+      "comment_id": 6241083995,
+      "body_sha256": "24425e830fa5c551e96643734b4b8f66baea1ca416a0c9e2c7c621a277953a28",
+      "original_issue_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "original_body_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6241084924",
+      "comment_id": 6241084924,
+      "body_sha256": "e04dd34ddb1448b8377f9194ef826e8b89cbe49f6366eb8d186847769055fe54",
+      "original_issue_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "original_body_unchanged": true,
+      "state": "open"
+    }
+  ],
+  "goal": "Active originalunbudgeted objective retained;completeS0-S6/19WP/10FV/12DG/UserHostP4 andalloriginalscope;no duplicate orcomplete transition",
+  "next": "R5f shared/publicAPI/highlevellanguage clients;R6actualpackagebuild/install/upgrade/rollback andnewartifactWS73/nativepermissions. GenericVMlimitedPASSdoesnotcloseanywholeissue. NaturalRCA/nonmanualrecovery OPEN.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r6a-global-metadata-v1.json",
+      "sha256": "876d95b270d630ad058feb4a84451e276390d1190ebbf51d289c4e82b7591a95",
+      "bytes": 1050710,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-registry-preflight-v1.json",
+      "sha256": "ff3307c646ef019828d47b3386eb26ec7ae8bc5b8bf6ff7ebd2cb73d7737fb54",
+      "bytes": 354,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-qualification-tests-v1.log",
+      "sha256": "e70fec2825d9bf206d27463a792768195039599cb39bcca66339f47283f84cce",
+      "bytes": 108,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-qualification-tests-v2.log",
+      "sha256": "193e0e19b90867b79099c15ba9238898a263fa99ec34b2486626a55a87f52d8b",
+      "bytes": 4807,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-registry-docs-v1.log",
+      "sha256": "5c00d5a5b23b7f16d14f4c98141282fb5590ccf68ce61fb9973fd4fc56321ae6",
+      "bytes": 1058455,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-ci-observation-v1.json",
+      "sha256": "a65fea34214e5ff50ea843799c70417fd35aab3edba112ec87a3da9497a7e489",
+      "bytes": 2497,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-ci-668-final-v1.json",
+      "sha256": "1ce6e4b69ac067aa01c46b026d4f492a1b081714768fa02bbabf9da641f83223",
+      "bytes": 181,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-issue-receipts-v1.json",
+      "sha256": "11b232887594d5030d05b94bc06e6fac1ebcdbcc8bdec5dfd4f97e73ecc9dd3b",
+      "bytes": 2922,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-4008-main-wip-preserved-v1.json",
+      "sha256": "6c60e02d78a7609ad8c47a932c3a9a68c915d1f9d95560c0024ff0f90e8e9440",
+      "bytes": 1143,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    },
+    {
+      "path": ".dev/architecture-r6a-668-main-wip-preserved-v1.json",
+      "sha256": "b9dcbd2c706ae913046cf2336e11b7498304ec71d5edfc47539d7d7679fbb346",
+      "bytes": 1143,
+      "access": "private workspace;metadata/local bytes/CI/issue maintenance as stated,not new RF proof"
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "result": "MAINTENANCE_AND_STAGED_LOADER_ONLY_NOT_NEW_HARDWARE",
+  "compiled_userspace": "40c47570ec348cc1d87216aec572870de9e9f3f6",
+  "executed_client_tools": "86755183d934b201aa9b6dacc004622ec0a9ae0e",
+  "offline_report_commit": "f0c9d82f4fa1d7f21cf98772dc0ba03468dd1ff3",
+  "native_vm_layout_source": "1d8932b4fc19e8d8ab129b57ee9a00788436d596",
+  "scope": [
+    "Six qualification verifier negative controls rejected stale source,missing/bad artifact,scope mismatch,missing required gate and UNPROVED required gate.",
+    "Native VM runtime layout reproduced real loader failure using sealed40cELFs. Shared canonical SONAME map now stages one runtime copy per library;10host-layout tests and actualstagedlibraryload pass. This is not VMboot,systembuspolicy,NativeGrant orWS73 success.",
+    "All original ten userworkfiles preserved byteforbyte;no hostdriver/service installation or newfirmware/hub/QMP activity.",
+    "Python multi-threadedfork warning is retained for intentionalchildclient rejection;no safe postfork client use/construction claimed.",
+    "First offlineauditor refused the expected CLIownerloss diagnostic;v1retained,v2checks specific successfulnegative and exits. No productionassertion weakened."
+  ],
+  "negative_controls": [
+    {
+      "name": "stale-source-map",
+      "result": "REJECTED",
+      "errors": [
+        "application-language-client-r5f1/compiled_userspace: stale/incomplete source mapping"
+      ]
+    },
+    {
+      "name": "missing-artifact",
+      "result": "REJECTED",
+      "errors": [
+        "application-language-client-r5f1-m60: missing material"
+      ]
+    },
+    {
+      "name": "wrong-artifact-hash",
+      "result": "REJECTED",
+      "errors": [
+        "application-language-client-r5f1-m60: hash/size mismatch"
+      ]
+    },
+    {
+      "name": "report-scope-mismatch",
+      "result": "REJECTED",
+      "errors": [
+        "application-language-client-r5f1: scope mismatch"
+      ]
+    },
+    {
+      "name": "missing-required-gate",
+      "result": "REJECTED",
+      "errors": [
+        "application-language-client-r5f1: missing/extra/duplicate gate"
+      ]
+    },
+    {
+      "name": "failed-gate-cannot-be-pass",
+      "result": "REJECTED",
+      "errors": [
+        "application-language-client-r5f1: PASS hides a required non-PASS gate"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f-registry-preflight-v1.json",
+      "sha256": "cc7d66aa76e9aea5238b73fcef40be3551e84dd04e8140bd1f87c0b5a0cb4400",
+      "bytes": 1273
+    },
+    {
+      "path": ".dev/architecture-r5f-registry-preflight-v2.json",
+      "sha256": "58d08f6a4b50d2a0f2f08c1a0cff326006b42491a93bdea36dfaad9251001e10",
+      "bytes": 1849
+    },
+    {
+      "path": ".dev/architecture-r5f-main-wip-preserved-v1.json",
+      "sha256": "c3df93637add06df7e84c890e9ce01960aaf03f47c9ecb2d80ab40d8f180cb08",
+      "bytes": 2284
+    },
+    {
+      "path": ".dev/architecture-r5f-report-main-wip-preserved-v1.json",
+      "sha256": "bcf32d324e306ddf0a34b9782c16e4c5d940f005ef96ea843bd7670f78775a47",
+      "bytes": 1143
+    },
+    {
+      "path": ".dev/architecture-r5f-native-major-before-v1/result.json",
+      "sha256": "003775d13daf6c92e01e271355644ff02dc8522c59397762f10b66648017eef0",
+      "bytes": 421
+    },
+    {
+      "path": ".dev/architecture-r5f-native-major-before-v1/stderr",
+      "sha256": "2de353511d8057f70090dc2c07491013ba771e857b85a7f5135194477ab21074",
+      "bytes": 615
+    },
+    {
+      "path": ".dev/architecture-r5f-native-major-after-v1/result.json",
+      "sha256": "8125736b4dfd5b1d1bdeae691a6fff75e3d759707ef04e632e0378d360f3c902",
+      "bytes": 404
+    },
+    {
+      "path": ".dev/architecture-r5f-native-major-after-v1/stdout",
+      "sha256": "f437aab875eb87409a03522f747fab1d1c0c026eca614194f1e4d201d5a8f163",
+      "bytes": 63
+    },
+    {
+      "path": ".dev/architecture-r5f-native-major-after-v1/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".dev/architecture-r5f-native-major-unit-v1.log",
+      "sha256": "6389c24234afac70c3b362ae8aaa738e1711ec6bf5076b930ad102e022d9c733",
+      "bytes": 1857
+    },
+    {
+      "path": ".dev/architecture-r5f-final-docs-v1.log",
+      "sha256": "5eecc83be576780a9e7e02ccc0ee5ac5847fbdd8c1e2efa5d50f87ec09ed1dd6",
+      "bytes": 1067045
+    },
+    {
+      "path": ".dev/architecture-r5f-global-metadata-v2.json",
+      "sha256": "aebe93097dbb510f6100743ed4535d4ca639e7b1740cda0f41fef1049f6f919e",
+      "bytes": 1059300
+    },
+    {
+      "path": ".dev/architecture-r5f-issues-v1.json",
+      "sha256": "342e42ae304f3839085c45ea7d98aef3e3376b6b06cdd374b9508c903b7f59cb",
+      "bytes": 1163
+    }
+  ],
+  "remaining": [
+    "Actualnewclient systembus/KernelGrant/dualWS73 positive andlifetime/peerisolation gates",
+    "HigherC-PythonSSAP/Agent/Owned/commonAPI;R6c upgrade/rollback/debug/dependency/license/provenance/release",
+    "Fullarchitecture andoriginalS0-S6/19WP/10FV/12DG remainOPEN;UserHostP4;VM-only. NaturalRCA/nonmanualrecovery notclosed."
+  ],
+  "issues": [
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6242337150"
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "issue": 6,
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6242338089"
+    },
+    {
+      "repo": "OpenSparklink/linux",
+      "issue": 19,
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6242338986"
+    }
+  ],
+  "qualification_state": {
+    "required_records": 164,
+    "selected_original_real_artifact_unchanged": true,
+    "new_client_real_record": "MISSING",
+    "global_result": "INCOMPLETE",
+    "current_tree": "NOT_REVALIDATED",
+    "metadata_check": "METADATA_ONLY_NOT_REVERIFIED"
+  }
+}

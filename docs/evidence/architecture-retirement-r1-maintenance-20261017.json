@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "scope": "R1 qualification/goal/issue reconciliation and adoption of user three-view API target;not R2 implementation or whole HEAD qualification",
+  "public_report": "docs/evidence/architecture-retirement-r1-20261017.json",
+  "report_commit": "9fa835950598e96c85a680e7716896d9a003ecf5",
+  "materials": [
+    {
+      "path": ".dev/architecture-retirement-r1-full-integrity-v2.json",
+      "sha256": "a5439bb3437dfdfa614642048785450e69a1066acc83d604225d6f3744d35aff",
+      "bytes": 339,
+      "access": "private"
+    },
+    {
+      "path": ".dev/architecture-retirement-r1-registry-preflight-v1.json",
+      "sha256": "d8dea0a1e7cac16eaf865bb00a4547aa92d5f1cf9251d25144b3b33da6aa9a00",
+      "bytes": 1520,
+      "access": "private"
+    },
+    {
+      "path": ".dev/architecture-retirement-r1-final-issue-receipts.json",
+      "sha256": "4624ba3371038113306273de2bbf2b4dc8a529cc67115364b48ff3d8261d36dd",
+      "bytes": 821,
+      "access": "private"
+    },
+    {
+      "path": ".dev/architecture-retirement-r1-docs-v3.log",
+      "sha256": "b99a9a4d4710f6355dd4f1b6303462b548049ccaccca72f8d07d018108784209",
+      "bytes": 377612,
+      "access": "private"
+    },
+    {
+      "path": ".dev/architecture-retirement-r6a-uninstall-v1.log",
+      "sha256": "dddf59b5aa63b38edd99749945bdf7beb24130057730ff15f464a1aa7ba927ab",
+      "bytes": 287,
+      "access": "private"
+    },
+    {
+      "path": ".dev/architecture-retirement-r1-dependencies-v1.log",
+      "sha256": "94778487426cdb23e43b9b975a7141d5ada8992b99a58ecb5f8633684ef907f2",
+      "bytes": 316,
+      "access": "private"
+    }
+  ],
+  "full_integrity": {
+    "errors": [],
+    "unavailable_private_materials": [],
+    "unavailable_source_checkouts": [],
+    "verification": "ACTIVE_BYTES_VERIFIED_RETIRED_EVIDENCE_UNAVAILABLE_NOT_REPLAYED",
+    "retired_evidence_unavailable": [
+      "hcc110-document-retention-incident"
+    ],
+    "current": "NOT_CHECKED",
+    "overall": "INCOMPLETE",
+    "completed": true
+  },
+  "new_record_materials": 260,
+  "new_record_negative_controls": 5,
+  "issues": [
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6231464072",
+      "state": "OPEN"
+    },
+    {
+      "repo": "sparklink",
+      "number": 5,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6231464401",
+      "state": "OPEN"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6231464824",
+      "state": "OPEN"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "comment": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6231465190",
+      "state": "OPEN"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "comment": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6231465555",
+      "state": "OPEN"
+    }
+  ],
+  "goal": "Existing active/unbudgeted goal retained;no new goal or premature completion;plan reflects architecture-first steering",
+  "api_target": {
+    "canonical": "project/architecture.md / API和SDK：三个统一视图",
+    "input_sha256": "e6d60b004ed151130bb403a7288c6e8809a0aecfb69b14b90f2cdd846cef20d4",
+    "implemented": "R1 only;R2 in progress;Native/Channel/shared contract/application Client target not yet migrated",
+    "transition_exception": "Current slkd→libsparklink Native wrapper explicitly allowed only until R3 caller migration;remove then update dependency gate"
+  },
+  "not_waived": [
+    "Full S0-S6/19WP/10FV/12DG",
+    "Existing HCC110 retention incident required UNPROVED",
+    "Natural startup/reenumeration/disappearance RCA/nonmanual recovery",
+    "Inflight owner/deadline tools not real qualified",
+    "UserHost P4 and VM-only",
+    "Clean-VM deployment and full SDK/API/event retirement"
+  ]
+}

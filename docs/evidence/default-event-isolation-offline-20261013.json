@@ -1,0 +1,101 @@
+{
+  "status": "DEFAULT_EVENT_CONSUMER_ISOLATION_OFFLINE_PASS",
+  "kernel_head": "bf8663bb78eb780a7363128574fd42b7e018f9a5",
+  "compiled_userspace_head": "86bfbc81ba001539c3816f72b3efc5a911cf19ee",
+  "scope": "Default daemon rejects profile0 before lease/object publication; canonical Native receiver unchanged. Legacy event actor remains only in tests/explicit experimental feature; kernel/low-level legacy consumers not fully removed.",
+  "source_hashes": {
+    "crates/slkd/src/adapters.rs": "5a2efcc5838d9709ff360cb89458375a3365fb47c2f32fb85f2dbd1f8c4d7b19",
+    "crates/slkd/src/config.rs": "21a93df0ce723087bad7480d20c7897949e9234889adf2b9383436dc2b67d601",
+    "crates/slkd/src/event_loop.rs": "1833f245fec44c5d388d730523dbeca109291fa5dbe21706f5d65c0e3553fed4"
+  },
+  "default_workspace_tests": 199,
+  "explicit_experimental_tests": 62,
+  "strict_clippy_default_all_targets": true,
+  "strict_clippy_explicit_all_features": true,
+  "formal_proof_added": false,
+  "client_and_receiver_scope": "f2859a0/d3039b2 isolated tools strict build/local fd credential rejection only; not staged, no actual daemon-death qualification",
+  "first_test_failures_preserved": {
+    "paths": [
+      ".dev/event-default-retirement-tests.log",
+      ".dev/event-default-retirement-all-features-tests.log"
+    ],
+    "reason": "dbus-daemon executable missing from test PATH, corrected with SPARKLINK_TEST_DBUS_DAEMON verified local binary; no driver failure"
+  },
+  "private_log_sha256": {
+    "event-default-retirement-tests-v2.log": "71be11bef4c869920d3ed835d6d2018e5583a55eeb51a1770e42f2c3edc2820e",
+    "event-default-retirement-all-features-tests-v2.log": "694932d801f92d5d7aef1dc21eb6383e3a3830dc0be5bd7ff93919ea4ac12138",
+    "event-default-retirement-clippy.log": "d928055bb7d5a301bd13799aa15a64b386de7fb7cfdf6208d6fee191c33d37ba",
+    "event-default-retirement-all-features-clippy.log": "1264ee70b6b4534cbb91df0339407c582597435300da19e851b6a984eaecdce7",
+    "channel-fd-probe-build.log": "fad2035342da63757ca76b78aea6ac2ff56d0fd0a6d4d8cd29e9cfc67d7a8130",
+    "channel-fd-probe-clippy.log": "729e4e79850fefabcef2630eead847df41a954a1d5c3d1bb87e5e5caf4b0360b"
+  },
+  "probe_host_refusal": {
+    "scope": "Argument/ordinary VM guard refusal only; no bus or radio call",
+    "binary_sha256": "21c6123f703c0aba582562fd6c042725e8bd5d4e5261a0ab21822446b22ba3d2",
+    "rows": [
+      {
+        "args": [],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "Error: usage: ws73-channel-fd-probe CONNECTION_PATH UNIX_DATAGRAM TOKEN\n"
+      },
+      {
+        "args": [
+          "/org/sparklink/notreal",
+          "/tmp/notreal",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "Error: ordinary identity required\n"
+      }
+    ],
+    "hardware_acceptance": false
+  },
+  "full_goal_complete": false,
+  "current_tool_tests": 432,
+  "production_ci": {
+    "run_id": 38316932967,
+    "source_head": "86bfbc81ba001539c3816f72b3efc5a911cf19ee",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Python bindings and kernel ABI conformance",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo check",
+        "conclusion": "success"
+      },
+      {
+        "name": "WS73 tooling and evidence validation (no hardware)",
+        "conclusion": "success"
+      },
+      {
+        "name": "rustfmt",
+        "conclusion": "success"
+      },
+      {
+        "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+        "conclusion": "success"
+      },
+      {
+        "name": "clippy",
+        "conclusion": "success"
+      },
+      {
+        "name": "cargo test",
+        "conclusion": "success"
+      },
+      {
+        "name": "C header generation",
+        "conclusion": "success"
+      },
+      {
+        "name": "release build",
+        "conclusion": "success"
+      }
+    ]
+  }
+}

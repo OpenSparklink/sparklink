@@ -1,0 +1,2265 @@
+{
+  "status": "PASSTHROUGH_SUPPORT_PASS",
+  "kernel": "e78b88f050aa98f7e8c83ff12c828eb172968d66",
+  "service": "bf7a189a4a52a8a7645b00bec2de287a2a4df86c",
+  "manifest": {
+    "workspace_relative_path": ".dev/native-read-retirement-real-short/manifest.json",
+    "sha256": "55801f5eaea83176ea3aea78699a3cf414b2fd1ce21ca3157c9f6421af28a822",
+    "public_raw_material": false
+  },
+  "pcap": {
+    "workspace_relative_path": ".dev/native-read-retirement-real-short/guest-output/ws73.pcap",
+    "sha256": "cb097f2da4fa8653be63036acaaaf8d8efb03a71abc0195cae692a32c7db2d65",
+    "public_raw_material": false
+  },
+  "console": {
+    "workspace_relative_path": ".dev/native-read-retirement-real-short/console.log",
+    "sha256": "5f8a769dd99c0bdff9a08dd8e9232459a2f67e059bf487db4e28d2b78a8d5c8a",
+    "public_raw_material": false
+  },
+  "capture_stats": {
+    "workspace_relative_path": ".dev/native-read-retirement-real-short/guest-output/capture-stats.txt",
+    "sha256": "9d993668acc51ee63b3bb83018910eb298e22f6a963e6c004b4626e94fe766f2",
+    "public_raw_material": false
+  },
+  "scope": "actual hardware in VM; QMP/injection not natural recovery or new manual physical qualification",
+  "scope_detail": "uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; 61-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
+  "round_trips": 40,
+  "application_rejections": 0,
+  "phases": [
+    {
+      "phase": 0,
+      "owners": [
+        {
+          "controller": {
+            "bus": 1,
+            "device": 2,
+            "index": 0,
+            "generation": 1,
+            "address": "00:01:09:32:54:CD"
+          },
+          "connection": {
+            "generation": 1,
+            "lifetime": 1,
+            "handle": 0,
+            "role": 0,
+            "address_type": 0,
+            "address": "00:01:09:32:54:F9",
+            "path": "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000001"
+          }
+        },
+        {
+          "controller": {
+            "bus": 1,
+            "device": 3,
+            "index": 1,
+            "generation": 2,
+            "address": "00:01:09:32:54:F9"
+          },
+          "connection": {
+            "generation": 2,
+            "lifetime": 1,
+            "handle": 0,
+            "role": 1,
+            "address_type": 0,
+            "address": "00:01:09:32:54:CD",
+            "path": "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000001"
+          }
+        }
+      ],
+      "legs": [
+        {
+          "sequence": 0,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657342643000,
+            "record": 442,
+            "file_offset": 50338,
+            "usb_sha256": "06f658d5341239766a512ddd099c44478396ede1ce4c810ce0405cdfef155498",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b315d93b9d6d77bae92403c3511b7f9428578ca33f80025eac3adab06d0edc0bdb792337cc402d51a335d5bf6201dd0ada782236cd412",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657347369000,
+            "record": 450,
+            "file_offset": 51651,
+            "usb_sha256": "6c4d778bb7b31c0f0c7baa1764bb27238ae9aaea3a3409c9d1727d3253bcb25e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b315d93b9d6d77bae92403c3511b7f9428578ca33f80025eac3adab06d0edc0bdb792337cc402d51a335d5bf6201dd0ada782236cd412",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 0,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657360655000,
+            "record": 452,
+            "file_offset": 51989,
+            "usb_sha256": "977b14efe33153b23ce36d6b16ed6c6572a9f5150aadc941ce6c5f26df0c59a5",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b315d93b9d6d77bae92403c3511b7f9428578ca33f80125eac3adab06d0edc0bdb792337cc402d51a335d5bf6201dd0ada782236cd412",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657368293000,
+            "record": 458,
+            "file_offset": 52964,
+            "usb_sha256": "9c468c4696d37017e41e546efae3a969d4c0f18325d7660376a5b6cb72860c65",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b315d93b9d6d77bae92403c3511b7f9428578ca33f80125eac3adab06d0edc0bdb792337cc402d51a335d5bf6201dd0ada782236cd412",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 1,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657386638000,
+            "record": 462,
+            "file_offset": 53640,
+            "usb_sha256": "e723da67158705813f4ea19647eac0999cec17e3c6d5cb1db3bddc2722971de9",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3165d30b608cbbccc637d57ff163d26f1d9bcddada00fe4f96fe131b6d649471da57c47ac6b7ce7fa6ce230b7d748461ca47d46ad6a7",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657390782000,
+            "record": 468,
+            "file_offset": 54615,
+            "usb_sha256": "f675dc466c6c317a7adecbb3701ccc38f6c90c0a3a4384757f2e4cbfa966c0e7",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3165d30b608cbbccc637d57ff163d26f1d9bcddada00fe4f96fe131b6d649471da57c47ac6b7ce7fa6ce230b7d748461ca47d46ad6a7",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 1,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657404692000,
+            "record": 472,
+            "file_offset": 55291,
+            "usb_sha256": "fc738b37d7261364dbe8fb48da1faef351f3a9e1835d4e424f3a73005dd6ff12",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3165d30b608cbbccc637d57ff163d26f1d9bcddada01fe4f96fe131b6d649471da57c47ac6b7ce7fa6ce230b7d748461ca47d46ad6a7",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657413242000,
+            "record": 478,
+            "file_offset": 56266,
+            "usb_sha256": "3b82c87665ddf8e52ae31976da4d2a9eef2eecdc5b44be8327f742b4d1cccd02",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3165d30b608cbbccc637d57ff163d26f1d9bcddada01fe4f96fe131b6d649471da57c47ac6b7ce7fa6ce230b7d748461ca47d46ad6a7",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 2,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657430635000,
+            "record": 482,
+            "file_offset": 56942,
+            "usb_sha256": "e382e9af79d5a56b98857f12a80d7bee0bb339440dca8600520e93964fb7bcdc",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31ee6186061ab70e059d71ab0c5425713f22f8d76700cc42a2233c90262cb75a87217a0a410edc52b2332c80363ca74a97316a1a317e",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657435895000,
+            "record": 490,
+            "file_offset": 58255,
+            "usb_sha256": "b84157bd692e35869af7c77b333505998d802221600b2fdd58083e2eab416e09",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31ee6186061ab70e059d71ab0c5425713f22f8d76700cc42a2233c90262cb75a87217a0a410edc52b2332c80363ca74a97316a1a317e",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 2,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657448641000,
+            "record": 492,
+            "file_offset": 58593,
+            "usb_sha256": "0ca40b245013c4e1a72b37520188b9239fde678b9d3bd2de5b7d2245a3788114",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31ee6186061ab70e059d71ab0c5425713f22f8d76701cc42a2233c90262cb75a87217a0a410edc52b2332c80363ca74a97316a1a317e",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657456751000,
+            "record": 498,
+            "file_offset": 59568,
+            "usb_sha256": "e00891cc2afdb79bfa26a108b1bcf717a47da1cab7f987fff3280afe75197481",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31ee6186061ab70e059d71ab0c5425713f22f8d76701cc42a2233c90262cb75a87217a0a410edc52b2332c80363ca74a97316a1a317e",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 3,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657474640000,
+            "record": 502,
+            "file_offset": 60244,
+            "usb_sha256": "d8227d3783bd6a0d90883f4d02aa0e0839c24f9bc59e200e60dea51cd61a4be8",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31c16f96bb16b30a0b106caf37af58ed779f187a85005ecf3719b517afadb7c4069d04f440d96edf2709a507bfbda7d4168d14e450c9",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657479256000,
+            "record": 508,
+            "file_offset": 61219,
+            "usb_sha256": "271abe1f3fbc988959a2be0795d74b1d93fe1e658862d208c40387c0ce9769e0",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31c16f96bb16b30a0b106caf37af58ed779f187a85005ecf3719b517afadb7c4069d04f440d96edf2709a507bfbda7d4168d14e450c9",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 3,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657492726000,
+            "record": 512,
+            "file_offset": 61895,
+            "usb_sha256": "5c4a8f9d5c5327e8ca70038e4004982c4b1e2ca6d20ba9b54f71c8536efbbd6a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31c16f96bb16b30a0b106caf37af58ed779f187a85015ecf3719b517afadb7c4069d04f440d96edf2709a507bfbda7d4168d14e450c9",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657500287000,
+            "record": 518,
+            "file_offset": 62870,
+            "usb_sha256": "658bf5a126e98b6710146a3c91fc112c35b7ca31be07a212fafbe49239995261",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31c16f96bb16b30a0b106caf37af58ed779f187a85015ecf3719b517afadb7c4069d04f440d96edf2709a507bfbda7d4168d14e450c9",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 4,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657518707000,
+            "record": 522,
+            "file_offset": 63546,
+            "usb_sha256": "06cb1325c2479ddbd4719f0a2da370124d8bf1a28e6a6358382ade96eea811c9",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3184b03f77fa677ac5c52a36b0aa492d8ebabba12b003e0b83ca44d8ba0407e9f2756c8ee5474e7bf3ba34a8aa1417f9e2657c9ef557",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657522893000,
+            "record": 528,
+            "file_offset": 64521,
+            "usb_sha256": "405287b025242890a2b74b92548ffda926f8cefe15698f6cd51fa63a0740c3fc",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3184b03f77fa677ac5c52a36b0aa492d8ebabba12b003e0b83ca44d8ba0407e9f2756c8ee5474e7bf3ba34a8aa1417f9e2657c9ef557",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 4,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657536870000,
+            "record": 532,
+            "file_offset": 65197,
+            "usb_sha256": "c24f0f2bc9e60ec3acacb3ca55a62b0b7c2945ea31e6f88bc0d1b1662396a723",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3184b03f77fa677ac5c52a36b0aa492d8ebabba12b013e0b83ca44d8ba0407e9f2756c8ee5474e7bf3ba34a8aa1417f9e2657c9ef557",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657545251000,
+            "record": 538,
+            "file_offset": 66172,
+            "usb_sha256": "34250f6db48d451dd7d75384ca5eee724f9ed5a4cfe8440225481c81a04caa20",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3184b03f77fa677ac5c52a36b0aa492d8ebabba12b013e0b83ca44d8ba0407e9f2756c8ee5474e7bf3ba34a8aa1417f9e2657c9ef557",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 5,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657563642000,
+            "record": 542,
+            "file_offset": 66848,
+            "usb_sha256": "2e5deee3777052d147909d9cacc9486e6ce91be7889a4f4ba95017d496fafa27",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b318040f7aafb2944f2832f48a1c3ed5335bc21bc57003cfd49153be8863147ea8e660b2499fe4c8d39652bf8962157fa9e761b3489ee",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657567866000,
+            "record": 550,
+            "file_offset": 68161,
+            "usb_sha256": "52a1382448d752827d68c9343704cb088541174962e8962ad973b73659425436",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b318040f7aafb2944f2832f48a1c3ed5335bc21bc57003cfd49153be8863147ea8e660b2499fe4c8d39652bf8962157fa9e761b3489ee",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 5,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657581662000,
+            "record": 552,
+            "file_offset": 68499,
+            "usb_sha256": "86c390bde534d5703686f57e0e21eca52123e6ce07969671af612e63fc960b75",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b318040f7aafb2944f2832f48a1c3ed5335bc21bc57013cfd49153be8863147ea8e660b2499fe4c8d39652bf8962157fa9e761b3489ee",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657588734000,
+            "record": 558,
+            "file_offset": 69474,
+            "usb_sha256": "0a53d5a8fab2a0b957bd7ff9ed08288f2617d1a37f682b69073fa822e9881e00",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b318040f7aafb2944f2832f48a1c3ed5335bc21bc57013cfd49153be8863147ea8e660b2499fe4c8d39652bf8962157fa9e761b3489ee",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 6,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657607657000,
+            "record": 562,
+            "file_offset": 70150,
+            "usb_sha256": "a83a78c1208f8aa3e8ff843fabf8aa721c267d81af22fd081b9f69cfa6bd8890",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b317cf94ba0eb512e297c29cd86455b877c0dee64900071f744b0fa433d3d693fda9e5c419c6061e75480ca730d0d590feaae6c71ac50",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657612830000,
+            "record": 570,
+            "file_offset": 71463,
+            "usb_sha256": "6d10c3373243f2be77240131b6e3949c7e79051d50a28c69b6e11fa2da27860d",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b317cf94ba0eb512e297c29cd86455b877c0dee64900071f744b0fa433d3d693fda9e5c419c6061e75480ca730d0d590feaae6c71ac50",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 6,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657625645000,
+            "record": 572,
+            "file_offset": 71801,
+            "usb_sha256": "1d50b70e758d3fc4f9b3503659ad0a90640d481e0f1a903138491d074fcd1949",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b317cf94ba0eb512e297c29cd86455b877c0dee64900171f744b0fa433d3d693fda9e5c419c6061e75480ca730d0d590feaae6c71ac50",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657633752000,
+            "record": 578,
+            "file_offset": 72776,
+            "usb_sha256": "26c74024e7f866ac12f0b62e0db15dee0fe5435e9db91d8a0f7edfa4a3a9e096",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b317cf94ba0eb512e297c29cd86455b877c0dee64900171f744b0fa433d3d693fda9e5c419c6061e75480ca730d0d590feaae6c71ac50",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 7,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657651642000,
+            "record": 582,
+            "file_offset": 73452,
+            "usb_sha256": "c947eb35b011ca698539a60fa4374dd6a054a3aa0be24bebd7f3061ef38ed158",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31c7f6dd97edd3c8d5e7c0b97e9ffdffc8fc7f0074003b0b2368edd2cad6e3c5bf7997f4f5c3cbfbd398fdc2dac6f3d5af6987e4e5d3",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657656311000,
+            "record": 590,
+            "file_offset": 74765,
+            "usb_sha256": "ac39d5c18a49ca00a1e36b9edae0f9791642ef73ba718b8a5f3d31457cfe4114",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31c7f6dd97edd3c8d5e7c0b97e9ffdffc8fc7f0074003b0b2368edd2cad6e3c5bf7997f4f5c3cbfbd398fdc2dac6f3d5af6987e4e5d3",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 7,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657669728000,
+            "record": 592,
+            "file_offset": 75103,
+            "usb_sha256": "59263426bdcb15ae013b92991784dbbc98371d6c5376b98aeed757f04ce3dcfa",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31c7f6dd97edd3c8d5e7c0b97e9ffdffc8fc7f0074013b0b2368edd2cad6e3c5bf7997f4f5c3cbfbd398fdc2dac6f3d5af6987e4e5d3",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657677245000,
+            "record": 598,
+            "file_offset": 76078,
+            "usb_sha256": "56553bb6697f91791abad8730a91e64fed2fa1911b044dda03b06eeb5dc24783",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31c7f6dd97edd3c8d5e7c0b97e9ffdffc8fc7f0074013b0b2368edd2cad6e3c5bf7997f4f5c3cbfbd398fdc2dac6f3d5af6987e4e5d3",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 8,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657695661000,
+            "record": 602,
+            "file_offset": 76754,
+            "usb_sha256": "6b547c8f7b8855228464343814f593e9adc07e5d757c3df1726aac0e33cf62d6",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3192dba471ea3233c1f0971a1eda860caa3af3924d00a8e0984cd40d7380b2d45e5b9cc144e3d890e83ca47d6390a2c44e4b8cd154f3",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657699850000,
+            "record": 610,
+            "file_offset": 78067,
+            "usb_sha256": "1c7db91e8f0c2a4b83e086e9c6fe6dfe9200cdb007aa12d364965f2738a9e9c9",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3192dba471ea3233c1f0971a1eda860caa3af3924d00a8e0984cd40d7380b2d45e5b9cc144e3d890e83ca47d6390a2c44e4b8cd154f3",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 8,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657713653000,
+            "record": 612,
+            "file_offset": 78405,
+            "usb_sha256": "6726b98597f2b2f9e5f7cb7ca47c61165b4d7fec9a012bf11c4bc7edf75c5094",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3192dba471ea3233c1f0971a1eda860caa3af3924d01a8e0984cd40d7380b2d45e5b9cc144e3d890e83ca47d6390a2c44e4b8cd154f3",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657722280000,
+            "record": 618,
+            "file_offset": 79380,
+            "usb_sha256": "2d378a2314cd669053c192e73ce743db3066fe06d324c99e778c301ff0a00857",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3192dba471ea3233c1f0971a1eda860caa3af3924d01a8e0984cd40d7380b2d45e5b9cc144e3d890e83ca47d6390a2c44e4b8cd154f3",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 9,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657739645000,
+            "record": 622,
+            "file_offset": 80056,
+            "usb_sha256": "5a37328592d90ff21f3a70c310ba0401a84a77ba772d669e4481988c950b91e7",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31bfd2cd03d216eb2fa4a2f3af455bd9a38a91e894003559418e5c997bbe3631673ad3cc413a2549519e4c894b8e0601570ae3fc710a",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657744816000,
+            "record": 630,
+            "file_offset": 81369,
+            "usb_sha256": "0017073a795ecc50f15e1b5f3f19002f13b4675f8d6d388f7440a9387f1337af",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31bfd2cd03d216eb2fa4a2f3af455bd9a38a91e894003559418e5c997bbe3631673ad3cc413a2549519e4c894b8e0601570ae3fc710a",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 9,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657757733000,
+            "record": 632,
+            "file_offset": 81707,
+            "usb_sha256": "afa883beed80c77c2682eea58bfaa2d3e3a7427baf868748a0844342622d0764",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31bfd2cd03d216eb2fa4a2f3af455bd9a38a91e894013559418e5c997bbe3631673ad3cc413a2549519e4c894b8e0601570ae3fc710a",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657765771000,
+            "record": 638,
+            "file_offset": 82682,
+            "usb_sha256": "c59eb48ff405d08dbab5081ea634918207f3b08339664bc96a5d9e61d66cba58",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31bfd2cd03d216eb2fa4a2f3af455bd9a38a91e894013559418e5c997bbe3631673ad3cc413a2549519e4c894b8e0601570ae3fc710a",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 10,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657783640000,
+            "record": 642,
+            "file_offset": 83358,
+            "usb_sha256": "d361322e0eec87b74ab289a10be78ce3f6edcbdb5c7563cd5326fa1b6e126731",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b318ffb4baaffb3de1345d15b3e61eebf40e60ce8d500691ca343155832feab3eabcf931d4bb5790cb353054822eebb2e5b3f63edbb45",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657788386000,
+            "record": 650,
+            "file_offset": 84671,
+            "usb_sha256": "acf6818a9e4bc0c53d24c7f1634f9948d3ee3c7ffa9e0d4c648d3fcff7a40adb",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b318ffb4baaffb3de1345d15b3e61eebf40e60ce8d500691ca343155832feab3eabcf931d4bb5790cb353054822eebb2e5b3f63edbb45",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 10,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657801742000,
+            "record": 652,
+            "file_offset": 85009,
+            "usb_sha256": "25d95e0bda2f8957f4e61f5a03c2bb65f636368d4e790e7063c34f0c43b714dd",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b318ffb4baaffb3de1345d15b3e61eebf40e60ce8d501691ca343155832feab3eabcf931d4bb5790cb353054822eebb2e5b3f63edbb45",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657809245000,
+            "record": 658,
+            "file_offset": 85984,
+            "usb_sha256": "ffb0816c406562d10b282817220c0f98c0be67802a83e7430f99110ffcd5b1e6",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b318ffb4baaffb3de1345d15b3e61eebf40e60ce8d501691ca343155832feab3eabcf931d4bb5790cb353054822eebb2e5b3f63edbb45",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 11,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657828645000,
+            "record": 662,
+            "file_offset": 86660,
+            "usb_sha256": "89efd9f0d740d958dc9194ca94e6d3cf9236220a1a3fe4e3a90a0f363afee859",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b314e7723f867d3aa29fa37ec20a3d8ea223b15eec500754b1ec65893eb6bb973a966e490a368053b6eb62883fb7ba963b976f480b378",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657833254000,
+            "record": 668,
+            "file_offset": 87635,
+            "usb_sha256": "48d65b124f8ab3bb0715830b7f84cd2cb07001f98e4d69392f6787b0cc3b283b",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b314e7723f867d3aa29fa37ec20a3d8ea223b15eec500754b1ec65893eb6bb973a966e490a368053b6eb62883fb7ba963b976f480b378",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 11,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657846667000,
+            "record": 672,
+            "file_offset": 88311,
+            "usb_sha256": "06f1e403a39fc6343f0dc886be48f217b1a57bc3d847378e88e2aa2ff7a26a1e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b314e7723f867d3aa29fa37ec20a3d8ea223b15eec501754b1ec65893eb6bb973a966e490a368053b6eb62883fb7ba963b976f480b378",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657854247000,
+            "record": 678,
+            "file_offset": 89286,
+            "usb_sha256": "695fda80a0195de7033379c7cb2c976b6aa0a2e1210eec1e4aca6691879d41c0",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b314e7723f867d3aa29fa37ec20a3d8ea223b15eec501754b1ec65893eb6bb973a966e490a368053b6eb62883fb7ba963b976f480b378",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 12,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657872640000,
+            "record": 682,
+            "file_offset": 89962,
+            "usb_sha256": "1c23bc1430a388e82d9eb5f828f9d8945b92136483965de3af5281590b848b7b",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31a2610ae8187dc8d250e89842de1d26d782bd7c7b0020e28e6d9efa405bda6314cf5092b64630f29e7d8eea504bca7304df40828676",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657876798000,
+            "record": 690,
+            "file_offset": 91275,
+            "usb_sha256": "da2febd4d67a0115c7d0492a8c9c5b7986e1b2f06bb5a19cb53563f35b0e291d",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31a2610ae8187dc8d250e89842de1d26d782bd7c7b0020e28e6d9efa405bda6314cf5092b64630f29e7d8eea504bca7304df40828676",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 12,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657890663000,
+            "record": 692,
+            "file_offset": 91613,
+            "usb_sha256": "6e87ac1f48694ca13fe06804a759384f1e9151bf56b90cf82540576e7602bdb5",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31a2610ae8187dc8d250e89842de1d26d782bd7c7b0120e28e6d9efa405bda6314cf5092b64630f29e7d8eea504bca7304df40828676",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657897714000,
+            "record": 698,
+            "file_offset": 92588,
+            "usb_sha256": "9f1f285f42b6a9659ccabd653f28ca1cc2101c70cc7925103dabac6e84fa631d",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31a2610ae8187dc8d250e89842de1d26d782bd7c7b0120e28e6d9efa405bda6314cf5092b64630f29e7d8eea504bca7304df40828676",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 13,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657916638000,
+            "record": 702,
+            "file_offset": 93264,
+            "usb_sha256": "7a38f0d721000679a42ed72b31f0ba0ac6f2f182be9c11ae1dc5a9c7fe7a4360",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31737cb89564ed47a93b8b3f44559427f0b3f0269400c0c80d23d355fe13803782faea54e632b0b87d53a3258e63f047f28a9a44f622",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657921850000,
+            "record": 710,
+            "file_offset": 94577,
+            "usb_sha256": "ed3d94123147b2941d93883f25319aaa9de29eafd4c34da5bdc8a27122512e03",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31737cb89564ed47a93b8b3f44559427f0b3f0269400c0c80d23d355fe13803782faea54e632b0b87d53a3258e63f047f28a9a44f622",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 13,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657935644000,
+            "record": 712,
+            "file_offset": 94915,
+            "usb_sha256": "4c74e4f5d972e82851102b2cbae2bdd672f2fbb1c5e63a305dd9d20e75bdc0ab",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31737cb89564ed47a93b8b3f44559427f0b3f0269401c0c80d23d355fe13803782faea54e632b0b87d53a3258e63f047f28a9a44f622",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657944256000,
+            "record": 718,
+            "file_offset": 95890,
+            "usb_sha256": "48af04cb75eaf2ef8a09be691da2030d0c4f6bd265c6de00382e40a7786a5fbb",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31737cb89564ed47a93b8b3f44559427f0b3f0269401c0c80d23d355fe13803782faea54e632b0b87d53a3258e63f047f28a9a44f622",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 14,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657960642000,
+            "record": 722,
+            "file_offset": 96566,
+            "usb_sha256": "f844f0da78a6dde6429f1fbc9283171e4039a2e5d5e1c91dac504a945ea6c242",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31675e65cca08b66643644975f9f265bfc5ee395db00390105adc2e802015023ff36f54d3791093115bdd2f812114033ef26e55d2781",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657965364000,
+            "record": 730,
+            "file_offset": 97879,
+            "usb_sha256": "35b2aef91bab6579a21be26d5f6e49db775b62ffed145ffae061f76a5fc01efd",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31675e65cca08b66643644975f9f265bfc5ee395db00390105adc2e802015023ff36f54d3791093115bdd2f812114033ef26e55d2781",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 14,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908657979648000,
+            "record": 732,
+            "file_offset": 98217,
+            "usb_sha256": "8cbff5d104e9262d9df900d1594233afe86a8c28a9de595b89d83f7b42bb643b",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31675e65cca08b66643644975f9f265bfc5ee395db01390105adc2e802015023ff36f54d3791093115bdd2f812114033ef26e55d2781",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908657987798000,
+            "record": 738,
+            "file_offset": 99192,
+            "usb_sha256": "109133052e5c54f337a17f0979c25f783c8e5c470bb35c77293020fcef500228",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31675e65cca08b66643644975f9f265bfc5ee395db01390105adc2e802015023ff36f54d3791093115bdd2f812114033ef26e55d2781",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 15,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658005652000,
+            "record": 742,
+            "file_offset": 99868,
+            "usb_sha256": "063ae0db6279f22be1a5b52936c86de67e792f751d45052a59e0abc2cc7c90ed",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b316d8ce1e889a4ec01f079ca29b786d0fb0bc14aab006680ece686b4fd13e36ddf3fa09ec9e17690fcf69684cd23d35def0f90aef9d1",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658010326000,
+            "record": 750,
+            "file_offset": 101181,
+            "usb_sha256": "d10c3b63601d9a5bad7d25f9af4b29cf24a5c65c5827ad319355be67a2c54d7e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b316d8ce1e889a4ec01f079ca29b786d0fb0bc14aab006680ece686b4fd13e36ddf3fa09ec9e17690fcf69684cd23d35def0f90aef9d1",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 15,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658023682000,
+            "record": 752,
+            "file_offset": 101519,
+            "usb_sha256": "45be2f110cbed7f7f332eed6fdabd1f67195ff0b0f13e78977aec390a7cdd500",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b316d8ce1e889a4ec01f079ca29b786d0fb0bc14aab016680ece686b4fd13e36ddf3fa09ec9e17690fcf69684cd23d35def0f90aef9d1",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658031295000,
+            "record": 758,
+            "file_offset": 102494,
+            "usb_sha256": "c7537615015ef1d1707ea07711632506ad4e89fa55c5da9655b444d40a5f8c7d",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b316d8ce1e889a4ec01f079ca29b786d0fb0bc14aab016680ece686b4fd13e36ddf3fa09ec9e17690fcf69684cd23d35def0f90aef9d1",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 16,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658049658000,
+            "record": 762,
+            "file_offset": 103170,
+            "usb_sha256": "3e96041b95f45d735a61ea25a143b9d2674b6e0a374878fc40bdf70c1fa6c6d2",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31dfd5a7ea1d9811be1e0446037c080bc6976728dd00484d3e7086048c2081a4e7a1dfacae60787d0e40b634bc10b1b4f7b1cfbcbe70",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658055345000,
+            "record": 770,
+            "file_offset": 104483,
+            "usb_sha256": "4e74cdaa9b9bbc0da203168ea9da41978873c807560a8fe265105be385b14738",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31dfd5a7ea1d9811be1e0446037c080bc6976728dd00484d3e7086048c2081a4e7a1dfacae60787d0e40b634bc10b1b4f7b1cfbcbe70",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 16,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658067649000,
+            "record": 772,
+            "file_offset": 104821,
+            "usb_sha256": "f77571d806a9b8ebfc945a98c113e7540cf14f4d32753b3c8fe32522f73bdfa1",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31dfd5a7ea1d9811be1e0446037c080bc6976728dd01484d3e7086048c2081a4e7a1dfacae60787d0e40b634bc10b1b4f7b1cfbcbe70",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658074776000,
+            "record": 778,
+            "file_offset": 105796,
+            "usb_sha256": "fc8b37350fc44562cd563d27183fb2520ce05a6768940babbe43ba5f33e7065f",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31dfd5a7ea1d9811be1e0446037c080bc6976728dd01484d3e7086048c2081a4e7a1dfacae60787d0e40b634bc10b1b4f7b1cfbcbe70",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 17,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658093649000,
+            "record": 782,
+            "file_offset": 106472,
+            "usb_sha256": "5d877e7feaaf0b61d30fb9455d6f399bbe1a1f03669be674722641a9512b0636",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b310bea61c84f20b3722bfea34cf7e34b6dd7edf76e00dc32b81294fc6eacf41e42ae1407ae8bec028822a4cc5e9cc40e52be0417be9b",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658098774000,
+            "record": 788,
+            "file_offset": 107447,
+            "usb_sha256": "64b8a22f359779b89d839fc43c5b53fe2d3a2fa295b34bf2fd8d33eaafffc073",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b310bea61c84f20b3722bfea34cf7e34b6dd7edf76e00dc32b81294fc6eacf41e42ae1407ae8bec028822a4cc5e9cc40e52be0417be9b",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 17,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658111731000,
+            "record": 792,
+            "file_offset": 108123,
+            "usb_sha256": "b73d7289d1a57d9814abdb1f05739ac259110b9a42e63660e4110c51705e7bc5",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b310bea61c84f20b3722bfea34cf7e34b6dd7edf76e01dc32b81294fc6eacf41e42ae1407ae8bec028822a4cc5e9cc40e52be0417be9b",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658119764000,
+            "record": 798,
+            "file_offset": 109098,
+            "usb_sha256": "1006a6b7becf11895a60df5e5f041963d7670e3935be0a00d85b9f35c6e25be1",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b310bea61c84f20b3722bfea34cf7e34b6dd7edf76e01dc32b81294fc6eacf41e42ae1407ae8bec028822a4cc5e9cc40e52be0417be9b",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 18,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658137644000,
+            "record": 802,
+            "file_offset": 109774,
+            "usb_sha256": "43276aefab6cddcebffcb595beff75091952500b4c7052a6dc54ac4fe9f11e8b",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31563376c21250b741dcbc067f28eeede0284ea987007e1a5ce93e7d996eec8d344c1cdbdbd76e0a4cf92e6d897e9cfd443c6cababa7",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658142365000,
+            "record": 810,
+            "file_offset": 111087,
+            "usb_sha256": "d3423da29d651e2e5115e69083e49256792726344b1662464fd80cc880fc3b6e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31563376c21250b741dcbc067f28eeede0284ea987007e1a5ce93e7d996eec8d344c1cdbdbd76e0a4cf92e6d897e9cfd443c6cababa7",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 18,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658155639000,
+            "record": 812,
+            "file_offset": 111425,
+            "usb_sha256": "3ced0ddacf1f6a13ac5735a9d5b6e26924895aa4f23e1c537f32abe36f238d04",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31563376c21250b741dcbc067f28eeede0284ea987017e1a5ce93e7d996eec8d344c1cdbdbd76e0a4cf92e6d897e9cfd443c6cababa7",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658163248000,
+            "record": 818,
+            "file_offset": 112400,
+            "usb_sha256": "6c09e04478602216a4ea851a466613804c1e671ca0847f13c966d302b3aa79c5",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31563376c21250b741dcbc067f28eeede0284ea987017e1a5ce93e7d996eec8d344c1cdbdbd76e0a4cf92e6d897e9cfd443c6cababa7",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 19,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658181647000,
+            "record": 822,
+            "file_offset": 113076,
+            "usb_sha256": "f21670a81ae1698bae85267ae1abae198579eb1bc90733a8255f8d158200bee3",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3106a4fbb5f6d7b1507a03c66ed9fc1e7c76149f3d0070d383cc8caccd2d047c46ef5b7f9af98023733c7c5c3dddf48c56ff4b6f8ae9",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658185873000,
+            "record": 830,
+            "file_offset": 114389,
+            "usb_sha256": "6c71ece96300f3d8198c3d1302f0e9efc198baefd58897a8d8a6f4f3574f2c41",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3106a4fbb5f6d7b1507a03c66ed9fc1e7c76149f3d0070d383cc8caccd2d047c46ef5b7f9af98023733c7c5c3dddf48c56ff4b6f8ae9",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 19,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658200664000,
+            "record": 832,
+            "file_offset": 114727,
+            "usb_sha256": "16d6696bcd67e0d9963bc525e8909ba8bb0939bb65306d364d2467a0b066bd7a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3106a4fbb5f6d7b1507a03c66ed9fc1e7c76149f3d0170d383cc8caccd2d047c46ef5b7f9af98023733c7c5c3dddf48c56ff4b6f8ae9",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658208267000,
+            "record": 838,
+            "file_offset": 115702,
+            "usb_sha256": "c0527cfbefec672ca6b4abf9cec373efc1c68aa80c70270a2209a245cc32a9dc",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3106a4fbb5f6d7b1507a03c66ed9fc1e7c76149f3d0170d383cc8caccd2d047c46ef5b7f9af98023733c7c5c3dddf48c56ff4b6f8ae9",
+            "direction": "in"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "owners": [
+        {
+          "controller": {
+            "bus": 1,
+            "device": 3,
+            "index": 1,
+            "generation": 2,
+            "address": "00:01:09:32:54:F9"
+          },
+          "connection": {
+            "generation": 2,
+            "lifetime": 3,
+            "handle": 0,
+            "role": 0,
+            "address_type": 0,
+            "address": "00:01:09:32:54:CD",
+            "path": "/org/sparklink/slk1_g2/peer_t00_0001093254cd/link_0000000000000003"
+          }
+        },
+        {
+          "controller": {
+            "bus": 1,
+            "device": 2,
+            "index": 0,
+            "generation": 1,
+            "address": "00:01:09:32:54:CD"
+          },
+          "connection": {
+            "generation": 1,
+            "lifetime": 3,
+            "handle": 0,
+            "role": 1,
+            "address_type": 0,
+            "address": "00:01:09:32:54:F9",
+            "path": "/org/sparklink/slk0_g1/peer_t00_0001093254f9/link_0000000000000003"
+          }
+        }
+      ],
+      "legs": [
+        {
+          "sequence": 0,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658816670000,
+            "record": 918,
+            "file_offset": 128522,
+            "usb_sha256": "b008f50cbab77e635ff7948dc8806f23274345265d4af7e0460c1a435ff4164e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31b670c14d775e545224e0d673738fe897a2eb50360014d365e8d1f9fcfb8e4b7adedd20582604c375f8c1e9eceb9e5b6acecd302856",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658821802000,
+            "record": 924,
+            "file_offset": 129497,
+            "usb_sha256": "a1e035c4919604d5d915ae8f92a52bf73c2d51d5082a18250fcdcf3a9b383457",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31b670c14d775e545224e0d673738fe897a2eb50360014d365e8d1f9fcfb8e4b7adedd20582604c375f8c1e9eceb9e5b6acecd302856",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 0,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658843639000,
+            "record": 928,
+            "file_offset": 130173,
+            "usb_sha256": "bcfe68536fc71389f3fc0d4481c7902b577591cb2ca7f76b80282474ee080ec3",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31b670c14d775e545224e0d673738fe897a2eb50360114d365e8d1f9fcfb8e4b7adedd20582604c375f8c1e9eceb9e5b6acecd302856",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658851899000,
+            "record": 934,
+            "file_offset": 131148,
+            "usb_sha256": "d1a82245e1fa955c680e62b00de7ca29f1ad0717090e0d1c2c4597ed4a85389d",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31b670c14d775e545224e0d673738fe897a2eb50360114d365e8d1f9fcfb8e4b7adedd20582604c375f8c1e9eceb9e5b6acecd302856",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 1,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658872652000,
+            "record": 938,
+            "file_offset": 131824,
+            "usb_sha256": "47a1ac55641af7f1bb9c1a9a6a412c1acd55bbbbb20873a28bb17be0d8e1fca5",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b319a3c03b6b73bfbd3e2aa3243079161879aa89a530000a79f2b29a45b72400996e6a136c92e3097af1b19944b62501986f6b126d93e",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658877367000,
+            "record": 944,
+            "file_offset": 132799,
+            "usb_sha256": "58a9f598a72fc9ff8716c713db922cf90ab2f8fb1b3e42152474251619ae94ab",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b319a3c03b6b73bfbd3e2aa3243079161879aa89a530000a79f2b29a45b72400996e6a136c92e3097af1b19944b62501986f6b126d93e",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 1,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658898635000,
+            "record": 948,
+            "file_offset": 133475,
+            "usb_sha256": "f4900e5e22f9eb9067a1c15cafee2db3b9fb1e7b074f4614e4a1c3ab3b210904",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b319a3c03b6b73bfbd3e2aa3243079161879aa89a530100a79f2b29a45b72400996e6a136c92e3097af1b19944b62501986f6b126d93e",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658905781000,
+            "record": 954,
+            "file_offset": 134450,
+            "usb_sha256": "f13c5c64d5d061786c385b21bd96b0ab8c675da4bb56704fc76af6ffb5dca0aa",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b319a3c03b6b73bfbd3e2aa3243079161879aa89a530100a79f2b29a45b72400996e6a136c92e3097af1b19944b62501986f6b126d93e",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 2,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658927728000,
+            "record": 958,
+            "file_offset": 135126,
+            "usb_sha256": "5808d3d8a5289646136f4db1ccfedf3dde497df25ad448954e21f9cdbda1a45b",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e28b5b05dc5d6b378a15eedf8389066d3406e62900d6be6d32e464510cb628d0e0c3c8442ea6ce1d429414217cc658a090d3d8543e",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658932790000,
+            "record": 964,
+            "file_offset": 136101,
+            "usb_sha256": "2de7cb6d556651e951e803a3f27869d1c28658535f04c4d8166a961d59ae96aa",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e28b5b05dc5d6b378a15eedf8389066d3406e62900d6be6d32e464510cb628d0e0c3c8442ea6ce1d429414217cc658a090d3d8543e",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 2,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658953642000,
+            "record": 968,
+            "file_offset": 136777,
+            "usb_sha256": "cee51eeba69d1502ca742d547fba96db01c4d2f1bb640e7317bdb0104a034033",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e28b5b05dc5d6b378a15eedf8389066d3406e62901d6be6d32e464510cb628d0e0c3c8442ea6ce1d429414217cc658a090d3d8543e",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658961315000,
+            "record": 974,
+            "file_offset": 137752,
+            "usb_sha256": "4bd47f2e9a20768e131139b32d5bc815978f5c1cb5778bdd92014d8b46ec2b07",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e28b5b05dc5d6b378a15eedf8389066d3406e62901d6be6d32e464510cb628d0e0c3c8442ea6ce1d429414217cc658a090d3d8543e",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 3,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908658982740000,
+            "record": 978,
+            "file_offset": 138428,
+            "usb_sha256": "7818ed71bae63fe8fa749ff2939f8416da09e7d600416c311320952dc26d55c8",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31f179c0011532a5b6bebf2073f8c28a1e2362374600d25de527321a8c9c95930d5dd7f2bb2cc24df537220a9c8c85831d4dc782cb5c",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908658988422000,
+            "record": 984,
+            "file_offset": 139403,
+            "usb_sha256": "a79bd2df18f3d6e7eed0b074c484017cfebcd56074064f8a8fbdf91d824d1d11",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31f179c0011532a5b6bebf2073f8c28a1e2362374600d25de527321a8c9c95930d5dd7f2bb2cc24df537220a9c8c85831d4dc782cb5c",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 3,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659008641000,
+            "record": 988,
+            "file_offset": 140079,
+            "usb_sha256": "49cdc1b8d2d3b8327a65abc58ecd133b0378f32f88aa42221408a365ef07791a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31f179c0011532a5b6bebf2073f8c28a1e2362374601d25de527321a8c9c95930d5dd7f2bb2cc24df537220a9c8c85831d4dc782cb5c",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659016764000,
+            "record": 994,
+            "file_offset": 141054,
+            "usb_sha256": "1e853cc4fa059d0cc161eefbbcff7970d4e2887890970545b3bad20d6b91919f",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31f179c0011532a5b6bebf2073f8c28a1e2362374601d25de527321a8c9c95930d5dd7f2bb2cc24df537220a9c8c85831d4dc782cb5c",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 4,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659037677000,
+            "record": 998,
+            "file_offset": 141730,
+            "usb_sha256": "ebdf2b50d0248b462dd093d5e28c938a275766290378e943c8387e698da2a266",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3116f2a2a2f0da1e3f420a9a677161d7fde028ad4b00f6134041143ff8d8aae3708c9d8c3912e6035051042fe8c8baf3609c8d9c2902",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659042318000,
+            "record": 1004,
+            "file_offset": 142705,
+            "usb_sha256": "58e8cd2ceb8d021fa1d6a5912516ee8629078178e552bc0d825f673747fbda01",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3116f2a2a2f0da1e3f420a9a677161d7fde028ad4b00f6134041143ff8d8aae3708c9d8c3912e6035051042fe8c8baf3609c8d9c2902",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 4,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659063634000,
+            "record": 1008,
+            "file_offset": 143381,
+            "usb_sha256": "15df1b5f703db5c3c7faeee2b2486f32ab7ca27cd961df82853840c9aa9d239e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3116f2a2a2f0da1e3f420a9a677161d7fde028ad4b01f6134041143ff8d8aae3708c9d8c3912e6035051042fe8c8baf3609c8d9c2902",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659070769000,
+            "record": 1014,
+            "file_offset": 144356,
+            "usb_sha256": "525c47002768955a15753509711bc052e2c03d852c93d25b11740e0fe34b6ed3",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3116f2a2a2f0da1e3f420a9a677161d7fde028ad4b01f6134041143ff8d8aae3708c9d8c3912e6035051042fe8c8baf3609c8d9c2902",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 5,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659092669000,
+            "record": 1018,
+            "file_offset": 145032,
+            "usb_sha256": "1374bf1c399d11ebbec0de9e55106db272c29faed2e5452d7506c1cca1f9f797",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3182591bb9a43474b8c30d7a82537595d9fae4766f0078a2e7445acb74b9c10e7e8755729dd0885217b4aa3b64a9d11e6e9745628dc0",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659097788000,
+            "record": 1024,
+            "file_offset": 146007,
+            "usb_sha256": "ee0a9c36c26f51efb6649bfddb8c36b6d67268299d04648d22e96bcc2a6582a0",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3182591bb9a43474b8c30d7a82537595d9fae4766f0078a2e7445acb74b9c10e7e8755729dd0885217b4aa3b64a9d11e6e9745628dc0",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 5,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659118639000,
+            "record": 1028,
+            "file_offset": 146683,
+            "usb_sha256": "4b8d5f12aaf92f8f9cd28f578eac697fe0335bb6f81b0e2c11853c170f7f8c8a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3182591bb9a43474b8c30d7a82537595d9fae4766f0178a2e7445acb74b9c10e7e8755729dd0885217b4aa3b64a9d11e6e9745628dc0",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659126344000,
+            "record": 1034,
+            "file_offset": 147658,
+            "usb_sha256": "ecea76f90a8eeace37646355551453ce8193381b103010b8931f913154aeb17e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3182591bb9a43474b8c30d7a82537595d9fae4766f0178a2e7445acb74b9c10e7e8755729dd0885217b4aa3b64a9d11e6e9745628dc0",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 6,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659147651000,
+            "record": 1038,
+            "file_offset": 148334,
+            "usb_sha256": "9d94bac8df7c199ede94f553056598ae66bdcf8920c02bf521e950beeb820ba7",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b312b16e6fc7fa71ffd3cff9c7dee7d8e1de20eabb400c9f502199940f714d614709000927eecd9e512098950e704c604608010828e1c",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659151795000,
+            "record": 1044,
+            "file_offset": 149309,
+            "usb_sha256": "64990a426f301225f347975ce2ac86915f7ec48891853245daed629cef228eb9",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b312b16e6fc7fa71ffd3cff9c7dee7d8e1de20eabb400c9f502199940f714d614709000927eecd9e512098950e704c604608010828e1c",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 6,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659173652000,
+            "record": 1048,
+            "file_offset": 149985,
+            "usb_sha256": "5ccc4efebd61aa5b54f72d338dde9be438cb707362c3d126effc10c46824801e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b312b16e6fc7fa71ffd3cff9c7dee7d8e1de20eabb401c9f502199940f714d614709000927eecd9e512098950e704c604608010828e1c",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659181799000,
+            "record": 1054,
+            "file_offset": 150960,
+            "usb_sha256": "39a66a6cd6e95b0b8b1c1efe57f833a617bc537ed2c52f87cbdfdc8543dcbca2",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b312b16e6fc7fa71ffd3cff9c7dee7d8e1de20eabb401c9f502199940f714d614709000927eecd9e512098950e704c604608010828e1c",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 7,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659202732000,
+            "record": 1058,
+            "file_offset": 151636,
+            "usb_sha256": "af06ffa3c7d574f4f51ef6458a94ae948590fa649d9a4c9be7b3793c658c709b",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31d58ef6b0a07f8be698d2027d286ddc9acad1fdc2001f453a7d6eb05b374a01d6a8feba04430f552a6d7ea06b077a31e698ce8a3473",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659207293000,
+            "record": 1064,
+            "file_offset": 152611,
+            "usb_sha256": "e8406bea5e5a6fb3e7041b321d2bf8b7db9f1b74aa4c6291a6ee52600a5e4824",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31d58ef6b0a07f8be698d2027d286ddc9acad1fdc2001f453a7d6eb05b374a01d6a8feba04430f552a6d7ea06b077a31e698ce8a3473",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 7,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659218651000,
+            "record": 1068,
+            "file_offset": 153287,
+            "usb_sha256": "a35a1b852a0a7e555c7cb160fa4c6ae25e12030b62b8dd8274693dd0936ffed1",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31d58ef6b0a07f8be698d2027d286ddc9acad1fdc2011f453a7d6eb05b374a01d6a8feba04430f552a6d7ea06b077a31e698ce8a3473",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659226770000,
+            "record": 1074,
+            "file_offset": 154262,
+            "usb_sha256": "35b20e7185736a23123e9f5e4b709e110f9260304b59717bb36f9afc61d8034e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31d58ef6b0a07f8be698d2027d286ddc9acad1fdc2011f453a7d6eb05b374a01d6a8feba04430f552a6d7ea06b077a31e698ce8a3473",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 8,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659247664000,
+            "record": 1078,
+            "file_offset": 154938,
+            "usb_sha256": "d5d2b89bd67feec384e6177a6a41f2382881d6bd9050825ec294fe1bec5c7d13",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31fc7d818f4e3859eb12fa0411e522e2866852d8ef009414ebe422553784628b7662915794f18404fbf432452794927b869261a76401",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659252324000,
+            "record": 1084,
+            "file_offset": 155913,
+            "usb_sha256": "f318e0d9a20ca9b58581d08c6161766a11aa732cdb169740acb679665ea7a74a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31fc7d818f4e3859eb12fa0411e522e2866852d8ef009414ebe422553784628b7662915794f18404fbf432452794927b869261a76401",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 8,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659273645000,
+            "record": 1088,
+            "file_offset": 156589,
+            "usb_sha256": "1c9acf34843ee31bacd0c3bdb117c03c138ace5204c663a5122fd9729fc45a90",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31fc7d818f4e3859eb12fa0411e522e2866852d8ef019414ebe422553784628b7662915794f18404fbf432452794927b869261a76401",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659280763000,
+            "record": 1094,
+            "file_offset": 157564,
+            "usb_sha256": "c13cc3874e16c8bd056af63c69ee51f88b6b1cc5e05020e83a617783f8debf30",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31fc7d818f4e3859eb12fa0411e522e2866852d8ef019414ebe422553784628b7662915794f18404fbf432452794927b869261a76401",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 9,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659302673000,
+            "record": 1098,
+            "file_offset": 158240,
+            "usb_sha256": "9171369c816950b084d81b62efdb33732cbcc0f708c10412ab34f0449f912c4b",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b312f8ae7eea7efab1846f807550eab674ca20e3cce008d29434b014803b1ec53abf8a004d7fd9d39535b115813a1fc43bbe8b014a78d",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659307811000,
+            "record": 1104,
+            "file_offset": 159215,
+            "usb_sha256": "282e336a75d0155007e2c29b769ee8486e4fd27f2a157aa621cb14a78c93024a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b312f8ae7eea7efab1846f807550eab674ca20e3cce008d29434b014803b1ec53abf8a004d7fd9d39535b115813a1fc43bbe8b014a78d",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 9,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659328645000,
+            "record": 1108,
+            "file_offset": 159891,
+            "usb_sha256": "44217908a7e79b06546eeaad07a25d627f5138a00249cef540b6e25a18b216f6",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b312f8ae7eea7efab1846f807550eab674ca20e3cce018d29434b014803b1ec53abf8a004d7fd9d39535b115813a1fc43bbe8b014a78d",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659336294000,
+            "record": 1114,
+            "file_offset": 160866,
+            "usb_sha256": "f6b1d3cf298a2557cddae6685746f552ade9a4d0c2a522af85d89f268114de67",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b312f8ae7eea7efab1846f807550eab674ca20e3cce018d29434b014803b1ec53abf8a004d7fd9d39535b115813a1fc43bbe8b014a78d",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 10,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659347645000,
+            "record": 1118,
+            "file_offset": 161542,
+            "usb_sha256": "b4dbf56e3d5e570de557edc17c6a91fd7a172a67133cbcdb91a56ea9fe25aa80",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31bfaa8a1be91c8504c3329cac51d0b10c78977d7600c7d3f0609561fb7b43b31e2fd555378b3723009065910b8b53a30e3fc545279b",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659352823000,
+            "record": 1124,
+            "file_offset": 162517,
+            "usb_sha256": "14f52a5538368b44dcbfb960790bdcb35480f5d22d288c703ca1796471ac7044",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31bfaa8a1be91c8504c3329cac51d0b10c78977d7600c7d3f0609561fb7b43b31e2fd555378b3723009065910b8b53a30e3fc545279b",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 10,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659373646000,
+            "record": 1128,
+            "file_offset": 163193,
+            "usb_sha256": "adb4f1b01363b7187d9962954a693103053a1003c745edf012fd263589fad042",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31bfaa8a1be91c8504c3329cac51d0b10c78977d7601c7d3f0609561fb7b43b31e2fd555378b3723009065910b8b53a30e3fc545279b",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659381304000,
+            "record": 1134,
+            "file_offset": 164168,
+            "usb_sha256": "40c0a98b2e7ff6cd61df1e2a60213821b0e08cde95bcb9e98749378a1dbd0c56",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31bfaa8a1be91c8504c3329cac51d0b10c78977d7601c7d3f0609561fb7b43b31e2fd555378b3723009065910b8b53a30e3fc545279b",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 11,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659392648000,
+            "record": 1138,
+            "file_offset": 164844,
+            "usb_sha256": "060cbd93f4bd8c0fc510f6f243c5e2d9bfad013dd503bb54d849a1e2303ddc6a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e3dc8ada478e417cb4c3dd8fa8a2a56f82851b8100615f0e5fc109c9f53e485102262d35fe714f1e4fd119d9e52e584112363d05ce",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659397824000,
+            "record": 1144,
+            "file_offset": 165819,
+            "usb_sha256": "45a2b57f10b56d68cbd247fbf4cda0d9d4bf67dcb7ba53ae1bf7dfdeffef2959",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e3dc8ada478e417cb4c3dd8fa8a2a56f82851b8100615f0e5fc109c9f53e485102262d35fe714f1e4fd119d9e52e584112363d05ce",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 11,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659417638000,
+            "record": 1148,
+            "file_offset": 166495,
+            "usb_sha256": "263ed3e853e165534e3ad1807d63c55388c37b2f22f2cc0e487c9cb224071b22",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e3dc8ada478e417cb4c3dd8fa8a2a56f82851b8101615f0e5fc109c9f53e485102262d35fe714f1e4fd119d9e52e584112363d05ce",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659424800000,
+            "record": 1154,
+            "file_offset": 167470,
+            "usb_sha256": "7619a71d87cedc7bd1c28704ec06fb37b225c3050dfb5d427e1432b3868aabe9",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e3dc8ada478e417cb4c3dd8fa8a2a56f82851b8101615f0e5fc109c9f53e485102262d35fe714f1e4fd119d9e52e584112363d05ce",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 12,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659436651000,
+            "record": 1158,
+            "file_offset": 168146,
+            "usb_sha256": "085f5b704253039ac69f579b366488d42ca2932523439f256478f373c3cba20e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3164498eada8c05769449de00d66afbc859228bb3d00f6da1a383e57cff0de067c90f8301c24c6ea2a080e67ffc0ee364ca0c8000c34",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659441301000,
+            "record": 1164,
+            "file_offset": 169121,
+            "usb_sha256": "3e85dda2d6280041c3fb919c7f601684e043b60067eb640cc7fe6efe04dc273a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3164498eada8c05769449de00d66afbc859228bb3d00f6da1a383e57cff0de067c90f8301c24c6ea2a080e67ffc0ee364ca0c8000c34",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 12,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659461635000,
+            "record": 1168,
+            "file_offset": 169797,
+            "usb_sha256": "0472d62b5c58a2bf5ec3faa3a9c0ab997c5f4e4dd400eba44ff0552931414ad6",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3164498eada8c05769449de00d66afbc859228bb3d01f6da1a383e57cff0de067c90f8301c24c6ea2a080e67ffc0ee364ca0c8000c34",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659469880000,
+            "record": 1174,
+            "file_offset": 170772,
+            "usb_sha256": "4eface02c6fc9efc4d2e1375c341457c32cc82556419cc7b44aa19a2232fe75d",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3164498eada8c05769449de00d66afbc859228bb3d01f6da1a383e57cff0de067c90f8301c24c6ea2a080e67ffc0ee364ca0c8000c34",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 13,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659481650000,
+            "record": 1178,
+            "file_offset": 171448,
+            "usb_sha256": "591b6d77d8f0bccfaba713dd314b007d5e0dad829738c159d7824c82402e4311",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3197fd34948689c19954743db1371f87428142523400167fb710030f4611ddfeb63dba9108d2066fa700131f5601cdeea62daa8118e2",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659486320000,
+            "record": 1184,
+            "file_offset": 172423,
+            "usb_sha256": "df4a1642809605ade0636d18dfedeabc5451e9c9e2f6316efb535eac502cd73b",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3197fd34948689c19954743db1371f87428142523400167fb710030f4611ddfeb63dba9108d2066fa700131f5601cdeea62daa8118e2",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 13,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659505650000,
+            "record": 1188,
+            "file_offset": 173099,
+            "usb_sha256": "6f3ad3a0a15228e61824e732a644c14eaab0d534610c46dc37ea235939141141",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3197fd34948689c19954743db1371f87428142523401167fb710030f4611ddfeb63dba9108d2066fa700131f5601cdeea62daa8118e2",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659513277000,
+            "record": 1194,
+            "file_offset": 174074,
+            "usb_sha256": "262486f8aa167ca70beef7a03be14501018b7318b29cc7c7a8a61c7c3a1520a2",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b3197fd34948689c19954743db1371f87428142523401167fb710030f4611ddfeb63dba9108d2066fa700131f5601cdeea62daa8118e2",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 14,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659525730000,
+            "record": 1198,
+            "file_offset": 174750,
+            "usb_sha256": "bc2102d5dc75e1a5babb9b4cee793f73815ca44f78dfdef6c3521cca13cc0352",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e3933c509236c254d9343a59db29d3eaefa3001a000c63cda261c237a22eccc3a320d52e141c933d529132c752de3c3353d025dee4",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659529796000,
+            "record": 1204,
+            "file_offset": 175725,
+            "usb_sha256": "73998a802cc97a6f784d340319ef1395157456c1857ce10d9696d4a98b39e4e9",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e3933c509236c254d9343a59db29d3eaefa3001a000c63cda261c237a22eccc3a320d52e141c933d529132c752de3c3353d025dee4",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 14,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659549650000,
+            "record": 1208,
+            "file_offset": 176401,
+            "usb_sha256": "4253c722394828201dd144121d1229f20bda86d13d3b91093d4e0d4c2e23419a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e3933c509236c254d9343a59db29d3eaefa3001a010c63cda261c237a22eccc3a320d52e141c933d529132c752de3c3353d025dee4",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659556771000,
+            "record": 1214,
+            "file_offset": 177376,
+            "usb_sha256": "989a398489993cdd8abbf3a8547878585365f476239930365dcf8c94189be558",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31e3933c509236c254d9343a59db29d3eaefa3001a010c63cda261c237a22eccc3a320d52e141c933d529132c752de3c3353d025dee4",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 15,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659569725000,
+            "record": 1218,
+            "file_offset": 178052,
+            "usb_sha256": "4f16c3329f8253d928e5e7fa40a7f4417b7146b79c84dc778018a003c3dfa90c",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31817c4a1a83776842a3552d10bd860ed50060b62700817d481987726e45ab5c271bb18b00da916d580997627e55bb4c370ba19b10ca",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659574778000,
+            "record": 1224,
+            "file_offset": 179027,
+            "usb_sha256": "c8db9a84acccca1c554b9835de799c063f2be5dd1faaaafae2998abe60514200",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31817c4a1a83776842a3552d10bd860ed50060b62700817d481987726e45ab5c271bb18b00da916d580997627e55bb4c370ba19b10ca",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 15,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659594638000,
+            "record": 1228,
+            "file_offset": 179703,
+            "usb_sha256": "ad5286c08eb638688b1228aa01c0b392460fd291ea3beddbae064eb5e6cfd268",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31817c4a1a83776842a3552d10bd860ed50060b62701817d481987726e45ab5c271bb18b00da916d580997627e55bb4c370ba19b10ca",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659601772000,
+            "record": 1234,
+            "file_offset": 180678,
+            "usb_sha256": "88af3d751c747abf71fad1dfdaef2291540dceee7224a80abf06c392fbb76e6d",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31817c4a1a83776842a3552d10bd860ed50060b62701817d481987726e45ab5c271bb18b00da916d580997627e55bb4c370ba19b10ca",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 16,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659613658000,
+            "record": 1238,
+            "file_offset": 181354,
+            "usb_sha256": "9af77e50297cee8cc8a9801721b773006788e507466c2e275af7e8b2dc944ef1",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31ba42ae6df6e162f4780faface3d2bf89c2620ad80078816aa83026aa3db2c463612d1d6f5868917ab82036ba2da2d473713d0d5f68",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659618275000,
+            "record": 1244,
+            "file_offset": 182329,
+            "usb_sha256": "5dee6bb3a3e14fe02ceb4510117460048404ba0233a324e1342ae5ebf4cefc2a",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31ba42ae6df6e162f4780faface3d2bf89c2620ad80078816aa83026aa3db2c463612d1d6f5868917ab82036ba2da2d473713d0d5f68",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 16,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659638637000,
+            "record": 1248,
+            "file_offset": 183005,
+            "usb_sha256": "2f7797e3ca3e8439d1968415702775b6fdb3afd79ddab2a5beecf51eb0add156",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31ba42ae6df6e162f4780faface3d2bf89c2620ad80178816aa83026aa3db2c463612d1d6f5868917ab82036ba2da2d473713d0d5f68",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659646810000,
+            "record": 1254,
+            "file_offset": 183980,
+            "usb_sha256": "c90e3615cc45ca662b37451599b992e2ca56c5195289617003bc6c067f8b0331",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31ba42ae6df6e162f4780faface3d2bf89c2620ad80178816aa83026aa3db2c463612d1d6f5868917ab82036ba2da2d473713d0d5f68",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 17,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659668676000,
+            "record": 1258,
+            "file_offset": 184656,
+            "usb_sha256": "11cf9d6a642e78ecb4e477690735ec541e873e3c4c9617f06e5c0a11739eaeff",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b314343a9af35b72900a9d052e388d7079f16f69875005554b1b62fac351db7cf72c2aaf423ba656481861f9c052d87ff62d2bae433aa",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659673781000,
+            "record": 1264,
+            "file_offset": 185631,
+            "usb_sha256": "1c851711f2aceea47a1f71d86e68684d29f4c7b0208a7a6276ea08af286dabec",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b314343a9af35b72900a9d052e388d7079f16f69875005554b1b62fac351db7cf72c2aaf423ba656481861f9c052d87ff62d2bae433aa",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 17,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659693637000,
+            "record": 1268,
+            "file_offset": 186307,
+            "usb_sha256": "37c205a73e4411ec18087df2fcbb51840ef1bd7af1230ad1eaef6441868d056d",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b314343a9af35b72900a9d052e388d7079f16f69875015554b1b62fac351db7cf72c2aaf423ba656481861f9c052d87ff62d2bae433aa",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659700763000,
+            "record": 1274,
+            "file_offset": 187282,
+            "usb_sha256": "0aa4acd5de2c1693cbd860185e81528d1f9922202b8b0839cd1214bfc5ad1672",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b314343a9af35b72900a9d052e388d7079f16f69875015554b1b62fac351db7cf72c2aaf423ba656481861f9c052d87ff62d2bae433aa",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 18,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659712641000,
+            "record": 1278,
+            "file_offset": 187958,
+            "usb_sha256": "fe6fd4889d4f029549bb8ee4111d31808a2572c2527df90de4602a04189291f2",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b319900fa2d23e4922643496d8404d35c8dc6fa9f6c005fc732e4e92f5eeb8d86bd55d60088584fd722f4f93f4efb9d968d65e630b868",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659717313000,
+            "record": 1284,
+            "file_offset": 188933,
+            "usb_sha256": "578d13b167bf1f5c6e26c3d94e48ddd1b8c862f78c3e71a621870160e0a3c37e",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b319900fa2d23e4922643496d8404d35c8dc6fa9f6c005fc732e4e92f5eeb8d86bd55d60088584fd722f4f93f4efb9d968d65e630b868",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 18,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659737636000,
+            "record": 1288,
+            "file_offset": 189609,
+            "usb_sha256": "b8792e2a84018c3e899cde109203d2c2c99a2f194312cad73410895747d070b3",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b319900fa2d23e4922643496d8404d35c8dc6fa9f6c015fc732e4e92f5eeb8d86bd55d60088584fd722f4f93f4efb9d968d65e630b868",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659745796000,
+            "record": 1294,
+            "file_offset": 190584,
+            "usb_sha256": "57b8b3518597e25c1d8572dfb8c4fa7f4d454873d5a7f7b38bf2e0f8bf038706",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b319900fa2d23e4922643496d8404d35c8dc6fa9f6c015fc732e4e92f5eeb8d86bd55d60088584fd722f4f93f4efb9d968d65e630b868",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 19,
+          "tx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659767792000,
+            "record": 1298,
+            "file_offset": 191260,
+            "usb_sha256": "fad401a1b37b2b8531bdf2abe07170195f041e28e2a6011e89c33c193661757f",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31282662de24f9203c4e0a6a3ee04d90e271153e2500595411aa518f5744377011429d33ef62a9a4e15aa17fa7b4c780e1b26dc31f72",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659772823000,
+            "record": 1304,
+            "file_offset": 192235,
+            "usb_sha256": "a5fe980dfe4c216cfdfda80763ec9cfbb475d1b4ef629dbd40902ae13865dc54",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31282662de24f9203c4e0a6a3ee04d90e271153e2500595411aa518f5744377011429d33ef62a9a4e15aa17fa7b4c780e1b26dc31f72",
+            "direction": "in"
+          }
+        },
+        {
+          "sequence": 19,
+          "tx": {
+            "bus": 1,
+            "device": 2,
+            "wall_ns": 1791908659793640000,
+            "record": 1308,
+            "file_offset": 192911,
+            "usb_sha256": "8c01787ad211fe4affcf75d444844e76773f407cb26c12d62d11c3dcd32312a2",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31282662de24f9203c4e0a6a3ee04d90e271153e2501595411aa518f5744377011429d33ef62a9a4e15aa17fa7b4c780e1b26dc31f72",
+            "direction": "out"
+          },
+          "rx": {
+            "bus": 1,
+            "device": 3,
+            "wall_ns": 1791908659801263000,
+            "record": 1314,
+            "file_offset": 193886,
+            "usb_sha256": "38631833b8972b2f643466b0419473605e93d55c67109cca009f084be0847df0",
+            "handle": 0,
+            "data": "1f003e00f1534c4b534f434b31282662de24f9203c4e0a6a3ee04d90e271153e2501595411aa518f5744377011429d33ef62a9a4e15aa17fa7b4c780e1b26dc31f72",
+            "direction": "in"
+          }
+        }
+      ]
+    }
+  ],
+  "acb_sdus": 176,
+  "nocp_count": 88,
+  "actual_current_copy_receipts": [
+    {
+      "args": [
+        "/bin/controller-event-copy-probe",
+        "0",
+        "1"
+      ],
+      "start_wall_ns": 1791908658238900573,
+      "start_monotonic_ns": 28946283655,
+      "start_boottime_ns": 28946283826,
+      "pid": 642,
+      "stdout": "CONTROLLER_EVENT_COPY_PASS: uid=1000 index=0 generation=1 partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2\n",
+      "stderr": "",
+      "exit": 0,
+      "end_wall_ns": 1791908658241752658,
+      "end_monotonic_ns": 28949135621,
+      "end_boottime_ns": 28949135771
+    },
+    {
+      "args": [
+        "/bin/controller-event-copy-probe",
+        "1",
+        "2"
+      ],
+      "start_wall_ns": 1791908658247367411,
+      "start_monotonic_ns": 28954750423,
+      "start_boottime_ns": 28954750583,
+      "pid": 645,
+      "stdout": "CONTROLLER_EVENT_COPY_PASS: uid=1000 index=1 generation=2 partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2\n",
+      "stderr": "",
+      "exit": 0,
+      "end_wall_ns": 1791908658250181044,
+      "end_monotonic_ns": 28957563996,
+      "end_boottime_ns": 28957564166
+    },
+    {
+      "args": [
+        "/bin/controller-event-copy-probe",
+        "1",
+        "2"
+      ],
+      "start_wall_ns": 1791908659836414596,
+      "start_monotonic_ns": 30543797628,
+      "start_boottime_ns": 30543797819,
+      "pid": 704,
+      "stdout": "CONTROLLER_EVENT_COPY_PASS: uid=1000 index=1 generation=2 partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2\n",
+      "stderr": "",
+      "exit": 0,
+      "end_wall_ns": 1791908659840321670,
+      "end_monotonic_ns": 30547704652,
+      "end_boottime_ns": 30547704802
+    },
+    {
+      "args": [
+        "/bin/controller-event-copy-probe",
+        "0",
+        "1"
+      ],
+      "start_wall_ns": 1791908659848639286,
+      "start_monotonic_ns": 30556022329,
+      "start_boottime_ns": 30556022599,
+      "pid": 707,
+      "stdout": "CONTROLLER_EVENT_COPY_PASS: uid=1000 index=0 generation=1 partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2\n",
+      "stderr": "",
+      "exit": 0,
+      "end_wall_ns": 1791908659853365874,
+      "end_monotonic_ns": 30560748857,
+      "end_boottime_ns": 30560749017
+    }
+  ],
+  "actual_dbus_positions": [
+    {
+      "args": [
+        "/usr/libexec/opensparklink/native-lab/bf7a189a4a52/slctl",
+        "--adapter",
+        "/org/sparklink/slk0_g1",
+        "events"
+      ],
+      "start_wall_ns": 1791908658232906075,
+      "start_monotonic_ns": 28940289528,
+      "start_boottime_ns": 28940289899,
+      "pid": 640,
+      "stdout": "Selected /org/sparklink/slk0_g1\nControllerEventPosition: index=0 generation=1 sequence=2\nRegistration-local watermark; independent readers report loss. This is not a delivery acknowledgement.\n",
+      "stderr": "",
+      "exit": 0,
+      "end_wall_ns": 1791908658237356232,
+      "end_monotonic_ns": 28944739395,
+      "end_boottime_ns": 28944739565
+    },
+    {
+      "args": [
+        "/usr/libexec/opensparklink/native-lab/bf7a189a4a52/slctl",
+        "--adapter",
+        "/org/sparklink/slk1_g2",
+        "events"
+      ],
+      "start_wall_ns": 1791908658243225514,
+      "start_monotonic_ns": 28950608517,
+      "start_boottime_ns": 28950608657,
+      "pid": 643,
+      "stdout": "Selected /org/sparklink/slk1_g2\nControllerEventPosition: index=1 generation=2 sequence=1\nRegistration-local watermark; independent readers report loss. This is not a delivery acknowledgement.\n",
+      "stderr": "",
+      "exit": 0,
+      "end_wall_ns": 1791908658246017486,
+      "end_monotonic_ns": 28953400469,
+      "end_boottime_ns": 28953400629
+    },
+    {
+      "args": [
+        "/usr/libexec/opensparklink/native-lab/bf7a189a4a52/slctl",
+        "--adapter",
+        "/org/sparklink/slk1_g2",
+        "events"
+      ],
+      "start_wall_ns": 1791908659827642673,
+      "start_monotonic_ns": 30535026046,
+      "start_boottime_ns": 30535026447,
+      "pid": 702,
+      "stdout": "Selected /org/sparklink/slk1_g2\nControllerEventPosition: index=1 generation=2 sequence=4\nRegistration-local watermark; independent readers report loss. This is not a delivery acknowledgement.\n",
+      "stderr": "",
+      "exit": 0,
+      "end_wall_ns": 1791908659834361837,
+      "end_monotonic_ns": 30541744809,
+      "end_boottime_ns": 30541744959
+    },
+    {
+      "args": [
+        "/usr/libexec/opensparklink/native-lab/bf7a189a4a52/slctl",
+        "--adapter",
+        "/org/sparklink/slk0_g1",
+        "events"
+      ],
+      "start_wall_ns": 1791908659842262978,
+      "start_monotonic_ns": 30549646041,
+      "start_boottime_ns": 30549646241,
+      "pid": 705,
+      "stdout": "Selected /org/sparklink/slk0_g1\nControllerEventPosition: index=0 generation=1 sequence=4\nRegistration-local watermark; independent readers report loss. This is not a delivery acknowledgement.\n",
+      "stderr": "",
+      "exit": 0,
+      "end_wall_ns": 1791908659846489414,
+      "end_monotonic_ns": 30553872396,
+      "end_boottime_ns": 30553872657
+    }
+  ],
+  "kernel_capture_drops": 0,
+  "taint": 0
+}

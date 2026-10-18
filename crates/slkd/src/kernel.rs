@@ -1,4 +1,4 @@
-use libsparklink::Adapter;
+use slk_native::Adapter;
 
 /// Wraps the kernel device fd and adapter for the daemon
 pub struct KernelLink {
@@ -6,7 +6,7 @@ pub struct KernelLink {
 }
 
 impl KernelLink {
-    pub fn open(path: &str) -> libsparklink::Result<Self> {
+    pub fn open(path: &str) -> slk_native::Result<Self> {
         let adapter = Adapter::open(path)?;
         Ok(Self { adapter })
     }

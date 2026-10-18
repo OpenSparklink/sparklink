@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "status": "FOUR_EXISTING_ISSUES_READBACK_AND_SCOPED_INTEGRITY_PASS",
+  "report": "benchmark-window-trace-20261017.json",
+  "report_commit": "3e5b9a1105ab4daf3d9ef3c1a2963187917f1500",
+  "qualification_state_commit": "7f4c41df472217ea508f9d8d8ac3d512549cded0",
+  "scope": [
+    "380new materials verified,not all historicalmaterials ornewhardware replay",
+    "4registry+10report negativecontrols;12bootcookie/480requestframe uniqueness;not formal orkernel concurrency proof",
+    "Four existingissue comments readback,originalbody scopeunchanged,all OPEN",
+    "e34physicalexecution anddbcstricterreadonlyverification separate;original073FAIL retained",
+    "FullS0-S6/19WP/10FV/12DG active,UserHost lowpriority,VM-only;wholequalification INCOMPLETE"
+  ],
+  "checks": {
+    "recorded_materials": 380,
+    "registry_negatives": 4,
+    "report_negatives": 10,
+    "actual_copied_evidence_negatives": 216,
+    "distinct_boot_cookies": 12,
+    "distinct_request_frames": 480,
+    "strict_html": "PASS",
+    "documentation_inventory": 115,
+    "overall": "INCOMPLETE"
+  },
+  "numeric_type_correction": {
+    "controls": 4,
+    "old_accepted": 3,
+    "old_already_rejected": 1,
+    "new_rejected": 4,
+    "clarification": "dbc620a message should be read asfour controls,notfour distinctoldgaps;starting subbuffer wasalready typed. Exact rawresults andinitialdiagnosticfailure retained."
+  },
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 4,
+      "title": "让每个控制器独立拥有协议状态与工作队列",
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6219880916",
+      "comment_id": 6219880916,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "90ad3f4de79d35f0433493a37d5bd6bcf2355243972cb8061dc96910a4f92124"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 17,
+      "title": "补齐 WS73 TCID 数据通道、ACB 重组与发送 credit",
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6219881965",
+      "comment_id": 6219881965,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "90ad3f4de79d35f0433493a37d5bd6bcf2355243972cb8061dc96910a4f92124"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "title": "建立厂商 Backend 回归矩阵、WS73 硬件 gates 与维护文档",
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6219883002",
+      "comment_id": 6219883002,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "90ad3f4de79d35f0433493a37d5bd6bcf2355243972cb8061dc96910a4f92124"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "title": "跟踪：Linux 与用户态 SparkLink 全部 issues 的联合实施和验收",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6219884730",
+      "comment_id": 6219884730,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "90ad3f4de79d35f0433493a37d5bd6bcf2355243972cb8061dc96910a4f92124"
+    }
+  ],
+  "remaining": [
+    "NextactualSession wait/service observation+boundedcontinuousTX experiment,not speculative NOCPrefund/multiURB or latencyguarantee",
+    "NaturalRCA/nonmanualrecovery,NOCPtruth/reuse/drain,debugVM/FV/fullperformance OPEN",
+    "Newbaseline exactlybfaa/9385/e34/dbc;oldK400/f43 andP2b qualifiers untouched,latestHEAD notimplicitly requalified"
+  ],
+  "materials": [
+    {
+      "path": ".dev/benchmark-observation-final-issue-receipts-v1.json",
+      "sha256": "cccea331a8be54b4255a1e74d17aaab0cff1980925e02882077dccf14b0eacc3",
+      "bytes": 2267,
+      "access": "private",
+      "scope": "Immutable issue/integrity/offline checks;not new device result"
+    },
+    {
+      "path": ".dev/benchmark-observation-registry-local-v1.json",
+      "sha256": "5e99fc228d3f6c0046f1b1895ac446c57a02c0776c2c958810583d9e752806e0",
+      "bytes": 1220,
+      "access": "private",
+      "scope": "Immutable issue/integrity/offline checks;not new device result"
+    },
+    {
+      "path": ".dev/benchmark-observation-report-contract-v1.py",
+      "sha256": "e76e8b292ee40766ae9c47d73a727b08a31440e09a675f8dae7061ad53257324",
+      "bytes": 3933,
+      "access": "private",
+      "scope": "Immutable issue/integrity/offline checks;not new device result"
+    },
+    {
+      "path": ".dev/benchmark-observation-report-contract-v1.json",
+      "sha256": "66649596f479f37e81eae7292664055fa40a05e876347cb70931bcbb8edea028",
+      "bytes": 1091,
+      "access": "private",
+      "scope": "Immutable issue/integrity/offline checks;not new device result"
+    },
+    {
+      "path": ".dev/benchmark-observation-canonical-docs-v1.log",
+      "sha256": "2a443476fb6dd3fa278f1651606a71277095a56d687d56e90259114f3569da85",
+      "bytes": 238109,
+      "access": "private",
+      "scope": "Immutable issue/integrity/offline checks;not new device result"
+    },
+    {
+      "path": ".dev/benchmark-observation-metadata-v1.json",
+      "sha256": "ce34026bc7fc6d5daab3fd741f725033170fb0e057a858899490201c19bef8c6",
+      "bytes": 230337,
+      "access": "private",
+      "scope": "Immutable issue/integrity/offline checks;not new device result"
+    },
+    {
+      "path": ".dev/benchmark-observation-numeric-types-regression-v2.json",
+      "sha256": "0673cf27e40dc3d9ec76c4a0e96dfd40247b3e9ca7f5f3a345ef63c87185e00c",
+      "bytes": 1403,
+      "access": "private",
+      "scope": "Immutable issue/integrity/offline checks;not new device result"
+    },
+    {
+      "path": ".dev/benchmark-observation-numeric-types-first-failure.json",
+      "sha256": "81992df402a7175467a02061ea4612dd350ec8022bbb9136eba048c78edd0041",
+      "bytes": 241,
+      "access": "private",
+      "scope": "Immutable issue/integrity/offline checks;not new device result"
+    }
+  ]
+}

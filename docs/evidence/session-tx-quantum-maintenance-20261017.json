@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "status": "EXISTING_ISSUES_READBACK_AND_SCOPED_INTEGRITY_PASS_P2D_INCOMPLETE",
+  "report": "session-tx-quantum-progress-20261017.json",
+  "report_commit": "03ef98f46133cf448a139d8d20cea99401de0a9b",
+  "qualification_state_commit": "58919470446b38200d2d3689f688e1ff3e7c73fc",
+  "scope": [
+    "181newmaterials verified;not allhistoricalmaterials orindependent decoder",
+    "Real3/48 isinitialscope only;explicitfullP2dUNPROVED andretainedoriginalFAIL remainrequiredrecords",
+    "5registry/10report/18copiedactualevidence negativecontrols;not formalorhardwarefaultinjection",
+    "Sourceaccurate C4 production/2c23 runtimeandtools;no inheritanceofbfaa qualifications",
+    "Four originalissuebodiesunchanged andOPEN;fullgoalactive,S0-S6/19WP/10FV/12DG retained;VM-only"
+  ],
+  "checks": {
+    "materials": 181,
+    "registry_negatives": 5,
+    "report_negatives": 10,
+    "copied_actual_evidence_negatives": 18,
+    "strict_html": "PASS",
+    "inventory": 115,
+    "overall": "INCOMPLETE",
+    "p2d_full_exit": "UNPROVED",
+    "virtual_absent_from_supplied_initramfs": true
+  },
+  "issues": [
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 4,
+      "title": "让每个控制器独立拥有协议状态与工作队列",
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6220912304",
+      "comment_id": 6220912304,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "2e6e96b756650e4949ec31b7adf9966bdd97f13e3060881f34d5a5f34770b589"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 17,
+      "title": "补齐 WS73 TCID 数据通道、ACB 重组与发送 credit",
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6220913599",
+      "comment_id": 6220913599,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "2e6e96b756650e4949ec31b7adf9966bdd97f13e3060881f34d5a5f34770b589"
+    },
+    {
+      "repository": "OpenSparklink/linux",
+      "issue": 19,
+      "title": "建立厂商 Backend 回归矩阵、WS73 硬件 gates 与维护文档",
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6220914911",
+      "comment_id": 6220914911,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "2e6e96b756650e4949ec31b7adf9966bdd97f13e3060881f34d5a5f34770b589"
+    },
+    {
+      "repository": "OpenSparklink/sparklink",
+      "issue": 8,
+      "title": "跟踪：Linux 与用户态 SparkLink 全部 issues 的联合实施和验收",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6220916342",
+      "comment_id": 6220916342,
+      "readback_matches": true,
+      "original_body_unchanged": true,
+      "state": "open",
+      "body_sha256": "2e6e96b756650e4949ec31b7adf9966bdd97f13e3060881f34d5a5f34770b589"
+    }
+  ],
+  "ci_observations": [
+    {
+      "head": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "name": "Production codec bounded fuzz",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38935653150",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "name": "Qualification integrity",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38935653179",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "name": "Documentation",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38935653570",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "name": "CI",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38935653222",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "name": "Documentation",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38935644194",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "2c23b490b97657cc7b3faa4a63780dd25ad18d36",
+      "name": "Qualification integrity",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38935644182",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "03ef98f46133cf448a139d8d20cea99401de0a9b",
+      "name": "Production codec bounded fuzz",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938491230",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "03ef98f46133cf448a139d8d20cea99401de0a9b",
+      "name": "Documentation",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938490786",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "03ef98f46133cf448a139d8d20cea99401de0a9b",
+      "name": "Qualification integrity",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938491062",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "03ef98f46133cf448a139d8d20cea99401de0a9b",
+      "name": "CI",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938491074",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "03ef98f46133cf448a139d8d20cea99401de0a9b",
+      "name": "Qualification integrity",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938478001",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "03ef98f46133cf448a139d8d20cea99401de0a9b",
+      "name": "Documentation",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938478037",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "58919470446b38200d2d3689f688e1ff3e7c73fc",
+      "name": "Production codec bounded fuzz",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938908906",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "58919470446b38200d2d3689f688e1ff3e7c73fc",
+      "name": "Documentation",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938908820",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "58919470446b38200d2d3689f688e1ff3e7c73fc",
+      "name": "Qualification integrity",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938909195",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "58919470446b38200d2d3689f688e1ff3e7c73fc",
+      "name": "CI",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938908908",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "head": "58919470446b38200d2d3689f688e1ff3e7c73fc",
+      "name": "Qualification integrity",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938890442",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "head": "58919470446b38200d2d3689f688e1ff3e7c73fc",
+      "name": "Documentation",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38938890328",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "ci_limits": "2c23 and03ef observedallcompleted success;589combinedCI stillrunning atobserved time. Other589 workflows passed. Noassumedterminalsuccess or newhardwarequalification.",
+  "materials": [
+    {
+      "path": ".dev/tx-quantum-final-issue-receipts-v1.json",
+      "sha256": "425e1fc594e2aa7930d24ea4bb7b9b051509aaf3911f9d4c79cee82047ba5e48",
+      "bytes": 2275,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-issues-v1.log",
+      "sha256": "7b3be6af26049220c532902df8859fce46a04687504829f13828ed03407bd27e",
+      "bytes": 364,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-update-issues-v1.py",
+      "sha256": "3c978b27c5e3db25e4bbf26342df45a38ed9e4cfb4c030fb40c97edab048ae70",
+      "bytes": 5733,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-registry-local-v1.json",
+      "sha256": "10fbdcb15c5eb940717c64e9c70fce700b5add56da87abfd94fcd10a6150bc6b",
+      "bytes": 1238,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-report-contract-v1.json",
+      "sha256": "34a7d3e4c416098244af66e6d0bf735b0d5d611ae5b905aa8fa6edf63abaeaea",
+      "bytes": 993,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-strict-docs-v1.log",
+      "sha256": "110236942a8496aa35d0fcc555c46a9d4ccb5e1a577b3e536fb9cb55d7a48b0f",
+      "bytes": 253098,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-metadata-v1.json",
+      "sha256": "daeefc5afc7df72470370ce0476b4e67a889e4b6624530298f07ee1c2b6d6baa",
+      "bytes": 245485,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-initramfs-listing-v1.log",
+      "sha256": "aa514574c0cf1077d5142d25d77a0a5b317251ba3452d98ae61d2ce2b4ff98ab",
+      "bytes": 543192,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-ci-2c23b49-v1.json",
+      "sha256": "710cf9038f5b2db607b79989e562bb8f31085d90ac9cdf5267050506f7f7cfc2",
+      "bytes": 95540,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-ci-03ef98f-v1.json",
+      "sha256": "ef8d4dc48f6465a2567d596403fea948941f27a788599c43efcb89e593616fc3",
+      "bytes": 96052,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    },
+    {
+      "path": ".dev/tx-quantum-ci-5891947-v2.json",
+      "sha256": "a32bb8ebcbbdbcbf39472ef6beaaef2b66d8f42ad696af6074d5f2039a7e8c5a",
+      "bytes": 95705,
+      "access": "private",
+      "retention": "Original authorized workspace;not a public artifact"
+    }
+  ],
+  "firmware_limits": "SDK111 identifies the selected/staged input bytes and hash. Firmware readback/execution and board applicability are not attested; startup and peer replies do not prove either."
+}

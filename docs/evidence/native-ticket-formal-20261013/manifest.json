@@ -1,0 +1,12 @@
+{
+  "status": "SCOPED_LKMM_PASS_CREDIT_ROLLBACK_NOT_PROVEN",
+  "kernel_head": "464d4d8a9de7a9f4d02848dcedabea3ea9b56c6e",
+  "userspace_head": "854f364d163ec23f88f6a7e83c6d84b625d3fb86",
+  "reports": [
+    "native-ticket-lkmm-qualified",
+    "native-ticket-credit-rollback"
+  ],
+  "full_goal_complete": false,
+  "NOCP_barrier_proven": false,
+  "Grant_epoch_proven": false
+}

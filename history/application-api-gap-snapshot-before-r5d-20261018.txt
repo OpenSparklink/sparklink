@@ -1,0 +1,19 @@
+HISTORICAL AUDIT SNAPSHOT ONLY; source 4772063. Not current code or qualification.
+
+#### 源码差距与迁移规则（2026-10-17复核）
+
+| 目标职责 | 当前源码差距／已存在内容 | 迁移与验收边界 |
+|---|---|---|
+| Native | `libsparklink::Adapter`实际打开设备、管理lease、事件/snoop、WS73控制；daemon/诊断直接使用 | 抽出同一实现及其实际调用者；Native不能作为应用SDK默认导出或反向依赖SDK |
+| Channel | syscall与安全上下文仍在`slk-protocol::channel/message_security`；slktest有已验业务循环 | syscall/poll/fd操作归Channel，Native管理建bind与业务fd能力分开；复用现有循环/原期限/Ticket，不复制Engine |
+| 共享契约 | 一些SSAP/Registration tuple已共享，CLI和daemon仍有方法/路径字符串与长元组重复 | 独立于应用SDK，统一类型/签名/路径/错误；保留独立introspection和真实bus校验 |
+| 应用SDK | libsparklink目前混合Native/FFI；尚非目标Client，Python默认仍暴露Adapter | 应用经slkd申请管理/通道授权，数据直达socket；C/Python应用/Native入口区分，迁移后删除旧默认导出 |
+| SSAP | 当前唯一slkd actor、Owned数据库/审批及部分真实远端操作已存在；不是从零建Engine | local/remote为daemon客户端封装；描述符/订阅/长写等未支持项不因API树而开放；原权限类型与codec复用 |
+| slk-protocol | 当前还包含ioctl/syscall包装；此状态不满足纯值/codec边界 | 移走操作层，保留准确ABI/必要纯codec与状态转换；源码/形式化映射随迁移更新，不转授旧证明 |
+| R3c源码边界 | libsparklink→Channel/契约/protocol，slkd→Native/Channel/契约/protocol；Native无SDK/Channel依赖 | 实际默认Cargo闭包及独立符号/头检查；新artifact尚未验收，完整C/Python broker/SSAP客户端与R4/R6仍缺失 |
+
+R3a把现有Channel query/TX/Session status、SCM安全上下文和期限/系统调用迁入
+slk-channel；ABI值与纯校验留slk-protocol，无旧操作alias。生产调用者同步切换，
+不改wire或权限。R3b已将Native管理/事件/抓包及ioctl和对应调用者迁入slk-native；独立共享契约及真实应用Client仍待迁移，表中目标
+不能解读为当前全部实现；准确资格只看结构化记录对应编译/执行身份。
+

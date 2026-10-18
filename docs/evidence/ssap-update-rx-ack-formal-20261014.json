@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "BOUNDED_PASS",
+  "accepted_proof": true,
+  "source_head": "8e92f97e83db6058575228d2edb756f5f6b6985b",
+  "source_mapping": {
+    "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+    "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+    "formal/ssap_value/src/lib.rs": "88525b7e08ef518396cd1930d4098800681438147ad2f0d24a26ea7b0ba9240a",
+    "formal/ssap_value/Cargo.toml": "f752abe56855869cb57b924c97ea73a9c83ee19149298cd9797e14e40265c502"
+  },
+  "command": [
+    "cargo",
+    "kani",
+    "--manifest-path",
+    "formal/ssap_value/Cargo.toml",
+    "--harness",
+    "actual_ack_flags_and_atomic_refusal"
+  ],
+  "properties": [
+    "successful ACK encoding preserves supplied flags, opcode/type/count and decodes",
+    "successful encoding leaves trailing output unchanged",
+    "failed encoding leaves entire output unchanged"
+  ],
+  "boundary": {
+    "flags": "4 arbitrary u8 values; count0..4",
+    "output": "8 arbitrary bytes; capacity0..8",
+    "mtu": "arbitrary u16",
+    "event": "arbitrary bool",
+    "unwind": 12
+  },
+  "assumptions": [
+    "Only input count<=4 and capacity<=8; actual production functions included directly",
+    "No stubbing or assumption excludes malformed flags, tiny MTU or rejected output",
+    "No Tokio, caller lifetime, update parsing, full64 flags, queue, RF or security proof"
+  ],
+  "tool_versions": {
+    "kani": "0.68.0",
+    "cbmc": "6.11.0"
+  },
+  "exit_code": 0,
+  "checks": 187,
+  "failed": 0,
+  "unreachable": 5,
+  "unsupported_compilation_warnings": [
+    "caller_location",
+    "foreign function"
+  ],
+  "unsupported_guards": [
+    {
+      "check": "54",
+      "property": "std::panic::Location::<'_>::caller.unsupported_construct.1",
+      "status": "SUCCESS"
+    },
+    {
+      "check": "55",
+      "property": "kani::mem::cbmc::same_allocation.unsupported_construct.1",
+      "status": "SUCCESS"
+    },
+    {
+      "check": "56",
+      "property": "core::panicking::panic_nounwind_fmt::runtime.unsupported_construct.1",
+      "status": "SUCCESS"
+    }
+  ],
+  "unsupported_resolution": "All3 assert(false) unsupported guards verified SUCCESS; unsupported paths are unreachable within the stated bounds, not ignored or assumed away. Reached unsupported, incomplete unfold, timeout/OOM would remain NOT_PROVEN.",
+  "tool_semantics_source": "https://model-checking.github.io/kani/rust-feature-support.html#code-generation-for-unsupported-features",
+  "log_sha256": "14b693661c26b8ee84f2b82a095a500386dd524a011f74ee81af4e2c935e2972",
+  "log_availability": "private workspace; digest does not imply download",
+  "source_changed_during_run": false,
+  "previous_read_uuid_model": "NOT_PROVEN after memory exhaustion; no upgrade from this separate ACK proof"
+}

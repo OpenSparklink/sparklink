@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "status": "IMPLEMENTED_DEVELOPMENT_OFFLINE_NOT_CLEAN_VM_OR_NEW_RF_QUALIFIED",
+  "production": [
+    "One Make install-files list,Debian shares it;fixed release/profile and Cargo target handling",
+    "Runtime service/activation/config and pc paths consistent;DESTDIR stays out of runtime",
+    "Application/explicitNative SONAME,header andpc separated;no applicationNativelease",
+    "Existing admin config/modes/symlink,state andotherlibraryversions retained;exactuninstall",
+    "Shared sysusers roles;genericudev onlyNativechardev;rawUSBdevelop permission separate"
+  ],
+  "offline": [
+    "Actualdevelopmentrelease ELF stage at/usr and/usr/local;4externalC/Nativecompile-link-run errno consumers,DT_NEEDED/SONAME",
+    "Actual configparser,reinstall/uninstall config/state/foreignversion retention",
+    "8layout/existing uninstall tests,originalbundlefiletests,strictallfeaturesClippy,strictHTML116"
+  ],
+  "boundaries": [
+    "Development artifacts built from dirtysource;this is not new immutable artifact qualification",
+    "No systembus/service/sysusers/udev activation onhost;nohostdriver ordeviceoperation",
+    "CleanVM service,actual permissions,Python installedconsumers,Debianpackages,upgrade/rollback andnewartifactrealWS73gates pending",
+    "SelectedR5e remains exactoldqualification;fullS0-S6/19WP/10FV/12DG andnaturalRCA/nonmanualrecovery open"
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r6a-build-budget-v1.json",
+      "sha256": "15f8f7155cb296062f34fce5a729b4d2464be26e515b93d8385d2f9251e85feb",
+      "bytes": 887,
+      "access": "private development workspace;no device/VM acceptance"
+    },
+    {
+      "path": ".dev/architecture-r6a-build-v1.log",
+      "sha256": "5d111326cf5deb651b025328d138e2ed2d74a9d924a5268827b131dc42bff5a5",
+      "bytes": 1602,
+      "access": "private development workspace;no device/VM acceptance"
+    },
+    {
+      "path": ".dev/architecture-r6a-strict-budget-v1.json",
+      "sha256": "6d9d3916aa5a36a530ea50789d51c5c5ac7b8c5f4c74a81b37ff1f0cf7d8b742",
+      "bytes": 950,
+      "access": "private development workspace;no device/VM acceptance"
+    },
+    {
+      "path": ".dev/architecture-r6a-strict-v1.log",
+      "sha256": "90df4af38be3dbba5e93878b0c3025682368291eec404a1452b884d1cd7fc418",
+      "bytes": 2032,
+      "access": "private development workspace;no device/VM acceptance"
+    },
+    {
+      "path": ".dev/architecture-r6a-layout-tests-v3.log",
+      "sha256": "b93d639aea274874bdbf48337af7c553e9dbef5716df049b3fbbb193b9e4d93c",
+      "bytes": 1542,
+      "access": "private development workspace;no device/VM acceptance"
+    },
+    {
+      "path": ".dev/architecture-r6a-bundle-tests-v1.log",
+      "sha256": "ee9f5e5028ae186b372748aa1b5010fd0f23f623c58d4839a75a0fcffc9a7d6b",
+      "bytes": 454,
+      "access": "private development workspace;no device/VM acceptance"
+    },
+    {
+      "path": ".dev/architecture-r6a-uninstall-tests-v1.log",
+      "sha256": "0d3a1077c12ac4ecd238f34d945742d5ff61c8824dac1a323ed3200a57738e47",
+      "bytes": 287,
+      "access": "private development workspace;no device/VM acceptance"
+    },
+    {
+      "path": ".dev/architecture-r6a-docs-v1.log",
+      "sha256": "f98981eae87352508400c4440fa5a65d6bbcd8b7cb2bc87ba68912c5193e9dd9",
+      "bytes": 1055018,
+      "access": "private development workspace;no device/VM acceptance"
+    },
+    {
+      "path": ".dev/architecture-r6a-stage-v1/manifest.json",
+      "sha256": "7a2be718a142eaebb7a6d591dd0332bd2f734510dafe5459606696dfdb62799e",
+      "bytes": 65297,
+      "access": "private development workspace;no device/VM acceptance"
+    }
+  ]
+}

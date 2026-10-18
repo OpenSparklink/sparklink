@@ -12,7 +12,7 @@
 //! operation indicator (4B LE, properties only), and descriptor
 //! type list (sorted ascending, 1B each).
 
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 
 /// Entry category byte values matching TXS-20001-2025 section 7.4.3.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -35,10 +35,7 @@ pub enum EntryCategory {
 impl EntryCategory {
     /// Whether this category carries an operation indicator.
     fn has_ops(self) -> bool {
-        matches!(
-            self,
-            Self::Property | Self::CustomProperty
-        )
+        matches!(self, Self::Property | Self::CustomProperty)
     }
 }
 
@@ -143,7 +140,7 @@ mod tests {
         // Manually compute expected: SHA-256([0x01, 0x00, 0x00, 0x0B, 0x06]) low 16
         let mut hasher = Sha256::new();
         hasher.update([0x01, 0x00]); // handle 0x0001 LE
-        hasher.update([0x00]);       // category PrimaryService
+        hasher.update([0x00]); // category PrimaryService
         hasher.update([0x0B, 0x06]); // uuid 0x060B LE
         let digest = hasher.finalize();
         let mut expected = [0u8; 16];
@@ -157,14 +154,14 @@ mod tests {
             handle: 0x0010,
             category: EntryCategory::Property,
             uuid: SsapUuid::Uuid16(0x1039),
-            ops: 0x01, // READ
+            ops: 0x01,                                // READ
             descriptor_types: vec![0x04, 0x02, 0x01], // unsorted
         }];
         let hash = compute_service_hash(&entries);
 
         let mut hasher = Sha256::new();
         hasher.update([0x10, 0x00]); // handle
-        hasher.update([0x02]);       // category Property
+        hasher.update([0x02]); // category Property
         hasher.update([0x39, 0x10]); // uuid LE
         hasher.update([0x01, 0x00, 0x00, 0x00]); // ops LE
         hasher.update([0x01, 0x02, 0x04]); // descriptor types sorted
@@ -199,8 +196,8 @@ mod tests {
     #[test]
     fn uuid128_entry() {
         let uuid = [
-            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-            0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,
+            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
+            0x0F, 0x10,
         ];
         let entries = vec![HashEntry {
             handle: 0x0030,
@@ -275,16 +272,16 @@ mod tests {
             HashEntry {
                 handle: 0x0010,
                 category: EntryCategory::Property,
-                uuid: SsapUuid::Uuid16(0x1039), // TypeFormat
-                ops: 0x01, // READ
+                uuid: SsapUuid::Uuid16(0x1039),     // TypeFormat
+                ops: 0x01,                          // READ
                 descriptor_types: vec![0x02, 0x04], // ClientConfig, PropertyFormat
             },
             HashEntry {
                 handle: 0x0011,
                 category: EntryCategory::Property,
                 uuid: SsapUuid::Uuid16(0x103C), // InputReport
-                ops: 0x09, // READ | NOTIFY
-                descriptor_types: vec![0x02], // ClientConfig
+                ops: 0x09,                      // READ | NOTIFY
+                descriptor_types: vec![0x02],   // ClientConfig
             },
             HashEntry {
                 handle: 0x0020,

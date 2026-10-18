@@ -1,0 +1,54 @@
+# 为什么把数据就绪与超时分开调度
+
+每连接唯一 Session 保持连接级 RX 分流、CMTC 和通道发送的顺序。周期轮询使无事
+可做的连接仍唤醒，也可能使刚入队的数据等下一轮。已封存的轮询版本使用 10 ms
+维护周期；事件与原期限分离后，10 ms 只用于特定可重试条件。它不能解释 USB、
+固件和无线的全部时延，具体镜像的资格须单独核对。
+
+目标是通知驱动重新检查生产状态：入队、可消费 RX、真实 credit 恢复或生命周期
+变化到达便唤醒；credit 不足便休眠。通知不代表授权或发送许可，每次实际 USB
+提交仍验证 Grant、generation、lifetime、原期限和 Ticket。有限执行预算保持公平，
+长 PDU 的 PB 分片不能因轮转错误交错。原期限有独立定时来源，不靠周期空转保障。
+
+worker 决定休眠和新通知可能并发；合并通知不等于可以丢事件。注册引用、停止
+通知、join worker、timer/callback drain 与最终释放是同一生命周期契约。计划中的
+事件改造还需生产源码、模型和 VM 交错验证，不能据本解释宣称已经无丢失唤醒。
+
+第一阶段的通知链保留这些边界：USB 接收与 NOCP 处理只设置 per-controller 合并
+提示并唤醒 Runtime。Runtime 在进程上下文从 Session 表取得临时引用，退出表锁后
+通知唯一 Session worker。提示不保存可追随复用的裸 handle，也不在 USB callback
+取得可睡眠的 Session 表锁。Session 再次检查自己是否关闭，所有业务状态和准入
+仍从原锁保护的数据读取，不能从提示标志推导 Ready 或 credit。
+
+修改已经排队的 work 只提前执行时间，保留原排队引用；运行中再排下一次执行则
+需要另一份引用。stop 先在同一 Session 锁下关闭新排队，再在锁外取消并 join，
+才能结清排队和运行引用。原期限定时选择最早的协商、通道、队列与已开始PDU期限；
+空闲Open会话不排维护work。只有实际reserve失败才可等待credit事件，其他EAGAIN
+保留有界重试。一次进展可以请求下一有预算轮次，不能把10ms直接改0持续空转。
+需要以真实业务前后的正对照、原件完整且无丢失的worker追踪核对有限空闲区间；
+它不是无限执行证明或CPU/时延资格。较快RTT也不能替代这些边界。
+
+连续发送把软件执行预算与协议 credit 分开：数据阶段每轮最多尝试八片、4096
+字节，在开始下一次 transport 调用前检查 2 ms 时间预算。同步 USB 调用可能超过
+这个时间，因此它不是整轮执行上界。失败尝试也消耗软件预算；USB 成功仍不能
+退款协议 credit。PB 完整 PDU 结束后才轮转通道，不能逐片混入另一通道的数据。
+同轮先成功、随后遇到 credit 不足时，先前进展不能继续被当作当前可发送状态。
+
+默认关闭的 Session 观测点分别记录 worker、软件队列和实际提交回调。它们不含
+业务载荷或密钥；准入、出队、USB 接受、同步返回和操作退休都不等于对端收到。
+观测序号只用于关联，不替代 generation/lifetime 或 Grant。VM 专用采集器在原业务
+门禁之后关联 Session 阶段与 USB OUT；它没有新的发送路径，见[测量操作](../how-to/measure-socket-ping-pong.md)。
+丢失记录和未覆盖的
+控制分支必须单列；实际字段与范围见固定源码的
+[内核说明](https://github.com/OpenSparklink/linux/blob/c4d5362276d43b6a21fc4f8f152f84f0827bf642/Documentation/networking/sparklink-implementation.rst)。
+
+WS73 bulk RX 已异步，但目前 completion 处理完一份 buffer 后才重提同一 URB。
+这段空窗需要测量；多 URB 可能降低空窗，也增加完成顺序和 buffer 所有权问题，
+不能凭 URB 数量断言性能。发送预分配、多个在途 URB 与 HCC 聚合也要各自比较
+尾延迟、顺序、公平性及退出清理，不能只看吞吐。
+
+普通用户应用的校验回复才是业务闭环。软件准入、USB 完成、NOCP 和协议 ACK
+各有不同含义；[benchmark 指标契约](../reference/socket-benchmark.md)解释如何避免
+闭环过载隐藏、整批起点计时、日志扰动和跨时钟错误。准确源码的限定基线与改造
+状态只在[当前资格](../../project/current-capabilities.md)维护；功能样本不是硬件最低时延，
+也不等于完成性能或并发验收。

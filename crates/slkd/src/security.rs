@@ -15,192 +15,63 @@ impl SecurityIface {
 
 #[interface(name = "org.sparklink.Security")]
 impl SecurityIface {
-    /// Get current security state
-    async fn get_info(&self) -> zbus::fdo::Result<SecurityInfo> {
-        let st = self.state.lock().await;
-        let info = st.adapter.sec_info().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("sec_info failed: {e}"))
-        })?;
-        Ok(SecurityInfo {
-            state: sec_state_label(info.state),
-            method: pair_method_label(info.method),
-            mode: info.mode,
-            encrypted: info.enc_enabled != 0,
-        })
+    /// Register one explicit Agent for this controller. The system bus policy
+    /// requires controller administration, not ordinary channel enrollment.
+    async fn register_agent(
+        &self,
+        path: zbus::zvariant::OwnedObjectPath,
+        method: &str,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<u64> {
+        crate::security_policy::register(
+            &self.state,
+            connection,
+            crate::security_policy::sender(&header)?,
+            path,
+            method,
+        )
+        .await
     }
 
-    /// Set Pre-Shared Key (16 bytes hex string)
-    async fn set_psk(&self, psk_hex: &str) -> zbus::fdo::Result<()> {
-        let psk = parse_hex_key(psk_hex, 16).map_err(|e| {
-            zbus::fdo::Error::InvalidArgs(e.to_string())
-        })?;
-        let mut params = slk_protocol::SlePskParams { psk: [0; 16] };
-        params.psk.copy_from_slice(&psk);
-        let st = self.state.lock().await;
-        st.adapter.set_psk(&params).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("set_psk failed: {e}"))
-        })
+    async fn unregister_agent(
+        &self,
+        path: zbus::zvariant::OwnedObjectPath,
+        epoch: u64,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        crate::security_policy::unregister(
+            &self.state,
+            &crate::security_policy::sender(&header)?,
+            path,
+            epoch,
+        )
+        .await
     }
+}
 
-    /// Initiate pairing with the given method
-    /// method: "just_works", "psk", "none"
-    async fn pair(&self, method: &str) -> zbus::fdo::Result<()> {
-        let m = match method {
-            "just_works" => slk_protocol::PairMethod::JustWorks as u8,
-            "psk" => slk_protocol::PairMethod::Psk as u8,
-            "none" | "" => slk_protocol::PairMethod::None as u8,
-            _ => return Err(zbus::fdo::Error::InvalidArgs(
-                "method must be 'just_works', 'psk', or 'none'".into()
-            )),
-        };
-        let params = slk_protocol::SlePairParams {
-            method: m,
-            _reserved: [0; 3],
-        };
-        let st = self.state.lock().await;
-        st.adapter.pair(&params).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("pair failed: {e}"))
-        })
-    }
-
-    /// Enable encryption on the active connection
-    async fn encrypt(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.encrypt_on().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("encrypt_on failed: {e}"))
-        })
-    }
-
-    /// Get the passkey displayed by the controller (for numeric comparison)
-    async fn get_passkey(&self) -> zbus::fdo::Result<u32> {
-        let st = self.state.lock().await;
-        st.adapter.get_passkey().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("get_passkey failed: {e}"))
-        })
-    }
-
-    /// Confirm passkey match (user accepted numeric comparison)
-    async fn confirm_passkey(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.confirm_passkey().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("confirm_passkey failed: {e}"))
-        })
-    }
-
-    /// Reject passkey match (user rejected)
-    async fn reject_passkey(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.reject_passkey().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("reject_passkey failed: {e}"))
-        })
-    }
-
-    /// Input a passkey (user-entered 6-digit code)
-    async fn input_passkey(&self, passkey: u32) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.input_passkey(passkey).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("input_passkey failed: {e}"))
-        })
-    }
-
-    /// Reset security state
-    async fn reset(&self) -> zbus::fdo::Result<()> {
-        let st = self.state.lock().await;
-        st.adapter.sec_reset().map_err(|e| {
-            zbus::fdo::Error::Failed(format!("sec_reset failed: {e}"))
-        })
-    }
-
-    /// List bonded device addresses
-    async fn list_bonded(&self) -> zbus::fdo::Result<Vec<String>> {
-        let st = self.state.lock().await;
-        let addrs = st.bonding.bonded_addrs();
-        Ok(addrs
-            .iter()
-            .map(|a| {
-                a.iter()
-                    .map(|b| format!("{b:02X}"))
-                    .collect::<Vec<_>>()
-                    .join(":")
-            })
-            .collect())
-    }
-
-    /// Remove bonding for a device
-    async fn remove_bond(&self, addr_hex: &str) -> zbus::fdo::Result<()> {
-        let parts: Vec<&str> = addr_hex.split(':').collect();
-        if parts.len() != 6 {
-            return Err(zbus::fdo::Error::InvalidArgs("expected AA:BB:CC:DD:EE:FF".into()));
+#[cfg(test)]
+mod tests {
+    fn parse_hex_key(hex: &str, expected_len: usize) -> Result<Vec<u8>, &'static str> {
+        let hex = hex.strip_prefix("0x").unwrap_or(hex);
+        if hex.len() != expected_len * 2 {
+            return Err("hex string has wrong length");
         }
-        let mut addr = [0u8; 6];
-        for (i, part) in parts.iter().enumerate() {
-            addr[i] = u8::from_str_radix(part, 16).map_err(|_| {
-                zbus::fdo::Error::InvalidArgs("invalid hex byte".into())
-            })?;
+        if !hex.is_ascii() {
+            return Err("invalid hex character");
         }
-        let mut st = self.state.lock().await;
-        st.bonding.remove(&addr).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("remove_bond failed: {e}"))
-        })
+        let mut bytes = Vec::with_capacity(expected_len);
+        for i in (0..hex.len()).step_by(2) {
+            let byte =
+                u8::from_str_radix(&hex[i..i + 2], 16).map_err(|_| "invalid hex character")?;
+            bytes.push(byte);
+        }
+        Ok(bytes)
     }
 
-    /// Current security state as property
-    #[zbus(property)]
-    async fn encrypted(&self) -> bool {
-        let st = self.state.lock().await;
-        st.adapter.sec_info()
-            .map(|info| info.enc_enabled != 0)
-            .unwrap_or(false)
+    #[test]
+    fn key_input_rejects_unicode_at_expected_byte_length() {
+        assert!(parse_hex_key(&"aéa".repeat(8), 16).is_err());
+        assert_eq!(parse_hex_key(&"a1".repeat(16), 16).unwrap(), vec![0xA1; 16]);
     }
-
-    /// Current pairing state as property
-    #[zbus(property)]
-    async fn paired(&self) -> bool {
-        let st = self.state.lock().await;
-        st.adapter.sec_info()
-            .map(|info| info.state >= slk_protocol::SecState::Paired as u8)
-            .unwrap_or(false)
-    }
-}
-
-/// Structured security info returned over D-Bus
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, zbus::zvariant::Type)]
-pub struct SecurityInfo {
-    pub state: String,
-    pub method: String,
-    pub mode: u8,
-    pub encrypted: bool,
-}
-
-fn sec_state_label(state: u8) -> String {
-    match state {
-        0 => "none".into(),
-        1 => "pairing".into(),
-        2 => "paired".into(),
-        3 => "encrypted".into(),
-        _ => format!("unknown({state})"),
-    }
-}
-
-fn pair_method_label(method: u8) -> String {
-    match method {
-        0 => "none".into(),
-        1 => "just_works".into(),
-        2 => "psk".into(),
-        _ => format!("unknown({method})"),
-    }
-}
-
-fn parse_hex_key(hex: &str, expected_len: usize) -> Result<Vec<u8>, &'static str> {
-    let hex = hex.strip_prefix("0x").unwrap_or(hex);
-    if hex.len() != expected_len * 2 {
-        return Err("hex string has wrong length");
-    }
-    let mut bytes = Vec::with_capacity(expected_len);
-    for i in (0..hex.len()).step_by(2) {
-        let byte = u8::from_str_radix(&hex[i..i + 2], 16)
-            .map_err(|_| "invalid hex character")?;
-        bytes.push(byte);
-    }
-    Ok(bytes)
 }

@@ -1,0 +1,12 @@
+{
+  "status": "EXPECTED_COUNTEREXAMPLE",
+  "deliberately_weak_source": true,
+  "failures": [
+    "main.assertion.14",
+    "main.assertion.15",
+    "main.assertion.16"
+  ],
+  "guard_change": "Only private model copy changes unsupported opcode rejection to zero. No production source change.",
+  "implementation_mapping": "virtual_codec_test.c exhaustively rejects non-query opcodes; not a callback/Host/lifetime proof.",
+  "physical_acceptance": false
+}

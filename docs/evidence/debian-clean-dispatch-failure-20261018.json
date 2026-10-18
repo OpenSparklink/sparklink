@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "status": "FAIL_RETAINED_ACTUAL_PACKAGE_CLEAN_DEFECT_FIX_OFFLINE_ONLY",
+  "source_archive_userspace": "668adeb6884475ef8f937ad8a80a358e174b560f",
+  "source_archive_sha256": "86f6ebb4a5b2899f7a3c91ef2c0f71dbb408f86dc4f1c4c497c39783e442da27",
+  "scope": [
+    "ActualcleanDebianVM,noUSB/experimentaldriver orhostinstall",
+    "RealpinnedRust/Cargobin/lib/licensepayload installedaslabpackage;dpkgversiondependenciespass,nodummyprovider ordependencybypass. NotanofficialDebiantoolchain/releasequalification.",
+    "DebianprecleandelegatesbareMakeclean,whoseCargodefaultrequiresrustup+1.96.1dispatch. ActualinstalledCargo1.96.1correctlyrejects +argument. Buildaborts beforeprojectbuild/tests;no install/packagequalification.",
+    "Fixadds explicit CARGO=cargo toDebianoverride_dh_auto_clean asalreadyusedbybuild/test. ActualGNUmake/source dry-runregression withdpkgarchitecturemetadatafixturepasses;actualnewsourceVM rebuildstillpending.",
+    "Firstlabattemptformattedonlydisposableoverlayandlostparentinputs;tarfailed,nopackagebuild. ParentR6a/WIPunmodified. V2 noformat/checksactualsourcehash/compiler/cache beforeboot. Originalfailuresretained.",
+    "No newRF/formalproof;existingR6agenericVM andoldR5erealqualification remainboundtotheirownsource/artifacts. FullR5f/R6/originalscope andnaturalRCA/nonmanualrecoveryOPEN."
+  ],
+  "root_cause": "Missing Debian clean override inherited generic rustup dispatcher default,despite actual compiler/Cargo and Build-Depends satisfied",
+  "fix": "debian/rules override_dh_auto_clean calls $(MAKE) clean CARGO=cargo;no requirement relaxation",
+  "materials": [
+    {
+      "path": ".dev/architecture-r6b-package-v2/guest.py",
+      "sha256": "87277abbbf36f7ee6b9f7df54999c1997e014d3a4a923022a47ffaadca7451a4",
+      "bytes": 4638,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/prepare.py",
+      "sha256": "bc3650eee8afc1b630f10b7b175ebc461c672091975b4b6f8695845fe58ccd68",
+      "bytes": 2876,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/run.py",
+      "sha256": "8ab7d22f42f4153f274414e1aef98a097ed1fbe5c246ea9b0876381865cb2e9c",
+      "bytes": 1486,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/run.json",
+      "sha256": "57a3812ef4d31fa4f498cdbe3fc8ac406bac6dbb4dbd71c809a50a95a2c3cdd8",
+      "bytes": 1105,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/populate-data.log",
+      "sha256": "70523c7bb07fd0da7d9027bef151ebd42a620e1bbf4f14ee54c3d81600d0e788",
+      "bytes": 85,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/console.log",
+      "sha256": "74149fe33c93e1486e7f69ef59da732d4b74c5c6e202f65ae91920352259a79c",
+      "bytes": 68153,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/result.json",
+      "sha256": "1f6dbe637321cab22b465a9e2d0452a62cba5c8b7793ed1b5c1e0682f5c0b3a7",
+      "bytes": 4929,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/rules",
+      "sha256": "db47c432dfbb4400e1f13ba136793b893079c2fc3181411d4c65af337e2f6948",
+      "bytes": 337,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/package-build.log",
+      "sha256": "e4789b564f1188dba5e0825d871272b906e6fc7d553f6ec769709b5a91804859",
+      "bytes": 842,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/build-dependencies.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/real-packaged-cargo.log",
+      "sha256": "b1e146f4c74466cbfc3f0c9ab7f510ec1c325df3538507bbd86a4433d57a8d3e",
+      "bytes": 337,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/real-packaged-rustc.log",
+      "sha256": "2af3376cb254e69564e00978cada767f05432a299af78300c47d14c103366c1e",
+      "bytes": 196,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/real-package-files.log",
+      "sha256": "426f013e0e002bf4459e80c3f32674d5954684a7fcf75a74f1e3057abad09869",
+      "bytes": 283374,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/toolchain-package-build.log",
+      "sha256": "72bcf0db954acbc06e6fa4defaa8b3d0bfc12041dd44d55a71f7982d301310de",
+      "bytes": 150,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/toolchain-package-install.log",
+      "sha256": "56c794534ff1e7ebc1b7951432962b86ad52d49fb902cd9deb209a8ae3948f4c",
+      "bytes": 343,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v2/export/opensparklink-lab-rust-toolchain_1.96.1-1_amd64.deb",
+      "sha256": "b6e77eeee742187704447d910d6c73051ec75b55ab537de816e5a8d2cb7fef59",
+      "bytes": 214610540,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v1/export/package-outputs-v1/result.json",
+      "sha256": "90824948b1658e73bba4bb41570cfcbe5e5dc9a1d8114056f57d7c476ada02f1",
+      "bytes": 2300,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v1/export/package-outputs-v1/source-extract.log",
+      "sha256": "f6da5d4f7749e5ce73338d31840e8a2f30bc88d815e804ece0911a90a91ada85",
+      "bytes": 110,
+      "access": "private workspace retained;lab compilerpackage not published"
+    },
+    {
+      "path": ".dev/architecture-r6b-clean-rule-tests-v1.log",
+      "sha256": "6328d1e7f21f241bdba5b3d435ccf4b0d5cbf64a76397c9b50c77893960682b6",
+      "bytes": 1530,
+      "access": "private workspace retained;lab compilerpackage not published"
+    }
+  ]
+}

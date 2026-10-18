@@ -11,6 +11,8 @@ NotifyAccess=main
 LimitNPROC=1
 Restart=on-failure
 RestartSec=5s
+StateDirectory=sparklink
+StateDirectoryMode=0700
 
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW
 ProtectSystem=strict

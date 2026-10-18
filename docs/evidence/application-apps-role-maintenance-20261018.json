@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "result": "FINITE_ROLE_AND_PRESERVATION_RECORDS_SYNCHRONIZED_FULL_ARCHITECTURE_OPEN",
+  "compiled_and_executed_source": "fa31031cafa4997809e63969d8c8d888ce78dc1c",
+  "report_publication": "dff8238",
+  "records": [
+    "application-apps-role-real-r5f4",
+    "application-apps-preservation-real-r5f4"
+  ],
+  "registry_negative_controls": 12,
+  "offline": {
+    "ws73_tool_methods": 708,
+    "strict_probe_clippy": "PASS",
+    "docs": "strictHTML/inventory116;fourreaderquadrantsonly"
+  },
+  "goal": "Existing full active goal, no scope reduction, no duplicate goal or issue closure",
+  "next": "Native privileged socket creator audit/migration, pure transport observation mapping in shared contract;full publiclifecycle/originaldeadline/commonAPI/higherSDK/perappDiscovery/R6c continue.",
+  "remaining": "ENODATA/naturalRCA/nonmanualrecovery and all original S0-S6/19WP/10FV/12DG remain OPEN. No new formal or whole tree qualification.",
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f4-registry-preflight-v1.json",
+      "sha256": "f2b0677a9d1340d21501cbb8712a972eedc95d702b1155d126febba32c322e85",
+      "bytes": 2990
+    },
+    {
+      "path": ".dev/architecture-r5f4-final-html-v1.log",
+      "sha256": "e815c5d813d2e16bbb0fb4409bf5221bb427e8f0de4393cb6cfcafd400d78450",
+      "bytes": 1134915
+    },
+    {
+      "path": ".dev/architecture-r5f4-final-tool-fixtures-v1.log",
+      "sha256": "c0f824214c16739062c4cdcbe7b70973fb0776d4a2ebef972b08015d48d1c2c5",
+      "bytes": 883
+    },
+    {
+      "path": ".dev/architecture-r5f4-probe-clippy-v2.log",
+      "sha256": "4e4391a4086a9074fcbe22bc0b4f5078cbd217afe3091041c9367b5f80cd05a9",
+      "bytes": 533
+    }
+  ]
+}

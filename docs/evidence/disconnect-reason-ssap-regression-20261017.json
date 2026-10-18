@@ -1,0 +1,1002 @@
+{
+  "schema_version": 1,
+  "status": "SIX_REASON10_SSAP_AND_DATA_REAL_GATES_PASS_ORIGINAL_TIMEOUT_RCA_OPEN",
+  "batch_exit_result": "PASS",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "formal_result": "UNPROVED",
+  "root_cause_result": "UNPROVED",
+  "full_goal_result": "UNPROVED",
+  "historical_failure_result": "FAIL",
+  "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+  "compiled_userspace": "8bda4e0e3dd32c737957b2cdfd19d062d68cef3a",
+  "executed_tools": "8bda4e0e3dd32c737957b2cdfd19d062d68cef3a",
+  "scope": [
+    "VM-only Hi3873U2/3,SDK111 unchanged;Hi3873E1 excluded,nohostdriver/install. ExactK619/U8bda frozenartifacts,normalQEMU/config.",
+    "OnlydaemonproductionDisconnect reason13->SDK/OHOS remoteuser10;kernelcleanup/pre-daemonprobes remain13. SamephysicalSession/Runtime/Grant/credit/Ticket,soleSSAPEngine,deadlines andconnectionparameters. No newHost/Engine or UAPI layout.",
+    "Sixnewrealcases:plain61twice,protectedSSAP1/noMITM and2/numeric,plain249boundary andcomplete2042;eachbothconnectionroles. 48randomCUTCpeerRT,96SSAPread/write/peerDBchecks,96discoveryrecords,16oversizerefusals. Qualifiedselectedlengths,notcompleteboundary/stress/performance/fullsecurity.",
+    "ProtectedSMTC1/2 firstbind:8actualpreinstallEACCES,16currentsnapshots,20insufficientCUTCgraderefusals;960completeSMTC USBobservations auditedbeforedestructiveSDU matching byactualexecuted8btools. Not attributelocalauthorization,namedidentity,Bond orRFcipherattestation.",
+    "Each12newCreatecommandbodies exactequal to correspondingoldfailed331case;no supervision/deadline reduction.24newDown events:caller11,peer10;USBsubmit-to-event1.090..4.051ms observed,not applicationRTT/RF/oneway/performanceclaim.Originalshared5s propertychecksunchanged.",
+    "Sixexactsource replays(connection/object/channel/Agentwhereapplicable)and42copiedactualevidence negatives;actual705clean8btooltests andstrictclippy. Same decoderTCB,not independentdecoder,newfaultinjection orformalproof.",
+    "StaticSDKbundledAArch64920archiveinstructions support3-bytehandle+10releaserequesttoHCI sender;exactarchive/object/tool hashes retainedprivately. Onearchitecture/buildnotversionattested/notexecutedfirmwareproof. libws73 fixedreference13discrepancy recorded,not rewritten.",
+    "FRESHLEGACY13CONTROL PASSES fast:caller11,peer13. Thisrefutes13alonealwayscausesoriginal5stimeout. Semanticmanagementreasoncorrection isqualified;originalcaller0d/peer07after5.064s FAIL staysFAIL andlateDowncauseUNRESOLVED. No predictedfailuremanufactured.",
+    "UnchangedK619pureGrantCBMC79retainsoriginalboundaryonly;NO NEW formalrun. Actualrefs/locks/USBdrain/NOCPaccuracy/late/reuse,daemonconsumercomposition notproved.",
+    "CurrentselectedSSAP-firstprotectedbind plusdefault61/249/2042exit achievedat8b. FullS0-S6/19WP/10FV/12DG,attributesafety/Bond,kernelcleanupmigration,multichannel/fourdevice/PM/recovery/release incomplete;allwholeissuesOPEN.",
+    "Naturalstartup/re-enum/disappearanceRCA/nonmanualrecoveryOPEN. Manual/hub/QMP/legacy/injecteddiagnostics not recoveryqualification. SameothercontrollerReady/scanobservations not survivingsecondbusinesspair/processfaultdomain."
+  ],
+  "real_gates": [
+    {
+      "name": "plain-short0",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/disconnect-reason-plain-short0-v1/manifest.json",
+      "security_requirement": 0,
+      "message_bytes": 61,
+      "actual_CUTC_peer_round_trips": 8,
+      "SSAP_read_write_peer_checks": 16
+    },
+    {
+      "name": "plain-short1",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/disconnect-reason-plain-short1-v1/manifest.json",
+      "security_requirement": 0,
+      "message_bytes": 61,
+      "actual_CUTC_peer_round_trips": 8,
+      "SSAP_read_write_peer_checks": 16
+    },
+    {
+      "name": "sec1-short",
+      "result": "PASS",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": ".dev/disconnect-reason-sec1-short-v1/manifest.json",
+      "security_requirement": 1,
+      "message_bytes": 61,
+      "actual_CUTC_peer_round_trips": 8,
+      "SSAP_read_write_peer_checks": 16
+    },
+    {
+      "name": "sec2-short",
+      "result": "PASS",
+      "status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": ".dev/disconnect-reason-sec2-short-v1/manifest.json",
+      "security_requirement": 2,
+      "message_bytes": 61,
+      "actual_CUTC_peer_round_trips": 8,
+      "SSAP_read_write_peer_checks": 16
+    },
+    {
+      "name": "plain-boundary249",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/disconnect-reason-plain-boundary249-v1/manifest.json",
+      "security_requirement": 0,
+      "message_bytes": 249,
+      "actual_CUTC_peer_round_trips": 8,
+      "SSAP_read_write_peer_checks": 16
+    },
+    {
+      "name": "plain-long2042",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": ".dev/disconnect-reason-plain-long2042-v1/manifest.json",
+      "security_requirement": 0,
+      "message_bytes": 2042,
+      "actual_CUTC_peer_round_trips": 8,
+      "SSAP_read_write_peer_checks": 16
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "705-clean-frozen-tools",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "strict-workspace-clippy",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "six-exact-replays-42-actual-copied-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "twelve-byte-identical-Create-parameter-comparisons",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "six-exact8bCI-success",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "formal_gates": [
+    {
+      "name": "actual-lifecycle-Grant-submit-revoke-late-drain-reuse-andSSAPconsumercomposition",
+      "status": "NO_NEW_FORMAL_RUN",
+      "result": "UNPROVED"
+    }
+  ],
+  "failed_gates": [
+    {
+      "name": "original331plainwholecase",
+      "status": "FAIL",
+      "result": "FAIL",
+      "manifest": ".dev/protected-ssap-plain-short-v1/manifest.json"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "original-lateDown-cause-andnaturalRCA-nonmanualrecovery",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "kernelcleanup-andpre-daemonreasonmigration-lifecycle-regression",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "attribute-authentication-localauthorization-CPCD-Bond",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "fulloriginalS0-S6-multi-fourdevice-performance-PM-release",
+      "status": "NOT_COMPLETE",
+      "result": "UNPROVED"
+    }
+  ],
+  "bounds": {
+    "real_cases": 6,
+    "CUTC_peer_round_trips": 48,
+    "SSAP_read_write_peer_checks": 96,
+    "discovery_records": 96,
+    "application_boundary_rejections": 16,
+    "complete2042_round_trips": 8,
+    "protected_full_window_USB_observations": 960,
+    "protected_preinstall_SSAP_refusals": 8,
+    "exact_replays": 6,
+    "copied_negatives": 42,
+    "current_mechanism_queries": 16,
+    "insufficient_CUTC_grade_refusals": 20,
+    "normal_disconnect_outcomes": 24,
+    "observed_USB_submit_to_Down_ns": [
+      1090000,
+      4051000
+    ],
+    "legacy_diagnostic_real_gate": "PASS",
+    "legacy_diagnostic_qualified_as_current": false
+  },
+  "original_failed_attempt": {
+    "compiled_kernel": "61905139ff8c3ed2937ccdba697d880880582234",
+    "compiled_userspace": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+    "executed_tools": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+    "status": "FAIL",
+    "error": "both real Down events must reach Device properties within shared budget",
+    "manifest": ".dev/protected-ssap-plain-short-v1/manifest.json"
+  },
+  "fresh_legacy_control": {
+    "status": "PASSTHROUGH_SUPPORT_PASS",
+    "compiled_userspace": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+    "executed_tools": "331950258acf9f626cb43fd2f477b3b05104aa1b",
+    "reason_requested": 19,
+    "returned_by_caller": 17,
+    "returned_by_peer": 19,
+    "causal_claim": "13alonecausesoriginal5stimeout isNOT_SUPPORTED;originalrootstaysOPEN"
+  },
+  "remaining": [
+    "Kernelinternalcleanup/pre-daemonprobes stillrequest13;nextmigrate10onlyasintendeduserterminationandrunsourceboundlifecycle,notrequireallcontrolracesbeforeSSAP/datawork.",
+    "SoleSSAPperpropertyauth/encrypt/localauthorizationandCPCDconsumers,Bond/namedidentityremainseparate.",
+    "OriginaltimeoutrootnotclosedbysemanticfixornewselectedPASS;alloriginalnaturalrecoveryandfullgoalscopeintact."
+  ],
+  "materials": [
+    {
+      "path": ".dev/disconnect-reason-plain-short0-v1/manifest.json",
+      "sha256": "e59ef38d6ae550169e32de043b3155d0c23b8a2fd13a8a3d9c5586c98e0678b4",
+      "bytes": 1176420,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short0-v1/console.log",
+      "sha256": "abdc3916cd2e5976417c08caa6b724a8a47d59e3f8a1a23d0612d00f4e212fb3",
+      "bytes": 16211,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short0-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short0-v1/guest-output/ws73.pcap",
+      "sha256": "e047ed1af744d5df6c66610101bbb60c57aac5b38e59963382bb3b8c00511a61",
+      "bytes": 489724,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short0-v1/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short0-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "21b2ceba15e9d925e2ea86ced28359349d6dd49b1f24ceee57b5a8dbbd9cec40",
+      "bytes": 664880,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short0-audit-v1.json",
+      "sha256": "851f1e521748de4fd366421520bf147b77a33e87827227ebc6df1445b9156020",
+      "bytes": 4044,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short1-v1/manifest.json",
+      "sha256": "adf70e9cec123ebc8dc747e7bcfd23120851d71bc8957cf7b7bae7c613373f29",
+      "bytes": 1176420,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short1-v1/console.log",
+      "sha256": "9a49f74d6253b55e57ce65d213254f2c63658cc1c0e77f2de4b420aaa7d52699",
+      "bytes": 16211,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short1-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short1-v1/guest-output/ws73.pcap",
+      "sha256": "94f78ff562250ef54f16129308635edd0c005f78846b60a09e6a8194552f7b16",
+      "bytes": 489724,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short1-v1/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short1-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "5691695a87f0225b04d02aed3fa0542a30fdad0663d2f0a669bfb53a34bf9a12",
+      "bytes": 664876,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-short1-audit-v1.json",
+      "sha256": "fa3b030870004473a7d6be4a170ac8e1ecac96ca4e0952255e4d6b230bce271e",
+      "bytes": 4044,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-short-v1/manifest.json",
+      "sha256": "de5197da81172c54e02b6a1c57c4fd4441641af3b19b378cc2e904f7a6001900",
+      "bytes": 1225812,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-short-v1/console.log",
+      "sha256": "baec7013662b1dff42aa703017d2e1ed946fb537d2ba49c7aa77d52fd026b194",
+      "bytes": 16239,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-short-v1/guest-output/ws73.pcap",
+      "sha256": "7169d90776dde0850d964bd308622a15216511501706909a755e2c716a835644",
+      "bytes": 534660,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-short-v1/guest-output/capture-stats.txt",
+      "sha256": "1e32e830eefbda17c7a75ccf736ec4311448495cd1f23430942cc0fb3a472617",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "c8b06d25fc41157036239b5ccad1781243a79f2a690119bd1c7f6386e36d35a1",
+      "bytes": 721880,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-short-audit-v1.json",
+      "sha256": "3c37d29463cd3cee9184d8a641a1cd43cf59d4c8ee14e8679ab564ede1f97661",
+      "bytes": 4017,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-short-v1/manifest.json",
+      "sha256": "6c2522986c1e912cafceb17271da70154b1f86ce07e24f5784961efdfd617f59",
+      "bytes": 1225795,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-short-v1/console.log",
+      "sha256": "42c0e5c53ebd9e32fa6656f74c4a3792641da120e38533cad1061e3ec51ab4f5",
+      "bytes": 16247,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-short-v1/guest-output/ws73.pcap",
+      "sha256": "437d36f5afa0b2c8e987985f48d8d8eac6662c2a3cec5692e202cf5379cf2e30",
+      "bytes": 532732,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-short-v1/guest-output/capture-stats.txt",
+      "sha256": "798730e9c9f533387c50ca93d2823ff8118fb865f8d005f3fadd6e4d074e8a45",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "e509291d88c5100d20225651221dcf5ff9498dd01d27dde7f840afbf508207a8",
+      "bytes": 726068,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-short-audit-v1.json",
+      "sha256": "5663fd0a56e94de9b6033fe5d34ec640366ac842ad4b02be0d58c600a704f609",
+      "bytes": 4017,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-boundary249-v1/manifest.json",
+      "sha256": "d04e55e372dc05d80ddb8957753803b993d2298d199ec33a545f317d71b534bf",
+      "bytes": 1264770,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-boundary249-v1/console.log",
+      "sha256": "2bb5865170b837570896dd9498c73f21efce53bf030598e3052fbb71defd1abe",
+      "bytes": 16238,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-boundary249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-boundary249-v1/guest-output/ws73.pcap",
+      "sha256": "3c911e941bfdb9bc248a233d116793220f49d1490da1ba88d3886332e715dffe",
+      "bytes": 530588,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-boundary249-v1/guest-output/capture-stats.txt",
+      "sha256": "80378fbbe71dfc0fc2e837187f579bb4c5271d1937bf465c0a4e6ddfc29ed307",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-boundary249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "9c437f89a83f0d488b61c4d35c7bfe34c3287e06203ad96ce80e234181589eac",
+      "bytes": 743429,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-boundary249-audit-v1.json",
+      "sha256": "15360f980e4430b957100917681e0e7571b554d66c8aaeadb0a86d003993957d",
+      "bytes": 4054,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-long2042-v1/manifest.json",
+      "sha256": "c31437ae8be039d779c7457d7b8f1550ff738a65260ce45b0f9764f7816dd6a2",
+      "bytes": 2244578,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-long2042-v1/console.log",
+      "sha256": "d58feb566d42b7d2df893ceeda9c04c9a871d5ddff119d03538df4927ea7dd2e",
+      "bytes": 16214,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-long2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-long2042-v1/guest-output/ws73.pcap",
+      "sha256": "38e31f242894fb8c5a23db7e7cef22bed43886d3da544874b88a5181f8d93f85",
+      "bytes": 1016972,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-long2042-v1/guest-output/capture-stats.txt",
+      "sha256": "8bde0e86ff030be70ef34d3df2ca907273c903cb5c5b9270a49ced50bd235f2d",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-long2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "f5b00721de532973e03ea30434216919ca8005ad88275c067eaa681b9d6d9322",
+      "bytes": 791670,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-long2042-audit-v1.json",
+      "sha256": "0e3b4bdf68f925ac9e95a7d80295021e833d93558d4d9b13244719f9d9b3e2c9",
+      "bytes": 4049,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-qualification-v1.json",
+      "sha256": "73d60ca627b35cf68cb65cff95077375f07da2c8c545c8d48613b7205878bd5f",
+      "bytes": 7638,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-qualify-v1.py",
+      "sha256": "ece4519457077f2da3626609d366f7f7be655f2db5e6587667b201c1d5af3510",
+      "bytes": 2974,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-build-prepare-v1.json",
+      "sha256": "46e1b937ed343618c8bbdcba3a79a2a1008e39b228784ada90e0b4afc02b2a71",
+      "bytes": 6664,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-build-prepare-v1.py",
+      "sha256": "c4d987a99dfd1c56cf363bd2168caf64d6908125e45a64cfdff60aa52418998b",
+      "bytes": 2897,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/manifest.json",
+      "sha256": "543e4cc9426fb68f1ab5018b340b8b3677780e7b2853a182acb2f970d9d84a49",
+      "bytes": 26511,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-case-audit-v1.py",
+      "sha256": "0b7c716a44a614988a6158501f9a99f97dd32d71305ac4884899d8fd178ea475",
+      "bytes": 6324,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-frozen-tools-v1.log",
+      "sha256": "b8dc5532863602693e9380a159a892693973c7d17f79fde977395fd7180cea24",
+      "bytes": 840,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-tools-v1.log",
+      "sha256": "e7de9d3ad3bc7ef1170466c52b718f2e8d2d3834fc2141ef2726cb20e73c50a6",
+      "bytes": 2456,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-tools-v2.log",
+      "sha256": "293ad192a12e6bb6cac8fd317d1ff805d989166dad1b108c50d6b49a23434191",
+      "bytes": 840,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-clippy-v1.log",
+      "sha256": "1accca38301b49e67316a75e7b891416a68ca7bab10fb745a3ba6bef7da42e9c",
+      "bytes": 498,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-ci8b-v1.json",
+      "sha256": "99e12e22552ec726bf93826440243a4e0c5429f6dcc779c0262214ab82bd267d",
+      "bytes": 1413,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/report.json",
+      "sha256": "7c1ab2e4c0f025895fed9f791826d10679865aa6d6845e7025128b3dbd4feadc",
+      "bytes": 4719,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-legacy13-control-v1.json",
+      "sha256": "1a5e6677a829ea88dac0926174d7408d4abde1f6ebce171ee368297b0489dea0",
+      "bytes": 1347,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-legacy13-control-v1.py",
+      "sha256": "1e56419ba445417025f39a606f1acd8c4b46ed0887bb69597a7cfaa4ea1616f3",
+      "bytes": 1940,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-legacy13-comparison-v1.json",
+      "sha256": "ca28e522a2e4a51235fdef496e0431fd1fb1d48fbcc2afca344cedfa40ea81f6",
+      "bytes": 1460,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-legacy13-control-run-v1/manifest.json",
+      "sha256": "e0ff66960f40e07069d9331b831bbc1863154f760cf3f5db5d9b3cc40acea6e8",
+      "bytes": 1176155,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-legacy13-control-run-v1/guest-output/ws73.pcap",
+      "sha256": "6f12eaa11341fb62d3dc86bba82883e13de653ec19186272735c673acb204200",
+      "bytes": 489724,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-legacy13-control-run-v1/guest-output/capture-stats.txt",
+      "sha256": "2228848eca1f35e23e8f6460d519abc2dbe5841b65ee631d7359aa40d25c5d53",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-legacy13-control-run-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "f204ba8ac843b5c6a7f7e0fc0be34be2ce07dd61b1d648ce7f7edc78b7ef1ec7",
+      "bytes": 664923,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-down-failure-v1.json",
+      "sha256": "b76a374d12b8229497a9ab56d76c20e1b90a74d21ac7e3c724b58a486f220579",
+      "bytes": 1363,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/manifest.json",
+      "sha256": "adf0abe353f9ac8699361261eb76397a63495dccda9d7b58aaaad09d05d5eb24",
+      "bytes": 48131,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/guest-output/ws73.pcap",
+      "sha256": "375724bff802aeccc2248ed20f0ae75f8bb801176fc2c6314c5ee7f05f96c525",
+      "bytes": 358690,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/guest-output/capture-stats.txt",
+      "sha256": "5c5d0249a469e7385e763a4b90a8a297b12c642a99846f8420cdee585568cba5",
+      "bytes": 227,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/protected-ssap-plain-short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "5c9f44269cd1ccc16251367569953187b3c0af2b44278d7d8582699ee91cde3f",
+      "bytes": 481305,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/security-grant-kernel-artifacts-v1/manifest.json",
+      "sha256": "1ccf3d01364acb2fb673d837fd41e3e42cddaed629d4d7b4bfa9446477e7cbb7",
+      "bytes": 229023,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/security-grant-modules-v1/manifest.json",
+      "sha256": "ff09ea1cac0c96aea94c04f5f9031cb2f252508e97f31005d473301e28b4e079",
+      "bytes": 2381,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/security-grant-lifecycle-smoke-v2/manifest.json",
+      "sha256": "51c51999218a7762c4696caf75374fb12a09d6f9e2a3cdaeb0ffe609bbd0f85b",
+      "bytes": 37497,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-prepared-v1/manifest.json",
+      "sha256": "3b458f969851209e3c19380f1d8b0f71f68ad38a3e367d3fe08243f46300ea00",
+      "bytes": 274460,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-prepared-v1/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-plain-prepared-v1/root.btrfs",
+      "sha256": "1eaca7e4a7b704ad957c1874ae234331c9a0833e80401d26360d6b003620f33a",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-prepared-v1/manifest.json",
+      "sha256": "c06fa58ffbe946dad692a715eb94e837a1a28a2d47b2981dd201a225ea1bd6fe",
+      "bytes": 275035,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-prepared-v1/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec1-prepared-v1/root.btrfs",
+      "sha256": "5b1a89144514ca29941be8ef792b2b09b2a0259a463fed691da7bba157647775",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-prepared-v1/manifest.json",
+      "sha256": "c065a58febbeb831e07b3422b72cedaa1818891c5629c90877b708be1cd5c831",
+      "bytes": 275035,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-prepared-v1/bzImage",
+      "sha256": "bfbaa980a99b3afe9296aacc55473ff08a72b9fbfdc37ca2479b276af7328cdf",
+      "bytes": 15753216,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-sec2-prepared-v1/root.btrfs",
+      "sha256": "f6862c9879bd5901eb0a91302cedcc80ca68b6a4eafebf42f6616f10ec9cdf64",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/8bda4e0e3dd3/slkd",
+      "sha256": "b39be5d71c79af7e194e20bc8e5c84ccbef42c7e27fc69212fbe3dfc06b31fda",
+      "bytes": 10614672,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/8bda4e0e3dd3/slctl",
+      "sha256": "a6c0c7432f2f85cd8473a1639603b464208dc9a38dbbdfee2c3d34f21826deef",
+      "bytes": 7828432,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/8bda4e0e3dd3/slktest",
+      "sha256": "5bb2e137ac1139f528ec0ccfa06e2285fb6f99a72e089792ca717c3a88c42dab",
+      "bytes": 5264304,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/8bda4e0e3dd3/slkconfig",
+      "sha256": "09560f3e0b4263d08b220ee0dad8a0bf0fd84532cf244bf92bce9dac92acea3d",
+      "bytes": 1404136,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/8bda4e0e3dd3/slkmon",
+      "sha256": "b29f1cf8f8e81a3c87d253911b93dfe79d916fcf8fa0c24384d6537c9a14e4ae",
+      "bytes": 1662328,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/8bda4e0e3dd3/slkdump",
+      "sha256": "93929b9aaa903d2039077a59a399b978266c461889a5f9251be42f776a40e744",
+      "bytes": 1662200,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/8bda4e0e3dd3/liblibsparklink.so",
+      "sha256": "3126822aa5dc51cb00a823d0f9641c33ce22cdbe7fb4e95fd1ecc81fb74460bd",
+      "bytes": 548536,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "20ade6d3b8c6526ffa0e4624d000ce5e336a7144306e65656188be89dddf73bd",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "7b39a4b43249c3b4775fa008e4c69bd6753e97099a89aaf9fe24c2f9c18b92ae",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-reason-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/sle_srv_cm.c.o",
+      "sha256": "bac01219810e59e5a0353655a3153f48b2dbef126f117276bafe4de4a769ae28",
+      "bytes": 44448,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/disconnect.asm",
+      "sha256": "ad45fc0cfdf7f8246691edbcbbbae626f6012b7fb688e01da59ec3555d792810",
+      "bytes": 6332,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/disconnect-relocs.asm",
+      "sha256": "25270361fe3b10203f367ac9eb7bbf9eeeb1ad3837a396f4530feb94a10e8475",
+      "bytes": 7756,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/uapi_gle_con_manager.c.o",
+      "sha256": "ec13aac600516cf491722511b68c1481804b0858f7c82ee11a1025a9ed5315fd",
+      "bytes": 7952,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/sapi_gle_con_manager.c.o",
+      "sha256": "a3239b68571cdf9148b79a78953ff9da20267df7db9339accf5fb2963ed527ae",
+      "bytes": 11704,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/gle_cm_ui.c.o",
+      "sha256": "661ddab008ceac0292d9a0a5714040c6360bfd8c28fd896db1a22d1974bdf36f",
+      "bytes": 13088,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/gle_cm_core.c.o",
+      "sha256": "1fe260fa91afd36bc6e082eb5f69045b3f9fbfd1317ecc88c527c7fb50ac8853",
+      "bytes": 28280,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/release-request-relocs.asm",
+      "sha256": "452a2c3b0bdaa9c2b752100fc381a611f725c42dd9cad04ce31c22adb840861b",
+      "bytes": 2388,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/release-core-relocs.asm",
+      "sha256": "8c7bb4a29a0c65bb3770f7413d6892e677244339dba86cc0f74bdd6799314002",
+      "bytes": 4428,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/gle_aa_connect_ui.c.o",
+      "sha256": "ecb2ff90164e0940838de6168f65158484b472b080fe33ff55cb69c720ecfe02",
+      "bytes": 23232,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    },
+    {
+      "path": ".dev/disconnect-sdk-reference-v1/access-release-relocs.asm",
+      "sha256": "bee11e26e8a7b9e63eb31ecc66039cc9220409ae2e4d4770ab0cad56f6b4bead",
+      "bytes": 2941,
+      "access": "private",
+      "retention": "Authorized ownerworkspace originals;actualUSBkeys/firmware/SDKremainprivate,noverifiedoffsitearchive. Missing/hashmismatch notPASS."
+    }
+  ],
+  "replay": [
+    "Usefrozen8b read_capture/check_capture_stats thenconnection/object/channel/securitycorroboration;comparecanonicalJSON;requireexactlive10,legacy13onlyexplicitoldscope.",
+    "HostrawUSBtimestampcomparisonissameguestclock;noRFsegmentation/applicationperformanceclaim. ActualpeerchecksandplaintextUSB/HCCobservationsarenotindependentRFcipherproof.",
+    "Privatematerialaccessrequiresauthorizedownerworkspace;originalfirmware/keys/SDKnotpublicartifacts,noverifiedoffsitearchive. Missing/hash/source/scope mismatchfailclosed."
+  ],
+  "wall_ns": 1792199827192062300
+}

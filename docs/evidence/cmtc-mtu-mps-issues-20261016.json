@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "REQUIRED_MPS_FAIL_RECORDED_TWO_ISSUES_READ_BACK_OPEN",
+  "qualification_record": "cmtc-mtu-mps-contract-gap",
+  "report": "docs/evidence/cmtc-mtu-mps-audit-20261016.json",
+  "issues": [
+    {
+      "repo": "OpenSparklink/linux",
+      "number": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6206750312",
+      "id": 6206750312,
+      "state": "OPEN",
+      "readback_verified": true,
+      "reference_scope_clarified": true
+    },
+    {
+      "repo": "OpenSparklink/sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6206751068",
+      "id": 6206751068,
+      "state": "OPEN",
+      "readback_verified": true,
+      "reference_scope_clarified": true
+    }
+  ],
+  "body_sha256": "1fa41170f58d2bec3d6b0ae659d3abb68f2a971df95ea6efed660682f9644a47",
+  "scope": "Confirmed own source/retained wire MPS admission gap;not observed hardware loss or general fault in referenceHost. Historical peer delivery and bounded codec result retained separately.",
+  "next": "Do not restart livebuild;after terminal separateMTU/MPS/ACB limits andincrementally rebuild,then exactVM regression and full dynamic signaling"
+}

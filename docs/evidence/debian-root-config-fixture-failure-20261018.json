@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "status": "FAIL_RETAINED_ROOT_PERMISSION_FIXTURE_NEW_VM_PENDING",
+  "actual_source": "9ce9e2a567e9865e76f7cc3a1a444b9f4e420852",
+  "scope": [
+    "ActualcleanDebianVM,noUSB orhostinstall. Versiondependencies andpreviouscleanfix passtheir actualstage;productionbuild reachesworkspace tests. OverallpackagebuildFAIL,notqualification.",
+    "Onlyunreadable config startupcase fails:root canread chmod000,empty config isvalid,anddaemonthen hits deliberately nonexistent sessionbus. Theassertion expectedpermissionreaderror. Thisisfixtureprivilegeassumption,notproductionparserfailure orfallback.",
+    "Keepmode000 andexactcannot-read/no-defaults/no-start assertions. TestreadsactualkernelEUID fromproc,notinterposedfakerootgeteuid;actualroot launchesreaderwithnumericordinaryUID/GID65534. Ordinarytestcaller keepsitsUID. No testskip,alwaystruefixture orproductionrestriction.",
+    "AfterformattingfiveCLItestsactuallypassasordinaryhostuser,strict targetedClippy andfmtpass. Solo12jobs/fixeddevelopmenttarget recorded. Actualroot VM/pakagerebuildnewsourcepending.",
+    "CurrentR6agenericVMandoldR5erealdeviceartifactsremainseparatelysourcebound;0newRF/formalproof. FullR5f/R6 andalloriginalscope,naturalRCA/nonmanualrecovery OPEN."
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r6b-package-v3/guest.py",
+      "sha256": "487c1ef908652ad1e34b8c1ebd2491c56119bbd436e92b54745abdf83cf8bad1",
+      "bytes": 3117,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/prepare.py",
+      "sha256": "67e29fda196e7d4e8c8a3876987e678b14712bc49422299e7d2fcddf851e9c30",
+      "bytes": 3140,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/run.py",
+      "sha256": "d17d89fe11f1970d166714425d47ac50b7a6a22b30778e369584d6adedcc1192",
+      "bytes": 1486,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/run.json",
+      "sha256": "0155a013e323ae0b55bcb74d22830a53d8fd8ca15fd46a164f3cf8f7ba8c393f",
+      "bytes": 1105,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/input-manifest.json",
+      "sha256": "26fa06841aef22faf9463ab1bbac3ca880c1e9e4c250c4af5a6b2b9b8c0b15a2",
+      "bytes": 688,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/populate-data.log",
+      "sha256": "ef6b62646404d57f9092ce2767c135ec9e6f69cca6169de5ad9cc688f01cd26e",
+      "bytes": 150,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/console.log",
+      "sha256": "e89ea85f923ceeaae6ae83d109075b1b00a5d4af75850d22ad42fac6fb2ba086",
+      "bytes": 78451,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/export/result.json",
+      "sha256": "034370985de9047b2fe829b9477247e752ce4068a154ea7d990d2e122599e141",
+      "bytes": 3766,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/export/package-build.log",
+      "sha256": "088d28b9f302bc18ae7c58f554dd1c2599d997d114b4747596d0398da4ecd067",
+      "bytes": 43540,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/export/build-dependencies.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-package-v3/export/real-packaged-cargo.log",
+      "sha256": "b1e146f4c74466cbfc3f0c9ab7f510ec1c325df3538507bbd86a4433d57a8d3e",
+      "bytes": 337,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-config-uid-tests-v1.log",
+      "sha256": "db02ba008308c1b9a6c1db9f1cbb9fc72fc4419b576370146eb00efed71f74db",
+      "bytes": 1422,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-config-uid-tests-budget-v1.json",
+      "sha256": "6d8678e4a85cc6d4b406238250f1c1557862ed74c26b9f8f058cb50a6a35995e",
+      "bytes": 908,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-config-uid-tests-v2.log",
+      "sha256": "7ae2ea4b2ba3792758fcc1e5e1b451c470e4ddd015a49ca8a27c2aac0ac49efb",
+      "bytes": 1136,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-config-uid-tests-budget-v2.json",
+      "sha256": "8a695e411985b57ed9c4a94d3d501e9b80d389bb6c5093175ef1e0a51e9ba8b3",
+      "bytes": 908,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-config-uid-clippy-v1.log",
+      "sha256": "c6c7431ca1b694ba0a8613d415ce6818a281f159d21b179289fc483dc50ff348",
+      "bytes": 531,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-clean-fix-docs-v1.log",
+      "sha256": "bf9aa8ffc4043c72b10840253997405113e9e1f1f74873ab9c9cc80575c7b3cc",
+      "bytes": 1058455,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-clean-fix-issues-v1.json",
+      "sha256": "eeb9a5c3a891299d1057911c08c3956b51c9f30b789f61034480ae524187b92d",
+      "bytes": 681,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    },
+    {
+      "path": ".dev/architecture-r6b-clean-fix-ci-v1.json",
+      "sha256": "ef3f9ae954c43f3680b4c835edd6e0d855a56aee71be1c7e4340c5d3ec8ce731",
+      "bytes": 1251,
+      "access": "private workspace retained;finite test/tool/build evidence as stated"
+    }
+  ]
+}

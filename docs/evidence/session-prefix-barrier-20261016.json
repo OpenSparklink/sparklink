@@ -1,0 +1,2315 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_REAL_LIFECYCLE_PASS_ORIGINAL_FAILURES_RETAINED",
+  "lifecycle_result": "PASS",
+  "retained_original_matrix_result": "FAIL",
+  "formal_result": "PASS",
+  "compiled_kernel": "a0e1ad7b3a1c4397f1c187b5875b88a9efcc26bd",
+  "compiled_userspace": "9385c8a9124332bab09c889fccba4848cb31b19c",
+  "executed_tools": "3f10abb106234063d8b1b1cfa8901e3cc7de145b",
+  "original_regression_tools": "f355e2a7ca468f089f8f8b9ceacc2e5df50bd8c4",
+  "kernel_proof_tools": "a9bf10c45fe445a3d7f66ae3e7e1667156a6d686",
+  "tlc_specification_source": "4dd487e2ff88ac6697690b5cff23fa5d5f1795d0",
+  "tlc_mapping_source": "ab93f6a805be6c9f04ea51fc278d42bfd07f5439",
+  "scope": [
+    "VM-only selected Managed release/final control File close/dup final close,direct Disconnect and original5s begun-PDU deadline;both controller indices.",
+    "Two real pre-control business exchanges per gate,four in dup gates;partial2042-byte PDU never counted as business delivery.",
+    "Real successful IN81 bytes held by existing pinned QEMU:normal2s/independentdeadline8s;no synthetic completion,credit,Down or physical recovery.",
+    "Peer Ready/generation/lease and real scan on/off only;does not prove a separate business pair survives failure.",
+    "Kernel immediate wake stage retains10ms Session maintenance fallback;not full event-driven/performance qualification.",
+    "Formal results are bounded dependencies/models with explicit lock/allocator/scheduler/USB/time assumptions;not actual kernel concurrency,refinement,RF or hardware truth.",
+    "Original failed reports stay FAIL;successful new controlled tests do not erase failed preconditions or natural-fault unknowns."
+  ],
+  "remaining": [
+    "Original S0-S6/19WP/10FV/12DG remain;full event-driven timeout separation,boundedcontinuousTX,multichannel/four-device andSSAP/security/PM/release outstanding.",
+    "NOCP accuracy/duplicate/late attribution,handle reuse barrier,USBcallback drain and natural firmware state clearance still unproved.",
+    "Native original253 peerDown late failure,boot timeout/re-enumeration/disappearance root causes and nonmanual automatic recovery OPEN.",
+    "KASAN/KCSAN/lockdep VM concurrency qualification and full performance/resources/observation overhead not granted."
+  ],
+  "attempts": [
+    {
+      "name": "release0",
+      "case": "release",
+      "index": 0,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-release0-v1/manifest.json",
+        "sha256": "63c0ae758a1f036ecfbf4886d2868e65efc771289522edc67f942fb090c6bb0b",
+        "bytes": 91454,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 2000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000000000001000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792157872014384325
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792157872351366879
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792157872365895852
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792157872034076049
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792157872362169258
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792157872381785700
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "late_nocp_records": [
+          596,
+          598,
+          600,
+          602,
+          604
+        ],
+        "no_new_submit_after_withdrawal": true
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "release1",
+      "case": "release",
+      "index": 1,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-release1-v2/manifest.json",
+        "sha256": "29991d6b102d58ae8cd46abc5651a96e8851424745fa41303444e032311a7cca",
+        "bytes": 91454,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 2000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000100000002000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792157994780279549
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792157995122108196
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792157995137747552
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792157994804486943
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792157995133362828
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792157995154148784
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "late_nocp_records": [
+          596,
+          598,
+          600,
+          602,
+          604
+        ],
+        "no_new_submit_after_withdrawal": true
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "close0",
+      "case": "close",
+      "index": 0,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-close0-v2/manifest.json",
+        "sha256": "f6c9cc95cd561b9f5cc2e7e2546f4e601efae9ce905743a4083b4a5c0a2a53d5",
+        "bytes": 91384,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 2000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000000000001000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792158030596345301
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792158030938307249
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792158030952637278
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792158030621179808
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792158030948912467
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792158030968777728
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "late_nocp_records": [
+          596,
+          598,
+          600,
+          602,
+          604
+        ],
+        "no_new_submit_after_withdrawal": true
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "close1",
+      "case": "close",
+      "index": 1,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-close1-v2/manifest.json",
+        "sha256": "e165f0c18d215304c79f242e0e73e7ad3d28ce1dae25e53d675135c8b70b1b36",
+        "bytes": 91384,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 2000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000100000002000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792158065971474451
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792158066309012301
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792158066324828089
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792158065991141077
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792158066320432254
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792158066341674871
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "late_nocp_records": [
+          596,
+          598,
+          600,
+          602,
+          604
+        ],
+        "no_new_submit_after_withdrawal": true
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "dup0",
+      "case": "dup",
+      "index": 0,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-dup0-v2/manifest.json",
+        "sha256": "4b93038e95ac687d3343318c8c52f86d876f7799555f55a463b838059c6f5eb1",
+        "bytes": 106954,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 4,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 2000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000000000001000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792158102234817354
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792158102578930867
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792158102595302343
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792158102260319488
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792158102590912319
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792158102611348235
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "late_nocp_records": [
+          636,
+          638,
+          640,
+          642,
+          644
+        ],
+        "no_new_submit_after_withdrawal": true
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "dup1",
+      "case": "dup",
+      "index": 1,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-dup1-v2/manifest.json",
+        "sha256": "84bce0930de7a8ec87a7e3f19e0456b25002dd3e00f226ee65764a6964b7da1b",
+        "bytes": 106954,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 4,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 2000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000100000002000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792158138037150072
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792158138374650542
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792158138391884303
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792158138056652229
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792158138386674003
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792158138409206581
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "late_nocp_records": [
+          636,
+          638,
+          640,
+          642,
+          644
+        ],
+        "no_new_submit_after_withdrawal": true
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "down0",
+      "case": "down",
+      "index": 0,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-down0-v2/manifest.json",
+        "sha256": "4840fcd4aad4642fcdcd5497ef8b0c8f3ba1b847ddd05ad2445fc4e0935e1b07",
+        "bytes": 63346,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 8,
+      "submitted_bytes": 2032,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 2000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000000000001000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792158174181664904
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792158174526142394
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792158174544054714
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792158174207830770
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792158174537029503
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792158174560661824
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "REAL_BEGUN_LINK_DOWN_CORROBORATED",
+        "both_leases_preserved": true
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "down1",
+      "case": "down",
+      "index": 1,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_LINK_DOWN_PREFIX_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-down1-v2/manifest.json",
+        "sha256": "d2103b2cf053e6931c46374f6c40c0c1f7fc6a89e68143062dd4630f2586e306",
+        "bytes": 63346,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 7,
+      "submitted_bytes": 1778,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 2000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000100000002000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792158210179412961
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792158210523637503
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792158210541159367
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792158210205340698
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792158210535344047
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792158210557855174
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "REAL_BEGUN_LINK_DOWN_CORROBORATED",
+        "both_leases_preserved": true
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "deadline0",
+      "case": "deadline",
+      "index": 0,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-deadline0-v2/manifest.json",
+        "sha256": "e9974e8189291ac976c99034fa302c2f7ca4abaec1d530ec4e70ac597d1f024a",
+        "bytes": 62146,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 8000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000000000001000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792158247580145225
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792158247921555433
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792158252624628015
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792158247603684280,
+          "monotonic_ns": 30355444509
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792158247933439562,
+          "monotonic_ns": 30685195032
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792158252641402561,
+          "monotonic_ns": 35393158051
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "REAL_ORIGINAL5S_BEGUN_DEADLINE_CORROBORATED",
+        "elapsed_monotonic_ns": 5008119175,
+        "delayed_nocp_records": [
+          592,
+          594,
+          596,
+          598,
+          600
+        ]
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    },
+    {
+      "name": "deadline1",
+      "case": "deadline",
+      "index": 1,
+      "result": "PASS",
+      "status": "REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS",
+      "qemu_exit": 0,
+      "manifest": {
+        "path": ".dev/prefix-barrier-deadline1-v2/manifest.json",
+        "sha256": "bcd60c43539d67fa08283cfdb410d625048a43d4c284d27365e74f215955f392",
+        "bytes": 62146,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      },
+      "ordinary_uid": 1000,
+      "application_capabilities": 0,
+      "business_round_trips_before_control": 2,
+      "partial_pdu_application_round_trips": 0,
+      "submitted_fragments": 5,
+      "submitted_bytes": 1270,
+      "pdu_bytes": 2047,
+      "hold_budget_ms": 8000,
+      "original_pdu_deadline_ms": 5000,
+      "actual_exhausted_pool": "010040000100000002000000000000000100000000000000fe000500050005000500000008000100ff070000f604000003000000000000001200000000000000",
+      "guest_markers": [
+        {
+          "hold_phase": "arm_ready",
+          "wall_ns": 1792158288003331654
+        },
+        {
+          "hold_phase": "wait_held",
+          "wall_ns": 1792158288343471869
+        },
+        {
+          "hold_phase": "release_ready",
+          "wall_ns": 1792158293045683268
+        }
+      ],
+      "guest_ack_receipts": [
+        {
+          "stage": "armed",
+          "wall_ns": 1792158288026525759,
+          "monotonic_ns": 29777975763
+        },
+        {
+          "stage": "held",
+          "wall_ns": 1792158288354394755,
+          "monotonic_ns": 30105840301
+        },
+        {
+          "stage": "released",
+          "wall_ns": 1792158293063012368,
+          "monotonic_ns": 34814457945
+        }
+      ],
+      "no_automatic_recovery_qualification": true,
+      "independent_replay": "MATCHED_ORIGINAL_COMPLETE_PROOF",
+      "prefix_proof": {
+        "status": "REAL_ORIGINAL5S_BEGUN_DEADLINE_CORROBORATED",
+        "elapsed_monotonic_ns": 5006316086,
+        "delayed_nocp_records": [
+          592,
+          594,
+          596,
+          598,
+          600
+        ]
+      },
+      "peer_scope": "Same generation/Ready and unchanged lease plus real scan on/off;physical peer link loss is expected,not a four-device independent business link"
+    }
+  ],
+  "counts": {
+    "lifecycle_gates": 10,
+    "passed": 10,
+    "business_round_trips_before_control": 24,
+    "partial_pdu_business_round_trips": 0
+  },
+  "retained_original_matrix": [
+    {
+      "name": "window-repeat2",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-window-repeat2-v1/manifest.json",
+        "sha256": "d8b078777f6983f7bf1650dbf83fc706d622c3532fda5796bbd2ba8bb2b59bc1",
+        "bytes": 468880,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "window-repeat3",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-window-repeat3-v1/manifest.json",
+        "sha256": "5733fc24a74d6293e33fb3348835ce53d58bf35d6db45a182f903cc9ace247bc",
+        "bytes": 468883,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "fixed248",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-fixed248-v1/manifest.json",
+        "sha256": "eea16c0d7cd1b8c8a8f1d36cd817fbecf2803d5defc6d76156a797b0c2ff8327",
+        "bytes": 1253793,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "fixed249",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-fixed249-v1/manifest.json",
+        "sha256": "de6db06cc810567d1c69178d34843ccdd70c14838c01913a6bf1f9adb61dfb1a",
+        "bytes": 1263188,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "fixed250",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-fixed250-v1/manifest.json",
+        "sha256": "a3bd5752563d1247c4105837a01cf19560e106899d5eade6dddec2ca6231bab8",
+        "bytes": 1285056,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "fixed253",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-fixed253-v1/manifest.json",
+        "sha256": "5a362c4e6925ab9969126648196e54d2095e20508c1c1b43cdf13554283f2288",
+        "bytes": 1285440,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "fixed254",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-fixed254-v1/manifest.json",
+        "sha256": "a39ef847c7b3d7c7c21a8f48e45b295088bd6abefaa749e48c87c728960bbe85",
+        "bytes": 1285568,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "fixed255",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-fixed255-v1/manifest.json",
+        "sha256": "2813d92ed519a202bf7010960b44ba1b479937826819366f57275f98283e6ecb",
+        "bytes": 1285696,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "fixed1024",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-fixed1024-v1/manifest.json",
+        "sha256": "57e4c0c127dbb2b46ccde4714b8c6b3faeffa0c4deb7781e9de1a7cd1a137318",
+        "bytes": 1696466,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "dynamic249",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-dynamic249-v1/manifest.json",
+        "sha256": "11b01651bccc67c052165a976fad1c0307de85442c2f6844e896b36346cdb51e",
+        "bytes": 1957698,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "dynamic250",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-dynamic250-v1/manifest.json",
+        "sha256": "d742ecf98bf6f5d4845e7f223f1602af624fe7081fe7381912d7927f3431ad28",
+        "bytes": 1981973,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "dynamic253",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-dynamic253-v1/manifest.json",
+        "sha256": "6e1fc767644b0e86de90fb9d5ecc36da45a9d1e7127d16a6fdb62346fec7d0bb",
+        "bytes": 1982359,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "dynamic254",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-dynamic254-v1/manifest.json",
+        "sha256": "95590b2035c8882040b874f52cc06da68efcde03f192daa7420681e4bfa6d783",
+        "bytes": 1982487,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "dynamic255",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-dynamic255-v1/manifest.json",
+        "sha256": "29a0185337d88bee900bbd1602868898003ecab75cd1cae094f6166ddfb1c0ad",
+        "bytes": 1982615,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "dynamic1024",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-wake-retained-dynamic1024-v1/manifest.json",
+        "sha256": "17a9240f0d9c26e64dfe5820ce374d4ea3da411b6e0d9a48f0bf3f85bbca1635",
+        "bytes": 2426242,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    },
+    {
+      "name": "release0",
+      "result": "FAIL",
+      "status": "FAIL",
+      "manifest": {
+        "path": ".dev/session-wake-retained-release0-v1/manifest.json",
+        "sha256": "36a5e663cac4e1e309ecd537f527f7999121d536b201cd32cdc9180230af1fa0",
+        "bytes": 41157,
+        "access": "private",
+        "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+      }
+    }
+  ],
+  "retained_original_not_run": 9,
+  "original_release_failure": {
+    "path": ".dev/session-wake-retained-release0-v1/manifest.json",
+    "result": "FAIL",
+    "finding": "All9 fragments completed before withdrawal;last fragment33.840ms before release begins. No observed post-withdrawal submit;incomplete-PDU precondition absent,not acceptance."
+  },
+  "supervisor_failure": {
+    "path": ".dev/prefix-barrier-qualification-v1.json",
+    "result": "FAIL",
+    "finding": "Child release0 exit0 and REAL_CHANNEL_GRANT_PASS with complete USB proof;supervisor expected unrelated PASSTHROUGH_SUPPORT_PASS. Original record preserved;v2 consumes same independently replayed child report without rerunning it."
+  },
+  "offline": {
+    "real_evidence_negative_controls": 100,
+    "negative_control_result": "ALL_REJECTED",
+    "python_tests": 641,
+    "result": "PASS",
+    "sandbox_failure": "Unix SO_PASSCRED denied;original retained,unrestricted pure-tool rerun passed",
+    "fixture_unit_first_failure": "Corruption negative initially changed an already-zero fixture byte;fixed negative toff,initial failure retained",
+    "strict_html": "PASS",
+    "inventory": 115,
+    "local_test_source": "762412e;before fixed-target-only3f10abb change;CI ac77305 covers full tools with that change"
+  },
+  "supporting_formal": {
+    "result": "PASS",
+    "scope": "LIMITED_NOT_NEW_KERNEL_CONCURRENCY_PROOF",
+    "actual_rust_tests": 46,
+    "cbmc": {
+      "tool": "6.11.0",
+      "steps": 20,
+      "checks": 300,
+      "production_helpers": "Actual enqueue bodies and production Channelphase helpers",
+      "assumptions": "Sequential Linux workqueue/spinlock/kref contracts,stable external caller reference",
+      "negative_controls": [
+        "inverted queue reference fails",
+        "insufficient unwind fails"
+      ],
+      "limits": "No Linux API implementation/concurrency/unbounded proof"
+    },
+    "tlc": {
+      "tool": "2.19",
+      "controllers": 2,
+      "events_per_controller": 2,
+      "physical_sessions_per_controller": 1,
+      "distinct_states": 117649,
+      "generated_states": 463737,
+      "depth": 37,
+      "weak_fairness": "Runtime/Session/cleanup stages;no fairness for new events or close",
+      "negative_control": "Cannot queue Runtime while running produces lost-wakeup counterexample",
+      "reference_scope": "Table/notification subledger only;fd/security/external references excluded;zero not actual Free",
+      "limits": "Not implementation refinement,LKMM or complete lifecycle"
+    },
+    "lkmm": "NO_NEW_PROOF",
+    "provenance": "Prior unchanged-production-source checks retained,not newly claimed whole-kernel proofs"
+  },
+  "resource_policy": {
+    "solo_jobs": 12,
+    "with_vm_jobs": 8,
+    "actual_prepare_jobs": 12,
+    "cargo_target": ".dev/cargo-native-dev",
+    "no_heavy_build_during_physical_tests": true,
+    "correction": "Earlier build-resources report overstated fixed target for prepare:bundle reused fixed cache but prepare still worktree-local.3f10abb corrects all compiler/staging consumers;old manifests unchanged."
+  },
+  "firmware": {
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "sdk": "1.10.111",
+    "board_qualified": false,
+    "runtime_firmware_attestation": false
+  },
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "sdk": "d5e68a58fe38c2b04a16769c69de1e8a80e86d74"
+  },
+  "retained_materials": [
+    {
+      "path": ".dev/prefix-barrier-release0-independent-replay-v2.json",
+      "sha256": "257982e0e185b1ca12ac17e68990a00ea39a718ee88e2a8815f8aa172ef18fab",
+      "bytes": 45859,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/manifest.json",
+      "sha256": "63c0ae758a1f036ecfbf4886d2868e65efc771289522edc67f942fb090c6bb0b",
+      "bytes": 91454,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/guest-output/connected-file/run.json",
+      "sha256": "92016bdb3409227e2104a657339b0f421212e552c7f72179ef3918cf1277f2a9",
+      "bytes": 38666,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/guest-output/ws73.pcap",
+      "sha256": "4586b83927ebc0f6f84de2728cd9fc8a1e0783b30818e55759750b806b8f84c7",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/guest-output/kernel.log",
+      "sha256": "15f6129edc4a5db17edaf9bc4254f6fc98962b51b0b95554a23ec8a03fb6afa4",
+      "bytes": 348544,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/guest-output/setup-release/run.json",
+      "sha256": "3cc3d33b905679dfc40e71df905cedf4788572f5798addcc9d77ad51a5bf4ab8",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/qemu-stderr.log",
+      "sha256": "c9aeef276faaa337cf1e55ebd988c5766b1a509c7a3161eed7877b65199291f5",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/qmp.jsonl",
+      "sha256": "43d806e2bef44ab4d4446e3ed5e827411e50843a98f04f5fb5d0b67880501bc0",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release0-v1/console.log",
+      "sha256": "6152ec3f7ede2e4f39c57d7cca02b3dfc17388d3a422b3840c61017ea147b09b",
+      "bytes": 14079,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-independent-replay-v2.json",
+      "sha256": "dc244655622cb3f665bfae43fd70b21f9ac215fdd6ef0cce93abaf64bd3adfc0",
+      "bytes": 45859,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/manifest.json",
+      "sha256": "29991d6b102d58ae8cd46abc5651a96e8851424745fa41303444e032311a7cca",
+      "bytes": 91454,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/guest-output/connected-file/run.json",
+      "sha256": "2caaf44d4900c69d24df371d916a7f47a0c3922ed09b0020e8168c34d8d13813",
+      "bytes": 38664,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/guest-output/ws73.pcap",
+      "sha256": "ce0a63dc0654b0dbe5eee0d42a5072ea9a724b1566d8222a5e229eee5c1c7033",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/guest-output/kernel.log",
+      "sha256": "bff03a2db86e7a9f4a4549eb4f321b7e194df127d978689332f90bde0b3f29e8",
+      "bytes": 349511,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/guest-output/setup-release/run.json",
+      "sha256": "c5ae7dfb5725abb2fd59843553f51e1d37b5829065714313025f627413376203",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/qemu-stderr.log",
+      "sha256": "d1c1fbdac8d0198b02313cc9df6158b7eb845b6e3c1480667e73bc0f74046de2",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/qmp.jsonl",
+      "sha256": "fd44948226d9fcca373f04b1b3832e61ece1478a413a2b3801decd95c16f3a89",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-release1-v2/console.log",
+      "sha256": "9504d4f699c39ee6b3df965f6ca78583cfaa055071688f5c4fde7c7ad010a489",
+      "bytes": 13889,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-independent-replay-v2.json",
+      "sha256": "c96b1af42236b84d04abbff5b66b1a898f4c8bf3a49eff00a44fa179d8552116",
+      "bytes": 45859,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/manifest.json",
+      "sha256": "f6c9cc95cd561b9f5cc2e7e2546f4e601efae9ce905743a4083b4a5c0a2a53d5",
+      "bytes": 91384,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/guest-output/connected-file/run.json",
+      "sha256": "23029c47fa6bc596d5f0acfeabda778bd6a08a05a8a16aab00ff97ba66b6458e",
+      "bytes": 38563,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/guest-output/ws73.pcap",
+      "sha256": "30f5b7f4e96ce712d99d62f67bc48522c060d1ce26a543cd251f2722d51c6a15",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/guest-output/kernel.log",
+      "sha256": "fb45e76f90d4572975b2dc5777e14cc0decb4fadaea6022dd9916c42418d3980",
+      "bytes": 349365,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/guest-output/setup-release/run.json",
+      "sha256": "3f23a47403ccf8f61e04bbbc9213b59e9c1b68b223be5f3cf7d0dfeacf33e03d",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/qemu-stderr.log",
+      "sha256": "c6739efbd77b17582aed3a35e13588f348d592e9b51d6d7d4811807782e1a7f6",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/qmp.jsonl",
+      "sha256": "43d806e2bef44ab4d4446e3ed5e827411e50843a98f04f5fb5d0b67880501bc0",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close0-v2/console.log",
+      "sha256": "86548d0709e55c8c9f95e5dc6452220d73de92794bc13a5128fbb6c58b671fbe",
+      "bytes": 13887,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-independent-replay-v2.json",
+      "sha256": "ae4029e3ec88c93957c316a55db75bc064b56497f33f18c5c38c513a0f6009c8",
+      "bytes": 45859,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/manifest.json",
+      "sha256": "e165f0c18d215304c79f242e0e73e7ad3d28ce1dae25e53d675135c8b70b1b36",
+      "bytes": 91384,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/guest-output/connected-file/run.json",
+      "sha256": "79317a1b038c5972438db8dc06b0db9f5a162b752cff4cb5146b1e6266c4b5c7",
+      "bytes": 38564,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/guest-output/ws73.pcap",
+      "sha256": "5e7775bfe92846aea2ba660fe4d0cfc0e1fdb8412f54f85eb6fa6af2fafa9931",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/guest-output/kernel.log",
+      "sha256": "0b1182862107db061bebb3e387294e2940688ff6b788c558d62d9d1d293f950a",
+      "bytes": 349231,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/guest-output/setup-release/run.json",
+      "sha256": "00ab31c97da2b5ce6d2f26e2ad7e811c433ff0b98cfba0f34291901e451831a8",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/qemu-stderr.log",
+      "sha256": "f256b23ffb6c8f546d0e28127b20dc75f734847cfd0db1bbf953af69ed91e19b",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/qmp.jsonl",
+      "sha256": "fd44948226d9fcca373f04b1b3832e61ece1478a413a2b3801decd95c16f3a89",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-close1-v2/console.log",
+      "sha256": "eab889b51c06c301d31c3ecdc7645cf0f89fbacfa9651e7e1db5499e9c3edd71",
+      "bytes": 13887,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-independent-replay-v2.json",
+      "sha256": "3d592eabe2b9c3ebbdf4a67472758dd49a7353bb85f55dc2eb9e3ca29ecd0824",
+      "bytes": 61499,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/manifest.json",
+      "sha256": "4b93038e95ac687d3343318c8c52f86d876f7799555f55a463b838059c6f5eb1",
+      "bytes": 106954,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/guest-output/connected-file/run.json",
+      "sha256": "b56a992c20679a9d4dfe21bea100dd9e75cd73a937f22613ea28c24fcbb717ce",
+      "bytes": 41613,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/guest-output/ws73.pcap",
+      "sha256": "8e0073b4948aede8afb8404b9e9a8ab88758961e294dcfc4882c122f6e5b0769",
+      "bytes": 88377,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/guest-output/capture-stats.txt",
+      "sha256": "58d0f63402f1f8921ad062388d5dca5e772cbbc1780838f7c66d8734dfbc22d3",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/guest-output/kernel.log",
+      "sha256": "3f5ce4fa354df73b3ac3dbd830dc83fd3b4433bc1efa0770c006b0610aad61b4",
+      "bytes": 348967,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/guest-output/setup-release/run.json",
+      "sha256": "189dc4a00c19e7d60a1ab1b3db15c4f26dc28cdbfe1d6dc0060184ea32212720",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/qemu-stderr.log",
+      "sha256": "5070b95813afbe7e34cf0366010e8f20c351c8cacba11cb5f0fa64a4803231d7",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/qmp.jsonl",
+      "sha256": "43d806e2bef44ab4d4446e3ed5e827411e50843a98f04f5fb5d0b67880501bc0",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup0-v2/console.log",
+      "sha256": "8d6be67063d410ebb62dc0d0f32f5701b58488db8648a8a521f1c6568f26efdf",
+      "bytes": 13885,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-independent-replay-v2.json",
+      "sha256": "8e804c869c8b82c940a1c86c94470e2e25cfcb34294a0ef69e941ed5d6c42532",
+      "bytes": 61499,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/manifest.json",
+      "sha256": "84bce0930de7a8ec87a7e3f19e0456b25002dd3e00f226ee65764a6964b7da1b",
+      "bytes": 106954,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/guest-output/connected-file/run.json",
+      "sha256": "0ade39526663fb5f716e067f6584074a51f4d8a28bcdfa92b7b6177660f19f06",
+      "bytes": 41612,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/guest-output/ws73.pcap",
+      "sha256": "21e26482e35ec980dc5a3ca8fcbc8174c0275e697356993845448af051224c8f",
+      "bytes": 88377,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/guest-output/capture-stats.txt",
+      "sha256": "58d0f63402f1f8921ad062388d5dca5e772cbbc1780838f7c66d8734dfbc22d3",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/guest-output/kernel.log",
+      "sha256": "18fa813caade55a97c518a20c8ecc10e5cbe11f37e753d29b260e577bedbeeb0",
+      "bytes": 349361,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/guest-output/setup-release/run.json",
+      "sha256": "080beea8b579c23d6cffdf00dac80787b510e8ff0b85c88bf081d86ee4f0cd7d",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/qemu-stderr.log",
+      "sha256": "931f7b32eaeb2de6ce9394cae0dc2bfb3067c3187dbf96f83c3f2c631b6e6822",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/qmp.jsonl",
+      "sha256": "fd44948226d9fcca373f04b1b3832e61ece1478a413a2b3801decd95c16f3a89",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-dup1-v2/console.log",
+      "sha256": "0406bc3f231e81c917f78d237f6c0e43cfa9c78e4965a7e1e64382f61521ef6c",
+      "bytes": 13885,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-independent-replay-v2.json",
+      "sha256": "185acf9ac0dbd42e79ddf5c96891ae450672a5f062db455c7075905ed104b5a7",
+      "bytes": 17576,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/manifest.json",
+      "sha256": "4840fcd4aad4642fcdcd5497ef8b0c8f3ba1b847ddd05ad2445fc4e0935e1b07",
+      "bytes": 63346,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/guest-output/connected-file/run.json",
+      "sha256": "d8752211668c7322781e4589cff6f6421d4b3fa66c188bdbed64b5bcb2af759b",
+      "bytes": 42483,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/guest-output/ws73.pcap",
+      "sha256": "195df1bce7edbec78ff902612950d64c262bf9bcbc7a218383c37bf86231dcb9",
+      "bytes": 84248,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/guest-output/capture-stats.txt",
+      "sha256": "aa5698a3e66780427598b2af590d8d8f51a786baa8586863ee2144da55d2ba43",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/guest-output/kernel.log",
+      "sha256": "c538e695552bb491e2fad2c7a610d32a2b9b4fba9e327faed450a2d04067482e",
+      "bytes": 349698,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/guest-output/setup-release/run.json",
+      "sha256": "59a79d417f603331a3cf0beeaba9fa2aced8e89f5356f3541ff7f6aa5aef078b",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/qemu-stderr.log",
+      "sha256": "00731f2cba2f471455110a0f6bbf01cc07ac533fc166b994d65a104c25391fb3",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/qmp.jsonl",
+      "sha256": "43d806e2bef44ab4d4446e3ed5e827411e50843a98f04f5fb5d0b67880501bc0",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down0-v2/console.log",
+      "sha256": "3fee2a8f379737f5dcde7a4caf51180177ec37b59374dc3fe4c768668d400354",
+      "bytes": 13914,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-independent-replay-v2.json",
+      "sha256": "627166c56236b9fc63477f6703669d2c15eec6f1fcec1ba7b40e5b9b6f1b7e91",
+      "bytes": 17576,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/manifest.json",
+      "sha256": "d2103b2cf053e6931c46374f6c40c0c1f7fc6a89e68143062dd4630f2586e306",
+      "bytes": 63346,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/guest-output/connected-file/run.json",
+      "sha256": "fa067bd9dd6b6ec1681a93e7796800720baf89ef282313c9174c12f8fe89b53a",
+      "bytes": 42484,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/guest-output/ws73.pcap",
+      "sha256": "3800586a3b2b1e14a2e260fda689d41da8f699b3491afe2ca3026d9418b2f251",
+      "bytes": 83423,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/guest-output/capture-stats.txt",
+      "sha256": "c6fa95345ef389a9c00220e84d3e9e6eff1ed817e754c2c79c3c5aecf37fb467",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/guest-output/kernel.log",
+      "sha256": "1d01bf212aab2bc0c74756350a5c4c55b8fb2b3da1f6c095fe34d18032807baa",
+      "bytes": 348320,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/guest-output/setup-release/run.json",
+      "sha256": "02c6e17e7dd6bed2e118fa7d80e2aa7ff0c80d13c8d68bb54911d308a5c22d81",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/qemu-stderr.log",
+      "sha256": "afea0a4a9c264c66eec44068efb5cc9fb076fc86ea72d618ff1b29cbd6730c56",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/qmp.jsonl",
+      "sha256": "fd44948226d9fcca373f04b1b3832e61ece1478a413a2b3801decd95c16f3a89",
+      "bytes": 11151,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-down1-v2/console.log",
+      "sha256": "286a2767a579e1e8518e25461f4984e78993dcdb526fac2151413ac1a834e9bc",
+      "bytes": 13724,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-independent-replay-v2.json",
+      "sha256": "90fcb7278b56b98cdf41b35106630312389ba12ef0dedfc92faa6e125edf40f4",
+      "bytes": 16339,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/manifest.json",
+      "sha256": "e9974e8189291ac976c99034fa302c2f7ca4abaec1d530ec4e70ac597d1f024a",
+      "bytes": 62146,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/guest-output/connected-file/run.json",
+      "sha256": "aa8fffe817ca58498cd63c5d4fec078a65fa75f50d2baba7b4680b7b93a60da5",
+      "bytes": 45020,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/guest-output/ws73.pcap",
+      "sha256": "71a6c526b89d6a01a138773ee4f0db6fed8f4d37e03b508e345ebd56c276bd3b",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/guest-output/kernel.log",
+      "sha256": "7f2541af034845b7f97692cd1defde803b2d898814ee2d18ff2de283036b5a69",
+      "bytes": 348364,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/guest-output/setup-release/run.json",
+      "sha256": "14f81f3b26032ead898fa8ea6386010cf4a936fa4fbcc8f3c24f4f6d8e2e4491",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/qemu-stderr.log",
+      "sha256": "4e541bf3f3407b2bca3f41b8696fdb361eab13ee0df62337d1437b73af329510",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/qmp.jsonl",
+      "sha256": "a2bbf221941ba76f712a9f7c729e71d787fb630ad8351d9a642a07c48338974d",
+      "bytes": 11367,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline0-v2/console.log",
+      "sha256": "81a81cdbe684623f5f5dec3072dec63ba6b8a873443128c5029961176f68481e",
+      "bytes": 14103,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-independent-replay-v2.json",
+      "sha256": "ae93b697068baa4d44f32cfee74e79d0f9d1564b17d0b92980dce45b58f5ece7",
+      "bytes": 16339,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/manifest.json",
+      "sha256": "bcd60c43539d67fa08283cfdb410d625048a43d4c284d27365e74f215955f392",
+      "bytes": 62146,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/guest-output/connected-file/run.json",
+      "sha256": "d70e032b1edf2d1e73b9d90763aa28d36d26faeb4f8b12494ac91afa9d8df235",
+      "bytes": 45021,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/guest-output/ws73.pcap",
+      "sha256": "3109ae772e18fb905540df9d00485d820ead3220796b4ca86697efa16bdd4615",
+      "bytes": 81773,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/guest-output/capture-stats.txt",
+      "sha256": "c4b27a7daa092d1147fa996050f47fda9a03a9661416913c92856638c85943dc",
+      "bytes": 225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/guest-output/kernel.log",
+      "sha256": "7ec6ca36ce137f69f53d7e20e12ed1c5ff733892fc659a683e846c1bd2fdab34",
+      "bytes": 348673,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/guest-output/setup-release/run.json",
+      "sha256": "b5586f2f46007243f7afd30a4b424abaf42d16cf06e20ec5ac859793e01a37ae",
+      "bytes": 10005,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/qemu-stderr.log",
+      "sha256": "8b2f271bfc8c1dd87d5b1af0a52fa6beeff9c4dad322c1176cf709e9ff5346a8",
+      "bytes": 257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/qmp.jsonl",
+      "sha256": "a01efbc47be7321c5860444e5cdb2a2bf1320de95ebf3d5367240c0ba8ee5049",
+      "bytes": 11367,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline1-v2/console.log",
+      "sha256": "76ded8a9e46b5cc31241708538ec1e4c92f08379d3d0b2b215166c68849fd531",
+      "bytes": 13913,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-window-repeat2-v1/manifest.json",
+      "sha256": "d8b078777f6983f7bf1650dbf83fc706d622c3532fda5796bbd2ba8bb2b59bc1",
+      "bytes": 468880,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-window-repeat3-v1/manifest.json",
+      "sha256": "5733fc24a74d6293e33fb3348835ce53d58bf35d6db45a182f903cc9ace247bc",
+      "bytes": 468883,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-fixed248-v1/manifest.json",
+      "sha256": "eea16c0d7cd1b8c8a8f1d36cd817fbecf2803d5defc6d76156a797b0c2ff8327",
+      "bytes": 1253793,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-fixed249-v1/manifest.json",
+      "sha256": "de6db06cc810567d1c69178d34843ccdd70c14838c01913a6bf1f9adb61dfb1a",
+      "bytes": 1263188,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-fixed250-v1/manifest.json",
+      "sha256": "a3bd5752563d1247c4105837a01cf19560e106899d5eade6dddec2ca6231bab8",
+      "bytes": 1285056,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-fixed253-v1/manifest.json",
+      "sha256": "5a362c4e6925ab9969126648196e54d2095e20508c1c1b43cdf13554283f2288",
+      "bytes": 1285440,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-fixed254-v1/manifest.json",
+      "sha256": "a39ef847c7b3d7c7c21a8f48e45b295088bd6abefaa749e48c87c728960bbe85",
+      "bytes": 1285568,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-fixed255-v1/manifest.json",
+      "sha256": "2813d92ed519a202bf7010960b44ba1b479937826819366f57275f98283e6ecb",
+      "bytes": 1285696,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-fixed1024-v1/manifest.json",
+      "sha256": "57e4c0c127dbb2b46ccde4714b8c6b3faeffa0c4deb7781e9de1a7cd1a137318",
+      "bytes": 1696466,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-dynamic249-v1/manifest.json",
+      "sha256": "11b01651bccc67c052165a976fad1c0307de85442c2f6844e896b36346cdb51e",
+      "bytes": 1957698,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-dynamic250-v1/manifest.json",
+      "sha256": "d742ecf98bf6f5d4845e7f223f1602af624fe7081fe7381912d7927f3431ad28",
+      "bytes": 1981973,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-dynamic253-v1/manifest.json",
+      "sha256": "6e1fc767644b0e86de90fb9d5ecc36da45a9d1e7127d16a6fdb62346fec7d0bb",
+      "bytes": 1982359,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-dynamic254-v1/manifest.json",
+      "sha256": "95590b2035c8882040b874f52cc06da68efcde03f192daa7420681e4bfa6d783",
+      "bytes": 1982487,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-dynamic255-v1/manifest.json",
+      "sha256": "29a0185337d88bee900bbd1602868898003ecab75cd1cae094f6166ddfb1c0ad",
+      "bytes": 1982615,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-dynamic1024-v1/manifest.json",
+      "sha256": "17a9240f0d9c26e64dfe5820ce374d4ea3da411b6e0d9a48f0bf3f85bbca1635",
+      "bytes": 2426242,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-release0-v1/manifest.json",
+      "sha256": "36a5e663cac4e1e309ecd537f527f7999121d536b201cd32cdc9180230af1fa0",
+      "bytes": 41157,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-qualification-v1.json",
+      "sha256": "0082f5fd825c8cc98594ddba574004327c96ffb44f2316529d523bac942c1a9b",
+      "bytes": 7090,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-qualification-v2.json",
+      "sha256": "624e2ce7925e14ecc4f86f301b5c0a96942a941e596bf4be91b72faac7c13620",
+      "bytes": 11035,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-qualify-v1.py",
+      "sha256": "f22bcd49727a05a15b8aad543b82f597070681b32c2db023aef926c2f7c40f3d",
+      "bytes": 4417,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-qualify-v2.py",
+      "sha256": "82de81b349dcdad2f5bb0057d63d71cc2366b090fbf08531205d6ea0d5b7049f",
+      "bytes": 3570,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/replay-prefix-barrier.py",
+      "sha256": "8dde0299b863b29f5f48767fdd4560243be101a9d90110f52e87ef7c964c728f",
+      "bytes": 1490,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-followups-v1.json",
+      "sha256": "397f469bfc26bb0aea35e6d8048ab01efa089761158b1b1219e711f46cff4691",
+      "bytes": 21596,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-followups-v1.py",
+      "sha256": "e2488f90b618f76027431aeec46735cde278eacf642a3edf9a4f729a534c35ce",
+      "bytes": 3207,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-unit-v1.log",
+      "sha256": "30cc23f4260273f934344fcae5bb2b2182a94be736a324ee6962a3a9675fc746",
+      "bytes": 4314,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-unit-v2.log",
+      "sha256": "8fd9f8bee12c40faba5330fb73ac49c6cd2bf320d8a842381dc55f821377cf8f",
+      "bytes": 2427,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-full-python-v1.log",
+      "sha256": "4bfc153e7121bf80f418cee165dcd96c8fd70be11f3a501356502e200f2383fb",
+      "bytes": 1475,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-full-python-v2.log",
+      "sha256": "725e6abc1945608c4185849ee9773ec9af2e9377a54e76be8cb87779db552a12",
+      "bytes": 776,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-docs-v1.log",
+      "sha256": "2ff2cd02a24c76dc7b71c927e97465cf8a7b2f6181f36103fd2fc68844172d9d",
+      "bytes": 194397,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-ci-ac77305.json",
+      "sha256": "bae185c4fe33583572298efdf5295e29d9da86730e39b079a7fcea050cdc61ac",
+      "bytes": 13333,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-ci-ac77305-jobs.json",
+      "sha256": "fe65a713978e8342d24108ce9052c34af3735a806e93835f500116a8ab93f247",
+      "bytes": 24646,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-real-negative-controls-v1.json",
+      "sha256": "d7f75f36745e33e650bcd415010aa8546d26a6a27bfdb3ce1798d8ded42a63d9",
+      "bytes": 21338,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-real-negatives.py",
+      "sha256": "06643a737243ea118a90f161d8412dfb8308ba727ee9b0aa5b761154c88404d1",
+      "bytes": 3286,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-qualification-v3.json",
+      "sha256": "d8c660db6ed0d1cd11849c76bd07a381c3ab23c2f165cac75ceb9e870f57bebd",
+      "bytes": 13328,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-native-data-final.json",
+      "sha256": "875526bd8bb05b0bdf7b8707ec38adaf35f4674649ad3725ed3d99da687517ca",
+      "bytes": 2208,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-native-data-final.log",
+      "sha256": "ac4283a381e84d61a7266e3a0364139f95a49970921cc302ddcc9baf0fc6ac19",
+      "bytes": 10122,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-enqueue-final.json",
+      "sha256": "421bd38f9e56b854136b6a9f9fe0769cba5e07b60858655e56fc27c1b65059f2",
+      "bytes": 4823,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-enqueue-final.log",
+      "sha256": "0ea2bf59ab2e96d025d71726abaefe6ce6ad9617d89d68a90b26a60cda05e823",
+      "bytes": 4872,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-notification-tlc-v3.log",
+      "sha256": "c5ecfcfe5139741fbdb1b9d402c99e24f6a81880b4878dbb37b3eae384ebf63e",
+      "bytes": 2130,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-notification-tlc-negative-v1.log",
+      "sha256": "4adad77a57836996b3d22c6a9521db35f144c99d54a86ff2d1ba4c05a7628f0a",
+      "bytes": 5498,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-cbmc-final/report.json",
+      "sha256": "d587c220b481f06818a09f8912fa73496314158bc3ece1910ac74c0a8576cb6b",
+      "bytes": 3175,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-cbmc-final/production.c",
+      "sha256": "b604c79922114f9f31bb33924fc44ec3f008ee6cffbc0b701ad972490f855e87",
+      "bytes": 5710,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-cbmc-final/production.json",
+      "sha256": "2e4a5db75a43c22212de001e14a9e1843357f4be8313a726df3d9b30b7bd9734",
+      "bytes": 345495,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-cbmc-final/inverted-queue-reference-negative.json",
+      "sha256": "c97faf440dfc8931e16966605a3a71323c87f2b290b277d505b3614405ee3af0",
+      "bytes": 5586320,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-cbmc-final/short-unwind-negative.json",
+      "sha256": "b2550beb25c75105aa221311314dd29bad70453199bbfcaa3ddb21c77d352075",
+      "bytes": 620048,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-normal-prepared-v1/manifest.json",
+      "sha256": "40a7262635ec3e80a2ba68891fb0c698eafe17832c10c78adee2f2157f8cdf2c",
+      "bytes": 267873,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-normal-prepared-v1/bzImage",
+      "sha256": "c9e455ab62504113fb333c00956a9e33e475002ad73ad9dceb5d4a8f0a053c81",
+      "bytes": 15745024,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-normal-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-normal-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-normal-prepared-v1/root.btrfs",
+      "sha256": "2cded92ca2af0a51894e0b941fd41f2f148b3ca9b2ec6820696cb4211ff17193",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "349246e6765968cd3c975c7ba4256899b06b3bcc6d1f94859e4595ccd9b826f2",
+      "bytes": 6148713,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "78ebebd124ffd28a8c8e083553de8ca0f8ab2d6026f833a11e636a879764da01",
+      "bytes": 1238401,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "9229a41a9a731c2ab3bc5947fbeb0c19a514e751534a214ff6f616cd30749fe6",
+      "bytes": 3196225,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "cabf7c2d3707254fd61a9c7c771a866e63804fd37ef1f07d6028281c2cb385ab",
+      "bytes": 614513,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "3099b5c347a56eafe3dda3ee4cf9e7305de5f1c095ad60a3bbe2e6c25c70b47e",
+      "bytes": 603641,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-normal-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_prefix_hold.py",
+      "sha256": "b6a361cac24a809cc98f5fb3126b030b61649823069f12eb65c8c74f1272f30d",
+      "bytes": 7336,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-normal-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_grant.py",
+      "sha256": "cda7466bf939bd241c1574362e81ac4158dc183f5491dfe1edb845b4038e790b",
+      "bytes": 29257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-normal-prepared-v1/root/usr/share/sparklink/tools/ws73_connected_file_gate.py",
+      "sha256": "bda3e38ad3336ae059ae2a89e4f8b0fa386fd79eeed49117de937b31464d9c56",
+      "bytes": 44056,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline-prepared-v1/manifest.json",
+      "sha256": "f2a5460f66706de298e3c89179722f3f87b59b792a52bced0c31b141d6b5c2d7",
+      "bytes": 269701,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline-prepared-v1/bzImage",
+      "sha256": "c9e455ab62504113fb333c00956a9e33e475002ad73ad9dceb5d4a8f0a053c81",
+      "bytes": 15745024,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline-prepared-v1/root.btrfs",
+      "sha256": "1ce730d79e35fb57021420ba4bffa922031b369d6378ddbbedb82573a8095460",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/data-deadline-qemu/qemu-system-x86_64",
+      "sha256": "e4bcb57e0d3abbadb40d3805008e20284bcd6380f1944f3581c0d9a5ffdf2b97",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_prefix_hold.py",
+      "sha256": "b6a361cac24a809cc98f5fb3126b030b61649823069f12eb65c8c74f1272f30d",
+      "bytes": 7336,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline-prepared-v1/root/usr/share/sparklink/tools/ws73_channel_grant.py",
+      "sha256": "cda7466bf939bd241c1574362e81ac4158dc183f5491dfe1edb845b4038e790b",
+      "bytes": 29257,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/prefix-barrier-deadline-prepared-v1/root/usr/share/sparklink/tools/ws73_connected_file_gate.py",
+      "sha256": "bda3e38ad3336ae059ae2a89e4f8b0fa386fd79eeed49117de937b31464d9c56",
+      "bytes": 44056,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/manifest.json",
+      "sha256": "6e293527386fd72155bceb096dfc72edd2df0c9a0a875a6e371fff2c140023e0",
+      "bytes": 26235,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/9385c8a91243/slkd",
+      "sha256": "254f268b6251a82a760ee92c3f6f531247c9fec984e62dde9108a9bcd049e7a5",
+      "bytes": 10476632,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/9385c8a91243/slctl",
+      "sha256": "76ca0d1690ed5b9d1cccc693c825b922a46cc92695f892ea42491fb0b8b44f05",
+      "bytes": 7804536,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/9385c8a91243/slktest",
+      "sha256": "9c5ecf97cd0afe2d8d288b5cc82bca978e01eee55795026a4912c817578cb2cf",
+      "bytes": 5233016,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/9385c8a91243/slkconfig",
+      "sha256": "64a136d8b035453bdb15a5649a199af238770353bead5ed2553eb8e92a7a31d3",
+      "bytes": 1403944,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/9385c8a91243/slkmon",
+      "sha256": "dcac45cb127a41c434158c345a01eeb96e5b2ae6e8accb04cd9571a5b989d5ba",
+      "bytes": 1662136,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/9385c8a91243/slkdump",
+      "sha256": "6d5fa01fe056050475b635f7f6539be68c671e2e410b301b6f70a97221653674",
+      "bytes": 1662008,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/9385c8a91243/liblibsparklink.so",
+      "sha256": "de262e57b01e321d03c613115ffb1d19c2a29ab6a75edab771680c92b34274d7",
+      "bytes": 545432,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "df1f9f2a5e601edf67c67565e1a5a86da055a2c2c91807ee96bdb07931469029",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "9f34020d0f5e2d649dd4ca43b604104a737d33425d2f68779303611eec338338",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-service-bundle-v3/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-release0-v1/guest-output/ws73.pcap",
+      "sha256": "50cf727c8c2ac7d7d58a6e23416d930cd93c7a28177ec72838c731690481b33d",
+      "bytes": 89268,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-release0-v1/guest-output/connected-file/run.json",
+      "sha256": "3ac6e8ad849ac8850e4ef4b40633ea4cc3b5d922043a26ab27c89939707f3664",
+      "bytes": 36114,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    },
+    {
+      "path": ".dev/session-wake-retained-release0-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Original local workspace;authorized maintainers only;no verified offsite availability"
+    }
+  ],
+  "ci": {
+    "commit": "ac7730503e8802f047168cb311cbfd77670e18f5",
+    "run": "https://github.com/OpenSparklink/sparklink/actions/runs/38909419536",
+    "jobs": 9,
+    "result": "PASS",
+    "scope": "Hosted pure-tool/sanitizer/Cargo/UAPI gates;not hardware,CBMC,TLC or whole qualification"
+  },
+  "formal_gates": [
+    {
+      "name": "actual-Rust-state-fixture",
+      "result": "PASS",
+      "status": "46_TESTS_PASS_DEPENDENCIES_ARE_FIXTURES"
+    },
+    {
+      "name": "actual-enqueue-CBMC",
+      "result": "PASS",
+      "status": "300_CHECKS_20_STEPS_WITH_DEPENDENCY_CONTRACTS"
+    },
+    {
+      "name": "Session-notification-TLC",
+      "result": "PASS",
+      "status": "117649_STATES_WITH_EXPLICIT_FAIRNESS_AND_SUBLEDGER_SCOPE"
+    }
+  ]
+}

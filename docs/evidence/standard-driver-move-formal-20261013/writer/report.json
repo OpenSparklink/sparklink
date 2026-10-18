@@ -1,0 +1,39 @@
+{
+  "status": "MODEL_CHECKED_SCOPED",
+  "exit": 0,
+  "timed_out": false,
+  "properties": 116,
+  "warnings": [],
+  "source_head": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
+  "source_sha256": "f3834f07caa73bf1e0286f197ea31de80bb124ed0b10217039c851d47118b9b0",
+  "actual_function_sha256": "71582e2eaeb6e50570eb55924ce7a5d626a637d33af354cc6a5d514ef52d4d27",
+  "generated_sha256": "e80b8a5d87df0e10055aeb13c7ecae4fc50e64e546f391196fa79608c7ba803a",
+  "tool": "6.11.0 (cbmc-6.11.0)",
+  "command": [
+    "cbmc",
+    "/home/sanchuanhehe/Documents/opensparklink/.dev/driver-move-writer-proof/actual.c",
+    "--bounds-check",
+    "--pointer-check",
+    "--signed-overflow-check",
+    "--unsigned-overflow-check",
+    "--memory-leak-check",
+    "--malloc-may-fail",
+    "--unwind",
+    "4",
+    "--unwinding-assertions",
+    "--json-ui"
+  ],
+  "bounds": "Full int32 parameter length/timeout/USB return, all u16 opcodes/indices/u8 target types; active/missing-device/null-params/allocation-failure states; valid parameter object65531 bytes; no loop-bound reduction of admitted length. Unwind4 for modeled dependencies.",
+  "assumptions": [
+    "Process-context caller pins context/device and holds I/O lock",
+    "memcpy abstracted to read/write-range assertions only: payload-byte provenance is NOT proved",
+    "little-endian primitive and USB APIs are controlled dependency models",
+    "No concurrency/URB/module/refcount/Host-credit/controller-Complete/Ready or hardware proof"
+  ],
+  "implementation_regression": "actualC25 sanitizer cases incl65531/65532/65535, shorts/timeouts/alloc failures and C setup/header matching",
+  "physical_acceptance": false,
+  "production_proof": true,
+  "budget_seconds": 60,
+  "tool_source_sha256": "c1e448350d2fc7235f87bb6ebbc5b7863100d7511409d4851b07f77b7745c522",
+  "weak_wlength": false
+}

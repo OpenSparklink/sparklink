@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "result": "ORIGINAL_COLD_ZERO_ASSUMPTION_FAILURE_RETAINED",
+  "classification": "Test environment/accounting assumption; no growing per-connection fd leak established by this failure.",
+  "original_failure": "Actual C final SlkConnection close returned; thread count converged but comparing fd count with pre-Tokio process baseline failed. Original binary, exact source hashes, stderr and diagnostic fd targets retained.",
+  "attribution": "Actual C process shared-library stack and socketpair syscall show the pinned Tokio copy initializing its signal OsExtraData through OnceLock. The2 observed sockets are this fixed runtime foundation resource. Dependency source bytes checked against the Cargo.lock crate checksum, not just a guessed installed version.",
+  "dependency_sources": [
+    {
+      "package": "tokio",
+      "version": "1.51.0",
+      "path": "src/signal/unix.rs",
+      "sha256": "a505ee54eb7b357546c4b9a2f6a2048a668ce7f773263f948b05a0df97cb9d4b",
+      "crate_checksum": "2bd1c4c0fc4a7ab90fc15ef6daaa3ec3b893f004f915f2392557ed23237820cd"
+    },
+    {
+      "package": "tokio",
+      "version": "1.51.0",
+      "path": "src/signal/registry.rs",
+      "sha256": "4daadcf4cd222e3569fd9211637becf61c2a160cb1b214df1d65af5de5b01a3d",
+      "crate_checksum": "2bd1c4c0fc4a7ab90fc15ef6daaa3ec3b893f004f915f2392557ed23237820cd"
+    },
+    {
+      "package": "tokio",
+      "version": "1.51.0",
+      "path": "src/runtime/signal/mod.rs",
+      "sha256": "7cae37626477a94dfe683df137b6bc669ef023b626c9e7e2c7af850769d9e5a2",
+      "crate_checksum": "2bd1c4c0fc4a7ab90fc15ef6daaa3ec3b893f004f915f2392557ed23237820cd"
+    }
+  ],
+  "correction": "Test now checks exact cold cost +2 for these C/Python environments, then16 actual Client open/close cycles per language and final derived-view close against the same warmed fd/thread baseline. No per-iteration slack, skipped case, silent retry or deadline extension. Partial diagnostic stack tracing was intrusive and failed/timed out; not a qualification. Syscall-only attribution is separate.",
+  "limits": [
+    "Finite private-bus lifecycle/serialization fixture, not protocol, actual permission, kernel concurrency or real WS73 proof.",
+    "The fixed resource belongs to the SDK-linked Tokio copy; multiple separately linked runtime copies in one process require separate accounting. No claim about arbitrary runtimes, library unload, completeLinux or hardware.",
+    "Original cold-zero FAIL and the temporary diagnostic missing-standard-header compile FAIL remain unchanged; new results do not overwrite either.",
+    "Exact new source/artifact offline and actual public SSAP device gates still require separate sealing. Whole architecture and all original issues remainopen."
+  ],
+  "materials": [
+    {
+      "path": ".dev/architecture-r5f3-ffi-v4.log",
+      "sha256": "b0a0f6d9c53d7f4b0a47e6b3b9ef53ae03e76fa16fd68ef98de3957eb8127bf7",
+      "bytes": 1058,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v4/client",
+      "sha256": "be4091702a8288a884829c6aa67dd0318e4d0f8b1918ec6a54882f2c40828ff9",
+      "bytes": 87328,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v4/libsparklink.so.0",
+      "sha256": "9fccd67cabc68577d80f127d0e9fa6c276aa0415ba1f274df523af64724fb355",
+      "bytes": 57945280,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v4/c.stderr",
+      "sha256": "38bf104deab6f4a38dc69a31d6c3c8e5aa9ec26eccf70d1481ce3fc45149383a",
+      "bytes": 270,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v4/materials.sha256",
+      "sha256": "6411e260d087dda9d380e4c159ec754fb76794b8d0ea0bb171373f62aafe0f69",
+      "bytes": 1095,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cold-zero-source-v1/application_client.c",
+      "sha256": "1e9b41d6e0608de146a2e6c60f163613c38def32ee07441c613ee42e3571fe17",
+      "bytes": 5868,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cold-zero-source-v1/application_client.py",
+      "sha256": "6cb4816c02320a13a8f11a2b6b837be5139b73218d85cfe64d86dd939e341840",
+      "bytes": 4071,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cold-zero-source-v1/RETENTION.txt",
+      "sha256": "b42f3bdeaeffc8c7dff8f046c4f3c5f744f9862833bc3fbe9a3f986fcbeceef4",
+      "bytes": 286,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-ffi-v5.log",
+      "sha256": "3030161ffd4204407ed54d63b81b65a545f05192ebc63d90bf9c75092c1b3299",
+      "bytes": 1921,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v6/c.stdout",
+      "sha256": "63dd3017fc3b5d8bfb207eb96949cb13e7d2cedbb629559c8b00e062b5ee515e",
+      "bytes": 743,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v6/c.stderr",
+      "sha256": "f18950cbb815f289f5aaf1f68d81c061042305533b7e3535eab03c82071f2aba",
+      "bytes": 271,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-fd-trace-v2.log",
+      "sha256": "5c8ff87e7d030571e5252f8123f29a7f6cff8f48e11686e801d8e8a88748fb92",
+      "bytes": 35793,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-fd-trace-v3.log",
+      "sha256": "f80fbc83a6741252198ed6d7c3d0dc2e81bee9f1dfd2d20fa168dc3aa49d3654",
+      "bytes": 11395,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-stacktrace-interruption-v1.json",
+      "sha256": "81e6c9862aa46a141cd570152dde66ffafc3dca1e5cf4bde6634940393d355a1",
+      "bytes": 392,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-ffi-v8.log",
+      "sha256": "f8ae007dedc469c50c603bfc4f22b9dcb697d7b42343984a0def0821d0109479",
+      "bytes": 451,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-ffi-v9.log",
+      "sha256": "a0f17ff603f777a01968fb1f78ebf554980a0d5517cde07bb050b1d04d4f55e6",
+      "bytes": 338,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-ffi-v10.log",
+      "sha256": "62bf11c33034d89dca4b72d2b89afd99296091092b0a57ac2d52e1e15c327e33",
+      "bytes": 750,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v10/client",
+      "sha256": "7b1d538cae355b47cdcfc05effa481a258bff7addcf58961ce3deac2f49346fc",
+      "bytes": 87328,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v10/libsparklink.so.0",
+      "sha256": "9fccd67cabc68577d80f127d0e9fa6c276aa0415ba1f274df523af64724fb355",
+      "bytes": 57945280,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v10/c.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v10/python.stdout",
+      "sha256": "dbce07ca856de31f8a697f4664a4ab603f356ace54c736649745bdf53382ec3e",
+      "bytes": 101,
+      "access": "retained private originals, not publicly copied"
+    },
+    {
+      "path": ".dev/architecture-r5f3-cross-language-v10/materials.sha256",
+      "sha256": "0ddfedb17e4df3ce22f0d67a8a4b5461aa7cdbc35a3fb5c3df70c8855bfbdcee",
+      "bytes": 1097,
+      "access": "retained private originals, not publicly copied"
+    }
+  ]
+}

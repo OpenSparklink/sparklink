@@ -1,0 +1,15 @@
+    /// Get subsystem statistics
+    async fn get_stats(&self) -> zbus::fdo::Result<SubsysStats> {
+        let st = self.state.lock().await;
+        let s = st.adapter.subsys_stats().map_err(map_err)?;
+        Ok(SubsysStats {
+            dev_count: s.dev_count,
+            active_connections: s.active_connections,
+            total_conn_created: s.total_conn_created,
+            total_mgmt_submitted: s.total_mgmt_submitted,
+            total_mgmt_timeouts: s.total_mgmt_timeouts,
+            crc_errors: s.crc_errors,
+            power_state: s.power_state,
+        })
+    }
+

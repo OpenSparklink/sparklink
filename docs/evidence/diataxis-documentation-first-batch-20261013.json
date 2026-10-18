@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "status": "PARTIAL_DOCUMENTATION_ONLY",
+  "recorded_at_utc": "2026-10-13T13:15:05.095686+00:00",
+  "validated_document_commit": "8a89ee4b650fe94d879332b742535683962aabc3",
+  "original_inventory_baseline": "670674736ac90ec0f89ca0330849e22b1bc8f81b",
+  "linux_committed_head": "88372a9b7cbcea7fcbca4f34cc9d5707488be46e",
+  "linux_dirty": "Preserved existing diagnostic changes; not touched, committed or qualified by this task.",
+  "qualified_hardware_sources_unchanged": {
+    "linux": "ae5b24535a898fb05b9c4f08aa0e7e2004911072",
+    "userspace": "967ad220271009498319f3bb71d93fbfb9c63e83"
+  },
+  "original_documents": 64,
+  "original_evidence_assets_not_copied": 405,
+  "environment": {
+    "uv": "0.10.3",
+    "python": "3.12.10",
+    "sphinx": "9.1.0",
+    "myst-parser": "5.1.0",
+    "furo": "2025.12.19"
+  },
+  "source_hashes": {
+    "uv.lock": "6534c0b37af956a6421808a92bbd1ba1bf2332e1d6dd7b03d276e33b50a35314",
+    "pyproject.toml": "a97cb514a64f95d2fc57924deed3908756c2529a6d4771bb83e622619d6b0f64",
+    "docs/conf.py": "15fb4dcf492e8d43e349d4b8e7dbe0e3e7e3810d9ac2c2187440c3fae5ee01a0",
+    "docs/documentation-map.toml": "932e79b57892f1126c3698ccfdbba0e86547239d7ac3bc7822e847f570a033c8",
+    "tools/check_docs.py": "3bd2524db6dc292f86e6212bc9e76bc733da14c7c5f0f0a6c82b4f26db173db3",
+    "Makefile": "9c56b02f21874ada4c84da3356db0b11920ad6b54ff2978b5fccac64b3736318"
+  },
+  "checks": {
+    "fresh_locked_environment": "PASS --only-group docs, package=false; separate from bindings/python",
+    "strict_html": "PASS exact validated_document_commit, -E -n -W --keep-going",
+    "internal_pages_anchors_resources": "PASS all generated HTML",
+    "public_output": "PASS no workstation /home paths or raw evidence copies; no source download/doctree in HTML artifact",
+    "site_subpath_http": "PASS six actual localhost /sparklink/ page/resource requests; not browser UI",
+    "runtime_and_qualification_diff": "EMPTY crates/bindings/data/Cargo.toml/Cargo.lock/CURRENT_CAPABILITIES against original baseline",
+    "target_architecture_body": "BYTE_IDENTICAL from target section to end against baseline",
+    "browser": "NOT_VERIFIED CUA apps=[] browsers=[]; createBrowserTab(iab) unavailable. No UI/search/figure/mobile claim."
+  },
+  "external_links": {
+    "status": "NOT_FULLY_VERIFIED_RATE_LIMITED",
+    "checked": 279,
+    "working": 223,
+    "http_429_unverified": 56,
+    "other_failures": [],
+    "command_exit": 1,
+    "unique_output_directory": true,
+    "scope": "exact validated_document_commit; anchors disabled separately and declared, internal anchors audited",
+    "earlier_overlapping_output": "INVALID_MALFORMED_JSON; discarded; isolated rerun is authoritative",
+    "network_report_sha256": "6dd3bc06ff082fe480a830505fc6908f8af04a8b2e1f3b9ab915cba2da9e4ad4"
+  },
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38402594511",
+    "head": "8a89ee4b650fe94d879332b742535683962aabc3",
+    "html_job": "success",
+    "external_job": "skipped (manual independent job)",
+    "artifact_id": 11816411358,
+    "artifact_name": "sparklink-documentation",
+    "artifact_size": 405727,
+    "artifact_digest": "sha256:262e2d1ca934f697d661cab7fd04615bbad3ca1facf8d4b0d796bb7683b074fd",
+    "retention_days": 14,
+    "formal_publishing": "NOT_STARTED"
+  },
+  "content_status": {
+    "infrastructure": "implemented; strict build/locked install/CI passed; browser gate still open",
+    "navigation": "implemented",
+    "splitting": "PARTIAL README, three task guides, API status audit, architectural status removed with immutable original link, real evidence-reading tutorial",
+    "remaining": [
+      "browser navigation/search/code/tables/Mermaid/mobile",
+      "complete source-mapped API fields and errors",
+      "remaining mixed-document extraction",
+      "new qualified first hardware-operation tutorial",
+      "offline pinned Mermaid plus licenses",
+      "Pages and version publishing review"
+    ]
+  },
+  "issues": [
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6146312924",
+      "comment_id": 6146312924,
+      "body_sha256": "997e2d935b354ba605ad090f307c12de30741305aaca8a78d5b82c74d0a39ab3",
+      "readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6146313680",
+      "comment_id": 6146313680,
+      "body_sha256": "997e2d935b354ba605ad090f307c12de30741305aaca8a78d5b82c74d0a39ab3",
+      "readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6146314960",
+      "comment_id": 6146314960,
+      "body_sha256": "997e2d935b354ba605ad090f307c12de30741305aaca8a78d5b82c74d0a39ab3",
+      "readback_exact": true
+    }
+  ],
+  "goal": "same active, unbudgeted full S0-S6 goal; documentation workstream in persistent plan; no duplicate or complete mutation",
+  "hardware_or_runtime_operation": "NONE"
+}

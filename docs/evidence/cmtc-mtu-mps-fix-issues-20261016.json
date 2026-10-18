@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "EXISTING_ISSUES_UPDATED_OPEN",
+  "kernel": "90fda1457a8d8191a1a5fab260927e31644b3e50",
+  "implementation_tools": "2ee780c3f30e6ff9b04cb1e89f56b5b70e7eeecc",
+  "proof_publication": "ddf807edb7b79cbd326b811720b87646436feaab",
+  "canonical_sync": "b29b5ea1ee605fd85687e82438927775bc5f01e2",
+  "receipts": [
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6207284859",
+      "state": "open",
+      "body_readback": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6207285497",
+      "state": "open",
+      "body_readback": true
+    }
+  ],
+  "scoped_provenance_check": {
+    "errors": [],
+    "unavailable_private_materials": [],
+    "unavailable_source_checkouts": [],
+    "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "current": "SCOPED_SOURCE_AND_BYTES_MATCH_NOT_REPLAYED",
+    "overall": "RECORDED_REQUIRED_RESULTS_PASS",
+    "scope": "Only current K90 pure-code limited-proof record;not whole-project or actual real-device qualification"
+  },
+  "local_check_sha256": "027e5d6e27df4f20da86e8e872bdec97687f4e57777e9d3bc93ca74fa75d1ee3",
+  "body_sha256": "1c8e6dcedf4fcb56958c9bae8aa123b540b9dc23639953b5f46a462234906a99",
+  "scope": "Implementation,bounded proof and current real40short progress;original full data/four-device gates still incomplete;not issue completion",
+  "natural_recovery_qualified": false,
+  "full_goal_complete": false
+}

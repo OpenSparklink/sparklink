@@ -1,0 +1,684 @@
+{
+  "schema_version": 1,
+  "status": "TIMED_HCC_NEW_KERNEL_FOUR_REAL_DATA_GATES_SCOPED_PASS_FULL_GOAL_OPEN",
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "compiled_userspace": "83625029e313552ffe7bb87d572245e232a58a49",
+  "executed_tools": "ee8c4d2d05d8b8dc38ea585d2964c0aa6b213eb1",
+  "scope": [
+    "VM-only exact0cd kernel/compiled836 nativebinary/executedandguestee8;SDK110 actualexistingE1/U2/U3/U4RAMuploads source-bound to prior8c59report,not repeated orfirmwareexecutionattested bywarmadoption. No hostdriver/install/ROMfallback.",
+    "HCCprivate query nowpasses eachOUT the remainingoriginal2s budget,checks expirybeforelaterOUT/notification,andrejectsoverflow. LegacyBSLE/DLI default3s writewrapper/recoverycaps preserved.1116actualproductionfixturechecks includeexpiredfirst/second/thirdOUT,decreasing2000/1300/600msbudget andnoIOpastcheck;ASanUBSanpass. This isnot hardwarestalledUSBorclock/ref/drainproof.",
+    "Fourfresh newkernelcases E/U61,249 workload/oversize and2042 plusU2/3short,bothconnectionroles:32actualrandompeer-validatedRT/88discoveryrounds,48attribute cases32denied,64priorSSAPpeerchecks,64RXcontexts,96invalidintent/16unknowncontrolrefusals,2042complete8RT/16oversizerefusals2043/2046/2047/2048. Do notinterpretfunctionalelapsedlogsasperformancebenchmark.",
+    "ActualHCCrequest/reply independentlycorroborated12timesbeforeDLI,includingcontrolledQMP readd. BothROMsearchpathsabsent,sounexpectedROMfails. Fourexactbusinessreplays/128copiednegatives;samecheckerTCB,notphysicalfaultinjection orindependentRFdecoder.",
+    "Nativecrates/data/Cargo byte-identicalcompiled836 andtoolseE8;730frozen tools/48newsealedABI/strictincremental8waybuild/noUSB KVMmodule-smoke. Newrelativepreparedrootnormalization haspath/hash/bytesnegativecontrols;originalpathFAIL remainsFAIL.",
+    "F88730lifecycle gates areseparatereport fd907953,not rerun wholesale on0cd. Entire listednet/trace/native/channel/UAPI scopes andwirecodec files byte-identical,sourcehashesrecorded;thismapping doesnotprove driver/refinement/hardwareequivalence. First5.509s dataSessionFAIL remainsunexplained,not claimed causedorfixedby HCCbootstrapbudgetchange.",
+    "ExistingactualchipreplyCBMC sourcewire.c/h unchangedf887->0cd;old8-propertyboundeddecoder result remainssource-bound,not newquerydeadlineproof. OriginalfullS0-S6/19WP/10FV/12DG andnaturalRCA/nonmanualrecovery obligations unchanged,UserHostP4."
+  ],
+  "remaining": [
+    "RealUSB OUTstall/stop/recoveryinterleavings fornewHCCdeadline;fixturetimechecks nothardwaredeadlineSLA,callbackdrain/epochrefinement orworst-case schedulingproof.",
+    "First1105.509s data-deadlineRCA open despiteunmodifiedsuccessfulrepeat. Full0cdcontrolmatrixnotrerun;F887mechanism/leasequalification remainsitsaccurateartifact. Needboundcomponentmappingandnewgatesperchangedinvariant,notassumeallcurrentHEADqualified.",
+    "ROMfirstmodel/firmwareselection,S/generalboards,mixedfourdevices,protected110SSAP/slkdAgent/fullBond/localauthorization,credit-lateNOCP-reuse/Owner/refproofs,performance/PM/deploy/release andnaturalstartup/re-enumeration/disappearance/nonmanualrecoveryremainOPEN;no manual/hub/QMP/RAMresetnaturalrecoveryclaim."
+  ],
+  "bounds": {
+    "peer_round_trips": 32,
+    "discovery_rounds": 88,
+    "attributes": 48,
+    "denied": 32,
+    "SSAP_peer_checks": 64,
+    "RX_contexts": 64,
+    "invalid_intent_refusals": 96,
+    "unknown_control_refusals": 16,
+    "full2042_round_trips": 8,
+    "oversize_refusals": 16,
+    "HCC_model_replies": 12,
+    "offline_tools": 730,
+    "ABI": 48,
+    "production_fixture_checks": 1116,
+    "exact_replays": 4,
+    "copied_negatives": 128
+  },
+  "source_equivalence": {
+    "kernel_base": "f887b477f0857aa83454b255ba681a9f7b95473f",
+    "kernel_new": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+    "identical_net_scopes": [
+      "net/sparklink",
+      "include/trace/events/sparklink.h",
+      "include/uapi/linux/sparklink_ioctl.h",
+      "include/uapi/linux/sparklink_socket.h",
+      "include/linux/sparklink_channel.h",
+      "include/linux/sparklink_native.h"
+    ],
+    "identical_net_files": {
+      "include/linux/sparklink_channel.h": "88f7b99c632182576710b71ae0623a69191afd5e29a9866db70a883a782c40b6",
+      "include/linux/sparklink_native.h": "5bd70d0d098751c031ebb9b95823d40cbe80d029eb4532161f5c6f9ff3b643b4",
+      "include/trace/events/sparklink.h": "279afabf3424aa3b405cd83ffdc2e7c866234a11837d059c04c4e8b67b733800",
+      "include/uapi/linux/sparklink_ioctl.h": "e4a60ceadf753407891a0c365b5ab758cdcdcd66126df8d7a496a6c45881f69d",
+      "include/uapi/linux/sparklink_socket.h": "18299e4eb6aef480aedafce949a10ced185bf9de3a28208a08dbeee9ca591742",
+      "net/sparklink/Kconfig": "352656711a97406f5303dc11b94ce5a5d4f792a6b6adb874814bf890f0a27a18",
+      "net/sparklink/Makefile": "f602d17ad2cebbb1232854b361451c486aed8a433eab2f6241d0820506c2308d",
+      "net/sparklink/experimental/README": "950d51c089ab48be6a7ecc541a5113fe673949a3fb6e2ccba99156265ca4304d",
+      "net/sparklink/sle_authorization.rs": "1031cfc7cb417eef42696d44149eba5b4591d915a772e3ce8db86717c6203991",
+      "net/sparklink/sle_backend.rs": "65d9fec9abaa64edc2fa06756f67ce7bb1a17d3ff73bb744d95d721388bc734d",
+      "net/sparklink/sle_channel_grant.h": "c6fd04b8a335f563d75a5dd4f597fbdf566ad0c21dcc97718a3899392d7090dd",
+      "net/sparklink/sle_channel_socket.c": "57ad8003210a8c347dcab6d2b50a326a2f8eb1446238067cfe9b6a74718418cf",
+      "net/sparklink/sle_channel_state.h": "2be8f64ad94f32b698286a19211b8d66954402591239627679b6908327bda565",
+      "net/sparklink/sle_channel_table.h": "6a1ecbcbaf134ca3f6fe66577b93113f2f6fd4e8cad1de97d561d66e27aa039e",
+      "net/sparklink/sle_channel_wire.c": "f64a6850c88177f1e89b2a95f09d5a0a1b19a26570c8907486778f5169ba6af2",
+      "net/sparklink/sle_channel_wire.h": "05b4f91e039982ca4fe4257201f2ac04bc3a54ae27e6cddbe6ff4728b695f32a",
+      "net/sparklink/sle_command_plan.rs": "cdc89884f13e563b4840215d228b6bb5b67f417588e6067bdb9d446a18e6814d",
+      "net/sparklink/sle_command_queue.rs": "119cc76e1db0ce6704a25d33cd6f6f38d0ed93e103c8a0a89bd64d46fa247cb0",
+      "net/sparklink/sle_configfs.rs": "048964fc18927cbd55a470c5c0c6abb865a1214d822ddd839aef8cde36b70b69",
+      "net/sparklink/sle_connection_operation.rs": "96a6a48e12badac620d81f0328decfe9583158c968e249b322945635c7884dce",
+      "net/sparklink/sle_controller_event.rs": "81423ded2609f8953bf2fc25f44253c83606eeafd88802af0e1685a80d9c21d7",
+      "net/sparklink/sle_crypto.rs": "e3dc9d39a25eed3fa5432b27464ac2d37b3f531c5b9b61ca2a0d3994897b8d97",
+      "net/sparklink/sle_crypto_ffi.c": "544430bfc75e0e0e06adbcc303ae24564fdf163200902fecc624e6973bcdf70c",
+      "net/sparklink/sle_data_credit.rs": "63c3e38418860cbd0a639d460caa2c699ec502847f30e8fad6337101819a76a5",
+      "net/sparklink/sle_dev.rs": "2a5d9726a4e4a446ea78d7ee842e60ab2d16bd05e37271f72abeef16990822eb",
+      "net/sparklink/sle_discovery_operation.rs": "54c793e3b1236c20f7c5bb9fe92a19b9480591467ff566aaa3e287466a8331b3",
+      "net/sparklink/sle_dli.rs": "4d8add91d46b78098695949c23679c621ec7f3e0acfbff56ee32fbefc4a7bffd",
+      "net/sparklink/sle_dynamic_state.h": "33835dc321e93a8dd7c7c810bdae5d717e27825c198ec68f660ff192052f3452",
+      "net/sparklink/sle_fragment_cursor.h": "688b3035e6263e5d824c990d3244aaf5abec9162bab3e07013e217a33588714d",
+      "net/sparklink/sle_grant.rs": "bdce526c3e54eca92a70e881d0df7b144aa7e23fb8d660fdee0b8ed8e950a28d",
+      "net/sparklink/sle_host.rs": "97257c14aa68ed9924e9517481052e3e2f3d22e8d116dc99f148805965196d58",
+      "net/sparklink/sle_ingress.rs": "fbc3d68b8ae838e823c72d5923b0e24ac74231e6deae85e2037b72d00edd4978",
+      "net/sparklink/sle_irq_lock.c": "b1f8a8fe4c3cd3697d6c3babd3f4aee0f93f0fb7cf98526f3490767c5d9cd9cf",
+      "net/sparklink/sle_irq_lock.h": "3f9a44812ebdd84d08db0f88834910f370bb92a0ce5760ba9371608a3679cb2d",
+      "net/sparklink/sle_irq_lock.rs": "5b5ca8e8750ea21825a34be4f45dd6eeba63cc43eeeda1e6053f55acbb6476a8",
+      "net/sparklink/sle_link_observation.rs": "864f9f64efd545f53a244208d5999dc53738fae096d8c03125bf52b6ba711784",
+      "net/sparklink/sle_management.rs": "268302e9e5c58a9acc31bd543533b5ba2b1edd70c1b339d2c0273817d7ef7c06",
+      "net/sparklink/sle_message_security.h": "ffd0efc0ed80051f0dc2704f60ec2a1dc2098cfd598aa5b02d07790c81ff2c44",
+      "net/sparklink/sle_mgmt.rs": "e3d0a9673674ba075e4c4aa84ec745b94a8c2ae176f89b7006b2e1498bdcee29",
+      "net/sparklink/sle_native.rs": "e53457824c6381ee334f2c1e8769438d4317226f98403451ee7af97e1f071652",
+      "net/sparklink/sle_native_data.rs": "9b36144f3377e7c35c536d41b22fd3769472355d559f584214d6ec7acde71f05",
+      "net/sparklink/sle_native_ffi.c": "9e53c93ef5b1dd679227009c0a6b38be26ba47dbbc7aa9b1bed6f9082e6ec00b",
+      "net/sparklink/sle_native_ffi.h": "a4123e5c9eca11b8175cab5143b7e1d1bdb19403b43ee11028934941beb08502",
+      "net/sparklink/sle_pair_crypto.c": "0706143298e86df6013549c2a8886b2b1b283fac82aa750d1d16cd29166900fd",
+      "net/sparklink/sle_pair_material.c": "ed8a1adfca85ea38c113c671f3c38950431fbd93bf370df2a736ef5bbc4653b9",
+      "net/sparklink/sle_pair_material.h": "32429c20a0647e8ecaa65602395a77baaf24b29958d49896835161e683d697e4",
+      "net/sparklink/sle_pair_material.rs": "c31bfee415e9a90724142e1d34a736ce6b5fc7a2a1fe2d8306586f241716ef90",
+      "net/sparklink/sle_security_relay.h": "d741a43c6ad061b56546bfb2a8f182cd79fee2e27c2fb3a1927810167cc3aad7",
+      "net/sparklink/sle_security_relay.rs": "adc4f37655ecf3fb6839d492f8c41a661cc15babe529d88104a5f85fa79699cf",
+      "net/sparklink/sle_security_relay_state.rs": "edd7a961c93a9a567b2b3543150478c9bae78c0d85a935d8ccfc9621b54493fe",
+      "net/sparklink/sle_session_schedule.h": "306e26113573f3ca003dc78f73a320e06e8534220cfa4d1aae9d599e4e0c851e",
+      "net/sparklink/sle_sessions.rs": "594a3b2826ca4a82d25f59670dc44a7e58a78e970dab333c80d0f7469a701d57",
+      "net/sparklink/sle_snoop.rs": "d2a7d85f841066d8ea735d990b80281d01135a8488eb9c60778c790600ea8e73",
+      "net/sparklink/sle_standard_dli.rs": "a07c9af73eb2b71554a3e73fd32f06726cbbab48ef807b250a7c88aeac92e606",
+      "net/sparklink/sle_tx_budget.h": "f75c2f9133170f40651a8addc9a8a739872e5f456ad9fe9f4847bd15a84d0ed2",
+      "net/sparklink/sle_uapi.rs": "cfd250a811b4566033da5fdba8101abd6fdca48246abb4eb7a06d6b5794b5b0e",
+      "net/sparklink/sle_workers.rs": "453e679f479229591b4506d2ac2c463ffaf09fb8f627c5174a54c8a4376ef4ac",
+      "net/sparklink/sparklink_core.rs": "fcb176992e5a5d33056cd84125f55bf977e0b419e3e755e97887bd53b1c7e509",
+      "net/sparklink/sparklink_genl.c": "ffe57e94d4f5da25ae5e4548c25f503510b95a31b64c68271412c145975c2d63"
+    },
+    "identical_wire_scopes": [
+      "drivers/sparklink/ws73/wire.c",
+      "drivers/sparklink/ws73/wire.h"
+    ],
+    "not_refinement_proof": true
+  },
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "query_formal_result": "UNPROVED",
+  "full_goal_result": "UNPROVED",
+  "real_gates": [
+    {
+      "name": "mixedshort",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/hcc110-timed-mixedshort-v1/manifest.json",
+      "round_trips": 8
+    },
+    {
+      "name": "mixed249",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/hcc110-timed-mixed249-v1/manifest.json",
+      "round_trips": 8
+    },
+    {
+      "name": "mixed2042",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/hcc110-timed-mixed2042-v1/manifest.json",
+      "round_trips": 8
+    },
+    {
+      "name": "u23short",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "result": "PASS",
+      "manifest": ".dev/hcc110-timed-u23short-v1/manifest.json",
+      "round_trips": 8
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "730-frozen-tools",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "48-new-sealed-ABI",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "1116-production-query-fixture-ASanUBSan",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "8way-strict-module-build-noUSB-KVM",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "four-exact-replays128-copied-negatives",
+      "status": "PASS",
+      "result": "PASS"
+    },
+    {
+      "name": "12-actual-HCC-model-replies-beforeDLI",
+      "status": "PASS",
+      "result": "PASS"
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "RealUSB OUTstall/stop/recoveryinterleavings fornewHCCdeadline;fixturetimechecks nothardwaredeadlineSLA,callbackdrain/epochrefinement orworst-case schedulingproof.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "First1105.509s data-deadlineRCA open despiteunmodifiedsuccessfulrepeat. Full0cdcontrolmatrixnotrerun;F887mechanism/leasequalification remainsitsaccurateartifact. Needboundcomponentmappingandnewgatesperchangedinvariant,notassumeallcurrentHEADqualified.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    },
+    {
+      "name": "ROMfirstmodel/firmwareselection,S/generalboards,mixedfourdevices,protected110SSAP/slkdAgent/fullBond/localauthorization,credit-lateNOCP-reuse/Owner/refproofs,performance/PM/deploy/release andnaturalstartup/re-enumeration/disappearance/nonmanualrecoveryremainOPEN;no manual/hub/QMP/RAMresetnaturalrecoveryclaim.",
+      "status": "OPEN",
+      "result": "UNPROVED"
+    }
+  ],
+  "materials": [
+    {
+      "path": ".dev/hcc110-timed-mixedshort-v1/manifest.json",
+      "sha256": "c078c3d4551c3f0723f46571f47bce0ef95aae34a278597a13242174671046a8",
+      "bytes": 1510884,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixedshort-v1/console.log",
+      "sha256": "f2806cf7d314afb0771238be8950b8c67072d8e97918aabd9522994b1925fbae",
+      "bytes": 16233,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixedshort-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixedshort-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "1315a059c2c6c2da662c682c487405592f6948f3db8eaaac43bbbcdc812bae6f",
+      "bytes": 873611,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixedshort-v1/guest-output/ws73.pcap",
+      "sha256": "879946a046488920811bee4fd8a5c619bb09596360cf21398645c066f3516efa",
+      "bytes": 595296,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixedshort-v1/guest-output/kernel.log",
+      "sha256": "de113aec14b73686de6f30ae78d800b4c3ddf469f2bdcb600dfbc09be0d80bd3",
+      "bytes": 49355,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixedshort-v1/guest-output/capture-stats.txt",
+      "sha256": "aca2b468d6ae1b83069888deab207235b0042a995a12698154c5ae0a73bc71a5",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixedshort-v1-audit-hcc110-timed-v1.json",
+      "sha256": "9e4b2ecad3a714e5e1ed8deaa2c532bb24d3fd5cf23e177a0c3bab8120fb0eb4",
+      "bytes": 6995,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed249-v1/manifest.json",
+      "sha256": "2f398833fabd1735b68d8669e364bc7a12754a39ca72f2d85f5cb1e0ef3bbd57",
+      "bytes": 1598958,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed249-v1/console.log",
+      "sha256": "a3c5c10841a4cd268c424ed495be489ed53e1c706d9e5893dc1b57337f4d1ef4",
+      "bytes": 16260,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed249-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed249-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "f3469671edb69d56c7f707c9db8446f85fe27be84fe0952fe7f0a8dc09b60e5c",
+      "bytes": 952444,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed249-v1/guest-output/ws73.pcap",
+      "sha256": "3b5f7c96c3a2d42c2f7f71375a250fd2a0da7baf5adca24ef60885dba427c63a",
+      "bytes": 636160,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed249-v1/guest-output/kernel.log",
+      "sha256": "47b0d5f2f7b2daf59ad1da7043390e400178c4c004d6e115cd56861bc7c00821",
+      "bytes": 49409,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed249-v1/guest-output/capture-stats.txt",
+      "sha256": "e88fff78fe5bcfae43e0b37299cf355cd0584fcfc0d64ea5322846f13720f7f1",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed249-v1-audit-hcc110-timed-v1.json",
+      "sha256": "1b61437b2cae30f0d2c73735484fa4efb311da96b7515eb12819e84be8d993db",
+      "bytes": 6991,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed2042-v1/manifest.json",
+      "sha256": "09798db3ef3818a38f2022b9df328c99e7438319c9f97e7c4bb8668e8d1f9799",
+      "bytes": 2502364,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed2042-v1/console.log",
+      "sha256": "409c10f9e57eaac63a74534e547f2cc9ec8af98e8a4374ec15446b48cb129727",
+      "bytes": 16235,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed2042-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed2042-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "2e305bb03f4b7fdbbfdb5d41ad88a1fb0df7a2e057dd629baa41f06b4166c16d",
+      "bytes": 1000723,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed2042-v1/guest-output/ws73.pcap",
+      "sha256": "28566cdfe024b1f379358fd1815678b3d208cf78f2efaae854ab11f19ee18684",
+      "bytes": 1071320,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed2042-v1/guest-output/kernel.log",
+      "sha256": "55ce7abdfb565e9cf12c38dc9d16e53de6cc21ee0094aac06bfa4998bfcb8c40",
+      "bytes": 49272,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed2042-v1/guest-output/capture-stats.txt",
+      "sha256": "6219f8e7ec308c688409922ab85266a22ed546c0f10b916fa6190ccdfe7218d7",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-mixed2042-v1-audit-hcc110-timed-v1.json",
+      "sha256": "936313cfb65f12614b336439ff1efd0064ee29a232235792eb7a0372acbca71e",
+      "bytes": 6994,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-u23short-v1/manifest.json",
+      "sha256": "51ab3cb74c4c9c0f162f390613824984120ca3717a4371cd9d154b7f5fb58c0b",
+      "bytes": 1510772,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-u23short-v1/console.log",
+      "sha256": "8e74381571db85c82ab09df6a47488c2b3c66c788d0313bee11d72b683d008b1",
+      "bytes": 16211,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-u23short-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-u23short-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "fe722350f79e8351c758b21a0a9c0289b1031c4fc8501c330419c9be9ce6f50f",
+      "bytes": 873445,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-u23short-v1/guest-output/ws73.pcap",
+      "sha256": "16272d02d1b3b300e504ae73db8310f561273b93406234dedf1897d55ea78127",
+      "bytes": 595296,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-u23short-v1/guest-output/kernel.log",
+      "sha256": "0f10e960bbc5064cb53d43ac564e7041c9588fed93ac8afc2507f74da50d05e3",
+      "bytes": 49355,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-u23short-v1/guest-output/capture-stats.txt",
+      "sha256": "aca2b468d6ae1b83069888deab207235b0042a995a12698154c5ae0a73bc71a5",
+      "bytes": 227,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-u23short-v1-audit-hcc110-timed-v1.json",
+      "sha256": "4202f2c1dfa78e7f5a6a2b61442814c17d063ccfb1e67051c8043f7da3a68c7d",
+      "bytes": 6991,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-data-qualification-v1.json",
+      "sha256": "c9f698e5231361b07a82b0ce19cc908ae700ae5d2f4388c0dd29ec26bfd63b69",
+      "bytes": 4044,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-data-qualify-v1.py",
+      "sha256": "df8ef1a575a79052ed0253d7c29b7885fe2b52661807dcb726a5e0f1026ba5fa",
+      "bytes": 1956,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-data-case-audit-v1.py",
+      "sha256": "397583429dff840014a178b691ea18f5602b768b8171ece600b8c011d5ad2a8e",
+      "bytes": 8943,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-model-evidence-v1.json",
+      "sha256": "54c8c35a57d38b57e39eb66fc0d280a5c31cd2d4fbb2d1b16292592b25a07e7e",
+      "bytes": 8606,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-frozen-tools-v1.log",
+      "sha256": "3579f6c33c2fa43a9ad7d5e2e2f62df469211ed857743765c870f657f669a93c",
+      "bytes": 866,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-sealed-bindings-v1.log",
+      "sha256": "ce09cd5381b2d50a8ed8b58f7141d07e9d9af5a67fc89c692ca6a67fbd20007b",
+      "bytes": 147,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-relative-artifact-tests-v1.log",
+      "sha256": "d3b2d9e0e6a529129c464879aaf6c605ab720e5a823c4412bb29a7104b278b64",
+      "bytes": 127,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-relative-artifact-all-v1.log",
+      "sha256": "3e880c5398ad8f065d5cdc3cba926eae61143cc9887006e8fa71792110b6d204",
+      "bytes": 865,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-build-v3.json",
+      "sha256": "389a7fbd3153cea5e2547c69e72eb5f159638ff294fea763490dcacb6a49408f",
+      "bytes": 1624,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-build-v3.log",
+      "sha256": "8aec90a8e850a413bd23a957d30ce3b9bfda15400a9e13822b97356fa2424d97",
+      "bytes": 1466,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-budget-v3.json",
+      "sha256": "c826bf6f9cafaf58b14cfbc1b3d9883bd38fd49cd2f17fc2c3a88d8fcd4d6aa9",
+      "bytes": 1067,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-kernel-artifacts-v3/manifest.json",
+      "sha256": "bc3f5827f0b31e4fa663bedf852abbd49e124ebbd8d3d486c4c521ccb22eecad",
+      "bytes": 229017,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/manifest.json",
+      "sha256": "9f79924c1c90ffa435329afe14c59b1f9d63f4a2aa6912021bda39dd5aa383aa",
+      "bytes": 2351,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-root-smoke-v4/manifest.json",
+      "sha256": "3b2054ed2603d77fe2a2d5328800e8cfa5494c8021e9e68480c046b24b55f2bc",
+      "bytes": 36324,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-prepare-v1.json",
+      "sha256": "cae2c18ef62f63f3a68ce96a009cd1d90c569b921f70fa26e8ed3d0e91e40bb6",
+      "bytes": 4107,
+      "access": "private"
+    },
+    {
+      "path": ".dev/chip-query-deadline-offline-build-v1.log",
+      "sha256": "0ff4ff0d92e9e2fbcda44587d5b27dc11b6f711f69d4f7978c738128dd3f9a06",
+      "bytes": 1267,
+      "access": "private"
+    },
+    {
+      "path": ".dev/ws73-chip-timed-sanitizer-v1.log",
+      "sha256": "d360dab6a4eb00436adb26dbc51185f34e393c8db3b1acc83dd6e654c439126a",
+      "bytes": 41,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-selection-v1.json",
+      "sha256": "b6bac7ab7259a82a0f5feb2cdd659ef4876bb3ae9b22fb8baf812bc2468c5427",
+      "bytes": 2609,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-runtime-prepared-v1/manifest.json",
+      "sha256": "2db5e072f7132e109104fa2ad4aa97d791e5792acffc22562688595cbf78ced6",
+      "bytes": 270159,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-runtime-prepared-v1/bzImage",
+      "sha256": "0f303cbe0e34dc2cee9f0477e72e9f2a7b43f5b1e786bedaeb3d2ef7ea8e529e",
+      "bytes": 15753216,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-runtime-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-runtime-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc110-timed-runtime-prepared-v1/root.btrfs",
+      "sha256": "3afb6fad9ab48fd9bd92358e595160fab9798cf458161a6650951ce4b4c0d347",
+      "bytes": 1073741824,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private"
+    },
+    {
+      "path": ".dev/hcc-chip-modules-v3/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "80bd5f638d65f574b738eee8f65cabf99d81cdf371c677a67d91115e25a4ef3f",
+      "bytes": 145497,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/manifest.json",
+      "sha256": "e0032c92d18d116badbf726eec92ee7a3bb6f129050a2bf2c8a33ec9b86daae2",
+      "bytes": 26979,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkd",
+      "sha256": "c86967115f9ba107d3ee42caf9f75ffe613707b202caf019b2ed5a997c6a271c",
+      "bytes": 10634880,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slctl",
+      "sha256": "138b84adfa8effbf6a528bf0dbaee9133d798e1f00c2f5aa4b1670c7413ba9fe",
+      "bytes": 7911664,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slktest",
+      "sha256": "0ffda53bcf2889ed8734398ee6d7a879142a8e80e46cf586e32041bba79675ad",
+      "bytes": 5278024,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkconfig",
+      "sha256": "b7b9678f35be4d7ac83e885c75f956d97ccde68ea50922448f9a273a588af299",
+      "bytes": 1403736,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkmon",
+      "sha256": "1d6402733c388a693a74764d4c9583701655cc662e20bcbb993ce49dc6585080",
+      "bytes": 1661896,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/slkdump",
+      "sha256": "880c446c2775675bbef373a3f9a07afe970765144eb05210e5c69bd09d37210c",
+      "bytes": 1661768,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/libexec/opensparklink/native-lab/83625029e313/liblibsparklink.so",
+      "sha256": "30758249c58fd5db7fd9fe0fa8f47490a15bd5a45dbd7ff623d2904400d54c6e",
+      "bytes": 552048,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "7ac0483476bd0c861125929b034a3b9fe5275e6ef8036d37b370eec3f41d1b23",
+      "bytes": 143956,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "3d4bfadb1b2a61e1206a68083cbed7b1b109a80cbccab4f4e7825f3a6bce7fc5",
+      "bytes": 21044,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "4010355847dc14d26c471d7be411c27c226ad3628ca2f1855678e6cfc21c5af4",
+      "bytes": 7772,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/sparklink/main.conf",
+      "sha256": "df99a4cb7f669098db3902a2e2ceb6145f08da030957e7dda81f47feec20f330",
+      "bytes": 1928,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "153bd4d0a29cab95ea4674e6aa3c33510a8ce5dedb4cbc0686cc7e7e6b899f3a",
+      "bytes": 507,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "82d65094030f4302dda3df7927e7bb2f7ac9d3355deca287ede43785cf86e857",
+      "bytes": 154,
+      "access": "private"
+    },
+    {
+      "path": ".dev/firmware110-us-service-bundle-v3/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private"
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private"
+    }
+  ],
+  "retention": "Privateauthorizedworkspace SDK/capturesmaycontainkeys;relativepath/hash/sizeonly,nopublicdownloadorverifiedoffsitearchive.Missing/hash/source/scope mismatch preventsPASS.",
+  "wall_ns": 1792212889743518236
+}

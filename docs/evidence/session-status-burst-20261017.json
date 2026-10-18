@@ -1,0 +1,1615 @@
+{
+  "schema_version": 1,
+  "status": "REAL_DYNAMIC_BURST_V4_SCOPED_PASS_WITH_RETAINED_V3_FAIL",
+  "real_result": "PASS",
+  "offline_result": "PASS",
+  "full_exit_result": "UNPROVED",
+  "compiled_kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
+  "compiled_userspace": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
+  "executed_tools": "42ecc6f9839957ce9092be0d664d88c65675f8d0",
+  "scope": [
+    "VM-only selected Hi3873U2/3;port1 user-confirmed Hi3873E excluded;no four-device/mixed-board qualification",
+    "Both physical roles;ordinary UID1000/caps0 existing socket A/B/C apps;C16x2042 and exact peer validation/reply",
+    "Readonly Session snapshot through existing authorized owner,original1s query and5s/64samples observation;no newHost/Engine",
+    "Existing capturedUSB/CMTC/PB/NOCP predicates unchanged;historical v3FAIL not retroactively regraded",
+    "Scoped actual productionC fixtures and Rust/IPC/ABI/Python checks;LKMM twoCPU publication only"
+  ],
+  "remaining": [
+    "Length boundaries,finite concurrentprogress andten lifecycle cases running separately;not granted by this report.",
+    "Snapshot is not callback/ref drain,Free,NOCP accuracy/duplicate/late or safe handle reuse.",
+    "Whole fairness/P2d matched performance/resource/observer cost and mixed four-device qualification remain UNPROVED.",
+    "Full S0-S6/19WP/10FV/12DG,Agent/SSAP/multichannel/safety/Bond/PM/release continue open;UserHost low priority.",
+    "Natural startup/re-enumeration/disappearance causes and nonmanual recovery OPEN;manual/hub/QMP/injected recovery not natural qualification."
+  ],
+  "real_gates": [
+    {
+      "name": "dynamic-burst-v4-bothroles",
+      "result": "PASS",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/session-status-burst-real-v1/manifest.json",
+        "sha256": "0c7c36dfc5a733f986143131c52d649b0009f15147929bc4c44102b084cce857",
+        "bytes": 6816134,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+      },
+      "round_trips": 80,
+      "baseline_round_trips": 8,
+      "post_close": [
+        {
+          "phase": 0,
+          "samples": 1,
+          "elapsed_ns": 58603192,
+          "before": [
+            {
+              "index": 0,
+              "generation": 1,
+              "lifetime": 1,
+              "handle": 0,
+              "capacity": 5,
+              "outstanding": 0,
+              "debt": 0,
+              "queued": 0,
+              "active": 0,
+              "open": 1,
+              "pending": 0,
+              "retired": 2,
+              "failed": 1,
+              "allocated": 4,
+              "flags": 0
+            },
+            {
+              "index": 1,
+              "generation": 2,
+              "lifetime": 1,
+              "handle": 0,
+              "capacity": 5,
+              "outstanding": 0,
+              "debt": 0,
+              "queued": 0,
+              "active": 0,
+              "open": 1,
+              "pending": 0,
+              "retired": 2,
+              "failed": 0,
+              "allocated": 3,
+              "flags": 0
+            }
+          ],
+          "terminal": [
+            {
+              "index": 0,
+              "generation": 1,
+              "lifetime": 1,
+              "handle": 0,
+              "capacity": 5,
+              "outstanding": 0,
+              "debt": 0,
+              "queued": 0,
+              "active": 0,
+              "open": 0,
+              "pending": 0,
+              "retired": 3,
+              "failed": 1,
+              "allocated": 4,
+              "flags": 0
+            },
+            {
+              "index": 1,
+              "generation": 2,
+              "lifetime": 1,
+              "handle": 0,
+              "capacity": 5,
+              "outstanding": 0,
+              "debt": 0,
+              "queued": 0,
+              "active": 0,
+              "open": 0,
+              "pending": 0,
+              "retired": 3,
+              "failed": 0,
+              "allocated": 3,
+              "flags": 0
+            }
+          ],
+          "scope": "Diagnostic request/close interval;not data RTT/performance or drain bound"
+        },
+        {
+          "phase": 1,
+          "samples": 1,
+          "elapsed_ns": 104322270,
+          "before": [
+            {
+              "index": 1,
+              "generation": 2,
+              "lifetime": 3,
+              "handle": 0,
+              "capacity": 5,
+              "outstanding": 0,
+              "debt": 0,
+              "queued": 0,
+              "active": 0,
+              "open": 1,
+              "pending": 0,
+              "retired": 2,
+              "failed": 1,
+              "allocated": 4,
+              "flags": 0
+            },
+            {
+              "index": 0,
+              "generation": 1,
+              "lifetime": 3,
+              "handle": 0,
+              "capacity": 5,
+              "outstanding": 0,
+              "debt": 0,
+              "queued": 0,
+              "active": 0,
+              "open": 1,
+              "pending": 0,
+              "retired": 2,
+              "failed": 0,
+              "allocated": 3,
+              "flags": 0
+            }
+          ],
+          "terminal": [
+            {
+              "index": 1,
+              "generation": 2,
+              "lifetime": 3,
+              "handle": 0,
+              "capacity": 5,
+              "outstanding": 0,
+              "debt": 0,
+              "queued": 0,
+              "active": 0,
+              "open": 0,
+              "pending": 0,
+              "retired": 3,
+              "failed": 1,
+              "allocated": 4,
+              "flags": 0
+            },
+            {
+              "index": 0,
+              "generation": 1,
+              "lifetime": 3,
+              "handle": 0,
+              "capacity": 5,
+              "outstanding": 0,
+              "debt": 0,
+              "queued": 0,
+              "active": 0,
+              "open": 0,
+              "pending": 0,
+              "retired": 3,
+              "failed": 0,
+              "allocated": 3,
+              "flags": 0
+            }
+          ],
+          "scope": "Diagnostic request/close interval;not data RTT/performance or drain bound"
+        }
+      ]
+    }
+  ],
+  "offline_gates": [
+    {
+      "name": "actual-C-sanitizers",
+      "result": "PASS",
+      "status": "EXTRACTED_PRODUCTION_DEPENDENCY_FIXTURES_PASS_NOT_KERNEL_CONCURRENCY",
+      "report": {
+        "path": ".dev/session-status-c-retention-v2.json",
+        "sha256": "04fbc5c9fb3a939c7367a5559f81e783fdecb456502185947aba05732d5d256b",
+        "bytes": 2131,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+      }
+    },
+    {
+      "name": "frozen-Rust",
+      "result": "PASS",
+      "status": "190_UNIT_AND5_DOC_PASS_RETAINED4_ELFS",
+      "report": {
+        "path": ".dev/session-status-retained-rust-v1.json",
+        "sha256": "eb2affed46e9e204c061cd32dcff3bc5f93badcdf11292557225db90e0fdcaf5",
+        "bytes": 3055,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+      }
+    },
+    {
+      "name": "frozen-tools",
+      "result": "PASS",
+      "status": "671_PASS_SO_PASSCRED_PERMISSION_FAILURE_RETAINED",
+      "report": {
+        "path": ".dev/session-status-frozen-tools-v2.log",
+        "sha256": "09fc0e924227165aa90139fa9ef278f5bbfebd5a3fc075d0934854108bb253e3",
+        "bytes": 109378,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+      }
+    },
+    {
+      "name": "ABI-Python",
+      "result": "PASS",
+      "status": "LP64_ILP32_C_RUST_PYTHON_4_PLUS40_PASS",
+      "report": {
+        "path": ".dev/session-status-python-v1.log",
+        "sha256": "3a86bd8cb8f3fe3a4cab30a34b4c71b96799295987633cc82a5429e8c84ebdec",
+        "bytes": 5118,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+      }
+    },
+    {
+      "name": "workspace-clippy",
+      "result": "PASS",
+      "status": "ALL_TARGETS_NO_WARNINGS",
+      "report": {
+        "path": ".dev/session-status-clippy-v2.log",
+        "sha256": "f8f0badaab3333729c8e71340c1dae0294f06bc8a0ec1c3e75503507d31498eb",
+        "bytes": 498,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+      }
+    },
+    {
+      "name": "strict-html",
+      "result": "PASS",
+      "status": "115_PASS_NOT_BROWSER_OR_FUNCTIONAL_QUALIFICATION",
+      "report": {
+        "path": ".dev/session-status-docs-v2.log",
+        "sha256": "3aff4b2fe44deb9ef5e249767fb8085658d5ea9596d17ac430829d8d8fbd09e7",
+        "bytes": 265214,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+      }
+    },
+    {
+      "name": "actual-evidence-negatives",
+      "result": "PASS",
+      "status": "EXACT_REPLAY_AND24_NEGATIVES",
+      "report": {
+        "path": ".dev/session-status-replay-negatives-v1.json",
+        "sha256": "bd9ce0ba843315305bef9862a470840d2ce47cf2772f42213dfb5b0ec67dbf38",
+        "bytes": 5638334,
+        "access": "private",
+        "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+      }
+    }
+  ],
+  "pending_gates": [
+    {
+      "name": "FullCallbackDrainAndReuseBarrier",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_THIS_SNAPSHOT_OR_FINITE_RUN"
+    },
+    {
+      "name": "WholeMultiChannelFairness",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_THIS_SNAPSHOT_OR_FINITE_RUN"
+    },
+    {
+      "name": "MatchedPerformanceResources",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_THIS_SNAPSHOT_OR_FINITE_RUN"
+    },
+    {
+      "name": "NaturalFaultRecovery",
+      "result": "UNPROVED",
+      "status": "NOT_GRANTED_BY_THIS_SNAPSHOT_OR_FINITE_RUN"
+    }
+  ],
+  "counts": {
+    "dynamic_round_trips": 80,
+    "baseline_round_trips": 8,
+    "actual_queries": 8,
+    "role_phases": 2,
+    "copied_evidence_negatives": 24,
+    "rust_unit_tests": 190,
+    "rust_doc_tests": 5,
+    "tools_tests": 671,
+    "python_tests": 40,
+    "abi_tests": 4,
+    "strict_html_documents": 115
+  },
+  "build": {
+    "kernel_jobs": 12,
+    "bundle_jobs": 12,
+    "prepare_jobs": 12,
+    "stableO": true,
+    "shared_lock": true,
+    "host_installation": false
+  },
+  "firmware": {
+    "sdk": "1.10.111",
+    "combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "board_qualification": false
+  },
+  "formal": {
+    "report": "session-worker-publication-20261017.json",
+    "strength": "TwoCPU representativefield lock-publication;not implementation refinement or firmware proof"
+  },
+  "retained_failures": [
+    "session-c4-dynamic-lengths-20261017.json",
+    "Original v3 final debt FAIL retained;new v4 has distinct observed boundary and artifact.",
+    "Initial sandbox LSan/ccache/SO_PASSCRED/missingdbus and clippy failures retained with corrected-environment or sourcefix checks."
+  ],
+  "performance_qualified": false,
+  "full_fairness": false,
+  "physical_drain_proved": false,
+  "materials": [
+    {
+      "path": ".dev/session-status-burst-real-v1/manifest.json",
+      "sha256": "0c7c36dfc5a733f986143131c52d649b0009f15147929bc4c44102b084cce857",
+      "bytes": 6816134,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-real-v1/qemu-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-real-v1/qmp.jsonl",
+      "sha256": "0240110eabf31894725f46aafa228b5c5dd896e5de41b51acaa0130270685559",
+      "bytes": 1757,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-real-v1/console.log",
+      "sha256": "34193db075dfd27c7ff10f395d6a42725fd4b02a2968d9c27fabad0a41b61028",
+      "bytes": 16279,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-real-v1/guest-output/ws73.pcap",
+      "sha256": "f3297be7c422a1409c941d4eec2bb30e0a2df42f5ac60546a1dd3c11419f325c",
+      "bytes": 2901436,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-real-v1/guest-output/capture-stats.txt",
+      "sha256": "2dc9e6435cc4df8a901041184122df25006540bb5a5cc6d4fcd351a4a2a4c85a",
+      "bytes": 229,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-real-v1/guest-output/kernel.log",
+      "sha256": "f2ef257f47fba17fc76d26fd2c55b407a3b14dd27d36a3de211713f8a1b79ef5",
+      "bytes": 49326,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-real-v1/guest-output/application/passthrough-control/run.json",
+      "sha256": "4b12cd5835e47e635703c5e37d9087c50bffb0aa1993cbbbe285b2b2fdd6713d",
+      "bytes": 1353715,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-replay-negatives-v1.py",
+      "sha256": "8c5d83ecedd665a4b2158ef1c8e99a3863a90497d3bfeb8960af6477e5e0e276",
+      "bytes": 5107,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-replay-negatives-v1.log",
+      "sha256": "21bb35a4aff69dcd775e877e86d8bb6831121daa4c6e1234b947699305bed328",
+      "bytes": 38,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-replay-negatives-v1.json",
+      "sha256": "bd9ce0ba843315305bef9862a470840d2ce47cf2772f42213dfb5b0ec67dbf38",
+      "bytes": 5638334,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-run-v1.py",
+      "sha256": "aab9a999b3f754af8a4de0e5f7df92010f70e4a18d6a5047f9652a449526e73f",
+      "bytes": 2332,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-burst-run-v1.json",
+      "sha256": "ef0d7f4e89cabed053360a2e3a18651a57014ca1537e3daa94df81ee7cd89c2f",
+      "bytes": 1605,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-kernel-build-v1.json",
+      "sha256": "32681005270d07aab3321afe25732c09e11707233df3e05a9349e3a1551dedcf",
+      "bytes": 1647,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-kernel-build-v1.log",
+      "sha256": "e6240f73580f3992b3b931f4edac56027e1dd911fc3c034358de3cab8a6c4f74",
+      "bytes": 2802,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-build-budget-v1.json",
+      "sha256": "993c1a5fa974f2f222f9b1273efcafdea7b696d6ccec2aba0555a37dbe84cb3f",
+      "bytes": 1070,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-c-retention-v2.json",
+      "sha256": "04fbc5c9fb3a939c7367a5559f81e783fdecb456502185947aba05732d5d256b",
+      "bytes": 2131,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-c-checks-v2.log",
+      "sha256": "f2704abaff8caf656941a526e2ffda51bfc98340a374dbd3bcf17ae0a8844d30",
+      "bytes": 4021,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-rust-tests-v1.log",
+      "sha256": "3bbb67b3f2399a18b5d2c5cc93bec9147df5697c76812ad7e29b627556c09fc4",
+      "bytes": 25878,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-abi-v1.log",
+      "sha256": "2438ad927096d121f30b89edcb999f9c70362ee9c60676cf2b11fc80b6671b76",
+      "bytes": 1273,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-abi-v2.log",
+      "sha256": "0016a1b80003980c0631c2b41946f64c3002f98a4d4744e926bca0c625f66a99",
+      "bytes": 1276,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-clippy-v1.log",
+      "sha256": "88c5197bffab568fc9a779556962d0c33bbcfdfab1b5f38a3537fefa84ff263b",
+      "bytes": 2058,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-dispatch-v1.log",
+      "sha256": "0e0affe338f38f6e0f866e4b784b3cca54e761cc3af73d742e68bab0de715fb2",
+      "bytes": 1383,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-frozen-tools-v1.log",
+      "sha256": "906bf6c76a0c0de3b4b1b25904cda6867f78132d66373f61244f549c81ce88ef",
+      "bytes": 110099,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-frozen-tools-v2.log",
+      "sha256": "09fc0e924227165aa90139fa9ef278f5bbfebd5a3fc075d0934854108bb253e3",
+      "bytes": 109378,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-frozen-rust-v1.log",
+      "sha256": "159eff3c5c8ade8e2528b88136cc28e95fa39edb24d5a7e2a1910e8d5cd95341",
+      "bytes": 17304,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-frozen-rust-budget-v1.json",
+      "sha256": "c899920d571ae6ab9e638c27693be08a8d434044ec46f59fa04e597e1e0e9796",
+      "bytes": 885,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-retained-rust-v1.json",
+      "sha256": "eb2affed46e9e204c061cd32dcff3bc5f93badcdf11292557225db90e0fdcaf5",
+      "bytes": 3055,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-clippy-v2.log",
+      "sha256": "f8f0badaab3333729c8e71340c1dae0294f06bc8a0ec1c3e75503507d31498eb",
+      "bytes": 498,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-clippy-v2.json",
+      "sha256": "9a7354d2f5d4b80041f277dbab27a13a2ddb62bcd1eb715fa61b627aca3c1971",
+      "bytes": 919,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-abi-v3.log",
+      "sha256": "d89a6b967c0da4d2385a4f17307aec8f2c45ac644bbe812430bb6b731a905da3",
+      "bytes": 102,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-python-v1.log",
+      "sha256": "3a86bd8cb8f3fe3a4cab30a34b4c71b96799295987633cc82a5429e8c84ebdec",
+      "bytes": 5118,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-docs-v2.log",
+      "sha256": "3aff4b2fe44deb9ef5e249767fb8085658d5ea9596d17ac430829d8d8fbd09e7",
+      "bytes": 265214,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-drain-tests-v2.log",
+      "sha256": "8a19eef8ca2af1e331bae7f8685f1aed1db53efc688f5ef90891828710a78bbd",
+      "bytes": 442,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-lkmm-v1.log",
+      "sha256": "eadc01236634c783df99768f612c9231a9339e0a88a21c9e191994f7ba1e2b0f",
+      "bytes": 580,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-herd-version-v1.log",
+      "sha256": "f15276a3b23c96214a896647d44dc59e11636c50d363388a26210aec3a6a0471",
+      "bytes": 20,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-ci-42ecc6f-v1.json",
+      "sha256": "1ec4bfa44ea758b40d57c96c7c5725d0515c9800aade6c0eae1681c93e44f275",
+      "bytes": 892,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-dispatch-retained-v2/report.json",
+      "sha256": "c8aaa22ca2c8424a1a176a35b30a31b8d19b069ea21ad48657661a4181f4a77a",
+      "bytes": 2561,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-dispatch-retained-v2/compile/test.c",
+      "sha256": "094aa3df4ce96f6f8a066c266df24be2b6a389ac84c53a0393c2f1b412573921",
+      "bytes": 114622,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-dispatch-retained-v2/compile/test",
+      "sha256": "56fb920dfe0daedb14747efcb9562680a112458f2dde3d557a1c48d19ee33ec5",
+      "bytes": 2635464,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-wake-retained-v2/report.json",
+      "sha256": "d05acb67e27955a60ecbf02edbc0a43e13cb45510b702abbd757465fd1365dc2",
+      "bytes": 1341,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-wake-retained-v2/compile/test.c",
+      "sha256": "11cfd2ea76e2ace3762a0d22eb3771b0a116b8c862305b8ad03e1fac7152e8f1",
+      "bytes": 4135,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-wake-retained-v2/compile/test",
+      "sha256": "11453cb346fc3f3a0f3f6b7343a7096d38be6c673edafaec8d69f2e662e01a1b",
+      "bytes": 1778168,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-offline-retained-v1/slk_protocol-d6226b5ec5715618",
+      "sha256": "e2ff56c787b1523e8b5a5f191c8ef42be126c804c033ae2ff06306ea807edec4",
+      "bytes": 10395632,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-offline-retained-v1/slkd-dd0fd63196a3f0df",
+      "sha256": "949c555aed2301758d025dc1e48c01b15c4b699a189211d6b58d1d2375bc2db3",
+      "bytes": 136208216,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-offline-retained-v1/slktest-cc02aecf0d9aea9f",
+      "sha256": "d1fb8ddcd2567812c4ae7ee2609100a06ee23539398f504d5bfc4e51d32a0ace",
+      "bytes": 57175872,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-offline-retained-v1/slktest-11fb41c3cc63fe45",
+      "sha256": "9f03f268b4ea71fb7b3c6a7e60a59c5b87182d092919df7c44b39035f9bb8620",
+      "bytes": 6886296,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/manifest.json",
+      "sha256": "60dba5add97b92bdd2aa566920887f2991c5af2199fe50aa2fdc3c6de016c018",
+      "bytes": 264226,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/bzImage",
+      "sha256": "6c2c6b3b6092707421af244e255c27510c0d510a082a05afd4f0e486284b85d3",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/kernel.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/initramfs.cpio.gz",
+      "sha256": "4f590fee0d4785d7378ea01c55a6ddac00aa0db2cd51ba9e16a78b0c986539a8",
+      "bytes": 217020964,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-prepared-v1/root.btrfs",
+      "sha256": "2440990bd98adb4b8b7f7ea766b69305d0178eefd546bfa0d59c66f2e272b7a0",
+      "bytes": 1073741824,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/daemon-remove-qemu2/qemu-system-x86_64",
+      "sha256": "05a3b654eb2801ed1ddb60fc6c6fa9bd5cd48eefa8194f999170eab90b26185a",
+      "bytes": 30094800,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/netfs/netfs.ko",
+      "sha256": "7beeb335cd012e257e2701c8a52379045e31e297d8f35f34252b17cf394a896f",
+      "bytes": 696513,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet.ko",
+      "sha256": "ad4bb5caa4cf203978a84544bc9c2d1403b2d4653eff427f232a9223766dce27",
+      "bytes": 210113,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/fs/9p/9p.ko",
+      "sha256": "f0218adc023d481b90f73ff013a07ecca9c68b50c19f5352057153c7b604448e",
+      "bytes": 183769,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/net/9p/9pnet_virtio.ko",
+      "sha256": "08fb5951a3c8cabfc23f18a853330f44d397f74a9eae5dd552152e61a85640eb",
+      "bytes": 37217,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-modules-v1/lib/modules/7.0.0-rc6-opensparklink-native-lab+/kernel/drivers/sparklink/sparklink_ws73_usb.ko",
+      "sha256": "9d7bd90c52d7cb2382bc3b8ce6fa4e20a2ac258189b6e8a17244950a8c98d2ee",
+      "bytes": 138049,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/manifest.json",
+      "sha256": "ecf0d35ada948661587d01b23fce37a13d99d4e1d145bbee51da61bc840bbb07",
+      "bytes": 26326,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slkd",
+      "sha256": "02efd6e2c102ad0727cfd6b371b5b5c8a06bf3c0f26e3a8e5e9410ad50eae126",
+      "bytes": 10527128,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slctl",
+      "sha256": "10a80a1c7aecbc3c3e3b1e2bd11d3ddb98656393db4ad2b90714f71f5b5bb8af",
+      "bytes": 7818832,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slktest",
+      "sha256": "54b9cd0611d714efc9f91b95d17644ef5d7cc431cbc42e1fea1ddf697b30b935",
+      "bytes": 5236208,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slkconfig",
+      "sha256": "2b9a5b71d626f42346e99618ef619bfd0f1d87ce38982d29369d886b86c6f9fd",
+      "bytes": 1403824,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slkmon",
+      "sha256": "677a0b52e0f59f6a1620a0dfce60ff10c38d4a96e9a9e5a1a3ec3ceae8f1f17e",
+      "bytes": 1662288,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/slkdump",
+      "sha256": "99c48c59778bd8bab8ace3a1e7eb62871d967c58f6d275f33a2b0704c1344d34",
+      "bytes": 1662128,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/libexec/opensparklink/native-lab/42ecc6f98399/liblibsparklink.so",
+      "sha256": "0fb387aaa07f02d50122192a3a1a6611751493086a7cc557968ba1c980209e88",
+      "bytes": 546344,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/etc/sparklink/main.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/etc/dbus-1/system.d/sparklink-native-lab.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/etc/udev/rules.d/99-sparklink-native-lab.rules",
+      "sha256": "7002984d75c37fed791d13b3bed0106e089738951e2dd095605e1e102089fff6",
+      "bytes": 396,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/etc/systemd/system/opensparklink-native-lab.service",
+      "sha256": "739a3d116452738d60da4142c31d4f90b1939354e0d77b4ce5af296f0e33828e",
+      "bytes": 507,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/share/dbus-1/system-services/org.sparklink.service",
+      "sha256": "fbf83993a333fb3ffb5389f0ec7c1210316dd104ba7c93f1e1e6b3c4e8f626b6",
+      "bytes": 154,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-service-bundle-v1/payload/usr/lib/sysusers.d/opensparklink-native-lab.conf",
+      "sha256": "413da121453297af5b1971205d613f3ea8907b29eae7c74f1d0483da32fb1288",
+      "bytes": 14,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-artifacts-v1/manifest.json",
+      "sha256": "2d384fd343dd3bfbf51d68fb9e9425b895e0eded57e651bea02640926c13efa9",
+      "bytes": 229023,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-artifacts-v1/retained-vmlinux",
+      "sha256": "5228ca5dd6d95b3d4d3380997dc757d0303a69745e6b01778b7830cda1436c02",
+      "bytes": 409836592,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-artifacts-v1/retained-vmlinux.json",
+      "sha256": "750fb2852ecebb7dd01cd7a20aebbf1d16306174a2ab5359b8e9f97cf047957f",
+      "bytes": 229,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-normal-smoke-v1/manifest.json",
+      "sha256": "cac9e462736bc983f888508dec1b087f13af0948adda1037d831f4c4e093541a",
+      "bytes": 37168,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/c4-dynamic-lengths-v1.json",
+      "sha256": "fba50fd1552d8934f030aeb9a45b82059d038b2947d80df203f95d52e8497584",
+      "bytes": 9997,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst2042-v1/manifest.json",
+      "sha256": "5a5f7a97bd077906632d305d3f7ba3183b31043349f925deb1bf327ba4dd370c",
+      "bytes": 1183184,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/c4-dynamic-burst-failure-diagnostic-v1.json",
+      "sha256": "ed0b82c01a03f7e19b23fe785b4aced4ea488e57e8324ba3aa32a86fb6904574",
+      "bytes": 1764,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-artifacts-v1/artifacts/arch/x86/boot/bzImage",
+      "sha256": "6c2c6b3b6092707421af244e255c27510c0d510a082a05afd4f0e486284b85d3",
+      "bytes": 15749120,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-artifacts-v1/artifacts/.config",
+      "sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+      "bytes": 299479,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/tools/qemu-deps/root/usr/bin/busybox",
+      "sha256": "98d9040015eb17931e17b45e00b5f49f2451326372d5107a3a280f1cb3aaf3fc",
+      "bytes": 1440888,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/tools/dbus/usr/bin/dbus-daemon",
+      "sha256": "cbb05276d0a322ddbfd71e58c135625117dfab72967ad743c60fdaf10970545e",
+      "bytes": 228064,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-external-inputs-v1/edb51cf1e8fd5398-tcpdump",
+      "sha256": "edb51cf1e8fd539883eddbac10d1c8cc6acf1636f0990be4ad2117476e3a91d0",
+      "bytes": 1147000,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs.",
+      "observed_original_path": "/usr/bin/tcpdump"
+    },
+    {
+      "path": ".dev/session-status-external-inputs-v1/0d64bd6d66d68dac-python3.14",
+      "sha256": "0d64bd6d66d68dac91cdadafc46e22d4f09f22bdc997aaae870f42865b024a3e",
+      "bytes": 11544,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs.",
+      "observed_original_path": "/usr/bin/python3.14"
+    },
+    {
+      "path": ".dev/session-status-tools-v1/data/dbus/sparklink.conf",
+      "sha256": "af4f2323be74bbae7cae14c19edd3b315cd06065f1e84cee565a0e61ead55700",
+      "bytes": 8249,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_target.py",
+      "sha256": "19595392953bdf981d83b8dc3eb2c7207fde365b49a07f4aff66ffa3fe55e66d",
+      "bytes": 154678,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_target_init.sh",
+      "sha256": "7fa767bba0a6d1fdeb5339f09612fe5b416caab7cbe9f876c74d20ba9ae21c26",
+      "bytes": 33843,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_vm_native_root.py",
+      "sha256": "a805611862274dd7ed7a4b47d62e34cf423d524096d3136d15d9e40a594ea058",
+      "bytes": 14715,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_discovery_policy_capture.py",
+      "sha256": "c46e86a768b431d8a04a5ecf11b67b4cae3a8cf782fec32d068f21e99e249667",
+      "bytes": 5586,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_managed_queue_support.py",
+      "sha256": "7c951e9dc3b6bec05c16b8f256f7537c422aceadc7870b5ac74518337944b898",
+      "bytes": 15500,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_model_hold.py",
+      "sha256": "f0f2863833fbaf9822f5515dea0ab1c8f2fd934c104ae79189714d6604db1e53",
+      "bytes": 7325,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_channel_daemon_crash.py",
+      "sha256": "a46904a941fcd73038e6b96e002a4bf38d5f7bb940ea6274e6f104490bae3ff7",
+      "bytes": 17077,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_daemon_channel_fd.py",
+      "sha256": "392474a115e52b439b3d9a6dd803c2ed4bb78708b6149f2ca41f67e768f4614f",
+      "bytes": 3430,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_target_guest.py",
+      "sha256": "9361ab9532b690cd505bdf0ff7738047598e384afac3c08d33b2fd2ff6b2e949",
+      "bytes": 31618,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_north_star.py",
+      "sha256": "f83714df62b3f4249b5196bdcfe29d61f38ef71372f3eed004175cf1c3eeb130",
+      "bytes": 32042,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_capture.py",
+      "sha256": "80590536783292b2f020b6c065c04a95a6e809af6f7098e77fcc2dc9080c562a",
+      "bytes": 42628,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_rf_rounds.py",
+      "sha256": "c23010775c27d6c04417435a1eff108fae506c3b232a485183c8519d0f3e1a9f",
+      "bytes": 14088,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_parallel.py",
+      "sha256": "635565aca4b179de641ffee2a70503e447e272f2eb6dc8a34e8bbe60c2b76894",
+      "bytes": 25768,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_parallel_data.py",
+      "sha256": "47f105065fdc82c6189fe51a158a33de22cc1304d615efa282beaf753b9af7c4",
+      "bytes": 27301,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_credit_observation.py",
+      "sha256": "a20c285fd3a479987dcc06396f80935550ab80ff073f40f0d6832a6ae26bdd58",
+      "bytes": 7067,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_security_agent.py",
+      "sha256": "90e34159099e19bebc8cdd9b18ba7fc5fe5feca89847837e37e22644dea6bb81",
+      "bytes": 13585,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_security_cli.py",
+      "sha256": "99bda3dfde564693382723cd00366f7e906a89647ef29edb3b06f9b0295316ce",
+      "bytes": 13439,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_target_control.py",
+      "sha256": "793540882f71f011579f2b71da25f62a8c5ca77ecadaae57c48bbabbe5574ce3",
+      "bytes": 10912,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_connection_control.py",
+      "sha256": "ca953b7343e5ad886c5bb5eea2ec9ee6adb6465e1ac95bd725a25e916e19912c",
+      "bytes": 23865,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_connection_objects.py",
+      "sha256": "068514d4b9c4b867bb0e82a99caf383a2e74b3e50d9c20420d537e04f6772903",
+      "bytes": 10469,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_link_resync.py",
+      "sha256": "90bdf1b3320bd036d1eb726fa68d2d7999a53650fba62d66f273cab24980dfc7",
+      "bytes": 11109,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_acb_transport_probe.py",
+      "sha256": "b3d59ef465ec0e1b4c461a86b0397df325904123dde368b6c37a0a8923b73d10",
+      "bytes": 14227,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_channel_socket.py",
+      "sha256": "067c23d58cd236168e1693ca03735fd7122fa2acf404e835c2b5f2eb9dfb7959",
+      "bytes": 46159,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_benchmark.py",
+      "sha256": "8c06a3a038c199700d407c694c79cc541628bf59775e9cc63b1da31181cd5823",
+      "bytes": 20522,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_socket_benchmark.py",
+      "sha256": "19c9c6e031045f02b274c341bc94e610a12ae22cecbd402bce42f3a702016b79",
+      "bytes": 16011,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_benchmark_timeline.py",
+      "sha256": "92043a0b33bc498551636428a77a8ae63b5dadaea210921da60f9c26a880896b",
+      "bytes": 10302,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_dynamic_channels.py",
+      "sha256": "47f21b92b41d9e4212dd813c67e979c117df89a0c933b308f3df5c0120641bb9",
+      "bytes": 29628,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_session_drain.py",
+      "sha256": "e459a71ad26b50d41b260ff6dd758ccb740c6874d5adbdb38148ecbcefa0ffc9",
+      "bytes": 8381,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_channel_fairness.py",
+      "sha256": "240383395f03e3482e6381b41fc526e5e9a831e033e5e66b643dd04ddbb9cc4f",
+      "bytes": 14445,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_ssap_value.py",
+      "sha256": "45f6ca4786e7b87fb8f9bd50a6d14dc56ec2235b2bafbd562db24ff6bbff58d8",
+      "bytes": 9915,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_ssap_discovery.py",
+      "sha256": "c261be70787a297be0a01adf8836b02e8d9d48af6ac0c322f63e55ad9a82458e",
+      "bytes": 4981,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_initialization_lifecycle.py",
+      "sha256": "734df6f58555f33b819ee25cd67397a225ff9b6de2ad9a77237156d69ae02ed3",
+      "bytes": 18450,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_observer_policy.py",
+      "sha256": "6c247953620b9131e24cc9aeb37f6443e6953c215569bd8817e67af410b79f1c",
+      "bytes": 11020,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_daemon_crash.py",
+      "sha256": "e79306f9897f770756fb18d9a5ddd98192be0ba631e551651fb1cb9a37147d19",
+      "bytes": 16497,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_target_recovery.py",
+      "sha256": "96cc6a12a4b151aae826dea7c3e78a247277dc9b4fa7dc9a49b34292a3e37f3f",
+      "bytes": 9737,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_early_fault.py",
+      "sha256": "4e90b25cde9f7ce2f46b63a99ff8e70b4deb1e6448146e6741bda3ba3d23c604",
+      "bytes": 20582,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_event_copy_probe.py",
+      "sha256": "aa4c681e40fe5cbd5d7a82f95b88b9a55c1f015a2fd946d0a96894bd66508abc",
+      "bytes": 3060,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_diagnostic_probe.py",
+      "sha256": "e6c0c43df173c9709a73ad9105268c2382a1a5632d664160fb20a8e5a1a15407",
+      "bytes": 18546,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_diagnostic_cancel.py",
+      "sha256": "783d973083151f229b2fabe965aee73b4fa052422461ae5b5bf7cd1a4522bfcc",
+      "bytes": 6214,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_diagnostic_hold.py",
+      "sha256": "5f17620a1313566a142dcd7d907d651d1cbe559d474e5b2a47d282c4ef622299",
+      "bytes": 7715,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_diagnostic_deadline.py",
+      "sha256": "08c4b04564918b22b14d654dbb1c8c5d518d8f4cca2e22631239e81b378fb41f",
+      "bytes": 3240,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_diagnostic_autonomous.py",
+      "sha256": "4015d570613e488e2ef58fb058209ebd036af2cfee92368f435b5697d1ee2ec8",
+      "bytes": 2596,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_active_deadline.py",
+      "sha256": "fff7caf3aeb1a6ca99ac7eb6f3ccdb593b237f38b260a268bd473c3f937665e0",
+      "bytes": 30142,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_management_setup.py",
+      "sha256": "dd76436d1480bb4b7642ef2d119ac4e5d2abe988fcbc39b359b20179048cce82",
+      "bytes": 9310,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_management_queued.py",
+      "sha256": "7b5c7fe38bbf5f58933c988e7543263bc1599b21df70e3210c947efb36b59ccd",
+      "bytes": 22997,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_management_queue_ready_peer.py",
+      "sha256": "716977fbafbf8f3d7f940374261f9f6e93dab6b9f84bad265e771e3dc0733279",
+      "bytes": 5048,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_connection_queued.py",
+      "sha256": "0bde3f3c8b03c574212a1965f5d539fa6d1295a0e9a021e7c44496f6db8aa330",
+      "bytes": 7951,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_managed_queue_probe.c",
+      "sha256": "1670731a7c5b8a1888ca2c0bc899817a762b03061570ec6a29212b2a855eb7d8",
+      "bytes": 23162,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_management_partial.py",
+      "sha256": "dc4ad2a25b8e95ff11159a52c9375482d1ad404f7b038022deb68b1b308c56de",
+      "bytes": 38405,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_resource_file_gate.py",
+      "sha256": "0191364cd23ca6de83ceaffa11b8672e55b3f81539d8fe5d2d027578b9c24cc6",
+      "bytes": 15752,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_connected_file_gate.py",
+      "sha256": "ca194a829b2194ef4acc718e45942228478e072fdc338743f9c65fd334fe3094",
+      "bytes": 44854,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_session_idle.py",
+      "sha256": "0e3ba7c5848a974872280c0e2e257c79c12c8ff4a7b33a3da44e46473f37c776",
+      "bytes": 9109,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_session_service.py",
+      "sha256": "db7d79925dc36d80141beadc76ed06e3924de55b85523dff0332be8776983694",
+      "bytes": 24624,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_trace_layout.py",
+      "sha256": "1220dd5d01e5f748585bfc0dd5646196fd0f10365d2ec791d0a065eada74633d",
+      "bytes": 929,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_channel_grant.py",
+      "sha256": "e61b7e6fb7cc665f6038c54d5942154a79e67ec07cf2bb6a758fcccb77aab1d0",
+      "bytes": 31621,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_revoke_prefix.py",
+      "sha256": "7bbe36002fa8df6686348cebeb426ea5b7df1d54d7fc78a0e0cda421b6b3a3ab",
+      "bytes": 2552,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_channel_prefix_hold.py",
+      "sha256": "2a6b8720777f098a6d5d7270af772b25bc46fee4dd4591cabec55459e97052a3",
+      "bytes": 10754,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_channel_link_down.py",
+      "sha256": "e2f4ea1e1bc9797afa9280f43ad36d14bcdb65328080b4335f5a2b07fc7dea51",
+      "bytes": 12756,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_channel_deadline.py",
+      "sha256": "eee746b38308719e740df4a1f712536cd96bff5620d6889ab37408789f6288e2",
+      "bytes": 17389,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_security_capabilities.py",
+      "sha256": "0380d18f3082bee53bede21c41257cdfcc31ed6f6716251d5ea9749c794d9100",
+      "bytes": 21482,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_security_cancel.py",
+      "sha256": "8a2f20b241a307e9510dce9a1bd596380690d735e5baead806e38470d676a2ca",
+      "bytes": 7680,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_key_agreement.py",
+      "sha256": "a719758392ab2f66f1abad205420e79d853e8e862bbd5159fd376893eda10cb8",
+      "bytes": 9886,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_management_ready_peer.py",
+      "sha256": "0087c9c304365831a151ff3c9ac340143a2b90bc48aaa4aac446a789a57f28d7",
+      "bytes": 9186,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_host_later_hold.py",
+      "sha256": "82ac4142af1485514fb6fdc5d71b60d2cfeceff05e1c75ef26d914b1d9a3d290",
+      "bytes": 6555,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_management_eviction.py",
+      "sha256": "92d547bbe42ace5dea0033b581ef1a5c453ece089e9a49dfc645a3f977c71c87",
+      "bytes": 16000,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_daemon_hold.py",
+      "sha256": "3ef0140fbc69b22866da58d92f22b2acf229f82a8d42d6a628f8f1bc0f6b8cfb",
+      "bytes": 28764,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_daemon_removal.py",
+      "sha256": "2ff04e8665aa04d52c1d58ebe6487c0607369beeb111582f46f2c654db59b99d",
+      "bytes": 21965,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_vm_register_reset.py",
+      "sha256": "99e759dc2ff4d0171fd002102c925c1a68ba865ead419d7da4cc4b9f4b1f5d70",
+      "bytes": 24371,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_register_reset_init.sh",
+      "sha256": "826541c4d499b3905db5b9f24a83154024e9a59ae1a62e27c8f4a214dc659ecd",
+      "bytes": 2897,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/sparklink_event_copy_test.c",
+      "sha256": "750430e6bc1524b564ebfeed8369d06966caf8f8fc6d8f03053e5b3840deefbc",
+      "bytes": 6613,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/controller_event_copy_test.c",
+      "sha256": "7f27c64fcd3bad323c2b6e19f4acaab39e216a59675196e5769c8bd922c8b28d",
+      "bytes": 3340,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/genl_registry_test.c",
+      "sha256": "005c134f66436dec40383a2a0a902aaa93e2069562a6f9173be1bf7f3eb601cb",
+      "bytes": 5520,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/protocol_state_unsupported_test.c",
+      "sha256": "d3af826bebaf3db2c6e322fa24f529e1440e6c5e558596ad19a8299585dbd453",
+      "bytes": 7176,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/sparklink_diagnostic_result_test.c",
+      "sha256": "77b6a180707aa6c8eca644511ae2edfa3627adbe322768832a182edf629ec9f7",
+      "bytes": 41170,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/sparklink_setup_release_test.c",
+      "sha256": "f14cd406487e2ad45a5acac67f02b273c9c81fc4bb1d042397dd547fb47b45ac",
+      "bytes": 5405,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/ssap_removed_uapi_test.c",
+      "sha256": "62f20ab567d1f81397eb6508bac5458f167d8ccf940bd81bf5e180094dd0974c",
+      "bytes": 2011,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/sparklink_socket_type_test.c",
+      "sha256": "e25a1fc682c02f5509f39db38d3bd8b827016d23e450b0c3b1945d2f5f0ab007",
+      "bytes": 956,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/include/uapi/linux/sparklink_ioctl.h",
+      "sha256": "ae3d68b48ebc68a79c06af096c74dacab633183110048b23bdde141d1084dfb1",
+      "bytes": 40217,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_bindings_probe.c",
+      "sha256": "e0e1f33c2b939d95aeffba2acd1f791422d963af3fde35c4408b787ad5403fd3",
+      "bytes": 10270,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/ws73_bindings_probe.py",
+      "sha256": "a8cee9e23dd6680345a7c278b04d84101bfd347ec3b9bc1629e330466c350683",
+      "bytes": 6262,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/ws73-lab.py",
+      "sha256": "a4178f03a0b3756b70370c34fe36fe79500f9fe58b977c2b4e526e9e3f0d873a",
+      "bytes": 34831,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/qemu_verdict.py",
+      "sha256": "0430a395426c686d793624d6e893bc6ae6d5671970f3cdd06278b27b584eacbc",
+      "bytes": 5996,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": "linux/tools/testing/selftests/sparklink/daemon_radio_guest.sh",
+      "sha256": "458cb7a63fe09e6dfd72dd9d810febc286b2c2058152a8c9d08ceba22034bad5",
+      "bytes": 2274,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/native-dynamic-burst-service-bundle/payload/usr/lib/firmware/sparklink/ws73/bsle_custom.bin",
+      "sha256": "615e2ee921fbb5a0519cb76361708f68474f10b21c0d18140b7c18f9cf76316c",
+      "bytes": 140,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/native-dynamic-burst-service-bundle/payload/usr/lib/firmware/sparklink/ws73/pm_config.bin",
+      "sha256": "a914196cc667ce2f81b82c5bbb7da1e465976d8e4e35be042e5cdde9b2ee2dfe",
+      "bytes": 4,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/firmware-1.10.111/ws73.bin",
+      "sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "bytes": 144604,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/firmware-1.10.111/wifi_cali.bin",
+      "sha256": "0acb09017a144955c750a33eaa6188acab60a43ac3f7037d6ded44ddb6c67b03",
+      "bytes": 21044,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/firmware-1.10.111/btc_cali.bin",
+      "sha256": "48d8fcc4a62eca6cf49f61560927622b11b9f46c729df77910ddf95656c307ac",
+      "bytes": 7740,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/tools/build_resources.py",
+      "sha256": "a4e2bc174be731d25e4410db3a4016954597e0bae0a3026789cab302cc9d375c",
+      "bytes": 5929,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    },
+    {
+      "path": ".dev/session-status-tools-v1/project/build-resource-policy.json",
+      "sha256": "c10dfb10add9bfac7dc1001d89f8ec3dde2962e422f52d71aa94edb2a76541ba",
+      "bytes": 790,
+      "access": "private",
+      "retention": "Authorized workspace maintainers only;raw captures/SDK/VM payload not publicly downloadable. Replay uses exact frozen source,tool,artifact and saved capture inputs."
+    }
+  ]
+}

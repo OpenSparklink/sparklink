@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "status": "IMPLEMENTED_TWO_FIXED_CHANNELS; OFFLINE_SCOPED_PASS; REAL_CUTC_REGRESSION_PASS; SMTC_RF_MISSING",
+  "kernel": "6fe9696a04da6527b994c792cac91ac25b07155e",
+  "service_and_runner": "f0cd461778209aa2ae30e8de8779b690ee122f70",
+  "sources": {
+    "linux/net/sparklink/sle_channel_socket.c": "cea5133f111c2f3da6bd87ce099e3a7d5ace8dc9a5db0428ec941c00536267b2",
+    "linux/net/sparklink/sle_channel_state.h": "b1404da47c9523c115ee5e85601d1e0604c3a0ce2b9ad7daef1529c7d4551dc3",
+    "linux/net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+    "linux/net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+    "sparklink/formal/channel/session_table_cbmc.c": "a5d69ac28c9fba0165386f94e3dda0eda39fff50925f85c79334a21bdb8064fd"
+  },
+  "production_scope": [
+    "one Runtime-owned connection Session and one ACB consumer",
+    "two fixed slots: CUTC31/PI241 and SMTC10/PI0",
+    "independent finite per-channel TX8/RX16, binding/grant/close",
+    "shared real ACB credit and Runtime guarded submit with bounded TX round-robin",
+    "whole-Session link-down/revoke; per-channel final close retains sibling",
+    "dynamic TCID/reliable mode/same-life rebind unsupported"
+  ],
+  "cleanup": {
+    "removed": "single per-session application queue assumption; no second ACB consumer added",
+    "migrated_tests": "actual struct/function extraction, existing receive/permission tests retained, new dual-slot isolation",
+    "waiting_replacement": [
+      "dynamic channel negotiation and close/drain barrier",
+      "unique daemon SSAP Engine on SMTC",
+      "trusted security/profile"
+    ],
+    "retired_legacy_ssap_restored": false
+  },
+  "build": {
+    "status": "PASS",
+    "config_sha256": "308604271c3abe188b950611eaa14215e0ee4adaeb37ebc51ad70ef5b4709134",
+    "config_unchanged": true,
+    "warnings": 0,
+    "record": {
+      "workspace_relative_path": ".dev/native-session-fixed-channel-build-record.json",
+      "sha256": "8f7118d26c1906d4632166e5c423e3c48a81bd8c75d522091ba91c64cfabf7fe",
+      "availability": "workspace-private original; not uploaded"
+    }
+  },
+  "virtual": {
+    "record": {
+      "workspace_relative_path": ".dev/native-session-fixed-channel-virtual-vm/manifest.json",
+      "sha256": "73bb04a79c48b84c5aaf0ee2024eeb4fbd48d29ccd8973144690e47dfc6235b8",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "scope": "existing registration/Host/Diagnostic/VFS tests; no SMTC RF",
+    "protocol_refusal_checks": 332
+  },
+  "offline": {
+    "actual_dispatch_sanitizers": {
+      "status": "ACTUAL_SESSION_ROUTE_SUBMIT_PASS",
+      "scope": "actual single-consumer two-slot route/local TCID+PI/independent finite RX and TX, retired-slot/peer isolation, queue and USB consent, full recvmsg retry/authorized dequeue/PEEK/TRUNC/zero/error paths; kernel allocation/locks/Host authorization/wait/wakeup/copy are explicit dependencies; no running kernel or RF",
+      "physical_acceptance": false,
+      "whole_session_proof": false,
+      "bodies_sha256": "b58f9489c266c1af3f958fce4114190bb57fd1414869823f59c7c1b39125d9d2",
+      "sources": {
+        "net/sparklink/sle_channel_socket.c": "cea5133f111c2f3da6bd87ce099e3a7d5ace8dc9a5db0428ec941c00536267b2",
+        "net/sparklink/sle_channel_state.h": "3cf939ce87b914f9cee06391029a73f8cc2b1b0cf4a793293354ad4d11221612",
+        "net/sparklink/sle_channel_grant.h": "1e2e07c73346ea78e70e645c21948ec5a404b8f5769ed5e892144fad68bbf8dd",
+        "net/sparklink/sle_channel_wire.c": "ce9996a012f473047e549e09b84a677c782935392ee915617040197aa43ee1c9",
+        "net/sparklink/sle_channel_wire.h": "259a5b166b8a10403fee1e3ed5db01f122a0ed03e9f20d4da78867b18d383b59",
+        "net/sparklink/sle_channel_table.h": "bee5d1ceab069c31e9cf8ece32bb77d356c45d9345ee277cf8af8dda1e73b1d5",
+        "tools/testing/selftests/sparklink/session/dispatch_fixture.c": "e41bc8f9d1f10806b776d6850cceca2a1b727c640359d1d7cada535b536162fb"
+      }
+    },
+    "key_test": "16777216 u8 key combinations; actual header, cross-grant refusal",
+    "address_contract": {
+      "status": "ACTUAL_C_RUST_SOCKET_V2_LAYOUT_PASS",
+      "size": 48,
+      "scope": "actual broker struct/initializer and C UAPI; no kernel admission/VFS/RF proof",
+      "sources": {
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/crates/slkd/src/channel.rs": "f9bff6f4793fb87f123d1adb6e84e9119b50b6d03497db73318ffc4206d363b3",
+        "/home/sanchuanhehe/Documents/opensparklink/linux/include/uapi/linux/sparklink_socket.h": "153bc24030425730254f93a4e0baa63bfd4d2612353b12b2ec5409a7d92cdc96"
+      }
+    },
+    "hardware_claim": false
+  },
+  "formal": {
+    "status": "MODEL_CHECKED_SCOPED",
+    "tool": "6.11.0 (cbmc-6.11.0)",
+    "command": "cbmc formal/channel/session_table_cbmc.c --bounds-check --pointer-check --signed-overflow-check --unsigned-overflow-check --conversion-check --unwinding-assertions",
+    "actual_source_included": "linux/net/sparklink/sle_channel_table.h",
+    "properties": 11,
+    "bounds": "full unsigned int inputs, no domain-narrowing assumptions, no loops",
+    "assumptions": [
+      "C int/unsigned int machine semantics; serialized pure key function only"
+    ],
+    "does_not_prove": [
+      "socket concurrency/refcount/UAF",
+      "queue fairness or complete lifetime",
+      "hardware behavior/NOCP/real SMTC"
+    ],
+    "first_counterexample": "signed negative sentinel compared with unsigned constants in harness under conversion-check; explicit int constants fix harness, no production change",
+    "log": {
+      "workspace_relative_path": ".dev/session-fixed-channel-table-cbmc-v2.log",
+      "sha256": "a897110d907326c738fc583b21be13a976385291f8ef2b5bf9a62a83d5ae616c",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "prior_failure": {
+      "workspace_relative_path": ".dev/session-fixed-channel-table-cbmc.log",
+      "sha256": "d7208e2fd470a61f965bf985a80cd055156ce5d5af0c731f22da43f840ba3671",
+      "availability": "workspace-private original; not uploaded"
+    }
+  },
+  "real_reports": {
+    "real-short": "session-fixed-channel-real-short-20261014.json",
+    "real-boundary": "session-fixed-channel-real-boundary-20261014.json",
+    "fault-real": "session-fixed-channel-fault-real-20261014.json"
+  },
+  "normal_total": {
+    "round_trips": 48,
+    "rejections": 16,
+    "acb_sdus": 224,
+    "nocp_count": 112,
+    "kernel_drops": 0,
+    "taint": 0,
+    "peer_application_validated": true
+  },
+  "failures_retained": {
+    "session-fixed-channel-object-preview.log": {
+      "workspace_relative_path": ".dev/session-fixed-channel-object-preview.log",
+      "sha256": "84e34a1f2e201581f1c0e54ead09177f9627d273c0a5e654f8c825a86eb1c67b",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "session-fixed-channel-dispatch.log": {
+      "workspace_relative_path": ".dev/session-fixed-channel-dispatch.log",
+      "sha256": "bda6868e07c0631d6ae412e9b92b2e32c5daea0333ae240bdb37d1e1c7a7aace",
+      "availability": "workspace-private original; not uploaded"
+    },
+    "session-fixed-channel-table-cbmc.log": {
+      "workspace_relative_path": ".dev/session-fixed-channel-table-cbmc.log",
+      "sha256": "d7208e2fd470a61f965bf985a80cd055156ce5d5af0c731f22da43f840ba3671",
+      "availability": "workspace-private original; not uploaded"
+    }
+  },
+  "ci": {
+    "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38479661397",
+    "head": "f0cd461778209aa2ae30e8de8779b690ee122f70",
+    "status": "success",
+    "jobs_success": 9,
+    "per_job_readback": true
+  },
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 6,
+      "state": "OPEN",
+      "comment_id": 6156831192,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6156831192",
+      "readback_exact": true,
+      "body_sha256": "0ec1271d97d0f6469ffaf471c28d123746017037b22dc4fad4340103f4dae9e0"
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "state": "OPEN",
+      "comment_id": 6156831845,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6156831845",
+      "readback_exact": true,
+      "body_sha256": "0ec1271d97d0f6469ffaf471c28d123746017037b22dc4fad4340103f4dae9e0"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6156832598,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156832598",
+      "readback_exact": true,
+      "body_sha256": "0ec1271d97d0f6469ffaf471c28d123746017037b22dc4fad4340103f4dae9e0"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_id": 6156833390,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6156833390",
+      "readback_exact": true,
+      "body_sha256": "0ec1271d97d0f6469ffaf471c28d123746017037b22dc4fad4340103f4dae9e0"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6156834025,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156834025",
+      "readback_exact": true,
+      "body_sha256": "0ec1271d97d0f6469ffaf471c28d123746017037b22dc4fad4340103f4dae9e0"
+    }
+  ],
+  "physical_smtc_qualified": false,
+  "whole_session_formally_proved": false,
+  "next": [
+    "get coherent actual channel MTU/MPS for the daemon Engine",
+    "bind true SMTC to single lifetime-scoped daemon actor; real ExchangeInfo",
+    "bounded SSAP database/read/write/notification/indication",
+    "dynamic channels, long/credit/queue/close/lifetime/four-device gates"
+  ],
+  "vm_only": true,
+  "natural_recovery_qualified": false,
+  "whole_issue_closed": false,
+  "goal_complete": false,
+  "terminal_issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 6,
+      "state": "OPEN",
+      "comment_id": 6156831192,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6156831192",
+      "readback_exact": true,
+      "body_sha256": "3cca13ff2130a87b0b03b3ad2db6e618b9b86fbdec8b69eb388de9c9bf778ad2",
+      "terminal_readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "state": "OPEN",
+      "comment_id": 6156831845,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6156831845",
+      "readback_exact": true,
+      "body_sha256": "3cca13ff2130a87b0b03b3ad2db6e618b9b86fbdec8b69eb388de9c9bf778ad2",
+      "terminal_readback_exact": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_id": 6156832598,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6156832598",
+      "readback_exact": true,
+      "body_sha256": "3cca13ff2130a87b0b03b3ad2db6e618b9b86fbdec8b69eb388de9c9bf778ad2",
+      "terminal_readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_id": 6156833390,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6156833390",
+      "readback_exact": true,
+      "body_sha256": "3cca13ff2130a87b0b03b3ad2db6e618b9b86fbdec8b69eb388de9c9bf778ad2",
+      "terminal_readback_exact": true
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_id": 6156834025,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6156834025",
+      "readback_exact": true,
+      "body_sha256": "3cca13ff2130a87b0b03b3ad2db6e618b9b86fbdec8b69eb388de9c9bf778ad2",
+      "terminal_readback_exact": true
+    }
+  ]
+}

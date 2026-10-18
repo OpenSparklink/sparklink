@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "ALL9_READBACK_OPEN_SCOPE_UNCHANGED",
+  "source_evidence_commit": "34a6c7d5a97899ffd4ef6a48978ea85590c595b9",
+  "source_evidence": "docs/evidence/security-capabilities-20261015.json",
+  "receipts": [
+    {
+      "repo": "linux",
+      "issue": 4,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6185093783",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "d007dfb1ebadec66885f10b4d47b37470423f311c2cd4afb6e1769d49ac16bae",
+      "comment_sha256": "54ff96d22025b22154faf2927019bdc8c5f1f9464d340f1a05dda0c45192e154"
+    },
+    {
+      "repo": "linux",
+      "issue": 14,
+      "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6185094589",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+      "comment_sha256": "9c1dd59b42f62c4238784a0627439d9d247f9b4a89ddbed8e98f97204a607604"
+    },
+    {
+      "repo": "linux",
+      "issue": 16,
+      "url": "https://github.com/OpenSparklink/linux/issues/16#issuecomment-6185095497",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "f7160a379be1e38f4e8ed9c4ca04901ff66a85fd13f7f9fd40fecfd9fb13f8fc",
+      "comment_sha256": "8ab0e8dad8463a52acd7d2fe00e257bb438298499a5598119896e426b439c8c9"
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6185096348",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "comment_sha256": "852ba91bd8c72d12549c432bd8eb7b859cf01db4faeed11477455c9b440863a8"
+    },
+    {
+      "repo": "linux",
+      "issue": 18,
+      "url": "https://github.com/OpenSparklink/linux/issues/18#issuecomment-6185097267",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "5c2dbee1928dff3ce3caecac72d05f6c37a8509549022002c7911376ed40132b",
+      "comment_sha256": "33e9e9e4eb818bbf4769db84bc23ef7dbf2fc5d748dabb31e50d9a5c1af1ddf8"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6185098148",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "comment_sha256": "17ad1745908ebbebc98f95274983b0a12130af13ea6027e8365f9f8a0c2dfdc2"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6185099072",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "02bfe4b12073842bcad27c30281db21b877850aad8990efe75baf4fd8048ef41",
+      "comment_sha256": "0015d079048e2f40af1dc6ee3d46224a76b607df52c1dbb09344695e0cc453b9"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 5,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6185099911",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "37ec76d5e6c3f2b13241322f029e8fc12f0113dc4b49cb091c65e96a1595de6a",
+      "comment_sha256": "46f9b87124403ef1150ea081fafc3c3f2897066ffa5b074a836e1c7e20a4ea30"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6185100772",
+      "state": "OPEN",
+      "body_unchanged": true,
+      "comment_verified": true,
+      "original_scope_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "comment_sha256": "8831da9171a80186b376ea6d6f54a496ee794772bb97ba137391171d71934c38"
+    }
+  ],
+  "issue_closure": false,
+  "whole_goal_complete": false
+}

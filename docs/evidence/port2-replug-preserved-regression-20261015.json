@@ -1,0 +1,510 @@
+{
+  "schema": 1,
+  "status": "ALL17_REAL_REGRESSION_GATES_PASS",
+  "vm_only": true,
+  "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+  "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+  "prepared_and_executed_tools": "227f2f576ddf1741b2787138fbd27108acc650d9",
+  "executed_from_independent_clean_worktree": true,
+  "firmware": "original111 frozen selection; no experimental RAM derivative",
+  "selected_ports": [
+    "1-2.1.2",
+    "1-2.1.3"
+  ],
+  "new_user_action": "User again replugged2or3; only hostport2 device85->88, ports1/3/4 unchanged before controlled VM. Physical action itself is not automatic recovery.",
+  "port2_bounded_check": {
+    "status": "PASSTHROUGH_SUPPORT_PASS",
+    "ordinary_business_round_trips": 4,
+    "ready_both": true,
+    "files": [
+      {
+        "path": ".dev/native-install-v8-port2-second-requalification/manifest.json",
+        "sha256": "62d055a00dd4ceb6946d03a880757f52aa152eb6888f1022c3894b81dbcd8e7d",
+        "bytes": 1140505
+      },
+      {
+        "path": ".dev/native-install-v8-port2-second-requalification/qmp.jsonl",
+        "sha256": "f52541d5503a4c4400fe04e980816352ce79caa0e6c6535f533dd0884713432e",
+        "bytes": 3357
+      },
+      {
+        "path": ".dev/native-install-v8-port2-second-requalification/guest-output/ws73.pcap",
+        "sha256": "e987fabd38afff54ad5d8bb313d130bc5556832918be7e845306831023005b66",
+        "bytes": 665248
+      },
+      {
+        "path": ".dev/native-install-v8-port2-second-requalification/guest-output/capture-stats.txt",
+        "sha256": "f63ffcee294d8bfeec3e7d23f65c599f46e6a1b36d7508767a3d12215a7aa943",
+        "bytes": 227
+      }
+    ]
+  },
+  "runs": [
+    {
+      "name": "capabilities-index0",
+      "status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-capabilities-index0/manifest.json",
+        "sha256": "dbb1639f3b622134821dd894dcf294d0901cfcaf78a7c13f3cd7c87b52aec42e",
+        "bytes": 74538
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-capabilities-index0/guest-output/ws73.pcap",
+        "sha256": "2c8c88601acab2d3c858ab9aa13c868681f26fc4c841d293b5a69b40bff7c59e",
+        "bytes": 69280
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-capabilities-index0/guest-output/capture-stats.txt",
+        "sha256": "ae9ccf23bfe6d2487d907d6b58a828c63e752604deb58faab04f756c211dbb01",
+        "bytes": 225
+      },
+      "business_round_trips": 4,
+      "elapsed_ms": 11.512308,
+      "business_split": "2 before,2 after limited capability/candidate/controller-reported encryption; no Agent/authenticated identity/Bond",
+      "kernel_taint0": true,
+      "capture_drops": 0
+    },
+    {
+      "name": "capabilities-index1",
+      "status": "REAL_LIMITED_SECURITY_CAPABILITIES_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-capabilities-index1/manifest.json",
+        "sha256": "203ad1d6863a9d7cffc8bd2b5552523f57222892086895c40c1e80cc9e469470",
+        "bytes": 74538
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-capabilities-index1/guest-output/ws73.pcap",
+        "sha256": "cc466929f89276dcf91e0b440d98c157bf6872d0f6c6ac8d774f0b4401310c50",
+        "bytes": 69280
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-capabilities-index1/guest-output/capture-stats.txt",
+        "sha256": "ae9ccf23bfe6d2487d907d6b58a828c63e752604deb58faab04f756c211dbb01",
+        "bytes": 225
+      },
+      "business_round_trips": 4,
+      "elapsed_ms": 12.801237,
+      "business_split": "2 before,2 after limited capability/candidate/controller-reported encryption; no Agent/authenticated identity/Bond",
+      "kernel_taint0": true,
+      "capture_drops": 0
+    },
+    {
+      "name": "key-agreement-index0",
+      "status": "REAL_CANDIDATE_KEY_AGREEMENT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-key-agreement-index0/manifest.json",
+        "sha256": "54beb4965206850d8c653cd0434518cb6ff401a8567ff89b676b1003687cc5f0",
+        "bytes": 88263
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-key-agreement-index0/guest-output/ws73.pcap",
+        "sha256": "941af57b67187d0ee92a4f5b8412758664f2978722bee146e3cc7e1963c2ff3b",
+        "bytes": 76062
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-key-agreement-index0/guest-output/capture-stats.txt",
+        "sha256": "e34e0021e1e3fd63b85f7e53028390afe417807f2ac926a9f4e13485442e9988",
+        "bytes": 225
+      },
+      "business_round_trips": 4,
+      "elapsed_ms": 28.425294,
+      "business_split": "2 before,2 after limited capability/candidate/controller-reported encryption; no Agent/authenticated identity/Bond",
+      "kernel_taint0": true,
+      "capture_drops": 0
+    },
+    {
+      "name": "key-agreement-index1",
+      "status": "REAL_CANDIDATE_KEY_AGREEMENT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-key-agreement-index1/manifest.json",
+        "sha256": "a55b76123b09950cdd756bb278fe975c7c3800869cc48545a6bd9485db2cb9f0",
+        "bytes": 88263
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-key-agreement-index1/guest-output/ws73.pcap",
+        "sha256": "ed2d7e6f5273d80d3b3c5ec8d40718be100557ecca0a62787c970903ed944478",
+        "bytes": 76062
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-key-agreement-index1/guest-output/capture-stats.txt",
+        "sha256": "e34e0021e1e3fd63b85f7e53028390afe417807f2ac926a9f4e13485442e9988",
+        "bytes": 225
+      },
+      "business_round_trips": 4,
+      "elapsed_ms": 28.506558,
+      "business_split": "2 before,2 after limited capability/candidate/controller-reported encryption; no Agent/authenticated identity/Bond",
+      "kernel_taint0": true,
+      "capture_drops": 0
+    },
+    {
+      "name": "unauthenticated-encryption-index0",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-unauthenticated-encryption-index0/manifest.json",
+        "sha256": "cdced1d199a8de092602c9e17970d3a2ebb1aab56ed3563121a0fe5af401533d",
+        "bytes": 89654
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-unauthenticated-encryption-index0/guest-output/ws73.pcap",
+        "sha256": "ca05d7e81e5d7a9f4f1a38535286723e08a79f59db1abf3014f51d5a5f46bf2c",
+        "bytes": 78328
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-unauthenticated-encryption-index0/guest-output/capture-stats.txt",
+        "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+        "bytes": 225
+      },
+      "business_round_trips": 4,
+      "elapsed_ms": 37.648327,
+      "business_split": "2 before,2 after limited capability/candidate/controller-reported encryption; no Agent/authenticated identity/Bond",
+      "kernel_taint0": true,
+      "capture_drops": 0
+    },
+    {
+      "name": "unauthenticated-encryption-index1",
+      "status": "REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-unauthenticated-encryption-index1/manifest.json",
+        "sha256": "f0902360997b14a2d5f5cf45fe3e3c979008cc3a1af75fb3351e40bed259ee4d",
+        "bytes": 89654
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-unauthenticated-encryption-index1/guest-output/ws73.pcap",
+        "sha256": "caf017ddaff4af959910b504a90f76f4fd40c1054e25fc756656f52bad40e403",
+        "bytes": 78328
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-unauthenticated-encryption-index1/guest-output/capture-stats.txt",
+        "sha256": "528f11c36976a49f4c4195c62230f464bb01cb2d2a510f5d9dd95decae7406ce",
+        "bytes": 225
+      },
+      "business_round_trips": 4,
+      "elapsed_ms": 37.267238,
+      "business_split": "2 before,2 after limited capability/candidate/controller-reported encryption; no Agent/authenticated identity/Bond",
+      "kernel_taint0": true,
+      "capture_drops": 0
+    },
+    {
+      "name": "short",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-short/manifest.json",
+        "sha256": "ccadabfc78e68945ca7134baf19d85395b0fcbf146621b0095bc84a13efd03b6",
+        "bytes": 1457514
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-short/guest-output/ws73.pcap",
+        "sha256": "04e1f3059370bccaa813dc7705edc8eeca2a43b088d3e5d32be8a8147ae8c691",
+        "bytes": 602486
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-short/guest-output/capture-stats.txt",
+        "sha256": "897db1b84b26fe9447cb0da9c6e3ff361be260530359e3446870affb6b5cb8ba",
+        "bytes": 227
+      },
+      "business_round_trips": 40,
+      "payload_bytes_requested": 61,
+      "boundaries": false,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "boundary",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-boundary/manifest.json",
+        "sha256": "c1cf000b26f6a7687733636d9eab546a9683d9c03533df4da8131ee74f3db652",
+        "bytes": 1263304
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-boundary/guest-output/ws73.pcap",
+        "sha256": "6ac12f8295b1983bf7a76c3bb097dd6861d41f26b34e605722697aeca5e5ab48",
+        "bytes": 538024
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-boundary/guest-output/capture-stats.txt",
+        "sha256": "bbab514b7677b48c1c3d5c75db1cfc1490d9a0985ed821eb17fba1a546ff126a",
+        "bytes": 227
+      },
+      "business_round_trips": 8,
+      "payload_bytes_requested": 249,
+      "boundaries": true,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "long",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-long/manifest.json",
+        "sha256": "936882c079f2de4a6ee516800ee4a9ba2b285aa4a462533d3aa118c9261d29d7",
+        "bytes": 2243204
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-long/guest-output/ws73.pcap",
+        "sha256": "e459b5880720412e4e1b1480d0a2dab25d82d54583fde3d7c21cf65066b37d43",
+        "bytes": 1021704
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-long/guest-output/capture-stats.txt",
+        "sha256": "b7f299ca023063340e30cd216dfb4986f5e185e4913007d1bd422a08caaf0c7b",
+        "bytes": 227
+      },
+      "business_round_trips": 8,
+      "payload_bytes_requested": 2042,
+      "boundaries": true,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "length248",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-length248/manifest.json",
+        "sha256": "c4348189bb6964755bfca1ecb24b3243d61452efeb86fc3e89b2ee143f071344",
+        "bytes": 1253947
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-length248/guest-output/ws73.pcap",
+        "sha256": "246b951d49178b8cada0f6ed37a7739a031af9838f87c236fff36c7135b95412",
+        "bytes": 531248
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-length248/guest-output/capture-stats.txt",
+        "sha256": "de7aaf227129e2e93a5668f4b5a558ff014a2d248753e3f674d1837a29c23825",
+        "bytes": 227
+      },
+      "business_round_trips": 8,
+      "payload_bytes_requested": 248,
+      "boundaries": false,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "length250",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-length250/manifest.json",
+        "sha256": "56397901d8141c31025bb2f6070cb11dabfe707733ef8e70b15f261b856bc351",
+        "bytes": 1285210
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-length250/guest-output/ws73.pcap",
+        "sha256": "c662351f6d492eae94372f7b44d19f0d6fe4678e7dd200397a4312fc0d2ad7f9",
+        "bytes": 552096
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-length250/guest-output/capture-stats.txt",
+        "sha256": "9081ab378b5bfe8da137d0fc2d9d50beb39190841c57553ed3451b3f30bf1f77",
+        "bytes": 227
+      },
+      "business_round_trips": 8,
+      "payload_bytes_requested": 250,
+      "boundaries": false,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "length253",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-length253/manifest.json",
+        "sha256": "56e7ab8faaa84346d40c987f779198d80b5b83a08112129cd94baab3de55455c",
+        "bytes": 1285594
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-length253/guest-output/ws73.pcap",
+        "sha256": "87f5dfd5a2c174972c6efc56dc3327cf558b9aced6ae57d56187e60b816a7aaf",
+        "bytes": 552434
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-length253/guest-output/capture-stats.txt",
+        "sha256": "e83a40ef064f50c9a7636025f757cb4f4c31b04c97c4da1fcaf64bdfb686e863",
+        "bytes": 227
+      },
+      "business_round_trips": 8,
+      "payload_bytes_requested": 253,
+      "boundaries": false,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "length254",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-length254/manifest.json",
+        "sha256": "0f31312d5a17438585191aaa5d7e21add6d3a6aa7aca9399feab1f69d0c043ca",
+        "bytes": 1285722
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-length254/guest-output/ws73.pcap",
+        "sha256": "5059d0fe935e8df602a77beff58a2049b00238932b7023d245fa2b1438b9735e",
+        "bytes": 552096
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-length254/guest-output/capture-stats.txt",
+        "sha256": "9081ab378b5bfe8da137d0fc2d9d50beb39190841c57553ed3451b3f30bf1f77",
+        "bytes": 227
+      },
+      "business_round_trips": 8,
+      "payload_bytes_requested": 254,
+      "boundaries": false,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "length255",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-length255/manifest.json",
+        "sha256": "e529265317c2108a3719393645aa012846185931a6f41831747f3afc4eb05596",
+        "bytes": 1285861
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-length255/guest-output/ws73.pcap",
+        "sha256": "75b8b68053d41503be5804ebe56156af53c41714860b5ba130f7b4c4fbba93a2",
+        "bytes": 550406
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-length255/guest-output/capture-stats.txt",
+        "sha256": "20fcb2cc54ac77e345d82cdb7e286f93c430f87e8fdb12528e7123c6c0a2da21",
+        "bytes": 227
+      },
+      "business_round_trips": 8,
+      "payload_bytes_requested": 255,
+      "boundaries": false,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "length1024",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-length1024/manifest.json",
+        "sha256": "815f9cb4b65eafe091ad238151f1d86568d5453a19e71fc228ae3de5152fe79e",
+        "bytes": 1696618
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-length1024/guest-output/ws73.pcap",
+        "sha256": "1f418c03ee65ed404e17d669cf8c71bc3e58d21be78bf8ebd23def36205ba65f",
+        "bytes": 751232
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-length1024/guest-output/capture-stats.txt",
+        "sha256": "4a9cdd915294f965a17cce782e3cff8da4f2909771c405fc954d42dab8cca2b4",
+        "bytes": 227
+      },
+      "business_round_trips": 8,
+      "payload_bytes_requested": 1024,
+      "boundaries": false,
+      "prefix_close": false,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "prefix-close",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-prefix-close/manifest.json",
+        "sha256": "4b6b594c45c5a97d628bda6dac8b31d47440ca6a87dc485ce7459167a71abc55",
+        "bytes": 1390559
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-prefix-close/guest-output/ws73.pcap",
+        "sha256": "78d696594a50a98cab8ebe1c27c027ac108c611b561d68b153a1f14b4d02de45",
+        "bytes": 606118
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-prefix-close/guest-output/capture-stats.txt",
+        "sha256": "3cc68bbd6ea1db0242de740f894aa883a859d99cfaaf07cdd2d2f98299a4756a",
+        "bytes": 227
+      },
+      "business_round_trips": 0,
+      "payload_bytes_requested": 2042,
+      "boundaries": false,
+      "prefix_close": true,
+      "burst": false,
+      "capture_drops": 0
+    },
+    {
+      "name": "burst",
+      "status": "PASSTHROUGH_SUPPORT_PASS",
+      "runtime_kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+      "compiled_userspace": "37f7bc220cd769e44d968d3a6c0a20efb4d4f231",
+      "manifest": {
+        "path": ".dev/native-install-v8-regression-regression-burst/manifest.json",
+        "sha256": "4598a9941472cb1f967ddb4536497621837a5decd27111bcdba3e3b7a440bf54",
+        "bytes": 5677559
+      },
+      "capture": {
+        "path": ".dev/native-install-v8-regression-regression-burst/guest-output/ws73.pcap",
+        "sha256": "267f1cc15d6362c2fc2a9dc1850ae3792e491477be510817944bacc3c258589a",
+        "bytes": 2686076
+      },
+      "capture_stats": {
+        "path": ".dev/native-install-v8-regression-regression-burst/guest-output/capture-stats.txt",
+        "sha256": "2b4e5bfa04da6e8ecaf7a19d6c3bbba0c79823c7f3238abe0c59328aeeccd327",
+        "bytes": 229
+      },
+      "business_round_trips": 32,
+      "payload_bytes_requested": 2042,
+      "boundaries": false,
+      "prefix_close": false,
+      "burst": true,
+      "capture_drops": 0
+    }
+  ],
+  "totals": {
+    "security_business_round_trips": 24,
+    "data_business_round_trips": 136
+  },
+  "previous_failure_retained": "port-requalification-20261015.json",
+  "limits": [
+    "All results belong to old56-byte submit ABI/runtime45. New64-byte absolute-deadline8cbf not qualified by these results.",
+    "No Agent/method/caller consent, authenticated identity, trusted Grant, Bond or independent cipher attestation.",
+    "Data credit depletion/lateNOCP/reuse require separate scoped analysis, not inferred from USB success or burst label.",
+    "Raw captures with possible key material are private local artifacts; only hashes published, no serials or LTK.",
+    "Manual replug restored usable VM experimental conditions, not natural root-cause or nonhuman recovery acceptance.",
+    "No native host, four-device two-pair or wholeS0-S6 completion."
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "linux": "43e55d59fe9559b08da9404da7051272a84a3acc",
+    "userspace": "384174601fe677d8a52376c7e3c28ab0b2c755c1"
+  },
+  "scope": "Remove duplicate conn/adv/AFH/sync/PDU/local-role state; preserve real Native CMTC/TCID/session/data/security mechanisms",
+  "immediately_remove": [
+    {
+      "code": "ConnManager/AdvScanInner/local_role and duplicate RX/Host-reply projections",
+      "production_callers": "legacy ioctl/state/debugfs and worker; no current Native data consumer",
+      "actual_function": "local models/alternate handles, second data queue/router, repeated discovery state",
+      "replacement": "existing Native Host/physical link observation, typed discovery/connection and Session unique RX; legacy unsupported",
+      "regression": "actual kernel rejection + full real dualWS73/length/lifecycle paths"
+    },
+    {
+      "code": "default AFH/sync/packet model modules and fixed extended-adv capacity claim",
+      "production_callers": "legacy ConnManager/adv helpers; CRC in old stats",
+      "replacement": "remove modules; actual driver codecs/DTAP/credit retained; unsupported capabilities reject; no invented max sets"
+    },
+    {
+      "code": "unused configfs max/adv/scan defaults and mixed SubsysStats",
+      "replacement": "configfs explicit unsupported; registry/ControllerSnapshot/LinkSnapshot real authority; delete unpublished stats after caller migration"
+    }
+  ],
+  "move_to_tests": [
+    {
+      "code": "exact conn/adv/phy/pdu models and legacy sender/ioctl/projection fixtures",
+      "location": "tools/testing/selftests/sparklink/retired-protocol-state",
+      "scope": "historical tests retain codec/credit/TX boundary/permission semantics, no default model or qualified current RX"
+    }
+  ],
+  "wait_for_replacement": [
+    {
+      "code": "SecurityInner/RPA and remaining default-selection/diagnostic stats",
+      "reason": "separate kernel mechanism/caller audit; do not delete real crypto or ownership"
+    },
+    {
+      "code": "real extended adv/AFH/sync/standard typed/data",
+      "reason": "needs true negotiated/firmware completion and isolated real gates; no model staging success"
+    }
+  ],
+  "keep": [
+    "Native Runtime/generation/lifetime, CMTC, TCID, DTAP, credit/tickets, Session/Channel/SocketBinding/Grant",
+    "actual driver/fw/HCC/USB codecs and source evidence",
+    "crypto/security mechanisms pending proper per-session owner integration"
+  ],
+  "issues": [
+    "K#2",
+    "K#3",
+    "K#4",
+    "K#5",
+    "K#6",
+    "K#17",
+    "K#19",
+    "U#2",
+    "U#8"
+  ],
+  "whole_scope_complete": false
+}

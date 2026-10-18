@@ -1,0 +1,194 @@
+{
+  "status": "REAL_FIXED_T_CONNECTABLE_CONNECTION_FAILED",
+  "normal_vm_attempt": 77,
+  "actual_kernel_head": "49699d6f11a5c1802508ac748d4a5e7d0b39d1d4",
+  "actual_service_and_tool_head": "6517c6d34c1dc94e1b482d0acbdaab9836ad1489",
+  "capture_packets": 397,
+  "kernel_capture_drops": 0,
+  "qemu_exit": 0,
+  "actual_advertising_command": {
+    "args": [
+      "/usr/libexec/opensparklink/native-lab/6517c6d34c1d/slctl",
+      "--adapter",
+      "/org/sparklink/slk1_g2",
+      "advertise",
+      "connectable"
+    ],
+    "start_wall_ns": 1791770843109901307,
+    "start_monotonic_ns": 27899737255,
+    "start_boottime_ns": 27899737465,
+    "pid": 582,
+    "stdout": "Selected /org/sparklink/slk1_g2\nNativeAdvertisementRequest: request=17900676080451945280 marker=8b374af2107f0f446245a03d93f24e17\nNativeAdvertisementAccepted: request=17900676080451945280 marker=8b374af2107f0f446245a03d93f24e17 data=ff290101010b24736c6b2d3862333734616632313037663066343436323435613033643933663234653137\nNativeOperationResult: generation=2 request=17900676080451945280 operation=1 state=3 errno=0 status=0x00 opcode=0x0c05 step=2/3 power=20 power_valid=1 adv=2 scan=1 profile=1\n",
+    "stderr": "",
+    "exit": 0,
+    "end_wall_ns": 1791770843114921697,
+    "end_monotonic_ns": 27904757825,
+    "end_boottime_ns": 27904758045
+  },
+  "actual_complete_connectable_parameter_proof": {
+    "command": {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791770843113184000,
+      "urb": 18446615926422139648,
+      "record": 378,
+      "file_offset": 40122,
+      "usb_sha256": "8885b021caaca880d3588e65d075961758a498d39cce4b4625448538b353b82a",
+      "opcode": 3074,
+      "params": "000102b00400b004000700000001093254f9000000000000007f0000000000000001000000000000000000c80000000000",
+      "sequence": 17,
+      "completion": {
+        "bus": 1,
+        "device": 3,
+        "wall_ns": 1791770843113392000,
+        "urb": 18446615926422139648,
+        "record": 379,
+        "file_offset": 40330
+      }
+    },
+    "reply": {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791770843113521000,
+      "urb": 18446615926416375808,
+      "record": 380,
+      "file_offset": 40410,
+      "hcc_offset": 92,
+      "usb_sha256": "16fad2ea74711d66516486e2bc27265ca9b5d2352e92f6d9b1bd1e8fcc128800",
+      "usb_length": 178,
+      "opcode": 3074,
+      "status": 0,
+      "value": "14"
+    }
+  },
+  "actual_create_out": {
+    "bus": 1,
+    "device": 2,
+    "wall_ns": 1791770843124183000,
+    "urb": 18446615926422141184,
+    "record": 390,
+    "file_offset": 42000,
+    "usb_sha256": "a682ef6c4fd025c663f50318c11334cda5f138eba453cb16079042656125af9e",
+    "opcode": 5121,
+    "params": "0000000001093254f90101200020000c000c000000fc0100000000",
+    "sequence": 17,
+    "completion": {
+      "bus": 1,
+      "device": 2,
+      "wall_ns": 1791770843124312000,
+      "urb": 18446615926422141184,
+      "record": 391,
+      "file_offset": 42208
+    }
+  },
+  "actual_create_status": {
+    "bus": 1,
+    "device": 2,
+    "wall_ns": 1791770843124797000,
+    "urb": 18446615926416377536,
+    "record": 392,
+    "file_offset": 42288,
+    "hcc_offset": 92,
+    "usb_sha256": "1f01b47c3dfb280885938cc271f21215ae349d43a5884c53f035384735619707",
+    "usb_length": 178,
+    "event": 1,
+    "params": "01140100"
+  },
+  "actual_cli_terminal": {
+    "args": [
+      "/usr/libexec/opensparklink/native-lab/6517c6d34c1d/slctl",
+      "--adapter",
+      "/org/sparklink/slk0_g1",
+      "connect",
+      "00:01:09:32:54:F9",
+      "0"
+    ],
+    "start_wall_ns": 1791770843121332717,
+    "start_monotonic_ns": 27911168614,
+    "start_boottime_ns": 27911168774,
+    "pid": 586,
+    "stdout": "Selected /org/sparklink/slk0_g1\nNativeConnectionRequest: request=1 address=00:01:09:32:54:F9 address_type=0\nNativeConnectionResult: generation=1 request=1 operation=1 state=7 errno=-110 fault=-110 command_status=0 outcome_status=0 handle=0 flags=1\n",
+    "stderr": "error: connection procedure did not succeed; original request=1\n",
+    "exit": 1,
+    "end_wall_ns": 1791770853142206660,
+    "end_monotonic_ns": 37932042928,
+    "end_boottime_ns": 37932043298
+  },
+  "peer_stop_proof": {
+    "command": {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791770853163020000,
+      "urb": 18446615926422140416,
+      "record": 394,
+      "file_offset": 42626,
+      "usb_sha256": "d77da3610f8ed5f6b09d18e91d524df178ad98acd19a36e1e36a0aebba228aed",
+      "opcode": 3077,
+      "params": "0000000000",
+      "sequence": 20,
+      "completion": {
+        "bus": 1,
+        "device": 3,
+        "wall_ns": 1791770853163217000,
+        "urb": 18446615926422140416,
+        "record": 395,
+        "file_offset": 42834
+      }
+    },
+    "reply": {
+      "bus": 1,
+      "device": 3,
+      "wall_ns": 1791770853163594000,
+      "urb": 18446615926416375808,
+      "record": 396,
+      "file_offset": 42914,
+      "hcc_offset": 92,
+      "usb_sha256": "5897fa61de32f51adeb55be7662a5cbceaba8d5a28f3e332518bb2305ce5775e",
+      "usb_length": 178,
+      "opcode": 3077,
+      "status": 0,
+      "value": ""
+    }
+  },
+  "physical_outcome_count": 0,
+  "default_beacon_preserved": true,
+  "air_visibility_before_create_verified": false,
+  "connection_acceptance": false,
+  "connected_lifecycle_acceptance": false,
+  "automatic_recovery_acceptance": false,
+  "root_cause_closed": false,
+  "full_goal_complete": false,
+  "next_diagnosis": "Prove actual fresh random connectable advertisement via scan, confirm STOP before Create, compare reference Host mode/GT negotiation/address setup. Do not extend budget or fabricate outcome.",
+  "artifacts": [
+    {
+      "path": ".dev/connectable-real/manifest.json",
+      "sha256": "6e4c0cd0c715095b04662b39544187b91b84871eeb92b059a5f24857e4c63db7",
+      "size": 40398
+    },
+    {
+      "path": ".dev/connectable-real/guest-output/application/passthrough-control/run.json",
+      "sha256": "3d112f1cc2c24619964cdaf470d9bc210c01ec1cae19f3798a13d3ba1e1e8e36",
+      "size": 17307
+    },
+    {
+      "path": ".dev/connectable-real/guest-output/ws73.pcap",
+      "sha256": "ea41a643d3668d8b2c56409ef8ef6ba807356c59d30db847baa4917983143b79",
+      "size": 43252
+    },
+    {
+      "path": ".dev/connectable-real/guest-output/capture-stats.txt",
+      "sha256": "9f5dc37dfe31cb03f8209ff0332be9b8a4905d6e0d35a7ff63a8096dc68822d6",
+      "size": 225
+    },
+    {
+      "path": ".dev/connectable-real/console.log",
+      "sha256": "d155ba1049c3fa68a54d28e49fdeea383e2afe8fcdfa58e00095467a8738fe91",
+      "size": 58567
+    },
+    {
+      "path": ".dev/connectable-prepared/manifest.json",
+      "sha256": "1fc8e1639cbaffeffd88d0612c7c0e1d61e1126f78c6e7ebafd25d0b7e226079",
+      "size": 228898
+    }
+  ]
+}

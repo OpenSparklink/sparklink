@@ -1,0 +1,20 @@
+{
+  "status": "REFERENCE_CORROBORATION_NOT_FIRMWARE_RCA_CLOSED",
+  "actual_evidence": "docs/evidence/ws73-vm-uninitialized-managed-release-failed-20261011.json",
+  "actual_status": 30,
+  "reference_symbol": "DLI_UNKNOWN_ADVERTISING_IDENTIFIER",
+  "reference_value": "0x1E",
+  "interpretation": "Reference Host labels raw 0x1e as unknown advertising identifier. Actual command was disable handle0 before SetAdvParams; configured standby path creates handle0 before disable. Consistent explanation, not proof of all firmware internals, recovery or natural-disappearance RCA.",
+  "production_bug_open": true,
+  "required_gates": [
+    "Managed acquire/release and fd close while Setup, no bare stop of uncreated handle",
+    "Actual configured advertising/scanning and unknown state cleanup",
+    "Interrupted initializer with active command, original reservation/deadline retained",
+    "Per-device bounded recovery while peer keeps generation/operations and slkd remains running"
+  ],
+  "sources": {
+    "communication_nearlink_service/services/stack/src/dli/interface/dli_errno.h": "4501fb2077eb24a68fd1737b6696619a0e04d9101dc1af25a584486875b9024f",
+    "communication_nearlink_service/services/stack/include/ext/nlstk_sle_errcode.h": "eac8108e3bcc403f035088f9b76bfd554011590ded832a58adba7c6d1df34d11",
+    "libws73-usb/src/sle73/sle73_discovery.c": "4519e7d597a1a76e0c2e5f360b2d067724123c519b725fa743192923e4fbaeb5"
+  }
+}

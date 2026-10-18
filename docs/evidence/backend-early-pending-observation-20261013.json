@@ -1,0 +1,448 @@
+{
+  "status": "REAL_ORDINARY_RUNTIME_INTERFACE_PENDING_ADOPTION_PASS",
+  "kernel_head": "308e5398dccc83a27ca3bd92f0611b93cf2d7bbe",
+  "compiled_service_head": "420cc1266347a00fbd3afbb0a9eae1ab06119aa9",
+  "run_tools_head": "420cc1266347a00fbd3afbb0a9eae1ab06119aa9",
+  "cases": [
+    {
+      "case": "short-repeat-daemon-real",
+      "slot": 0,
+      "early_observations": [
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=0 pending_generation=1 core_pending_ret=0 core_phase=4 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-1",
+          "time_ns": 1791863333281156884
+        },
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=0 pending_generation=1 core_pending_ret=0 core_phase=10 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-1",
+          "time_ns": 1791863344354445144
+        }
+      ],
+      "qualified_observations": [
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=0 pending_generation=1 core_pending_ret=0 core_phase=4 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-1",
+          "time_ns": 1791863333281156884
+        },
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=0 pending_generation=1 core_pending_ret=0 core_phase=10 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-1",
+          "time_ns": 1791863344354445144
+        }
+      ],
+      "ready": {
+        "port": "1-1",
+        "path": "/org/sparklink/slk0_g1",
+        "index": 0,
+        "generation": 1,
+        "bus": 1,
+        "device": 2,
+        "address": "00:01:09:32:54:CD",
+        "view": "Selected /org/sparklink/slk0_g1\nAdapter /org/sparklink/slk0_g1:\n  State:       Ready\n  Generation:  1\n  Address:     00:01:09:32:54:CD\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+        "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=1 core_pending_ret=-2 core_phase=0 core_error=0",
+        "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+      },
+      "private_original_sha256": {
+        "guest-output/ready-0.json": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+        "guest-output/pending-observations-0.json": "25a1d0b2fd52d6ece7ad3af2aa0680a914af0bde22bb6f0bb571811f9f25eb24"
+      }
+    },
+    {
+      "case": "short-repeat-daemon-real",
+      "slot": 1,
+      "early_observations": [
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=1 pending_generation=2 core_pending_ret=0 core_phase=4 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-2",
+          "time_ns": 1791863345230773351
+        },
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=1 pending_generation=2 core_pending_ret=0 core_phase=10 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-2",
+          "time_ns": 1791863356305177053
+        }
+      ],
+      "qualified_observations": [
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=1 pending_generation=2 core_pending_ret=0 core_phase=4 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-2",
+          "time_ns": 1791863345230773351
+        },
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=1 pending_generation=2 core_pending_ret=0 core_phase=10 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-2",
+          "time_ns": 1791863356305177053
+        }
+      ],
+      "ready": {
+        "port": "1-2",
+        "path": "/org/sparklink/slk1_g2",
+        "index": 1,
+        "generation": 2,
+        "bus": 1,
+        "device": 3,
+        "address": "00:01:09:32:54:F9",
+        "view": "Selected /org/sparklink/slk1_g2\nAdapter /org/sparklink/slk1_g2:\n  State:       Ready\n  Generation:  2\n  Address:     00:01:09:32:54:F9\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+        "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=1 pending_generation=2 core_pending_ret=-2 core_phase=0 core_error=0",
+        "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+      },
+      "private_original_sha256": {
+        "guest-output/ready-1.json": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+        "guest-output/pending-observations-1.json": "e7302c764f1df34105ced41fb1801d35b3653dd7c10e66adc903b15ece066228"
+      }
+    },
+    {
+      "case": "daemon-real",
+      "slot": 0,
+      "early_observations": [
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=0 pending_generation=1 core_pending_ret=0 core_phase=4 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-1",
+          "time_ns": 1791863398404476549
+        },
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=0 pending_generation=1 core_pending_ret=0 core_phase=17 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-1",
+          "time_ns": 1791863409285146744
+        }
+      ],
+      "qualified_observations": [
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=0 pending_generation=1 core_pending_ret=0 core_phase=4 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-1",
+          "time_ns": 1791863398404476549
+        },
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=0 pending_generation=1 core_pending_ret=0 core_phase=17 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-1",
+          "time_ns": 1791863409285146744
+        }
+      ],
+      "ready": {
+        "port": "1-1",
+        "path": "/org/sparklink/slk0_g1",
+        "index": 0,
+        "generation": 1,
+        "bus": 1,
+        "device": 2,
+        "address": "00:01:09:32:54:CD",
+        "view": "Selected /org/sparklink/slk0_g1\nAdapter /org/sparklink/slk0_g1:\n  State:       Ready\n  Generation:  1\n  Address:     00:01:09:32:54:CD\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+        "native_runtime": "id=0 generation=1 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=0 pending_generation=1 core_pending_ret=-2 core_phase=0 core_error=0",
+        "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:cd acb=254/5 icb=0/0 bootstrap_credits=1"
+      },
+      "private_original_sha256": {
+        "guest-output/ready-0.json": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+        "guest-output/pending-observations-0.json": "69f266e49d6d00752a2a2191363c6efb001e654fcd7eb8b5acabea37a96e5813"
+      }
+    },
+    {
+      "case": "daemon-real",
+      "slot": 1,
+      "early_observations": [
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=1 pending_generation=2 core_pending_ret=0 core_phase=4 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-2",
+          "time_ns": 1791863410370621849
+        },
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=1 pending_generation=2 core_pending_ret=0 core_phase=10 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-2",
+          "time_ns": 1791863421450910572
+        }
+      ],
+      "qualified_observations": [
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=1 pending_generation=2 core_pending_ret=0 core_phase=4 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-2",
+          "time_ns": 1791863410370621849
+        },
+        {
+          "credentials": {
+            "uids": [
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "cap_eff": "0000000000000000",
+            "cap_prm": "0000000000000000",
+            "cap_amb": "0000000000000000",
+            "groups": [
+              1000,
+              1002
+            ]
+          },
+          "runtime": "id=-1 generation=0 streaming=0 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=1 pending_id=1 pending_generation=2 core_pending_ret=0 core_phase=10 core_error=0",
+          "metadata_valid": "0",
+          "port": "1-2",
+          "time_ns": 1791863421450910572
+        }
+      ],
+      "ready": {
+        "port": "1-2",
+        "path": "/org/sparklink/slk1_g2",
+        "index": 1,
+        "generation": 2,
+        "bus": 1,
+        "device": 3,
+        "address": "00:01:09:32:54:F9",
+        "view": "Selected /org/sparklink/slk1_g2\nAdapter /org/sparklink/slk1_g2:\n  State:       Ready\n  Generation:  2\n  Address:     00:01:09:32:54:F9\n  Profile:     1\n  Native links: event_seq=0 revision=0 known=true lost=0\n  Radio policy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n  Name:        SparkLink\n  Powered:     true\n  Discovering: false\n",
+        "native_runtime": "id=1 generation=2 streaming=1 broken=0 unsupported=0 last_event=0000 controller_error=100 reserved=0 pending_id=1 pending_generation=2 core_pending_ret=-2 core_phase=0 core_error=0",
+        "controller_information": "version=016c00a100 features=23155000120000010000 address=00:01:09:32:54:f9 acb=254/5 icb=0/0 bootstrap_credits=1"
+      },
+      "private_original_sha256": {
+        "guest-output/ready-1.json": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+        "guest-output/pending-observations-1.json": "d2534e063269af1e4f0b0410aac478e0cb8b94b7c6b5481eae480d8cc9315a34"
+      }
+    }
+  ],
+  "qualified_early_observations": 8,
+  "scope": "VM-only two real WS73 runtime-interface bootstraps, ordinary sysfs read UID1000/caps0, Core pending query succeeds before queried metadata/streaming/Native ID; same id/generation later adopted. Sampled phases only; does not cover boot-ROM firmware-upload/cold-reenumeration, actual failed bootstrap, callback lifetime or automatic recovery.",
+  "whole_early_lifecycle_complete": false,
+  "cold_boot_rom_qualified": false,
+  "actual_pending_failure_qualified": false,
+  "daemon_pending_objects_qualified": false,
+  "natural_fault_root_cause_closed": false,
+  "non_manual_recovery_qualified": false
+}

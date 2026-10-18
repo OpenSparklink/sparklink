@@ -1,0 +1,28 @@
+    /// Get power management info
+    async fn get_pm_info(&self) -> zbus::fdo::Result<PmInfo> {
+        let st = self.state.lock().await;
+        let p = st.adapter.pm_info().map_err(map_err)?;
+        Ok(PmInfo {
+            state: p.state,
+            force_active: p.force_active != 0,
+            current_interval: p.current_interval,
+            transitions: p.transitions,
+        })
+    }
+
+    /// Set target power state (0=Active, 1=Sniff, 2=Idle, 3=Suspended)
+    async fn pm_set_state(&self, target: u8) -> zbus::fdo::Result<()> {
+        let cmd = slk_protocol::SlePmStateCmd {
+            target_state: target,
+            _reserved: [0; 3],
+        };
+        let st = self.state.lock().await;
+        st.adapter.pm_set_state(&cmd).map_err(map_err)
+    }
+
+    /// Force active power state
+    async fn pm_force_active(&self, enable: bool) -> zbus::fdo::Result<()> {
+        let st = self.state.lock().await;
+        st.adapter.pm_force_active(enable).map_err(map_err)
+    }
+

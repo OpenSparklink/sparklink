@@ -1,0 +1,244 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "REAL_SIX_MANAGED_BEGUN_PREFIX_SUBGATES_PASS",
+  "kernel_head": "49467d4df595f8988a7ad6310b53932f37d68283",
+  "compiled_userspace_head": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+  "tool_commit": "e2a0139ff3ccbccb51f5a8606deda5a0d43688c3",
+  "vm_only": true,
+  "production_runtime_code_changed": false,
+  "runs": [
+    {
+      "case": "release",
+      "index": 0,
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "private_folder": "native-relay-prefix-release0-v2",
+      "manifest_sha256": "4f125c5be23b99386d75a19809bc96c0f2e2ff04c78462c7b309abd3017c65f7",
+      "capture_sha256": "8a54ef03766c5819b6b5e891ef034f4dfdb586659e0e1d59c2eca48bdc169279",
+      "application_round_trips_before_withdrawal": 2,
+      "begun_prefix": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "submitted_fragments": 6,
+        "submitted_bytes": 1524,
+        "pdu_bytes": 2047,
+        "first_submit_record": 484,
+        "last_submit_record": 570,
+        "late_nocp_records": [
+          584,
+          588
+        ],
+        "no_new_submit_after_withdrawal": true,
+        "source_application_round_trips": 0,
+        "scope": "Per-controller Managed release/final File; actual disconnect and unchanged peer lease/readiness. Not peer business after disconnect, original-deadline or full late-NOCP/reuse safety."
+      },
+      "original_release_interval_ns": [
+        1792026338720172473,
+        1792026338723122263
+      ],
+      "peer_lease_preserved": true,
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "full_grant_complete": false,
+      "inflight_usb_complete_qualification": false
+    },
+    {
+      "case": "release",
+      "index": 1,
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "private_folder": "native-relay-prefix-release1",
+      "manifest_sha256": "3ba211cb5138508285f2b441f9fe015f313a49d1b639a5716dd41caddaceb68d",
+      "capture_sha256": "1d18ebaf789888c16a0a4bdd2c0250705b5838928533d376b8b81b27fd811af7",
+      "application_round_trips_before_withdrawal": 2,
+      "begun_prefix": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "submitted_fragments": 6,
+        "submitted_bytes": 1524,
+        "pdu_bytes": 2047,
+        "first_submit_record": 482,
+        "last_submit_record": 570,
+        "late_nocp_records": [
+          584,
+          590
+        ],
+        "no_new_submit_after_withdrawal": true,
+        "source_application_round_trips": 0,
+        "scope": "Per-controller Managed release/final File; actual disconnect and unchanged peer lease/readiness. Not peer business after disconnect, original-deadline or full late-NOCP/reuse safety."
+      },
+      "original_release_interval_ns": [
+        1792026465682421001,
+        1792026465684529776
+      ],
+      "peer_lease_preserved": true,
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "full_grant_complete": false,
+      "inflight_usb_complete_qualification": false
+    },
+    {
+      "case": "close",
+      "index": 0,
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "private_folder": "native-relay-prefix-close0",
+      "manifest_sha256": "85bd6ad7c2761cd94bd0e587b625a50e91ce57e71f5503e838ee4c53f2475d02",
+      "capture_sha256": "96779c358f76ca0cededda50eb719fafb99cebb552167c589bd54f5f1cde4371",
+      "application_round_trips_before_withdrawal": 2,
+      "begun_prefix": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "submitted_fragments": 6,
+        "submitted_bytes": 1524,
+        "pdu_bytes": 2047,
+        "first_submit_record": 482,
+        "last_submit_record": 570,
+        "late_nocp_records": [
+          582,
+          590
+        ],
+        "no_new_submit_after_withdrawal": true,
+        "source_application_round_trips": 0,
+        "scope": "Per-controller Managed release/final File; actual disconnect and unchanged peer lease/readiness. Not peer business after disconnect, original-deadline or full late-NOCP/reuse safety."
+      },
+      "original_release_interval_ns": [
+        1792026500836519437,
+        1792026500839025179
+      ],
+      "peer_lease_preserved": true,
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "full_grant_complete": false,
+      "inflight_usb_complete_qualification": false
+    },
+    {
+      "case": "close",
+      "index": 1,
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "private_folder": "native-relay-prefix-close1",
+      "manifest_sha256": "ff2ec0100ee12485097287b445676a19f59d52caa4be4273f587cd855740984f",
+      "capture_sha256": "6e7391e88ff85b1421a138ec2d6bf2607d949dc9a19d3d3938b958eb8ee1f966",
+      "application_round_trips_before_withdrawal": 2,
+      "begun_prefix": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "submitted_fragments": 6,
+        "submitted_bytes": 1524,
+        "pdu_bytes": 2047,
+        "first_submit_record": 482,
+        "last_submit_record": 572,
+        "late_nocp_records": [
+          584,
+          588
+        ],
+        "no_new_submit_after_withdrawal": true,
+        "source_application_round_trips": 0,
+        "scope": "Per-controller Managed release/final File; actual disconnect and unchanged peer lease/readiness. Not peer business after disconnect, original-deadline or full late-NOCP/reuse safety."
+      },
+      "original_release_interval_ns": [
+        1792026535899615657,
+        1792026535901576482
+      ],
+      "peer_lease_preserved": true,
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "full_grant_complete": false,
+      "inflight_usb_complete_qualification": false
+    },
+    {
+      "case": "dup",
+      "index": 0,
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "private_folder": "native-relay-prefix-dup0",
+      "manifest_sha256": "c10ce56d335c43409240631ecb250991241a1e3d6e23d3a3342a9b92c6ad064f",
+      "capture_sha256": "2a9d859076e32f79a8e762926136cafd29329cdcef0b2b239dee4aef7a755bf8",
+      "application_round_trips_before_withdrawal": 4,
+      "begun_prefix": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "submitted_fragments": 6,
+        "submitted_bytes": 1524,
+        "pdu_bytes": 2047,
+        "first_submit_record": 522,
+        "last_submit_record": 610,
+        "late_nocp_records": [
+          622,
+          630
+        ],
+        "no_new_submit_after_withdrawal": true,
+        "source_application_round_trips": 0,
+        "scope": "Per-controller Managed release/final File; actual disconnect and unchanged peer lease/readiness. Not peer business after disconnect, original-deadline or full late-NOCP/reuse safety."
+      },
+      "original_release_interval_ns": [
+        1792026573398789714,
+        1792026573401090100
+      ],
+      "peer_lease_preserved": true,
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "full_grant_complete": false,
+      "inflight_usb_complete_qualification": false
+    },
+    {
+      "case": "dup",
+      "index": 1,
+      "status": "REAL_CHANNEL_GRANT_PASS",
+      "private_folder": "native-relay-prefix-dup1",
+      "manifest_sha256": "1161a35f639faa0b54a66ff8220f84a3d5aaab101da63ac76556ece8c479b392",
+      "capture_sha256": "799358c7ae884878c26a5b975d09827956b3c6e1b99312a0f45fdd1076f0fd40",
+      "application_round_trips_before_withdrawal": 4,
+      "begun_prefix": {
+        "status": "ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS",
+        "submitted_fragments": 6,
+        "submitted_bytes": 1524,
+        "pdu_bytes": 2047,
+        "first_submit_record": 522,
+        "last_submit_record": 610,
+        "late_nocp_records": [
+          624,
+          628
+        ],
+        "no_new_submit_after_withdrawal": true,
+        "source_application_round_trips": 0,
+        "scope": "Per-controller Managed release/final File; actual disconnect and unchanged peer lease/readiness. Not peer business after disconnect, original-deadline or full late-NOCP/reuse safety."
+      },
+      "original_release_interval_ns": [
+        1792026608890972316,
+        1792026608892841729
+      ],
+      "peer_lease_preserved": true,
+      "vm_taint": 0,
+      "capture_kernel_drops": 0,
+      "full_grant_complete": false,
+      "inflight_usb_complete_qualification": false
+    }
+  ],
+  "total_before_withdrawal_business_round_trips": 16,
+  "partial_pdus": 6,
+  "partial_source_application_round_trips": 0,
+  "scope": "Managed control-File release/final close/dup on both controller indices. Ordinary business fd is separately duplicated and retained. Real partial PDU, withdrawal error/poll/successor rejection, actual link-down and peer lease/readiness/scan retained. Not the previous business-fd-only last-close gate.",
+  "linearization_limit": "USB submit timestamps must precede successful withdrawal return; revoke point is bounded by syscall before/after interval, not directly timestamped. Actual Host/data/gate/Session source checks remain necessary; this is not a complete C/Rust proof.",
+  "firmware_provenance": "Selected original combined111 and matching metadata; these warm runs do not independently attest device RAM image. New cold-upload evidence is separate.",
+  "offline": {
+    "tests_at_commit": 489,
+    "scope": "evidence parsers and actual local fd/credential regressions; not RF or formal proof",
+    "log_sha256": "35adac5b571a71e3dca137688b95562cda45bc4a7eae1555e2754a2571dcf6cb"
+  },
+  "formal": {
+    "status": "NO_NEW_WHOLE_COMBINATION_PROOF",
+    "retained": "Prior actual494 C consent311 scalar source mapping stays limited; Kani unsupported/timeout and NOCP reuse counterexample remain unproven",
+    "excluded": [
+      "Locks/refcounts/C-Rust refinement/long-term liveness",
+      "Firmware NOCP truth/duplicates/late attribution/handle reuse barrier"
+    ]
+  },
+  "reproduction": [
+    "python3 tools/ws73_target.py run --prepared PREPARED --output NEW_RUN --ports PORT_A PORT_B --setup-release-verify --managed-connected-case release --managed-channel-grant --managed-channel-revoke-prefix --managed-connected-index 0 --timeout 600",
+    "Repeat case release/close/dup and index0/1 with distinct output directories"
+  ],
+  "remaining": [
+    "Begun original-deadline/uncertain USB failure and cleanup, actual submit cancellation barrier",
+    "Full late-NOCP/duplicate/reuse/credit/Grant composition and controlled interleavings",
+    "Actual independent peer business on a separate concurrent physical link/four devices",
+    "All original S0-S6/19WP/10FV/12DG, complete security and nonhuman natural recovery"
+  ],
+  "raw_artifacts_public": false,
+  "raw_artifact_availability": "Private workspace only; hashes and summaries are not independently downloadable raw captures",
+  "original_issues_closed": false,
+  "full_goal_complete": false,
+  "natural_recovery_qualified": false
+}

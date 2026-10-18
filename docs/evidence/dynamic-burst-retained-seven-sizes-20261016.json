@@ -1,0 +1,2820 @@
+{
+  "schema_version": 1,
+  "status": "REAL_DYNAMIC7_REGRESSION_NEW_CLI_SCOPED_PASS",
+  "generated_utc": "2026-10-16T06:50:18.674325+00:00",
+  "kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
+  "compiled_userspace": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "guest_tools": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "executed_tools": "25df09b7cca753f3b10d4bb24abdb2ebc2bb7e1b",
+  "scope": [
+    "Exact K400/newcompiled U25df09b and frozen guest/Host tools25df09b. Seven sizes249/250/253/254/255/1024/2042;392 ordinary dynamic roundtrips including56 size-C roundtrips;both physical connection roles. Not the complete12DG/S0-S6 scope.",
+    "Actual CMTC negotiation,asymmetric TCIDs,per-channel RX,unbound endpoint refusal,A close/B actual progress,C size payload and14 fifth-lifetime-slot ENOSPC refusals before staging;Cactual peer validation/reply continues after refusal. Four lifetime tombstones are a finite safety bound,not safe reuse or longterm recycling.",
+    "Application SDU and complete DTAP PDU differ by5bytes;controller ACB254 independent. Size249 fullPDU254 has one TX packet. Larger packets use ordered bounded PB;peer firmware may repacketize independently. Captures match actual random peer app data/replies,not only USB/NOCP/logs.",
+    "All original guest outputs hash checked,child pipe bytes match stdout/stderr artifacts,128KiB per stream;zero capture drops,QEMU/supervisor0,ordinary uid1000/caps0. Original5s scheduling and10s application deadlines unchanged. Not full deployment/permissions/authentication/reliable mode qualification.",
+    "119 offline negative controls mutate decoded capture/metadata views and reject missing peer data/application replies/actual FIRSTfragment TCID-PI/missing C final TX/size/slot evidence. Same frozen decoder/verifier,not independent RF sniffer or injected firmware fault.",
+    "Original tools8297955 dynamic249 supervisor ENODATA FAIL remains preserved and unresolved;new bounded-pipe test success does not identify its OS root cause or qualify natural recovery.",
+    "Retained14 fixed-channel/4device regressions remain separately qualified at tools4b337. Pilot2042 at d14 remains separate. No historical execution identity rewritten. Latest whole tree remains NOT_REVALIDATED.",
+    "Credit NOCP accuracy/late/duplicate/reuse barriers,complete Grant/concurrency/fairness,security/Bond/deployment,debug-kernel/full formal refinement,natural startup/reenumeration/disappearance RCA and nonhuman recovery remain OPEN. All19WP/10FV/12DG/S0-S6 retained;UserHost P4."
+  ],
+  "ordinary_round_trips": 392,
+  "size_c_round_trips": 56,
+  "fragmented_size_c_round_trips": 48,
+  "slot_refusals": 14,
+  "offline_negative_controls": 119,
+  "gates": [
+    {
+      "name": "dynamic-249-slot-budget",
+      "result": "PASS",
+      "status": "ACTUAL_TWO_END_SIZE_AND_SLOT_REFUSAL_PASS",
+      "message_bytes": 249,
+      "complete_pdu_bytes": 254,
+      "ordinary_round_trips": 56,
+      "size_c_round_trips": 8,
+      "slot_refusals": 2,
+      "capture_packets": 4765,
+      "capture_drops": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "manifest_sha256": "78f218451f98c6b4847c3b225245271e36286e7747f56491566a4e1c1c3e1067",
+      "phases": [
+        {
+          "phase": 0,
+          "C_info": {
+            "peer": [
+              1,
+              2,
+              1,
+              0,
+              130,
+              131,
+              241,
+              249,
+              254,
+              0,
+              3
+            ],
+            "initiator": [
+              0,
+              1,
+              1,
+              0,
+              131,
+              130,
+              241,
+              249,
+              254,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            1
+          ],
+          "C_rx_fragment_counts": [
+            10
+          ],
+          "C_directional_packets": 8
+        },
+        {
+          "phase": 1,
+          "C_info": {
+            "peer": [
+              0,
+              1,
+              3,
+              0,
+              130,
+              131,
+              241,
+              249,
+              254,
+              0,
+              3
+            ],
+            "initiator": [
+              1,
+              2,
+              3,
+              0,
+              131,
+              130,
+              241,
+              249,
+              254,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            1
+          ],
+          "C_rx_fragment_counts": [
+            10
+          ],
+          "C_directional_packets": 8
+        }
+      ]
+    },
+    {
+      "name": "dynamic-250-slot-budget",
+      "result": "PASS",
+      "status": "ACTUAL_TWO_END_SIZE_AND_SLOT_REFUSAL_PASS",
+      "message_bytes": 250,
+      "complete_pdu_bytes": 255,
+      "ordinary_round_trips": 56,
+      "size_c_round_trips": 8,
+      "slot_refusals": 2,
+      "capture_packets": 4861,
+      "capture_drops": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "manifest_sha256": "1dbf65e0467f524d92931876270dca9b3cd11b6a9b924d6dd295603fd352668f",
+      "phases": [
+        {
+          "phase": 0,
+          "C_info": {
+            "peer": [
+              1,
+              2,
+              1,
+              0,
+              130,
+              131,
+              241,
+              250,
+              255,
+              0,
+              3
+            ],
+            "initiator": [
+              0,
+              1,
+              1,
+              0,
+              131,
+              130,
+              241,
+              250,
+              255,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            2
+          ],
+          "C_rx_fragment_counts": [
+            11
+          ],
+          "C_directional_packets": 8
+        },
+        {
+          "phase": 1,
+          "C_info": {
+            "peer": [
+              0,
+              1,
+              3,
+              0,
+              130,
+              131,
+              241,
+              250,
+              255,
+              0,
+              3
+            ],
+            "initiator": [
+              1,
+              2,
+              3,
+              0,
+              131,
+              130,
+              241,
+              250,
+              255,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            2
+          ],
+          "C_rx_fragment_counts": [
+            11
+          ],
+          "C_directional_packets": 8
+        }
+      ]
+    },
+    {
+      "name": "dynamic-253-slot-budget",
+      "result": "PASS",
+      "status": "ACTUAL_TWO_END_SIZE_AND_SLOT_REFUSAL_PASS",
+      "message_bytes": 253,
+      "complete_pdu_bytes": 258,
+      "ordinary_round_trips": 56,
+      "size_c_round_trips": 8,
+      "slot_refusals": 2,
+      "capture_packets": 4861,
+      "capture_drops": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "manifest_sha256": "dd18e97a563975ccdba9cd6cce6ba6674243c80d9dd17f45b3945cca026ea8b4",
+      "phases": [
+        {
+          "phase": 0,
+          "C_info": {
+            "peer": [
+              1,
+              2,
+              1,
+              0,
+              130,
+              131,
+              241,
+              253,
+              258,
+              0,
+              3
+            ],
+            "initiator": [
+              0,
+              1,
+              1,
+              0,
+              131,
+              130,
+              241,
+              253,
+              258,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            2
+          ],
+          "C_rx_fragment_counts": [
+            11
+          ],
+          "C_directional_packets": 8
+        },
+        {
+          "phase": 1,
+          "C_info": {
+            "peer": [
+              0,
+              1,
+              3,
+              0,
+              130,
+              131,
+              241,
+              253,
+              258,
+              0,
+              3
+            ],
+            "initiator": [
+              1,
+              2,
+              3,
+              0,
+              131,
+              130,
+              241,
+              253,
+              258,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            2
+          ],
+          "C_rx_fragment_counts": [
+            11
+          ],
+          "C_directional_packets": 8
+        }
+      ]
+    },
+    {
+      "name": "dynamic-254-slot-budget",
+      "result": "PASS",
+      "status": "ACTUAL_TWO_END_SIZE_AND_SLOT_REFUSAL_PASS",
+      "message_bytes": 254,
+      "complete_pdu_bytes": 259,
+      "ordinary_round_trips": 56,
+      "size_c_round_trips": 8,
+      "slot_refusals": 2,
+      "capture_packets": 4873,
+      "capture_drops": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "manifest_sha256": "34ca9dd730759f983e3f299e2f83802bf34485aa5f6a0020ac123d865df93d37",
+      "phases": [
+        {
+          "phase": 0,
+          "C_info": {
+            "peer": [
+              1,
+              2,
+              1,
+              0,
+              130,
+              131,
+              241,
+              254,
+              259,
+              0,
+              3
+            ],
+            "initiator": [
+              0,
+              1,
+              1,
+              0,
+              131,
+              130,
+              241,
+              254,
+              259,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            2
+          ],
+          "C_rx_fragment_counts": [
+            11
+          ],
+          "C_directional_packets": 8
+        },
+        {
+          "phase": 1,
+          "C_info": {
+            "peer": [
+              0,
+              1,
+              3,
+              0,
+              130,
+              131,
+              241,
+              254,
+              259,
+              0,
+              3
+            ],
+            "initiator": [
+              1,
+              2,
+              3,
+              0,
+              131,
+              130,
+              241,
+              254,
+              259,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            2
+          ],
+          "C_rx_fragment_counts": [
+            11
+          ],
+          "C_directional_packets": 8
+        }
+      ]
+    },
+    {
+      "name": "dynamic-255-slot-budget",
+      "result": "PASS",
+      "status": "ACTUAL_TWO_END_SIZE_AND_SLOT_REFUSAL_PASS",
+      "message_bytes": 255,
+      "complete_pdu_bytes": 260,
+      "ordinary_round_trips": 56,
+      "size_c_round_trips": 8,
+      "slot_refusals": 2,
+      "capture_packets": 4861,
+      "capture_drops": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "manifest_sha256": "da00f7c394a3b2278f7b34c1a54de04f39ef397f5391dfef484808f0523dfd7c",
+      "phases": [
+        {
+          "phase": 0,
+          "C_info": {
+            "peer": [
+              1,
+              2,
+              1,
+              0,
+              130,
+              131,
+              241,
+              255,
+              260,
+              0,
+              3
+            ],
+            "initiator": [
+              0,
+              1,
+              1,
+              0,
+              131,
+              130,
+              241,
+              255,
+              260,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            2
+          ],
+          "C_rx_fragment_counts": [
+            11
+          ],
+          "C_directional_packets": 8
+        },
+        {
+          "phase": 1,
+          "C_info": {
+            "peer": [
+              0,
+              1,
+              3,
+              0,
+              130,
+              131,
+              241,
+              255,
+              260,
+              0,
+              3
+            ],
+            "initiator": [
+              1,
+              2,
+              3,
+              0,
+              131,
+              130,
+              241,
+              255,
+              260,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            2
+          ],
+          "C_rx_fragment_counts": [
+            11
+          ],
+          "C_directional_packets": 8
+        }
+      ]
+    },
+    {
+      "name": "dynamic-1024-slot-budget",
+      "result": "PASS",
+      "status": "ACTUAL_TWO_END_SIZE_AND_SLOT_REFUSAL_PASS",
+      "message_bytes": 1024,
+      "complete_pdu_bytes": 1029,
+      "ordinary_round_trips": 56,
+      "size_c_round_trips": 8,
+      "slot_refusals": 2,
+      "capture_packets": 6025,
+      "capture_drops": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "manifest_sha256": "702c998911ac7d78fa8f607c9690b31cb9202e7c102f5c8e46fef5c63c2443a9",
+      "phases": [
+        {
+          "phase": 0,
+          "C_info": {
+            "peer": [
+              1,
+              2,
+              1,
+              0,
+              130,
+              131,
+              241,
+              1024,
+              1029,
+              0,
+              3
+            ],
+            "initiator": [
+              0,
+              1,
+              1,
+              0,
+              131,
+              130,
+              241,
+              1024,
+              1029,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            5
+          ],
+          "C_rx_fragment_counts": [
+            41
+          ],
+          "C_directional_packets": 8
+        },
+        {
+          "phase": 1,
+          "C_info": {
+            "peer": [
+              0,
+              1,
+              3,
+              0,
+              130,
+              131,
+              241,
+              1024,
+              1029,
+              0,
+              3
+            ],
+            "initiator": [
+              1,
+              2,
+              3,
+              0,
+              131,
+              130,
+              241,
+              1024,
+              1029,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            5
+          ],
+          "C_rx_fragment_counts": [
+            41
+          ],
+          "C_directional_packets": 8
+        }
+      ]
+    },
+    {
+      "name": "dynamic-2042-slot-budget",
+      "result": "PASS",
+      "status": "ACTUAL_TWO_END_SIZE_AND_SLOT_REFUSAL_PASS",
+      "message_bytes": 2042,
+      "complete_pdu_bytes": 2047,
+      "ordinary_round_trips": 56,
+      "size_c_round_trips": 8,
+      "slot_refusals": 2,
+      "capture_packets": 7561,
+      "capture_drops": 0,
+      "qemu_exit": 0,
+      "supervisor_exit": 0,
+      "manifest_sha256": "6e45a5657c467eccea798e0571c16a05ec3111b4e224fcc62b9eb558c4c533ad",
+      "phases": [
+        {
+          "phase": 0,
+          "C_info": {
+            "peer": [
+              1,
+              2,
+              1,
+              0,
+              130,
+              131,
+              241,
+              2042,
+              2047,
+              0,
+              3
+            ],
+            "initiator": [
+              0,
+              1,
+              1,
+              0,
+              131,
+              130,
+              241,
+              2042,
+              2047,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            9
+          ],
+          "C_rx_fragment_counts": [
+            81
+          ],
+          "C_directional_packets": 8
+        },
+        {
+          "phase": 1,
+          "C_info": {
+            "peer": [
+              0,
+              1,
+              3,
+              0,
+              130,
+              131,
+              241,
+              2042,
+              2047,
+              0,
+              3
+            ],
+            "initiator": [
+              1,
+              2,
+              3,
+              0,
+              131,
+              130,
+              241,
+              2042,
+              2047,
+              0,
+              3
+            ]
+          },
+          "C_tx_fragment_counts": [
+            9
+          ],
+          "C_rx_fragment_counts": [
+            81
+          ],
+          "C_directional_packets": 8
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "private_workspace_path": ".dev/audit-dynamic-evidence-v3.py",
+      "sha256": "5626541c66390a1ac827c44b84cfaa7e2839e71d597b8ca32bb2c6b1aeb49e4c",
+      "bytes": 6671
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-boundary-matrix-v1.json",
+      "sha256": "08bf3a7f4087be96d7fa212312eb09c40fdfb0f88e462eb47ff0bdc228f086ac",
+      "bytes": 1773
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-all-tools-unsandboxed.log",
+      "sha256": "8fd85a39ff2d1cbe74cf1e10f139cf481b844ff5362b5f74a1cec59f04653f08",
+      "bytes": 749
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-prepare-v2-record.json",
+      "sha256": "fab3bd56ac7c5aecc2477270ec62c984517a37f55764463b70dbe905cd9a7568",
+      "bytes": 1552
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-matrix-v1.json",
+      "sha256": "f9bd838b0a141bcefe60ffa6985d29af76fcc01d776403f136a4d7dd8afc9830",
+      "bytes": 8591
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-1024-audit.json",
+      "sha256": "0316aa192fe8d05b291e034ece55c6b75d53455662d07cccf311770b234e6147",
+      "bytes": 3395
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-1024-audit.log",
+      "sha256": "721cd63b7a9f2490f410ec9e60ed3ff338532a2c540f27985008a728dc372acd",
+      "bytes": 65
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-1024.log",
+      "sha256": "3f1c103776916ba0f1458933203b91f9fdb346811ec556d388c5d5155db0e612",
+      "bytes": 16398
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-2042-audit.json",
+      "sha256": "088af0bd7f47869b9b02938eb827a6d7a09694e12ac54725ed6f68f291aeebaf",
+      "bytes": 3395
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-2042-audit.log",
+      "sha256": "721cd63b7a9f2490f410ec9e60ed3ff338532a2c540f27985008a728dc372acd",
+      "bytes": 65
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-2042.log",
+      "sha256": "7e9c1232c4f465f355177b6f6ec26e669413ecfa1ae2ce273638a12fed5beb18",
+      "bytes": 16545
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-249-audit.json",
+      "sha256": "6e11b4b87ca1a65c7b8af1a8c5bf2c1c11b277ec7c06330f0f4ca534ed9013a4",
+      "bytes": 3395
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-249-audit.log",
+      "sha256": "721cd63b7a9f2490f410ec9e60ed3ff338532a2c540f27985008a728dc372acd",
+      "bytes": 65
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-249.log",
+      "sha256": "b6e0846f03b21b9bc52ae0be052abb5e340af9bfeddaaec9095be87f050078b8",
+      "bytes": 16400
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-250-audit.json",
+      "sha256": "0ab7f567b19c8c7ac50f6ed4eb0785058bb7d09c885648ca67098b5c3e38c4a1",
+      "bytes": 3395
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-250-audit.log",
+      "sha256": "721cd63b7a9f2490f410ec9e60ed3ff338532a2c540f27985008a728dc372acd",
+      "bytes": 65
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-250.log",
+      "sha256": "71ff72ce739befc3fcc1709fbbafa4f37ef7f41f3804048271fa4b503ea7859a",
+      "bytes": 16399
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-253-audit.json",
+      "sha256": "255113597dcfbb3c71d8d90298628111a2482cf9ac8522106a9a2ef09a9e8b87",
+      "bytes": 3395
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-253-audit.log",
+      "sha256": "721cd63b7a9f2490f410ec9e60ed3ff338532a2c540f27985008a728dc372acd",
+      "bytes": 65
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-253.log",
+      "sha256": "e031b2a9ed2803fd1660d77ab33edca64ae3c0607e44addf9859b3662f0b1cfe",
+      "bytes": 16401
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-254-audit.json",
+      "sha256": "813128a164aded32ae69b5af6cd32407e2a55d671a1b76f621ddedbac76f778f",
+      "bytes": 3395
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-254-audit.log",
+      "sha256": "721cd63b7a9f2490f410ec9e60ed3ff338532a2c540f27985008a728dc372acd",
+      "bytes": 65
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-254.log",
+      "sha256": "e727f9e2432f000df13b29578cd3bf33f1cdfdcc1530cac8b8d13fcf48461fee",
+      "bytes": 16401
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-255-audit.json",
+      "sha256": "297cde352fa6db5421962897fbd3723e2a8e3168ae04a265b9ea1a0b440cb5ef",
+      "bytes": 3395
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-255-audit.log",
+      "sha256": "721cd63b7a9f2490f410ec9e60ed3ff338532a2c540f27985008a728dc372acd",
+      "bytes": 65
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-255.log",
+      "sha256": "16639a23736443e5c0f7ac07af0f6377c40cc046cb13a67462f110123844d650",
+      "bytes": 16398
+    },
+    {
+      "private_workspace_path": ".dev/dynamic-burst-retained-v1-reverification.json",
+      "sha256": "c688daad80a0e134d39b83c5026efab985c812a9d6bab920fd98ef38c9261833",
+      "bytes": 876
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "8eea83dd55d22d595ef6c2024e69a283b9fd56f42c7532c935b29bcdbc2ff79e",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "39dd8e6f11389996bcb80e8f50d893ccf862c6a8aeb27c1280eb892b36afa5e1",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "8f4c8b35eb5ec4fb4deb736452a45244e37f0d6acf76b7dedcd57d313a9daa8a",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "da5accbc3dfafee3fa9e90d316ada822427b2d2a53ad3c4976cd55344b1f3c7f",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "f84ce744f9dfe041610d2c070f3226bdc5b2d8e514a6c22a0f97e711f1cc2f12",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "f1cc39801995fe7f17a6a207000f6efc2da18767b04d0623058f0a3d4979af1e",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "d199391ee2ae65d2e11c0c9b8a1366ec547c81a66b96a5e334a5bffabaca1a54",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "4ecded9613c409592558cf8f1f142f79382744a8c5a309d6ee2531ebd0b8c705",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "33b41f64ad63f9454892e4affb913713480a324fec084fd0a895490e52787308",
+      "bytes": 17483
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "bbb99c9b493a8319e0c5af3786033aa0bb0bd377939efdbd063fced06a110547",
+      "bytes": 17417
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "b2902b29acf9ec10df02324579ac811e1fac19fab59a6d5139d56ed36c3a5a04",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "44cdd8beda853dfef73c772373f75b3f8faa38ed61e5d8bdbc5d410e5de159a1",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "ad4fe1814078db02102712f475f8a0948e3a1a9fda8f37cbd9cfa0337e7f9b9f",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "78e7afac8665e759b2902b986d67a8658f039627ac98c940f8e678f3812219ec",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "dad12a24cc371f4dfd7b550bffbed63fb116a1eb36b0db1dcba1577cb278f41e",
+      "bytes": 17483
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "42432f920f842c93a924689b7965ba938dbf123ca79b57ce2aae5e81f7d6e76d",
+      "bytes": 17417
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/passthrough-control/run.json",
+      "sha256": "2a73cc20efd399bf8a1ab7dc45205015b621a916201255800db57a99b3cd487f",
+      "bytes": 861010
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/capture-process-status.txt",
+      "sha256": "663b7ffd269b02c9760a83a536118385c12347113713c08fa06d7b29db46da41",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/capture-stats.txt",
+      "sha256": "7a314d21ace3614225c43ebf92808c4fd5d86cc91f9734b7d61f2843ff1d4787",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/kernel.log",
+      "sha256": "526fb6cfe0d7f874844c63b45453adb37144570c8cc0e215492ea04737262ca9",
+      "bytes": 49157
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/passthrough-control-proofs.json",
+      "sha256": "073ce6c57982080d4d6bac14b39ab4564983581fe75407cc5b3e7a6b191691b5",
+      "bytes": 477311
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/pending-observations-0.json",
+      "sha256": "feb9539ee90a174db40df5b63018634ebb50835fd897cbec47f5b4e445c90669",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/pending-observations-1.json",
+      "sha256": "96bc219d1e07799fcf057a22860bae809160ccdb255ffee9255a03d17d821dfe",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/ready-progress-0.json",
+      "sha256": "b5722fa35df2f5798140615fc2afa7b322b12ad6bbb0e7237ed87b6809c59c59",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/ready-progress-1.json",
+      "sha256": "412402b3a8041c656a5279a71abbd37ebe9e1e927717d50e5f3ad2d0bbad1c2a",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/slkd-process-status.txt",
+      "sha256": "c7ef864520758d975a58780cacb61188b0cb4fd4d13838a0e0dbe894aab45444",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/slkd.log",
+      "sha256": "6299fd4983392b90c6ee00df25ace8f44794e648d4ba08dcb874ecda1a4ad0dd",
+      "bytes": 6605
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/ws73.pcap",
+      "sha256": "8c944ed243e29ccb35277d67bf1c9c2ff88c4bc61041a2176271b3b0902b5231",
+      "bytes": 963612
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/xhci-trace-stats.txt",
+      "sha256": "b8ac4fe94adae95eb242e74a813023636b55a9f50c0de766265b4e1b7dc43a4a",
+      "bytes": 281
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/guest-output/xhci-trace.log",
+      "sha256": "ccad4ec085264615bead64833455c2fe2f056afe8b111d3cdb79118c599fbcbc",
+      "bytes": 3234570
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-1024/manifest.json",
+      "sha256": "702c998911ac7d78fa8f607c9690b31cb9202e7c102f5c8e46fef5c63c2443a9",
+      "bytes": 2400638
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "f60debede403c0b7848ba63183bfed16abbd2ae789a890601119f39f94f207de",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "9e74484b7255f0c3d6ae7eb0d04eeed9a94a6953188f3210a3628da215f60e81",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "7c07820e4b9865f3131e97ea5d9cd55de09f50104359fc5e1612a2d0afe9d947",
+      "bytes": 1939
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "cb3c5f1b374b0e8e9119fa671d78c1615e9e6450b0fafaec701e020743ce5919",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "5c11c72d4ae642ab7999d16919fd800e10f20e12828968e6feae8abc5d876d67",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "1055ff299858a23f184c4d10c84e98b0c9457f279d62134029606c989703ce22",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "06e5842c785e3673edca18ce54c7f63276b787018b85ae681421bcd47f5af9a3",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "99890ee8b202e1f39468af35009a47e251d8afec270da3bfd66e39da0236a206",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "09da6318bdc190dabfa211791523471bcbce67d06b1c061163d5a8b685092f6b",
+      "bytes": 33771
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "30feeabc57ac79410d1a0d89e478b8bd0dc732c1a0d76a6567519c8402312ef4",
+      "bytes": 33705
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "e61943eead4a01914e337eab923c1ac77f73861c61431db2889381db56f917d5",
+      "bytes": 2068
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "6f7fa696327a62473a742ac0a32b8c27511563323c67d1cf6696c73ae3208725",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "e571ea78f95928981b8e4107bcbdd1d30aad39a026c4a9ec91b33258b6dcfa41",
+      "bytes": 7483
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "70c680d425281fe3d4b99b83a2737b6983ad20e4cd40bc0bbb7aac384db8ea2a",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "6a6d457b43468a2896b041b78c2ca9c496721291660ef813b2d7cb2e898c2a9f",
+      "bytes": 33772
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "2b84b6237f1efdb6188ac25867f2ae642112effdc3bcfe483e07f487a1c4a945",
+      "bytes": 33705
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/passthrough-control/run.json",
+      "sha256": "dba86e7e5315624d76954389b2c5d5159e6f466714da50ef29f6c0534a738dc5",
+      "bytes": 926178
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/capture-process-status.txt",
+      "sha256": "0b1c0700c5dd665e29db6780561cece70598e228a44e5aa219f3bb8d16a6c149",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/capture-stats.txt",
+      "sha256": "3ccd3f50c2c0da15e673c6dad61a9f07ac74d772ea5f17d284ca8b1d79e8d788",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/kernel.log",
+      "sha256": "1695b36e66ffdd60f0a20673d61bfdf38b8e176b885665c83e18b8b3f32a3da1",
+      "bytes": 49070
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/passthrough-control-proofs.json",
+      "sha256": "872af2d3e63698b06461bc8f68c6b2b899c4e61e6bdbc451fe215bed491df775",
+      "bytes": 477850
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/pending-observations-0.json",
+      "sha256": "2867fd84fc2f092bbbd7fe3566ab86a2f1c7a71effa56ea5ba73e20722ca1fd0",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/pending-observations-1.json",
+      "sha256": "caa4b7ef756c71adfaf85424e8a3a418c246d391faccc2e82363f59d99b79b35",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/ready-progress-0.json",
+      "sha256": "dc9a2fc0e53c4790169fb6fabcb1994f703e2f1cad2980826e00d7160e2d9321",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/ready-progress-1.json",
+      "sha256": "5005171e7cd7cf72cbce9dbd90ef3139dd2206a94cfa95b2e800f58c8d5f5447",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/slkd-process-status.txt",
+      "sha256": "f7c49be2182baa019212d7378a423956e6c81dfc6696c4d07a5f6a128784aeac",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/slkd.log",
+      "sha256": "78d5238e5c33fcd796a3431edf933d568029108b0b0fd789308b07b18a6691f4",
+      "bytes": 5249
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/ws73.pcap",
+      "sha256": "c6feee95d453c414f2faeaf3a07e688413962a797bb5731b8c10e8f1bda5a024",
+      "bytes": 1232732
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/xhci-trace-stats.txt",
+      "sha256": "7cb47bc49b7e0bfbb10aa988033ddc9a85a03b4aebe3385e5a89ea9e84d51a0d",
+      "bytes": 285
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/guest-output/xhci-trace.log",
+      "sha256": "b697ebc3838bb7fb12fdb9408c547b546c053f869751f27b44b1c9905b6872a4",
+      "bytes": 3574938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-2042/manifest.json",
+      "sha256": "6e45a5657c467eccea798e0571c16a05ec3111b4e224fcc62b9eb558c4c533ad",
+      "bytes": 2991413
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "34bcf7fdbba5208ba97924a7889a129b022705009b03f475ff8aad48389f88d3",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "6e19cab201d8052f895442fd45cd4547020e9ffd1d7b4a34b5eaa6da49004d99",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "ad949f50e5c556aac46adc2163e301567d6f56e435ca7c98c68ab06bd69e520a",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "6371f73a6ca6388890939cd62e6c9fd9dcf89a6f6a75b1a02d25518335e1eec8",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "9f35137e091f090d18c304dfd544b8e7008e1bcb8da110da22fc61220b104541",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "599da033f85e2049de85d3e323862fea56b314c744281e35cf510a5b80ea8c04",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "d6a33dee1b2db23fec7b795f84cbf2558cd5c3034536a2d2c5d04d68a608f069",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "2b9e610ff126d2321d93bc182cbddc8b45244e571e1cbb81e581a379bd7c3c12",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "2cdd2251f3aaee22a464c648e94f1415c61883d256c42c26d58ee5e2d88614e5",
+      "bytes": 5076
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "d105656c95dd17d77108f3b6453101ca521c45fccd32929a96a4f55656557d2b",
+      "bytes": 5014
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "5134b000d7bb6ad30ddcdeb1627a49da0201bc6f3f33b278da305536bfc3f65c",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "d2cc9ef76da8dc9e644692c05abeba0641759fa5dfd4a152adf1024f8d7523f1",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "8710101524e5b9cf81617f30c4e3c2a669308d21ed4836d797026aa944ad818a",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "51e6cfce4baeb5ba39f7a4567c4640baaa2c0e407e9e79ae9d73991118f0ce40",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "d174890000fffc307bded8bbaa98f8f17c85b04cf069ad080a508fc106490287",
+      "bytes": 5076
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "ef74b6225f828a48b8a1f8ec29c75e5668965c626fefc60e835fb033fedfaa99",
+      "bytes": 5014
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/passthrough-control/run.json",
+      "sha256": "c8b817fb575bff2d43baa4992e9420b9700c1291c13e1634e0187dd1f625c3e1",
+      "bytes": 811449
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/capture-process-status.txt",
+      "sha256": "823337291c307a6920ec36e0e1bcbf5caab1a6df38030b449fbd3cf5e71478bc",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/capture-stats.txt",
+      "sha256": "003ec0d463e10cd7dbe716d2c631f327c0f197c3f4aa19e22a2db6f42257f841",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/kernel.log",
+      "sha256": "d6b2e0e0c1cf2683dde09adabe34a4f243a05545554169cff93f73809d839e9b",
+      "bytes": 49156
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/passthrough-control-proofs.json",
+      "sha256": "d039ac0125d6aa968aea697be4d889e31eb18b576102e69d4dcb1072adbc64b2",
+      "bytes": 477316
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/pending-observations-0.json",
+      "sha256": "9a989e90d3cbf17111a998daecb4ae5493eb701aeb14e6d99bd4b44c14f135c7",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/pending-observations-1.json",
+      "sha256": "ae32e56b764cd228a034e3365bef6d10ee8c036c271a0ab75cc26e32fe041f0e",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/ready-progress-0.json",
+      "sha256": "51a53b373c2542b06661137bd0db12652e59e711e69c2a8b36eb4c027b6ee3ee",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/ready-progress-1.json",
+      "sha256": "145c82b997ff952dbbc0c67c52215f04a8e5a414623382e12c56987730972f34",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/slkd-process-status.txt",
+      "sha256": "646d929400d0181154067be6e6c7c172afa9a61b4eccde89e7652cbd112e2fdd",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/slkd.log",
+      "sha256": "9d0f3638c2a03ae5df9a3bbb48ab49e9888227cda2b63114a75c0bd5d07937f9",
+      "bytes": 5927
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/ws73.pcap",
+      "sha256": "da9ca914b40147d78bc8571306b80572822fccd561e0c254aaf5586b06b6d4ab",
+      "bytes": 744420
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/xhci-trace-stats.txt",
+      "sha256": "956a22afbd43d41d052f412c691316fe31e4965d83db61836ceca1df3ac6bb2c",
+      "bytes": 282
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/guest-output/xhci-trace.log",
+      "sha256": "d6b29bd6f32bcc52d3ae48f188b25c389fd2c217d0822bf9186510a9f57f7795",
+      "bytes": 2587437
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-249/manifest.json",
+      "sha256": "78f218451f98c6b4847c3b225245271e36286e7747f56491566a4e1c1c3e1067",
+      "bytes": 1925504
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "b7a48e44f551284cd06d6728b3a6663b788d1ee5aa5a8f0cdd723526d3f758f9",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "55b44090fc6910dd1b73b3444784793a4e284afd8b18820047d56e1f9ef23da9",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "3fb756e43289601bbc0aa779683cec06b4f40bb359da32e16dddeb292aaec980",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "f29006aa095cc8159ccc4b54b64c82b3d66f272daf976d85de6b34d6a4b64883",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "9108265379fb7080d06899f92b8a610e6cdfbc905eb3f384c32233f6fde9deb0",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "6450f3c5b5a4ddf2dea1858762d5da93a1d0b028c8f0efc2fdc31d0deab41f4d",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "aaa017c048729a7962480c85702bba6b73682f45038d12fd7c17c04c40037f91",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "eaeab707b07af99c296eacae139ed7f50426fbaf955787de69e3c6343e815e02",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "6a61223eb4c0d7624ec5e4216b605c277bc1f8e4c65ffb45d7928e7ebc3a55db",
+      "bytes": 5092
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "c7966f82a8bee32f040cf81d657eec6aa704899e0d1483070f4407aa6f3aac63",
+      "bytes": 5030
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "70ab754bee5be6265c8147efe51e99f59a93979de0063f0c21b398baf416c0c3",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "f01c9013d0f9a59c136a733e63956780808b789d138087a609c2131d8fb6be38",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "ee4b9754214c4a792ceb96a44c7b404aad80e0092b7d75f4f8853fb2ab58145b",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "8a8540473912a54f91abcee514a104bfa5faf39d14d26fd2367c1c396875efae",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "32897c0208645d6a1353a0467005315c879b16a58ebb4de7c488bf577ca543df",
+      "bytes": 5092
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "b6647530907ebf1b1196531dcda14b9d1ff6a6ae6c510059f4b3d577deee8502",
+      "bytes": 5030
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/passthrough-control/run.json",
+      "sha256": "090cec51492b1006c61089569b4fce0d40bff51a28e757d0eea1dfcdd75a49a7",
+      "bytes": 811545
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/capture-process-status.txt",
+      "sha256": "bed8fc2a38c0dad77d862f296fda7ca783a9b5f0bcd4b619a84a64f82d4c11dc",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/capture-stats.txt",
+      "sha256": "6e1c3c377410b9d5b5615035418714e8762f049f10400ef7a0e1ffaef78a32f0",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/kernel.log",
+      "sha256": "49086ae5f6b68dac36792d2ba30eefdaef02cb6fb1f8565e5c4d6fb832f18c9a",
+      "bytes": 49206
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/passthrough-control-proofs.json",
+      "sha256": "c6d211ddff605f339e801b2c91bdeba622d9f5f4afa62b2a0a17d5f55bbfbd4b",
+      "bytes": 477316
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/pending-observations-0.json",
+      "sha256": "953b576486631db3679d42bdf5d386d686999e0b2f8b3230020efa09b839aaae",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/pending-observations-1.json",
+      "sha256": "8d2cc87cd73df9e133778e4b30f1514d47762218f2bceb912a108407173c1a7b",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/ready-progress-0.json",
+      "sha256": "bd393385e58e01edb0d0404177e1dc70fc6e2d2c9ad7d97a8d4bc89b0b392d39",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/ready-progress-1.json",
+      "sha256": "1f11824b35765f5997e710583ff74eaf7af8f9c5e2df3ff89347d19f7f3d46b7",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/slkd-process-status.txt",
+      "sha256": "0bd9d8c0ab44ba6488e7bc77606c8b514f50eda130dcbeebf2b575daab17dbe9",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/slkd.log",
+      "sha256": "14f6c02c2af9ac63367e7129ba636e0beda3247c09803a9665b8bad353bbc26d",
+      "bytes": 5927
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/ws73.pcap",
+      "sha256": "c9e1255480f1b5f5d6739cc345d2b5f1cd48bfc7786dae13784e2eee98986dfb",
+      "bytes": 759844
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/xhci-trace-stats.txt",
+      "sha256": "92a00de6dbdde4c52fa6582bf884d4a80abf1e2930c491926e79f2f7026a6424",
+      "bytes": 282
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/guest-output/xhci-trace.log",
+      "sha256": "8dfb1ebb45905d261d78abc7cc440cc311546bde94df5e012a48a81cc375a86d",
+      "bytes": 2636965
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-250/manifest.json",
+      "sha256": "1dbf65e0467f524d92931876270dca9b3cd11b6a9b924d6dd295603fd352668f",
+      "bytes": 1949780
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "afa5b8cedd9832544a4ec6a43f4377a37743640114629c265dfb3759fae48115",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "1df325fab0f009ac6e153ae6207aa8565f80484b31b7158d64a172c7704af1d9",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "2b61e194b9b179ad1620477408cda5f014a99ce6407ab38f5a26e6886b5fb1cc",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "1a691102a831dd75e16ba52ba22b3d977fb100e555e0f71f699b67b00d00b283",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "def9ae78caf27606fc217cfebe99ae2858649bd66221090c455523045e071d88",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "40d2b77c23b01fd1004c2c7e54393be8f71ad146c70907a3a707b82f55a41d62",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "e5ac19fdea18ba031eabc6c1bb28e8ad9b4441ee1779d3333863ee898afedb89",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "3ee200adcbe9c69a40b7775c107766933af1f112c895fa99afa2961546721d2d",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "8ee27dd5602e6e534d57622087859a4e19c37b3372599f4b76a10f24351a6c80",
+      "bytes": 5140
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "47a36e02b3717de6442d8b3412d7e694a4466d07bd0d222dbb8ec650c33053d5",
+      "bytes": 5078
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "f57fe2e0d8c967abcae44778611d227a00c0933faba48b40022505aaf2d185be",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "505ba371f65d83297c0c4ead4beea5d0c97c93b48b775bcf44fe3589032e95a9",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "593f0e19792ab9b6835d795d50d6df346d120f9c728ac874dd965e37ae8ae929",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "4750c6e2254c021ee4ec4b9f173a1fd569976a13966f646711e5021306f221e0",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "6d4c66951f913ab97c782557bbe4564c0f9bd665af628a169018daf2d62eea98",
+      "bytes": 5140
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "03be5e60e201063955267bac767806d055bdf17b964e3d2e31a2c9d5cc23626c",
+      "bytes": 5078
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/passthrough-control/run.json",
+      "sha256": "7eed480e852ca427d6b73c57b2da2f4b5507aac968b494d554340e81e9a616af",
+      "bytes": 811669
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/capture-process-status.txt",
+      "sha256": "4d51da8e60e0501baff9e7d755a5681c05f0d53f8ee5625f3c45f76b81e2ba27",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/capture-stats.txt",
+      "sha256": "6e1c3c377410b9d5b5615035418714e8762f049f10400ef7a0e1ffaef78a32f0",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/kernel.log",
+      "sha256": "f551e7499c71e1994be7712fb7dcccc941a2f1b6c5a6a6e222be53da0b8d52d6",
+      "bytes": 49528
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/passthrough-control-proofs.json",
+      "sha256": "123116ec3390fbad82083a11bee65cd8a617177dd1eaf27a139d2f144e37304b",
+      "bytes": 477317
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/pending-observations-0.json",
+      "sha256": "ec4ff64c3d4fadc7f1550103845f686461e1500d5d66ee23f0c070f268588919",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/pending-observations-1.json",
+      "sha256": "5c72704ddfa7a2d8c3a9289961ff065fdf3e3f6d72789e2074febaf494ffe87f",
+      "bytes": 1125
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/ready-progress-0.json",
+      "sha256": "cfe7146946a860e2c49787631e0159fbef184333fb51faec6605e35259d8d302",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/ready-progress-1.json",
+      "sha256": "93efe52c18886cd1482d99fd4cbb80345901c741b9cf4176b9e1b6602cf1a5fb",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/slkd-process-status.txt",
+      "sha256": "fb78b773b201fcecbbc3b219370b3ef816852c5da8dab46c763c2aa2f7044542",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/slkd.log",
+      "sha256": "0e7306544444b48353abdaeed81bd87fd2b79e27333546828ccbaf078d4fefa7",
+      "bytes": 5248
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/ws73.pcap",
+      "sha256": "a05334b74e4ef07cd7067db35f66d06e8949c5c258c001ee882209ce721af8ef",
+      "bytes": 759844
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/xhci-trace-stats.txt",
+      "sha256": "65e70ed4be624bfa07eb75a002c0659f53c502394538955f39713bf2a259c28d",
+      "bytes": 281
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/guest-output/xhci-trace.log",
+      "sha256": "4b452e28ce30727bd8a0eb4dd18ee39433a43bd41b41d2a546ec6573af7eda21",
+      "bytes": 2636749
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-253/manifest.json",
+      "sha256": "dd18e97a563975ccdba9cd6cce6ba6674243c80d9dd17f45b3945cca026ea8b4",
+      "bytes": 1950165
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "7b3cd5c4cb9e86068f11bfa500d81c9770b8fc19605096264a8a1b5c5528a9b9",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "65fe4ae41abc4e02ddd30796c68002e15ee3b3ee9a2fede7faacc785209f0fe1",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "dd7f649efabea225249bdeca905576afd82b5360be97a898edd4d8172d166fc0",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "7453493ba9371e76c932678cd34c4e3b10d22737f4b33f0a74d8355af181bb83",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "90af8b98868d9efe9b7d2c80736c7ee4872fb478e198ac0c49544e9c2c2b39ea",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "71b6dd76508d7a4f668543223818a862737252e866454b379479793938d07105",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "d9f89a785cee1efea0d335e2378b24c99a3dd1f7d3fce70ab1c578339d5afa83",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "df8143e265d8391f8f6ee08ed2047b77cf27a52555b73f27963d2ee349459b5c",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "f7f6d659d8824b62af3ad775886adc1773fd1bb7bcd03545cbcf889d3ffcc6ff",
+      "bytes": 5156
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "e49558e57451b2abe749c1978b35095b0e4d64cfe1c6c881abdfdd7194a0b82b",
+      "bytes": 5094
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "e83c719c446e01c88661832b6c1fad160f53185384bfc92db814bf19726b93d2",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "ad65bef4c09d1aedbbc9ec638cebe9cf868355567220b0d447fc8daeb6bdc687",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "a54b97b46aaebdb40eb1de080f83b353273742486e465af81a7c3c69df783a48",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "3cb5baf91ed9720298223f63d39b630f96a34cfb67520a5b0819a653291b0393",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "fb56f71d3009a939c6651ce513ca441ee92c85344bf74c70f43ed9189234e407",
+      "bytes": 5156
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "f96916471bc64aaf020c1d6971704c7df7e550fa87acb5037641c3eb533d8a32",
+      "bytes": 5094
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/passthrough-control/run.json",
+      "sha256": "cf6b5d21e373b32d9fdd6d70707858c514c73cd5880d6b8785713713a0524276",
+      "bytes": 811786
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/capture-process-status.txt",
+      "sha256": "d188bb3ef78d722e6755271dcd41b9735cb420c64ed2d0b1a83d2d23ccdfd1f9",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/capture-stats.txt",
+      "sha256": "bd9ccc31aec67765270a93a186870befad58703f47f2f05e76e58a39a10bd9e7",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/kernel.log",
+      "sha256": "66642cb8c6fc840d44239e1e80dad7cd338fc97b535a15179888f18c193bae70",
+      "bytes": 49156
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/passthrough-control-proofs.json",
+      "sha256": "fab265096af5616d78833081dde63e52a85b06d313d5b5aca144240cf03c2b2a",
+      "bytes": 477317
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/pending-observations-0.json",
+      "sha256": "abd6736e8fad91a9e5c5aa1d124bcbc2b10947ddd9ffca53e3d9048218258d89",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/pending-observations-1.json",
+      "sha256": "10f8fb31ecef2b0d8a7b0f44d2beb62d2a50a35193eeb24de2eddd1bff80bba4",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/ready-progress-0.json",
+      "sha256": "f5047f6924ae5cc76d5e461d7ceb3df46f19d00e3c0c4ca704481b024a6ff85f",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/ready-progress-1.json",
+      "sha256": "a3171b1194848dea44ea8eb06fd9071298e6974920b17044608fc92c0363cc05",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/slkd-process-status.txt",
+      "sha256": "2f41dc6037791b567a4bb70110fe8e5dfa0a6a8d64811247ac1744d84c6663ad",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/slkd.log",
+      "sha256": "3d983c6bb0b2a0c6101c181eb158cbd91911f7f36f630c8ee6abca062f8b18d6",
+      "bytes": 6606
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/ws73.pcap",
+      "sha256": "102e847083ffdea771351c44043f9e965c29036949582fe98fe9cac0d17892a5",
+      "bytes": 761772
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/xhci-trace-stats.txt",
+      "sha256": "e631851af998633c56e734b0f70c02557455ff8bc9781e191f684e01359f6c66",
+      "bytes": 282
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/guest-output/xhci-trace.log",
+      "sha256": "f4f27ddd83f02fc638769a6e5961e208137df6fa639ed57bde4420e96527c255",
+      "bytes": 2644111
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-254/manifest.json",
+      "sha256": "34ca9dd730759f983e3f299e2f83802bf34485aa5f6a0020ac123d865df93d37",
+      "bytes": 1956884
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/channel-0-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/channel-0-initiator.stdout",
+      "sha256": "149a6cfe5e25296a52fcab7f2a0a7393cccfb45a9984f7220c486543717bf04c",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/channel-0-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/channel-0-peer.stdout",
+      "sha256": "c1db743b63c1a1eaa012b272a4f674477aed898107cf0b1fe4ecb683f3f001c4",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/channel-1-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/channel-1-initiator.stdout",
+      "sha256": "19ee645d8f9efd31d643a673463748ea29943919627e7f2bfed262c0f9f3fbec",
+      "bytes": 1938
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/channel-1-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/channel-1-peer.stdout",
+      "sha256": "b541d4c1523781b43aff6508219cec6c749d411692535124f57d11c262540957",
+      "bytes": 1877
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-A-initiator.stdout",
+      "sha256": "b3890c156d97a8f616f945f5bdb8d700c5ec0d900d70497c13b35d22a44b4029",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-A-peer.stdout",
+      "sha256": "24581f40440e7e0e6fa79ee9f0edcadc4165e36dccb1321937cc28a7db3ec99b",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-B-initiator.stdout",
+      "sha256": "a9384732fcb7e24f9e61252f08c55fbeb0e6bbbcc9c4317a07624e4dd40b0024",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-B-peer.stdout",
+      "sha256": "405ab5aba01eefd2d99a269641c5a84dccd4e9734c67fa468b625fba53be30ac",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-C-initiator.stdout",
+      "sha256": "65a6c1a8e3ad1dd430cd5b45ae8a2a3f9f64bce80b5980d4bb69a55ce12acf00",
+      "bytes": 5172
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-0-C-peer.stdout",
+      "sha256": "fff4a3e5205d801315eb8b7f5d14866e91d28d1f09cdb30b5b00acda320946d3",
+      "bytes": 5110
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-A-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-A-initiator.stdout",
+      "sha256": "a6a590a05c7709eddffbcdfc3a95f834c0ebe8966e4305e67ab6e92724a1c1bf",
+      "bytes": 2067
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-A-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-A-peer.stdout",
+      "sha256": "23e380a251e7c329b888731444550b23898848813ca92b46f385299af8be5fa8",
+      "bytes": 2005
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-B-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-B-initiator.stdout",
+      "sha256": "d656f9c2a462f5122d3e0bc92c1c76da63fce1254d2a76af9b755e8b1f95e59a",
+      "bytes": 7482
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-B-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-B-peer.stdout",
+      "sha256": "cc9844a3b1308d11a8c0e4cdba4cfd04d66163408bbcc3a4fd0b952da03582a6",
+      "bytes": 7195
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-C-initiator.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-C-initiator.stdout",
+      "sha256": "ab5fd7cecf2aa7471f0c1ebdfcad9066f2e67ae90c3dcf047bf08cc9c615f3b3",
+      "bytes": 5172
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-C-peer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/dynamic-1-C-peer.stdout",
+      "sha256": "7f7818ff164e4e8755bf15b7c0777bef9eee875f98cb7601005f5312af37e005",
+      "bytes": 5110
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/passthrough-control/run.json",
+      "sha256": "18c1d4981fd031b755633682a4889b73151670180e995e6b16f93be933cc668f",
+      "bytes": 811821
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/socket-type-ordinary.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/application/ssap-removed-uapi-ordinary.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/capture-process-status.txt",
+      "sha256": "3fa8661a61a4ae60ea3055d51fc018dd8f496cadf4d31cf19da8b6fde542f993",
+      "bytes": 1486
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/capture-stats.txt",
+      "sha256": "6e1c3c377410b9d5b5615035418714e8762f049f10400ef7a0e1ffaef78a32f0",
+      "bytes": 227
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/capture-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/dbus.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/discovery-config-validation.txt",
+      "sha256": "f805641fce338c40087d27547162ce03e43f6445e39fbf7aa6b5bf94e95570d8",
+      "bytes": 51
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/kernel.log",
+      "sha256": "a93e2858bfd33b3d4bebc20067798510af244685559e22d3de4248117b3a84cd",
+      "bytes": 49393
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/passthrough-control-proofs.json",
+      "sha256": "20cc957609ade41291fa828e3640f75a83e8e567fb3f5a11c374bb40754ef50d",
+      "bytes": 477315
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/pending-observations-0.json",
+      "sha256": "9ddd2becc356e2ca4365a6857e1692fb7ea820ca20484415a1cd477d970dbbc6",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/pending-observations-1.json",
+      "sha256": "6f1daad66b4c3615f2359652b3ddee63afa8d8b442c23b9f4149bb2b82dfbc57",
+      "bytes": 1126
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/ready-0.json",
+      "sha256": "f1ffb485972d621b5c9135e77dbe5387dcaeda2d3003ddc7cda1b182bf70d1f9",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/ready-1.json",
+      "sha256": "90c3cd2dea449b4d9961195f1a20b43272b6f58df33538275c63fea8dfbf2327",
+      "bytes": 882
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/ready-progress-0.json",
+      "sha256": "93c2e9b78dfb0ffa917cf78eb52a8650a02c2697c6c7e8ae843a038808d47b69",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/ready-progress-1.json",
+      "sha256": "3c0fa85f6497fb9987b0aa955e6d8b2812a23b0eccb5120361a23787ede616dc",
+      "bytes": 1119
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/slkd-config.conf",
+      "sha256": "cdd3c4e71c9ae07585d0ed540c6129fe0d35a9b2402b0653c03d3d9bdd01b11b",
+      "bytes": 1530
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/slkd-process-status.txt",
+      "sha256": "5446530021aab9d5a84f01878361d3dbb5776dbcbd7a0578b4af1b43e6977092",
+      "bytes": 1454
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/slkd.log",
+      "sha256": "733ae99acad53e1e2f91ebc6c59a589607ab3216e594efdbdecbdc3410b5a9d8",
+      "bytes": 5248
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/socket-type-root.log",
+      "sha256": "354fc935ab33065e39cc6ad734488ee406d7f11248663755159d6cf794d19d32",
+      "bytes": 70
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/ssap-removed-uapi-root.log",
+      "sha256": "6992b611e4113bfa6bf8dab12e90ac38c6e77693482b29cef3d27e7cf4cdb6c2",
+      "bytes": 54
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/ws73.pcap",
+      "sha256": "51c955d5e29169e779c37eb077e6f78f2e1a290272166f4e43d125eb523ef87e",
+      "bytes": 759844
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/xhci-trace-stats.txt",
+      "sha256": "b95507b8b68dc5379d665e872be6b408c94a4219268c74fe0842a06eafb94bc2",
+      "bytes": 282
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/guest-output/xhci-trace.log",
+      "sha256": "4f4532c719e193f18f929285b2ebfeac50dc14c53a4e67de8e5a96c29b579fa2",
+      "bytes": 2637848
+    },
+    {
+      "private_workspace_path": ".dev/native-dynamic-burst-retained-v1-255/manifest.json",
+      "sha256": "da00f7c394a3b2278f7b34c1a54de04f39ef397f5391dfef484808f0523dfd7c",
+      "bytes": 1950422
+    },
+    {
+      "private_workspace_path": ".dev/run-dynamic-burst-retained-matrix-v1.py",
+      "sha256": "262ae254687b2bea0fc26fb050ebd11abb1b094ba430d2a96c46f5857b78d8b5",
+      "bytes": 2181
+    }
+  ],
+  "raw_access": {
+    "condition": "Authorized workspace owner;raw USB/SDK/firmware remain private,no verified offsite retention guarantee.",
+    "replay": "Exact tools25df09b and original per-size manifest command in VM-only. audit-dynamic-evidence-v3.py saved-evidence replay does not run hardware.",
+    "firmware_combined_sha256": "7a9bb91d00a94fb8fc146fe17f73a78976bee9a5525303da2d6d4a3f8becaef3",
+    "firmware": "SDK111 /1.10.111"
+  }
+}

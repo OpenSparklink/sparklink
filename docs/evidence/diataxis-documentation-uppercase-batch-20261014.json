@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "scope": "Diataxis uppercase document audit and content corrections only",
+  "source_heads": {
+    "userspace": "1d09c09369ce9de58f018ea5f1ae37929d357295",
+    "linux": "31769ea4b8c006f999f4fbe0da68f7291ef71935"
+  },
+  "source_baseline_userspace": "ac64b3566f330557a025f1994b0a6f49a22b3bd3",
+  "uppercase_sources": 46,
+  "topic_groups": 11,
+  "inventory": {
+    "userspace_markdown": 93,
+    "kernel_sources": 10,
+    "baseline_hashes_preserved": true
+  },
+  "implemented": [
+    "all uppercase original scopes and preferred entries",
+    "11-topic per-document purpose/disposition guide",
+    "legacy 544-line API table retired with immutable original",
+    "SSAP permission semantics extracted; old consumers marked removed",
+    "historical native-host deployment explicitly VM-only restricted"
+  ],
+  "validation": {
+    "fresh_locked_python312_install": "PASS",
+    "clean_exact_commit_strict_html": "PASS",
+    "internal_links_anchors_assets_public_paths": "PASS",
+    "browser": "PASS",
+    "browser_report_sha256": "26db07447bf2ac60e2540bfcec94e7a2ac5ada53e35e4d3ff9c7ab1cd1565bf5",
+    "browser_probe_sha256": "0644a812d847dd5352d2b70285807db1a034b4f3eccca0ccea155a4874d37ac1",
+    "browser_probe_scope": "existing versioned browser checker plus temporary additional topic/SSAP page checks; private probe retained, not a production tool",
+    "checks": [
+      "actual /sparklink/ navigation",
+      "English and Chinese JS search",
+      "table/code/Mermaid",
+      "390px mobile",
+      "11 topic tables and current/source links",
+      "SSAP permission search"
+    ],
+    "screenshots_visually_reviewed": [
+      "uppercase-topics.png",
+      "uppercase-mobile.png"
+    ],
+    "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38487251357",
+    "ci_artifact": {
+      "id": 11859729228,
+      "expires_at": "2026-10-27T23:56:49Z",
+      "published_site": false
+    }
+  },
+  "failures_retained": [
+    {
+      "scope": "clean archive lacked Git HEAD metadata",
+      "result": "FAILED",
+      "resolution": "fetch exact local commit into isolated Git metadata, rerun strict build",
+      "qualification_impact": "none"
+    }
+  ],
+  "preserved_dirty_development_files": 13,
+  "runtime_changes": false,
+  "hardware_qualification_changed": false,
+  "formal_qualification_changed": false,
+  "vm_only": true,
+  "goal_status": "active; full S0-S6 preserved",
+  "issues_to_update": [
+    "OpenSparklink/sparklink#8",
+    "OpenSparklink/linux#19"
+  ],
+  "closure_allowed": false,
+  "remaining": [
+    "complete mixed-page extraction",
+    "full interface field/error reference",
+    "qualified first hardware execution tutorial",
+    "external HTTP429 links remain unverified; not rerun",
+    "offline Mermaid license/resources",
+    "formal publishing"
+  ],
+  "public_material_boundary": "no SDK/firmware/restricted standards/full captures/workstation paths copied",
+  "private_logs": [
+    {
+      "name": "diataxis-uppercase-clean-install.log",
+      "sha256": "4453d243205b9a644a5e111e5f6f554f4f913417e3cc179bba38f417ee67d8ea"
+    },
+    {
+      "name": "diataxis-uppercase-clean-build-v2.log",
+      "sha256": "eb57aee0031bf2f81d9c247c605b699be1038b09e223d511b98db83b8016d29b"
+    }
+  ],
+  "issue_updates": [
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6157742456",
+      "body_sha256": "b95200d3ad85f83d24f9c4f0a4ca5f9b9fd455b2b1e60584ffb1cffed6741bfa",
+      "verified_readback": true
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6157742944",
+      "body_sha256": "b95200d3ad85f83d24f9c4f0a4ca5f9b9fd455b2b1e60584ffb1cffed6741bfa",
+      "verified_readback": true
+    }
+  ]
+}

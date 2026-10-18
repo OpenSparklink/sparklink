@@ -1,0 +1,57 @@
+{
+  "audited_heads": {
+    "linux": "46f3b77f2662351c8b75c19b1abdcde776b85198",
+    "userspace": "18f43a44fd0032f60ff83c672b60c37e5e322381"
+  },
+  "scope": "WP12/18 legacy read and event-state presentation retirement; not full canonical loss/ownership completion",
+  "immediate_delete": [
+    {
+      "source": "Core read_iter/old per-fd EventQueue/global-sequence BroadcastRing and old worker projection",
+      "callers": "old C read/copy tests, no current default Native SDK reader",
+      "replacement": "existing per-controller ControllerEventGet and independent snoop; read(2) explicit Unsupported"
+    },
+    {
+      "source": "EVENT_COUNT/STATS ioctl0x70/0x71/types, SDK Rust/D-Bus/slctl callers",
+      "actual_function": "obsolete pending/delivered counts from truncated queue; CLI used incompatible six-field tuple",
+      "replacement": "D-Bus/CLI GetControllerEventPosition from actual NativeLinkSnapshot.event_seq; no false delivery counter"
+    },
+    {
+      "source": "production ioctl injection handlers ADV/RAW_ADV/CONN_RESP/CONN_DATA",
+      "replacement": "explicit Unsupported after privilege check; actual data/RF only through drivers/test backend"
+    }
+  ],
+  "move_to_tests": [
+    {
+      "source": "entire exact old SleWireEvent/EventQueue/read_iter source",
+      "destination": "kernel selftests retired-read",
+      "purpose": "preserve9 historical usercopy/overflow/fanout regressions and baseline identity; not current API qualification"
+    },
+    {
+      "source": "old live C read probe/private ABI",
+      "purpose": "historical only; old live gate rejects before USB; new full ControllerEvent copy test is separate"
+    }
+  ],
+  "wait_for_replacement": [
+    {
+      "source": "legacy normalized state and genl projections/control callers",
+      "replacement": "audit actual callers, use Host/session state and generation-aware canonical events; do not invent state"
+    },
+    {
+      "source": "full canonical snapshot/loss/resync/owner-death/IRQ/PM lifecycle",
+      "replacement": "relevant formal and actual per-controller regressions; no full control-race precondition for data"
+    }
+  ],
+  "new_regressions": [
+    "default/new actual Virtual read/stats rejected with user buffer unchanged",
+    "actual ordinary-user ControllerEventGET guarded copy four prefixes/change observed/retry/replay/independent reader/readiness",
+    "real slctl events invokes new actual D-Bus position on both physical devices",
+    "preserve actual40 short/249/fault peer data/RF/objects/generation gates"
+  ],
+  "constraints": [
+    "VM-only",
+    "no UAPI compatibility period",
+    "no default fake Complete/echo",
+    "retain exact failure and source scopes",
+    "all original issues and goal remain open"
+  ]
+}

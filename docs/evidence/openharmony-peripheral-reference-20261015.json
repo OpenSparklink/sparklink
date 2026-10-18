@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "READ_ONLY_SOURCE_REFERENCE_AUDIT",
+  "hardware_acceptance": false,
+  "formal_proof": false,
+  "reference": {
+    "repository": "https://gitcode.com/openharmony/drivers_peripheral",
+    "commit": "879984db5c71d6922e37a529ea467dcadcd46958",
+    "tree_clean": true,
+    "license": "Inspected NearLink DLI files: Apache-2.0 headers; root LICENSE also describes HDF/chipset licensing. No implementation copied.",
+    "online_access": "GitCode web open unavailable; reviewed local clone with matching gitcode origin. HEAD is local identity, not a claim of latest upstream."
+  },
+  "sources": [
+    {
+      "path": "LICENSE",
+      "sha256": "5218a8ffe6bfbd61ae064e832075996ab78a871a765e1281d73598fd4a24e3c3",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/LICENSE"
+    },
+    {
+      "path": "nearlink/README_zh.md",
+      "sha256": "cb30ab77ec8d8b1df24240e68fe3223c2aae2997bc9cfb53d71865b01b0596a3",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/README_zh.md"
+    },
+    {
+      "path": "nearlink/dli/dli_service/sle_hci_interface_impl.cpp",
+      "sha256": "940928515752cb69246abb0397b49d75ed80ec17263baf7b54c935842d93b4c4",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/sle_hci_interface_impl.cpp"
+    },
+    {
+      "path": "nearlink/dli/dli_service/implement/vendor_interface.h",
+      "sha256": "5f5361622ec5b3b4bd328c7724763be0151b6632a798b60d52bd2054db5bfc30",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/implement/vendor_interface.h"
+    },
+    {
+      "path": "nearlink/dli/dli_service/implement/vendor_interface.cpp",
+      "sha256": "1006bb2f8a39a54994d8109e8f969f4085e10afbc01a6397469e0d390a340a84",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/implement/vendor_interface.cpp"
+    },
+    {
+      "path": "nearlink/dli/dli_service/implement/ohos_sle_vendor_lib.h",
+      "sha256": "17ada3606dd3c3e94aa12ea43837ed4d9a8b55cfd2f0d0ed84354ef7f79199c9",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/implement/ohos_sle_vendor_lib.h"
+    },
+    {
+      "path": "nearlink/dli/dli_service/implement/dli_internal.h",
+      "sha256": "9ee20997445dd6b3f6ee45bf589d2a5240d9dbf4e6f10a76a13877631af04161",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/implement/dli_internal.h"
+    },
+    {
+      "path": "nearlink/dli/dli_service/implement/dli_protocol.cpp",
+      "sha256": "f32ed9c3488fdc29584818c882b58a9b5bcd1e3ec4f7688d2cb350bffe5247cf",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/implement/dli_protocol.cpp"
+    },
+    {
+      "path": "nearlink/dli/dli_service/implement/h4_protocol.cpp",
+      "sha256": "9f1413ac0606cbc503895a73df039d9f56e432ffa8cd91676e617fb81fc751f9",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/implement/h4_protocol.cpp"
+    },
+    {
+      "path": "nearlink/dli/dli_service/implement/dli_watcher.cpp",
+      "sha256": "65b57e583ca6d827f27ed5879beb8959c4b67c7d1d03465d348c322bedab91dd",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/implement/dli_watcher.cpp"
+    },
+    {
+      "path": "nearlink/dli/dli_service/implement/sle_hal_constant.h",
+      "sha256": "ff88c0700d88d1022d786c8926ee1f6f3a640c377846d002713661df827c84ef",
+      "url": "https://gitcode.com/openharmony/drivers_peripheral/blob/879984db5c71d6922e37a529ea467dcadcd46958/nearlink/dli/dli_service/implement/sle_hal_constant.h"
+    }
+  ],
+  "companion_references": [
+    {
+      "repository": "https://gitcode.com/openharmony/communication_nearlink_service.git",
+      "local_checkout_name": "communication_nearlink_service",
+      "commit": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+      "use": "Host SM/DTAP/SSAP protocol and command/event semantics; existing pinned reference remains in use."
+    },
+    {
+      "repository": "https://gitcode.com/goodspeed1/libws73-usb",
+      "commit": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+      "use": "SDK111 wire dialect and hardware comparisons, no code copied."
+    }
+  ],
+  "mapping": [
+    {
+      "topic": "DLI packet boundary",
+      "observed": "A1 command/A2 event/A3 ACB/A4 ICB. H4 byte stream carries type then four-byte header; DliProtocol uses length offset2/size2; receive callback excludes type.",
+      "sparklink": "drivers/ws73 validates/removes USB/HCC/BSLE envelope and exact DLI lengths; net retains typed command/event/ACB ownership. Never feed raw H4 into Native socket or conflate stream boundaries with USB frames.",
+      "gate": "WP02/WP11; actual codec malformed/truncated/aggregated inputs and two-end captures, not transport success alone."
+    },
+    {
+      "topic": "Asynchronous initialization and send",
+      "observed": "SleHalInit returns request result, initializationComplete is separate; internal address command0405 and status trigger opened state. Send returns transport write result.",
+      "sparklink": "Runtime records actual command/event qualification, original deadline and partial-init journal. Transport init/send success cannot establish Native Ready, protocol completion, encryption or peer delivery.",
+      "gate": "WP01/WP02/WP09; finite failure/timeout and real exact-identity response."
+    },
+    {
+      "topic": "Callback death and teardown",
+      "observed": "Close/OnRemoteDied invoke vendor cleanup; watcher Stop wakes and joins before vendor channel close and library unload. Some event tasks use weak_ptr.",
+      "sparklink": "Use explicit per-controller references/generation/lifetime/epoch; revoke admission, retain physical debt, stop/drain outside Host/gate locks, retire only after established barrier. Weak references alone do not reject stale identity.",
+      "gate": "WP03/WP05/WP16; revoke/Down/original-deadline/late reply composition and unaffected peer in VM."
+    },
+    {
+      "topic": "Vendor boundary and ownership",
+      "observed": "DelayedSingleton VendorInterface loads libnearlink_sle_vendor[_chip].z.so and NEARLINK_VENDOR_LIB_INTERFACE with init/op/close; reviewed path accepts one opened fd channel.",
+      "sparklink": "Useful vendor/transport separation reference; not a multi-controller ownership proof, not WS73 USB firmware loader or complete Host. Native stays drivers/net/slkd. Any future OHOS Host adaptation belongs to optional WP14 UserHost, not Native Backend proxy.",
+      "gate": "WP14 remains P4, no implementation or compatibility promise; verify actual Host/HDI framing and exclusive ownership separately."
+    },
+    {
+      "topic": "Bounded resources and success criteria",
+      "observed": "Synchronous promise waits, EAGAIN retry and H4 short-write loop provide no original absolute deadline in inspected methods; CheckOnBoardState returns true.",
+      "sparklink": "Do not import unbounded waiting or reported onboard=true as hardware truth. Use finite queue/retry/deadline, no-progress errors and state snapshots. This is a local source comparison, not a finding that the whole OHOS system fails.",
+      "gate": "WP01/WP03/WP11; actual production code checks, VM fail/timeout/peer-isolation gates. No new framework."
+    }
+  ],
+  "reviewed_project_state": {
+    "linux_head": "337eab0b6e6f939d353c505fcd8c7dcfd813db0d",
+    "linux_dirty_files": [
+      "net/sparklink/sle_native.rs",
+      "net/sparklink/sle_security_relay.rs",
+      "net/sparklink/sle_sessions.rs",
+      "tools/testing/selftests/sparklink/native-data/fixture.rs"
+    ],
+    "userspace_head": "3eb3c459c68686479a95b6942dbe5a736a2c3a9b",
+    "dirty_preserved": true,
+    "note": "Existing Session-owner retention changes remain under development; reference audit changes no runtime code or hardware qualification."
+  },
+  "issue_mapping": [
+    "OpenSparklink/linux#13",
+    "OpenSparklink/linux#14",
+    "OpenSparklink/sparklink#8"
+  ],
+  "scope_unchanged": {
+    "stages": "S0-S6",
+    "work_packages": 19,
+    "formal_categories": 10,
+    "data_gates": 12,
+    "vm_only": true,
+    "userhost_priority": "P4 optional, no current prerequisite",
+    "port1-2.1.2": "Ignored by user; failed restore evidence preserved; four-device gate remains open",
+    "natural_recovery": "Unqualified; physical unplug, hub/QMP/injection are not natural recovery"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "status": "REAL_BURST_POOL_DEPLETION_AND_NOCP_RESUMPTION_SCOPED_PASS",
+  "source": {
+    "kernel_head": "8cbf53e6a088899229d398b0673a82e8e5aed9ff",
+    "userspace_head": "2d81b3e6348b1c7437e598a6fd3cac53ce9b8fc7"
+  },
+  "application_round_trips": 32,
+  "assumptions": [
+    "PCAP USB submission/NOCP observed ordering; original link interval starts drained",
+    "NOCP accuracy is firmware/hardware trust, not proven by a matching count",
+    "No duplicate/late NOCP or handle-reuse barrier qualified",
+    "USB completion is not credit return; only NOCP changes reconstructed debt"
+  ],
+  "inputs": {
+    "manifest.json": "e5f71e32491e98c30c9a4479fc1d2fe379063c1a23d1d22603cf978591808d47",
+    "run.json": "0f4502776d0b22f731da690de17cbf2410957a922a7814cddf8d83c153918ade",
+    "ws73.pcap": "1bbf792fba53f433ab0ee9023feab75a7e99f5356b768390c8a3d362ac6e7eab"
+  },
+  "scope": "Two real controllers, exchanged roles, fixed channels and SDK111 profile. Supplemental evidence; original manifest remains unchanged.",
+  "natural_recovery_qualified": false,
+  "whole_credit_proof": false,
+  "full_local_report": {
+    "path": ".dev/security-deadline-v2-pool.json",
+    "sha256": "a6bb4c50dc5bc238669fe1ff6771ad578afe9673a9e89ddcf5b323bc38fd02cc",
+    "bytes": 69675
+  },
+  "phases": [
+    {
+      "phase": 0,
+      "source_pool_refusals_delta": 29,
+      "source_full_samples": 6,
+      "endpoints": [
+        {
+          "controller": 0,
+          "generation": 1,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 110,
+          "full_nocp_resume_interval_count": 109
+        },
+        {
+          "controller": 1,
+          "generation": 2,
+          "lifetime": 1,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 130,
+          "full_nocp_resume_interval_count": 129
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "source_pool_refusals_delta": 30,
+      "source_full_samples": 6,
+      "endpoints": [
+        {
+          "controller": 1,
+          "generation": 2,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 104,
+          "full_nocp_resume_interval_count": 103
+        },
+        {
+          "controller": 0,
+          "generation": 1,
+          "lifetime": 3,
+          "handle": 0,
+          "capacity": 5,
+          "usb_submissions": 206,
+          "nocp_packets": 206,
+          "wire_peak": 5,
+          "wire_final_debt": 0,
+          "full_points": 124,
+          "full_nocp_resume_interval_count": 123
+        }
+      ]
+    }
+  ],
+  "reproduction": [
+    "python3 sparklink/tools/ws73_credit_observation.py --run-folder .dev/native-deadline-v2-regression-burst --output NEW_OUTPUT.json"
+  ],
+  "raw_material_access": "Capture/complete interval report kept private locally; public source and fingerprints available, not a downloadable public capture artifact."
+}

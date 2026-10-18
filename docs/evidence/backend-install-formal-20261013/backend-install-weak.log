@@ -1,0 +1,82 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 71 and seed -4093215684586215183 with 1 worker on 16 cores with 1820MB heap and 64MB offheap memory [pid: 1013841] (Linux 7.2.8-200.fc44.x86_64 amd64, Red Hat, Inc. 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lifecycle/BackendInstall.tla
+Parsing file /tmp/Naturals.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Sequences.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module BackendInstall
+Starting... (2026-10-13 11:07:16)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-10-13 11:07:16.
+Error: Invariant LiveMetadataCurrent is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ candidateGeneration = (a :> 0 @@ b :> 0)
+/\ generation = (0 :> 0 @@ 1 :> 0)
+/\ nextGeneration = 1
+/\ candidatePhase = (a :> "Idle" @@ b :> "Idle")
+/\ phase = (0 :> "Free" @@ 1 :> "Free")
+/\ candidateSlot = (a :> 0 @@ b :> 0)
+/\ reported = (0 :> 0 @@ 1 :> 0)
+
+State 2: <Reserve line 13, col 15 to line 18, col 81 of module BackendInstall>
+/\ candidateGeneration = (a :> 0 @@ b :> 0)
+/\ generation = (0 :> 1 @@ 1 :> 0)
+/\ nextGeneration = 2
+/\ candidatePhase = (a :> "Idle" @@ b :> "Idle")
+/\ phase = (0 :> "Reserved" @@ 1 :> "Free")
+/\ candidateSlot = (a :> 0 @@ b :> 0)
+/\ reported = (0 :> 0 @@ 1 :> 0)
+
+State 3: <Snapshot line 19, col 18 to line 23, col 74 of module BackendInstall>
+/\ candidateGeneration = (a :> 1 @@ b :> 0)
+/\ generation = (0 :> 1 @@ 1 :> 0)
+/\ nextGeneration = 2
+/\ candidatePhase = (a :> "Building" @@ b :> "Idle")
+/\ phase = (0 :> "Reserved" @@ 1 :> "Free")
+/\ candidateSlot = (a :> 0 @@ b :> 0)
+/\ reported = (0 :> 0 @@ 1 :> 0)
+
+State 4: <Construct line 24, col 17 to line 26, col 107 of module BackendInstall>
+/\ candidateGeneration = (a :> 1 @@ b :> 0)
+/\ generation = (0 :> 1 @@ 1 :> 0)
+/\ nextGeneration = 2
+/\ candidatePhase = (a :> "Constructed" @@ b :> "Idle")
+/\ phase = (0 :> "Reserved" @@ 1 :> "Free")
+/\ candidateSlot = (a :> 0 @@ b :> 0)
+/\ reported = (0 :> 0 @@ 1 :> 0)
+
+State 5: <Cancel line 40, col 16 to line 42, col 115 of module BackendInstall>
+/\ candidateGeneration = (a :> 1 @@ b :> 0)
+/\ generation = (0 :> 1 @@ 1 :> 0)
+/\ nextGeneration = 2
+/\ candidatePhase = (a :> "Constructed" @@ b :> "Idle")
+/\ phase = (0 :> "Free" @@ 1 :> "Free")
+/\ candidateSlot = (a :> 0 @@ b :> 0)
+/\ reported = (0 :> 0 @@ 1 :> 0)
+
+State 6: <Reserve line 13, col 15 to line 18, col 81 of module BackendInstall>
+/\ candidateGeneration = (a :> 1 @@ b :> 0)
+/\ generation = (0 :> 2 @@ 1 :> 0)
+/\ nextGeneration = 3
+/\ candidatePhase = (a :> "Constructed" @@ b :> "Idle")
+/\ phase = (0 :> "Reserved" @@ 1 :> "Free")
+/\ candidateSlot = (a :> 0 @@ b :> 0)
+/\ reported = (0 :> 0 @@ 1 :> 0)
+
+State 7: <Publish line 32, col 15 to line 36, col 90 of module BackendInstall>
+/\ candidateGeneration = (a :> 1 @@ b :> 0)
+/\ generation = (0 :> 2 @@ 1 :> 0)
+/\ nextGeneration = 3
+/\ candidatePhase = (a :> "Done" @@ b :> "Idle")
+/\ phase = (0 :> "Live" @@ 1 :> "Free")
+/\ candidateSlot = (a :> 0 @@ b :> 0)
+/\ reported = (0 :> 1 @@ 1 :> 0)
+
+1582 states generated, 722 distinct states found, 439 states left on queue.
+The depth of the complete state graph search is 7.
+The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 8 and the 95th percentile is 6).
+Finished in 00s at (2026-10-13 11:07:16)

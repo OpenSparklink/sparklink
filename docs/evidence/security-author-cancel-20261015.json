@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "status": "TYPED_SECURITY_AUTHOR_CANCEL_IMPLEMENTED_OFFLINE_PASS_RF_PENDING",
+  "kernel": "45c049f329643de7a9941fe664642b3f847561e0",
+  "sources": {
+    "net/sparklink/sle_security_relay_state.rs": "f1f4968794f5e58c8fb80d5b64c1bc2f030d94d609951ecee768cef2fe73f2f5",
+    "net/sparklink/sle_security_relay.rs": "2003136737ebf103f4807a1a69e3c8d68e1ee786879ddbc3170584306d9dda7b",
+    "net/sparklink/sparklink_core.rs": "21a6eca6b5b1d333ed2c2f8abdb1f1d29bb7401ac52c77ec2518bf7f92b2da6c",
+    "net/sparklink/sle_authorization.rs": "92b40f2a04e2aafae443ca8b9d6743ceaa3a68ad14867dcabb69b5f0f293d307",
+    "net/sparklink/sle_uapi.rs": "b044af478e02b70cad8ddf4494525b23cc8d5bed9dbbbdea631ebc495c690cbb",
+    "include/uapi/linux/sparklink_ioctl.h": "15f1fccd119b77fe34388159f061ecd20a7f49799309ab6f15ca85ca4680352a",
+    "tools/testing/selftests/sparklink/security/relay_session.rs": "ab606ec7c85af4c26d81bae9df92e2a117193938167b8c7991b4f2216f803ce0",
+    "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "b7a5fc7628e3c38db1c9c3dc5271475ce36ef629b802cccc62597152c2fb5f15"
+  },
+  "abi_bytes": 32,
+  "ioctl": "SL_IOCTL_SECURITY_NEGOTIATION_CANCEL/_IOW(S,0xd4,32)",
+  "contract": {
+    "authority": "Original Managed File, CAP_NET_ADMIN, selected controller/generation/lifetime/handle/request; same grant epoch revalidated under Host/gate. Ordinary channel fd has no authority.",
+    "lookup": "Only existing original physical Session, no allocation/adoption; one retained C kref through material destruction.",
+    "linearization": "Management ownership held through dispatch; table reference lookup then Host/gate/Owner state lock. Actual production Session.cancel validates identity and terminal state, removes unsubmitted work. Existing final submit checks reject canceled tickets.",
+    "return_zero": "Local withdrawal handled or already terminal; never wire cancel/Complete, credit refund, disconnect or encryption Off.",
+    "physical_debt": "Submitted relay/install obligation preserved; actual matching reply/domain evidence or separate proven physical retirement only.",
+    "material": "Private candidate taken after authorized request only; destruction outside Host/gate/Owner locks. In-progress crypto jobs keep their own material, and canceled phase rejects late result.",
+    "deadline": "Existing original deadline wins; expiry terminal not overwritten by cancel.",
+    "scope": "No Agent, D-Bus or CLI connection yet; new cancellation mechanism not RF-qualified."
+  },
+  "offline": {
+    "production_transitions": 28,
+    "native_actual_functions": 44,
+    "host_checks": 68,
+    "cross_language": 39,
+    "cargo_tests": 222,
+    "cargo_suites": 13,
+    "clippy": "PASS workspace/all-features/all-targets -D warnings",
+    "tooling_tests": 518,
+    "exact_clean_kernel_build": "PASS",
+    "build_record_sha256": "be18687bddf07e11be055ee411581e3aaa9a3caa39297504d410c6e4c7b33997",
+    "debug_library_sha256": "0076cf008780fd459ee63e01367b1e7eb3181413ebf2009abd0be02cdec14e07",
+    "logs": {
+      "security-author-cancel-cargo.log": "4283f75a3c862ed3a8c8b1754ed90a70ab0ca8cac954eac1052717ecc8657c63",
+      "security-author-cancel-clippy.log": "d3b65b1c7acde9e9e28ea39c331f4d4f557d81bfab2f9ec3d09ceafbcdbd10ab",
+      "security-author-cancel-python.log": "23c5cc84612bb6a36e3c965cc8e61d7c9953d19842532dd52b4309b440bbee48",
+      "security-author-cancel-tools.log": "6f2e8e31f8e06281d59be9b4dd584b31b0377d41b13b7adb4344c65d879b9295",
+      "security-author-cancel-contract-external.log": "4e9db4b0fc06622562a5afc32ef9e83c0ddfdd67a23f96f12b6f808f166a9107",
+      "security-author-cancel-containment.log": "9c9a684fa61d7238adf9d059e965af99d12b83dffff49f9f23e960007123aac7"
+    }
+  },
+  "formal": {
+    "status": "PRODUCTION_RELAY_SESSION_FORMAL_NOT_PROVEN",
+    "tests": 28,
+    "default_kernel_implementation": true,
+    "rf_acceptance": false,
+    "source_head": "45c049f329643de7a9941fe664642b3f847561e0",
+    "source_tree_clean": true,
+    "runner_sha256": "23f9aa2bed6d3e8dcedad19a1c7bdebe5e957b9846b95cef0744811be7add1f5",
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+    "sources": {
+      "net/sparklink/sle_security_relay_state.rs": "f1f4968794f5e58c8fb80d5b64c1bc2f030d94d609951ecee768cef2fe73f2f5",
+      "tools/testing/selftests/sparklink/security/relay_session.rs": "ab606ec7c85af4c26d81bae9df92e2a117193938167b8c7991b4f2216f803ce0",
+      "tools/testing/selftests/sparklink/security/relay_session_kani.rs": "b7a5fc7628e3c38db1c9c3dc5271475ce36ef629b802cccc62597152c2fb5f15"
+    },
+    "formal": {
+      "status": "NOT_PROVEN_UNSUPPORTED",
+      "exit": 0,
+      "generated_checks": [
+        1766
+      ],
+      "command": [
+        "kani",
+        "tools/testing/selftests/sparklink/security/relay_session_kani.rs",
+        "--harness",
+        "installation_submit_cancel_accept_and_event"
+      ],
+      "log_sha256": "ee6dba1bc798bc0c46efa2fd068d2b4266c2a01693eebaec1555f8257547179c",
+      "version": "Kani Rust Verifier 0.68.0 (standalone)\nCBMC 6.11.0"
+    },
+    "proof_scope": {
+      "harness": "installation_submit_cancel_accept_and_event",
+      "queue_depth": 2,
+      "capability_payload_bytes": 10,
+      "capability_exchanges": 1,
+      "capability_terminal_replies": 1,
+      "arbitrary_commit_time_u64": false,
+      "unwind": 80,
+      "property_inventory_by_harness": {
+        "capability_withdraw_deadline_and_submit": [
+          "No callback after prior withdraw/expiry or foreign identity",
+          "Submit failure is nondeterministic; only accepted callback creates obligation",
+          "Withdraw/expiry preserve submitted obligation until matching terminal reply"
+        ],
+        "capability_requires_peer_and_terminal_complete": [
+          "Successful Status alone cannot pay obligation or complete exchange",
+          "Both peer ingress and real Complete required in either order; terminal failure cannot revive"
+        ],
+        "key_agreement_job_cancel_and_physical_obligation": [
+          "G public crypto job cannot be created before T response actually submits",
+          "Withdraw/expiry reject either successful or failed crypto receipt and create no continuation",
+          "Submitted T response obligation remains until its actual matching terminal reply"
+        ],
+        "installation_submit_cancel_accept_and_event": [
+          "Drive actual G capability/public/confirm/nonce/proof transitions before installation; no force-ready model",
+          "Every actual submit and crypto job has failure branches; accepted command and real0011 independently required",
+          "Withdraw/expiry before materialize or final submit prevents callback; cancel after submit retains obligation until matching reply",
+          "Late reply or encryption event cannot revive cancelled/failed Session; post-success off invalidates even beyond original deadline",
+          "Command Status pays only command obligation; pending asynchronous install survives cancel/expiry until actual domain evidence or physical retirement"
+        ]
+      },
+      "assumptions": [
+        "Caller serializes exact production methods under Owner lock",
+        "Host/gate identity is current; driver callback atomically accepts or NEVER queues",
+        "Input reply ticket already resolved by Host; peer ingress identity already frozen"
+      ],
+      "excluded": [
+        "Actual locks/references/IRQ/USB callback drain and Host-to-driver mapping",
+        "Wire Complete uniqueness, late/duplicate handle attribution, firmware state clear/reuse barrier",
+        "Unbounded execution, cryptography, authentication, Agent, actual controller key installation and natural recovery",
+        "Actual C key copy, firmware encryption truth, independent radio cipher attestation, T role installation model and uncertain USB failure combination"
+      ],
+      "role": "G only",
+      "original_deadline": 100,
+      "logical_schedule": "fixed0..28, expiry100 and lateroff101/102; not arbitrary time or kernel clock proof",
+      "wire_inputs": "knownoffer10, ownpub64/encoded70, peerpub64 and16byte confirmation/nonce/proof fixtures",
+      "crypto_jobs": 4,
+      "local_relays": 4,
+      "installation_intents": 1,
+      "crypto_dependency": "success/failure nondeterministic, not valid-point/math proof",
+      "installation_scope": "actual metadata transitions; opaque C key copy and actual driver lock/reference/USB excluded",
+      "request_cancel_scope": "Before materialization/final submit and after actual submit/Status, nondeterministic choice of author withdraw or actual production Session.cancel; cancellation idempotence checked. Original File/request validation and Runtime locking are outside this pure harness."
+    },
+    "regression_status": "PASS"
+  },
+  "proof_strength": "28 concrete regressions pass. Actual production G composition includes nondeterministic choice of withdraw or cancel/idempotence before materialization/final submit and after submit/Status, plus real failure branches;1766 generated checks still NOT_PROVEN_UNSUPPORTED. Actual File authorization, locks/references/USB, T, crypto and wire attribution excluded. No PASS from exit code or check count.",
+  "verification_followup": "Trace unsupported caller_location/foreign/same_allocation to exact tool/runtime operations and resolve supported tool/intrinsic semantics without warning suppression, always-success dependencies or deleting real failure branches. Keep unproved until complete.",
+  "new_physical_cancel_acceptance": false,
+  "previous_exact_rf": "docs/evidence/session-owner-retention-20261015.json: eff620/2cd remains historical exact qualification, not inherited by45c049.",
+  "remaining_gate": "Add reproducible VM passive-author cancel while awaiting peer, wrong original File/identity, repeated/terminal result, same leases/links and ordinary bidirectional peer app replies; then controlled in-flight Status/event/deadline and Agent integration. Data gates remain parallel.",
+  "constraints": {
+    "vm_only": true,
+    "port2_ignored": true,
+    "whole_issue_closed": false,
+    "natural_recovery_qualified": false
+  }
+}

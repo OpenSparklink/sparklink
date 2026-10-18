@@ -1,0 +1,44 @@
+{
+  "status": "FOUR_EXISTING_ISSUES_UPDATED_OPEN_SCOPE_UNCHANGED",
+  "source": "48688df12e1feb42e27cad91c00c930120e427de",
+  "entries": [
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6243754727",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "9177179e52ae32c0ef3b70c9f55be54e06a92b420a05d66d982b2f6ff3cec440"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6243755167",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "9177179e52ae32c0ef3b70c9f55be54e06a92b420a05d66d982b2f6ff3cec440"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6243755631",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "9177179e52ae32c0ef3b70c9f55be54e06a92b420a05d66d982b2f6ff3cec440"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6243756132",
+      "state": "OPEN",
+      "original_body_unchanged": true,
+      "comment_sha256": "9177179e52ae32c0ef3b70c9f55be54e06a92b420a05d66d982b2f6ff3cec440"
+    }
+  ],
+  "scope": "Maintenance of existing issue scopes only;no issue closed and no extra qualification",
+  "source_of_report_links": "48688df12e1feb42e27cad91c00c930120e427de",
+  "wip_preservation": {
+    "path": ".dev/architecture-r5f3-main-wip-preserved-v3.json",
+    "sha256": "c2097f20a7aacde11728b4287a10da32d8558f77607dce3321db65f125069ef6"
+  }
+}

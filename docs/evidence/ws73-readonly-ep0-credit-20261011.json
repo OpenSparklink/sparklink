@@ -1,0 +1,1784 @@
+{
+  "status": "TWO_ACTUAL_READONLY_EP0_MEMORY_CREDIT_ZERO_RESPONSES_RCA_AND_REAL_MANAGED_OPEN",
+  "created_wall_ns": 1791716858403373132,
+  "vm_only": true,
+  "simulated_usb": false,
+  "supersedes_prior_evidence": false,
+  "source_tools_head": "0a096eeefb03b83ff9b2e452279be3223c3c45cb",
+  "kernel_source_head": "d115489e2c547d85eb1bf357bb0c3a5ae8518a1c",
+  "compiled_kernel_head": "292f9fec84b67d325055bff69c17ce3c7c81706d",
+  "compiled_userspace_head": "d749cbb102c55c926b9d4a9b47dcb8e79d1e59da",
+  "source_tools_tests": 292,
+  "actual_credit_control_reads": 2,
+  "new_diagnostic_bulk_attempts": 0,
+  "new_hub_cycles": 0,
+  "new_resets": 0,
+  "new_module_loads": 0,
+  "normal_managed_startup_attempts_total": 7,
+  "maintenance_attempts_total": 20,
+  "runs": [
+    {
+      "port": "1-2.1.2",
+      "original_guest_response_status": "VM_USB_CREDIT_READ_GUEST_REQUIRES_HOST_CORROBORATION",
+      "manifest": {
+        "status": "VM_USB_CREDIT_READ_GUEST_REQUIRES_HOST_CORROBORATION",
+        "scope": "one read-only SDK EP0 HCC memory-credit control, not a DLI credit/Ready acknowledgement; no bulk/register/write/reset/module or Managed acceptance",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "managed_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "started_wall_ns": 1791716251507973108,
+        "prepared_manifest_sha256": "9e7cbd93a632a310ec8240f903c90f374067b94f142ea179ed35966ec5056427",
+        "inventory_before": {
+          "1-2.1.1": {
+            "path": "1-2.1.1",
+            "bus": 1,
+            "address": 110,
+            "node": "/dev/bus/usb/001/110",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.1:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.2": {
+            "path": "1-2.1.2",
+            "bus": 1,
+            "address": 111,
+            "node": "/dev/bus/usb/001/111",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.2:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.3": {
+            "path": "1-2.1.3",
+            "bus": 1,
+            "address": 112,
+            "node": "/dev/bus/usb/001/112",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.3:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.4": {
+            "path": "1-2.1.4",
+            "bus": 1,
+            "address": 117,
+            "node": "/dev/bus/usb/001/117",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.4:1.0",
+                "endpoints": 2,
+                "driver": null
+              }
+            ]
+          }
+        },
+        "power_before": {
+          "1-2": {
+            "power/control": "auto",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "0",
+            "power/runtime_active_time": "403884923",
+            "speed": "480"
+          },
+          "1-2.1": {
+            "power/control": "auto",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "17001",
+            "power/runtime_active_time": "83333624",
+            "speed": "480"
+          },
+          "1-2.1.2": {
+            "power/control": "on",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "0",
+            "power/runtime_active_time": "18301754",
+            "speed": "480"
+          }
+        },
+        "qemu_args": [
+          "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-qemu/qemu-system-x86_64",
+          "-machine",
+          "q35,accel=kvm",
+          "-cpu",
+          "host",
+          "-m",
+          "1024M",
+          "-smp",
+          "2",
+          "-display",
+          "none",
+          "-monitor",
+          "none",
+          "-no-reboot",
+          "-nic",
+          "none",
+          "-chardev",
+          "socket,id=console,path=/tmp/slkc-mp2ht1z7/serial.sock,server=on,wait=off",
+          "-serial",
+          "chardev:console",
+          "-qmp",
+          "unix:/tmp/slkc-mp2ht1z7/qmp.sock,server=on,wait=off",
+          "-kernel",
+          "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-prepared/bzImage",
+          "-initrd",
+          "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-prepared/initramfs.cpio.gz",
+          "-device",
+          "qemu-xhci,id=xhci,p2=8,p3=8",
+          "-fsdev",
+          "local,id=evidence,path=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/guest-output,security_model=mapped-xattr",
+          "-device",
+          "virtio-9p-pci,fsdev=evidence,mount_tag=evidence",
+          "-L",
+          "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-prepared/qemu-data",
+          "-drive",
+          "file=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/root.btrfs,if=none,id=scratch,format=raw",
+          "-device",
+          "nvme,drive=scratch,serial=SLK_VM_ROOT_ONLY",
+          "-append",
+          "console=ttyS0 loglevel=6 panic=1 oops=panic ws73.register_reset_lab=1 ws73.usb_credit_lab=1 root=UUID=6eeddd5e-d84c-424e-ac52-3da655de064e rootfstype=btrfs rw init=/bin/rebootstrap-init rd.plymouth=0 plymouth.enable=0 rd.shell=0 rd.retry=30 rd.timeout=45",
+          "-msg",
+          "timestamp=on",
+          "-trace",
+          "events=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/usb-lifecycle.events,file=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/usb-lifecycle.log"
+        ],
+        "runner_sha256": "1d1822e43078046a40019adfcbc5f162c6e63815d53585889ccbac8cb1df5223",
+        "qemu_build_manifest_sha256": "7b100c80c2a08324c288ececb8a0448e56ed09c103fae603b4fc3fbb7be0581b",
+        "qemu_libusb_debug": "4",
+        "reattach": [],
+        "qemu_exit": 0,
+        "guest_probe": {
+          "status": "VM_USB_CREDIT_READ_GUEST_REQUIRES_HOST_CORROBORATION",
+          "physical_acceptance": false,
+          "automatic_fault_recovery_acceptance": false,
+          "natural_fault_root_cause_closed": false,
+          "managed_acceptance": false,
+          "node": "/dev/bus/usb/001/002",
+          "endpoints": [
+            1,
+            2,
+            129,
+            130,
+            131
+          ],
+          "started_wall_ns": 1791716258910473960,
+          "usb_credit_read_only": true,
+          "register_write_not_requested": true,
+          "module_load_requested": false,
+          "ready_acknowledgement_observed": false,
+          "usb_configuration_before_credit": [
+            {
+              "name": "configuration",
+              "kind": 128,
+              "request": 8,
+              "value": 0,
+              "length": 1,
+              "before_wall_ns": 1791716258915889384,
+              "returned": 1,
+              "data": "01",
+              "after_wall_ns": 1791716258916607327
+            },
+            {
+              "name": "descriptor",
+              "kind": 128,
+              "request": 6,
+              "value": 512,
+              "length": 53,
+              "before_wall_ns": 1791716258916644437,
+              "returned": 53,
+              "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+              "after_wall_ns": 1791716258917326953
+            }
+          ],
+          "credit_control": {
+            "kind": 161,
+            "request": 5,
+            "value": 0,
+            "index": 0,
+            "length": 4,
+            "timeout_ms": 2000,
+            "before_wall_ns": 1791716258920579040,
+            "returned": 4,
+            "data": "00000000",
+            "raw_credit_u32": 0,
+            "after_wall_ns": 1791716258924083353
+          },
+          "usb_configuration_after_credit": [
+            {
+              "name": "configuration",
+              "kind": 128,
+              "request": 8,
+              "value": 0,
+              "length": 1,
+              "before_wall_ns": 1791716258926909899,
+              "returned": 1,
+              "data": "01",
+              "after_wall_ns": 1791716258927560314
+            },
+            {
+              "name": "descriptor",
+              "kind": 128,
+              "request": 6,
+              "value": 512,
+              "length": 53,
+              "before_wall_ns": 1791716258927566616,
+              "returned": 53,
+              "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+              "after_wall_ns": 1791716258928257468
+            }
+          ],
+          "finished_wall_ns": 1791716258930879819
+        },
+        "power_after": {
+          "1-2": {
+            "power/control": "auto",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "0",
+            "power/runtime_active_time": "403893136",
+            "speed": "480"
+          },
+          "1-2.1": {
+            "power/control": "auto",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "17001",
+            "power/runtime_active_time": "83341837",
+            "speed": "480"
+          },
+          "1-2.1.2": {
+            "power/control": "on",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "0",
+            "power/runtime_active_time": "18309967",
+            "speed": "480"
+          }
+        },
+        "finished_wall_ns": 1791716261174157993,
+        "inventory_after": {
+          "1-2.1.1": {
+            "path": "1-2.1.1",
+            "bus": 1,
+            "address": 110,
+            "node": "/dev/bus/usb/001/110",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.1:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.2": {
+            "path": "1-2.1.2",
+            "bus": 1,
+            "address": 111,
+            "node": "/dev/bus/usb/001/111",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.2:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.3": {
+            "path": "1-2.1.3",
+            "bus": 1,
+            "address": 112,
+            "node": "/dev/bus/usb/001/112",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.3:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.4": {
+            "path": "1-2.1.4",
+            "bus": 1,
+            "address": 117,
+            "node": "/dev/bus/usb/001/117",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.4:1.0",
+                "endpoints": 2,
+                "driver": null
+              }
+            ]
+          }
+        },
+        "active_ready_peer_isolation_acceptance": false
+      },
+      "independent_proof": {
+        "status": "READONLY_EP0_CONTROL_CAPTURE_HOST_TRACE_MATCHED_NOT_READY",
+        "host_port": "1-2.1.2",
+        "host_bus": 1,
+        "host_address": 111,
+        "raw_credit_u32": 0,
+        "raw_data": "00000000",
+        "capture_packets": 65,
+        "capture": [
+          {
+            "submitted": {
+              "record": 60,
+              "urb": 18446616982376255040,
+              "wall_ns": 1791716258923334000,
+              "status": -115,
+              "length": 4,
+              "endpoint": 128
+            },
+            "completed": {
+              "record": 61,
+              "urb": 18446616982376255040,
+              "wall_ns": 1791716258924063000,
+              "status": 0,
+              "length": 4,
+              "endpoint": 128,
+              "data": "00000000",
+              "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+            }
+          }
+        ],
+        "host_trace": [
+          "3443117@1791716259.639680:usb_host_req_control dev 1:111, packet 0x7fcb18105b18, req 0xa105, value 0, index 0",
+          "3443113@1791716259.640308:usb_host_req_complete dev 1:111, packet 0x7fcb18105b18, status 0, length 4"
+        ],
+        "actual_host_control_return_supported": true,
+        "zero_bulk_records": true,
+        "zero_class_out_records": true,
+        "host_inventory_unchanged": true,
+        "active_ready_peer_isolation_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false
+      },
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/console.log",
+          "sha256": "26120ef6ed5d3ffbad567aaf814d32c44a1a648fe33f27095fc924402d80f7d4",
+          "bytes": 13672
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/guest-output/maintenance/capture.log",
+          "sha256": "adefd492708d7fc39728f19bd01d935e871f8d4128374de258424028444b10d3",
+          "bytes": 198
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/guest-output/maintenance/kernel.log",
+          "sha256": "afc14563a57a946c62ad7714042e03bff08a9a2854d4c6670d8bc553ad905955",
+          "bytes": 39825
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/guest-output/maintenance/probe.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/guest-output/maintenance/reset/run.json",
+          "sha256": "4697044144beb74e8ffb39634bc1335490e5e4bf0af8e134048e4398e55cbd96",
+          "bytes": 2134
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "43a725344e293475c39d3b42551b2a285f8ae8e6a295d59457d699ba38b613d0",
+          "bytes": 5604
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/manifest.json",
+          "sha256": "8ae305b5b0b9b656ec115fce45414c4bbf67086feade00990fdd9ba8442294ea",
+          "bytes": 8673
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/qemu-stderr.log",
+          "sha256": "29a7b5071682f2c28a84196038cd1c4f603eef792433aa50f22d995eca14101c",
+          "bytes": 34487
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/qmp.jsonl",
+          "sha256": "f53a1398672c46e22ee5702ee84abd18a95225c4a41446a15b5b046d039392a1",
+          "bytes": 651
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/root.btrfs",
+          "sha256": "00248d759d2ff9e5928a17a3ff502035ddb2af308085f82a5457684b3f9e4d9d",
+          "bytes": 1073741824
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/usb-lifecycle.events",
+          "sha256": "76825f7a68301d63a95b57187411cb62c7aad721045032d2e2907dfa6ca2e317",
+          "bytes": 447
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port2-run/usb-lifecycle.log",
+          "sha256": "267c733f130499f066a064b4d547db50d77afe8fcd1fb7adc96926426937d4d8",
+          "bytes": 17300
+        }
+      ],
+      "physical_ready_or_managed_acceptance": false
+    },
+    {
+      "port": "1-2.1.1",
+      "original_guest_response_status": "VM_USB_CREDIT_READ_GUEST_REQUIRES_HOST_CORROBORATION",
+      "manifest": {
+        "status": "VM_USB_CREDIT_READ_GUEST_REQUIRES_HOST_CORROBORATION",
+        "scope": "one read-only SDK EP0 HCC memory-credit control, not a DLI credit/Ready acknowledgement; no bulk/register/write/reset/module or Managed acceptance",
+        "physical_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "managed_acceptance": false,
+        "natural_fault_root_cause_closed": false,
+        "started_wall_ns": 1791716372264452923,
+        "prepared_manifest_sha256": "9e7cbd93a632a310ec8240f903c90f374067b94f142ea179ed35966ec5056427",
+        "inventory_before": {
+          "1-2.1.1": {
+            "path": "1-2.1.1",
+            "bus": 1,
+            "address": 110,
+            "node": "/dev/bus/usb/001/110",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.1:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.2": {
+            "path": "1-2.1.2",
+            "bus": 1,
+            "address": 111,
+            "node": "/dev/bus/usb/001/111",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.2:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.3": {
+            "path": "1-2.1.3",
+            "bus": 1,
+            "address": 112,
+            "node": "/dev/bus/usb/001/112",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.3:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.4": {
+            "path": "1-2.1.4",
+            "bus": 1,
+            "address": 117,
+            "node": "/dev/bus/usb/001/117",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.4:1.0",
+                "endpoints": 2,
+                "driver": null
+              }
+            ]
+          }
+        },
+        "power_before": {
+          "1-2": {
+            "power/control": "auto",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "0",
+            "power/runtime_active_time": "404005698",
+            "speed": "480"
+          },
+          "1-2.1": {
+            "power/control": "auto",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "17001",
+            "power/runtime_active_time": "83454399",
+            "speed": "480"
+          },
+          "1-2.1.1": {
+            "power/control": "on",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "0",
+            "power/runtime_active_time": "18423034",
+            "speed": "480"
+          }
+        },
+        "qemu_args": [
+          "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-qemu/qemu-system-x86_64",
+          "-machine",
+          "q35,accel=kvm",
+          "-cpu",
+          "host",
+          "-m",
+          "1024M",
+          "-smp",
+          "2",
+          "-display",
+          "none",
+          "-monitor",
+          "none",
+          "-no-reboot",
+          "-nic",
+          "none",
+          "-chardev",
+          "socket,id=console,path=/tmp/slkc-hicrgew_/serial.sock,server=on,wait=off",
+          "-serial",
+          "chardev:console",
+          "-qmp",
+          "unix:/tmp/slkc-hicrgew_/qmp.sock,server=on,wait=off",
+          "-kernel",
+          "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-prepared/bzImage",
+          "-initrd",
+          "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-prepared/initramfs.cpio.gz",
+          "-device",
+          "qemu-xhci,id=xhci,p2=8,p3=8",
+          "-fsdev",
+          "local,id=evidence,path=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/guest-output,security_model=mapped-xattr",
+          "-device",
+          "virtio-9p-pci,fsdev=evidence,mount_tag=evidence",
+          "-L",
+          "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-prepared/qemu-data",
+          "-drive",
+          "file=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/root.btrfs,if=none,id=scratch,format=raw",
+          "-device",
+          "nvme,drive=scratch,serial=SLK_VM_ROOT_ONLY",
+          "-append",
+          "console=ttyS0 loglevel=6 panic=1 oops=panic ws73.register_reset_lab=1 ws73.usb_credit_lab=1 root=UUID=6eeddd5e-d84c-424e-ac52-3da655de064e rootfstype=btrfs rw init=/bin/rebootstrap-init rd.plymouth=0 plymouth.enable=0 rd.shell=0 rd.retry=30 rd.timeout=45",
+          "-msg",
+          "timestamp=on",
+          "-trace",
+          "events=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/usb-lifecycle.events,file=/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/usb-lifecycle.log"
+        ],
+        "runner_sha256": "1d1822e43078046a40019adfcbc5f162c6e63815d53585889ccbac8cb1df5223",
+        "qemu_build_manifest_sha256": "7b100c80c2a08324c288ececb8a0448e56ed09c103fae603b4fc3fbb7be0581b",
+        "qemu_libusb_debug": "4",
+        "reattach": [],
+        "qemu_exit": 0,
+        "guest_probe": {
+          "status": "VM_USB_CREDIT_READ_GUEST_REQUIRES_HOST_CORROBORATION",
+          "physical_acceptance": false,
+          "automatic_fault_recovery_acceptance": false,
+          "natural_fault_root_cause_closed": false,
+          "managed_acceptance": false,
+          "node": "/dev/bus/usb/001/002",
+          "endpoints": [
+            1,
+            2,
+            129,
+            130,
+            131
+          ],
+          "started_wall_ns": 1791716379819536895,
+          "usb_credit_read_only": true,
+          "register_write_not_requested": true,
+          "module_load_requested": false,
+          "ready_acknowledgement_observed": false,
+          "usb_configuration_before_credit": [
+            {
+              "name": "configuration",
+              "kind": 128,
+              "request": 8,
+              "value": 0,
+              "length": 1,
+              "before_wall_ns": 1791716379824105133,
+              "returned": 1,
+              "data": "01",
+              "after_wall_ns": 1791716379824775957
+            },
+            {
+              "name": "descriptor",
+              "kind": 128,
+              "request": 6,
+              "value": 512,
+              "length": 53,
+              "before_wall_ns": 1791716379824811213,
+              "returned": 53,
+              "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+              "after_wall_ns": 1791716379825529797
+            }
+          ],
+          "credit_control": {
+            "kind": 161,
+            "request": 5,
+            "value": 0,
+            "index": 0,
+            "length": 4,
+            "timeout_ms": 2000,
+            "before_wall_ns": 1791716379829241721,
+            "returned": 4,
+            "data": "00000000",
+            "raw_credit_u32": 0,
+            "after_wall_ns": 1791716379832508687
+          },
+          "usb_configuration_after_credit": [
+            {
+              "name": "configuration",
+              "kind": 128,
+              "request": 8,
+              "value": 0,
+              "length": 1,
+              "before_wall_ns": 1791716379834621658,
+              "returned": 1,
+              "data": "01",
+              "after_wall_ns": 1791716379835242959
+            },
+            {
+              "name": "descriptor",
+              "kind": 128,
+              "request": 6,
+              "value": 512,
+              "length": 53,
+              "before_wall_ns": 1791716379835248599,
+              "returned": 53,
+              "data": "09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200",
+              "after_wall_ns": 1791716379835858889
+            }
+          ],
+          "finished_wall_ns": 1791716379838208065
+        },
+        "power_after": {
+          "1-2": {
+            "power/control": "auto",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "0",
+            "power/runtime_active_time": "404013918",
+            "speed": "480"
+          },
+          "1-2.1": {
+            "power/control": "auto",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "17001",
+            "power/runtime_active_time": "83462620",
+            "speed": "480"
+          },
+          "1-2.1.1": {
+            "power/control": "on",
+            "power/runtime_status": "active",
+            "power/runtime_suspended_time": "0",
+            "power/runtime_active_time": "18431254",
+            "speed": "480"
+          }
+        },
+        "finished_wall_ns": 1791716381956557647,
+        "inventory_after": {
+          "1-2.1.1": {
+            "path": "1-2.1.1",
+            "bus": 1,
+            "address": 110,
+            "node": "/dev/bus/usb/001/110",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.1:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.2": {
+            "path": "1-2.1.2",
+            "bus": 1,
+            "address": 111,
+            "node": "/dev/bus/usb/001/111",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.2:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.3": {
+            "path": "1-2.1.3",
+            "bus": 1,
+            "address": 112,
+            "node": "/dev/bus/usb/001/112",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.3:1.0",
+                "endpoints": 5,
+                "driver": null
+              }
+            ]
+          },
+          "1-2.1.4": {
+            "path": "1-2.1.4",
+            "bus": 1,
+            "address": 117,
+            "node": "/dev/bus/usb/001/117",
+            "writable": true,
+            "interfaces": [
+              {
+                "name": "1-2.1.4:1.0",
+                "endpoints": 2,
+                "driver": null
+              }
+            ]
+          }
+        },
+        "active_ready_peer_isolation_acceptance": false
+      },
+      "independent_proof": {
+        "status": "READONLY_EP0_CONTROL_CAPTURE_HOST_TRACE_MATCHED_NOT_READY",
+        "host_port": "1-2.1.1",
+        "host_bus": 1,
+        "host_address": 110,
+        "raw_credit_u32": 0,
+        "raw_data": "00000000",
+        "capture_packets": 65,
+        "capture": [
+          {
+            "submitted": {
+              "record": 60,
+              "urb": 18446615406118599296,
+              "wall_ns": 1791716379831847000,
+              "status": -115,
+              "length": 4,
+              "endpoint": 128
+            },
+            "completed": {
+              "record": 61,
+              "urb": 18446615406118599296,
+              "wall_ns": 1791716379832491000,
+              "status": 0,
+              "length": 4,
+              "endpoint": 128,
+              "data": "00000000",
+              "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+            }
+          }
+        ],
+        "host_trace": [
+          "3443295@1791716380.428645:usb_host_req_control dev 1:110, packet 0x7f22945d4628, req 0xa105, value 0, index 0",
+          "3443292@1791716380.429215:usb_host_req_complete dev 1:110, packet 0x7f22945d4628, status 0, length 4"
+        ],
+        "actual_host_control_return_supported": true,
+        "zero_bulk_records": true,
+        "zero_class_out_records": true,
+        "host_inventory_unchanged": true,
+        "active_ready_peer_isolation_acceptance": false,
+        "automatic_fault_recovery_acceptance": false,
+        "natural_fault_root_cause_closed": false
+      },
+      "assets": [
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/console.log",
+          "sha256": "7bc660214330dfbcc08c1d259a684f9c72fe1b9a721db5efd2b90da82e59ef52",
+          "bytes": 13672
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/guest-output/maintenance/capture.log",
+          "sha256": "adefd492708d7fc39728f19bd01d935e871f8d4128374de258424028444b10d3",
+          "bytes": 198
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/guest-output/maintenance/kernel.log",
+          "sha256": "ecfe61e1f69423dd5977d488c4624c793bb11a9cef4a1082cdd164b926ea42d8",
+          "bytes": 39951
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/guest-output/maintenance/probe.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/guest-output/maintenance/reset/run.json",
+          "sha256": "31e42b6489e0a9af1fa11bd20fe296c6cad87c90bb9c73b99502ced8431f8b04",
+          "bytes": 2134
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/guest-output/maintenance/ws73.pcap",
+          "sha256": "beeadb3b613fea5799f810184b740c56c19a40e615d5a277c746f10db1a4ce17",
+          "bytes": 5604
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/manifest.json",
+          "sha256": "74855ecbedad161019c42e232e2714eb702ba60e6750cc14bdb66d8c94cc2737",
+          "bytes": 8673
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/qemu-stderr.log",
+          "sha256": "3862d58b3236482c173de841d0e30009056f5811857bc18d9872354812dc24b8",
+          "bytes": 34487
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/qmp.jsonl",
+          "sha256": "898e2b772bf6b205635501a7ff0a2e034154e28f3424f15c6faf20f55d6ace1f",
+          "bytes": 651
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/root.btrfs",
+          "sha256": "8f95e831f5c83fda4e1fc08e9e913b9eb9bf2d729e1a4efc3f7d1f505b7097d8",
+          "bytes": 1073741824
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/usb-lifecycle.events",
+          "sha256": "76825f7a68301d63a95b57187411cb62c7aad721045032d2e2907dfa6ca2e317",
+          "bytes": 447
+        },
+        {
+          "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-vm-usb-credit-port1-run/usb-lifecycle.log",
+          "sha256": "84c58b100c82912fa693cfb5f3c79a32f3cb6daf1a3fc099d51c98273bc7cc28",
+          "bytes": 17300
+        }
+      ],
+      "physical_ready_or_managed_acceptance": false
+    }
+  ],
+  "physical_ready_bootstrap": false,
+  "managed_preselection_live_acceptance": false,
+  "managed_partial_live_acceptance": false,
+  "active_ready_peer_isolation_acceptance": false,
+  "automatic_fault_recovery_acceptance": false,
+  "natural_fault_root_cause_closed": false,
+  "full_goal_complete": false,
+  "source_validation": {
+    "ci": {
+      "conclusion": "success",
+      "headSha": "0a096eeefb03b83ff9b2e452279be3223c3c45cb",
+      "jobs": [
+        {
+          "completedAt": "2026-10-11T10:56:57Z",
+          "conclusion": "success",
+          "databaseId": 114453141058,
+          "name": "Actual kernel security, TX, SSAP and event copy boundaries",
+          "startedAt": "2026-10-11T10:55:55Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:55:57Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:00Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:55:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:03Z",
+              "conclusion": "success",
+              "name": "Run dtolnay/rust-toolchain@stable",
+              "number": 3,
+              "startedAt": "2026-10-11T10:56:00Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:03Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 4,
+              "startedAt": "2026-10-11T10:56:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:17Z",
+              "conclusion": "success",
+              "name": "Install compiler and sanitizer runtimes",
+              "number": 5,
+              "startedAt": "2026-10-11T10:56:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:34Z",
+              "conclusion": "success",
+              "name": "Execute actual source failure boundaries (not RF or crypto vectors)",
+              "number": 6,
+              "startedAt": "2026-10-11T10:56:17Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:36Z",
+              "conclusion": "success",
+              "name": "Check complete ioctl authorization and queue contracts",
+              "number": 7,
+              "startedAt": "2026-10-11T10:56:34Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:53Z",
+              "conclusion": "success",
+              "name": "Check pinned QEMU host test boundaries (no live USB or guest execution)",
+              "number": 8,
+              "startedAt": "2026-10-11T10:56:36Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:54Z",
+              "conclusion": "success",
+              "name": "Compile live VFS probe (not executed without a qualified VM)",
+              "number": 9,
+              "startedAt": "2026-10-11T10:56:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:54Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 17,
+              "startedAt": "2026-10-11T10:56:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:54Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 18,
+              "startedAt": "2026-10-11T10:56:54Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:54Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 19,
+              "startedAt": "2026-10-11T10:56:54Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453141058"
+        },
+        {
+          "completedAt": "2026-10-11T10:56:07Z",
+          "conclusion": "success",
+          "databaseId": 114453141187,
+          "name": "cargo check",
+          "startedAt": "2026-10-11T10:55:55Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:55:56Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:55:55Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:55:57Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:55:58Z",
+              "conclusion": "success",
+              "name": "Run dtolnay/rust-toolchain@stable",
+              "number": 3,
+              "startedAt": "2026-10-11T10:55:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:00Z",
+              "conclusion": "success",
+              "name": "Run Swatinem/rust-cache@v2",
+              "number": 4,
+              "startedAt": "2026-10-11T10:55:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:06Z",
+              "conclusion": "success",
+              "name": "Run cargo check --workspace --all-targets --all-features",
+              "number": 5,
+              "startedAt": "2026-10-11T10:56:00Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:06Z",
+              "conclusion": "success",
+              "name": "Post Run Swatinem/rust-cache@v2",
+              "number": 9,
+              "startedAt": "2026-10-11T10:56:06Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:06Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 10,
+              "startedAt": "2026-10-11T10:56:06Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:06Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 11,
+              "startedAt": "2026-10-11T10:56:06Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453141187"
+        },
+        {
+          "completedAt": "2026-10-11T10:56:04Z",
+          "conclusion": "success",
+          "databaseId": 114453141210,
+          "name": "rustfmt",
+          "startedAt": "2026-10-11T10:55:55Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:55:57Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:55:58Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:55:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:55:59Z",
+              "conclusion": "success",
+              "name": "Run dtolnay/rust-toolchain@stable",
+              "number": 3,
+              "startedAt": "2026-10-11T10:55:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:02Z",
+              "conclusion": "success",
+              "name": "Run cargo fmt --all -- --check",
+              "number": 4,
+              "startedAt": "2026-10-11T10:55:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:02Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 8,
+              "startedAt": "2026-10-11T10:56:02Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:02Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 9,
+              "startedAt": "2026-10-11T10:56:02Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453141210"
+        },
+        {
+          "completedAt": "2026-10-11T10:56:11Z",
+          "conclusion": "success",
+          "databaseId": 114453141211,
+          "name": "WS73 tooling and evidence validation (no hardware)",
+          "startedAt": "2026-10-11T10:55:55Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:55:57Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:55:58Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:55:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:01Z",
+              "conclusion": "success",
+              "name": "Check out matching kernel lab helpers",
+              "number": 3,
+              "startedAt": "2026-10-11T10:55:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:01Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 4,
+              "startedAt": "2026-10-11T10:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:08Z",
+              "conclusion": "success",
+              "name": "Run python -m unittest discover -s tools/tests -v",
+              "number": 5,
+              "startedAt": "2026-10-11T10:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:08Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 8,
+              "startedAt": "2026-10-11T10:56:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:08Z",
+              "conclusion": "success",
+              "name": "Post Check out matching kernel lab helpers",
+              "number": 9,
+              "startedAt": "2026-10-11T10:56:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:08Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 10,
+              "startedAt": "2026-10-11T10:56:08Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:08Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 11,
+              "startedAt": "2026-10-11T10:56:08Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453141211"
+        },
+        {
+          "completedAt": "2026-10-11T10:56:29Z",
+          "conclusion": "success",
+          "databaseId": 114453141273,
+          "name": "Python bindings and kernel ABI conformance",
+          "startedAt": "2026-10-11T10:55:55Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:55:57Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:55:56Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:55:58Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:55:57Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:01Z",
+              "conclusion": "success",
+              "name": "Check out matching canonical kernel UAPI",
+              "number": 3,
+              "startedAt": "2026-10-11T10:55:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:01Z",
+              "conclusion": "success",
+              "name": "Run dtolnay/rust-toolchain@stable",
+              "number": 4,
+              "startedAt": "2026-10-11T10:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:01Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@v5",
+              "number": 5,
+              "startedAt": "2026-10-11T10:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:25Z",
+              "conclusion": "success",
+              "name": "Prepare 32-bit header compilation and actual cdylib",
+              "number": 6,
+              "startedAt": "2026-10-11T10:56:01Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:25Z",
+              "conclusion": "success",
+              "name": "Run python -m py_compile bindings/python/sparklink/__init__.py",
+              "number": 7,
+              "startedAt": "2026-10-11T10:56:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:25Z",
+              "conclusion": "success",
+              "name": "Run python -m py_compile bindings/python/sparklink/structs.py",
+              "number": 8,
+              "startedAt": "2026-10-11T10:56:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:25Z",
+              "conclusion": "success",
+              "name": "Run python -m py_compile bindings/python/sparklink/adapter.py",
+              "number": 9,
+              "startedAt": "2026-10-11T10:56:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:25Z",
+              "conclusion": "success",
+              "name": "Run python -m py_compile bindings/python/sparklink/native.py",
+              "number": 10,
+              "startedAt": "2026-10-11T10:56:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:26Z",
+              "conclusion": "success",
+              "name": "Run Python unit and compiled C/Rust ABI tests",
+              "number": 11,
+              "startedAt": "2026-10-11T10:56:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:26Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@v5",
+              "number": 20,
+              "startedAt": "2026-10-11T10:56:26Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:27Z",
+              "conclusion": "success",
+              "name": "Post Check out matching canonical kernel UAPI",
+              "number": 21,
+              "startedAt": "2026-10-11T10:56:26Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:27Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 22,
+              "startedAt": "2026-10-11T10:56:27Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:27Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 23,
+              "startedAt": "2026-10-11T10:56:27Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453141273"
+        },
+        {
+          "completedAt": "2026-10-11T10:56:20Z",
+          "conclusion": "success",
+          "databaseId": 114453183468,
+          "name": "C header generation",
+          "startedAt": "2026-10-11T10:56:10Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:56:12Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:56:11Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:13Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:56:12Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:14Z",
+              "conclusion": "success",
+              "name": "Run dtolnay/rust-toolchain@stable",
+              "number": 3,
+              "startedAt": "2026-10-11T10:56:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:16Z",
+              "conclusion": "success",
+              "name": "Run Swatinem/rust-cache@v2",
+              "number": 4,
+              "startedAt": "2026-10-11T10:56:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:16Z",
+              "conclusion": "success",
+              "name": "Run cargo install cbindgen --version 0.29.4 --locked",
+              "number": 5,
+              "startedAt": "2026-10-11T10:56:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:17Z",
+              "conclusion": "success",
+              "name": "Generate sparklink.h",
+              "number": 6,
+              "startedAt": "2026-10-11T10:56:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:17Z",
+              "conclusion": "success",
+              "name": "Verify header unchanged",
+              "number": 7,
+              "startedAt": "2026-10-11T10:56:17Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:17Z",
+              "conclusion": "success",
+              "name": "Post Run Swatinem/rust-cache@v2",
+              "number": 13,
+              "startedAt": "2026-10-11T10:56:17Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:17Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 14,
+              "startedAt": "2026-10-11T10:56:17Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:17Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 15,
+              "startedAt": "2026-10-11T10:56:17Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453183468"
+        },
+        {
+          "completedAt": "2026-10-11T10:57:27Z",
+          "conclusion": "success",
+          "databaseId": 114453183512,
+          "name": "cargo test",
+          "startedAt": "2026-10-11T10:56:09Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:56:11Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:56:10Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:12Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:56:11Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:13Z",
+              "conclusion": "success",
+              "name": "Run dtolnay/rust-toolchain@stable",
+              "number": 3,
+              "startedAt": "2026-10-11T10:56:12Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:16Z",
+              "conclusion": "success",
+              "name": "Run Swatinem/rust-cache@v2",
+              "number": 4,
+              "startedAt": "2026-10-11T10:56:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:22Z",
+              "conclusion": "success",
+              "name": "Install private D-Bus regression dependency",
+              "number": 5,
+              "startedAt": "2026-10-11T10:56:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:57:25Z",
+              "conclusion": "success",
+              "name": "Run cargo test --workspace --all-features",
+              "number": 6,
+              "startedAt": "2026-10-11T10:56:22Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:57:26Z",
+              "conclusion": "success",
+              "name": "Post Run Swatinem/rust-cache@v2",
+              "number": 11,
+              "startedAt": "2026-10-11T10:57:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:57:26Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "startedAt": "2026-10-11T10:57:26Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:57:26Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "startedAt": "2026-10-11T10:57:26Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453183512"
+        },
+        {
+          "completedAt": "2026-10-11T10:56:35Z",
+          "conclusion": "success",
+          "databaseId": 114453183530,
+          "name": "clippy",
+          "startedAt": "2026-10-11T10:56:10Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:56:13Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:56:11Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:14Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:56:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:16Z",
+              "conclusion": "success",
+              "name": "Run dtolnay/rust-toolchain@stable",
+              "number": 3,
+              "startedAt": "2026-10-11T10:56:14Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:21Z",
+              "conclusion": "success",
+              "name": "Run Swatinem/rust-cache@v2",
+              "number": 4,
+              "startedAt": "2026-10-11T10:56:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:32Z",
+              "conclusion": "success",
+              "name": "Run cargo clippy --workspace --all-targets --all-features -- -W clippy::all",
+              "number": 5,
+              "startedAt": "2026-10-11T10:56:21Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:32Z",
+              "conclusion": "success",
+              "name": "Post Run Swatinem/rust-cache@v2",
+              "number": 9,
+              "startedAt": "2026-10-11T10:56:32Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:33Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 10,
+              "startedAt": "2026-10-11T10:56:32Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:56:33Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 11,
+              "startedAt": "2026-10-11T10:56:33Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453183530"
+        },
+        {
+          "completedAt": "2026-10-11T10:58:12Z",
+          "conclusion": "success",
+          "databaseId": 114453410767,
+          "name": "release build",
+          "startedAt": "2026-10-11T10:57:30Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-11T10:57:32Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-11T10:57:31Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:57:34Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-11T10:57:32Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:57:34Z",
+              "conclusion": "success",
+              "name": "Run dtolnay/rust-toolchain@stable",
+              "number": 3,
+              "startedAt": "2026-10-11T10:57:34Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:57:38Z",
+              "conclusion": "success",
+              "name": "Run Swatinem/rust-cache@v2",
+              "number": 4,
+              "startedAt": "2026-10-11T10:57:34Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:58:07Z",
+              "conclusion": "success",
+              "name": "Run cargo build --release --workspace",
+              "number": 5,
+              "startedAt": "2026-10-11T10:57:38Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:58:09Z",
+              "conclusion": "success",
+              "name": "Upload binaries",
+              "number": 6,
+              "startedAt": "2026-10-11T10:58:07Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:58:09Z",
+              "conclusion": "success",
+              "name": "Post Run Swatinem/rust-cache@v2",
+              "number": 11,
+              "startedAt": "2026-10-11T10:58:09Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:58:10Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "startedAt": "2026-10-11T10:58:09Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-11T10:58:10Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "startedAt": "2026-10-11T10:58:10Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023/job/114453410767"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/OpenSparklink/sparklink/actions/runs/38133714023"
+    },
+    "tests": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-source-tests.log",
+      "sha256": "798e2b4cec7d731cbdf77bf976f9314a35aaca7b236490181bcdc4d38b447a22",
+      "bytes": 134
+    }
+  },
+  "static_private_firmware_audit": {
+    "manifest": {
+      "created_wall_ns": 1791715737750669160,
+      "source_path": "/home/sanchuanhehe/Documents/opensparklink/.dev/firmware-1.10.111/ws73.bin",
+      "source_sha256": "ccba732d495c0c0d3b4e896c144f2d5ccd95896932879ca00d06ae52342f67e3",
+      "header_verified": true,
+      "content_sha256": "c693ac4c258eed144167e19e1399a251b14ec86345450d787fdc318f0dc106e5",
+      "load_address": "0x400000",
+      "content_bytes": 144540,
+      "analysis": "static local audit only; no proprietary binary exported and no USB command emitted",
+      "filtered_strings": 16
+    },
+    "manifest_asset": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/firmware-111-usb-control-audit/manifest.json",
+      "sha256": "1e9a7e51e0f438fa67b8dfbc0c717bf23acb74c125b3015f78ffb6e6dfd2a0ce",
+      "bytes": 525
+    },
+    "proprietary_bytes_published": false,
+    "handler_provenance_complete": false,
+    "limitations": "Stock RV32 disassembly includes unrecognized chip extensions and calls into device ROM. Enum RESET_BCPU alone does not prove a callback or acknowledgement; no recovery command emitted."
+  },
+  "assets": [
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-prepared/manifest.json",
+      "sha256": "9e7cbd93a632a310ec8240f903c90f374067b94f142ea179ed35966ec5056427",
+      "bytes": 227313
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-later-model-qemu/build-manifest.json",
+      "sha256": "7b100c80c2a08324c288ececb8a0448e56ed09c103fae603b4fc3fbb7be0581b",
+      "bytes": 2469
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/run_vm_usb_credit_diagnostic.py",
+      "sha256": "1d1822e43078046a40019adfcbc5f162c6e63815d53585889ccbac8cb1df5223",
+      "bytes": 6398
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/verify_usb_credit_diagnostics.py",
+      "sha256": "be09ade2913572be93b34df6c77e7c952f8add0de37bc4b8c9e454620332d009",
+      "bytes": 7215
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-independent-proofs.json",
+      "sha256": "635dfdaf45574cc2ae2f7d3cacead4372eea607c5edca3837d33b9a4dafdb9ca",
+      "bytes": 2683
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-independent-proofs2.json",
+      "sha256": "7b953b5f53cc66e585c5fbcb70207e0e67fa639ce63133c52aafcbe05411b7ac",
+      "bytes": 2755
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-independent-verification2.log",
+      "sha256": "909699fce213a9c07085271ac4deda8b9fb86d9c5e036f6ff15f130125304f4a",
+      "bytes": 41
+    }
+  ],
+  "verifier_initial_failure": {
+    "classification": "private verifier expected a full sysfs port string in QMP hostport instead of separate hostbus/hostport; VM and raw control observations unchanged",
+    "assets": [
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/verify_usb_credit_diagnostics-initial.py",
+        "sha256": "42d44147b5fd0d1beecbb75dfcbfa2f2f06191dc2d7ee02df3a1a7f829f8b96f",
+        "bytes": 7004
+      },
+      {
+        "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-usb-credit-independent-verification.log",
+        "sha256": "820a14167d87689272d4096849982cb572c5ac38d0afd8222704284055c48bac",
+        "bytes": 721
+      }
+    ],
+    "corrected_by": "Exact usb_properties(host_port,0) check and joined bus-port lookup; both original runs reverified, no producer rerun or normalized error"
+  },
+  "protocol_basis": {
+    "kind": "0xa1",
+    "request": 5,
+    "value": 0,
+    "index": 0,
+    "length": 4,
+    "sdk_function": "hcc_usb_get_credit",
+    "meaning": "HCC high-priority memory count; not native DLI command credits or BSP/BSLE Ready ACK",
+    "host_usb_source_sha256": "9fef03d5f739c70286348959308e0478f287e82c70ee6c866c3d490f8553c81c",
+    "host_control_mode": "ordinary original usb-host control callback, no emulation of 0xa105"
+  },
+  "prior_evidence": [
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/docs/evidence/ws73-register-read-contrasts-20261011.json",
+      "sha256": "c474a2d36732c2d0e96a810c789219e68f4dcb7b04e84aac2bf1897f947f91c7",
+      "bytes": 37424
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/docs/evidence/ws73-managed-gate-startup-failures-20261011.json",
+      "sha256": "b8d0e975deb512751a8db377473f8f56430aa82a3749cdb95d207823eb290388",
+      "bytes": 69296
+    },
+    {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/sparklink/docs/evidence/ws73-managed-later-partial-model-fd-20261011.json",
+      "sha256": "10e79b4140ea29a728f43c2b9d13ca91e510760e2534a038131f4d0ea0ef60e9",
+      "bytes": 368357
+    }
+  ],
+  "reproduction": {
+    "probe": "tools/ws73_vm_register_reset.py --usb-credit-read-only --output <unique evidence dir> only inside signed private QEMU scratch root; exact ws73.register_reset_lab=1 ws73.usb_credit_lab=1 boot selectors",
+    "launcher": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/run_vm_usb_credit_diagnostic.py",
+      "sha256": "1d1822e43078046a40019adfcbc5f162c6e63815d53585889ccbac8cb1df5223",
+      "bytes": 6398
+    },
+    "prepare": "tools/ws73_target.py prepare freezes K292 signed module inputs, Ud749 compiled service, user tools, qualified no-USB root smoke and same default host-libusb QEMU",
+    "verification": "Both joined VM runs independently pair exact a105000000000400 submission with original four-byte reply, capture counts/drop0, unique actual usb-host request/complete and libusb control success; no target bulk/reset/hub changes"
+  },
+  "conclusions": [
+    "Two independent real WS73 VM control queries, ports2/1 with the other three host devices unowned, return four bytes 00000000. Each uses one SDK class-IN request5 after exclusive interface0 and exact runtime descriptor; raw HCC memory credit0 preserved.",
+    "Guest pcap each has65 packets/drop0, unique matched original four-byte credit completion, and zero target bulk. Actual usb-host req0xa105 and original successful length4 completion plus libusb control reap/status0 support this control observation. No class setter, register write, reset, hub power action or WS73 module load was requested.",
+    "Before/after complete runtime descriptor, four host inventory entries and parent/hub/target suspended-time counters remain unchanged. This is not active Ready peer, RF or recovery isolation.",
+    "The observation distinguishes a completing SDK EP0 control read from earlier failing EP01/EP02 bulk. It does not prove that the firmware core is healthy, establish a current firmware version, or explain bulk failure.",
+    "Zero high-priority memory credit is a new diagnostic clue, not a natural root cause. SDK data flow control reserves a USB control buffer, and the existing route/register failures need independent explanation; do not bypass bootstrap admission or force flow/reset based on this raw word.",
+    "Static111 image header validates. Device USB control paths call ROM and stock disassembly lacks chip-specific instructions; RESET_BCPU is only a host enum in supplied sources. Blind reset/flow forcing and invented ACK are prohibited, no reset message emitted.",
+    "Probe remains a VM-only isolated diagnostic; production Linux/Rust and historical real WS73 evidence remain unchanged. Normal gate attempts7, maintenance attempts20, real Managed successes0. Source tests292 and CI9 success do not qualify whole Managed/Ready/recovery gates.",
+    "Root cause, per-device bounded independent automatic recovery, no-daemon-restart restoration and all original issue scopes remain OPEN. Pending hub/WS73 supply topology must not be replaced by another blind ganged re-enumeration cycle."
+  ]
+}

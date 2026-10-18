@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "status": "SCOPED_RESULTS_RECORDED_FULL_VERIFICATION_OPEN",
+  "hardware_acceptance": false,
+  "installation_is_implementation_proof": false,
+  "installation_smoke_sha256": "4c64f64da61cc8db98b08302d0a0750d585934f8afe147fabce182677d57bb84",
+  "sources": {
+    "linux/net/sparklink/sle_channel_state.h": "3cf939ce87b914f9cee06391029a73f8cc2b1b0cf4a793293354ad4d11221612",
+    "linux/net/sparklink/sle_channel_socket.c": "68caa4d32325f1ca89d3712175115286a78a7c203627018fa53c657ec931a57d",
+    "linux/net/sparklink/sle_data_credit.rs": "3804ef36be7d6842e0478de0ba83ee5871a54d5c6c9a703d7b8dad2854974124",
+    "linux/net/sparklink/sle_native.rs": "a3523a489f8061a3044f5bf896c68cf676a67aa648313e12820124eb8fb4e31e",
+    "linux/net/sparklink/sle_sessions.rs": "10d0b90ba29449679806829a1e93e1c6eb92a9a34ab6858c511196948fa0915a",
+    "linux/net/sparklink/sle_grant.rs": "b0d51a9c0026c5613385712550084192d4fdd57e4cda3a908878f79b90336dcd",
+    "linux/net/sparklink/sle_native_data.rs": "1e6468b1d81132042ddd91f85bf289394a5faf89f8fd1cadd4a7d8d609adc953",
+    "linux/net/sparklink/sle_command_queue.rs": "0bb13084c3c9a8b01469588828c47c2c2e13fc446541c9caa74a5a41c991321c",
+    "linux/net/sparklink/sle_host.rs": "6c03ae8be5cbfb39638f75a659d6788cc30caaabaf3fb01cee876ad91658bf7a",
+    "linux/net/sparklink/sle_irq_lock.rs": "5b5ca8e8750ea21825a34be4f45dd6eeba63cc43eeeda1e6053f55acbb6476a8",
+    "linux/net/sparklink/sle_native_ffi.c": "9a54686a4665e54cea17c35a619f4ffb4de9b1b9faab485b91050860614f9c45",
+    "linux/net/sparklink/sle_native_ffi.h": "5f2754f42ea1805d242ff8114ea55d36584eddbc2028cdc29c26d1bd1fc0625f",
+    "linux/net/core/datagram.c": "4fbc8716b3effb0a675bf99c07e613414cc5cd0deb9e7221db8a5c97298da864",
+    "linux/drivers/sparklink/ws73/usb.c": "0034f43f2cb46db2a50650b6498593784cea0757e2dfa33cd115a525019cd4f9",
+    "linux/include/linux/sparklink_native.h": "8357718d3786e56fbd534f11fa39fd7d8ec60f34264dab91bd33aef1455891d3",
+    "sparklink/formal/channel/binding_cbmc.c": "e574a426ca8152d0b8867ff56c3f64ae7d3a9be6eb7057d0ffb8b9c69872ee61",
+    "sparklink/formal/channel/progress_cbmc.c": "d09a1c9e8521f6d9e3da46ee825c3462d7a9c53ce03c874454a6c4da261c7e92",
+    "sparklink/formal/credit/src/main.rs": "916c98b4b0b321975229bb9acb20ea8c4ea42d9a985c45169d2c7f26a8286e65",
+    "sparklink/formal/grant/src/main.rs": "152fa0994ec68f3dea31ee77c34f39623581c51ee3fc0f24ebed583c7108b622",
+    "sparklink/formal/lifecycle/ConnectionSession.tla": "238ca757b7906462a854facf6cad32ebe9c9988f73c1b263fe197ca10545076c",
+    "sparklink/formal/lifecycle/ManagedLifetime.tla": "3109d2a9272463a7467b371400decfad74c20d502a82d3a15fe657169b18ae1f",
+    "sparklink/formal/lifecycle/NOCPReuse.tla": "549072cf094cfd829d10a5b1db6b3639256e92fbabd131035ccee252e02661c0",
+    "sparklink/formal/lifecycle/ConnectionSession.cfg": "5a7066501b6731cee8d34b79e4bf8d1850df0600ffcd6619d7466c77213cf52d",
+    "sparklink/formal/lifecycle/ManagedLifetime.cfg": "4537b37389b1ad890d25cf4e01774a338f9d1afdb0a1369b4d99116287094698",
+    "sparklink/formal/lifecycle/NOCPReuse.cfg": "1fd0a6449833999401976fc5a4fc5fb446fa201dbbb15ea156994666036e8da2",
+    "sparklink/formal/lkmm/ChannelCloseAdmission.litmus": "25bb99edc6343bfc7822d14f42eeab2c48a3b4e84d39f26afc487acb7baea885",
+    "sparklink/formal/lkmm/ChannelSnapshot.litmus": "98a37a51162236eaca6c8eaf547040fe9ab45eb0404465a1ceb8aa682b5c49bf",
+    "sparklink/formal/lkmm/ChannelSnapshotWeak.litmus": "487ab9985149e8f961f028492a63122318b7b11a4949f27e6cd11ecd7ffb1d38",
+    "sparklink/formal/lkmm/RxDequeueWithdrawal.litmus": "c61c1d59d2bdb11fa4bea7453bf7bb248a2e08d7359edf64d7fa7204c052de85",
+    "sparklink/formal/lkmm/RxDequeueWithdrawalWeak.litmus": "e4db2bc3095088b8ff580520ebc8a27d46bf8f275420c9ed7934dd9f21f8b9ea",
+    "sparklink/formal/lkmm/TxCommitWithdrawal.litmus": "0f9f7fc5b582d285d27309f551648d4f017334c7f9f87c47bc636e47529eabdc",
+    "sparklink/formal/lkmm/TxCommitWithdrawalWeak.litmus": "23e011dddc63707f08c849db563001aa94593c1bd79dd86aa67fb38f9be0e01d",
+    "linux/tools/memory-model/linux-kernel.cfg": "37c57d82291113c5a4a170f3f6b5b8f01bc18403d701b8e5a6db43aae62d6b32",
+    "linux/tools/memory-model/linux-kernel.cat": "250207709250d308e0a0a6f391c4eda0bbf4876cbc55eccbfbcd495676a179be",
+    "linux/tools/memory-model/linux-kernel.bell": "ab57943799d445327c3c7cf0a1ca9f9fae8e7379e45b9fc90312993bb038e23f",
+    "linux/tools/memory-model/linux-kernel.def": "a04911d85fd86f5dbcf8ed436c7a2570fcc615f768c0c19b0a101f6212d2504c",
+    "sparklink/formal/README.md": "a9d3de18881fa19c1a7aa8b4968e2b5a086c0e943509b6c0459877e1eee3fc5e",
+    "sparklink/formal/credit/Cargo.toml": "429c69b169dfa8bc4092c1e56003f244a0049683dbf36d3a4c2a935ed4e5b117",
+    "sparklink/formal/grant/Cargo.toml": "91ae9c3211959fc090fc2390edda21b4a107b9bf40f93629a14bfdd83aa7d56f",
+    "sparklink/tools/run_formal.py": "20a8eee1fe6b4fdd572a202b57cb068b759d1810a5f2f8aa858cb46e1230b8a3"
+  },
+  "repositories": {
+    "linux": {
+      "head": "f1034577ecc1a7f32ab393fe17586dec173ed759",
+      "worktree": ""
+    },
+    "sparklink": {
+      "head": "d5708191c38a6bc86b0dfce2db68d3a443d83b38",
+      "worktree": ""
+    }
+  },
+  "checks": [
+    {
+      "name": "rx-dequeue-withdrawal",
+      "kind": "lkmm-rx",
+      "command": [
+        "herd7",
+        "-conf",
+        "/home/sanchuanhehe/Documents/opensparklink/linux/tools/memory-model/linux-kernel.cfg",
+        "-I",
+        "/home/sanchuanhehe/Documents/opensparklink/linux/tools/memory-model",
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lkmm/RxDequeueWithdrawal.litmus",
+        "/home/sanchuanhehe/Documents/opensparklink/sparklink/formal/lkmm/RxDequeueWithdrawalWeak.litmus"
+      ],
+      "cwd": "/home/sanchuanhehe/Documents/opensparklink",
+      "budget_seconds": 60,
+      "elapsed_seconds": 0.016,
+      "exit": 0,
+      "status": "PROVED_SCOPED_WITH_WEAK_CONTROL",
+      "output": "rx-dequeue-withdrawal.log",
+      "output_sha256": "c5e7719dcebde365c65d5861d7ca3a2a5e24017823c83a78c21a29530dff7ea2",
+      "tool_banner": [
+        "Test RxDequeueWithdrawal Allowed",
+        "States 2"
+      ]
+    }
+  ],
+  "tool_paths": {
+    "cbmc": "/usr/local/bin/cbmc",
+    "goto-cc": "/usr/local/bin/goto-cc",
+    "goto-instrument": "/usr/local/bin/goto-instrument",
+    "herd7": "/usr/local/bin/herd7",
+    "tlc": "/usr/local/bin/tlc",
+    "cargo-kani": "/home/sanchuanhehe/.cargo/bin/cargo-kani",
+    "ghidra": "/usr/local/bin/ghidra",
+    "ghidra-headless": "/usr/local/bin/ghidra-headless",
+    "tamarin-prover": "/usr/local/bin/tamarin-prover",
+    "proverif": "/usr/local/bin/proverif",
+    "maude": "/usr/local/bin/maude"
+  },
+  "tool_versions": {
+    "cbmc": "6.11.0 (cbmc-6.11.0)",
+    "herd7": "7.58, Rev: exported",
+    "kani": "Kani Rust Verifier 0.68.0 (cargo plugin)\nCBMC 6.11.0"
+  },
+  "rx_only_requested": true,
+  "rx_scope": "Host lock orders epoch validation and actual RX unlink/PEEK reference against withdrawal; CPU lock abstraction with weak check/drop/dequeue control, not C/Rust/VFS/queue refinement, wait/wakeup, copy completion, firmware or hardware proof",
+  "grant_only_requested": false,
+  "grant_scope": "actual production pure lease constructor and one-step induction over all u64 epoch/representation states; successor never renews revoked epoch; not Managed/Host lock refinement, C socket/VFS, safety/security or hardware proof",
+  "session_only_requested": false,
+  "session_scope": "abstract contract only: two controllers/two lifetimes, fd aliases0..2 and pending/running work0..1 each; last close does not restart CMTC, joined references before free; not C/Rust/VFS refinement, lost wakeups, Grant/NOCP/hardware proof",
+  "binding_only_requested": false,
+  "binding_scope": "actual binding initialization/representation/retire/busy/queue-space helpers; not C session work/VFS/kref refinement or hardware",
+  "credit_rollback_only_requested": false,
+  "ticket_only_requested": false,
+  "ticket_scope": "Host-locked validation/atomic submit vs Host withdrawal CPU order, with a weak check-drop-submit control; not C/Rust refinement, HCD internals, callback UAF, Grant epoch or NOCP reuse barrier",
+  "sources_unchanged": true,
+  "credit_all_requested": false,
+  "unselected_credit_harnesses_proved": false
+}

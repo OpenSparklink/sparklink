@@ -1,12 +1,30 @@
-pub mod ioctl;
+//! ```compile_fail
+//! use slk_protocol::{SlePairParams, SleSecInfo};
+//! ```
+//! ```compile_fail
+//! use slk_protocol::{SleDliCmd, SleConnData, SleScanParams};
+//! ```
+//! Shared ABI, values, codecs and pure validation. Device/ioctl operations live
+//! in Native or Channel, never in this crate.
+//! ```compile_fail
+//! use slk_protocol::ioctl;
+//! ```
 pub mod advdata;
-pub mod service_hash;
-mod types;
+pub mod channel;
+pub mod message_security;
+pub use channel::{SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus};
+pub use message_security::{SleMessageSecurity, SleSendConstraint};
 mod genl;
 #[cfg(test)]
+mod retired_types;
+pub mod service_hash;
+pub mod ssap;
+#[cfg(test)]
 mod tests;
+mod types;
 
-pub use ioctl::*;
-pub use types::*;
-pub use genl::*;
 pub use advdata::*;
+pub use genl::*;
+pub use types::*;
+
+pub use ssap::*;

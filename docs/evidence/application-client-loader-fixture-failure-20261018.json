@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "result": "FAIL",
+  "scope": "Initial actual C consumer could not start;not broker/client/runtime/RF qualification.",
+  "source": {
+    "base": "492bfef8d60e443534baabc539127ae4821a2f2f",
+    "dirty": true,
+    "limitation": "Full pre-fix dirty snapshot and temporary C executable not retained;no exact source or artifact qualification claimed."
+  },
+  "execution": {
+    "command": "cargo +1.96.1 test --locked --offline -p libsparklink --test application_ffi -- --nocapture",
+    "cargo_exit": 101,
+    "c_consumer_exit": 127,
+    "raw_error_from_tool_transcript": "error while loading shared libraries: libsparklink.so.0: cannot open shared object file: No such file or directory",
+    "build_record": {
+      "workspace_path": ".dev/architecture-r5f-cross-language-v1.json",
+      "sha256": "db51e3a66eaf955a168729f114a124086c2892888d91cde961fb01c78eca3671"
+    }
+  },
+  "cause": "Private fixture linked the real SONAME library but did not provide its runtime ABI-major name. No application broker request executed.",
+  "correction": "Provide only libsparklink.so.0 in the private test directory, linked to the actual Cargo cdylib. Preserve header, actual SONAME, error and fd-domain assertions.",
+  "remaining": "Exact-source requalification and actual positive consumer VM/WS73 still required."
+}

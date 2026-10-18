@@ -1,0 +1,100 @@
+    def execute(self):
+        child = None
+        selector = None
+        try:
+            if not Path('/scratch-root-uuid').is_file() or 'ws73.event_copy=1' not in Path('/proc/cmdline').read_text().split():
+                raise ValueError('opt-in isolated scratch-root VM required')
+            identity = ordinary_identity()
+            self.pid = daemon_identity(self.args.slkd_pid)
+            a, b = [self.ready(p) for p in self.args.ports]
+            self.data.update(application_identity=identity, daemon_before=self.pid,
+                             bus_before=self.bus_identity(), initial=[a, b], cases=[],
+                             kernel_release=os.uname().release, probe=file_record(self.args.probe),
+                             sources=[file_record(Path(__file__))], physical_acceptance=False,
+                             automatic_fault_recovery_acceptance=False)
+            self.save()
+            with (self.output / 'probe-stderr.txt').open('xb') as errors:
+                child = subprocess.Popen([str(self.args.probe), str(a['index'])],
+                                         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                         stderr=errors)
+            self.data['probe_pid'] = child.pid
+            selector = selectors.DefaultSelector()
+            selector.register(child.stdout, selectors.EVENT_READ)
+            pending = b''
+            position = 0
+            deadline = time.monotonic() + 60
+            with (self.output / 'probe.jsonl').open('xb') as transcript:
+                while position < len(CASES):
+                    if time.monotonic() >= deadline:
+                        raise ValueError('live copy probe progress deadline')
+                    if not selector.select(0.1):
+                        self.alive()
+                        continue
+                    chunk = os.read(child.stdout.fileno(), 8192)
+                    if not chunk:
+                        raise ValueError('live copy probe stopped before all cases')
+                    transcript.write(chunk); transcript.flush()
+                    pending += chunk
+                    while b'\n' in pending:
+                        line, pending = pending.split(b'\n', 1)
+                        record = json.loads(line)
+                        if 'ready' in record:
+                            if record['ready'] != CASES[position] or record['uid'] != identity['uids'][0]:
+                                raise ValueError('probe uid/case handshake mismatch')
+                            self.check(a); self.check(b)
+                            started = self.ctl(a, 'scan', 'on')
+                            parse_result(started['stdout'], a, 3)
+                            stopped = self.ctl(a, 'scan', 'off')
+                            parse_result(stopped['stdout'], a, 4)
+                            child.stdin.write(b'events-ready\n'); child.stdin.flush()
+                        else:
+                            if record.get('case') != CASES[position]:
+                                raise ValueError('probe case result out of order')
+                            self.data['cases'].append(record); self.save()
+                            position += 1
+                            deadline = time.monotonic() + 60
+                selector.close()
+            if pending or child.wait(timeout=5) != 0:
+                raise ValueError('live copy probe trailing output/exit failure')
+            verify_cases(self.data['cases'])
+            self.data['daemon_after'] = daemon_identity(self.args.slkd_pid)
+            self.data['bus_after'] = self.bus_identity()
+            self.data['final'] = [self.ready(p) for p in self.args.ports]
+            if self.data['bus_before'] != self.data['bus_after'] or not all(stable(x, y) for x, y in zip(self.data['initial'], self.data['final'])):
+                raise ValueError('copy probe changed daemon or either controller identity')
+            self.data['status'] = self.SUCCESS
+        except (Exception, KeyboardInterrupt) as error:
+            self.data.update(status='FAIL', error=str(error) or type(error).__name__)
+        finally:
+            if selector is not None:
+                selector.close()
+            if child is not None:
+                if child.poll() is None:
+                    child.terminate()
+                    try:
+                        child.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        child.kill(); child.wait()
+                for stream in [child.stdin, child.stdout]:
+                    stream.close()
+                self.data['probe_exit'] = child.returncode
+            if self.pid and any(c['args'][-2:] == ['scan', 'on'] and c['exit'] == 0 for c in self.data['commands']):
+                try:
+                    self.stop(self.ready(self.args.ports[0]), 'scan')
+                    self.data['cleanup'] = 'STOP_CONFIRMED'
+                except (OSError, ValueError) as error:
+                    self.data.update(status='FAIL', cleanup=str(error))
+            self.save()
+        print(self.data['status'], str(self.output / 'run.json'), flush=True)
+        return 0 if self.data['status'] == self.SUCCESS else 1
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--probe', type=Path, required=True)
+    parser.add_argument('--slctl', type=Path, required=True)
+    parser.add_argument('--slkd-pid', type=int, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    args.ports = ['1-1', '1-2']
+    raise SystemExit(EventCopyRun(args).execute())

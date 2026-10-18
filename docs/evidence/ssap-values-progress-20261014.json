@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "source_heads": {
+    "kernel": "31769ea4b8c006f999f4fbe0da68f7291ef71935",
+    "userspace": "b5cc6f5ebd3fb199fe13d5c30917bbe173ed831d"
+  },
+  "implementation_commit": "b8f647977b68191b371ccfddf51b2adb27c6d68e",
+  "context_fix_commit": "b5cc6f5ebd3fb199fe13d5c30917bbe173ed831d",
+  "source_mapping": {
+    "crates/slk-protocol/src/ssap/value.rs": "412f85e955f9ce813e2cfa015dfdffc4f91d0b9de8fb3ac776841f8c055607be",
+    "crates/slkd/src/ssap_database.rs": "dbb68a71f71088ce9a76377c3104a51fb10a1e9a6350ef5697fa133548679970",
+    "crates/slkd/src/ssap_engine.rs": "adcd56305f63617988d5796fb6a293fce349904ba32f402ab17233ad0c9c2eba",
+    "crates/slkd/src/connection_object.rs": "a95a63551e79503ea5b00f77814d9d6aa7318c55a26efd7bb8fc15c5f57a997d",
+    "crates/slkd/src/service.rs": "7a9849f04ab9e2fe5b97bd88bb89923874d712ddb80a9f8a13c20c376284199e",
+    "crates/slctl/src/commands.rs": "cd03f7faf919a3cb65a47607c0d2f73fb1493d12aa4abe6cdde4f38460cb6776",
+    "tools/ws73_ssap_value.py": "137e0c205cf48dc20bd4b96da4469976de910c105727d2ac2ea39cac22254934",
+    "tools/ws73_channel_socket.py": "ec78aa2b7d7a5c4ba2e7ba35b1cfebec9efe2e02a27c255cd5190663d6ae8656",
+    "tools/ws73_target.py": "f9d24f6bcf6885dc1818ce55a661cf5c131240c2591e4a10c081b7006c066f18"
+  },
+  "scope": "base single-value SSAP operations on known handles, unique SMTC actor; not full SSAP",
+  "implemented": [
+    "strict tables50/69/72/76/77 codec",
+    "adapter-registration local database:16 services/64 values/8192 bytes,2042 max local value; handles never reused in registration",
+    "existing read/write permission type; descriptors/notify/indicate rejected",
+    "explicit local configuration methods; no claim of remote discovery/publication",
+    "one outstanding base request, bounded8 query/response queue, original5s operation deadlines",
+    "actual native metadata/grant checks and explicit retirement",
+    "peer verified write reply plus opposite local application check and over-air readback"
+  ],
+  "offline_passed": [
+    "strict whole workspace all targets/features",
+    "465 tools tests",
+    "36 C/Rust/Python contracts",
+    "unchanged generated C header",
+    "actual database permission/budget/nonreuse test",
+    "production context helper deadlock regression",
+    "nine exact CI jobs"
+  ],
+  "formal": "Value codec two harnesses solved but unsupported: NOT_PROVEN; bounded raw0..16 does not cover32-byte value runs; actor/database/queue/lifetime unproved",
+  "formal_report": "docs/evidence/ssap-value-codec-formal-20261014.json",
+  "ci": "https://github.com/OpenSparklink/sparklink/actions/runs/38490417999",
+  "real_passed": [
+    "4 lifetime phases, both directions repeated4 rounds perphase:32 random writes and64 over-air reads with actual peer local validation",
+    "40 role-swapped CUTC short roundtrips",
+    "8 249-byte CUTC roundtrips and16 250/253/254/255 refusals without data submit",
+    "real channel info/copy regression",
+    "controlled early-init peer isolation",
+    "both normal VMs capture drops0/taint0 and all3 VMs normal exit"
+  ],
+  "evidence": [
+    "docs/evidence/ssap-values-real-short-20261014.json",
+    "docs/evidence/ssap-values-real-boundary-20261014.json",
+    "docs/evidence/ssap-values-fault-real-20261014.json"
+  ],
+  "failures": [
+    {
+      "source_head": "b8f647977b68191b371ccfddf51b2adb27c6d68e",
+      "manifest_sha256": "95dd0470632e22d37ce859f9004c5e5c0e5beb40f51c9352859517799512e3de",
+      "status": "FAIL",
+      "error": "guest environment failed",
+      "qemu_exit": 0,
+      "actual_failure": "connect RPC18s timeout before SSAP value operations",
+      "root_cause": "two same adapter mutex acquisitions inside one actor-constructor argument expression; replaced with one actual snapshot helper",
+      "regression": "helper releases guard; new exact full VM pipeline passes",
+      "not_natural_hardware_recovery": true
+    }
+  ],
+  "remaining": [
+    "service discovery by structure/UUID and remote cache",
+    "notifications/indications/subscriptions",
+    "SSAP long values/fragmentation/extended control and transaction IDs",
+    "full lifetime/authorization/credit/queue formal and VM interleavings",
+    "dynamic multi-channel/four-device business pairs",
+    "security/Agent/Bond/Profile",
+    "C/Python high-level new SSAP APIs",
+    "natural RCA/nonmanual recovery/full S0-S6 release"
+  ],
+  "assumptions_and_limits": [
+    "plain unauthenticated values only; permissions are not trusted security",
+    "local configuration is management policy for this adapter registration; explicit remove, no app-scoped callback lease promise",
+    "base single outstanding request; uncertain timeout terminates actor; duplicate/reordered old replies without transaction IDs not comprehensively proved",
+    "write may commit before reply transport completes; failed/timeout operation has uncertain remote outcome",
+    "USB/NOCP is not peer business acknowledgement; original peer receipts and readback required"
+  ],
+  "vm_only": true,
+  "closure_allowed": false,
+  "issue_updates": [
+    {
+      "repo": "linux",
+      "issue": 6,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6158239127",
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
+    },
+    {
+      "repo": "linux",
+      "issue": 17,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6158239607",
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
+    },
+    {
+      "repo": "linux",
+      "issue": 19,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6158240171",
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 3,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6158240818",
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
+    },
+    {
+      "repo": "sparklink",
+      "issue": 8,
+      "state": "OPEN",
+      "comment_url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6158241476",
+      "body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "verified_readback": true,
+      "supplement_body_sha256": "1f17c6302f3e45205e42de814e4d4e1f055dab1335f2ffb7a10599346557c9fd",
+      "supplement_verified_readback": true,
+      "initial_body_sha256": "d9ec1f0f4b8aacddc0fbeed50da3eda10e466bca9f07e23137d3dd67e5481bd5"
+    }
+  ],
+  "post_qualification_guard": {
+    "source_head": "8438594b6282e282fa2e9af95ff281b813e7faa9",
+    "scope": "explicit rejection of WRITE_NO_RSP local registration; shared permission type unchanged",
+    "offline_passed": [
+      "actual production database atomic refusal",
+      "actual D-Bus handler rejection before held state lock",
+      "strict alltargets/allfeatures workspace"
+    ],
+    "real_qualification": "not transferred fromb5cc6f5; no new image gate for guard"
+  }
+}

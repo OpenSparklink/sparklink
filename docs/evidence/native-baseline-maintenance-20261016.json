@@ -1,0 +1,168 @@
+{
+  "status": "ISSUES_READBACK_MATCHED_OPEN",
+  "source": "16f25690f72bc1c208c5ac749a537d7a4d731e15",
+  "report": "docs/evidence/native-slktest-baseline-20261016.json",
+  "issue_scope_preserved": true,
+  "original_failure_retained": true,
+  "all_original_scope_open": true,
+  "goal_api": "paused observed;user continue authorizes work;no resume API;canonical goal association updated without duplicate/completion/budgetchange",
+  "issues": [
+    {
+      "repo": "linux",
+      "number": 17,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6214931799",
+      "comment_id": 6214931799,
+      "body_sha256": "4cce015d6f724e025d2d374dc4a0c162574b074576d21935f8d3c2a7864c695c",
+      "readback_matched": true,
+      "state_before": "open",
+      "action": "append scope/status only;no close"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6214932296",
+      "comment_id": 6214932296,
+      "body_sha256": "4cce015d6f724e025d2d374dc4a0c162574b074576d21935f8d3c2a7864c695c",
+      "readback_matched": true,
+      "state_before": "open",
+      "action": "append scope/status only;no close"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6214932738",
+      "comment_id": 6214932738,
+      "body_sha256": "4cce015d6f724e025d2d374dc4a0c162574b074576d21935f8d3c2a7864c695c",
+      "readback_matched": true,
+      "state_before": "open",
+      "action": "append scope/status only;no close"
+    }
+  ],
+  "registry_local": {
+    "status": "SCOPED_RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+    "result": {
+      "errors": [],
+      "unavailable_private_materials": [],
+      "unavailable_source_checkouts": [],
+      "verification": "RETAINED_BYTES_VERIFIED_NOT_REPLAYED",
+      "current": "NOT_CHECKED",
+      "overall": "INCOMPLETE"
+    },
+    "negative_controls": [
+      {
+        "kind": "stale-source",
+        "result": "REJECTED",
+        "errors": [
+          "native-slktest-f43: report/source mismatch compiled_userspace",
+          "native-slktest-f43/compiled_userspace: source object unavailable"
+        ]
+      },
+      {
+        "kind": "missing-artifact",
+        "result": "REJECTED",
+        "errors": [
+          "native-slktest-f43-m143: missing material"
+        ]
+      },
+      {
+        "kind": "scope-upgrade",
+        "result": "REJECTED",
+        "errors": [
+          "native-slktest-f43: scope mismatch"
+        ]
+      },
+      {
+        "kind": "hide-original-failure",
+        "result": "REJECTED",
+        "errors": [
+          "native-slktest-f43-retained: PASS hides a required non-PASS gate"
+        ]
+      }
+    ]
+  },
+  "ci_observed": [
+    {
+      "conclusion": "success",
+      "head_sha": "16f25690f72bc1c208c5ac749a537d7a4d731e15",
+      "id": 38896869491,
+      "name": "Production codec bounded fuzz",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "16f25690f72bc1c208c5ac749a537d7a4d731e15",
+      "id": 38896869253,
+      "name": "Qualification integrity",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "16f25690f72bc1c208c5ac749a537d7a4d731e15",
+      "id": 38896869239,
+      "name": "Documentation",
+      "status": "completed"
+    },
+    {
+      "conclusion": null,
+      "head_sha": "16f25690f72bc1c208c5ac749a537d7a4d731e15",
+      "id": 38896869205,
+      "name": "CI",
+      "status": "in_progress"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "16f25690f72bc1c208c5ac749a537d7a4d731e15",
+      "id": 38896861235,
+      "name": "Qualification integrity",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "16f25690f72bc1c208c5ac749a537d7a4d731e15",
+      "id": 38896861214,
+      "name": "Documentation",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "6383c7c72e9ae0b09dfe315eeeb8a7cc646810d8",
+      "id": 38896037544,
+      "name": "Production codec bounded fuzz",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "6383c7c72e9ae0b09dfe315eeeb8a7cc646810d8",
+      "id": 38896037466,
+      "name": "Documentation",
+      "status": "completed"
+    }
+  ],
+  "ci_notice": "Exact16f2569 observations;main CI wasinprogress,notPASS. Laterreceipt may record terminal result;not runtime qualification.",
+  "materials": [
+    {
+      "path": ".dev/native-benchmark-registry-local.json",
+      "sha256": "2f73855351e3a07f40c09e7bbe9c548daef756fdf52b6b3a5de8ed6684aaf9e0",
+      "bytes": 1049,
+      "access": "private"
+    },
+    {
+      "path": ".dev/native-benchmark-rx-python.log",
+      "sha256": "0a94aaa548ed8ce317aba68ce964312b921e4d7dd3534e3cc03dd1cadd79fcdd",
+      "bytes": 1467,
+      "access": "private"
+    },
+    {
+      "path": ".dev/native-benchmark-rx-python-unrestricted.log",
+      "sha256": "5d98f047de0b897d601a6c2b3c2286a139ee2d7154466c1c37226ff4f6f95a2b",
+      "bytes": 768,
+      "access": "private"
+    },
+    {
+      "path": ".dev/native-benchmark-state-docs-final.log",
+      "sha256": "d01ffa1c84bcff5f90f8b4d2ed7ab80565c743078326cc64441e4bc4ff70148d",
+      "bytes": 194397,
+      "access": "private"
+    }
+  ]
+}

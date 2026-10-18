@@ -1,0 +1,266 @@
+{
+  "schema": 1,
+  "compiled_kernel": "0cd4731dd3e673d1309a2b570b38769f9a98681f",
+  "firmware_combined_sha256": "09865cf9c42addb064079ac0953ee39770d31e63eb27268813bdfc804016266f",
+  "real_result": "PASS",
+  "compiled_userspace": "6aadcb48d23506df71a70c1fa4f74d624d4d2a55",
+  "executed_tools": "6aadcb48d23506df71a70c1fa4f74d624d4d2a55",
+  "scope": [
+    "R2 production: per-controller128 observations,64KiB retained variable-capacity buffers,60s advertising validity;Pending/Published/Retiring retry and charged-until-confirmed retirement. Per-pass8 actual attempts/100ms original budget;no state mutex across bus awaits. Bounded diagnostics;connection aliases cannot create valid advertising. GetDevices only published. Query-only dynamic properties require fresh Get or no-cache proxy.",
+    "Cache budget,TTL,publication/retirement failure,cursor and blocked-lock cases run through actual production functions with explicit private-bus,/dev/null,aged-Instant and canonical-snapshot fixtures. NOT128-address RF stress,real bus-failure/TTL qualification,kernel concurrency or full state-machine proof.",
+    "K0cd/compiled+tools6aad,SDK110 U2/U3:four preserved ordinary-user two-role real gates with opposite application validation/reply and pairedUSB.61/249+16oversize/2042/mechanism2 and Owned allow/deny plus owner exit BETWEEN operations. These preserve old paths;they do not qualify new in-flight owner-lifecycle WIP or hardware observation stress.",
+    "Service-only UID1005,extra groups none,caps0,actual guest system-bus/udev/device permissions:68 denials and owner-local operations. Not service-onlyRF or complete clean-distribution installation.",
+    "No new formal proof. Existing unsupported/unstable Kani remains UNPROVED. Natural fault RCA/nonmanual recovery OPEN;manual/hub/QMP/injection not acceptance. Full S0-S6/19WP/10FV/12DG and UserHostP4 retained;architecture-first R3-R6 still required."
+  ],
+  "remaining": [
+    "R2 actual multi-address RF stress/TTL/publication failure and long resource convergence remain unqualified. Address Device aliases are observations,not typed Peer or physical connection truth;R3 shared client must enforce no-cache observation reads.",
+    "R3 actual Native/Channel/shared contract/application SDK,C/Python boundary;R4 full-chain old API and event retirement;R5 gates;R6 actual clean-VM packaging/install/upgrade/rollback/uninstall remain.",
+    "Preserved owner-callback/deadline/revoke/Down WIP not qualified;protected E/full Agent negatives,CPCD/notifications/indications,long write/full multichannel/four-device/performance/soak/trusted Bond remain.",
+    "Natural startup/reenumeration/disappearance RCA/nonmanual recovery remain OPEN;5509ms failure and required old documentation retention incident unchanged."
+  ],
+  "bounds": {
+    "ordinary_round_trips": 32,
+    "owned_cases": 24,
+    "owner_decisions": 96,
+    "remote_owned_transactions": 120,
+    "owner_exits": 24,
+    "oversize_rejections": 16,
+    "service_role_denials": 68,
+    "real_gates": 4,
+    "exact_replays": 5,
+    "copied_negative_controls": 81,
+    "default_rust_tests": 309,
+    "all_features_rust_tests": 309,
+    "frozen_python_tests": 754,
+    "docs_inventory": 115
+  },
+  "real_gates": [
+    {
+      "name": "observation-r2-real-short-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/observation-r2-real-short-v1/manifest.json",
+        "sha256": "fc39465852a56c96a8be653961ba6579742c93248aa0ebf3bb939321c27368bd",
+        "bytes": 1787165,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "run": {
+        "path": ".dev/observation-r2-real-short-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "b1f360b646614f33eb1ac6b80588dbb567d73a1b676b6a632c3a45a9046dafab",
+        "bytes": 973117,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "capture": {
+        "path": ".dev/observation-r2-real-short-v1/guest-output/ws73.pcap",
+        "sha256": "ebd3320738bddf58b8b5c4b4c62e35767afb441f362f490f6cdf6ec3ab60fa83",
+        "bytes": 680528,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "replay": {
+        "path": ".dev/observation-r2-real-short-v1-r2-owned-audit-v1.json",
+        "sha256": "86b1b65d627ea67c01e9c1bac63303b2b8083e5e202ee0ecdca3c48f9bb86944",
+        "bytes": 3023,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "application_bytes": 61,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": false,
+      "security_requirement": 0
+    },
+    {
+      "name": "observation-r2-real-long-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/observation-r2-real-long-v1/manifest.json",
+        "sha256": "1b80a9d0a3e523ba23b02fbb20a88060b0d612fa7a5b3b75ce1137a09d81cab5",
+        "bytes": 2859511,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "run": {
+        "path": ".dev/observation-r2-real-long-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "487d6e106f8f6f83323dfdcbfe590d3ab331cd8259eb008fb73d235a28984d9a",
+        "bytes": 1099939,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "capture": {
+        "path": ".dev/observation-r2-real-long-v1/guest-output/ws73.pcap",
+        "sha256": "e88b99ee48a8057e1d8425450a579b8117392cb24d5213644c09b7ae317c0218",
+        "bytes": 1207776,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "replay": {
+        "path": ".dev/observation-r2-real-long-v1-r2-owned-audit-v1.json",
+        "sha256": "e5215e27e3a1ac3797cfee462d063d4b9c613e6d499ca3b69353997d38add9e1",
+        "bytes": 3023,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "application_bytes": 2042,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": true,
+      "security_requirement": 0
+    },
+    {
+      "name": "observation-r2-real-boundary-v1",
+      "status": "PASS",
+      "manifest_status": "PASSTHROUGH_SUPPORT_PASS",
+      "manifest": {
+        "path": ".dev/observation-r2-real-boundary-v1/manifest.json",
+        "sha256": "a9c34877a4222bbc91b1c062163326dbb2f44d2a816bb8350328b43b3f6583c4",
+        "bytes": 1598796,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "run": {
+        "path": ".dev/observation-r2-real-boundary-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "5724e9686697457c22ba8041e2553d42a4b2b517228185adc4e92cbe493b0e77",
+        "bytes": 951832,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "capture": {
+        "path": ".dev/observation-r2-real-boundary-v1/guest-output/ws73.pcap",
+        "sha256": "5f94fe2541dddaf74a07e0eb69c83442d3c1b2c1a89247e9e7df208b6439eb69",
+        "bytes": 636160,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "replay": {
+        "path": ".dev/observation-r2-real-boundary-v1-r2-length-audit-v1.json",
+        "sha256": "f6cf09583310058487d0b12a1bd4f7d80520d0183d84749a3c078e0919aabce5",
+        "bytes": 1508,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "application_bytes": 249,
+      "ordinary_round_trips": 8,
+      "owned_cases": 0,
+      "service_role_acceptance": false,
+      "security_requirement": 0
+    },
+    {
+      "name": "observation-r2-real-sec2-v1",
+      "status": "PASS",
+      "manifest_status": "REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS",
+      "manifest": {
+        "path": ".dev/observation-r2-real-sec2-v1/manifest.json",
+        "sha256": "e54facef8c6a44ccd98ae0ef12a0e300e7e959bc18b8383c0674dfc22b55729a",
+        "bytes": 1877685,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "run": {
+        "path": ".dev/observation-r2-real-sec2-v1/guest-output/application/passthrough-control/run.json",
+        "sha256": "941dcb3344a5f813caf0538ba90940e93e9d3c8aabfedcc75a2158619cae379b",
+        "bytes": 1034643,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "capture": {
+        "path": ".dev/observation-r2-real-sec2-v1/guest-output/ws73.pcap",
+        "sha256": "5a0f0f2f15ff99f93755dfd6dafdf2015f23c5d1e8f39b25f4d389b9eaa66f06",
+        "bytes": 741112,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "replay": {
+        "path": ".dev/observation-r2-real-sec2-v1-r2-owned-audit-v1.json",
+        "sha256": "a4573f51b76e8f699634713d78405b826f61117c6ac14255c4367d3e616fdf00",
+        "bytes": 3023,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      "application_bytes": 61,
+      "ordinary_round_trips": 8,
+      "owned_cases": 8,
+      "service_role_acceptance": false,
+      "security_requirement": 2
+    }
+  ],
+  "offline": {
+    "result": "PASS",
+    "scope": "Cache budget,TTL,publication/retirement failure,cursor and blocked-lock cases run through actual production functions with explicit private-bus,/dev/null,aged-Instant and canonical-snapshot fixtures. NOT128-address RF stress,real bus-failure/TTL qualification,kernel concurrency or full state-machine proof.",
+    "materials": [
+      {
+        "path": ".dev/observation-r2-default-v1.log",
+        "sha256": "599b5c7674eb597107a89739c3467b9572b7812c1317a45cb5248a86e12aa30f",
+        "bytes": 24335,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      {
+        "path": ".dev/observation-r2-allfeatures-v1.log",
+        "sha256": "6bf35b96b95ac4b16d40f20835bb84f737f92548ed0b42809988abd86af3c2a2",
+        "bytes": 23623,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      {
+        "path": ".dev/observation-r2-default-v3.log",
+        "sha256": "fd252c9967c0b0f9f4a9eea2aed3c909d1c6bb2f2a0f809c8cdaaa92c18c7ea9",
+        "bytes": 28602,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      {
+        "path": ".dev/observation-r2-allfeatures-v3.log",
+        "sha256": "89cc04a43424b60dba207fd7941a14c2b312ad8f01fcbc47aa750e19d2acd077",
+        "bytes": 28602,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      {
+        "path": ".dev/observation-r2-clippy-default-v2.log",
+        "sha256": "468a1ea0a27227998411aab3b8b4b5e31fc89e8b55690481d7ffa36a71cd4ff8",
+        "bytes": 498,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      {
+        "path": ".dev/observation-r2-clippy-all-v2.log",
+        "sha256": "91459e1398a9eed9df47158747f01f32253053a13735afa24a928dfea5618422",
+        "bytes": 498,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      {
+        "path": ".dev/observation-r2-docs-v1.log",
+        "sha256": "898bbd0ad6022dd7580d6382fefe8ed030574f1eb04c4131eac0aacd59776a04",
+        "bytes": 377612,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      },
+      {
+        "path": ".dev/observation-r2-tools-v1.log",
+        "sha256": "3c4712d6ccb1a5e76fdf494e420ea4a5e7ea73c364437729dcd5a663019931ea",
+        "bytes": 123421,
+        "access": "private retained local workspace;security/USB materials not publicly distributed"
+      }
+    ]
+  },
+  "failure_retained": {
+    "default_proxy_cached_true": {
+      "path": ".dev/observation-r2-default-v1.log",
+      "sha256": "599b5c7674eb597107a89739c3467b9572b7812c1317a45cb5248a86e12aa30f",
+      "bytes": 24335,
+      "access": "private retained local workspace;security/USB materials not publicly distributed"
+    },
+    "all_features_proxy_cached_true": {
+      "path": ".dev/observation-r2-allfeatures-v1.log",
+      "sha256": "6bf35b96b95ac4b16d40f20835bb84f737f92548ed0b42809988abd86af3c2a2",
+      "bytes": 23623,
+      "access": "private retained local workspace;security/USB materials not publicly distributed"
+    },
+    "interpretation": "Original ObservationValid false assertion retained. Dynamic proxy cached prior true despite query-only property annotation;test now explicitly CacheProperties::No. Shared production application client must implement freshness contract;not a suppressed assertion."
+  },
+  "role_audit": {
+    "path": ".dev/observation-r2-service-audit-v1.json",
+    "sha256": "07730cd843cc9ccd5efe912d4b0252c38830f05452c501970d7c794a89c040ac",
+    "bytes": 3084,
+    "access": "private retained local workspace;security/USB materials not publicly distributed"
+  },
+  "native_bundle": {
+    "path": ".dev/observation-r2-us-bundle-v1/manifest.json",
+    "sha256": "c152de507a6a0621ea0191cca8ea6b10ae49e6298a01eedf765ffed4e4dd969d",
+    "bytes": 27292,
+    "access": "private retained local workspace;security/USB materials not publicly distributed"
+  },
+  "replay": {
+    "tools_checkout": ".dev/observation-r2-source-v1",
+    "scripts": [
+      ".dev/observation-r2-owned-audit-v1.py",
+      ".dev/observation-r2-length-audit-v1.py",
+      ".dev/observation-r2-service-audit-v1.py"
+    ],
+    "command": "python3 <matching retained script> <retained run directory>;service script fixed declared run. Exact frozen6aad production verifier.81 copied negatives,5 exact replays.",
+    "raw_access": "Private raw retained .dev workspace with report hashes;full USB/security captures restricted because contain key material. Live reproduction requires matching explicit SDK110 U firmware/calibration,VM USB permissions and two known U boards. All real drivers VM-only."
+  }
+}

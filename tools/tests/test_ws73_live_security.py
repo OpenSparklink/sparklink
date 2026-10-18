@@ -1,0 +1,92 @@
+# SPDX-License-Identifier: GPL-2.0-only
+"""Synthetic evidence refusal controls, not kernel or hardware qualification."""
+import copy,json,unittest
+from ws73_security_agent import witness,live_security_wire
+from ws73_capture import CaptureError
+from test_ws73_numeric_agent import fixture
+
+def live_fixture(mode='numeric-approve'):
+    row,phase,daemon,capture=fixture(mode)
+    row['live_security_required']=True
+    info=next(v for v in row['events'] if v['stage']=='probe_identity')['infos']
+    for n,(obj,identity) in enumerate(zip(phase['typed_objects'],info)):
+        path=obj['object']['path'];level=2 if mode=='numeric-approve' else 0
+        facts=[15,4,16] if level else [0,0,0]
+        row['events'] += [dict(stage='current_security_before',wall_ns=1,path=path,snapshot=identity[:3]+[1,1,0,0,0,0]),
+                          dict(stage='current_security_after',wall_ns=98,path=path,snapshot=identity[:3]+[2+n if level else 1,1,level]+facts)]
+    seal(row)
+    return row,phase,daemon,capture
+
+def seal(row):row['command']['stdout']='\n'.join(json.dumps(v) for v in row['events'])
+
+class LiveSecurity(unittest.TestCase):
+    def test_positive_and_rejected_expired_mechanisms(self):
+        for mode in ['numeric-approve','numeric-reject','numeric-late']:
+            r,p,d,_=live_fixture(mode);witness(r,p,d)
+    def test_protected_refusals_are_native_grade_errors_not_missing_support(self):
+        row,phase,daemon,_=live_fixture()
+        row['protected_grant_required']=True
+        for entry in phase['typed_objects']:
+            obj=entry['object']
+            for required in [1,2]:
+                row['events'].append(dict(stage='protected_grant_refusal',wall_ns=2,
+                    path=obj['path'],identity=[obj[k] for k in ['generation','lifetime','handle']],
+                    phase='before',required=required,error='org.freedesktop.DBus.Error.Failed',
+                    detail='native channel bind: Permission denied (os error 13)'))
+        seal(row);witness(row,phase,daemon)
+        for kind in ['missing','duplicate','identity','unsupported','unknownmethod','wrongerrno','grade','phase','time','no-snapshot-guard']:
+            r=copy.deepcopy(row);v=next(v for v in r['events'] if v['stage']=='protected_grant_refusal')
+            if kind=='missing':r['events'].remove(v)
+            elif kind=='duplicate':r['events'].append(copy.deepcopy(v))
+            elif kind=='identity':v['identity'][1]+=1
+            elif kind=='unsupported':v['error']='org.freedesktop.DBus.Error.NotSupported'
+            elif kind=='unknownmethod':v['error']='org.freedesktop.DBus.Error.UnknownMethod'
+            elif kind=='wrongerrno':v['detail']='native channel bind: Resource busy (os error 16)'
+            elif kind=='grade':v['required']=0
+            elif kind=='phase':v['phase']='after'
+            elif kind=='time':v['wall_ns']=12
+            else:r['live_security_required']=False
+            seal(r)
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):witness(r,phase,daemon)
+
+    def test_current_positive_aggregator_cannot_drop_protected_witness_guard(self):
+        from unittest.mock import patch
+        from ws73_security_agent import corroborate
+        row,phase,daemon,_=live_fixture()
+        # Isolate the new aggregation prerequisite; not a fake physical PASS.
+        control=dict(connection_control=dict(phases=[phase,phase]),security_agent=[row,row],
+                     channel_socket=[{},{}],bus_before=daemon)
+        with patch('ws73_channel_socket.corroborate',return_value={}):
+            with self.assertRaisesRegex(CaptureError,'protected Grant witnesses'):
+                corroborate(control,{})
+
+    def test_actual_receipt_barrier_requires_captured_per_link_events(self):
+        r,p,_,c=live_fixture();live_security_wire(r,p,c)
+        for kind in ['epoch','missing','extra','foreign-controller']:
+            row,cap=copy.deepcopy((r,c))
+            if kind=='epoch':next(v for v in row['events'] if v['stage']=='current_security_after')['snapshot'][3]+=1
+            elif kind=='missing':cap['native_events']=[v for v in cap['native_events'] if v['event']!=0xe]
+            elif kind=='extra':cap['native_events'].append(copy.deepcopy(next(v for v in cap['native_events'] if v['event']==0x11)))
+            else:next(v for v in cap['native_events'] if v['event']==0x11)['device']=99
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):live_security_wire(row,p,cap)
+    def test_missing_duplicate_foreign_or_inconsistent_snapshot_fails(self):
+        base,p,d,_=live_fixture()
+        for kind in ['missing','duplicate','identity','epochzero','epochold','epochsame','profile','level','flags','method','keysize','time','unknownstage']:
+            r=copy.deepcopy(base);rows=r['events'];v=next(v for v in rows if v['stage']=='current_security_after')
+            if kind=='missing':rows.remove(v)
+            elif kind=='duplicate':rows.append(copy.deepcopy(v))
+            elif kind=='identity':v['snapshot'][1]+=1
+            elif kind=='epochzero':v['snapshot'][3]=0
+            elif kind=='epochold':v['snapshot'][3]=-1
+            elif kind=='epochsame':v['snapshot'][3]=1
+            elif kind=='profile':v['snapshot'][4]=0
+            elif kind=='level':v['snapshot'][5]=1
+            elif kind=='flags':v['snapshot'][6]=13
+            elif kind=='method':v['snapshot'][7]=3
+            elif kind=='keysize':v['snapshot'][8]=7
+            elif kind=='time':v['wall_ns']=0
+            elif kind=='unknownstage':v['stage']='optional-unverified'
+            seal(r)
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):witness(r,p,d)
+
+if __name__=='__main__':unittest.main()

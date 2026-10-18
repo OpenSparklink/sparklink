@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "LKMM_TWO_CPU_PUBLICATION_SCOPED_PASS_NOT_IMPLEMENTATION_REFINEMENT",
+  "kernel": "14d9f20f0af5b761ef45ff96f599327e1f9a060d",
+  "tool": "herd7 7.58 with Linux tools/memory-model/linux-kernel.cfg",
+  "properties": [
+    "seeing service_running=false under Session lock observes prior worker-private pending writes"
+  ],
+  "results": {
+    "locked": "Never:0 positive/2 negative states",
+    "weakened": "Sometimes:1 positive/2 negative states"
+  },
+  "source_mapping": {
+    "writer": "sl_work:publish true before worker-private writes;clear false under s->lock after work",
+    "reader": "sl_read_session_status:holds same s->lock,skips worker-private fields while running"
+  },
+  "bounds": "Two CPUs;one already running serialized worker completion;one inspector;one representative pending field",
+  "trusted_assumptions": [
+    "Linux spinlock LKMM model",
+    "same serialized delayed_work object is non-reentrant",
+    "compiler and kernel obey locking contract"
+  ],
+  "not_proved": [
+    "initial worker entry/exit scheduling and no-lost-wakeup",
+    "whole Linux/USB callback/ref drain",
+    "actual concurrent implementation refinement",
+    "NOCP/firmware truth",
+    "safe reuse",
+    "real hardware or performance"
+  ],
+  "materials": [
+    {
+      "path": "sparklink/formal/lkmm/SessionWorkerPublication.litmus",
+      "sha256": "c4c649ef1e021ef4ff810972af07b788ad0da8bd5427e809db28e046cb45e063",
+      "bytes": 836,
+      "access": "public"
+    },
+    {
+      "path": "sparklink/formal/lkmm/SessionWorkerPublicationWeak.litmus",
+      "sha256": "e04c2fa5ab3eab83f3b2792576cc1108483c3baf3ffd79bb95e4daa666ce0aed",
+      "bytes": 364,
+      "access": "public"
+    },
+    {
+      "path": ".dev/session-status-lkmm-v1.log",
+      "sha256": "eadc01236634c783df99768f612c9231a9339e0a88a21c9e191994f7ba1e2b0f",
+      "bytes": 580,
+      "access": "private"
+    },
+    {
+      "path": ".dev/session-status-herd-version-v1.log",
+      "sha256": "f15276a3b23c96214a896647d44dc59e11636c50d363388a26210aec3a6a0471",
+      "bytes": 20,
+      "access": "private"
+    },
+    {
+      "path": "linux/net/sparklink/sle_channel_socket.c",
+      "sha256": "0a868724ea4bb3ea8e8f35c9ad105c9bd3e4955daf3ba419edbebffa8190414d",
+      "bytes": 73351,
+      "access": "public"
+    }
+  ],
+  "raw_replay": "herd7 -conf linux/tools/memory-model/linux-kernel.cfg sparklink/formal/lkmm/SessionWorkerPublication{,Weak}.litmus (run separately); no device access",
+  "remaining": "Controlled VM regressions and whole notification/lifetime composition remain required;tool/model PASS does not replace implementation or firmware evidence"
+}

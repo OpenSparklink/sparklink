@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "status": "BASIC_DGRAM_TYPE_SUBGATE_PASS_WHOLE_ARCHITECTURE_OPEN",
+  "kernel_head": "4b4c6add8189a446d540e28f9d60841ed4ae8f87",
+  "userspace_head": "59479e0478dc0789c1afd99bcd39ae86b0359742",
+  "ci": {
+    "run_id": 38294233519,
+    "conclusion": "success",
+    "jobs": 9
+  },
+  "kernel_build": {
+    "status": "BUILD_PASSED",
+    "source_head": "4b4c6add8189a446d540e28f9d60841ed4ae8f87",
+    "normalized_config_sha256": "b8a4f6c03ee3e74c86e445fdff0686a9bf86e04794b1876fa4574dc39562ae37",
+    "scope": "VM_ONLY clean committed source; no host install",
+    "command": [
+      "make",
+      "-C",
+      "/home/sanchuanhehe/Documents/opensparklink/linux",
+      "--jobserver-style=pipe",
+      "O=/home/sanchuanhehe/Documents/opensparklink/.dev/native-data-kernel-build",
+      "LLVM=1",
+      "RUSTC_BOOTSTRAP=1",
+      "BINDGEN=/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin/bindgen",
+      "-j8",
+      "bzImage",
+      "modules"
+    ],
+    "environment_overrides": {
+      "CCACHE_DIR": "/home/sanchuanhehe/Documents/opensparklink/.dev/managed-domain-cleanup-ccache",
+      "PATH_PREFIX": "/home/sanchuanhehe/Documents/opensparklink/.dev/tools/bin",
+      "RUSTUP_TOOLCHAIN": "1.96.1"
+    },
+    "build_exit": 0,
+    "source_unchanged": true,
+    "config_unchanged": true,
+    "build_log": {
+      "path": "/home/sanchuanhehe/Documents/opensparklink/.dev/native-basic-dgram-kernel-build.log",
+      "sha256": "6c737a198ebbde68ec1e1005eadd0ff15d181e1b4a77e2821fe643f58dd39582"
+    }
+  },
+  "ordinary_application_unit_tests": 2,
+  "tooling_tests": 423,
+  "strict_clippy": "PASS",
+  "VM_type_gate": "root/ordinary DGRAM accepted and SO_TYPE checked; unqualified SEQPACKET EPROTONOSUPPORT",
+  "evidence": [
+    "ws73-basic-dgram-short-repeat-20261013.json",
+    "ws73-basic-dgram-249-boundary-20261013.json"
+  ],
+  "physical_unplug_qualified": false,
+  "natural_fault_rca_closed": false,
+  "non_manual_recovery_qualified": false,
+  "full_goal_complete": false,
+  "issues_closed": false,
+  "remaining": [
+    "Referenced submission Ticket/Down/reuse barrier",
+    "Session unique RX and fd separation",
+    "Revocable kernel Grant epoch",
+    "Whole socket error/queue/close/lifetime contract",
+    "Backend/event authority and legacy cleanup",
+    "Original full19WP/10FV/12DG/S0-S6 scope"
+  ]
+}

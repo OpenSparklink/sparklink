@@ -1,0 +1,157 @@
+{
+  "status": "FOURTEEN_EXISTING_DAEMON_CHANNEL_ISSUE_UPDATES_VERIFIED",
+  "evidence_commit": "dfae2124a7a4f1770778a2a7cdd6f57b555633ff",
+  "tool_head": "82aa65a77019804e78a95c1706c461e715187314",
+  "original_scopes_unchanged": true,
+  "issues_closed": 0,
+  "new_tracking_issues": 0,
+  "goal_status": "active",
+  "exact_tool_ci": {
+    "run_id": 38319594014,
+    "jobs": 9,
+    "conclusion": "success"
+  },
+  "comments": [
+    {
+      "repo": "linux",
+      "number": 1,
+      "comment_id": 6134293255,
+      "url": "https://github.com/OpenSparklink/linux/issues/1#issuecomment-6134293255",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "bec3a57dd8f6f3b32dcc82c024cd5db04866db8d6ec398a20f1a170ec3c85604",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 4,
+      "comment_id": 6134294215,
+      "url": "https://github.com/OpenSparklink/linux/issues/4#issuecomment-6134294215",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "cee3b8f66cb7d00fbbf8071efecbdcec7d90cfb8006211e5dac19fbc77c88ffd",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 5,
+      "comment_id": 6134295085,
+      "url": "https://github.com/OpenSparklink/linux/issues/5#issuecomment-6134295085",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "b939d505ecf8f27a4352fa208c831fc6aa550b59d4ea654112037f9209b8d38d",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 6,
+      "comment_id": 6134296024,
+      "url": "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6134296024",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "6e3b15a6bfb78f598e1f87b4c958b5588068cd6d5643179034fc1edc4c5071d9",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 9,
+      "comment_id": 6134296979,
+      "url": "https://github.com/OpenSparklink/linux/issues/9#issuecomment-6134296979",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "352e6338171e5b1b5c95d4db35dc5ebb9a3701245cdde50c99ce4c4664a2e633",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 10,
+      "comment_id": 6134298117,
+      "url": "https://github.com/OpenSparklink/linux/issues/10#issuecomment-6134298117",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "6720885939ce943bc08ecda6811f92ecf305c35a8b6e14829f1d432f2eb4ed18",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 14,
+      "comment_id": 6134299020,
+      "url": "https://github.com/OpenSparklink/linux/issues/14#issuecomment-6134299020",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "ad68757917a4f4da23d147629ccbc86b7a0666e7302e3018e62ae3230a084de9",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 17,
+      "comment_id": 6134300147,
+      "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6134300147",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "29efd999b47f2f9643ebd97ab8e7b5ee691b031620ba8504faab8c69836acdcf",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "linux",
+      "number": 19,
+      "comment_id": 6134301032,
+      "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6134301032",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "430dfb3230317ee59afbd179a3bc54219fb5500ea0f475ebcb88a346f41a07b1",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 1,
+      "comment_id": 6134302491,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/1#issuecomment-6134302491",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "f9714474242708d99f5391b3477011b54f17957cd2a2be1c91ed964a4ef08535",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 3,
+      "comment_id": 6134303374,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6134303374",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "8c3d7400ed018e3433172c7aeb35445d1e215204bc21e0078a50075a840a884e",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 5,
+      "comment_id": 6134304310,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5#issuecomment-6134304310",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "779cb4d8125b4354b7cfeadc43ce183e6c7517017042728c18ed81f9c1fa95f8",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 6,
+      "comment_id": 6134305352,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6#issuecomment-6134305352",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "df0560c7a43f09ec1f84f7db8003d97c294b823d83c53da75fc517ce115a3b2b",
+      "original_scope_unchanged": true,
+      "state": "open"
+    },
+    {
+      "repo": "sparklink",
+      "number": 8,
+      "comment_id": 6134306589,
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6134306589",
+      "body_sha256": "b0175d6836de5d9b275177b774edfd5843db9951eca0c4b23fef9a0063f1b1a4",
+      "original_body_sha256": "714349e1df9a281e7456134946ea92743a8fdb339aa6cfdd6501edfbed5b0ceb",
+      "original_scope_unchanged": true,
+      "state": "open"
+    }
+  ],
+  "body": "<!-- actual-daemon-channel-death-progress-20261013-dfae212 -->\n目标架构整改优先，完整S0–S6/原28 issues/19工作包/10形式化/12数据门禁范围保留。\n\n签名推送：ee854dc监督接入、9f65ec2启动器修复、1a586b2/82aa65a物理Down/授权首醒因果门禁与负向验证；dfae212精确新实机证据和canonical ARCHITECTURE/ADR/IMPLEMENTATION_PLAN/CURRENT_CAPABILITIES/active goal同步。\n\n- 已实现：仅VM init杀死/回收自己的实际slkd并启动接任；真实D-Bus OpenChannel fd经普通客户端、内核SCM_CREDENTIALS和SCM_RIGHTS传递给已关闭继承authority的UID1000/caps0应用。原客户端已reap、转交者原fd关闭，应用dup并确认原fd EBADF。真实双向随机载荷校验回复后，用实际/proc syscall45/同fd/TASK_INTERRUPTIBLE/wchan两次见证阻塞，再触发SIGKILL。\n- 离线：435工具测试，实际本地fd/凭据/截断拒绝清理、实际runner准入、收据变异与缺失/迟到/错controller/错handle/重复Down负向验证。Kernel未改；不新增whole VFS/引用/内存序/credit/在途形式化证明，既有限定报告和NOT_PROVEN范围保持。\n- 精确新实机：Kbf8663bb78eb780a7363128574fd42b7e018f9a5 / 编译U86bfbc81ba001539c3816f72b3efc5a911cf19ee / tools82aa65a，两个连接角色独立VM，4实际普通应用随机业务往返、32两端SDU、16真实NOCP、986 capture零丢包。原daemon实际SIGKILL/reap137；观察双方canonical Ready/Free/空物理表；新daemon unique owner/pid不同但controller generation/address/USB注册不变。Free后及接任后双方旧fd发送、接收全部严格EACCES，poll ERR/HUP，无旧授权载荷在USB上。原准确40/249、发现/建链/断链资格保留。\n- 发现并保留失败：ee854dc启动器premature package访问在VM前失败；9f65ec2首个实际death测试首醒ESTALE，原假设“进程退出意味着两device File授权同时原子撤销”不成立。捕获证明peer先Disconnect、目标物理Down先于首醒。按既有Kernel顺序（Grant有效先检查lifetime）明确契约：寿命先结束可ESTALE，但必须有本controller/handle成功Down早于该唤醒；授权先撤销EACCES。始终严格要求Free/接任后双方旧fd EACCES，没有把原失败改标PASS或仅放宽错误名单。\n\n范围：两controller共同由一个slkd拥有，两lease都撤销为预期；这不是独立管理者的另一组业务持续隔离。受控SIGKILL/显式接任也不是自然硬件自动恢复。可信security/降级、在途USB/迟到RX、NOCP可信排空/复用、完整引用/refinement、独立owner/四设备两组同行业务仍未闭合。自然启动超时/重枚举失败/设备消失RCA和非人工恢复仍OPEN，人工拔插/切电/QMP/注入不能替代。\n\n继续近期整改：WP12低层旧ring/库/CLI消费者迁移删除、WP13可注册Backend与generation/引用/模块/停止-callback屏障，保持真实WS73路径后推进新能力。不关闭任何整项issue，不新建总跟踪，goal ACTIVE完整目标未缩减。\n\n证据：[真实daemon-held fd死亡/接任](https://github.com/OpenSparklink/sparklink/blob/dfae212/docs/evidence/ws73-daemon-channel-death-20261013.json)、[离线与源码范围](https://github.com/OpenSparklink/sparklink/blob/dfae212/docs/evidence/daemon-channel-death-offline-20261013.json)、[契约与失败时序](https://github.com/OpenSparklink/sparklink/blob/dfae212/docs/decisions/0002-session-socket-lifetime-and-proof-contract.md)。\n"
+}

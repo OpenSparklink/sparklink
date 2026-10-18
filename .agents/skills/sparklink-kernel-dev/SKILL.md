@@ -268,7 +268,7 @@ Tests: N passed."
 | `data/dbus/sparklink.conf` | D-Bus 策略文件 |
 | `data/udev/99-sparklink.rules` | udev 规则 |
 | `data/pkgconfig/sparklink.pc` | pkg-config 文件 |
-| `docs/API.md` | ioctl 参考（126 命令） |
-| `docs/ARCHITECTURE.md` | 架构总览 |
-| `docs/AUDIT.md` | 覆盖率审计 |
-| `docs/BLUEZ_COMPARISON.md` | BlueZ 对比分析 |
+| `project/reference/management/api.md` | 历史 API 索引；当前接口以源码和能力入口为准 |
+| `project/architecture.md` | 架构总览 |
+| `history/cleanup/audit.md` | 覆盖率审计 |
+| `project/reference/architecture/bluez-comparison.md` | BlueZ 对比分析 |

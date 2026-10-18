@@ -1,0 +1,40 @@
+{
+  "status": "CONFIRMED_FIXTURE_DEPENDENCY_MISMATCH_NOT_PRODUCTION_MEMORY_FAULT",
+  "compiled_kernel_source": "4b6dda28490d61864eacaa791e72cac1cfea2c0c",
+  "production_event_param_budget": 240,
+  "previous_fixture_budget": 255,
+  "counterexample_exit": 101,
+  "command": [
+    "rustc",
+    "--edition=2021",
+    "--test",
+    "-D",
+    "warnings",
+    "/home/sanchuanhehe/Documents/opensparklink/.dev/parser-budget-review-v1/counterexample.rs",
+    "-o",
+    "/home/sanchuanhehe/Documents/opensparklink/.dev/parser-budget-review-v1/counterexample"
+  ],
+  "source_files": {
+    "net/sparklink/sle_uapi.rs": "cfd250a811b4566033da5fdba8101abd6fdca48246abb4eb7a06d6b5794b5b0e",
+    "net/sparklink/sle_standard_dli.rs": "7d1bd7802648c407034ee57f7eef86808b28cf00c3105a6ca24e3b71f4121ddd",
+    "tools/testing/selftests/sparklink/retired-usb-registration/codec_fixture.rs": "e9b9f0a15711f673b6a73dac9c150cd98ed2a9bf5821557991676e36a372de55",
+    "tools/testing/selftests/sparklink/retired-usb-registration/legacy_usb_codec.rs": "63e83bdd63f9e7589b1ee29d97525dc8d3234bcdcfb40f84c6229d04c6ffc7cb",
+    "tools/testing/selftests/sparklink/standard_event_fixture.rs": "299fd580e1f00944a994db165d586b7b670283c46a8de923526b1514358be7d1",
+    "tools/testing/selftests/sparklink/run_standard_events.py": "f45da4b42ed449e76f1c77c5b1cfb5b3d1a9debc35b2163a5ff519fc466cc202",
+    "tools/testing/selftests/sparklink/run_usb_codec_isolation.py": "87516d4415765fb1d52bd64cb6e09f2201fb93508c98b39634ba801a46621d87"
+  },
+  "counterexample_source_sha256": "1fea52815dddff8748fd1e3cb1891da4781e597d096dac25b1f45cb3188045ee",
+  "counterexample_log_sha256": "e462546acda3c1db0daf82859a839e30282a5c0dd48765427f60461195f63e15",
+  "affected_records": [
+    "kernel-event-registry-retirement-r4f2cd"
+  ],
+  "scope": "Old parser maximum255 acceptance fails with actual production240constant. Historical encoder keeps own255constant by design;not affected. New standard_event fixture also injected255andneeds correction,though its cases did not hit this boundary. No production source or previously captured realVMs changed. No new formalproof.",
+  "schema": 1,
+  "curation": "Original published report/artifacts/logs are immutable. Downgrade only aggregate+affectedoffline gate;actual fourRF and other independent gates retain original scopes. No corrected/currentPASS until new tool identities and exact rerun are recorded.",
+  "remaining": [
+    "Inject production constant in both parser fixtures and bindits source hash",
+    "Counterexample and old fixture remain;all correctedboundary/negativecontrols rerun",
+    "Separate standard event softwarebudget240from realNativeA3/applicationlength qualifications;fullstandard255interoperability notgranted",
+    "Resume rawABI/fullSDK/deployment architecture work after related gateclosure;all originalscope/naturalRCA/nonmanualrecoveryOPEN"
+  ]
+}

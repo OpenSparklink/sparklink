@@ -21,9 +21,11 @@ class DaemonHoldCoordinator(HoldCoordinator):
 
 class Invocation:
     """Read live pipes, never a redirected producer file; reap before sealing."""
-    def __init__(self, args, toggle, *, credentials=None):
+    def __init__(self, args, toggle, *, credentials=None, stdin=None, env=None):
         self.row=dict(args=args,toggle=toggle,start_wall_ns=time.time_ns())
         options={} if credentials is None else dict(user=credentials[0],group=credentials[1],extra_groups=[])
+        if stdin is not None:options['stdin']=stdin
+        if env is not None:options['env']=env
         self.process=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,**options)
         self.row['pid']=self.process.pid
         self.prefix=b''

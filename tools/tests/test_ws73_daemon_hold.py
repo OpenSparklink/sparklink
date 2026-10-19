@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Reject weak daemon evidence; fixtures never qualify hardware or RF."""
 import copy
+import os
 import sys
 import tempfile
 import unittest
@@ -43,6 +44,19 @@ def fixture(case='supersede'):
 
 
 class DaemonHoldTests(unittest.TestCase):
+    def test_actual_invocation_forwards_explicit_environment_and_stdin_without_recording_environment(self):
+        command=[sys.executable,'-c','import os,sys;print(os.environ["SPARKLINK_TEST_LITERAL"],flush=True);print(sys.stdin.readline().strip(),flush=True)']
+        invocation=Invocation(command,'explicit-process-fixture',stdin=subprocess.PIPE,
+            env=dict(os.environ,SPARKLINK_TEST_LITERAL='explicit-fixture'))
+        try:
+            self.assertEqual(invocation.until(rb'^explicit-fixture$',timeout=1,limit=4096),b'explicit-fixture')
+            invocation.process.stdin.write(b'original-input\n');invocation.process.stdin.flush()
+            record=invocation.finish(timeout=1)
+            self.assertEqual(record['exit'],0);self.assertEqual(record['stdout'],'explicit-fixture\noriginal-input\n')
+            self.assertEqual(record['stderr'],'');self.assertNotIn('env',record)
+        finally:
+            if invocation.process.poll()is None:invocation.finish(kill=True)
+
     def test_two_cases_require_actual_caller_lifetime_and_unchanged_daemon(self):
         for case in ['supersede','caller-exit']:
             r,h,c,l=fixture(case)

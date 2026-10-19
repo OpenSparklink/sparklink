@@ -10,10 +10,29 @@ import hashlib
 from pathlib import Path
 import struct
 import re
+import tempfile
 
 
 class CaptureError(ValueError):
     pass
+
+
+def read_live_prefix(output, capture, targets, observations):
+    """Bounded snapshot of the private capture,without opening USB or editing it.
+
+    Incomplete live records are an observation to retry,never a valid packet.
+    The returned decoder is the same strict offline decoder used at final seal.
+    """
+    if len(observations)>=64:raise CaptureError('live capture observation budget exceeded')
+    with Path(capture).open('rb')as source:raw=source.read(16*1024*1024+1)
+    if len(raw)>16*1024*1024:raise CaptureError('live capture barrier byte budget exceeded')
+    observation=dict(bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest());observations.append(observation)
+    with tempfile.NamedTemporaryFile(dir=output,prefix='capture-prefix-')as snapshot:
+        snapshot.write(raw);snapshot.flush()
+        try:return read_capture(snapshot.name,targets)
+        except CaptureError as error:
+            if str(error)not in ['truncated pcap record header','truncated USB packet/header','unfinished OUT submission at capture end']:raise
+            observation['partial']=str(error);return None
 
 
 def marker_data(marker):

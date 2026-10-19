@@ -278,10 +278,16 @@ static int owned_mode(int argc,char **argv) {
             error=slk_connection_ssap_owned_configuration(link,receipt.handles[0],&modes,deadline);
             if (error || modes>3) {errno=error?-error:EPROTO;goto done;}
             printf("SdkOwnedConfiguration: {\"api\":\"c\",\"handle\":%u,\"modes\":%u,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",receipt.handles[0],modes,started,deadline,now_ns());fflush(stdout);
-        } else if (updates && (!strcmp(line,"notify\n") || !strcmp(line,"indicate\n"))) {
-            int indication=!strcmp(line,"indicate\n");struct SlkSsapUpdate result={0};
-            uint64_t started=now_ns(),deadline=started+5000000000ULL;
+        } else if (updates && (!strcmp(line,"notify\n") || !strcmp(line,"indicate\n") || !strcmp(line,"indicate-deadline\n"))) {
+            int observe=!strcmp(line,"indicate-deadline\n"),indication=strcmp(line,"notify\n")!=0;struct SlkSsapUpdate result={0};
+            uint64_t started=now_ns(),deadline=started+(observe?1000000000ULL:5000000000ULL);
             error=slk_connection_ssap_send_owned(link,receipt.handles[0],(uint32_t)indication,&result,deadline);
+            if (observe) {
+                /* Observed API result only. The supervisor must reject a wrong
+                 * errno or an unexpected success; neither is a PASS here. */
+                printf("SdkOwnedUpdateDeadline: {\"api\":\"c\",\"handle\":%u,\"result\":%d,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",receipt.handles[0],error,started,deadline,now_ns());fflush(stdout);
+                continue;
+            }
             if (error || result.stage!=(indication?2U:1U) || result.pdu_length>2048 || result.acknowledgement_length>3) {errno=error?-error:EPROTO;goto done;}
             printf("SdkOwnedUpdate: {\"api\":\"c\",\"handle\":%u,\"stage\":%u,\"pdu\":\"",receipt.handles[0],result.stage);hex_print(result.pdu,result.pdu_length);
             printf("\",\"ack\":\"");hex_print(result.acknowledgement,result.acknowledgement_length);

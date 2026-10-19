@@ -205,9 +205,21 @@ def owned_mode():
                     modes=link.ssap().owned_configuration(handle,deadline_ns=deadline)
                     print('SdkOwnedConfiguration: '+json.dumps(dict(api='python',handle=handle,modes=modes,
                         started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
-                elif updates and line in (b'notify\n',b'indicate\n'):
-                    started=time.monotonic_ns();deadline=started+5_000_000_000
-                    result=link.ssap().send_owned_update(handle,deadline_ns=deadline,indication=line==b'indicate\n')
+                elif updates and line in (b'notify\n',b'indicate\n',b'indicate-deadline\n'):
+                    observe=line==b'indicate-deadline\n'
+                    started=time.monotonic_ns();deadline=started+(1_000_000_000 if observe else 5_000_000_000)
+                    try:
+                        result=link.ssap().send_owned_update(handle,deadline_ns=deadline,indication=line!=b'notify\n')
+                    except OSError as error:
+                        if not observe:raise
+                        observed=-error.errno
+                    else:observed=0
+                    if observe:
+                        # A result observation,not a success verdict. Wrong
+                        # errors and unexpected success remain gate failures.
+                        print('SdkOwnedUpdateDeadline: '+json.dumps(dict(api='python',handle=handle,result=observed,
+                            started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
+                        line.clear();continue
                     print('SdkOwnedUpdate: '+json.dumps(dict(api='python',handle=handle,stage=result.stage,
                         pdu=result.pdu.hex(),ack=result.acknowledgement.hex(),
                         started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)

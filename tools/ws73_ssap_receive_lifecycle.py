@@ -13,10 +13,9 @@ import json
 import os
 import re
 import secrets
-import tempfile
 import time
 
-from ws73_capture import CaptureError, read_capture
+from ws73_capture import CaptureError, read_live_prefix
 from ws73_application_client import application_environment, authorization_context, owned_arguments, process_identity
 from ws73_ssap_owned import publisher, wait_text, await_removed
 from ws73_ssap_update_delivery import configuration, discover, discovery_wire, sdk_receipt
@@ -109,17 +108,9 @@ def check_request(request,sequence):
 
 def capture_once(output,capture,request,observations):
     """One bounded Host-side prefix decode; never make raw capture app-readable."""
-    if len(observations)>=64:raise CaptureError('live capture observation budget exceeded')
-    with Path(capture).open('rb')as source:raw=source.read(16*1024*1024+1)
-    if len(raw)>16*1024*1024:raise CaptureError('live capture barrier byte budget exceeded')
-    observation=dict(bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest());observations.append(observation)
     owners=request['controllers'];s=request['phase'];t=1-s;mode=request['mode'];h=request['property']
-    with tempfile.NamedTemporaryFile(dir=output,prefix='capture-prefix-')as snapshot:
-        snapshot.write(raw);snapshot.flush()
-        try:decoded=read_capture(snapshot.name,[(v['bus'],v['device'])for v in owners])
-        except CaptureError as error:
-            if str(error)not in ['truncated pcap record header','truncated USB packet/header','unfinished OUT submission at capture end']:raise
-            observation['partial']=str(error);return None
+    decoded=read_live_prefix(output,capture,[(v['bus'],v['device'])for v in owners],observations)
+    if decoded is None:return None
     pdu=b'\x0e\x03'+h.to_bytes(2,'little')+bytes([2,mode,0]);frame=(b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu).hex();legs=[]
     for index,direction in [(t,'out'),(s,'in')]:
         entry=owners[index]

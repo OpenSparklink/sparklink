@@ -5,6 +5,7 @@ import io
 import json
 from pathlib import Path
 import tempfile
+import sys
 import time
 from types import SimpleNamespace
 import unittest
@@ -95,6 +96,30 @@ def fixture(phase=0):
 
 
 class ReceiveLifecycle(unittest.TestCase):
+    def test_actual_pipe_prefix_and_suffix_are_retained_without_file_callback_assumptions(self):
+        with tempfile.TemporaryDirectory()as directory:
+            run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
+            command=[sys.executable,'-c','import time;print("original-call",flush=True);time.sleep(.05);print("original-terminal",flush=True)']
+            with gate.receiver(run,command,'pipe-fixture')as invocation:
+                self.assertNotIn('output_files',invocation.row)
+                self.assertEqual(invocation.until(rb'^original-call$',timeout=1,limit=4096),b'original-call')
+                invocation.process.wait(timeout=1)
+            row=invocation.row
+            self.assertEqual(row['stdout'],'original-call\noriginal-terminal\n');self.assertEqual(row['exit'],0)
+            self.assertEqual(Path(row['output_files'][0]).read_bytes(),row['stdout'].encode())
+            self.assertEqual(Path(row['output_files'][1]).read_bytes(),b'')
+            self.assertIs(run.data['ssap_receive_applications'][0],row)
+
+    def test_failed_actual_pipe_barrier_retains_child_output_and_error(self):
+        with tempfile.TemporaryDirectory()as directory:
+            run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
+            with self.assertRaises(ValueError):
+                with gate.receiver(run,[sys.executable,'-c','print("wrong-call",flush=True)'],'failed-pipe-fixture')as invocation:
+                    invocation.until(rb'^required-call$',timeout=1,limit=4096)
+            row=run.data['ssap_receive_applications'][0]
+            self.assertIn('before',row['collector_error']);self.assertEqual(row['stdout'],'wrong-call\n')
+            self.assertEqual(Path(row['output_files'][0]).read_bytes(),b'wrong-call\n')
+
     def test_live_barrier_uses_real_decoder_and_waits_only_for_incomplete_tail(self):
         from test_ws73_north_star import aggregate,command_payload,pcap
         import struct

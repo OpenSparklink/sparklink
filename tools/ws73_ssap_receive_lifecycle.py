@@ -6,9 +6,11 @@ server configuration observation alone does not prove the peer saw its reply.
 No simulated success, extra wire loop or changed production deadline.
 """
 from pathlib import Path
+from contextlib import contextmanager
 import errno
 import hashlib
 import json
+import os
 import re
 import secrets
 import tempfile
@@ -18,10 +20,34 @@ from ws73_capture import CaptureError, read_capture
 from ws73_application_client import application_environment, authorization_context, owned_arguments
 from ws73_ssap_owned import publisher, wait_text, await_removed
 from ws73_ssap_update_delivery import configuration, discover, discovery_wire, sdk_receipt
+from ws73_daemon_hold import Invocation
 
 STATUS='REAL_RECEIVE_EXIT_DEADLINE_CLEANUP_PENDING_PAIRED_CAPTURE'
 CASES=['exit-enable-pending','exit-enabled','original-deadline']
 BUSY='SSAP client sequence owned by receive transaction'
+
+
+@contextmanager
+def receiver(run,arguments,label):
+    """Reuse the existing live-pipe owner; seal its original prefix and suffix."""
+    start=time.monotonic_ns();invocation=Invocation(arguments,'ssap-receive',env=dict(os.environ,**application_environment()))
+    invocation.row.update(environment=application_environment(),start_monotonic_ns=start)
+    run.data.setdefault('ssap_receive_applications',[]).append(invocation.row);run.save()
+    try:
+        yield invocation
+    except BaseException as error:
+        invocation.row.update(collector_error=str(error),collector_error_type=type(error).__name__)
+        raise
+    finally:
+        if invocation.process.poll()is None:invocation.process.kill()
+        invocation.finish(timeout=2)
+        invocation.row['end_monotonic_ns']=time.monotonic_ns()
+        files=[]
+        for stream in ['stdout','stderr']:
+            path=run.output/f'receive-{label}.{stream}'
+            with path.open('xb')as target:target.write(invocation.row[stream].encode())
+            files.append(str(path))
+        invocation.row['output_files']=files;run.save()
 
 
 def requested(args,*,passthrough):
@@ -112,9 +138,8 @@ def execute(run,row,business):
             def barrier(process,record):
                 from ws73_channel_socket import credentials
                 record['credentials']=credentials(process.pid);case['application']=record;run.save()
-                rows,_=wait_text(process,Path(record['output_files'][0]),r'^\{.*"stage"\s*:\s*"ssap_update_wait".*\}$',time.monotonic()+3)
-                if len(rows)!=1:raise CaptureError('one actual original receive call required')
-                call=json.loads(rows[0]);case['call']=call
+                raw=invocation.until(rb'^(\{[^\n]*"stage"\s*:\s*"ssap_update_wait"[^\n]*\})\n',timeout=3,limit=4096,label='original SDK receive call')
+                call=json.loads(raw);case['call']=call
                 enabled=prompt(owner,item,server,mode);case['enable_prompt']=enabled;run.save()
                 if kind=='exit-enable-pending':
                     case['pending_configuration']=configuration(owner,item,0,process)
@@ -148,7 +173,9 @@ def execute(run,row,business):
                     if BUSY not in command['stderr']:raise CaptureError('same SSAP actor did not remain usable after cleanup')
                     time.sleep(.01)
                 else:raise CaptureError('finite same-actor cleanup convergence budget')
-            case['application']=run.command(arguments,12,collection='ssap_receive_applications',on_started=barrier,environment=application_environment())
+            with receiver(run,arguments,f'{row["phase"]}-{kind}')as invocation:
+                case['application']=invocation.row;run.save()
+                barrier(invocation.process,invocation.row)
             case['end_wall_ns']=time.time_ns();run.save()
         owner.stdin.write('quit\n');owner.stdin.flush();owner.wait(timeout=2)
         if owner.returncode:raise CaptureError('original publisher unregister failed')

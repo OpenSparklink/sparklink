@@ -12,7 +12,7 @@ from sparklink.local_services import _Property, _Receipt
 
 class Boundary:
     def __init__(self):self.freed=[];self.unregistered=[];self.closed=[];self.reads=[];self.error=0;self.bad=False
-    def slk_client_register_local_service(self,c,i,u,n,ps,count,d,out):
+    def slk_client_register_local_service(self,c,i,u,n,ps,count,authorization,d,out):
         self.request=(bytes(u),n,count,d,ps[0].operations,ps[0].access,bytes(ps[0].value[:ps[0].value_length]));out._obj.value=123;return 0
     def slk_local_service_receipt(self,v,r):
         r=r._obj;r.controller.index=2;r.controller.generation=7;r.start=16;r.end=17;r.property_count=1;r.handles[0]=99 if self.bad else 17;return 0

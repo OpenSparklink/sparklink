@@ -144,14 +144,14 @@ class Client:
                                                     ctypes.byref(count), deadline_ns))
             return tuple(ControllerId(value.index, value.generation) for value in values[:count.value])
 
-    def register_local_service(self, controller, uuid, properties, *, deadline_ns):
+    def register_local_service(self, controller, uuid, properties, *, deadline_ns, authorization="none"):
         """Caller-owned local metadata; not remote publication or a callback Engine.
 
         Derived view retains this original caller. Explicit unregister and local
         close are different; timeout does not prove rollback or remote cleanup.
         """
         from .local_services import LocalService
-        return LocalService._register(self, controller, uuid, properties, deadline_ns)
+        return LocalService._register(self, controller, uuid, properties, deadline_ns, authorization)
 
     def discover(self, controller, *, prefix=b"", minimum_rssi=-128, duration_ms=20000, deadline_ns):
         """Acquire a caller discovery lease; see DiscoverySession for release semantics."""

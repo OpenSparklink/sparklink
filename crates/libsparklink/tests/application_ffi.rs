@@ -189,10 +189,11 @@ impl Link {
     }
 }
 
-// Finite local metadata fixture,not a service DB,callback or wire Engine.
+// Finite metadata and callback sender fixture,not a DB,wire or Native Engine.
 #[derive(Default)]
 struct OwnedMetadata {
     owner: Mutex<String>,
+    authorizer: Mutex<String>,
     registered: AtomicUsize,
     read: AtomicUsize,
     removed: AtomicUsize,
@@ -210,8 +211,18 @@ impl OwnedServices {
     ) -> (u16, u16, Vec<u16>) {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
         assert_eq!(uuid, [1, 0]);
-        assert_eq!(properties, [(vec![2, 0], 5, 0, vec![7, 8, 9])]);
-        assert_eq!(authorizer.as_str(), "/");
+        let access = properties[0].2;
+        assert!(matches!(access, 0 | 36));
+        assert_eq!(properties, [(vec![2, 0], 5, access, vec![7, 8, 9])]);
+        assert_eq!(
+            authorizer.as_str(),
+            if access == 0 {
+                "/"
+            } else {
+                "/org/sparklink/sdk/ssap_authorizer"
+            }
+        );
+        *self.0.authorizer.lock().unwrap() = authorizer.to_string();
         *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
         self.0.registered.fetch_add(1, Ordering::SeqCst);
         (16, 17, vec![17])
@@ -343,6 +354,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("tools/testing/application_client/client.c"))
         .arg(root.join("tools/testing/application_client/client.py"))
         .arg(root.join("bindings/python/sparklink/local_services.py"))
+        .arg(root.join("bindings/python/sparklink/service_authorization.py"))
         .output()?;
     anyhow::ensure!(
         identities.status.success() && identities.stderr.is_empty(),
@@ -354,7 +366,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let ssap_calls = Arc::new(AtomicUsize::new(0));
     let lifetime = Arc::new(AtomicU64::new(11));
     let owned = Arc::new(OwnedMetadata::default());
-    let _server = zbus::connection::Builder::address(bus.address.as_str())?
+    let server = zbus::connection::Builder::address(bus.address.as_str())?
         .name("org.sparklink")?
         .serve_at("/org/sparklink", Manager)?
         .serve_at(BASE, Adapter)?
@@ -419,13 +431,133 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
             "{language} Owned consumer failed: {output:?}"
         );
     }
+    // Actual installed language frontends consume requests while their original
+    // Client has closed. This tests real RPC/eventfd/FFI policy delivery, not RF.
+    for language in ["c", "python"] {
+        for policy in ["allow", "deny"] {
+            let mut command = Command::new("timeout");
+            command.arg("10s");
+            if language == "c" {
+                command.arg(&sdk_probe);
+            } else {
+                command
+                    .arg("python3")
+                    .arg(root.join("tools/testing/application_client/client.py"));
+            }
+            let mut process = command
+                .args(["owned", "2", "7", "0100", "0200", "070809", policy])
+                .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+                .env("LIBSPARKLINK_PATH", &runtime_library)
+                .env("PYTHONPATH", root.join("bindings/python"))
+                .env("LD_LIBRARY_PATH", &directory)
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()?;
+            let mut stdout = std::io::BufReader::new(process.stdout.take().unwrap());
+            let mut transcript = String::new();
+            for expected in [
+                format!("SdkOwnedAPI: api={language} client_closed=true\n"),
+                "SsapOwnedService: start=16 end=17 property=17; local registration only\n".into(),
+            ] {
+                let mut line = String::new();
+                stdout.read_line(&mut line)?;
+                assert_eq!(line, expected);
+                transcript.push_str(&line);
+            }
+            let owner = owned.owner.lock().unwrap().clone();
+            let path = owned.authorizer.lock().unwrap().clone();
+            let mut last_token = 0;
+            for (request_id, write) in [(1u64, false), (2, true)] {
+                let deadline =
+                    slk_channel::deadline::Deadline::after(std::time::Duration::from_secs(2))?
+                        .stamp()
+                        .monotonic_ns;
+                let value = if write { vec![4u8, 5, 6] } else { vec![] };
+                let prompt: slk_protocol::ssap::SsapAuthorizationPrompt = (
+                    request_id,
+                    (2, 7, 13, 3, 41, 0, 10, 10, 0),
+                    17,
+                    write,
+                    deadline,
+                    value.clone(),
+                );
+                let message = server
+                    .call_method(
+                        Some(owner.as_str()),
+                        path.as_str(),
+                        Some("org.sparklink.SsapAuthorizer"),
+                        "AuthorizeValue",
+                        &(prompt,),
+                    )
+                    .await?;
+                assert_eq!(message.body().deserialize::<bool>()?, policy == "allow");
+                let mut line = String::new();
+                stdout.read_line(&mut line)?;
+                let decision: serde_json::Value =
+                    serde_json::from_str(line.strip_prefix("SdkAuthorizationDecision: ").unwrap())?;
+                assert_eq!(decision["api"], language);
+                for (name, expected) in [
+                    ("index", 2),
+                    ("generation", 7),
+                    ("request_id", request_id),
+                    ("lifetime", 13),
+                    ("handle", 3),
+                    ("epoch", 41),
+                    ("level", 0),
+                    ("property", 17),
+                    ("local_tcid", 10),
+                    ("remote_tcid", 10),
+                    ("pi", 0),
+                    ("deadline_ns", deadline),
+                ] {
+                    assert_eq!(decision[name].as_u64(), Some(expected), "{name}");
+                }
+                assert_eq!(decision["write"], write);
+                assert_eq!(decision["allow"], policy == "allow");
+                assert_eq!(decision["value"], if write { "040506" } else { "" });
+                let token = decision["token"].as_u64().unwrap();
+                assert!(token > last_token);
+                last_token = token;
+                assert!(decision["decision_ns"].as_u64().unwrap() < deadline);
+                transcript.push_str(&line);
+            }
+            process
+                .stdin
+                .as_mut()
+                .unwrap()
+                .write_all(b"value\nquit\n")?;
+            let mut rest = String::new();
+            stdout.read_to_string(&mut rest)?;
+            assert_eq!(
+                rest,
+                format!(
+                    "SsapOwnedValue: handle=17 value=070809\nSdkOwnedRemoved: api={language} start=16\n"
+                )
+            );
+            transcript.push_str(&rest);
+            let output = process.wait_with_output()?;
+            std::fs::write(
+                directory.join(format!("{language}-authorization-{policy}.stdout")),
+                transcript,
+            )?;
+            std::fs::write(
+                directory.join(format!("{language}-authorization-{policy}.stderr")),
+                &output.stderr,
+            )?;
+            assert!(
+                output.status.success() && output.stderr.is_empty(),
+                "actual {language}/{policy}: {output:?}"
+            );
+        }
+    }
     assert_eq!(
         (
             owned.registered.load(Ordering::SeqCst),
             owned.read.load(Ordering::SeqCst),
             owned.removed.load(Ordering::SeqCst)
         ),
-        (2, 2, 2)
+        (6, 6, 6)
     );
     for language in ["c", "python"] {
         let mut command = Command::new("timeout");

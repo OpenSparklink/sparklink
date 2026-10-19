@@ -70,8 +70,14 @@ pub(crate) fn errno(error: ApplicationError) -> i32 {
 pub(crate) struct SyncClient {
     sender: Option<tokio::sync::mpsc::Sender<Job>>,
     worker: Option<thread::JoinHandle<()>>,
+    authorizers: Option<std::sync::Arc<crate::ssap::authorization::inbox::Dispatcher>>,
 }
 impl SyncClient {
+    pub(crate) fn authorizers(
+        &self,
+    ) -> &std::sync::Arc<crate::ssap::authorization::inbox::Dispatcher> {
+        self.authorizers.as_ref().expect("initialized caller")
+    }
     pub(crate) fn open_system(deadline: Deadline) -> Result<Self> {
         Self::start(deadline, Client::open_system)
     }
@@ -112,7 +118,24 @@ impl SyncClient {
                             return;
                         }
                     };
-                    if ready.try_send(Ok(())).is_err() {
+                    let authorizers = match tokio::time::timeout_at(
+                        deadline.0.into(),
+                        crate::ssap::authorization::inbox::Dispatcher::install(&client),
+                    )
+                    .await
+                    {
+                        Ok(Ok(value)) if deadline.remaining().is_ok() => value,
+                        Ok(Err(error)) => {
+                            let _ = ready.try_send(Err(errno(error)));
+                            return;
+                        }
+                        _ => {
+                            let _ = ready.try_send(Err(nix::libc::ETIMEDOUT));
+                            return;
+                        }
+                    };
+                    let _watch = authorizers.watch();
+                    if ready.try_send(Ok(authorizers)).is_err() {
                         return;
                     }
                     while let Some(job) = receiver.recv().await {
@@ -122,9 +145,10 @@ impl SyncClient {
                 // Runtime and its owner watcher are dropped on their own thread.
             })
             .map_err(|e| e.raw_os_error().unwrap_or(nix::libc::EAGAIN))?;
-        let handle = Self {
+        let mut handle = Self {
             sender: Some(sender),
             worker: Some(worker),
+            authorizers: None,
         };
         let status = result
             .recv_timeout(deadline.remaining()?)
@@ -132,7 +156,7 @@ impl SyncClient {
                 mpsc::RecvTimeoutError::Timeout => nix::libc::ETIMEDOUT,
                 mpsc::RecvTimeoutError::Disconnected => nix::libc::EPIPE,
             })?;
-        status?;
+        handle.authorizers = Some(status?);
         deadline.remaining()?;
         Ok(handle)
     }

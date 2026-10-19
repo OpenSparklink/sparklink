@@ -39,6 +39,14 @@ pub struct SlkLocalService {
     registration: Arc<tokio::sync::Mutex<ServiceRegistration>>,
     receipt: SlkServiceReceipt,
     executor: Arc<SyncClient>,
+    pub(crate) approvals: Option<Arc<crate::ssap::authorization::inbox::Queue>>,
+}
+impl Drop for SlkLocalService {
+    fn drop(&mut self) {
+        if let Some(queue) = &self.approvals {
+            queue.stop();
+        }
+    }
 }
 fn input_property(
     p: &SlkServiceProperty,
@@ -57,7 +65,7 @@ fn input_property(
         slk_protocol::SsapOperations::from_bits(p.operations).map_err(|_| nix::libc::EINVAL)?;
     let access = slk_protocol::ssap::access::SsapAccess::from_bits(p.access)
         .map_err(|_| nix::libc::EINVAL)?;
-    if ops.bits() & !5 != 0 || access.needs_local_authorization() {
+    if ops.bits() & !5 != 0 {
         return Err(nix::libc::EOPNOTSUPP);
     }
     Ok((
@@ -70,8 +78,9 @@ fn input_property(
 
 /// Register one caller-owned service through the sole Rust LocalServices API.
 /// uuid length2/16 with a nonzero byte; properties1..64, values0..2042. Only
-/// READ/WRITE_WITH_RSP are supported. Local authorization bits are explicitly
-/// EOPNOTSUPP until this language view has a real authorizer; no fake approval.
+/// READ/WRITE_WITH_RSP are supported. authorization=0 has no policy inbox and
+/// refuses local authorization bits;1 requires explicit application decisions
+/// via the bounded inbox. Unknown modes EOPNOTSUPP;never automatic approval.
 /// A local receipt is not remote discovery/publication or peer delivery.
 /// deadline_ns is original absolute CLOCK_MONOTONIC, future <=30s. No retry or
 /// fallback.0/-errno; output unchanged on error. Timeout/lost receipt can leave
@@ -89,6 +98,7 @@ pub unsafe extern "C" fn slk_client_register_local_service(
     uuid_length: usize,
     properties: *const SlkServiceProperty,
     count: usize,
+    authorization: u32,
     deadline_ns: u64,
     output: *mut *mut SlkLocalService,
 ) -> c_int {
@@ -114,16 +124,52 @@ pub unsafe extern "C" fn slk_client_register_local_service(
         let deadline = Deadline::from_monotonic_ns(deadline_ns)?;
         let original = deadline.request()?;
         let executor = unsafe { &*client }.inner.clone();
+        let requirements = definitions
+            .iter()
+            .map(|p| {
+                Ok((
+                    slk_protocol::SsapOperations::from_bits(p.1).map_err(|_| nix::libc::EINVAL)?,
+                    slk_protocol::ssap::access::SsapAccess::from_bits(p.2)
+                        .map_err(|_| nix::libc::EINVAL)?,
+                ))
+            })
+            .collect::<Result<Vec<_>, i32>>()?;
+        let approvals = match authorization {
+            0 if requirements.iter().any(|p| p.1.needs_local_authorization()) => {
+                return Err(nix::libc::EOPNOTSUPP);
+            }
+            0 => None,
+            1 => Some(executor.authorizers().reserve(id, &requirements)?),
+            _ => return Err(nix::libc::EOPNOTSUPP),
+        };
+        let policy = approvals.clone();
         let registration = executor.call(deadline, move |caller| async move {
             let view = caller.controller(&id.path()).await?;
-            view.local_services()
+            let registration = view
+                .local_services()
                 .register_service(
                     uuid,
                     definitions,
-                    zbus::zvariant::OwnedObjectPath::try_from("/").expect("root object path"),
+                    zbus::zvariant::OwnedObjectPath::try_from(if policy.is_some() {
+                        crate::ssap::authorization::inbox::PATH
+                    } else {
+                        "/"
+                    })
+                    .expect("constant object path"),
                     original,
                 )
-                .await
+                .await?;
+            if let Some(queue) = &policy
+                && let Err(error) = queue.bind(&registration.receipt().2)
+            {
+                // Do not invent a cleanup deadline or acknowledge rollback.
+                // Local policy stays closed;the original caller's eventual
+                // bus-owner exit handles uncertain remote registration.
+                return Err(crate::ApplicationError::Io(
+                    std::io::Error::from_raw_os_error(error),
+                ));
+            }
+            Ok(registration)
         })?;
         let value = registration.receipt();
         let mut receipt = SlkServiceReceipt {
@@ -143,6 +189,7 @@ pub unsafe extern "C" fn slk_client_register_local_service(
             registration: Arc::new(tokio::sync::Mutex::new(registration)),
             receipt,
             executor,
+            approvals,
         })
     })();
     match result {
@@ -234,6 +281,9 @@ pub unsafe extern "C" fn slk_local_service_unregister(
     let result = (|| {
         let deadline = Deadline::from_monotonic_ns(deadline_ns)?;
         let original = deadline.request()?;
+        if let Some(queue) = &view.approvals {
+            queue.stop();
+        }
         let registration = view.registration.clone();
         view.executor.call(deadline, move |_| async move {
             registration.lock().await.unregister(original).await

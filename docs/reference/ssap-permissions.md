@@ -195,9 +195,10 @@ generation/lifetime/handle/security epoch及原期限。原期限外、旧token�
 
 C 的 `slk_client_register_local_service` 接收明确 ControllerId、非零2/16字节服务 UUID
 和1..64个 `SlkServiceProperty`。每属性沿用 `SsapOperations`／`SsapAccess`，初值0..2042
-字节，超限拒绝，不截断；目前只支持 READ／WRITE_WITH_RSP。C/Python 尚无真实的
-审批 callback 接口，需要 WRITE_AUTHORIZED／READ_AUTHORIZED 时返回 EOPNOTSUPP，
-不能隐式批准。加密／认证需求继续由现有 Engine 与真实 RX 机制状态核对。
+字节，超限拒绝，不截断；目前只支持 READ／WRITE_WITH_RSP。authorization 参数为
+SLK_SERVICE_AUTHORIZATION_NONE(0) 时拒绝授权位；REQUESTS(1) 显式启用应用审批收件箱。
+未知模式 EOPNOTSUPP，不能隐式批准。未发布 C 签名已迁移，不保留旧无模式调用形状。
+加密／认证需求继续由现有 Engine 与真实 RX 机制状态核对。
 
 `SlkServiceProperty` 大小2076，value偏移32；`SlkServiceReceipt`大小152，handles偏移24。
 整个输入需初始化，reserved/tail必须为零。UUID／value只有指定长度部分有意义。
@@ -215,4 +216,39 @@ Python通过 `Client.register_local_service(controller, uuid, [LocalProperty(...
 派生view保留同caller，因此Client可先close；其他派生引用也可能让caller及服务继续存续。
 最后executor释放时排空有界本地工作，真实bus owner退出由daemon清理。未知／丢失回执
 不猜测删除目标。禁止C无效指针、并发free或fork后使用；Python在获取继承锁前拒绝fork
-对象，析构也不操作继承副本。未完成的回调／通知、完整退出及部署矩阵仍单列验收。
+对象，析构也不操作继承副本。审批请求模式的 free 会先停本地审批并唤醒通知；不代表远端登记移除。
+完整回调／通知、退出及部署矩阵仍单列验收。
+
+
+### C/Python 的显式审批请求
+
+Python 登记时选 authorization="requests"；默认仍为 "none"。每个 caller 使用一个
+原总线连接上的审批入口，最多16个审批 scope（包括初始化、退休和被请求引用持有者）。
+每服务只有一个待决 slot，容量直到实际 callback future 销毁且已交付请求释放后才归还。
+没有新 SSAP Engine、数据库、读值 provider 或 Native 管理权。
+
+C 用 slk_local_service_authorization_fd 取得调用者负责关闭的 CLOEXEC 通知 fd；只 poll，
+不要读写 counter。fd不携带批准权限或保活 caller。先用非阻塞 next_authorization 取
+SlkAuthorizationRequest，再等待通知；EAGAIN表示没有可交付请求。fd转交仅转交就绪观察，
+不能据此在另一进程批准。对象禁止fork后使用；普通dup/exec不改变原sender或请求身份。
+
+request_info 返回2120字节的只读原上下文，value偏移72；包含controller/generation、
+lifetime/handle、epoch/level、TCID/PI、属性、原期限和本地token。读请求无值，写请求
+只有被提议的0..2042字节；reserved/tail及未用字节归零。request_reply只接受0/1，
+直接进入原pending的一次性答复，不经同步RPC executor。0只表示本地决策准入，
+不是daemon提交、USB完成、协议确认或对端应用处理。重复／陈旧答复ESTALE，过期
+ETIMEDOUT，停止后ESHUTDOWN（daemon scope失效ESTALE）。错误不改输出，不重置期限。
+
+Python service.next_authorization() 非阻塞；带 deadline_ns 时按一个不超过30秒的
+原绝对期限等待通知，不持service锁poll。返回AuthorizationRequest，使用其info读取
+原快照、reply(bool)答复并close/context退出。未答复的请求被释放即拒绝；请求保活的是
+本地审批上下文，不是Client、登记或物理连接。调用者应及时释放每个请求，不能靠保留
+旧句柄后再使用新token取得资格。任何批准都要经过同一Rust guard及daemon最终复核。
+
+合法unregister请求先停止本地审批，再尝试异步撤回；失败也不重开审批。free与daemon
+owner失效会唤醒等待者。该通知不是controller/connection状态流；物理退休、旧lifetime
+和原安全状态仍由原Engine/Native检查。不要把同caller同步RPC的完成作为审批答复前置，
+避免该RPC本身正在等待审批；答复入口不会排在该executor后面。
+
+新增接口、离线检查与实机资格分别记录于唯一能力入口；旧产物的PASS不覆盖新ABI，
+审批模式也不代表完整provider、通知/指示、安全/Bond或生命周期资格。

@@ -8,6 +8,8 @@ from dataclasses import dataclass
 import errno
 import os
 import threading
+import time
+import select
 from .client import ControllerId, _ControllerId, _deadline, _result
 from .ssap import SsapOperations, SsapAccess
 
@@ -61,12 +63,14 @@ def _configure(lib):
     functions = {
         'slk_client_register_local_service': [ctypes.c_void_p, ctypes.POINTER(_ControllerId),
             ctypes.c_void_p, ctypes.c_size_t, ctypes.POINTER(_Property), ctypes.c_size_t,
-            ctypes.c_uint64, ctypes.POINTER(ctypes.c_void_p)],
+            ctypes.c_uint32, ctypes.c_uint64, ctypes.POINTER(ctypes.c_void_p)],
         'slk_local_service_receipt': [ctypes.c_void_p, ctypes.POINTER(_Receipt)],
         'slk_local_service_read': [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_void_p,
             ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
         'slk_local_service_unregister': [ctypes.c_void_p, ctypes.c_uint64],
         'slk_local_service_free': [ctypes.c_void_p],
+        'slk_local_service_authorization_fd': [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)],
+        'slk_local_service_next_authorization': [ctypes.c_void_p, ctypes.POINTER(ctypes.c_void_p)],
     }
     for name, args in functions.items():
         f = getattr(lib, name)
@@ -77,8 +81,8 @@ def _configure(lib):
 class LocalService:
     """Create through Client.register_local_service, retaining the same caller.
 
-    Supports READ/WRITE_WITH_RSP initial values. Authorizer-dependent permissions
-    explicitly return EOPNOTSUPP until the language callback API exists. Other
+    Supports READ/WRITE_WITH_RSP initial values. authorization='requests' enables
+    explicit bounded application decisions;default 'none' refuses approval bits. Other
     mechanism requirements remain enforced by the existing daemon/Engine.
     Receipt is local metadata only. unregister acknowledges original-owner local
     removal; timeout does not prove rollback/removal or remote peer completion.
@@ -95,7 +99,7 @@ class LocalService:
             self.close()
 
     @classmethod
-    def _register(cls, client, controller, uuid, properties, deadline_ns):
+    def _register(cls, client, controller, uuid, properties, deadline_ns, authorization):
         if not isinstance(controller, ControllerId):
             raise TypeError('immutable ControllerId required')
         if not isinstance(uuid, bytes) or len(uuid) not in (2, 16) or not any(uuid):
@@ -104,6 +108,8 @@ class LocalService:
             raise ValueError('1..64 LocalProperty definitions required')
         if any(not isinstance(p, LocalProperty) for p in properties):
             raise TypeError('LocalProperty definitions required')
+        if authorization not in ('none', 'requests'):
+            raise ValueError('authorization must be none or requests')
         deadline_ns = _deadline(deadline_ns)
         values = (_Property * len(properties))(*(p._encode() for p in properties))
         identity = _ControllerId(controller.generation, controller.index)
@@ -113,7 +119,8 @@ class LocalService:
             client._live()
             _configure(client._lib)
             _result(client._lib.slk_client_register_local_service(client._handle,
-                ctypes.byref(identity), uuid, len(uuid), values, len(values), deadline_ns,
+                ctypes.byref(identity), uuid, len(uuid), values, len(values),
+                1 if authorization == 'requests' else 0, deadline_ns,
                 ctypes.byref(output)))
             if not output.value:
                 raise OSError(errno.EPROTO, 'missing local-service view')
@@ -147,6 +154,65 @@ class LocalService:
             raise RuntimeError('local-service objects cannot be used after fork')
         if not self._handle.value:
             raise RuntimeError('local-service view closed')
+
+    def authorization_fd(self):
+        """New caller-owned CLOEXEC poll-only fd;never read/write its counter.
+
+        It conveys readiness,not decision authority or a caller reference.
+        Always attempt next before waiting. Close this duplicate with os.close.
+        """
+        self._live()
+        with self._lock:
+            self._live()
+            fd = ctypes.c_int(-1)
+            _result(self._lib.slk_local_service_authorization_fd(self._handle, ctypes.byref(fd)))
+            return fd.value
+
+    def next_authorization(self, *, deadline_ns=None):
+        """One opaque request;None is nonblocking(EAGAIN),otherwise original <=30s.
+
+        No service lock spans poll. Service close/unregister/daemon loss wakes
+        it. Release each request after replying;one delivered view holds capacity
+        through actual callback drain. This is not a remote-completion wait.
+        """
+        from .service_authorization import AuthorizationRequest
+        if deadline_ns is not None:
+            deadline_ns = _deadline(deadline_ns)
+            left = deadline_ns - time.monotonic_ns()
+            if left <= 0:
+                raise OSError(errno.ETIMEDOUT, 'original authorization wait expired')
+            if left > 30_000_000_000:
+                raise ValueError('authorization wait exceeds30 seconds')
+        fd = None
+        try:
+            while True:
+                if deadline_ns is not None and time.monotonic_ns() >= deadline_ns:
+                    raise OSError(errno.ETIMEDOUT, 'original authorization wait expired')
+                self._live()
+                with self._lock:
+                    self._live()
+                    output = ctypes.c_void_p()
+                    code = self._lib.slk_local_service_next_authorization(self._handle, ctypes.byref(output))
+                    if code != -errno.EAGAIN or deadline_ns is None:
+                        _result(code)
+                        request = AuthorizationRequest._from_view(self._lib, output, self.receipt)
+                        if deadline_ns is not None and time.monotonic_ns() >= deadline_ns:
+                            request.close()
+                            raise OSError(errno.ETIMEDOUT, 'original authorization wait expired')
+                        return request
+                if fd is None:
+                    fd = self.authorization_fd()
+                left = deadline_ns - time.monotonic_ns()
+                if left <= 0:
+                    raise OSError(errno.ETIMEDOUT, 'original authorization wait expired')
+                poller = select.poll()
+                poller.register(fd, select.POLLIN | select.POLLERR | select.POLLHUP)
+                events = poller.poll((left + 999_999) // 1_000_000)
+                if any(flags & (select.POLLERR | select.POLLHUP | select.POLLNVAL) for _, flags in events):
+                    raise OSError(errno.EIO, 'authorization notification fd failed')
+        finally:
+            if fd is not None:
+                os.close(fd)
 
     def read_local(self, handle, *, deadline_ns, capacity=2042):
         """Current local value; a fresh read after ENOBUFS can observe new data."""

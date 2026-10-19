@@ -19,7 +19,9 @@ VM 内需要运行当前 `slkd`、安装匹配的 Python 绑定与应用库，�
 ## 登记并观察本应用的值
 
 将下面代码保存为 `owned_service.py`。使用演示值；`SsapAccess(0)` 不要求加密或认证。
-需要本地审批 callback 的权限位目前返回 EOPNOTSUPP。
+默认 `authorization="none"` 模式拒绝本地审批权限位。需要逐请求审批时使用
+[显式请求接口](../reference/ssap-permissions.md#cpython的显式审批请求)，不能把基础示例
+改为默认批准；该新接口的实机资格仍须按准确 artifact 单列核对。
 
 ```python
 import sys
@@ -72,8 +74,8 @@ python3 owned_service.py "$INDEX" "$GENERATION"
 
 ## 处理失败和退出
 
-EACCES 时核对服务组及实际 system-bus 策略；EOPNOTSUPP 时核对操作位与未接通的
-审批能力。超限初值会被拒绝，不能截断为短值。owner/generation 失效后重新取得当前
+EACCES 时核对服务组及实际 system-bus 策略；EOPNOTSUPP 时核对操作位、审批模式和
+权限位组合。超限初值会被拒绝，不能截断为短值。owner/generation 失效后重新取得当前
 身份，不能把旧回执绑定到替换 daemon。错误与布局见[权限参考](../reference/ssap-permissions.md)。
 
 超时或回复丢失可能发生在远端效果之后，不能当作回滚或盲目重试。显式 unregister

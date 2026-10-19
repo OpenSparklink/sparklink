@@ -9,6 +9,16 @@ use slk_protocol::{
 };
 use std::time::Instant;
 use tokio::sync::{oneshot, watch};
+pub(crate) mod inbox;
+
+pub(crate) fn check_sender(owner: &str, sender: Option<&str>) -> zbus::fdo::Result<()> {
+    if sender != Some(owner) {
+        return Err(zbus::fdo::Error::AccessDenied(
+            "not the original daemon".into(),
+        ));
+    }
+    Ok(())
+}
 
 /// Borrowed frontend observation. It owns no mutable registration state. The
 /// frontend must take a fresh snapshot again before accepting a decision.
@@ -33,11 +43,7 @@ pub fn admit(
     sender: Option<&str>,
     prompt: &Prompt,
 ) -> zbus::fdo::Result<Option<Instant>> {
-    if sender != Some(context.daemon_owner) {
-        return Err(zbus::fdo::Error::AccessDenied(
-            "not the original daemon".into(),
-        ));
-    }
+    check_sender(context.daemon_owner, sender)?;
     let id = prompt.1;
     if context.owner_lost
         || prompt.0 == 0

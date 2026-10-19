@@ -543,7 +543,8 @@ UUID须2/16字节，范围非零且start≤end；无效本地参数为InvalidArg
 Connection.ReceiveSsapUpdate(handles:aq,modes:y,deadline:(ttttt))返回单个结构`(bay)`
 （indication:b、raw:ay），不是两个D-Bus返回参数。
 1..32个唯一非零handle、modes1通知/2指示/3两者、绝对期限最多10秒；InvalidArgs拒绝
-非法参数。必须有本lifetime实际发现的property及匹配Notify/Indicate能力，缺少时
+非法参数。准入使用本lifetime完整层级发现更新的建议性缓存；过滤发现的结果不替换
+该缓存。必须有其中实际发现的property及匹配Notify/Indicate能力，缺少时
 NotSupported。只允许一个call-owned等待者；busy、原期限、caller退出、Actor失败
 或断链为Failed，不静默成功。CLI为`ssap-receive CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]`。
 

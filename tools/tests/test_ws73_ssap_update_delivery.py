@@ -29,7 +29,12 @@ def fixture(phase=0):
         q=[b'\x06\x13\x01\0\xff\xff'+uuid,b'\x06\x13'+end+b'\xff\xff'+uuid]
         r=[b'\x07\x0b\x81'+h.to_bytes(2,'little')+uuid+(541).to_bytes(4,'little')+b'\x01\x02',b'\x01\0\x06'+end+b'\x0b']
         item['discovery']=dict(exit=0,stderr='',args=['slctl','--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path'],'property',item['uuid']],
-            stdout=f'SsapRemoteDiscovery: path={peer["object"]["path"]} kind=3 entries=1 requests={"|".join(v.hex()for v in q)} responses={"|".join(v.hex()for v in r)}\n')
+            start_wall_ns=5,end_wall_ns=8,stdout=f'SsapRemoteDiscovery: path={peer["object"]["path"]} kind=3 entries=1 requests={"|".join(v.hex()for v in q)} responses={"|".join(v.hex()for v in r)}\n')
+        fq=[b'\x04\x11\x01\0\xff\xff',b'\x04\x11'+end+b'\xff\xff',b'\x04\x13\x10\0\x11\0']
+        fr=[b'\x05\x0b\x81\x10\0\x11\0'+bytes.fromhex(item['service'])+b'\x02',b'\x01\0\x04'+end+b'\x0b',
+            b'\x05\x0b\x81\x11\0'+uuid+(541).to_bytes(4,'little')+b'\x01\x02']
+        item['full_discovery']=dict(exit=0,stderr='',args=['slctl','--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path']],
+            start_wall_ns=2,end_wall_ns=4,stdout=f'SsapRemoteDiscovery: path={peer["object"]["path"]} kind=1 entries=2 requests={"|".join(v.hex()for v in fq)} responses={"|".join(v.hex()for v in fr)}\n')
         lines=[f'SdkOwnedAPI: api={api} client_closed=true','SsapOwnedService: start=16 end=17 property=17; local registration only']
         for mode in(1,2):
             value,reply=random(32),random(32);pdu=(bytes([16 if mode==2 else 15,3,17,0,32,0])+bytes.fromhex(value)).hex()
@@ -62,14 +67,14 @@ class UpdateDelivery(unittest.TestCase):
         summaries=[]
         for phase in(0,1):
             proof,credit=gate.corroborate(fixture(phase),matched)
-            self.assertEqual([len(p['wire'])for p in proof],[23,23]);self.assertEqual(credit,{0:23,1:23})
+            self.assertEqual([len(p['wire'])for p in proof],[29,29]);self.assertEqual(credit,{0:29,1:29})
             summaries.append(dict(phase=phase,ssap_update_delivery=proof))
         self.assertTrue(gate.valid_summary(dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=summaries)))
         summaries[0]['ssap_update_delivery'][0]['wire'][0]['rx']={}
         self.assertFalse(gate.valid_summary(dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=summaries)))
 
     def test_missing_or_wrong_delivery_approval_cpcd_role_and_stream_never_pass(self):
-        controls=['missing-peer','false-peer-result','wrong-value','wrong-ack','wrong-stage','not-disabled','not-authenticated','foreign-owner','wrong-type','missing-decision','raw-stream-mismatch','bad-discovery','wrong-role','missing-kind']
+        controls=['missing-peer','false-peer-result','wrong-value','wrong-ack','wrong-stage','not-disabled','not-authenticated','foreign-owner','wrong-type','missing-decision','raw-stream-mismatch','bad-discovery','wrong-role','missing-kind','missing-hierarchy','wrong-hierarchy','late-hierarchy']
         for control in controls:
             row=fixture();item=row['ssap_update_delivery'][0];case=item['cases'][0]
             if control=='missing-peer':case['application']['stdout']=''
@@ -85,6 +90,9 @@ class UpdateDelivery(unittest.TestCase):
             elif control=='raw-stream-mismatch':item['stdout']=item['stdout'].replace('SsapOwnedValue:','LostValue:')
             elif control=='bad-discovery':item['discovery']['stdout']=''
             elif control=='wrong-role':case['application']['credentials']['uids']=[0]*4
+            elif control=='missing-hierarchy':item.pop('full_discovery')
+            elif control=='wrong-hierarchy':item['full_discovery']['stdout']=item['full_discovery']['stdout'].replace('kind=1','kind=3')
+            elif control=='late-hierarchy':item['full_discovery']['end_wall_ns']=9
             else:item['cases'].pop()
             with self.subTest(control=control),self.assertRaises((CaptureError,KeyError,ValueError)):gate.corroborate(row,matched)
 

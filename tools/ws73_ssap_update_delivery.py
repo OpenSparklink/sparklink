@@ -57,9 +57,10 @@ def command_receipt(process,item,command,prefix):
     return dict(start_wall_ns=wall,end_wall_ns=time.time_ns(),start_monotonic_ns=start,
         end_monotonic_ns=time.monotonic_ns(),receipt=json.loads(rows[-1]))
 
-def configuration(process,item,wanted):
+def configuration(process,item,wanted,peer=None):
     observations=[];deadline=time.monotonic()+3
     while True:
+        if peer is not None and peer.poll()is not None:raise CaptureError('peer exited before actual CPCD state barrier')
         observed=command_receipt(process,item,'configuration','SdkOwnedConfiguration');observations.append(observed)
         if observed['receipt'].get('modes')==wanted:return observations
         if time.monotonic()>=deadline or len(observations)>=12:raise CaptureError('actual CPCD state barrier not reached')
@@ -73,6 +74,11 @@ def execute(run,row):
         peer,server=row['owners'][sender],row['owners'][1-sender]
         api='c'if(row['phase']+sender)%2==0 else'python';peer_api='python'if api=='c'else'c'
         with publisher(run,row,sender,'allow',collection='ssap_update_delivery',label='delivery',sdk_api=api,updates=True) as (owner,item):
+            # The one advisory cache is published only by complete hierarchy
+            # discovery. A filtered result does not replace it or grant access.
+            item['full_discovery']=run.command([str(run.args.slctl),'--adapter',peer['owner']['path'],
+                'ssap-discover',peer['object']['path']],10,collection='ssap_update_delivery_discovery')
+            if item['full_discovery']['exit']:raise CaptureError('actual complete peer hierarchy refresh failed')
             item['discovery']=run.command([str(run.args.slctl),'--adapter',peer['owner']['path'],
                 'ssap-discover',peer['object']['path'],'property',item['uuid']],10,collection='ssap_update_delivery_discovery')
             if item['discovery']['exit']:raise CaptureError('actual owned CPCD property discovery failed')
@@ -95,7 +101,7 @@ def execute(run,row):
                             stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
                         app.update(pid=process.pid,credentials=credentials(process.pid));run.save()
                         wait_text(process,out,r'^\{.*"stage"\s*:\s*"ssap_update_wait".*\}$',time.monotonic()+5)
-                        case['enabled']=configuration(owner,item,mode);run.save()
+                        case['enabled']=configuration(owner,item,mode,process);run.save()
                         case['send']=command_receipt(owner,item,'indicate'if mode==2 else'notify','SdkOwnedUpdate');run.save()
                         process.wait(timeout=10)
                         if process.returncode:raise CaptureError('ordinary peer application did not validate/reply')
@@ -158,6 +164,17 @@ def corroborate(row,matched):
             frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
             legs.append(dict(tx=matched(owners[a],'out',frame,window),rx=matched(owners[b],'in',frame,window)));credit[a]+=1
         discovery=item['discovery'];uuid=bytes.fromhex(item['uuid']);end=(h+1).to_bytes(2,'little')
+        full=item['full_discovery'];start=item['start'].to_bytes(2,'little');handle=h.to_bytes(2,'little')
+        fq=[b'\x04\x11\x01\0\xff\xff',b'\x04\x11'+end+b'\xff\xff',b'\x04\x13'+start+handle]
+        fr=[b'\x05\x0b\x81'+start+handle+bytes.fromhex(item['service'])+b'\x02',
+            b'\x01\0\x04'+end+b'\x0b',b'\x05\x0b\x81'+handle+uuid+(541).to_bytes(4,'little')+b'\x01\x02']
+        full_summary=re.findall(r'^SsapRemoteDiscovery: path=(\S+) kind=(\d+) entries=(\d+) requests=([0-9a-f|]+) responses=([0-9a-f|]+)$',full['stdout'],re.M)
+        if (type(full.get('exit'))is not int or full['exit']!=0 or full['stderr']
+                or full['args']!=[discovery['args'][0],'--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path']]
+                or full_summary!=[(peer['object']['path'],'1','2','|'.join(v.hex()for v in fq),'|'.join(v.hex()for v in fr))]
+                or not item['start_wall_ns']<=full['start_wall_ns']<=full['end_wall_ns']<=discovery['start_wall_ns']<=discovery['end_wall_ns']<=item['end_wall_ns']):
+            raise CaptureError('original complete hierarchy must refresh this lifetime before filtered discovery')
+        for req,rsp in zip(fq,fr,strict=True):exchange(s,t,req,full);exchange(t,s,rsp,full)
         queries=[b'\x06\x13\x01\0\xff\xff'+uuid,b'\x06\x13'+end+b'\xff\xff'+uuid]
         responses=[b'\x07\x0b\x81'+h.to_bytes(2,'little')+uuid+(541).to_bytes(4,'little')+b'\x01\x02',b'\x01\0\x06'+end+b'\x0b']
         if discovery['exit']or discovery['stderr']or discovery['args']!=[item['discovery']['args'][0],'--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path'],'property',item['uuid']]:raise CaptureError('original filtered discovery required')
@@ -226,7 +243,7 @@ def valid_summary(proof):
             publisher='c'if(phase+sender)%2==0 else'python'
             if value.get('publisher')!=publisher or value.get('peer')!=('python'if publisher=='c'else'c'):return False
             legs=value.get('wire')
-            if not isinstance(legs,list) or len(legs)!=23:return False
+            if not isinstance(legs,list) or len(legs)!=29:return False
             if any(not isinstance(leg,dict) or set(leg)!={'tx','rx'}
                     or any(not isinstance(leg[k],dict) or not leg[k]for k in ['tx','rx'])for leg in legs):return False
     return True

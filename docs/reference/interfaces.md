@@ -540,7 +540,8 @@ UUID须2/16字节，范围非零且start≤end；无效本地参数为InvalidArg
 
 ### 单次客户端配置与更新事务（新源码接线，实机待验收）
 
-Connection.ReceiveSsapUpdate(handles:aq,modes:y,deadline:(ttttt))返回(indication:b,raw:ay)。
+Connection.ReceiveSsapUpdate(handles:aq,modes:y,deadline:(ttttt))返回单个结构`(bay)`
+（indication:b、raw:ay），不是两个D-Bus返回参数。
 1..32个唯一非零handle、modes1通知/2指示/3两者、绝对期限最多10秒；InvalidArgs拒绝
 非法参数。必须有本lifetime实际发现的property及匹配Notify/Indicate能力，缺少时
 NotSupported。只允许一个call-owned等待者；busy、原期限、caller退出、Actor失败
@@ -556,6 +557,9 @@ NotSupported。只允许一个call-owned等待者；busy、原期限、caller退
 旧ObserveSsapIncoming/ssap-observe入口已退休，无兼容别名；历史记录保留原命令身份。
 多条同handle实例、分包和事件投递未支持；malformed packet当前失败SSAP actor。
 真实正向更新/TX/CCC/security尚未验收。仅原路径回归与能力拒绝有实机证据。
+受保护SMTC在机制建立前请求初始化时，错误包装与初始化终态的保留仍需整改；
+不得通过基本模式回退、第二Engine或同lifetime重绑绕过。这条新更新路径暂不作为
+已可用服务承诺。
 
 
 ## Delegated channel TX status（未发布 v1）

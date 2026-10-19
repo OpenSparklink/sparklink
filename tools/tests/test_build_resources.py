@@ -32,7 +32,9 @@ class BuildResources(unittest.TestCase):
                     with build.real_device_vm():self.fail('VM launch stole existing build')
 
     def test_solo_vm_affinity_and_explicit_budget_share_one_cargo_limit(self):
-        with patch.object(build.os, 'sched_getaffinity', return_value=set(range(16))):
+        # These explicit-mode cases need their own empty lease directory.
+        # The separate real-flock test above checks VM detection and inheritance.
+        with tempfile.TemporaryDirectory() as directory, patch.object(build,'workspace',return_value=Path(directory)), patch.object(build.os, 'sched_getaffinity', return_value=set(range(16))):
             for supplied, expected in [({}, 12), ({'SPARKLINK_BUILD_WITH_VM': '1'}, 8),
                                        ({'SPARKLINK_BUILD_JOBS': '6', 'CARGO_BUILD_JOBS': '6'}, 6)]:
                 env, record = build.environment(supplied)

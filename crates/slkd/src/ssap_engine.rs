@@ -37,6 +37,34 @@ enum Status {
     Failed(String),
 }
 enum Query {
+    Subscribe {
+        owner: crate::ssap_subscription::CallerLease,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::subscription::Info, String>>,
+    },
+    SubscriptionRead {
+        caller: String,
+        token: u64,
+        wait: bool,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::subscription::Batch, String>>,
+    },
+    SubscriptionRenew {
+        caller: String,
+        token: u64,
+        duration_ms: u32,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::subscription::Info, String>>,
+    },
+    SubscriptionClose {
+        caller: String,
+        token: u64,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::subscription::Batch, String>>,
+    },
     Update {
         caller: String,
         handle: u16,
@@ -157,6 +185,94 @@ pub(crate) struct Observer {
     queries: mpsc::Sender<Query>,
 }
 impl Observer {
+    pub(crate) async fn subscribe(
+        &self,
+        owner: crate::ssap_subscription::CallerLease,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::subscription::Info, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::Subscribe {
+                owner,
+                handles,
+                modes,
+                duration_ms,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "subscription command queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "subscription original creation deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during subscription".to_string())?
+    }
+    pub(crate) async fn subscription_read(
+        &self,
+        caller: String,
+        token: u64,
+        wait: bool,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::subscription::Batch, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::SubscriptionRead {
+                caller,
+                token,
+                wait,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "subscription read command queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "subscription read original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during subscription read".to_string())?
+    }
+    pub(crate) async fn subscription_renew(
+        &self,
+        caller: String,
+        token: u64,
+        duration_ms: u32,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::subscription::Info, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::SubscriptionRenew {
+                caller,
+                token,
+                duration_ms,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "subscription renewal command queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "subscription renewal original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during subscription renewal".to_string())?
+    }
+    pub(crate) async fn subscription_close(
+        &self,
+        caller: String,
+        token: u64,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::subscription::Batch, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::SubscriptionClose {
+                caller,
+                token,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "subscription close command queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "subscription close original deadline;cleanup may continue".to_string())?
+            .map_err(|_| "SSAP actor stopped during subscription close".to_string())?
+    }
     pub(crate) async fn update(
         &self,
         caller: String,
@@ -558,11 +674,39 @@ fn retire_update_event(
     }
     Ok(())
 }
+pub(super) enum IncomingDelivery {
+    Once(oneshot::Sender<Result<Incoming, String>>),
+    Stream(crate::ssap_subscription::Sink),
+}
+impl From<oneshot::Sender<Result<Incoming, String>>> for IncomingDelivery {
+    fn from(value: oneshot::Sender<Result<Incoming, String>>) -> Self {
+        Self::Once(value)
+    }
+}
+impl IncomingDelivery {
+    fn is_closed(&self) -> bool {
+        match self {
+            Self::Once(reply) => reply.is_closed(),
+            Self::Stream(sink) => {
+                !*sink.alive.borrow() || sink.queue.lock().map_or(true, |q| q.is_closing())
+            }
+        }
+    }
+    pub(super) fn send(
+        self,
+        value: Result<Incoming, String>,
+    ) -> Result<(), Result<Incoming, String>> {
+        match self {
+            Self::Once(reply) => reply.send(value),
+            Self::Stream(_) => Err(value),
+        }
+    }
+}
 pub(super) struct IncomingWait {
     pub(super) handles: Vec<u16>,
     pub(super) modes: u8,
     pub(super) deadline: Instant,
-    pub(super) reply: oneshot::Sender<Result<Incoming, String>>,
+    pub(super) reply: IncomingDelivery,
 }
 /// Actual actor delivery: one complete packet fits the call-owned oneshot slot.
 /// ACK success means accepted into this application queue, not app validation.
@@ -570,6 +714,7 @@ fn incoming_packet(
     mtu: u16,
     logical_budget: u16,
     raw: &[u8],
+    receipt: Option<slk_protocol::SleMessageSecurity>,
     waiter: &mut Option<IncomingWait>,
 ) -> io::Result<Vec<u8>> {
     use slk_protocol::ssap::updates::{Update, ack};
@@ -586,8 +731,13 @@ fn incoming_packet(
                 .all(|item| w.handles.contains(&item.handle))
     });
     let accepted = if eligible {
-        let w = waiter.take().expect("eligible waiter");
-        w.reply.send(Ok((packet.indication, raw.to_vec()))).is_ok()
+        if let IncomingDelivery::Stream(sink) = &waiter.as_ref().expect("eligible waiter").reply {
+            sink.offer((packet.indication, raw.to_vec()), receipt, Instant::now())
+                .map_err(io::Error::other)?
+        } else {
+            let w = waiter.take().expect("eligible waiter");
+            w.reply.send(Ok((packet.indication, raw.to_vec()))).is_ok()
+        }
     } else {
         false
     };
@@ -1367,6 +1517,8 @@ async fn exchange_loop(
     let mut configurations = crate::ssap_engine_config::ClientConfigurations::default();
     let mut update: Option<UpdateRequest> = None;
     let mut receive: Option<crate::ssap_receive_transaction::ReceiveTransaction> = None;
+    let mut last_subscription: Option<crate::ssap_subscription::Closed> = None;
+    let mut next_subscription = 1u64;
     loop {
         retire_client_wait(&mut client, &mut pending, Instant::now());
         retire_update_wait(&mut update, &mut pending, Instant::now());
@@ -1376,7 +1528,9 @@ async fn exchange_loop(
                 .map_err(io::Error::other)?;
             retire_client_wait(&mut client, &mut pending, Instant::now());
             if current.finished() && client.is_none() {
-                receive.take().expect("finished transaction").finish();
+                if let Some(closed) = receive.take().expect("finished transaction").finish() {
+                    last_subscription = Some(closed);
+                }
             } else if client.is_none()
                 && let Some((handle, value, deadline)) = current.next(&mut incoming_wait)
             {
@@ -1414,6 +1568,14 @@ async fn exchange_loop(
                     mtu,
                 }
                 .begin(raw, deadline, 2, reply);
+                if admitted
+                    && let Some(expected) = current.expected_epoch()
+                    && client.as_ref().and_then(|c| c.epoch) != Some(expected)
+                {
+                    return Err(io::Error::other(
+                        "subscription original security changed before configuration admission",
+                    ));
+                }
                 current.submitted(handle, result, admitted);
             }
         }
@@ -1504,6 +1666,66 @@ async fn exchange_loop(
             }
             query = incoming.recv() => {
                 let Some(query)=query else { return Ok(()); };
+                if let Query::Subscribe {owner,handles,modes,duration_ms,deadline,reply}=query {
+                    if reply.is_closed(){continue;}
+                    let prepared=(||{
+                        if !initial_done || receive.is_some() || client.is_some() || incoming_wait.is_some()
+                            || Instant::now()>=deadline || !owner.current()
+                            || !slk_contract::ssap::subscription::valid_request(&handles,modes,duration_ms){
+                            return Err("subscription busy/not-ready/expired/invalid".to_string());
+                        }
+                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native subscription context required")?;
+                        let token=next_subscription;
+                        next_subscription=next_subscription.checked_add(1).ok_or("subscription namespace exhausted")?;
+                        let expires=Instant::now()+Duration::from_millis(u64::from(duration_ms));
+                        let info=slk_contract::ssap::subscription::Info{version:1,controller:capabilities.controller,
+                            generation:capabilities.generation,lifetime:capabilities.lifetime,handle:capabilities.handle,
+                            security_epoch:context.security_epoch,token,expires_ns:monotonic_deadline(expires).map_err(|e|e.to_string())?,
+                            handles:handles.clone(),modes,state:slk_contract::ssap::subscription::STARTING,
+                            capacity:slk_contract::ssap::subscription::CAPACITY as u16};
+                        Ok((info,expires))
+                    })();
+                    match prepared {
+                        Err(error)=>{let _=reply.send(Err(error));},
+                        Ok((info,expires))=>receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new_stream(
+                            handles,modes,deadline,owner,info,expires,reply)),
+                    }
+                    continue;
+                }
+                if let Query::SubscriptionRead{caller,token,wait,deadline,reply}=query {
+                    if reply.is_closed(){continue;}
+                    if let Some(current)=receive.as_mut().filter(|r|r.matches(&caller,token)) {
+                        let valid=(||{
+                            if Instant::now()>=deadline{return Err("subscription read original deadline".to_string());}
+                            let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
+                            if current.expected_epoch()!=Some(context.security_epoch){return Err("subscription original security changed".into());}
+                            Ok(())
+                        })();
+                        match valid { Ok(())=>current.read(wait,deadline,reply),Err(error)=>{let _=reply.send(Err(error));} }
+                    } else if let Some(last)=last_subscription.as_ref().filter(|r|r.owner==caller&&r.token==token) {
+                        let _=reply.send(last.result.clone());
+                    } else {let _=reply.send(Err("subscription owner/token unavailable".into()));}
+                    continue;
+                }
+                if let Query::SubscriptionRenew{caller,token,duration_ms,deadline,reply}=query {
+                    if reply.is_closed(){continue;}
+                    let result=(||{
+                        if Instant::now()>=deadline{return Err("subscription renewal original deadline".to_string());}
+                        let current=receive.as_mut().filter(|r|r.matches(&caller,token)).ok_or("subscription owner/token unavailable")?;
+                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
+                        if current.expected_epoch()!=Some(context.security_epoch){return Err("subscription original security changed".into());}
+                        current.renew(duration_ms)
+                    })();
+                    let _=reply.send(result);continue;
+                }
+                if let Query::SubscriptionClose{caller,token,deadline,reply}=query {
+                    if reply.is_closed(){continue;}
+                    if Instant::now()>=deadline {let _=reply.send(Err("subscription close original deadline".into()));continue;}
+                    if let Some(current)=receive.as_mut().filter(|r|r.matches(&caller,token)){current.close(reply);}
+                    else if let Some(last)=last_subscription.as_ref().filter(|r|r.owner==caller&&r.token==token){let _=reply.send(last.result.clone());}
+                    else {let _=reply.send(Err("subscription owner/token unavailable".into()));}
+                    continue;
+                }
                 if let Query::Configuration { caller, handle, deadline, reply } = query {
                     if reply.is_closed() {continue;}
                     let result = (|| {
@@ -1550,7 +1772,7 @@ async fn exchange_loop(
                     receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new(handles,modes,deadline,reply));continue;
                 }
                 if let Query::Value{bytes,deadline,minimum,reply}=query {
-                    if receive.is_some() {let _=reply.send(Err("SSAP client sequence owned by receive transaction".into()));continue;}
+                    if receive.as_ref().is_some_and(|r|r.owns_client_sequence()) {let _=reply.send(Err("SSAP client sequence owned by receive transaction".into()));continue;}
                     ClientAdmission {wire:&wire,client:&mut client,pending:&mut pending,response_load:server_load,ready:initial_done,mtu:if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{capabilities.mtu}}
                         .begin(bytes,deadline,minimum,reply);continue;
                 }
@@ -1680,7 +1902,7 @@ async fn exchange_loop(
                             current.maintain(&mut incoming_wait,Instant::now()).map_err(io::Error::other)?;
                         }
                         let budget=if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::MAX_LOGICAL_MTU}else{negotiated};
-                        let ack=incoming_packet(negotiated,budget,raw,&mut incoming_wait)?;
+                        let ack=incoming_packet(negotiated,budget,raw,receipt,&mut incoming_wait)?;
                         if !ack.is_empty(){pending.push_back(Pending{sent: 0,bytes:ack,deadline:reply_deadline,purpose:Purpose::ValueResponse,constraint});}
                     } else if raw[0]==17 {
                         let Some(mut current)=update.take() else {return Err(io::Error::other("unsolicited indication ACK"));};
@@ -2303,7 +2525,7 @@ mod tests {
                     handles,
                     modes,
                     deadline: Instant::now() + Duration::from_secs(1),
-                    reply,
+                    reply: reply.into(),
                 }),
                 rx,
             )
@@ -2312,7 +2534,7 @@ mod tests {
         let notification = [15, 3, 17, 0, 2, 0, 7, 8];
         let (mut w, mut rx) = wait(vec![17], 2);
         assert_eq!(
-            incoming_packet(249, 249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut w).unwrap(),
             [17, 3, 1]
         );
         assert_eq!(rx.try_recv().unwrap().unwrap(), (true, indication.to_vec()));
@@ -2320,31 +2542,31 @@ mod tests {
         let (mut w, rx) = wait(vec![17], 2);
         drop(rx);
         assert_eq!(
-            incoming_packet(249, 249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut w).unwrap(),
             [17, 3, 0]
         );
         let (mut w, _rx) = wait(vec![18], 2);
         assert_eq!(
-            incoming_packet(249, 249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut w).unwrap(),
             [17, 3, 0]
         );
         assert!(w.is_some());
         let (mut w, _rx) = wait(vec![17], 1);
         assert_eq!(
-            incoming_packet(249, 249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut w).unwrap(),
             [17, 3, 0]
         );
         assert!(w.is_some());
         w.as_mut().unwrap().deadline = Instant::now() - Duration::from_millis(1);
         assert!(
-            incoming_packet(249, 249, &notification, &mut w)
+            incoming_packet(249, 249, &notification, None, &mut w)
                 .unwrap()
                 .is_empty()
         );
         assert!(w.is_some());
         let (mut w, mut rx) = wait(vec![17], 1);
         assert!(
-            incoming_packet(249, 249, &notification, &mut w)
+            incoming_packet(249, 249, &notification, None, &mut w)
                 .unwrap()
                 .is_empty()
         );
@@ -2356,15 +2578,15 @@ mod tests {
         let mut event = indication;
         event[1] = 7;
         assert_eq!(
-            incoming_packet(249, 249, &event, &mut w).unwrap(),
+            incoming_packet(249, 249, &event, None, &mut w).unwrap(),
             [17, 7, 0]
         );
         assert!(w.is_some());
         let (mut w, _rx) = wait(vec![17], 2);
-        assert!(incoming_packet(249, 249, &indication[..7], &mut w).is_err());
+        assert!(incoming_packet(249, 249, &indication[..7], None, &mut w).is_err());
         assert!(w.is_some());
         assert_eq!(
-            incoming_packet(249, 249, &indication, &mut None).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut None).unwrap(),
             [17, 3, 0]
         );
     }

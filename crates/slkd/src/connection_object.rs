@@ -541,6 +541,28 @@ impl ConnectionOwner {
 }
 
 impl ConnectionIface {
+    async fn validate_update_targets(&self, handles: &[u16], modes: u8) -> zbus::fdo::Result<()> {
+        let cache = self.remote_services.lock().await;
+        let entries = cache.as_ref().ok_or_else(|| {
+            zbus::fdo::Error::NotSupported(
+                "actual peer discovery required before receive transaction".into(),
+            )
+        })?;
+        let required = (u32::from(modes) << 3) | 512;
+        if handles.iter().any(|handle| {
+            !entries.iter().any(|e| {
+                e.handle == *handle
+                    && e.category & 7 == 2
+                    && e.operations & required == required
+                    && e.descriptors.contains(&2)
+            })
+        }) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "peer has not advertised requested property update capabilities".into(),
+            ));
+        }
+        Ok(())
+    }
     pub(crate) fn from_owner(
         state: SharedState,
         owner: std::sync::Arc<ConnectionOwner>,
@@ -1219,28 +1241,127 @@ impl ConnectionIface {
             header,
             connection,
             |observer, _caller, original| async move {
-                let cache = self.remote_services.lock().await;
-                let entries = cache.as_ref().ok_or_else(|| {
-                    zbus::fdo::Error::NotSupported(
-                        "actual peer discovery required before receive transaction".into(),
-                    )
-                })?;
-                let required = (u32::from(modes) << 3) | 512;
-                if handles.iter().any(|handle| {
-                    !entries.iter().any(|e| {
-                        e.handle == *handle
-                            && e.category & 7 == 2
-                            && e.operations & required == required
-                            && e.descriptors.contains(&2)
-                    })
-                }) {
-                    return Err(zbus::fdo::Error::NotSupported(
-                        "peer has not advertised requested property update capabilities".into(),
-                    ));
-                }
-                drop(cache);
+                self.validate_update_targets(&handles, modes).await?;
                 observer
                     .incoming(handles, modes, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
+    /// One caller-owned leased stream;configuration and cleanup use the same actor.
+    async fn subscribe_ssap_updates(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Info> {
+        if !slk_contract::ssap::subscription::valid_request(&handles, modes, duration_ms) {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "subscription handles/modes/lease250..60000ms".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            std::time::Duration::from_secs(5),
+            header,
+            connection,
+            |observer, caller, original| async move {
+                self.validate_update_targets(&handles, modes).await?;
+                let slots = self.state.lock().await.ssap_subscription_slots.clone();
+                let slot = slots.try_acquire_owned().map_err(|_| {
+                    zbus::fdo::Error::LimitsExceeded("subscription owner budget".into())
+                })?;
+                let owner =
+                    crate::ssap_subscription::CallerLease::pin(connection, caller, slot, original)
+                        .await
+                        .map_err(zbus::fdo::Error::Failed)?;
+                observer
+                    .subscribe(owner, handles, modes, duration_ms, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
+    async fn read_ssap_updates(
+        &self,
+        token: u64,
+        wait: bool,
+        deadline: slk_contract::Deadline,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Batch> {
+        if token == 0 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "nonzero subscription token".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            std::time::Duration::from_secs(10),
+            header,
+            connection,
+            |observer, caller, original| async move {
+                observer
+                    .subscription_read(caller, token, wait, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
+    async fn renew_ssap_subscription(
+        &self,
+        token: u64,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Info> {
+        if token == 0 || !(250..=60000).contains(&duration_ms) {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "subscription token/lease".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            std::time::Duration::from_secs(5),
+            header,
+            connection,
+            |observer, caller, original| async move {
+                observer
+                    .subscription_renew(caller, token, duration_ms, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
+    async fn close_ssap_subscription(
+        &self,
+        token: u64,
+        deadline: slk_contract::Deadline,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Batch> {
+        if token == 0 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "nonzero subscription token".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            std::time::Duration::from_secs(5),
+            header,
+            connection,
+            |observer, caller, original| async move {
+                observer
+                    .subscription_close(caller, token, original)
                     .await
                     .map_err(zbus::fdo::Error::Failed)
             },
@@ -2400,6 +2521,26 @@ mod grant_tests {
                 "ReceiveSsapUpdate",
                 vec!["aq", "y", "(ttttt)"],
                 vec!["(bay)"],
+            ),
+            (
+                "SubscribeSsapUpdates",
+                vec!["aq", "y", "u", "(ttttt)"],
+                vec!["(uqttqtttaqyyq)"],
+            ),
+            (
+                "ReadSsapUpdates",
+                vec!["t", "b", "(ttttt)"],
+                vec!["((uqttqtttaqyyq)ttttuya(ttubay))"],
+            ),
+            (
+                "RenewSsapSubscription",
+                vec!["t", "u", "(ttttt)"],
+                vec!["(uqttqtttaqyyq)"],
+            ),
+            (
+                "CloseSsapSubscription",
+                vec!["t", "(ttttt)"],
+                vec!["((uqttqtttaqyyq)ttttuya(ttubay))"],
             ),
             (
                 "ReadSsapByUuid",

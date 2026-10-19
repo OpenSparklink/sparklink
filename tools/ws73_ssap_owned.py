@@ -9,6 +9,7 @@ from contextlib import ExitStack, contextmanager
 from pathlib import Path
 import re
 import json
+import os
 import secrets
 import subprocess
 import time
@@ -28,20 +29,28 @@ def wait_text(process, path, pattern, deadline, min_count=1):
 
 
 @contextmanager
-def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None):
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None):
     source,target=row['owners'][sender],row['owners'][1-sender]
     secret=secrets.token_hex(32);value=secrets.token_hex(32);uuid=secrets.token_hex(16);service=secrets.token_hex(16)
     prefix=run.output/f'ssap-owned-{row["phase"]}-{sender}-{label or policy}'
     out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
     args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve',service,uuid,'5','36',secret,policy]
+    environment=None
+    if sdk_api is not None:
+        from ws73_application_client import application_environment,owned_arguments
+        args=owned_arguments(sdk_api,target,service,uuid,secret,policy)
+        environment=application_environment()
     item=dict(sender=sender,target=1-sender,policy=policy,secret=secret,value=value,uuid=uuid,service=service,args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
+    if sdk_api is not None:item.update(publisher_api=sdk_api,environment=environment)
     row.setdefault(collection,[]).append(item);run.save();process=None
     try:
         with ExitStack() as files:
-            process=subprocess.Popen(args,stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
+            process=subprocess.Popen(args,env=dict(os.environ,**environment) if environment else None,stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
             item.update(pid=process.pid,credentials=credentials(process.pid));run.save()
             matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
             if len(matches)!=1:raise CaptureError('one actual owned registration required')
+            if sdk_api is not None and out.read_text().splitlines()[0]!=f'SdkOwnedAPI: api={sdk_api} client_closed=true':
+                raise CaptureError('actual SDK original caller and parent-close barrier required')
             start,end,handle=map(int,matches[0]);item.update(start=start,end=end,handle=handle);run.save()
             yield process,item
     finally:

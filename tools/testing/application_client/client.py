@@ -125,11 +125,19 @@ def discovery_mode():
         print(f'DiscoveryReleased: session={lease.session_id} last_physical_stop_confirmed={str(stopped).lower()}',flush=True)
 
 
+def owned_info(info):
+    return dict(api='python',index=info.controller.index,generation=info.controller.generation,
+        token=info.token,request_id=info.request_id,lifetime=info.connection_lifetime,
+        handle=info.connection_handle,epoch=info.security_epoch,level=info.security_level,
+        deadline_ns=info.deadline_ns,property=info.property,write=info.write,
+        value=info.value.hex(),local_tcid=info.local_tcid,remote_tcid=info.remote_tcid,pi=info.pi)
+
+
 def owned_mode():
     from sparklink import LocalProperty, SsapOperations, SsapAccess
-    if len(sys.argv) not in (7,8):raise ValueError('owned index generation service property initial-hex [allow|deny]')
+    if len(sys.argv) not in (7,8):raise ValueError('owned index generation service property initial-hex [allow|deny|ask]')
     policy=sys.argv[7] if len(sys.argv)==8 else None
-    if policy not in (None,'allow','deny'):raise ValueError('explicit allow/deny application test policy required')
+    if policy not in (None,'allow','deny','ask'):raise ValueError('explicit application test policy required')
     index,generation=int(sys.argv[2]),int(sys.argv[3])
     service,uuid,value=(bytes.fromhex(v) for v in sys.argv[4:7])
     identity=ControllerId(index,generation)
@@ -148,28 +156,27 @@ def owned_mode():
         fd=view.authorization_fd() if policy else None
         line=bytearray();poller=select.poll();poller.register(0,select.POLLIN)
         if fd is not None:poller.register(fd,select.POLLIN)
+        pending=None;closed=False
         try:
             while True:
-                if policy:
-                    try:request=view.next_authorization()
+                if policy and not closed and pending is None:
+                    try:pending=view.next_authorization()
                     except OSError as error:
                         if error.errno!=errno.EAGAIN:raise
                     else:
-                        with request:
-                            info=request.info
+                        info=pending.info
+                        if policy=='ask':
+                            print('SdkAuthorizationRequest: '+json.dumps(owned_info(info)),flush=True)
+                            print(f"SsapAuthorizationPrompt: token={info.token} request={info.request_id} index={index} generation={generation} lifetime={info.connection_lifetime} handle={info.connection_handle} epoch={info.security_epoch} security={info.security_level} property={info.property} write={str(info.write).lower()} bytes={len(info.value)} deadline_ns={info.deadline_ns}; answer 'yes {info.token}' or 'no {info.token}'",flush=True)
+                        else:
                             decision,wall=time.monotonic_ns(),time.time_ns()
-                            request.reply(policy=='allow')
-                            print('SdkAuthorizationDecision: '+json.dumps(dict(api='python',
-                                index=info.controller.index,generation=info.controller.generation,
-                                token=info.token,request_id=info.request_id,lifetime=info.connection_lifetime,
-                                handle=info.connection_handle,epoch=info.security_epoch,level=info.security_level,
-                                deadline_ns=info.deadline_ns,property=info.property,write=info.write,
-                                value=info.value.hex(),local_tcid=info.local_tcid,remote_tcid=info.remote_tcid,
-                                pi=info.pi,allow=policy=='allow',decision_ns=decision,decision_wall_ns=wall)),flush=True)
+                            try:pending.reply(policy=='allow')
+                            finally:pending.close();pending=None
+                            print('SdkAuthorizationDecision: '+json.dumps(dict(owned_info(info),allow=policy=='allow',decision_ns=decision,decision_wall_ns=wall)),flush=True)
                 left=end-time.monotonic_ns()
                 if left<=0:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
                 ready=dict(poller.poll((left+999999)//1000000))
-                if fd is not None and ready.get(fd,0)&(select.POLLERR|select.POLLHUP|select.POLLNVAL):
+                if fd is not None and not closed and ready.get(fd,0)&(select.POLLERR|select.POLLHUP|select.POLLNVAL):
                     raise OSError(errno.EIO,'approval notification failed')
                 if not ready.get(0,0)&select.POLLIN:
                     if ready.get(0,0)&(select.POLLERR|select.POLLHUP|select.POLLNVAL):raise BrokenPipeError('publisher input closed')
@@ -183,13 +190,42 @@ def owned_mode():
                 if line==b'value\n':
                     actual=view.read_local(handle,deadline_ns=time.monotonic_ns()+5_000_000_000)
                     print(f'SsapOwnedValue: handle={handle} value={actual.hex()}',flush=True)
+                elif policy=='ask' and (line.startswith(b'yes ') or line.startswith(b'no ')):
+                    parts=line.decode('ascii').split()
+                    if len(parts)!=2 or not parts[1].isascii() or not parts[1].isdecimal() or not 0<=int(parts[1])<2**64:raise ValueError('exact unsigned token required')
+                    token=int(parts[1]);current=pending.info.token if pending else 0
+                    called=pending is not None and token==current
+                    result=-errno.ESTALE
+                    if called:
+                        try:pending.reply(parts[0]=='yes');result=0
+                        except OSError as error:
+                            if error.errno not in (errno.ESTALE,errno.ETIMEDOUT,errno.ESHUTDOWN):raise
+                            result=-error.errno
+                        finally:pending.close();pending=None
+                    print('SdkAuthorizationReply: '+json.dumps(dict(api='python',token=token,current_token=current,allow=parts[0]=='yes',api_called=called,result=result,returned_ns=time.monotonic_ns())),flush=True)
+                elif policy=='ask' and line==b'close\n':
+                    if closed or pending is None:raise ValueError('live service with actual pending request required')
+                    snapshot=pending.info;view.close();closed=True;poller.unregister(fd)
+                    try:pending.reply(True)
+                    except OSError as error:
+                        if error.errno!=errno.ESTALE:raise
+                        result=-error.errno
+                    else:raise AssertionError('closed original scope accepted policy')
+                    print('SdkServiceClosed: '+json.dumps(dict(api='python',token=snapshot.token,
+                        info_preserved=pending.info==snapshot,notification_fd_alive=os.fstat(fd) is not None,
+                        reply_result=result,closed_ns=time.monotonic_ns())),flush=True)
+                    pending.close();pending=None
                 elif line==b'quit\n':
-                    view.unregister(deadline_ns=time.monotonic_ns()+5_000_000_000)
-                    print(f'SdkOwnedRemoved: api=python start={receipt.start}',flush=True)
+                    if closed:
+                        print(f'SdkOwnedClosedExit: api=python start={receipt.start}',flush=True)
+                    else:
+                        view.unregister(deadline_ns=time.monotonic_ns()+5_000_000_000)
+                        print(f'SdkOwnedRemoved: api=python start={receipt.start}',flush=True)
                     return
                 else:raise ValueError('bounded owned command required')
                 line.clear()
         finally:
+            if pending:pending.close()
             if fd is not None:os.close(fd)
 
 

@@ -151,39 +151,69 @@ done:
 
 
 /* Explicit test-application policy, never a default policy in the SDK/daemon. */
-static int owned_decision(struct SlkLocalService *view,const struct SlkServiceReceipt *receipt,int allow) {
-    struct SlkAuthorizationRequest *request=NULL;
-    struct SlkAuthorizationRequestInfo info={0};
-    int error=slk_local_service_next_authorization(view,&request);
+struct OwnedPending {
+    struct SlkAuthorizationRequest *request;
+    struct SlkAuthorizationRequestInfo info;
+};
+static void owned_info_json(const struct SlkAuthorizationRequestInfo *p) {
+    printf("{\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"token\":%"PRIu64",\"request_id\":%"PRIu64",\"lifetime\":%"PRIu64",\"handle\":%u,\"epoch\":%"PRIu64",\"level\":%u,\"deadline_ns\":%"PRIu64",\"property\":%u,\"write\":%s,\"value\":\"",
+        p->controller.index,p->controller.generation,p->token,p->request_id,p->connection_lifetime,
+        p->connection_handle,p->security_epoch,p->security_level,p->deadline_ns,p->property,p->write?"true":"false");
+    hex_print(p->value,p->value_length);
+    printf("\",\"local_tcid\":%u,\"remote_tcid\":%u,\"pi\":%u",p->local_tcid,p->remote_tcid,p->pi);
+}
+static void owned_clear(struct OwnedPending *p) {
+    slk_authorization_request_free(p->request);p->request=NULL;
+}
+static int owned_receive(struct SlkLocalService *view,const struct SlkServiceReceipt *receipt,
+                         struct OwnedPending *p,int ask,int allow) {
+    if (p->request) return 0;
+    int error=slk_local_service_next_authorization(view,&p->request);
     if (error==-EAGAIN) return 0;
     if (error) return error;
-    error=slk_authorization_request_info(request,&info);
-    if (!error && (info.controller.index!=receipt->controller.index
-        || info.controller.generation!=receipt->controller.generation
-        || info.property!=receipt->handles[0] || !info.token || !info.request_id
-        || !info.connection_lifetime || !info.security_epoch || !info.deadline_ns
-        || info.security_level>2 || info.write>1 || info.value_length>2042
-        || (!info.write && info.value_length)
-        || info.local_tcid!=10 || info.remote_tcid!=10 || info.pi)) error=-EPROTO;
+    error=slk_authorization_request_info(p->request,&p->info);
+    const struct SlkAuthorizationRequestInfo *info=&p->info;
+    if (!error && (info->controller.index!=receipt->controller.index
+        || info->controller.generation!=receipt->controller.generation
+        || info->property!=receipt->handles[0] || !info->token || !info->request_id
+        || !info->connection_lifetime || !info->security_epoch || !info->deadline_ns
+        || info->security_level>2 || info->write>1 || info->value_length>2042
+        || (!info->write && info->value_length)
+        || info->local_tcid!=10 || info->remote_tcid!=10 || info->pi)) error=-EPROTO;
+    if (error) {owned_clear(p);return error;}
+    if (ask) {
+        printf("SdkAuthorizationRequest: ");owned_info_json(info);printf("}\n");
+        printf("SsapAuthorizationPrompt: token=%"PRIu64" request=%"PRIu64" index=%u generation=%"PRIu64" lifetime=%"PRIu64" handle=%u epoch=%"PRIu64" security=%u property=%u write=%s bytes=%u deadline_ns=%"PRIu64"; answer 'yes %"PRIu64"' or 'no %"PRIu64"'\n",
+            info->token,info->request_id,info->controller.index,info->controller.generation,
+            info->connection_lifetime,info->connection_handle,info->security_epoch,info->security_level,
+            info->property,info->write?"true":"false",info->value_length,info->deadline_ns,info->token,info->token);
+        fflush(stdout);return 0;
+    }
     /* Call-start observations,not the internal decision linearization point. */
     uint64_t decision=now_ns(),wall=wall_ns();
-    if (!error) error=slk_authorization_request_reply(request,(uint32_t)allow);
+    error=slk_authorization_request_reply(p->request,(uint32_t)allow);
+    owned_clear(p);
     if (!error) {
-        printf("SdkAuthorizationDecision: {\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"token\":%"PRIu64",\"request_id\":%"PRIu64",\"lifetime\":%"PRIu64",\"handle\":%u,\"epoch\":%"PRIu64",\"level\":%u,\"deadline_ns\":%"PRIu64",\"property\":%u,\"write\":%s,\"value\":\"",
-            info.controller.index,info.controller.generation,info.token,info.request_id,info.connection_lifetime,
-            info.connection_handle,info.security_epoch,info.security_level,info.deadline_ns,info.property,info.write?"true":"false");
-        hex_print(info.value,info.value_length);
-        printf("\",\"local_tcid\":%u,\"remote_tcid\":%u,\"pi\":%u,\"allow\":%s,\"decision_ns\":%"PRIu64",\"decision_wall_ns\":%"PRIu64"}\n",info.local_tcid,info.remote_tcid,info.pi,allow?"true":"false",decision,wall);fflush(stdout);
+        printf("SdkAuthorizationDecision: ");owned_info_json(info);
+        printf(",\"allow\":%s,\"decision_ns\":%"PRIu64",\"decision_wall_ns\":%"PRIu64"}\n",allow?"true":"false",decision,wall);fflush(stdout);
     }
-    slk_authorization_request_free(request);
     return error;
+}
+static int owned_answer(struct OwnedPending *p,uint64_t token,int allow) {
+    const int called=p->request && p->info.token==token;
+    const uint64_t current=p->request?p->info.token:0;
+    const int result=called?slk_authorization_request_reply(p->request,(uint32_t)allow):-ESTALE;
+    if (called) owned_clear(p);
+    printf("SdkAuthorizationReply: {\"api\":\"c\",\"token\":%"PRIu64",\"current_token\":%"PRIu64",\"allow\":%s,\"api_called\":%s,\"result\":%d,\"returned_ns\":%"PRIu64"}\n",
+        token,current,allow?"true":"false",called?"true":"false",result,now_ns());fflush(stdout);
+    return result==0 || result==-ESTALE || result==-ETIMEDOUT || result==-ESHUTDOWN ? 0 : result;
 }
 
 /* Actual Owned SDK publisher. No wire codec, database or callback simulation. */
 static int owned_mode(int argc,char **argv) {
     if (argc!=7 && argc!=8) return 2;
-    int requests=argc==8,allow=requests && !strcmp(argv[7],"allow");
-    if (requests && !allow && strcmp(argv[7],"deny")) return 2;
+    int requests=argc==8,allow=requests && !strcmp(argv[7],"allow"),ask=requests && !strcmp(argv[7],"ask");
+    if (requests && !allow && !ask && strcmp(argv[7],"deny")) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]);
     uint8_t service[2042],property_uuid[2042],initial[2042];
     size_t service_n=bytes(argv[4],service),property_n=bytes(argv[5],property_uuid),initial_n=bytes(argv[6],initial);
@@ -192,7 +222,7 @@ static int owned_mode(int argc,char **argv) {
     memcpy(property.uuid,property_uuid,property_n);memcpy(property.value,initial,initial_n);
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkLocalService *view=NULL;struct SlkServiceReceipt receipt={0};
-    int status=1,error,approval_fd=-1;const uint64_t original=now_ns()+5000000000ULL;
+    int status=1,error,approval_fd=-1;struct OwnedPending pending={0};const uint64_t original=now_ns()+5000000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
     error=slk_client_register_local_service(client,&id,service,service_n,&property,1,requests?SLK_SERVICE_AUTHORIZATION_REQUESTS:SLK_SERVICE_AUTHORIZATION_NONE,original,&view);if (error) {errno=-error;goto done;}
     error=slk_local_service_receipt(view,&receipt);if (error) {errno=-error;goto done;}
@@ -203,9 +233,9 @@ static int owned_mode(int argc,char **argv) {
     const uint64_t end=now_ns()+30000000000ULL;char line[32];size_t used=0;
     for (;;) {
         /* Try next before sleeping;the duplicated eventfd is poll-only. */
-        if (requests) {error=owned_decision(view,&receipt,allow);if (error) {errno=-error;goto done;}}
+        if (requests && view) {error=owned_receive(view,&receipt,&pending,ask,allow);if (error) {errno=-error;goto done;}}
         uint64_t now=now_ns();if (now>=end) {errno=ETIMEDOUT;goto done;}
-        struct pollfd fds[2]={{.fd=STDIN_FILENO,.events=POLLIN},{.fd=approval_fd,.events=POLLIN}};
+        struct pollfd fds[2]={{.fd=STDIN_FILENO,.events=POLLIN},{.fd=view?approval_fd:-1,.events=POLLIN}};
         int count=poll(fds,requests?2:1,(int)((end-now+999999)/1000000));
         if (count<0 && errno==EINTR) continue;
         if (count<=0) {if (!count) errno=ETIMEDOUT;goto done;}
@@ -220,17 +250,38 @@ static int owned_mode(int argc,char **argv) {
         if (line[used++]!='\n') {if (used==sizeof line-1) {errno=E2BIG;goto done;}continue;}
         line[used]='\0';used=0;
         if (!strcmp(line,"value\n")) {
+            if (!view) {errno=ESHUTDOWN;goto done;}
             uint8_t value[2042];uintptr_t length=0;
             error=slk_local_service_read(view,receipt.handles[0],value,sizeof value,&length,now_ns()+5000000000ULL);if (error) {errno=-error;goto done;}
             if (length>sizeof value) {errno=EPROTO;goto done;}
             printf("SsapOwnedValue: handle=%u value=",receipt.handles[0]);hex_print(value,length);printf("\n");fflush(stdout);
+        } else if (ask && (!strncmp(line,"yes ",4) || !strncmp(line,"no ",3))) {
+            int answer=!strncmp(line,"yes ",4);line[strlen(line)-1]='\0';
+            const char *token=line+(answer?4:3);
+            for (const char *p=token;*p;p++) if (*p<'0' || *p>'9') {errno=EINVAL;goto done;}
+            error=owned_answer(&pending,number(token),answer);
+            if (error) {errno=-error;goto done;}
+        } else if (ask && !strcmp(line,"close\n")) {
+            if (!view || !pending.request) {errno=EINVAL;goto done;}
+            struct SlkAuthorizationRequestInfo after={0};uint64_t token=pending.info.token;
+            slk_local_service_free(view);view=NULL;
+            int info_result=slk_authorization_request_info(pending.request,&after);
+            int same=!info_result && !memcmp(&after,&pending.info,sizeof after);
+            int rejected=slk_authorization_request_reply(pending.request,1);
+            int notification_alive=fcntl(approval_fd,F_GETFD)>=0;
+            printf("SdkServiceClosed: {\"api\":\"c\",\"token\":%"PRIu64",\"info_preserved\":%s,\"notification_fd_alive\":%s,\"reply_result\":%d,\"closed_ns\":%"PRIu64"}\n",
+                token,same?"true":"false",notification_alive?"true":"false",rejected,now_ns());fflush(stdout);
+            owned_clear(&pending);
+            if (!same || !notification_alive || rejected!=-ESTALE) {errno=EPROTO;goto done;}
         } else if (!strcmp(line,"quit\n")) {
+            if (!view) {printf("SdkOwnedClosedExit: api=c start=%u\n",receipt.start);fflush(stdout);status=0;break;}
             error=slk_local_service_unregister(view,now_ns()+5000000000ULL);if (error) {errno=-error;goto done;}
             printf("SdkOwnedRemoved: api=c start=%u\n",receipt.start);fflush(stdout);status=0;break;
         } else {errno=EINVAL;goto done;}
     }
 done:
     if (status) perror("application-client-c-owned");
+    owned_clear(&pending);
     if (approval_fd>=0) close(approval_fd);
     slk_local_service_free(view);slk_client_close(client);return status;
 }

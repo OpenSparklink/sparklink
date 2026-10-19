@@ -25,6 +25,10 @@ impl Deadline {
         slk_channel::deadline::remaining(self.0)
             .map_err(|e| e.raw_os_error().unwrap_or(nix::libc::EIO))
     }
+    pub(crate) fn request(self) -> Result<slk_channel::deadline::Deadline> {
+        slk_channel::deadline::Deadline::from_monotonic_ns(self.1)
+            .map_err(|e| e.raw_os_error().unwrap_or(nix::libc::EIO))
+    }
     pub(crate) fn protocol(self) -> Result<(Self, slk_channel::deadline::Deadline)> {
         // Capture the existing protocol ceiling before entering the local queue.
         slk_channel::deadline::Deadline::from_monotonic_ns(self.1)
@@ -194,3 +198,7 @@ mod controller_events_tests;
 #[cfg(test)]
 #[path = "sync_client/discovery_tests.rs"]
 mod discovery_tests;
+
+#[cfg(test)]
+#[path = "sync_client/local_services_tests.rs"]
+mod local_services_tests;

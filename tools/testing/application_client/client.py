@@ -23,6 +23,7 @@ def wait(fd, event, deadline):
 
 
 def main():
+    if sys.argv[1:2] == ['owned']:return owned_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
     if len(sys.argv)!=7:raise ValueError("index generation connection role request reply required")
@@ -122,6 +123,37 @@ def discovery_mode():
                 if received==wanted:break
         stopped=lease.release(deadline_ns=deadline)
         print(f'DiscoveryReleased: session={lease.session_id} last_physical_stop_confirmed={str(stopped).lower()}',flush=True)
+
+
+def owned_mode():
+    from sparklink import LocalProperty, SsapOperations, SsapAccess
+    if len(sys.argv)!=7:raise ValueError('owned index generation service property initial-hex')
+    index,generation=int(sys.argv[2]),int(sys.argv[3])
+    service,uuid,value=(bytes.fromhex(v) for v in sys.argv[4:7])
+    identity=ControllerId(index,generation)
+    original=time.monotonic_ns()+5_000_000_000
+    with Client(deadline_ns=original) as client:
+        view=client.register_local_service(identity,service,
+            [LocalProperty(uuid,SsapOperations(5),SsapAccess(0),value)],
+            deadline_ns=original)
+    with view:
+        receipt=view.receipt
+        if len(receipt.handles)!=1:raise ValueError('one owned property required')
+        handle=receipt.handles[0]
+        print('SdkOwnedAPI: api=python client_closed=true',flush=True)
+        print(f'SsapOwnedService: start={receipt.start} end={receipt.end} property={handle}; local registration only',flush=True)
+        end=time.monotonic_ns()+30_000_000_000
+        while True:
+            wait(sys.stdin.fileno(),select.POLLIN,end)
+            line=sys.stdin.readline()
+            if line=='value\n':
+                actual=view.read_local(handle,deadline_ns=time.monotonic_ns()+5_000_000_000)
+                print(f'SsapOwnedValue: handle={handle} value={actual.hex()}',flush=True)
+            elif line=='quit\n':
+                view.unregister(deadline_ns=time.monotonic_ns()+5_000_000_000)
+                print(f'SdkOwnedRemoved: api=python start={receipt.start}',flush=True)
+                return
+            else:raise ValueError('bounded owned command required')
 
 
 if __name__=="__main__":main()

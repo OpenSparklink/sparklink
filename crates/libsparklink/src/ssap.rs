@@ -4,10 +4,29 @@
 //! response, queue admission and remote application processing remain distinct.
 pub mod authorization;
 pub mod local;
+pub mod subscription;
 use crate::{ApplicationConnection, ApplicationError};
 use slk_contract::{self as contract, ssap as wire};
 
 type Result<T> = std::result::Result<T, ApplicationError>;
+
+// One decoder and scope check for both the one-shot and leased receive views.
+// This validates a broker receipt; it does not grant Native security or delivery.
+fn validate_update(handles: &[u16], modes: u8, indication: bool, raw: &[u8]) -> Result<()> {
+    let packet = slk_protocol::ssap::updates::Update::decode(2048, raw)
+        .map_err(|_| ApplicationError::Identity("malformed received SSAP update"))?;
+    if packet.event
+        || packet.indication != indication
+        || modes & (if indication { 2 } else { 1 }) == 0
+        || packet
+            .items
+            .iter()
+            .any(|item| !handles.contains(&item.handle))
+    {
+        return Err(ApplicationError::Identity("received SSAP update scope"));
+    }
+    Ok(())
+}
 
 /// Borrows one pinned physical lifetime and the original daemon owner.
 /// This is not a remote service registration or a security authorization.
@@ -17,6 +36,19 @@ pub struct RemoteSsap<'a> {
 impl<'a> RemoteSsap<'a> {
     pub(crate) fn new(link: &'a ApplicationConnection) -> Self {
         Self { link }
+    }
+    /// Acquire a finite remote update lease on the existing physical actor.
+    /// One lease per actor currently; no shared-CPCD or implicit reconnect.
+    /// Dropping the parent connection view does not release this owned lease.
+    pub async fn subscribe(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        original: crate::Deadline,
+    ) -> Result<subscription::Subscription> {
+        subscription::Subscription::open(self.link.clone(), handles, modes, duration_ms, original)
+            .await
     }
     // All calls use the same production identity checks. No late reply can
     // silently be relabelled as a replacement daemon/connection observation.
@@ -185,18 +217,7 @@ impl<'a> RemoteSsap<'a> {
             }),
         )
         .await?;
-        let packet = slk_protocol::ssap::updates::Update::decode(2048, &value.1)
-            .map_err(|_| ApplicationError::Identity("malformed received SSAP update"))?;
-        if packet.event
-            || packet.indication != value.0
-            || modes & (if packet.indication { 2 } else { 1 }) == 0
-            || packet
-                .items
-                .iter()
-                .any(|item| !expected.contains(&item.handle))
-        {
-            return Err(ApplicationError::Identity("received SSAP update scope"));
-        }
+        validate_update(&expected, modes, value.0, &value.1)?;
         Ok(value)
     }
     pub async fn read_by_uuid(

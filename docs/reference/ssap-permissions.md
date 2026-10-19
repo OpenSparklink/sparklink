@@ -129,6 +129,16 @@ Bond及属性授权不继承。当前版本适用范围仍只由能力入口的�
 
 ## 应用拥有的本地服务与逐请求审批
 
+SDK 的 `ssap::authorization` 复用 CLI 的准入检查和有界等待；CLI 不再另存一份
+检查规则。`AuthorizationContext` 是调用者的只读观察快照，不是活动登记、kernel
+Grant 或安全资格。它仅接受原 unique daemon、当前 controller/generation、已收到
+的属性 handle 和基本 CUTC 上下文；仍检查同一 operation/access 类型及原五秒期限。
+审批等待不执行应用代码，owner 丢失/关闭、答复释放和原期限到期均拒绝。答复后必须
+重新取得快照并校验；批准不替代 daemon 对登记、物理 Session 和安全机制的最终检查。
+
+CLI 退出时先停止本地审批准入，再异步撤回登记；撤回失败不重新开放审批。
+这不表示远端清理已经完成，也不自动接通 C/Python callback、provider 或通知。
+
 `RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), authorizer:o, deadline:(ttttt))` 的 properties
 沿用上述四字段（实际 D-Bus 签名 `a(ayuuay)`），返回 `(start:q,end:q,handles:aq)`。
 登记者来自真实消息 sender 的 unique name，不能指定其他 owner。`authorizer=/`

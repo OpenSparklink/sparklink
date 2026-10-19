@@ -1,6 +1,7 @@
 //! Foreground application-owned SSAP service, not a second protocol Engine.
 use crate::security_agent::{Input, remaining};
 use anyhow::{bail, ensure};
+use libsparklink::ssap::authorization::{self, AuthorizationContext};
 use slk_protocol::{
     SsapOperations,
     ssap::{SsapAuthorizationPrompt as Prompt, access::SsapAccess},
@@ -33,6 +34,33 @@ struct Authorizer {
     prompts: mpsc::Sender<Pending>,
     slot: Arc<Semaphore>,
 }
+impl Authorizer {
+    fn admission(
+        &self,
+        prompt: &Prompt,
+        sender: Option<&str>,
+    ) -> zbus::fdo::Result<Option<std::time::Instant>> {
+        let property = *self
+            .property
+            .lock()
+            .map_err(|_| zbus::fdo::Error::Failed("owner state poisoned".into()))?;
+        authorization::admit(
+            &AuthorizationContext {
+                daemon_owner: &self.daemon,
+                owner_lost: *self.lost.borrow(),
+                controller: slk_contract::ControllerId {
+                    index: self.index,
+                    generation: self.generation,
+                },
+                property,
+                operations: self.operations,
+                access: self.access,
+            },
+            sender,
+            prompt,
+        )
+    }
+}
 #[zbus::interface(name = "org.sparklink.SsapAuthorizer")]
 impl Authorizer {
     async fn authorize_value(
@@ -40,57 +68,18 @@ impl Authorizer {
         prompt: Prompt,
         #[zbus(header)] header: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<bool> {
-        if header
-            .sender()
-            .is_none_or(|name| name.as_str() != self.daemon)
-        {
-            return Err(zbus::fdo::Error::AccessDenied(
-                "not the original daemon".into(),
-            ));
-        }
-        let property = *self
-            .property
-            .lock()
-            .map_err(|_| zbus::fdo::Error::Failed("owner state poisoned".into()))?;
-        let id = prompt.1;
-        if *self.lost.borrow()
-            || prompt.0 == 0
-            || property != Some(prompt.2)
-            || id.0 != self.index
-            || id.1 != self.generation
-            || id.2 == 0
-            || id.4 == 0
-            || id.5 > 2
-            || (id.6, id.7, id.8) != (10, 10, 0)
-            || prompt.5.len() > 2042
-            || !prompt.3 && !prompt.5.is_empty()
-            || self
-                .access
-                .check_authorization_result(id.5, prompt.3, true)
-                .is_err()
-            || !self.operations.contains(if prompt.3 {
-                SsapOperations::WRITE_WITH_RSP
-            } else {
-                SsapOperations::READ
-            })
-        {
+        let sender = header.sender().map(|name| name.as_str());
+        let Some(original) = self.admission(&prompt, sender)? else {
             return Ok(false);
-        }
+        };
         let Ok(_slot) = self.slot.clone().try_acquire_owned() else {
             return Ok(false);
         };
-        let Ok(budget) = remaining(prompt.4) else {
-            return Ok(false);
-        };
-        if budget > std::time::Duration::from_secs(5) {
-            return Ok(false);
-        }
         let approved = match self.policy {
             Policy::Allow => true,
             Policy::Deny => false,
             Policy::Ask => {
                 let (reply, result) = oneshot::channel();
-                let deadline = prompt.4;
                 if self
                     .prompts
                     .try_send(Pending {
@@ -102,17 +91,13 @@ impl Authorizer {
                 {
                     return Ok(false);
                 }
-                let mut lost = self.lost.clone();
-                tokio::select! {biased;
-                    _=lost.changed()=>false,
-                    result=tokio::time::timeout(remaining(deadline).unwrap_or_default(),result)=>matches!(result,Ok(Ok(true))),
-                }
+                authorization::await_decision(result, self.lost.clone(), original).await
             }
         };
-        let approved = approved && !*self.lost.borrow() && remaining(prompt.4).is_ok();
+        let approved = approved && self.admission(&prompt, sender)?.is_some();
         println!(
             "SsapAuthorizationDecision: request={} property={} write={} security={} approved={approved}; local policy only",
-            prompt.0, prompt.2, prompt.3, id.5
+            prompt.0, prompt.2, prompt.3, prompt.1.5
         );
         Ok(approved)
     }
@@ -129,6 +114,18 @@ fn input_decision(line: &str, token: u64) -> Option<bool> {
     } else {
         None
     }
+}
+
+fn stop_admission(
+    handle: &Mutex<Option<u16>>,
+    requests: &mut mpsc::Receiver<Pending>,
+) -> anyhow::Result<()> {
+    let stopped = handle
+        .lock()
+        .map(|mut handle| *handle = None)
+        .map_err(|_| anyhow::anyhow!("owner state poisoned"));
+    requests.close();
+    stopped
 }
 
 pub(crate) async fn serve(
@@ -231,6 +228,10 @@ pub(crate) async fn serve(
             }
         }
     }.await;
+    // Local policy admission ends before asynchronous broker withdrawal. A
+    // late yes cannot outlive the frontend, even if removal times out/fails.
+    // Always attempt actual withdrawal/object removal after a poisoned binding.
+    let stopped = stop_admission(&handle, &mut requests);
     let removed = registration
         .unregister(libsparklink::Deadline::after(
             std::time::Duration::from_secs(1),
@@ -238,6 +239,7 @@ pub(crate) async fn serve(
         .await;
     let _ = conn.object_server().remove::<Authorizer, _>(PATH).await;
     result?;
+    stopped?;
     removed?;
     Ok(())
 }
@@ -246,20 +248,27 @@ pub(crate) async fn serve(
 mod tests {
     use super::*;
     fn authorizer(policy: Policy) -> Authorizer {
-        let (_, lost) = watch::channel(false);
-        let (prompts, _) = mpsc::channel(1);
-        Authorizer {
-            daemon: ":1.10".into(),
-            lost,
-            generation: 7,
-            index: 0,
-            property: Arc::new(Mutex::new(Some(17))),
-            operations: SsapOperations::from_bits(5).unwrap(),
-            access: SsapAccess::from_bits(36).unwrap(),
-            policy,
-            prompts,
-            slot: Arc::new(Semaphore::new(1)),
-        }
+        setup(policy).0
+    }
+    fn setup(policy: Policy) -> (Authorizer, watch::Sender<bool>, mpsc::Receiver<Pending>) {
+        let (owner, lost) = watch::channel(false);
+        let (prompts, requests) = mpsc::channel(1);
+        (
+            Authorizer {
+                daemon: ":1.10".into(),
+                lost,
+                generation: 7,
+                index: 0,
+                property: Arc::new(Mutex::new(Some(17))),
+                operations: SsapOperations::from_bits(5).unwrap(),
+                access: SsapAccess::from_bits(36).unwrap(),
+                policy,
+                prompts,
+                slot: Arc::new(Semaphore::new(1)),
+            },
+            owner,
+            requests,
+        )
     }
     fn message(sender: &str) -> zbus::Message {
         zbus::Message::method_call(PATH, "AuthorizeValue")
@@ -346,5 +355,88 @@ mod tests {
                 .await
                 .unwrap()
         );
+    }
+
+    #[tokio::test]
+    async fn actual_cli_endpoint_keeps_one_pending_and_rechecks_receipt_after_policy() {
+        let (authorizer, _owner, mut requests) = setup(Policy::Ask);
+        let authorizer = Arc::new(authorizer);
+        let caller = authorizer.clone();
+        let work = tokio::spawn(async move {
+            let message = message(":1.10");
+            caller
+                .authorize_value(prompt(), message.header())
+                .await
+                .unwrap()
+        });
+        let pending = requests.recv().await.unwrap();
+        pending.reply.send(true).unwrap();
+        assert!(work.await.unwrap());
+        let caller = authorizer.clone();
+        let work = tokio::spawn(async move {
+            let message = message(":1.10");
+            caller
+                .authorize_value(prompt(), message.header())
+                .await
+                .unwrap()
+        });
+        let pending = requests.recv().await.unwrap();
+        assert_eq!(pending.prompt.2, 17);
+        // No second UI request while the actual first permit is held.
+        assert!(
+            !authorizer
+                .authorize_value(prompt(), message(":1.10").header())
+                .await
+                .unwrap()
+        );
+        assert!(requests.try_recv().is_err());
+        stop_admission(&authorizer.property, &mut requests).unwrap();
+        pending.reply.send(true).unwrap();
+        assert!(
+            !work.await.unwrap(),
+            "policy yes cannot revive a retired binding"
+        );
+        assert_eq!(authorizer.slot.available_permits(), 1);
+        assert!(requests.is_closed());
+        assert!(authorizer.property.lock().unwrap().is_none());
+    }
+
+    #[tokio::test]
+    async fn actual_cli_owner_exit_expiry_and_closed_ui_do_not_approve_or_retain_permits() {
+        for case in 0..3 {
+            let (authorizer, owner, mut requests) = setup(Policy::Ask);
+            let authorizer = Arc::new(authorizer);
+            let caller = authorizer.clone();
+            let mut p = prompt();
+            if case == 1 {
+                p.4 = libsparklink::Deadline::after(std::time::Duration::from_millis(20))
+                    .unwrap()
+                    .stamp()
+                    .monotonic_ns;
+            }
+            let work = tokio::spawn(async move {
+                let message = message(":1.10");
+                caller.authorize_value(p, message.header()).await.unwrap()
+            });
+            let pending = requests.recv().await.unwrap();
+            match case {
+                0 => {
+                    owner.send_replace(true);
+                }
+                1 => {} // Keep actual reply pending through its original expiry.
+                _ => {
+                    drop(pending);
+                    assert!(!work.await.unwrap());
+                    assert_eq!(authorizer.slot.available_permits(), 1);
+                    continue;
+                }
+            }
+            assert!(!work.await.unwrap());
+            assert!(
+                pending.reply.send(true).is_err(),
+                "late yes cannot reach a completed callback"
+            );
+            assert_eq!(authorizer.slot.available_permits(), 1);
+        }
     }
 }

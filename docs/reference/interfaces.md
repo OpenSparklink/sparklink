@@ -681,13 +681,17 @@ handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C�
 继承历史属性读写或旧本地观察PASS。表40要求CPCD写认证和授权；no-mitm/Agent同意不满足。
 配置由唯一物理actor按lifetime持有，拥有者退休或安全epoch变化使旧配置失效。
 本地替换不自动通知。SendOwnedSsapUpdate只发送原caller当前拥有的属性快照，仍受
-协商MTU、CPCD、原期限及每次Native提交检查约束；长值不分片、不截断。
+协商能力、CPCD、原期限及每次Native提交检查约束；没有序号分片协商时，超出线上
+MTU明确拒绝。协商后仍限定单值2042字节，通知/指示逻辑PDU最多2048，不能截断。
 
 一次最多一个待决指示，关闭/取消后仍等待匹配ACK或有限退休；ACK没有wire事务号，
 重复/晚到ACK和可靠传输假设仍须独立验证，不宣称解决了所有复用竞争。C/Python的
-SlkSsapUpdate为2056字节，stage1/2对应发送收据，stage3为收到且已验证停用；它们都
-不表示对端应用处理。完整持续订阅、provider、更新分片及多应用/故障矩阵继续开放；开发中的单值分片
-见[原理解释](../explanation/ssap-value-fragments.md)，不由历史更新资格授予。
+未发布的SlkSsapUpdate改为2064字节，PDU数组2048字节，ACK偏移2056，显式保留5字节。
+必须同步重编C调用者与共享库、更新Python绑定；不与旧2056字节布局混用，无兼容期。
+stage1仅在全部片软件准入后返回，stage2还需真实匹配ACK，stage3为收到且已验证停用；
+它们都不表示对端应用处理。首片启动一次原排空期限，部分流撤回不能忘记物理义务。
+完整持续订阅、provider及多应用/故障矩阵继续开放；分片机制见
+[原理解释](../explanation/ssap-value-fragments.md)，新artifact资格不由历史更新记录授予。
 
 ## 动态基础通道：已接线，实机待验收
 

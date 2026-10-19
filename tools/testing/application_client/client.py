@@ -259,7 +259,7 @@ def update_peer_mode():
     budget_ms=int(sys.argv[8]) if negative else 5000
     if negative and (int(sys.argv[7])!=errno.ETIMEDOUT or not 50<=budget_ms<=5000):
         raise ValueError('update-error requires actual ETIMEDOUT and bounded original milliseconds')
-    if mode not in (1,2) or not 1<=handle<=65535 or len(expected)>2036 or len(reply)>2042 or (not negative and expected==reply):
+    if mode not in (1,2) or not 1<=handle<=65535 or len(expected)>2042 or len(reply)>2042 or (not negative and expected==reply):
         raise ValueError('bounded independent update/reply required')
     started=time.monotonic_ns();original=started+budget_ms*1_000_000
     with Client(deadline_ns=original) as client:link=client.connection(ControllerId(index,generation),path,deadline_ns=original)

@@ -196,22 +196,25 @@ pub struct SlkSsapUpdate {
     pub stage: u32,
     pub pdu_length: u16,
     pub acknowledgement_length: u16,
-    pub pdu: [u8; 2042],
+    pub pdu: [u8; 2048],
     pub acknowledgement: [u8; 3],
-    pub reserved: [u8; 3],
+    pub reserved: [u8; 5],
 }
+const _: () = assert!(std::mem::size_of::<SlkSsapUpdate>() == 2064);
+const _: () = assert!(std::mem::offset_of!(SlkSsapUpdate, pdu) == 8);
+const _: () = assert!(std::mem::offset_of!(SlkSsapUpdate, acknowledgement) == 2056);
 impl SlkSsapUpdate {
     fn receipt(stage: u32, pdu: Vec<u8>, ack: Vec<u8>) -> Result<Self, i32> {
-        if pdu.len() > 2042 || ack.len() > 3 {
+        if pdu.len() > 2048 || ack.len() > 3 {
             return Err(nix::libc::EOVERFLOW);
         }
         let mut result = Self {
             stage,
             pdu_length: pdu.len() as u16,
             acknowledgement_length: ack.len() as u16,
-            pdu: [0; 2042],
+            pdu: [0; 2048],
             acknowledgement: [0; 3],
-            reserved: [0; 3],
+            reserved: [0; 5],
         };
         result.pdu[..pdu.len()].copy_from_slice(&pdu);
         result.acknowledgement[..ack.len()].copy_from_slice(&ack);

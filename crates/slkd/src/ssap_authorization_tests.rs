@@ -1263,6 +1263,7 @@ async fn actual_update_wait_cancellation_keeps_admitted_identity_and_original_dr
     for admitted in [false, true] {
         let (reply, mut result) = oneshot::channel();
         let mut update = Some(UpdateRequest {
+            submitted_all: admitted,
             handle,
             owner: owner.clone(),
             mode: 2,

@@ -32,8 +32,8 @@ class _ControllerId(ctypes.Structure):
 class _SsapUpdate(ctypes.Structure):
     _fields_ = [("stage", ctypes.c_uint32), ("pdu_length", ctypes.c_uint16),
                 ("acknowledgement_length", ctypes.c_uint16),
-                ("pdu", ctypes.c_uint8 * 2042), ("acknowledgement", ctypes.c_uint8 * 3),
-                ("reserved", ctypes.c_uint8 * 3)]
+                ("pdu", ctypes.c_uint8 * 2048), ("acknowledgement", ctypes.c_uint8 * 3),
+                ("reserved", ctypes.c_uint8 * 5)]
 
 
 @dataclass(frozen=True)
@@ -323,7 +323,7 @@ class RemoteSsap:
             _result(fn(connection._handle, handle, mode, ctypes.byref(output), deadline_ns))
         expected = 3 if operation == 'slk_connection_ssap_receive' else 2 if mode else 1
         ack = bytes(output.acknowledgement[:output.acknowledgement_length])
-        if (output.stage != expected or not 6 <= output.pdu_length <= 2042
+        if (output.stage != expected or not 6 <= output.pdu_length <= 2048
                 or output.acknowledgement_length > 3 or any(output.reserved)
                 or any(output.pdu[output.pdu_length:])
                 or any(output.acknowledgement[output.acknowledgement_length:])

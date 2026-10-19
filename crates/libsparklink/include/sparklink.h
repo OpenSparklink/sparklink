@@ -183,9 +183,9 @@ typedef struct SlkSsapUpdate {
     uint32_t stage;
     uint16_t pdu_length;
     uint16_t acknowledgement_length;
-    uint8_t pdu[2042];
+    uint8_t pdu[2048];
     uint8_t acknowledgement[3];
-    uint8_t reserved[3];
+    uint8_t reserved[5];
 } SlkSsapUpdate;
 
 /**

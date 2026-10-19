@@ -1,10 +1,20 @@
-//! Bounded single-value SSAP fragmentation (2025 §7.4.2), not DLI PB.
+//! Bounded value/update SSAP fragmentation (2025 §7.4.2), not DLI PB.
 //! The caller supplies negotiated sequence support, receipt identity and the
 //! original absolute deadline. No clock, socket, authorization or database.
-//! The local logical budget is a 2042-byte value plus WRITE_REQ overhead.
+//! Read/write and update overheads have separate logical budgets.
 
 pub const LOGICAL_MTU: u16 = 2047;
+/// A single update has a two-byte header and four-byte item header.
+pub const MAX_LOGICAL_MTU: u16 = 2048;
 pub const MAX_PARTS: usize = 15;
+
+fn logical_limit(opcode: u8) -> usize {
+    usize::from(if matches!(opcode, 15 | 16) {
+        MAX_LOGICAL_MTU
+    } else {
+        LOGICAL_MTU
+    })
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Error {
@@ -21,14 +31,15 @@ pub enum Error {
 }
 
 fn supported(op: u8) -> bool {
-    matches!(op, 8 | 9 | 11 | 13 | 14)
+    matches!(op, 8 | 9 | 11 | 13 | 14 | 15 | 16)
 }
 
-/// Requests and responses have independent ordered flow-control spaces.
+/// Requests, responses and updates retain independent partial streams.
 pub fn lane(opcode: u8) -> Option<usize> {
     match opcode & 0x7f {
         8 | 13 => Some(0),
         9 | 11 | 14 => Some(1),
+        15 | 16 => Some(2),
         _ => None,
     }
 }
@@ -49,7 +60,7 @@ pub struct Layout {
 }
 impl Layout {
     pub fn new(length: usize, mtu: u16) -> Result<Self, Error> {
-        if length < 2 || length > LOGICAL_MTU as usize {
+        if length < 2 || length > MAX_LOGICAL_MTU as usize {
             return Err(Error::Length);
         }
         if length <= mtu as usize {
@@ -102,6 +113,9 @@ pub struct Plan<'a> {
 impl<'a> Plan<'a> {
     pub fn new(raw: &'a [u8], mtu: u16, sequenced: bool) -> Result<Self, Error> {
         let layout = Layout::new(raw.len(), mtu)?;
+        if raw.len() > logical_limit(raw[0]) {
+            return Err(Error::Length);
+        }
         if layout.count() > 1 {
             if !sequenced || !supported(raw[0]) || raw[1] & 3 != 3 {
                 return Err(Error::Unsupported);
@@ -172,13 +186,13 @@ struct Active<C, D> {
 /// One lane of one existing physical Session. A receive error clears the
 /// partial value; the actor must retire rather than reuse an ambiguous stream.
 pub struct Reassembly<C, D> {
-    bytes: [u8; LOGICAL_MTU as usize],
+    bytes: [u8; MAX_LOGICAL_MTU as usize],
     active: Option<Active<C, D>>,
 }
 impl<C, D> Default for Reassembly<C, D> {
     fn default() -> Self {
         Self {
-            bytes: [0; LOGICAL_MTU as usize],
+            bytes: [0; MAX_LOGICAL_MTU as usize],
             active: None,
         }
     }
@@ -242,6 +256,9 @@ impl<C: Copy + Eq, D: Copy + Ord> Reassembly<C, D> {
             if now >= original_deadline {
                 return Err(Error::Expired);
             }
+            if raw.len() - 2 > logical_limit(op) {
+                return Err(Error::Capacity);
+            }
             let mut bytes = Vec::with_capacity(raw.len() - 2);
             bytes.extend_from_slice(&[op, control]);
             bytes.extend_from_slice(&raw[4..]);
@@ -291,7 +308,7 @@ impl<C: Copy + Eq, D: Copy + Ord> Reassembly<C, D> {
             .size
             .checked_add(raw.len() - 4)
             .ok_or(Error::Capacity)?;
-        if size > self.bytes.len() {
+        if size > logical_limit(active.opcode) {
             return Err(Error::Capacity);
         }
         self.bytes[active.size..size].copy_from_slice(&raw[4..]);
@@ -316,9 +333,9 @@ mod tests {
     use super::*;
     #[test]
     fn real_value_shapes_roundtrip_with_frozen_identity_and_first_deadline() {
-        for op in [8, 9, 11, 13, 14] {
+        for op in [8, 9, 11, 13, 14, 15, 16] {
             for mtu in [6, 16, 249, 2042] {
-                for n in [5, 16, 32, 249, 250, 254, 255, 1024, 2042, 2047] {
+                for n in [5, 16, 32, 249, 250, 254, 255, 1024, 2042, 2047, 2048] {
                     let mut raw = vec![0xa5; n];
                     raw[0] = op;
                     raw[1] = if op == 13 { 35 } else { 3 };
@@ -411,5 +428,114 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(c.bytes, [9, 3, 1, 2, 3]);
+    }
+
+    #[test]
+    fn extended_complete_rejects_oversize_before_allocating_a_logical_value() {
+        let mut raw = vec![0xa5; LOGICAL_MTU as usize + 3];
+        raw[..4].copy_from_slice(&[0x89, 3, 0, 0]);
+        let mut rx = Reassembly::default();
+        assert_eq!(
+            rx.receive(&raw, 4096, true, 7, 0u64, 10),
+            Err(Error::Capacity)
+        );
+        assert_eq!(rx.deadline(), None);
+    }
+
+    #[test]
+    fn maximum_update_does_not_widen_value_budget_or_deliver_a_partial_item() {
+        for op in [15, 16] {
+            let mut raw = vec![0x5a; 2048];
+            raw[..6].copy_from_slice(&[op, 3, 17, 0, 0xfa, 7]);
+            let plan = Plan::new(&raw, 2042, true).unwrap();
+            assert_eq!(plan.count(), 2);
+            let mut rx = Reassembly::default();
+            for part in 0..2 {
+                let mut out = [0xa5; 2042];
+                let size = plan.encode(part, &mut out).unwrap();
+                let complete = rx
+                    .receive(&out[..size], 2042, true, 7, part as u64, 10 + part as u64)
+                    .unwrap();
+                if part == 0 {
+                    assert!(complete.is_none());
+                    assert_eq!(&out[..4], &[op | 128, 0, 2, 0]);
+                } else {
+                    let complete = complete.unwrap();
+                    assert_eq!(complete.bytes, raw);
+                    assert_eq!(complete.deadline, 10);
+                    let decoded =
+                        super::super::updates::Update::decode(2048, &complete.bytes).unwrap();
+                    assert_eq!(decoded.items[0].value.len(), 2042);
+                }
+            }
+            assert!(Plan::new(&raw, 2042, false).is_err());
+            raw[0] = 13;
+            raw[1] = 35;
+            assert!(matches!(Plan::new(&raw, 2042, true), Err(Error::Length)));
+        }
+    }
+
+    #[test]
+    fn every_native_receipt_field_and_first_deadline_pin_the_partial_stream() {
+        let original = crate::SleMessageSecurity {
+            version: 1,
+            size: 40,
+            controller: 1,
+            generation: 7,
+            lifetime: 11,
+            handle: 2,
+            security: 2,
+            security_epoch: 13,
+            local_tcid: 10,
+            remote_tcid: 10,
+            pi: 0,
+            flags: 3,
+        };
+        let mut raw = [0x5a; 16];
+        raw[..2].copy_from_slice(&[16, 3]);
+        let plan = Plan::new(&raw, 12, true).unwrap();
+        let mut first = [0; 12];
+        let a = plan.encode(0, &mut first).unwrap();
+        let mut last = [0; 12];
+        let b = plan.encode(1, &mut last).unwrap();
+        for field in 0..14 {
+            let mut rx = Reassembly::default();
+            assert!(
+                rx.receive(&first[..a], 12, true, Some(original), 0u64, 10)
+                    .unwrap()
+                    .is_none()
+            );
+            let mut changed = original;
+            let mut context = Some(changed);
+            let mut now = 1;
+            match field {
+                0 => changed.version += 1,
+                1 => changed.size += 1,
+                2 => changed.controller += 1,
+                3 => changed.generation += 1,
+                4 => changed.lifetime += 1,
+                5 => changed.handle += 1,
+                6 => changed.security = 1,
+                7 => changed.security_epoch += 1,
+                8 => changed.local_tcid += 1,
+                9 => changed.remote_tcid += 1,
+                10 => changed.pi += 1,
+                11 => changed.flags = 1,
+                12 => context = None,
+                _ => now = 10,
+            }
+            if field < 12 {
+                context = Some(changed);
+            }
+            assert_eq!(
+                rx.receive(&last[..b], 12, true, context, now, 1000),
+                Err(if field == 13 {
+                    Error::Expired
+                } else {
+                    Error::Identity
+                })
+            );
+            assert_eq!(rx.deadline(), None);
+        }
     }
 }

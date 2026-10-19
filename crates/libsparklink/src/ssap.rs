@@ -58,12 +58,12 @@ impl<'a> RemoteSsap<'a> {
                     )
                     .await?;
                 if value.stage != if indication { 2 } else { 1 }
-                    || value.pdu.len() > 2042
+                    || value.pdu.len() > 2048
                     || value.acknowledgement != if indication { vec![17, 3, 1] } else { vec![] }
                 {
                     return Err(ApplicationError::Identity("malformed owned update receipt"));
                 }
-                let decoded = slk_protocol::ssap::updates::Update::decode(2042, &value.pdu)
+                let decoded = slk_protocol::ssap::updates::Update::decode(2048, &value.pdu)
                     .map_err(|_| ApplicationError::Identity("malformed owned update PDU"))?;
                 if decoded.event
                     || decoded.indication != indication
@@ -185,7 +185,7 @@ impl<'a> RemoteSsap<'a> {
             }),
         )
         .await?;
-        let packet = slk_protocol::ssap::updates::Update::decode(2042, &value.1)
+        let packet = slk_protocol::ssap::updates::Update::decode(2048, &value.1)
             .map_err(|_| ApplicationError::Identity("malformed received SSAP update"))?;
         if packet.event
             || packet.indication != value.0

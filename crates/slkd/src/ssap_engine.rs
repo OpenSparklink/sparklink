@@ -477,6 +477,7 @@ enum Purpose {
     Update,
 }
 struct UpdateRequest {
+    submitted_all: bool,
     handle: u16,
     owner: std::sync::Arc<crate::ssap_authorization::Owner>,
     mode: u8,
@@ -487,6 +488,10 @@ struct UpdateRequest {
     reply: Option<oneshot::Sender<Result<slk_contract::ssap::UpdateReceipt, String>>>,
 }
 impl UpdateRequest {
+    fn admit_part(&mut self, now: Instant, last: bool) {
+        self.drain.get_or_insert(now + Duration::from_secs(5));
+        self.submitted_all = last;
+    }
     fn obligation_deadline(&self) -> Instant {
         self.drain.map_or(self.deadline, |drain| {
             if self.reply.as_ref().is_some_and(|r| !r.is_closed()) {
@@ -529,9 +534,14 @@ pub(super) struct IncomingWait {
 }
 /// Actual actor delivery: one complete packet fits the call-owned oneshot slot.
 /// ACK success means accepted into this application queue, not app validation.
-fn incoming_packet(mtu: u16, raw: &[u8], waiter: &mut Option<IncomingWait>) -> io::Result<Vec<u8>> {
+fn incoming_packet(
+    mtu: u16,
+    logical_budget: u16,
+    raw: &[u8],
+    waiter: &mut Option<IncomingWait>,
+) -> io::Result<Vec<u8>> {
     use slk_protocol::ssap::updates::{Update, ack};
-    let packet = Update::decode(mtu, raw)
+    let packet = Update::decode(logical_budget, raw)
         .map_err(|e| io::Error::other(format!("invalid/unsupported SSAP update: {e:?}")))?;
     let eligible = waiter.as_ref().is_some_and(|w| {
         !w.reply.is_closed()
@@ -1215,7 +1225,7 @@ async fn exchange_loop(
     let mut incoming_wait: Option<IncomingWait> = None;
     let mut buffer = [0; 2042];
     let mut assemblies: [fragments::Reassembly<Option<slk_protocol::SleMessageSecurity>, Instant>;
-        2] = std::array::from_fn(|_| fragments::Reassembly::default());
+        3] = std::array::from_fn(|_| fragments::Reassembly::default());
     let mut server_queue: VecDeque<ServerPacket> = VecDeque::new();
     let mut server: Option<(Instant, ServerTask)> = None;
     let mut next_server_id = 0u64;
@@ -1377,15 +1387,16 @@ async fn exchange_loop(
                         let mtu=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         let packet=slk_protocol::ssap::updates::Update { indication,event:false,
                             items:vec![slk_protocol::ssap::updates::Item{handle,value:&value}] };
-                        let mut raw=vec![0;usize::from(mtu)];
-                        let size=packet.encode(mtu,&mut raw).map_err(|e|format!("update exceeds negotiated complete PDU: {e:?}"))?;
+                        let budget=if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)) {fragments::MAX_LOGICAL_MTU}else{mtu};
+                        let mut raw=vec![0;usize::from(budget)];
+                        let size=packet.encode(budget,&mut raw).map_err(|e|format!("update exceeds negotiated logical budget: {e:?}"))?;
                         raw.truncate(size);Ok((owner,mode,context,raw))
                     })();
                     match prepared {
                         Err(error)=>{let _=reply.send(Err(error));},
                         Ok((owner,mode,context,raw))=> {
                             pending.push_back(Pending{sent: 0,bytes:raw.clone(),deadline,purpose:Purpose::Update,constraint:Some(context)});
-                            update=Some(UpdateRequest{handle,owner,mode,epoch:context.security_epoch,deadline,drain:None,pdu:raw,reply:Some(reply)});
+                            update=Some(UpdateRequest{submitted_all:false,handle,owner,mode,epoch:context.security_epoch,deadline,drain:None,pdu:raw,reply:Some(reply)});
                         }
                     }
                     continue;
@@ -1441,7 +1452,7 @@ async fn exchange_loop(
                 if Instant::now() >= packet.deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "expired SSAP submit")); }
                 let is_update=matches!(packet.purpose,Purpose::Update);
                 let sequence=match packet.purpose {
-                    Purpose::Client=>peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)),
+                    Purpose::Client|Purpose::Update=>peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)),
                     Purpose::ValueResponse=>ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)),
                     _=>false,
                 };
@@ -1456,6 +1467,7 @@ async fn exchange_loop(
                     let db=database.lock().map_err(|_|io::Error::other("database poisoned"))?;
                     let current=update.as_ref().ok_or_else(||io::Error::other("missing update obligation"))?;
                     if !current.owner.current() || configurations.get(current.handle,&current.owner,current.epoch)&current.mode==0 {
+                        if current.drain.is_some() {return Err(io::Error::other("partial update owner/configuration withdrawn;retire SSAP actor"));}
                         drop(db);
                         if let Some(mut current)=update.take() && let Some(reply)=current.reply.take() {let _=reply.send(Err("update owner/configuration withdrawn before admission".into()));}
                         pending.pop_front();continue;
@@ -1468,6 +1480,10 @@ async fn exchange_loop(
                     if matches!(packet.purpose,Purpose::Client) && let Some(client)=&mut client {
                         client.admit_part(Instant::now(),packet.sent+1==count);
                     }
+                    if is_update {
+                        update.as_mut().ok_or_else(||io::Error::other("missing update admission"))?
+                            .admit_part(Instant::now(),packet.sent+1==count);
+                    }
                     packet.sent+=1;
                     if packet.sent<count {continue;}
                     let packet = pending.pop_front().expect("guarded queue");
@@ -1478,8 +1494,7 @@ async fn exchange_loop(
                         Purpose::Client => {},
                         Purpose::Update => {
                             let current=update.as_mut().ok_or_else(||io::Error::other("missing admitted update"))?;
-                            if current.mode==2 {current.drain=Some(Instant::now()+Duration::from_secs(5));}
-                            else {
+                            if current.mode!=2 {
                                 let mut current=update.take().expect("admitted notification");
                                 if let Some(reply)=current.reply.take() {let _=reply.send(Ok(slk_contract::ssap::UpdateReceipt {stage:1,pdu:current.pdu,acknowledgement:vec![]}));}
                                 // No SSAP reply is owed. Native still retains
@@ -1504,6 +1519,7 @@ async fn exchange_loop(
                         let enabled=if lane==0 {ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|accepts_extended(&p,wire_raw[1]))}
                             else {peer_reply.as_ref().is_some_and(|(p,_)|accepts_extended(p,wire_raw[1]))};
                         if lane==1 && let Some(c)=&client {reply_deadline=reply_deadline.min(c.obligation_deadline());}
+                        if lane==2 && let Some(w)=&incoming_wait {reply_deadline=reply_deadline.min(w.deadline);}
                         let complete=assemblies[lane].receive(wire_raw,capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu)),enabled,receipt,Instant::now(),reply_deadline)
                             .map_err(|e|io::Error::other(format!("SSAP fragment stream retired: {e:?}")))?;
                         let Some(complete)=complete else {continue;};
@@ -1521,11 +1537,12 @@ async fn exchange_loop(
                         if let Some(current)=receive.as_mut() {
                             current.maintain(&mut incoming_wait,Instant::now()).map_err(io::Error::other)?;
                         }
-                        let ack=incoming_packet(negotiated,raw,&mut incoming_wait)?;
-                        if !ack.is_empty(){pending.push_back(Pending{sent: 0,bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});}
+                        let budget=if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::MAX_LOGICAL_MTU}else{negotiated};
+                        let ack=incoming_packet(negotiated,budget,raw,&mut incoming_wait)?;
+                        if !ack.is_empty(){pending.push_back(Pending{sent: 0,bytes:ack,deadline:reply_deadline,purpose:Purpose::ValueResponse,constraint});}
                     } else if raw[0]==17 {
                         let Some(mut current)=update.take() else {return Err(io::Error::other("unsolicited indication ACK"));};
-                        if current.mode!=2 || current.drain.is_none_or(|d|Instant::now()>=d) {
+                        if current.mode!=2 || !current.submitted_all || current.drain.is_none_or(|d|Instant::now()>=d) {
                             return Err(io::Error::other("indication ACK before admission or after drain deadline"));
                         }
                         let m=receipt.ok_or_else(||io::Error::other("missing ACK security receipt"))?;
@@ -1940,7 +1957,7 @@ mod tests {
         let notification = [15, 3, 17, 0, 2, 0, 7, 8];
         let (mut w, mut rx) = wait(vec![17], 2);
         assert_eq!(
-            incoming_packet(249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, &mut w).unwrap(),
             [17, 3, 1]
         );
         assert_eq!(rx.try_recv().unwrap().unwrap(), (true, indication.to_vec()));
@@ -1948,31 +1965,31 @@ mod tests {
         let (mut w, rx) = wait(vec![17], 2);
         drop(rx);
         assert_eq!(
-            incoming_packet(249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, &mut w).unwrap(),
             [17, 3, 0]
         );
         let (mut w, _rx) = wait(vec![18], 2);
         assert_eq!(
-            incoming_packet(249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, &mut w).unwrap(),
             [17, 3, 0]
         );
         assert!(w.is_some());
         let (mut w, _rx) = wait(vec![17], 1);
         assert_eq!(
-            incoming_packet(249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, &mut w).unwrap(),
             [17, 3, 0]
         );
         assert!(w.is_some());
         w.as_mut().unwrap().deadline = Instant::now() - Duration::from_millis(1);
         assert!(
-            incoming_packet(249, &notification, &mut w)
+            incoming_packet(249, 249, &notification, &mut w)
                 .unwrap()
                 .is_empty()
         );
         assert!(w.is_some());
         let (mut w, mut rx) = wait(vec![17], 1);
         assert!(
-            incoming_packet(249, &notification, &mut w)
+            incoming_packet(249, 249, &notification, &mut w)
                 .unwrap()
                 .is_empty()
         );
@@ -1983,13 +2000,16 @@ mod tests {
         let (mut w, _rx) = wait(vec![17], 2);
         let mut event = indication;
         event[1] = 7;
-        assert_eq!(incoming_packet(249, &event, &mut w).unwrap(), [17, 7, 0]);
+        assert_eq!(
+            incoming_packet(249, 249, &event, &mut w).unwrap(),
+            [17, 7, 0]
+        );
         assert!(w.is_some());
         let (mut w, _rx) = wait(vec![17], 2);
-        assert!(incoming_packet(249, &indication[..7], &mut w).is_err());
+        assert!(incoming_packet(249, 249, &indication[..7], &mut w).is_err());
         assert!(w.is_some());
         assert_eq!(
-            incoming_packet(249, &indication, &mut None).unwrap(),
+            incoming_packet(249, 249, &indication, &mut None).unwrap(),
             [17, 3, 0]
         );
     }
@@ -2013,6 +2033,107 @@ mod tests {
         .await
         .unwrap_err();
         assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+    }
+
+    #[tokio::test]
+    async fn partial_update_caller_or_owner_exit_retains_original_physical_obligation() {
+        // Actual Owner watch and update bookkeeping; no Native/USB/credit stub.
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let caller = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let store = std::sync::Arc::new(std::sync::Mutex::new(
+            crate::ssap_database::Database::default(),
+        ));
+        let slots = std::sync::Arc::new(tokio::sync::Semaphore::new(1));
+        let first = Instant::now();
+        let owner = crate::ssap_authorization::Owner::pin(
+            &server,
+            caller.unique_name().unwrap().to_string(),
+            zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+            &store,
+            slots.clone().try_acquire_owned().unwrap(),
+            first + Duration::from_secs(5),
+        )
+        .await
+        .unwrap();
+        for partial in [false, true] {
+            let (reply, rx) = oneshot::channel();
+            let mut current = UpdateRequest {
+                submitted_all: false,
+                handle: 17,
+                owner: owner.clone(),
+                mode: 2,
+                epoch: 7,
+                deadline: first + Duration::from_secs(4),
+                drain: None,
+                pdu: vec![16, 3, 17, 0, 0, 0],
+                reply: Some(reply),
+            };
+            if partial {
+                current.admit_part(first, false);
+            }
+            let mut pending = VecDeque::from([Pending {
+                sent: usize::from(partial),
+                bytes: current.pdu.clone(),
+                deadline: current.deadline,
+                purpose: Purpose::Update,
+                constraint: None,
+            }]);
+            let mut update = Some(current);
+            drop(rx);
+            retire_update_wait(&mut update, &mut pending, first + Duration::from_secs(1));
+            if partial {
+                let current = update.as_mut().unwrap();
+                assert!(current.reply.is_none() && !current.submitted_all);
+                assert_eq!(pending.len(), 1);
+                assert_eq!(
+                    current.obligation_deadline(),
+                    first + Duration::from_secs(5)
+                );
+                current.admit_part(first + Duration::from_secs(2), true);
+                assert!(current.submitted_all);
+                assert_eq!(current.drain, Some(first + Duration::from_secs(5)));
+                assert_eq!(current.deadline, first + Duration::from_secs(4));
+            } else {
+                assert!(update.is_none() && pending.is_empty());
+            }
+        }
+        let (reply, _rx) = oneshot::channel();
+        let mut current = UpdateRequest {
+            submitted_all: false,
+            handle: 17,
+            owner: owner.clone(),
+            mode: 2,
+            epoch: 7,
+            deadline: first + Duration::from_secs(4),
+            drain: None,
+            pdu: vec![16, 3, 17, 0, 0, 0],
+            reply: Some(reply),
+        };
+        current.admit_part(first, false);
+        owner.revoke();
+        let mut pending = VecDeque::from([Pending {
+            sent: 1,
+            bytes: current.pdu.clone(),
+            deadline: current.deadline,
+            purpose: Purpose::Update,
+            constraint: None,
+        }]);
+        let mut update = Some(current);
+        retire_update_wait(&mut update, &mut pending, first + Duration::from_secs(1));
+        assert!(update.as_ref().unwrap().reply.is_none());
+        assert_eq!(pending.len(), 1);
+        assert_eq!(update.unwrap().drain, Some(first + Duration::from_secs(5)));
+        owner.shutdown().await;
+        assert_eq!(slots.available_permits(), 1);
     }
 }
 

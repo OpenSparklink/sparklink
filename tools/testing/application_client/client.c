@@ -14,9 +14,9 @@
 #include <unistd.h>
 #include <stddef.h>
 _Static_assert(sizeof(struct SlkServiceProperty)==2076,"Owned property ABI");
-_Static_assert(sizeof(struct SlkSsapUpdate)==2056,"SSAP update receipt ABI");
+_Static_assert(sizeof(struct SlkSsapUpdate)==2064,"unpublished bounded SSAP update receipt ABI");
 _Static_assert(offsetof(struct SlkSsapUpdate,pdu)==8,"SSAP update PDU ABI");
-_Static_assert(offsetof(struct SlkSsapUpdate,acknowledgement)==2050,"SSAP update ACK ABI");
+_Static_assert(offsetof(struct SlkSsapUpdate,acknowledgement)==2056,"SSAP update ACK ABI");
 _Static_assert(sizeof(struct SlkServiceReceipt)==152,"Owned receipt ABI");
 _Static_assert(offsetof(struct SlkServiceProperty,value)==32,"Owned value ABI");
 _Static_assert(offsetof(struct SlkServiceReceipt,handles)==24,"Owned handles ABI");
@@ -282,7 +282,7 @@ static int owned_mode(int argc,char **argv) {
             int indication=!strcmp(line,"indicate\n");struct SlkSsapUpdate result={0};
             uint64_t started=now_ns(),deadline=started+5000000000ULL;
             error=slk_connection_ssap_send_owned(link,receipt.handles[0],(uint32_t)indication,&result,deadline);
-            if (error || result.stage!=(indication?2U:1U) || result.pdu_length>2042 || result.acknowledgement_length>3) {errno=error?-error:EPROTO;goto done;}
+            if (error || result.stage!=(indication?2U:1U) || result.pdu_length>2048 || result.acknowledgement_length>3) {errno=error?-error:EPROTO;goto done;}
             printf("SdkOwnedUpdate: {\"api\":\"c\",\"handle\":%u,\"stage\":%u,\"pdu\":\"",receipt.handles[0],result.stage);hex_print(result.pdu,result.pdu_length);
             printf("\",\"ack\":\"");hex_print(result.acknowledgement,result.acknowledgement_length);
             printf("\",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",started,deadline,now_ns());fflush(stdout);
@@ -323,11 +323,11 @@ static int update_peer_mode(int argc,char **argv) {
     if (argc!=9) return 2;
     const int negative=!strcmp(argv[1],"update-error");
     uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[5]),mode=number(argv[6]);
-    uint8_t expected[2042],reply[2042],raw[2042],echo[2042];
+    uint8_t expected[2042],reply[2042],raw[2048],echo[2042];
     size_t n=negative?0:bytes(argv[7],expected),r=negative?0:bytes(argv[8],reply);
     const uint64_t budget_ms=negative?number(argv[8]):5000;
     if (negative && (number(argv[7])!=ETIMEDOUT || budget_ms<50 || budget_ms>5000)) return 2;
-    if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX || (mode!=1 && mode!=2) || n>2036 || r>2042 || (!negative && n==r && !memcmp(expected,reply,n))) return 2;
+    if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX || (mode!=1 && mode!=2) || n>2042 || r>2042 || (!negative && n==r && !memcmp(expected,reply,n))) return 2;
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};struct SlkClient *client=NULL;struct SlkConnection *link=NULL;
     int status=1,error;const uint64_t started=now_ns(),original=started+budget_ms*1000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}

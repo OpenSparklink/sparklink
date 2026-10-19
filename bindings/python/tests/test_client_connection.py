@@ -77,7 +77,7 @@ def caller(bridge):
 class PythonConnectionBoundary(unittest.TestCase):
     def test_update_layout_marshalling_and_distinct_completion_stages(self):
         self.assertEqual((ctypes.sizeof(_SsapUpdate),_SsapUpdate.pdu.offset,
-                          _SsapUpdate.acknowledgement.offset),(2056,8,2050))
+                          _SsapUpdate.acknowledgement.offset),(2064,8,2056))
         bridge=Boundary()
         with caller(bridge) as client, client.connection(ControllerId(2,7),'/fixture',deadline_ns=1) as connection:
             remote=connection.ssap()
@@ -89,6 +89,21 @@ class PythonConnectionBoundary(unittest.TestCase):
                 with self.assertRaises(ValueError):remote.receive_update(17,deadline_ns=1,modes=modes)
             with self.assertRaises(TypeError):remote.send_owned_update(17,deadline_ns=1,indication=1)
 
+    def test_maximum_update_abi_keeps_the_complete_2042_byte_value(self):
+        # ctypes/output contract fixture,not Native or remote delivery.
+        bridge=Boundary()
+        expected=b'\x0f\x03\x11\0\xfa\x07'+bytes(range(256))*7+bytes(range(250))
+        self.assertEqual(len(expected),2048)
+        def complete(*args):
+            bridge._update(args,3)
+            value=ctypes.cast(args[3],ctypes.POINTER(_SsapUpdate)).contents
+            value.pdu_length=len(expected)
+            value.pdu[:]=expected
+            return 0
+        bridge.slk_connection_ssap_receive=complete
+        with caller(bridge) as client,client.connection(ControllerId(2,7),'/fixture',deadline_ns=1) as connection:
+            self.assertEqual(connection.ssap().receive_update(17,deadline_ns=1,modes=1).pdu,expected)
+
     def test_malformed_update_receipts_are_rejected_without_retry(self):
         for mutation in ['stage','length','reserved','tail','ack']:
             bridge=Boundary()
@@ -96,7 +111,7 @@ class PythonConnectionBoundary(unittest.TestCase):
                 bridge._update(args,3)
                 value=ctypes.cast(args[3],ctypes.POINTER(_SsapUpdate)).contents
                 if mutation=='stage':value.stage=1
-                elif mutation=='length':value.pdu_length=2043
+                elif mutation=='length':value.pdu_length=2049
                 elif mutation=='reserved':value.reserved[0]=1
                 elif mutation=='tail':value.pdu[2041]=1
                 else:value.acknowledgement_length=1

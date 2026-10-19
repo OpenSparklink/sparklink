@@ -64,6 +64,16 @@ def fixture():
 
 
 class DirectLinkDown(unittest.TestCase):
+    def test_missing_or_extra_application_receipt_cannot_qualify_down_business(self):
+        for count in [0,1,3]:
+            r,c=fixture();apps=r['channel_grant']['business'][0]['applications']
+            r['channel_grant']['business'][0]['applications']=(apps*2)[:count]
+            # Extra entries may fail earlier in the existing payload oracle;
+            # missing entries must reach the new shared completeness check.
+            pattern='two actual business application receipts' if count<2 else '.+'
+            with self.subTest(count=count),self.assertRaisesRegex(ValueError,pattern):
+                corroborate(r,c)
+
     def test_scoped_receipts_and_actual_packet_paths(self):
         r,c=fixture();verify(r);p=corroborate(r,c)
         self.assertEqual(p['submitted_bytes'],254)

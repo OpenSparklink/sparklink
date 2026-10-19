@@ -507,6 +507,8 @@ def verify_intents(row, outer):
 
 def business_evidence(row, outer, capture):
     """Shared actual application TX/opposite RX evidence, independent of closure."""
+    if any(len(business['applications'])!=2 for business in row['business']):
+        raise CaptureError('two actual business application receipts required')
     if row.get('tx_constraint_required'):verify_intents(row,outer)
     sdus=reassemble_acb(capture);legs=[]
     for business in row['business']:

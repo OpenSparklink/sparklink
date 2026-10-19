@@ -485,3 +485,25 @@ handle、mode、errno 和原始毫秒预算；当前只接受 ETIMEDOUT 和50至
 
 该有限场景不证明全部撤权、断链、安全 epoch、最后引用、无编号ACK/NOCP复用、
 多应用订阅或故障恢复组合；准确资格与缺口仍只读取唯一能力记录。
+
+## SSAP 完整 PDU 长度门禁
+
+未发布 runner 的 `--ssap-value-lengths-verify` 要求独立的
+`--qmp-hotplug --connection-verify --channel-socket-verify` 普通基础模式，
+4轮、61字节 CUTC；不能组合 Agent、SDK、其他生命周期、动态通道或压力选择器。
+新 prepared root 必须封存匹配 Host／guest 工具。此选项描述开发门禁，不授予资格。
+
+保留双方向各4次32字节事务，再测试应用值0、1、248至255、1024及2037字节。
+两端实际 ExchangeInfo 均须是当前 lifetime 的2042字节协商结果。SSAP verified
+write 开销5字节，read response开销2字节，单项 UUID response开销4字节；
+不能把应用长度、SSAP PDU、DTAP帧或DLI分片长度混作同一边界。零字节及1字节
+无法容纳随机序号，使用原命令窗口、身份及精确载荷匹配；较长值保留随机载荷和序号。
+
+2038、2042、2043字节 verified write 必须实际返回 MTU 拒绝，随后的对端读取必须
+保留完整原值，后续合法事务仍须成功。每个真实发送及接收都从独立 USB/HCC/DLI
+捕获匹配，credit 核算使用实际 ACB 分片数，不将一次SDU误算成一次控制器发送。
+多余或未归属的 SSAP 包、缺失一端或必要场景均不得通过。
+
+当前入口使用普通UID1000控制角色的真实CLI调用及本地管理staging，再经唯一
+用户态Engine与对端实际读取、写入和UUID读取核对；staging本身不是远端交付证明。
+它不授予C/Python长度矩阵、其他协商MTU、SSAP协议分片或恢复资格；这些范围继续开放。

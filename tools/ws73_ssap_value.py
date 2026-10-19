@@ -4,9 +4,44 @@ from contextlib import contextmanager
 from ws73_channel_socket import CaptureError
 
 
+LENGTHS = (32,32,32,32,0,1,248,249,250,251,252,253,254,255,1024,2037)
+
+
+def lengths_requested(args,*,passthrough):
+    value=getattr(args,'ssap_value_lengths_verify',False)
+    if type(value)is not bool:raise ValueError('explicit SSAP length gate boolean required')
+    if value and (not passthrough or not getattr(args,'channel_socket_verify',False)
+            or getattr(args,'channel_socket_rounds',4)!=4 or getattr(args,'channel_socket_bytes',61)!=61
+            or getattr(args,'security_agent',None) is not None
+            or any(getattr(args,k,False) for k in ['application_client_verify','ssap_owned_verify',
+                'ssap_owned_update_verify','ssap_update_delivery_verify','ssap_update_lifecycle_verify',
+                'ssap_owner_lifecycle_verify','ssap_requester_lifecycle_verify','ssap_initialization_verify',
+                'channel_socket_close_prefix','channel_socket_burst','channel_socket_boundaries',
+                'dynamic_channel_verify','channel_fairness_verify'])):
+        raise ValueError('SSAP lengths require dedicated ordinary basic socket gate')
+    return value
+
+
+def length_mtu(row):
+    receipts=row.get('ssap_receipts',[])
+    if len(receipts)!=2:raise CaptureError('both actual SSAP negotiation receipts required')
+    pattern=r'^SsapExchangeInfo: index=(\d+) generation=(\d+) lifetime=(\d+) handle=(\d+) local_mtu=(\d+) negotiated_mtu=(\d+) request=([0-9a-f]+) peer_reply=([0-9a-f]+) peer_request=([0-9a-f]+) response=([0-9a-f]+)$'
+    for owner,receipt in zip(row['owners'],receipts,strict=True):
+        matches=re.findall(pattern,receipt['stdout'],re.M)
+        if receipt['exit'] or len(matches)!=1:raise CaptureError('one actual negotiation result required')
+        found=matches[0];identity=tuple(map(int,found[:4]))
+        if identity!=(owner['owner']['index'],owner['owner']['generation'],owner['object']['lifetime'],owner['object']['handle']) or tuple(map(int,found[4:6]))!=(2042,2042):
+            raise CaptureError('length gate requires exact current lifetime and actual negotiated2042')
+    return 2042
+
+
 def execute(run,row,*,value_command=None,services=None,local_value_command=None):
     row['ssap_value_required']=True;row['ssap_read_uuid_required']=True;row['ssap_update_local_rejection_required']=True;row['ssap_values']=[]
     owners=row['owners'];local=[]
+    lengths=bool(getattr(run.args,'ssap_value_lengths_verify',False))
+    if lengths:
+        if any(v is not None for v in (value_command,services,local_value_command)):raise CaptureError('dedicated real CLI length gate,not an unqualified SDK fixture')
+        row['ssap_value_lengths_required']=True;row['ssap_length_mtu']=length_mtu(row);row['ssap_length_rejections']=[]
     def command(owner,args,expected=None):
         if local_value_command is not None and args[0]=='ssap-local-read':
             return local_value_command(owner,args,expected)
@@ -41,10 +76,22 @@ def execute(run,row,*,value_command=None,services=None,local_value_command=None)
             args=[str(run.args.slctl),'--adapter',source['owner']['path'],'ssap-receive',source['object']['path'],str(prop['discovered_handle']),'notify','10']
             receipt=run.command(args,10,collection='ssap_values');row['unsupported_incoming'].append(dict(sender=sender,target=target,handle=prop['discovered_handle'],receipt=receipt));run.save()
             if receipt['exit']==0 or 'peer has not advertised requested property update capabilities' not in receipt['stderr']:raise CaptureError('non-notifying actual peer must explicitly reject local receive interest')
-        for sequence in range(4):
+        if lengths:
+            for sender,target in [(0,1),(1,0)]:
+                source=owners[sender];prop=local[target]
+                for size in (2038,2042,2043):
+                    value=secrets.token_bytes(size)
+                    words=[str(run.args.slctl),'--adapter',source['owner']['path'],'ssap-write',source['object']['path'],str(prop['handle']),value.hex()]
+                    item=dict(sender=sender,target=target,handle=prop['handle'],value=value.hex(),before=prop['value'].hex(),start_wall_ns=time.time_ns())
+                    item['rejected']=run.command(words,10,collection='ssap_length_rejections')
+                    row['ssap_length_rejections'].append(item);run.save()
+                    if not item['rejected']['exit'] or 'value codec: Mtu' not in item['rejected']['stderr']:raise CaptureError('actual complete-PDU oversize refusal required')
+                    item['unchanged']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],prop['value'])
+                    item['end_wall_ns']=time.time_ns();run.save()
+        for sequence,size in enumerate(LENGTHS if lengths else (32,)*4):
             for sender,target in [(0,1),(1,0)]:
                 source=owners[sender];destination=owners[target];prop=local[target]
-                payload=sequence.to_bytes(4,'little')+secrets.token_bytes(28)
+                payload=(sequence.to_bytes(4,'little')+secrets.token_bytes(size-4)) if size>=4 else secrets.token_bytes(size)
                 item=dict(sequence=sequence,sender=sender,target=target,handle=prop['discovered_handle'],before=prop['value'].hex(),value=payload.hex(),start_wall_ns=time.time_ns())
                 item['property_uuid']=prop['property_uuid']
                 item['uuid_read_before']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
@@ -67,15 +114,25 @@ def execute(run,row,*,value_command=None,services=None,local_value_command=None)
 
 def corroborate(row,matched):
     owners=row['owners'];operations=row.get('ssap_values',[])
-    if len(operations)!=8:raise CaptureError('four repeated SSAP operations in both directions required')
-    seen=set();nonces=set();proof=[];credit={0:0,1:0}
+    lengths=row.get('ssap_value_lengths_required',False)
+    if type(lengths)is not bool:raise CaptureError('explicit recorded length mode required')
+    sizes=LENGTHS if lengths else (32,)*4
+    if lengths and (length_mtu(row)!=row.get('ssap_length_mtu') or not row.get('ssap_read_uuid_required')):raise CaptureError('actual negotiated MTU/UUID length gate required')
+    if len(operations)!=2*len(sizes):raise CaptureError('complete repeated SSAP length/direction matrix required')
+    seen=set();nonces=set();proof=[];credit={0:0,1:0};previous_values={}
+    def sends(packet):return len(packet.get('fragments',[packet]))
     for item in operations:
         sender,target=item['sender'],item['target'];key=(sender,item['sequence'])
-        if sender not in (0,1) or target!=1-sender or key in seen or item['sequence'] not in range(4):raise CaptureError('independent repeated SSAP directions required')
+        if sender not in (0,1) or target!=1-sender or key in seen or item['sequence'] not in range(len(sizes)):raise CaptureError('independent repeated SSAP directions required')
         seen.add(key);value=bytes.fromhex(item['value']);before=bytes.fromhex(item['before']);handle=item['handle'];source=owners[sender];destination=owners[target]
-        if value[4:] in nonces:raise CaptureError('SSAP random nonce reused')
-        nonces.add(value[4:])
-        if len(value)!=32 or len(before)!=32 or int.from_bytes(value[:4],'little')!=item['sequence']:raise CaptureError('SSAP random payload/sequence required')
+        if len(value)>=16:
+            if value[4:] in nonces:raise CaptureError('SSAP random nonce reused')
+            nonces.add(value[4:])
+        size=sizes[item['sequence']]
+        previous=32 if item['sequence']==0 else sizes[item['sequence']-1]
+        if len(value)!=size or len(before)!=previous or size>=4 and int.from_bytes(value[:4],'little')!=item['sequence']:raise CaptureError('SSAP exact length/random payload/sequence required')
+        if target in previous_values and before!=previous_values[target]:raise CaptureError('original written value must persist into the next read')
+        previous_values[target]=value
         registrations=row.get('ssap_local_registrations',[])
         if len(registrations)!=2 or registrations[target]['owner']!=destination or registrations[target]['handle']!=handle:raise CaptureError('actual target local service identity required')
         registered=registrations[target];owned=row.get('ssap_registration_kind') in ('owned-sdk-v1','owned-sdk-requests-v1')
@@ -103,7 +160,7 @@ def corroborate(row,matched):
             window=item[name]
             if not item['start_wall_ns']<=window['start_wall_ns']<=window['end_wall_ns']<=item['end_wall_ns']:raise CaptureError('original command interval required')
             wire.append(dict(tx=matched(a,'out',frame(payload),window),rx=matched(b,'in',frame(payload),window)))
-            credit[0 if a==owners[0] else 1]+=1
+            credit[0 if a==owners[0] else 1]+=sends(wire[-1]['tx'])
         uuid_wire=[]
         if row.get('ssap_read_uuid_required'):
             uuid=bytes.fromhex(item['property_uuid'])
@@ -116,8 +173,25 @@ def corroborate(row,matched):
                 if c['exit'] or c['stdout'].splitlines().count(line)!=1 or c['stdout'].splitlines().count(trace)!=1:raise CaptureError('original peer UUID value and raw trace required')
                 if not item['start_wall_ns']<=c['start_wall_ns']<=c['end_wall_ns']<=item['end_wall_ns']:raise CaptureError('UUID request original interval required')
                 uuid_wire.append(dict(request=dict(tx=matched(source,'out',frame(request),c),rx=matched(destination,'in',frame(request),c)),response=dict(tx=matched(destination,'out',frame(response),c),rx=matched(source,'in',frame(response),c))))
-                credit[sender]+=1;credit[target]+=1
+                credit[sender]+=sends(uuid_wire[-1]['request']['tx']);credit[target]+=sends(uuid_wire[-1]['response']['tx'])
         proof.append(dict(sequence=item['sequence'],sender=sender,target=target,handle=handle,value=item['value'],wire=wire,uuid_wire=uuid_wire,receipts={k:item[k] for k in ['read_before','write','local_check','read_after']}))
+    if lengths:
+        refusals=row.get('ssap_length_rejections',[]);rejected=[]
+        if len(refusals)!=6 or [(r['sender'],len(bytes.fromhex(r['value']))) for r in refusals]!=[(s,n)for s in (0,1)for n in (2038,2042,2043)]:raise CaptureError('both actual complete-PDU oversize matrices required')
+        for item in refusals:
+            s,t=item['sender'],item['target'];h=item['handle'];c=item['rejected'];unchanged=item['unchanged'];before=bytes.fromhex(item['before'])
+            initial=next(op['before'] for op in operations if op['sender']==s and op['sequence']==0)
+            if item['before']!=initial:raise CaptureError('refusal must preserve the original value seen by the next actual operation')
+            if t!=1-s or h!=row['ssap_local_registrations'][t]['handle'] or len(before)!=32 or not c['exit'] or 'value codec: Mtu' not in c['stderr'] or c['args'][-4:]!=['ssap-write',owners[s]['object']['path'],str(h),item['value']]:raise CaptureError('original exact oversize command/refusal required')
+            if unchanged['exit'] or unchanged['stdout'].splitlines().count(f"SsapPeerValue: operation=ssap-read path={owners[s]['object']['path']} handle={h} value={item['before']}")!=1:raise CaptureError('peer must actually retain entire original value after refusal')
+            if not item['start_wall_ns']<=c['start_wall_ns']<=c['end_wall_ns']<=unchanged['start_wall_ns']<=unchanged['end_wall_ns']<=item['end_wall_ns']<=operations[0]['start_wall_ns']:raise CaptureError('original refusal/read/recovery ordering required')
+            legs=[]
+            for a,b,pdu in [(s,t,b'\x08\x03'+h.to_bytes(2,'little')+b'\0'),(t,s,b'\x09\x03'+before)]:
+                frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
+                legs.append(dict(tx=matched(owners[a],'out',frame,unchanged),rx=matched(owners[b],'in',frame,unchanged)));credit[a]+=sends(legs[-1]['tx'])
+            rejected.append(dict(sender=s,application_bytes=len(bytes.fromhex(item['value'])),wire=legs))
+        proof[0]['length_gate']=dict(mtu=2042,lengths=list(LENGTHS),refusals=rejected,scope='Complete-PDU CLI ordinary control-role;not SSAP protocol fragmentation or C/Python length qualification')
+    elif row.get('ssap_length_rejections') or 'ssap_length_mtu' in row:raise CaptureError('unexpected unrequested SSAP length evidence')
     if row.get('ssap_update_local_rejection_required'):
         rows=row.get('unsupported_incoming',[])
         if len(rows)!=2 or {x['sender'] for x in rows}!={0,1}:raise CaptureError('both actual peer local receive rejections required')
@@ -126,3 +200,24 @@ def corroborate(row,matched):
             expected=['ssap-receive',source['object']['path'],str(item['handle']),'notify','10']
             if target!=1-sender or r['exit']==0 or r['args'][-5:]!=expected or 'peer has not advertised requested property update capabilities' not in r['stderr']:raise CaptureError('actual unsupported local receive receipt required')
     return proof,credit
+
+
+def valid_length_summary(result):
+    try:return _valid_length_summary(result)
+    except (ValueError,TypeError,KeyError,IndexError,AttributeError):return False
+
+
+def _valid_length_summary(result):
+    if not isinstance(result,dict) or result.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED':return False
+    rows=result.get('proofs',[])
+    if len(rows)!=2:return False
+    for phase,row in enumerate(rows):
+        if type(row.get('phase'))is not int or row['phase']!=phase:return False
+        values=row.get('ssap_values',[])
+        if len(values)!=2*len(LENGTHS):return False
+        if any(type(v.get(k))is not int for v in values for k in ('sender','sequence')) or {(v.get('sender'),v.get('sequence')) for v in values}!={(s,n)for s in (0,1)for n in range(len(LENGTHS))}:return False
+        gate=values[0].get('length_gate',{})
+        if gate.get('mtu')!=2042 or gate.get('lengths')!=list(LENGTHS) or len(gate.get('refusals',[]))!=6:return False
+        if [(v.get('sender'),v.get('application_bytes'))for v in gate['refusals']]!=[(s,n)for s in (0,1)for n in (2038,2042,2043)] or any(len(v.get('wire',[]))!=2 for v in gate['refusals']):return False
+        if any(len(bytes.fromhex(v['value']))!=LENGTHS[v['sequence']] or len(v.get('wire',[]))!=6 or len(v.get('uuid_wire',[]))!=2 for v in values):return False
+    return True

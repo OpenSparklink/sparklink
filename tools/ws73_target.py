@@ -598,6 +598,8 @@ def _run(args):
     update_delivery=delivery_requested(args,passthrough=passthrough)
     from ws73_ssap_receive_lifecycle import requested as receive_lifecycle_requested
     receive_lifecycle=receive_lifecycle_requested(args,passthrough=passthrough)
+    from ws73_ssap_value import lengths_requested
+    value_lengths=lengths_requested(args,passthrough=passthrough)
     owner_lifecycle=bool(getattr(args,'ssap_owner_lifecycle_verify',False))
     owner_publisher=getattr(args,'ssap_owner_publisher','cli')
     if owner_publisher not in ('cli','sdk') or (owner_publisher!='cli' and not owner_lifecycle):raise ValueError('SDK owner publisher requires explicit lifecycle gate')
@@ -828,6 +830,9 @@ def _run(args):
     m['ordinary_channel_info_acceptance']=False
     m['ssap_exchange_info_acceptance']=False
     m['ssap_value_acceptance']=False
+    m['ssap_value_lengths_requested']=value_lengths
+    m['ssap_value_lengths_acceptance']=False
+    if value_lengths:m['ssap_value_lengths_verifier']=file_record(HERE/'ws73_ssap_value.py')
     m['ssap_access_acceptance']=False
     m['ssap_update_delivery_requested']=update_delivery
     m['ssap_update_delivery_acceptance']=False
@@ -1076,6 +1081,7 @@ def _run(args):
                      (' ws73.ssap_owned_update=1' if owned_update else '')+
                      (' ws73.ssap_update_delivery=1' if update_delivery else '')+
                      (' ws73.ssap_receive_lifecycle=1' if receive_lifecycle else '')+
+                     (' ws73.ssap_value_lengths=1' if value_lengths else '')+
                      (' ws73.application_clients=1' if application_clients else '')+
                      (' ws73.application_discovery=1' if application_discovery else '')+
                      (' ws73.application_discovery_case=owner-loss' if application_discovery and getattr(args,'application_discovery_case','release')=='owner-loss' else '')+
@@ -1560,6 +1566,11 @@ def _run(args):
                         validate_coordination(control['channel_socket'],m['ssap_receive_capture_observations'])
                     if any(bool(row.get('ssap_receive_lifecycle_required',False))!=receive_lifecycle for row in control['channel_socket']):raise ValueError('receive lifecycle request/evidence mismatch')
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
+                    if any(bool(row.get('ssap_value_lengths_required',False))!=value_lengths for row in control['channel_socket']):raise ValueError('SSAP lengths request/evidence mismatch')
+                    if value_lengths:
+                        from ws73_ssap_value import valid_length_summary
+                        if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration']):raise ValueError('exact SSAP length verifier and complete evidence required')
+                    m['ssap_value_lengths_acceptance']=value_lengths
                     m['ssap_receive_lifecycle_acceptance']=receive_lifecycle
                     m['ssap_update_delivery_acceptance']=update_delivery
                     m['ssap_owned_update_acceptance']=owned_update
@@ -1990,6 +2001,14 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     elif record.get('ssap_initialization_acceptance')or record.get('ssap_initialization_corroboration'):return 1
     channel_proof=record.get('channel_socket_corroboration',{})
     if not isinstance(channel_proof,dict):return 1
+    length_gate=record.get('ssap_value_lengths_requested',False)
+    if type(length_gate)is not bool:return 1
+    length_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_value_lengths=1']
+    if length_boot!=(['ws73.ssap_value_lengths=1']if length_gate else[]):return 1
+    if length_gate:
+        from ws73_ssap_value import valid_length_summary
+        if record.get('ssap_value_lengths_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or record.get('qemu_exit')!=0 or not valid_length_summary(channel_proof):return 1
+    elif record.get('ssap_value_lengths_acceptance')or any(v.get('length_gate')for p in channel_proof.get('proofs',[])for v in p.get('ssap_values',[])):return 1
     delivery=record.get('ssap_update_delivery_requested',False)
     if type(delivery)is not bool:return 1
     delivery_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_update_delivery=1']
@@ -2324,6 +2343,7 @@ def main():
             cmd.add_argument('--ssap-owned-update-verify',action='store_true')
             cmd.add_argument('--ssap-update-delivery-verify',action='store_true',help='real typed/authenticated CPCD,notification/indication and C/Python peer business reply')
             cmd.add_argument('--ssap-update-lifecycle-verify',action='store_true',help='dedicated same-actor receiver exit,original deadline and confirmed CPCD cleanup;requires update delivery')
+            cmd.add_argument('--ssap-value-lengths-verify',action='store_true',help='dedicated real complete-PDU value lengths/MTU refusal gate;not SSAP protocol fragmentation')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
             cmd.add_argument('--ssap-owner-publisher',choices=['cli','sdk'],default='cli',help='explicit owner frontend;SDK selects C/Python per role,no fallback')
             cmd.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester death/old reply drain and ordinary CUTC while real owner prompt held')

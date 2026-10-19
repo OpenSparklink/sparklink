@@ -561,7 +561,8 @@ NotSupported。只允许一个call-owned等待者；busy、原期限、caller退
 受保护SMTC的初始化保留原错误类型；只有已完成且未返回fd的确定安全准入拒绝，
 才能在真实安全完成事件后join并重新尝试。新bind仍由内核核对原租约及实际机制；
 未知失败、超时、已启动Engine与退休owner不重开。原拒绝的公开错误名称/正文保持。
-新产物正向更新门禁仍待验收；不得通过基本回退、第二Engine或同lifetime重绑绕过。
+接口存在不授予资格，须核对当前能力入口中准确产物的限定记录；持续订阅、多应用和
+完整生命周期仍有独立门禁。不得通过基本回退、第二Engine或同lifetime重绑绕过。
 
 
 ## Delegated channel TX status（未发布 v1）

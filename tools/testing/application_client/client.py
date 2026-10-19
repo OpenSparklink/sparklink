@@ -23,7 +23,7 @@ def wait(fd, event, deadline):
 
 
 def main():
-    if sys.argv[1:2] == ['owned']:return owned_mode()
+    if sys.argv[1:2] in (['owned'],['owned-readonly']):return owned_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
     if len(sys.argv)!=7:raise ValueError("index generation connection role request reply required")
@@ -144,7 +144,7 @@ def owned_mode():
     original=time.monotonic_ns()+5_000_000_000
     with Client(deadline_ns=original) as client:
         view=client.register_local_service(identity,service,
-            [LocalProperty(uuid,SsapOperations(5),SsapAccess(36 if policy else 0),value)],
+            [LocalProperty(uuid,SsapOperations(1 if sys.argv[1]=='owned-readonly' else 5),SsapAccess(36 if policy else 0),value)],
             deadline_ns=original,authorization='requests' if policy else 'none')
     with view:
         receipt=view.receipt
@@ -185,11 +185,17 @@ def owned_mode():
                 if not byte:raise BrokenPipeError('publisher input closed')
                 line+=byte
                 if byte!=b'\n':
-                    if len(line)>=31:raise ValueError('bounded owned command required')
+                    if len(line)>=4095:raise ValueError('bounded owned command required')
                     continue
                 if line==b'value\n':
                     actual=view.read_local(handle,deadline_ns=time.monotonic_ns()+5_000_000_000)
                     print(f'SsapOwnedValue: handle={handle} value={actual.hex()}',flush=True)
+                elif line.startswith(b'replace '):
+                    value=bytes.fromhex(line[8:-1].decode('ascii'))
+                    started=time.monotonic_ns();deadline=started+5_000_000_000
+                    view.replace_local(handle,value,deadline_ns=deadline)
+                    print('SdkOwnedReplaced: '+json.dumps(dict(api='python',handle=handle,value=value.hex(),
+                        started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
                 elif policy=='ask' and (line.startswith(b'yes ') or line.startswith(b'no ')):
                     parts=line.decode('ascii').split()
                     if len(parts)!=2 or not parts[1].isascii() or not parts[1].isdecimal() or not 0<=int(parts[1])<2**64:raise ValueError('exact unsigned token required')

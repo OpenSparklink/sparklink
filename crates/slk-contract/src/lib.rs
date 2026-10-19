@@ -78,6 +78,7 @@ pub mod ssap {
         pub const REGISTER_OWNED: &str = "RegisterOwnedLocalService";
         pub const UNREGISTER_OWNED: &str = "UnregisterOwnedLocalService";
         pub const READ_OWNED: &str = "ReadOwnedLocalValue";
+        pub const REPLACE_OWNED: &str = "ReplaceOwnedLocalValue";
         pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
         pub type PropertyRecord = (u16, Vec<u8>, u32, u32);
         pub type ServiceRecord = (u16, u16, Vec<u8>, Vec<PropertyRecord>);
@@ -89,6 +90,7 @@ pub mod ssap {
             crate::Deadline,
         );
         pub type OwnedHandleRequest = (u16, crate::Deadline);
+        pub type OwnedValueRequest = (u16, Vec<u8>, crate::Deadline);
     }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
@@ -385,6 +387,10 @@ mod owned_deadline_contract {
         assert_eq!(
             super::ssap::local::OwnedHandleRequest::SIGNATURE.to_string(),
             "(q(ttttt))"
+        );
+        assert_eq!(
+            super::ssap::local::OwnedValueRequest::SIGNATURE.to_string(),
+            "(qay(ttttt))"
         );
     }
 }

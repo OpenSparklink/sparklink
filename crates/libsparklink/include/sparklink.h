@@ -648,6 +648,21 @@ int slk_local_service_read(const struct SlkLocalService *view,
                            uint64_t deadline_ns);
 
 /**
+ * Replace this owner's local property value,0..2042 bytes,without truncation.
+ * Success is local commit,not publication/notification/peer delivery.
+ * Timeout/lost reply may follow commit;never automatically retry. Peer operation
+ * and security permissions are unchanged. Foreign/inactive handles are refused.
+ * # Safety
+ * view live;value immutable initialized length bytes,null only for0;no concurrent
+ * free,no use across fork. Inputs remain live throughout the call.
+ */
+int slk_local_service_replace(const struct SlkLocalService *view,
+                              uint16_t handle,
+                              const uint8_t *value,
+                              uintptr_t length,
+                              uint64_t deadline_ns);
+
+/**
  * Explicitly unregister this original owner's registration. No controller stop,
  * peer disconnect, new-owner fallback or blanket removal. Timely success is the
  * original broker's local removal acknowledgement,not remote peer completion.

@@ -83,3 +83,39 @@ mod ack_proofs {
         }
     }
 }
+
+// The exact replacement admission used by both local owner and remote write.
+#[path = "../../../crates/slkd/src/ssap_database/budget.rs"]
+mod value_budget;
+#[cfg(kani)]
+mod local_value_proofs {
+    #[kani::proof]
+    fn actual_replacement_budget_is_exact_and_bounded() {
+        let total:usize=kani::any();let old:usize=kani::any();let new:usize=kani::any();
+        let expected=total<=8192 && old<=2042 && new<=2042 && old<=total
+            && (total-old)+new<=8192;
+        let result=super::value_budget::replacement_bytes(total,old,new);
+        assert_eq!(result.is_some(),expected,"actual admission exactly matches finite byte budgets");
+        if let Some(next)=result {
+            assert!(next<=8192,"committed byte total remains bounded");
+            assert_eq!(next,total-old+new,"replace removes old bytes exactly once");
+        }
+    }
+    #[kani::proof]
+    fn actual_replacement_budget_composes_with_shrink_and_remove() {
+        let total:usize=kani::any();let old:usize=kani::any();let new:usize=kani::any();
+        kani::assume(old<=2042 && old<=total && total<=8192 && new<=2042);
+        if let Some(next)=super::value_budget::replacement_bytes(total,old,new) {
+            assert_eq!(super::value_budget::replacement_bytes(next,new,old),Some(total),"replacing back restores original accounting");
+            assert_eq!(super::value_budget::replacement_bytes(next,new,0),Some(total-old),"empty replacement releases only its own bytes");
+        }
+    }
+}
+#[cfg(kani)]
+mod local_value_negative_control {
+    #[kani::proof]
+    fn reject_a_false_replacement_budget_claim() {
+        assert!(super::value_budget::replacement_bytes(8192,0,1).is_some(),
+            "negative control must reject overbudget admission claim");
+    }
+}

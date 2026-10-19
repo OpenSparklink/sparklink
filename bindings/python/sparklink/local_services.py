@@ -68,6 +68,8 @@ def _configure(lib):
         'slk_local_service_read': [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_void_p,
             ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
         'slk_local_service_unregister': [ctypes.c_void_p, ctypes.c_uint64],
+        'slk_local_service_replace': [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_void_p,
+            ctypes.c_size_t, ctypes.c_uint64],
         'slk_local_service_free': [ctypes.c_void_p],
         'slk_local_service_authorization_fd': [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)],
         'slk_local_service_next_authorization': [ctypes.c_void_p, ctypes.POINTER(ctypes.c_void_p)],
@@ -213,6 +215,23 @@ class LocalService:
         finally:
             if fd is not None:
                 os.close(fd)
+
+    def replace_local(self, handle, value, *, deadline_ns):
+        """Local commit only;timeout can leave uncertain effects. Never retries.
+
+        Peer permissions stay unchanged;this sends no notification or wire PDU.
+        A separate real peer read can observe the committed current value.
+        """
+        if type(handle) is not int or not 1 <= handle <= 65535:
+            raise ValueError('nonzero property handle required')
+        if not isinstance(value, bytes) or len(value) > 2042:
+            raise ValueError('bounded 0..2042-byte local value required')
+        deadline_ns = _deadline(deadline_ns)
+        self._live()
+        with self._lock:
+            self._live()
+            _result(self._lib.slk_local_service_replace(self._handle, handle, value,
+                len(value), deadline_ns))
 
     def read_local(self, handle, *, deadline_ns, capacity=2042):
         """Current local value; a fresh read after ENOBUFS can observe new data."""

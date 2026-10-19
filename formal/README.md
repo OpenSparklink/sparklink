@@ -247,3 +247,28 @@ JSON 导出需显式 `-Z unstable-options --export-json NEW_PATH`，不能因为
 
 原 JSON 参数失败和数组迭代/unwrap 引出的 unsupported 结果保留为未证明；
 改用八次独立标量选择及显式 Result 断言保持同一状态空间和性质，不抑制警告。
+
+
+## Owned 本地值与远端写的共享预算
+
+`formal/ssap_value` 直接包含生产 `crates/slkd/src/ssap_database/budget.rs`。
+本地拥有者替换与远端写入共用该函数，不维护另一份准入实现。
+Kani0.68选择 `local_value_proofs::actual_replacement_budget_is_exact_and_bounded`
+及 `local_value_proofs::actual_replacement_budget_composes_with_shrink_and_remove`：
+前者对任意usize输入检查2042单值/8192总值边界、拒绝非法表示、精确替换；后者在
+合法原总值/原值范围内检查替换回原值及清空只释放自己的字节。无循环展开或
+调度公平性假设；这不证明数据库可达性、Mutex、Owner、分配器、daemon或硬件。
+
+使用已锁定的独立formal crate、共享构建锁和结构化导出，例如：
+
+```sh
+python3 tools/build_resources.py -- cargo kani -Z unstable-options --manifest-path formal/ssap_value/Cargo.toml --exact --harness local_value_proofs::actual_replacement_budget_is_exact_and_bounded --export-json /tmp/ssap-budget-proof-new.json
+```
+
+输出文件应取新名字。第二个harness同样独立导出；
+`local_value_negative_control::reject_a_false_replacement_budget_claim` 的错误预算断言
+必须得到指定反例，不以非零退出本身当负对照通过。复用
+`tools/run_formal.py:kani_export_verdict` 逐项核对harness、预期性质、错误类型与完成状态；
+unsupported/timeout/未展开均未证明。源码hash、工具版本、原始导出及实际回归另行记录。
+旧 `formal/ssap_value/check.py` 的“两项codec摘要”判据不适用于现有全部harness，不能
+用它升级新预算或其他codec资格；安装检查不等于这段实现已证明。

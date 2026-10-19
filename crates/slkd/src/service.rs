@@ -183,6 +183,61 @@ impl SsapManagerIface {
         })
         .await
     }
+    /// Commit this caller's local value only. No wire publication or ACK.
+    async fn replace_owned_local_value(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        let original =
+            Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).map_err(deadline_error)?;
+        if handle == 0 || value.len() > 2042 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "local handle/value length".into(),
+            ));
+        }
+        owned_request(original, async {
+            let caller = crate::security_policy::sender(&header)?;
+            let state = self.state.lock().await;
+            if !state.present {
+                return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+            }
+            let lease = state.native_lease.as_ref().ok_or_else(|| {
+                zbus::fdo::Error::NotSupported("Native management required".into())
+            })?;
+            // Do not sleep holding the state lock behind a management handoff.
+            let admission = lease
+                .try_lock()
+                .map_err(|_| zbus::fdo::Error::Failed("management handoff busy".into()))?;
+            if !admission.accepting || admission.token.is_none() {
+                return Err(zbus::fdo::Error::Failed("management revoked".into()));
+            }
+            let mut database = state
+                .ssap_database
+                .lock()
+                .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?;
+            original.remaining().map_err(deadline_error)?;
+            database
+                .replace_owned_value(handle, &caller, value)
+                .map_err(|error| {
+                    use crate::ssap_database::LocalValueError;
+                    match error {
+                        LocalValueError::Owner => {
+                            zbus::fdo::Error::AccessDenied("property is not owned by caller".into())
+                        }
+                        LocalValueError::Length => {
+                            zbus::fdo::Error::InvalidArgs("local value exceeds limit".into())
+                        }
+                        LocalValueError::Budget => {
+                            zbus::fdo::Error::LimitsExceeded("local database byte budget".into())
+                        }
+                    }
+                })
+        })
+        .await
+    }
     /// Adapter-local only; no remote service-discovery/publication receipt.
     async fn register_local_service(
         &self,
@@ -328,6 +383,7 @@ mod validation_tests {
                 vec!["ay", "a(ayuuay)", "o", "(ttttt)"],
             ),
             ("ReadOwnedLocalValue", vec!["q", "(ttttt)"]),
+            ("ReplaceOwnedLocalValue", vec!["q", "ay", "(ttttt)"]),
             ("UnregisterOwnedLocalService", vec!["q", "(ttttt)"]),
         ] {
             let method = xml
@@ -354,6 +410,7 @@ mod validation_tests {
             "RegisterOwnedLocalService",
             "UnregisterOwnedLocalService",
             "ReadOwnedLocalValue",
+            "ReplaceOwnedLocalValue",
             "RegisterLocalService",
             "ListLocalServices",
             "RemoveLocalService",

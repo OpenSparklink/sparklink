@@ -715,3 +715,183 @@ async fn owner_registration_deadline_is_not_the_active_service_lifetime() {
     owner.shutdown().await;
     assert_eq!(slots.available_permits(), 2);
 }
+
+#[tokio::test]
+async fn actual_owned_replacement_preserves_peer_permissions_budget_and_owner() {
+    let (_bus, state, _server, caller, _) = setup(false, Duration::ZERO).await;
+    let own = zbus::Proxy::new(
+        &caller,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap();
+    let (start, _, handles): (u16, u16, Vec<u16>) = own
+        .call(
+            "RegisterOwnedLocalService",
+            &(
+                vec![1u8, 0],
+                vec![(vec![2u8, 0], 1u32, 0u32, vec![7u8])],
+                OwnedObjectPath::try_from("/").unwrap(),
+                owned_deadline(),
+            ),
+        )
+        .await
+        .unwrap();
+    let handle = handles[0];
+    let db = store(&state).await;
+    let methods = own.introspect().await.unwrap();
+    assert!(methods.contains("ReplaceOwnedLocalValue"));
+    own.call::<_, _, ()>(
+        "ReplaceOwnedLocalValue",
+        &(handle, vec![8u8, 9], owned_deadline()),
+    )
+    .await
+    .unwrap();
+    {
+        let mut db = db.lock().unwrap();
+        assert_eq!(db.local_read(handle).unwrap(), [8, 9]);
+        let response = db
+            .answer(
+                ValuePdu::Read {
+                    handle,
+                    data_type: 0,
+                },
+                249,
+                0,
+            )
+            .unwrap();
+        assert_eq!(
+            ValuePdu::decode(249, &response).unwrap(),
+            ValuePdu::ReadValue(&[8, 9])
+        );
+        let response = db
+            .answer(
+                ValuePdu::Write {
+                    handle,
+                    data_type: 0,
+                    value: &[99],
+                    verify: true,
+                },
+                249,
+                0,
+            )
+            .unwrap();
+        assert_eq!(
+            ValuePdu::decode(249, &response).unwrap(),
+            ValuePdu::WriteError { handle, error: 7 }
+        );
+        assert_eq!(db.local_read(handle).unwrap(), [8, 9]);
+        db.register(
+            vec![3, 0],
+            (0..4)
+                .map(|n| (vec![4 + n, 0], 1, 0, vec![0; 2042]))
+                .collect(),
+        )
+        .unwrap();
+    }
+    own.call::<_, _, ()>(
+        "ReplaceOwnedLocalValue",
+        &(handle, vec![5u8; 24], owned_deadline()),
+    )
+    .await
+    .unwrap();
+    for (value, expected) in [
+        (vec![6u8; 25], "org.freedesktop.DBus.Error.LimitsExceeded"),
+        (vec![6u8; 2043], "org.freedesktop.DBus.Error.InvalidArgs"),
+    ] {
+        let result = own
+            .call::<_, _, ()>("ReplaceOwnedLocalValue", &(handle, value, owned_deadline()))
+            .await;
+        assert!(
+            matches!(result,Err(zbus::Error::MethodError(name,_,_)) if name.as_str()==expected)
+        );
+        assert_eq!(db.lock().unwrap().local_read(handle).unwrap(), vec![5; 24]);
+    }
+    let foreign = client(&_bus).await;
+    let other = zbus::Proxy::new(
+        &foreign,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap();
+    let result = other
+        .call::<_, _, ()>(
+            "ReplaceOwnedLocalValue",
+            &(handle, vec![1u8], owned_deadline()),
+        )
+        .await;
+    assert!(
+        matches!(result,Err(zbus::Error::MethodError(name,_,_)) if name.as_str()=="org.freedesktop.DBus.Error.AccessDenied")
+    );
+    own.call::<_, _, ()>(
+        "ReplaceOwnedLocalValue",
+        &(handle, Vec::<u8>::new(), owned_deadline()),
+    )
+    .await
+    .unwrap();
+    assert!(db.lock().unwrap().local_read(handle).unwrap().is_empty());
+    own.call::<_, _, ()>("UnregisterOwnedLocalService", &(start, owned_deadline()))
+        .await
+        .unwrap();
+    let result = own
+        .call::<_, _, ()>(
+            "ReplaceOwnedLocalValue",
+            &(handle, vec![1u8], owned_deadline()),
+        )
+        .await;
+    assert!(
+        matches!(result,Err(zbus::Error::MethodError(name,_,_)) if name.as_str()=="org.freedesktop.DBus.Error.AccessDenied")
+    );
+}
+
+#[tokio::test]
+async fn actual_owned_replacement_original_expiry_and_revocation_never_commit() {
+    let (_bus, state, _server, caller, _) = setup(false, Duration::ZERO).await;
+    let (_start, h) = register(&caller, 0).await;
+    let own = zbus::Proxy::new(
+        &caller,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap();
+    let original = slk_channel::deadline::Deadline::after(Duration::from_millis(20)).unwrap();
+    let held = state.lock().await;
+    let args = (h, vec![9u8], slk_contract::deadline_wire(original.stamp()));
+    let request = own.call::<_, _, ()>("ReplaceOwnedLocalValue", &args);
+    assert!(
+        matches!(request.await,Err(zbus::Error::MethodError(name,_,_)) if name.as_str()=="org.freedesktop.DBus.Error.Timeout")
+    );
+    drop(held);
+    assert_eq!(
+        store(&state).await.lock().unwrap().local_read(h).unwrap(),
+        [7]
+    );
+    let lease = state.lock().await.native_lease.clone().unwrap();
+    lease.lock().await.accepting = false;
+    assert!(
+        own.call::<_, _, ()>("ReplaceOwnedLocalValue", &(h, vec![9u8], owned_deadline()))
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        store(&state).await.lock().unwrap().local_read(h).unwrap(),
+        [7]
+    );
+    lease.lock().await.accepting = true;
+    state.lock().await.present = false;
+    assert!(
+        own.call::<_, _, ()>("ReplaceOwnedLocalValue", &(h, vec![9u8], owned_deadline()))
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        store(&state).await.lock().unwrap().local_read(h).unwrap(),
+        [7]
+    );
+}

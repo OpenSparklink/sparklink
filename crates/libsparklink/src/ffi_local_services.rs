@@ -263,6 +263,45 @@ pub unsafe extern "C" fn slk_local_service_read(
     }
 }
 
+/// Replace this owner's local property value,0..2042 bytes,without truncation.
+/// Success acknowledges local commit only,not publication/notification/delivery.
+/// Timeout/lost reply may follow commit;never automatically retry. Peer operation
+/// and security permissions are unchanged. Foreign/inactive handles are refused.
+/// # Safety
+/// view live;value immutable initialized length bytes,null only for0;no concurrent
+/// free,no use across fork. Inputs remain live throughout the call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_local_service_replace(
+    view: *const SlkLocalService,
+    handle: u16,
+    value: *const u8,
+    length: usize,
+    deadline_ns: u64,
+) -> c_int {
+    if view.is_null() || handle == 0 || length > 2042 || (length != 0 && value.is_null()) {
+        return -nix::libc::EINVAL;
+    }
+    let view = unsafe { &*view };
+    let result = (|| {
+        let deadline = Deadline::from_monotonic_ns(deadline_ns)?;
+        let original = deadline.request()?;
+        let value = if length == 0 {
+            Vec::new()
+        } else {
+            unsafe { std::slice::from_raw_parts(value, length) }.to_vec()
+        };
+        let registration = view.registration.clone();
+        view.executor.call(deadline, move |_| async move {
+            registration
+                .lock()
+                .await
+                .replace_local(handle, value, original)
+                .await
+        })
+    })();
+    result.map_or_else(|e| -e, |()| 0)
+}
+
 /// Explicitly unregister this original owner's registration. No controller stop,
 /// peer disconnect, new-owner fallback or blanket removal. Timely success is the
 /// original broker's local removal acknowledgement,not remote peer completion.

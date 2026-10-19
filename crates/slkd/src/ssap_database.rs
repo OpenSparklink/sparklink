@@ -6,6 +6,14 @@ use slk_protocol::ssap::discovery::{Entry, FindKind, FindRequest, encode_page};
 use slk_protocol::{SsapOperations, ssap::value::ValuePdu};
 use std::collections::BTreeMap;
 use std::sync::Arc;
+mod budget;
+
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) enum LocalValueError {
+    Owner,
+    Length,
+    Budget,
+}
 
 pub(crate) use slk_contract::ssap::local::{PropertyDefinition, ServiceRecord as LocalService};
 struct Property {
@@ -204,6 +212,34 @@ impl Database {
             return Err("property is not owned by caller".into());
         }
         self.local_read(handle)
+    }
+    /// The caller owns this data, independently of the peer WRITE permission.
+    /// Admission and commit share the DB mutex used by retirement and wire writes.
+    pub(crate) fn replace_owned_value(
+        &mut self,
+        handle: u16,
+        owner: &str,
+        value: Vec<u8>,
+    ) -> Result<(), LocalValueError> {
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.properties.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == owner)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        if value.len() > 2042 {
+            return Err(LocalValueError::Length);
+        }
+        let property = service.properties.get_mut(&handle).expect("owned property");
+        let next = budget::replacement_bytes(self.bytes, property.value.len(), value.len())
+            .ok_or(LocalValueError::Budget)?;
+        property.value = value;
+        self.bytes = next;
+        Ok(())
     }
     fn target(&self, handle: u16, level: u32, write: bool) -> Option<Target> {
         let service = self
@@ -491,8 +527,8 @@ impl Database {
                             .err()
                     }
                     Some(p)
-                        if value.len() > 2042
-                            || self.bytes - p.value.len() + value.len() > 8192 =>
+                        if budget::replacement_bytes(self.bytes, p.value.len(), value.len())
+                            .is_none() =>
                     {
                         Some(5)
                     }
@@ -509,7 +545,8 @@ impl Database {
                         .values_mut()
                         .find_map(|s| s.properties.get_mut(&handle))
                         .expect("checked property");
-                    self.bytes = self.bytes - p.value.len() + value.len();
+                    self.bytes = budget::replacement_bytes(self.bytes, p.value.len(), value.len())
+                        .expect("replacement admission checked under DB mutex");
                     p.value = value.to_vec();
                     if verify {
                         ValuePdu::WrittenValue {

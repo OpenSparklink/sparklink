@@ -3,6 +3,8 @@
 #[path = "application_ffi/authorization.rs"]
 mod authorization;
 mod support;
+#[path = "application_ffi/value_update.rs"]
+mod value_update;
 use std::{
     io::{BufRead, Read, Write},
     path::PathBuf,
@@ -199,6 +201,8 @@ struct OwnedMetadata {
     registered: AtomicUsize,
     read: AtomicUsize,
     removed: AtomicUsize,
+    value: Mutex<Vec<u8>>,
+    replacements: AtomicUsize,
 }
 struct OwnedServices(Arc<OwnedMetadata>);
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
@@ -215,7 +219,12 @@ impl OwnedServices {
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
         assert!(matches!(access, 0 | 36));
-        assert_eq!(properties, [(vec![2, 0], 5, access, vec![7, 8, 9])]);
+        assert!(matches!(properties[0].1, 1 | 5));
+        assert_eq!(
+            properties,
+            [(vec![2, 0], properties[0].1, access, vec![7, 8, 9])]
+        );
+        *self.0.value.lock().unwrap() = vec![7, 8, 9];
         assert_eq!(
             authorizer.as_str(),
             if access == 0 {
@@ -239,7 +248,21 @@ impl OwnedServices {
         assert_eq!(handle, 17);
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
         self.0.read.fetch_add(1, Ordering::SeqCst);
-        vec![7, 8, 9]
+        self.0.value.lock().unwrap().clone()
+    }
+    fn replace_owned_local_value(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        stamp: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        assert_eq!(handle, 17);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert!(value.len() <= 2042);
+        *self.0.value.lock().unwrap() = value;
+        self.0.replacements.fetch_add(1, Ordering::SeqCst);
     }
     fn unregister_owned_local_service(
         &self,
@@ -358,6 +381,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("bindings/python/sparklink/local_services.py"))
         .arg(root.join("bindings/python/sparklink/service_authorization.py"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/authorization.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/value_update.rs"))
         .output()?;
     anyhow::ensure!(
         identities.status.success() && identities.stderr.is_empty(),
@@ -589,6 +613,23 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
             owned.removed.load(Ordering::SeqCst)
         ),
         (8, 8, 6)
+    );
+    value_update::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+    )
+    .await?;
+    assert_eq!(
+        (
+            owned.registered.load(Ordering::SeqCst),
+            owned.read.load(Ordering::SeqCst),
+            owned.removed.load(Ordering::SeqCst),
+            owned.replacements.load(Ordering::SeqCst)
+        ),
+        (10, 14, 8, 6)
     );
     for language in ["c", "python"] {
         let mut command = Command::new("timeout");

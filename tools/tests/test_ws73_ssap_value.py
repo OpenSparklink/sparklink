@@ -256,3 +256,69 @@ class ReadLimitEvidence(unittest.TestCase):
         proof,credit=corroborate_read_limits(row,match,version=3);self.assertFalse(packets);self.assertEqual(credit,{0:116,1:116});self.assertEqual(sum(v['sdk']is not None for v in proof),6)
         broken=copy.deepcopy(row);broken['ssap_language_clients'].pop()
         with self.assertRaises(CaptureError):corroborate_read_limits(broken,match,version=3)
+
+class FragmentWireEvidence(unittest.TestCase):
+    """Fixed independent wire vectors/fixture packet lookup, not a real peer."""
+    def fixture(self,kind='good'):
+        source=dict(owner=0);destination=dict(owner=1)
+        body=bytes(range(256))*7+bytes(range(253))
+        self.assertEqual(len(body),2045)
+        pdu=b'\x0d\x23'+body
+        # Actual two-fragment WRITE_REQ headers, including partial vs immediate.
+        first=b'\x8d\x28\x02\0'+body[:2038]
+        last=b'\x8d\x22\x02\0'+body[2038:]
+        if kind=='sequence':first=b'\x8d\x28\x03\0'+body[:2038]
+        if kind=='operation':first=b'\x8d\x20\x02\0'+body[:2038]
+        packets=[]
+        for i,part in enumerate([first,last]):
+            frame=b'\x0a\0'+len(part).to_bytes(2,'little')+part
+            for owner,direction in [(source,'out'),(destination,'in')]:
+                if kind=='missing-tx'and i==1 and direction=='out':continue
+                if kind=='missing-rx'and i==1 and direction=='in':continue
+                record=(len(packets)+1)*100 if kind!='order'else 0
+                pieces=[dict(record=record+n,wall_ns=100,data=frame[p:p+254].hex())for n,p in enumerate(range(0,len(frame),254))]
+                packets.append([owner,direction,frame,dict(data=frame.hex(),record=record,wall_ns=100,fragments=pieces)])
+        def matched(owner,direction,payload,window):
+            for n,(o,d,p,receipt)in enumerate(packets):
+                if (o,d,p)==(owner,direction,payload):packets.pop(n);return receipt
+            raise CaptureError('missing exact fixed fragment endpoint')
+        return dict(ssap_value_lengths_version=4),source,destination,pdu,matched,packets
+
+    def test_two_real_format_ssap_parts_are_distinct_from_nine_dli_fragments(self):
+        from ws73_ssap_value import pair_wire,physical_sends
+        row,a,b,pdu,matched,remaining=self.fixture();wire=pair_wire(row,matched,a,b,pdu,{})
+        self.assertFalse(remaining);self.assertEqual(wire['logical_pdu'],pdu.hex())
+        for side in ['tx','rx']:
+            self.assertEqual(len(wire[side]['ssap_fragments']),2)
+            self.assertEqual(physical_sends(wire[side]),10)
+            parts=[bytes.fromhex(p['data'])[4:]for p in wire[side]['ssap_fragments']]
+            self.assertEqual([p[:4]for p in parts],[b'\x8d\x28\x02\0',b'\x8d\x22\x02\0'])
+            self.assertEqual(b'\x0d\x23'+b''.join(p[4:]for p in parts),pdu)
+
+    def test_missing_endpoint_bad_sequence_operation_and_equal_capture_time_do_not_hide_order(self):
+        from ws73_ssap_value import pair_wire
+        for kind in ['sequence','operation','missing-tx','missing-rx','order']:
+            row,a,b,pdu,matched,_=self.fixture(kind)
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):pair_wire(row,matched,a,b,pdu,{})
+
+    def test_old_contract_and_unsupported_logical_size_cannot_claim_new_fragment_delivery(self):
+        from ws73_ssap_value import pair_wire
+        for version in [1,2,3]:
+            row,a,b,pdu,matched,remaining=self.fixture();row['ssap_value_lengths_version']=version
+            with self.assertRaises(CaptureError):pair_wire(row,matched,a,b,pdu,{})
+            self.assertEqual(len(remaining),4)
+        row,a,b,pdu,matched,_=self.fixture()
+        with self.assertRaises(CaptureError):pair_wire(row,matched,a,b,pdu+b'\0',{})
+
+    def test_terminal_fragment_shape_refuses_missing_parts_and_corrupted_raw_bytes(self):
+        from ws73_ssap_value import pair_wire,valid_wire
+        row,a,b,pdu,matched,_=self.fixture();wire=pair_wire(row,matched,a,b,pdu,{})
+        self.assertTrue(valid_wire(wire))
+        for kind in ['missing','header','logical','DLI','order']:
+            bad=copy.deepcopy(wire)
+            if kind=='missing':bad['rx']['ssap_fragments'].pop()
+            elif kind=='header':bad['tx']['ssap_fragments'][0]['data']='00'
+            elif kind=='logical':bad['logical_pdu']='0d23'+'00'*2045
+            elif kind=='DLI':bad['rx']['ssap_fragments'][0]['fragments'][0]['data']='00'
+            else:bad['rx']['ssap_fragments'][1]['fragments'][0]['record']=0
+            with self.subTest(kind=kind):self.assertFalse(valid_wire(bad))

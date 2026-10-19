@@ -36,10 +36,13 @@ CLI 和观察者白名单同步退休。原权限、超限和不截断语义由�
 
 完整PDU阶段按opcode开销限制远端值：read最多为协商MTU减2字节，单项UUID读取
 最多为MTU减4字节。本地数据库的2042字节预算不代表该值能装进任意响应。
-超过响应MTU而尚未实现SSAP分片时，两种读取都返回READ_RSP的不支持分片错误16，
+未协商本地支持的有序号分片格式时，超过完整响应MTU的两种读取都返回READ_RSP错误16，
 不截断、不换成通用错误响应、不更改属性值；同一actor仍可继续处理后续合法请求。
 真实读写仍核对操作位、连接身份、安全上下文、原期限和本地授权；登记成功不能
-代替对端收到。通知/指示和长写的未实现部分继续明确拒绝。
+代替对端收到。新开发路径对已协商分片序号的单值read/UUID/verified-write复用同一Engine，逻辑值
+预算2042字节；每片独立经过Native约束。更新/发现分片、事务号并发、无序号分片和
+完整失败矩阵仍未支持。机制见[分片解释](../explanation/ssap-value-fragments.md)，
+实际资格仍只由当前能力页的准确产物记录决定。
 
 `org.sparklink.ServiceManager.RegisterLocalService` 是现有唯一用户态数据库的
 入口，当前只接通 READ 和 WRITE_WITH_RSP（mask `0x05`）；其他有效操作位返回
@@ -289,7 +292,8 @@ controller/管理租约和登记必须仍有效，提交与远端写入/移除�
 Rust `ServiceRegistration.replace_local`、C `slk_local_service_replace` 与 Python
 `LocalService.replace_local` 使用这一入口，调用成功只表示本地提交，不发通知或指示。
 超时/答复丢失可能发生在提交之后，效果不确定；不自动重试。对端须另行实际读取，仍
-遵守协商MTU及现有无SSAP分片限制。动态provider和SSAP分片仍未接通；新CPCD及
+遵守协商能力、物理MTU和逻辑值预算；仅已协商的单值分片走上述路径，不能推断
+通知/指示或provider也支持分片。动态provider仍未接通；新CPCD及
 Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与-ssap-更新的当前限制)，
 主动发送资格按当前能力入口的准确artifact及限定范围读取，旧本地替换PASS不升级
 为主动发送、持续订阅或完整生命周期资格。

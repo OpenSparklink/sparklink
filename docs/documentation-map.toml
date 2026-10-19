@@ -1709,3 +1709,17 @@ authority = "crates/libsparklink;bindings/python;project/current-capabilities.md
 disposition = "任务指南；资格只链接唯一入口，不复制计划或把本地回执写成远端发布"
 source_sha256 = "e912c929010190e2fb9c1fcd43938d93a6bf852d784ddd1131c6d0c5327615e3"
 publication = "html"
+
+[[documents]]
+path = "docs/explanation/ssap-value-fragments.md"
+title = "SSAP值与分片边界"
+section = "explanation"
+status = "active"
+reader = "应用和Host开发者"
+purpose = "解释逻辑值、物理MTU、片游标、原期限及验证边界"
+validity = "开发机制说明；准确资格只读取canonical能力入口"
+applicable_version = "当前开发分支；历史完整PDU契约1-3不升级"
+authority = "生产Engine/codec与project/current-capabilities.md"
+disposition = "保留原路径，按原理解释发布；不复制计划或资格"
+source_sha256 = "fcc44366f44122df63b37d2023e6594bc7e8404c57b1c428f29af91b0f0b00a5"
+publication = "html"

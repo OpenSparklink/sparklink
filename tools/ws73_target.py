@@ -105,6 +105,7 @@ def prepare_locked(args, build_fd):
                 'physical_acceptance':False, 'status':'PREPARING', 'inputs':[],
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['firmware_evidence_contract_version'] = 1
+    manifest['ssap_exchange_contract_version'] = 2
     try:
         module_profile = native_vm.enabled(args)
         config_required(args.kernel_build / '.config', module_profile)
@@ -832,7 +833,7 @@ def _run(args):
     m['ssap_value_acceptance']=False
     m['ssap_value_lengths_requested']=value_lengths
     m['ssap_value_lengths_acceptance']=False
-    if value_lengths:m['ssap_value_lengths_contract_version']=3
+    if value_lengths:m['ssap_value_lengths_contract_version']=4
     if value_lengths:m['ssap_value_lengths_verifier']=file_record(HERE/'ws73_ssap_value.py')
     m['ssap_access_acceptance']=False
     m['ssap_update_delivery_requested']=update_delivery
@@ -952,6 +953,8 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        from ws73_ssap_initialization import exchange_contract
+        m['ssap_exchange_contract_version']=exchange_contract(package)
         if directory_events:
             from ws73_controller_directory import staged_program
             m['controller_directory_program']=staged_program(args.prepared.resolve()/'root',package['guest_files'])
@@ -969,7 +972,8 @@ def _run(args):
             if file_record(probe)!=package['native_return_probe']['program']:raise ValueError('prepared owner probe changed')
             m['native_return_probe']=package['native_return_probe']
         if ssap_initialization:
-            from ws73_ssap_initialization import validate_qemu
+            from ws73_ssap_initialization import validate_qemu,check_selector_contract
+            check_selector_contract(package,initialization_stage)
             validate_qemu(package['qemu']['path'], initialization_stage)
         if application_discovery and 'native_vm' not in package:
             raise ValueError('application discovery requires the verified native VM profile')
@@ -1572,7 +1576,7 @@ def _run(args):
                         from ws73_ssap_update_delivery import validate_tools as validate_read_tools
                         for row in control['channel_socket']:validate_read_tools(row['ssap_read_limit_tools'],args.prepared/'root',package['guest_files'])
                         from ws73_ssap_value import valid_length_summary
-                        if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration'],expected_version=3):raise ValueError('exact SSAP length verifier and complete evidence required')
+                        if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration'],expected_version=4):raise ValueError('exact SSAP length verifier and complete evidence required')
                     m['ssap_value_lengths_acceptance']=value_lengths
                     m['ssap_receive_lifecycle_acceptance']=receive_lifecycle
                     m['ssap_update_delivery_acceptance']=update_delivery
@@ -1584,6 +1588,8 @@ def _run(args):
                     m['ordinary_channel_tx_status_acceptance']=True
                     m['ordinary_channel_info_acceptance']=True
                     if not all(row.get('ssap_exchange_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires real SMTC ExchangeInfo')
+                    from ws73_ssap_initialization import exchange_contract
+                    if any(row.get('ssap_exchange_contract',1)!=exchange_contract(package)for row in control['channel_socket']):raise ValueError('actual SSAP exchange differs from prepared source contract')
                     m['ssap_exchange_info_acceptance']=True
                     if not all(row.get('ssap_value_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP values')
                     m['ssap_value_acceptance']=True

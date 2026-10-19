@@ -35,6 +35,20 @@ def profile(stage='cmtc'):
     raise ValueError('explicit cmtc/exchange initialization stage required')
 
 
+def exchange_contract(package):
+    version=package.get('ssap_exchange_contract_version',1)
+    if type(version)is not int or version not in (1,2):raise ValueError('explicit known SSAP exchange artifact contract required')
+    return version
+
+
+def check_selector_contract(package,stage):
+    version=exchange_contract(package)
+    if stage=='exchange'and version!=1:
+        raise ValueError('NotSupported: archived six-byte ExchangeInfo hold selector cannot qualify the ten-byte sequence offer; replacement selector and new VM evidence required')
+    profile(stage)
+    return version
+
+
 def requested(args, *, passthrough=None):
     enabled = bool(getattr(args, 'ssap_initialization_verify', False))
     spec = profile(getattr(args, 'ssap_initialization_stage', 'cmtc'))

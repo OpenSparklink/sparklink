@@ -314,3 +314,13 @@ class InitializationGate(unittest.TestCase):
                 program='connection_arg=""; '+'; '.join(s.replace('/proc/cmdline','"$test_cmdline"')for s in lines)+'; printf \'%s\' "$connection_arg"'
                 result=subprocess.run(['sh','-c',program],env=os.environ|{'test_cmdline':str(cmdline)},capture_output=True,text=True)
                 self.assertEqual((result.returncode,result.stdout,result.stderr),(0,wanted,''))
+
+class ExchangeArtifactContract(unittest.TestCase):
+    def test_new_offer_cannot_run_archived_six_byte_hold_selector(self):
+        self.assertEqual(init.check_selector_contract({},'exchange'),1)
+        self.assertEqual(init.check_selector_contract({'ssap_exchange_contract_version':1},'exchange'),1)
+        self.assertEqual(init.check_selector_contract({'ssap_exchange_contract_version':2},'cmtc'),2)
+        with self.assertRaisesRegex(ValueError,'NotSupported.*ten-byte'):
+            init.check_selector_contract({'ssap_exchange_contract_version':2},'exchange')
+        for version in [True,False,0,3,'2',None]:
+            with self.subTest(version=version),self.assertRaises(ValueError):init.exchange_contract({'ssap_exchange_contract_version':version})

@@ -686,7 +686,8 @@ handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C�
 一次最多一个待决指示，关闭/取消后仍等待匹配ACK或有限退休；ACK没有wire事务号，
 重复/晚到ACK和可靠传输假设仍须独立验证，不宣称解决了所有复用竞争。C/Python的
 SlkSsapUpdate为2056字节，stage1/2对应发送收据，stage3为收到且已验证停用；它们都
-不表示对端应用处理。完整持续订阅、provider、SSAP分片及多应用/故障矩阵继续开放。
+不表示对端应用处理。完整持续订阅、provider、更新分片及多应用/故障矩阵继续开放；开发中的单值分片
+见[原理解释](../explanation/ssap-value-fragments.md)，不由历史更新资格授予。
 
 ## 动态基础通道：已接线，实机待验收
 

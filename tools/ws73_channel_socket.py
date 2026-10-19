@@ -133,7 +133,7 @@ def run_applications(run,row,processes,files,original_deadline=None):
 def execute(run, phase):
     row = dict(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
-               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, ssap_exchange_contract=2, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     row['message_security_required']=not (row['close_prefix'] or row['burst'])
     row['tx_constraint_required']=row['message_security_required']
     row['application_tool']=test_program(run)
@@ -644,7 +644,10 @@ def corroborate(run,capture):
                 value=fields[0];o=owner['owner'];obj=owner['object']
                 if tuple(map(int,value[:4]))!=(o['index'],o['generation'],obj['lifetime'],obj['handle']):raise CaptureError('SSAP owner/lifetime mismatch')
                 mtu=int(value[4]);negotiated=int(value[5]);req,rsp,peer_req,response=map(bytes.fromhex,value[6:])
-                expected_req=bytes([2,3])+mtu.to_bytes(2,'little')+bytes([1,2]);expected_rsp=bytes([3,3])+mtu.to_bytes(2,'little')+bytes([1,2])
+                version=row.get('ssap_exchange_contract',1)
+                if type(version)is not int or version not in (1,2):raise CaptureError('known exact ExchangeInfo contract required')
+                extra=b'\x04\0\0\0'if version==2 else b'';control=7 if version==2 else 3
+                expected_req=bytes([2,control])+mtu.to_bytes(2,'little')+bytes([1,2])+extra;expected_rsp=bytes([3,control])+mtu.to_bytes(2,'little')+bytes([1,2])+extra
                 if (req,rsp,peer_req,response)!=(expected_req,expected_rsp,expected_req,expected_rsp) or negotiated!=mtu:raise CaptureError('exact real basic ExchangeInfo required')
                 receiver=next(e for e in owners if e!=owner)
                 ssap_legs=[]

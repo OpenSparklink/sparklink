@@ -5,7 +5,7 @@ use super::*;
 use crate::{
     event_loop::tests::PrivateBus, security_policy::tests::state, service::SsapManagerIface,
 };
-use slk_protocol::ssap::SsapAuthorizationPrompt;
+use slk_contract::ssap::SsapAuthorizationPrompt;
 use tokio::sync::mpsc;
 use zbus::{Connection, zvariant::OwnedObjectPath};
 
@@ -29,6 +29,72 @@ async fn client(bus: &PrivateBus) -> Connection {
         .await
         .unwrap()
 }
+#[tokio::test]
+async fn actual_authorizer_bus_signature_is_independent_of_shared_aliases() {
+    let bus = PrivateBus::start();
+    let server = client(&bus).await;
+    let (seen, _received) = mpsc::unbounded_channel();
+    // Builder::serve_at waits for the object-server startup barrier. A dynamic
+    // .at() followed immediately by the first call can lose that call before
+    // the method stream starts. No sleep/retry or weakened signature oracle.
+    let owner = zbus::connection::Builder::address(bus.address.as_str())
+        .unwrap()
+        .serve_at(
+            "/authorizer",
+            Consent {
+                yes: true,
+                delay: Duration::ZERO,
+                seen,
+            },
+        )
+        .unwrap()
+        .build()
+        .await
+        .unwrap();
+    let reply = tokio::time::timeout(
+        Duration::from_secs(2),
+        server.call_method(
+            Some(owner.unique_name().unwrap().as_str()),
+            "/authorizer",
+            Some("org.freedesktop.DBus.Introspectable"),
+            "Introspect",
+            &(),
+        ),
+    )
+    .await
+    .expect("authorizer introspection original test deadline")
+    .unwrap();
+    let xml: String = reply.body().deserialize().unwrap();
+    let method = xml
+        .split_once("<method name=\"AuthorizeValue\">")
+        .unwrap()
+        .1
+        .split_once("</method>")
+        .unwrap()
+        .0;
+    // Literal expectations: moving one shared alias cannot silently teach both
+    // endpoints the same incompatible signature. This is actual private D-Bus,
+    // not kernel/RF or production system-bus permission qualification.
+    let arguments = |direction| {
+        method
+            .lines()
+            .filter(|line| {
+                line.contains("<arg ") && line.contains(&format!("direction=\"{direction}\""))
+            })
+            .map(|line| {
+                line.split_once("type=\"")
+                    .unwrap()
+                    .1
+                    .split_once('"')
+                    .unwrap()
+                    .0
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(arguments("in"), ["(t(qttqtuyyy)qbtay)"]);
+    assert_eq!(arguments("out"), ["b"]);
+}
+
 async fn setup(
     yes: bool,
     delay: Duration,

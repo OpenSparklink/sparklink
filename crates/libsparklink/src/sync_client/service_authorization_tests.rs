@@ -67,7 +67,7 @@ unsafe fn info(r: *const SlkAuthorizationRequest) -> SlkAuthorizationRequestInfo
 fn callback(
     server: &zbus::Connection,
     s: &Script,
-    p: slk_protocol::ssap::SsapAuthorizationPrompt,
+    p: slk_contract::ssap::SsapAuthorizationPrompt,
 ) -> tokio::task::JoinHandle<bool> {
     let server = server.clone();
     let owner = s.owner.lock().unwrap().clone();

@@ -34,7 +34,7 @@ impl Adapter {
     }
 }
 struct Services(Arc<Script>);
-fn approval_prompt(deadline: u64) -> slk_protocol::ssap::SsapAuthorizationPrompt {
+fn approval_prompt(deadline: u64) -> slk_contract::ssap::SsapAuthorizationPrompt {
     (
         1,
         (2, 7, 13, 1, 41, 0, 10, 10, 0),

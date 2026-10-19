@@ -68,7 +68,7 @@ pub(super) async fn exercise(
                 slk_channel::deadline::Deadline::after(std::time::Duration::from_secs(2))?
                     .stamp()
                     .monotonic_ns;
-            let prompt: slk_protocol::ssap::SsapAuthorizationPrompt = (
+            let prompt: slk_contract::ssap::SsapAuthorizationPrompt = (
                 100 + ordinal as u64,
                 (2, 7, 13, 3, 41, 0, 10, 10, 0),
                 17,

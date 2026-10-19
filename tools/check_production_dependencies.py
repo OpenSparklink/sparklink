@@ -48,10 +48,25 @@ def check_native_creators(files):
         if re.search(pattern,source):raise ValueError(f'{name}: direct Native creator/ioctl outside slk-native')
 
 
+def check_authorizer_contract(files):
+    """Named retirement guard, not a complete Rust/type dependency analysis.
+
+    These tuples describe local D-Bus policy, not SSAP packets or kernel ABI.
+    No compatibility re-export may restore their retired protocol-layer home.
+    """
+    for name,source in files:
+        if ('slk-protocol/' in name
+                and re.search(r'\bSsapAuthorization(?:Identity|Prompt)\b',source)):
+            raise ValueError(f'{name}: D-Bus authorizer contract belongs to slk-contract')
+        if re.search(r'slk_protocol\s*::\s*ssap\s*::\s*(?:\{[^}]*\b)?SsapAuthorization(?:Identity|Prompt)\b',source):
+            raise ValueError(f'{name}: retired protocol-layer authorizer import')
+
+
 def main():
     workspace=tomllib.loads((ROOT/'Cargo.toml').read_text())['workspace']['members']
     internal={tomllib.loads((ROOT/path/'Cargo.toml').read_text())['package']['name'] for path in workspace}
     check_native_creators((str(p.relative_to(ROOT)),p.read_text())for directory in ['crates/slkd/src','crates/slk-contract/src']for p in (ROOT/directory).rglob('*.rs'))
+    check_authorizer_contract((p.relative_to(ROOT).as_posix(),p.read_text())for p in (ROOT/'crates').rglob('*.rs'))
     for mode in ['default','all-features']:
         for package in ALLOWED:
             # Dev fixtures remain excluded. Optional production features must

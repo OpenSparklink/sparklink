@@ -130,7 +130,7 @@ impl Owner {
     }
     pub(crate) async fn authorize(
         &self,
-        prompt: slk_protocol::ssap::SsapAuthorizationPrompt,
+        prompt: slk_contract::ssap::SsapAuthorizationPrompt,
         deadline: Instant,
     ) -> bool {
         if !self.current() || !self.supports_authorization() || Instant::now() >= deadline {

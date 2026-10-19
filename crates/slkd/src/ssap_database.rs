@@ -1,5 +1,7 @@
 //! Bounded adapter-local service data. Handles are never reused within this
 //! registration. Local insertion is not remote discovery/publication success.
+//! Reply codecs receive a bounded logical-PDU budget; the sole Engine enforces
+//! each physical datagram MTU and negotiated fragment support before sending.
 use crate::ssap_authorization::{Approval, Owner, Target};
 use slk_protocol::ssap::access::SsapAccess;
 use slk_protocol::ssap::discovery::{Entry, FindKind, FindRequest, encode_page};

@@ -266,8 +266,9 @@ impl<'a> RemoteSsap<'a> {
         original.remaining()?;
         Ok(result)
     }
-    /// Uses the daemon's existing short-write contract. No truncation, long
-    /// write fallback or local echo is performed by the SDK.
+    /// Uses the daemon's bounded value contract and negotiated wire support.
+    /// The SDK never truncates, fragments independently, retries an uncertain
+    /// write or substitutes a local echo for the peer result.
     pub async fn write(
         &self,
         handle: u16,

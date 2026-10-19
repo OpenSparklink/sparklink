@@ -1,10 +1,12 @@
-//! Single lifetime-scoped SMTC owner: initial ExchangeInfo and bounded base
+//! Single lifetime-scoped SMTC owner: initial ExchangeInfo and bounded
 //! single-value requests. No synthetic replies, security projection, reliable
-//! mode, fragmentation or complete service-discovery claim.
+//! mode or complete service-discovery claim. Value fragments are bounded and
+//! require negotiated sequence support; a partial-stream error retires the actor.
 use slk_protocol::{
     SleChannelInfo,
     ssap::{
-        exchange::{ExchangeInfo, ExchangeKind},
+        exchange::{ExchangeInfo, ExchangeKind, ExtensionCapabilities},
+        fragments,
         value::ValuePdu,
     },
 };
@@ -351,11 +353,11 @@ impl Observer {
         };
         let mut bytes = vec![0; 23];
         let n = request
-            .encode(info.5, &mut bytes)
+            .encode(value_budget(&info), &mut bytes)
             .map_err(|e| format!("read UUID request: {e:?}"))?;
         bytes.truncate(n);
         let raw = self.request(bytes.clone(), deadline, minimum).await?;
-        let entries = slk_protocol::ssap::read_uuid::decode(info.5, &raw)
+        let entries = slk_protocol::ssap::read_uuid::decode(value_budget(&info), &raw)
             .map_err(|e| format!("read UUID response: {e:?}"))?
             .into_iter()
             .map(|item| match item.value {
@@ -379,7 +381,7 @@ impl Observer {
         let info = tokio::time::timeout_at(deadline, self.info())
             .await
             .map_err(|_| "SSAP value original deadline".to_string())??;
-        let mut bytes = vec![0; usize::from(info.5)];
+        let mut bytes = vec![0; usize::from(value_budget(&info))];
         let pdu = match &value {
             Some(value) => ValuePdu::Write {
                 handle,
@@ -393,7 +395,7 @@ impl Observer {
             },
         };
         let len = pdu
-            .encode(info.5, &mut bytes)
+            .encode(value_budget(&info), &mut bytes)
             .map_err(|e| format!("value codec: {e:?}"))?;
         bytes.truncate(len);
         if Instant::now() >= deadline {
@@ -563,12 +565,20 @@ struct ClientRequest {
     bytes: Vec<u8>,
     deadline: Instant,
     admitted: bool,
+    submitted_all: bool,
     // Starts once at software admission, when physical submission is possible.
     // This is a drain bound, never a renewed author/admission/TX deadline.
     cleanup_deadline: Option<Instant>,
     reply: Option<oneshot::Sender<Result<Vec<u8>, String>>>,
 }
 impl ClientRequest {
+    fn admit_part(&mut self, now: Instant, last: bool) {
+        if !self.admitted {
+            self.admitted = true;
+            self.cleanup_deadline = Some(now + Duration::from_secs(5));
+        }
+        self.submitted_all = last;
+    }
     fn obligation_deadline(&self) -> Instant {
         if self.admitted {
             let physical = self
@@ -621,6 +631,7 @@ fn retire_client_wait(
     }
 }
 struct Pending {
+    sent: usize,
     bytes: Vec<u8>,
     deadline: Instant,
     purpose: Purpose,
@@ -673,6 +684,7 @@ impl ClientAdmission<'_> {
         };
         let epoch = constraint.map(|c| c.security_epoch);
         pending.push_back(Pending {
+            sent: 0,
             bytes: bytes.clone(),
             deadline,
             purpose: Purpose::Client,
@@ -684,6 +696,7 @@ impl ClientAdmission<'_> {
             minimum,
             epoch,
             admitted: false,
+            submitted_all: false,
             cleanup_deadline: None,
             reply: Some(reply),
         });
@@ -933,6 +946,7 @@ fn complete_server(
         configurations,
     )?;
     Ok(Pending {
+        sent: 0,
         bytes: response,
         deadline: decision.packet.deadline,
         purpose: Purpose::ValueResponse,
@@ -1025,19 +1039,19 @@ impl Wire {
         )
         .map(Some)
     }
-    fn send(&self, fd: &OwnedFd, packet: &Pending) -> io::Result<()> {
+    fn send(&self, fd: &OwnedFd, packet: &Pending, bytes: &[u8]) -> io::Result<()> {
         #[cfg(test)]
         if self.fixture {
-            return send(fd, &packet.bytes);
+            return send(fd, bytes);
         }
         if let Some(c) = packet.constraint {
             let count = slk_channel::security::send(
                 fd.as_raw_fd(),
-                &packet.bytes,
+                bytes,
                 nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
                 &c,
             )?;
-            if count != packet.bytes.len() {
+            if count != bytes.len() {
                 return Err(io::Error::other("partial SSAP constrained admission"));
             }
             Ok(())
@@ -1049,12 +1063,29 @@ impl Wire {
 fn monotonic_deadline(deadline: Instant) -> io::Result<u64> {
     slk_channel::security::deadline_at(deadline.into_std())
 }
+fn sequenced(info: &ExchangeInfo) -> bool {
+    info.extension.is_some_and(|e| e.fragment_sequence)
+}
+fn accepts_extended(info: &ExchangeInfo, control: u8) -> bool {
+    info.extension
+        .is_some_and(|e| control & 3 == 3 || e.fragment_sequence)
+}
+fn value_budget(info: &Info) -> u16 {
+    if ExchangeInfo::decode(info.4, &info.7).is_ok_and(|p| sequenced(&p)) {
+        fragments::LOGICAL_MTU
+    } else {
+        info.5
+    }
+}
 fn encode(kind: ExchangeKind, mtu: u16) -> io::Result<Vec<u8>> {
     let info = ExchangeInfo {
         kind,
         mtu: Some(mtu),
         version: Some([1, 2]),
-        extension: None,
+        extension: Some(ExtensionCapabilities {
+            fragment_sequence: true,
+            transaction_capacity: None,
+        }),
         reliable: false,
     };
     let mut bytes = [0; 10];
@@ -1169,6 +1200,7 @@ async fn exchange_loop(
     let request = encode(ExchangeKind::Request, capabilities.mtu)?;
     let response = encode(ExchangeKind::Response, capabilities.mtu)?;
     let mut pending = VecDeque::from([Pending {
+        sent: 0,
         bytes: request.clone(),
         deadline: original_deadline,
         purpose: Purpose::Request,
@@ -1182,6 +1214,8 @@ async fn exchange_loop(
     let mut client: Option<ClientRequest> = None;
     let mut incoming_wait: Option<IncomingWait> = None;
     let mut buffer = [0; 2042];
+    let mut assemblies: [fragments::Reassembly<Option<slk_protocol::SleMessageSecurity>, Instant>;
+        2] = std::array::from_fn(|_| fragments::Reassembly::default());
     let mut server_queue: VecDeque<ServerPacket> = VecDeque::new();
     let mut server: Option<(Instant, ServerTask)> = None;
     let mut next_server_id = 0u64;
@@ -1284,6 +1318,7 @@ async fn exchange_loop(
         let debt_deadline = pending
             .iter()
             .map(|p| p.deadline)
+            .chain(assemblies.iter().filter_map(|a| a.deadline()))
             .chain(client.as_ref().map(ClientRequest::obligation_deadline))
             .chain(update.as_ref().map(UpdateRequest::obligation_deadline))
             .chain(receive.as_ref().map(|r| r.wake_deadline()))
@@ -1306,6 +1341,7 @@ async fn exchange_loop(
             _ = tokio::time::sleep_until(deadline) => {
                 retire_client_wait(&mut client, &mut pending, Instant::now());
                 retire_update_wait(&mut update, &mut pending, Instant::now());
+                if assemblies.iter().any(|a|a.deadline().is_some_and(|d|Instant::now()>=d)) {return Err(io::Error::new(io::ErrorKind::TimedOut,"original SSAP fragment deadline"));}
                 if update.as_ref().is_some_and(|v| Instant::now() >= v.obligation_deadline()) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP indication obligation deadline"));
                 }
@@ -1348,7 +1384,7 @@ async fn exchange_loop(
                     match prepared {
                         Err(error)=>{let _=reply.send(Err(error));},
                         Ok((owner,mode,context,raw))=> {
-                            pending.push_back(Pending{bytes:raw.clone(),deadline,purpose:Purpose::Update,constraint:Some(context)});
+                            pending.push_back(Pending{sent: 0,bytes:raw.clone(),deadline,purpose:Purpose::Update,constraint:Some(context)});
                             update=Some(UpdateRequest{handle,owner,mode,epoch:context.security_epoch,deadline,drain:None,pdu:raw,reply:Some(reply)});
                         }
                     }
@@ -1362,7 +1398,7 @@ async fn exchange_loop(
                 }
                 if let Query::Value{bytes,deadline,minimum,reply}=query {
                     if receive.is_some() {let _=reply.send(Err("SSAP client sequence owned by receive transaction".into()));continue;}
-                    ClientAdmission {wire:&wire,client:&mut client,pending:&mut pending,response_load:server_load,ready:initial_done,mtu:capabilities.mtu}
+                    ClientAdmission {wire:&wire,client:&mut client,pending:&mut pending,response_load:server_load,ready:initial_done,mtu:if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{capabilities.mtu}}
                         .begin(bytes,deadline,minimum,reply);continue;
                 }
                 if let Query::TransportStatus{deadline,reply}=query {
@@ -1404,6 +1440,16 @@ async fn exchange_loop(
                 let Some(packet) = pending.front() else { continue; };
                 if Instant::now() >= packet.deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "expired SSAP submit")); }
                 let is_update=matches!(packet.purpose,Purpose::Update);
+                let sequence=match packet.purpose {
+                    Purpose::Client=>peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)),
+                    Purpose::ValueResponse=>ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)),
+                    _=>false,
+                };
+                let mtu=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
+                let plan=fragments::Plan::new(&packet.bytes,mtu,sequence).map_err(|e|io::Error::other(format!("SSAP fragment plan: {e:?}")))?;
+                let mut fragment=vec![0;usize::from(mtu)];
+                let count=plan.count();let size=plan.encode(packet.sent,&mut fragment).map_err(|e|io::Error::other(format!("SSAP fragment encode: {e:?}")))?;
+                fragment.truncate(size);
                 let outcome = if is_update {
                     // Same DB mutex as removal. This nonblocking syscall admits
                     // one immutable value snapshot; no lock crosses an await.
@@ -1414,16 +1460,22 @@ async fn exchange_loop(
                         if let Some(mut current)=update.take() && let Some(reply)=current.reply.take() {let _=reply.send(Err("update owner/configuration withdrawn before admission".into()));}
                         pending.pop_front();continue;
                     }
-                    ready.try_io(|fd| wire.send(fd.get_ref(), packet))
-                } else {ready.try_io(|fd| wire.send(fd.get_ref(), packet))};
+                    ready.try_io(|fd| wire.send(fd.get_ref(), packet, &fragment))
+                } else {ready.try_io(|fd| wire.send(fd.get_ref(), packet, &fragment))};
                 if let Ok(result) = outcome {
                     result?;
+                    let packet=pending.front_mut().expect("guarded queue");
+                    if matches!(packet.purpose,Purpose::Client) && let Some(client)=&mut client {
+                        client.admit_part(Instant::now(),packet.sent+1==count);
+                    }
+                    packet.sent+=1;
+                    if packet.sent<count {continue;}
                     let packet = pending.pop_front().expect("guarded queue");
                     match packet.purpose {
                         Purpose::Request => request_admitted = true,
                         Purpose::Response => response_admitted = packet.bytes,
                         Purpose::Error | Purpose::ValueResponse => {},
-                        Purpose::Client => {if let Some(client)=&mut client {client.admitted=true;client.cleanup_deadline=Some(Instant::now()+Duration::from_secs(5));}}
+                        Purpose::Client => {},
                         Purpose::Update => {
                             let current=update.as_mut().ok_or_else(||io::Error::other("missing admitted update"))?;
                             if current.mode==2 {current.drain=Some(Instant::now()+Duration::from_secs(5));}
@@ -1440,12 +1492,27 @@ async fn exchange_loop(
             ready = wire.fd.readable() => {
                 let mut ready = ready?;
                 if let Ok(result) = ready.try_io(|fd| wire.receive(fd.get_ref(), &mut buffer, capabilities)) {
-                    let (size, receipt) = result?;
-                    let reply_deadline = if initial_done { Instant::now()+Duration::from_secs(5) } else { original_deadline };
-                    let constraint = receipt.map(|m| slk_protocol::SleSendConstraint::from_receipt(m,m.security,
-                        monotonic_deadline(reply_deadline)?)).transpose()?;
+                    let (size, mut receipt) = result?;
+                    let mut reply_deadline = if initial_done { Instant::now()+Duration::from_secs(5) } else { original_deadline };
+
                     if size == 0 || size > usize::from(capabilities.mtu) { return Err(io::Error::other("invalid SSAP PDU length")); }
-                    let raw = &buffer[..size];
+                    let wire_raw = &buffer[..size];
+                    let assembled;
+                    let raw = if fragments::needs_reassembly(wire_raw) {
+                        if !initial_done {return Err(io::Error::other("SSAP fragments before negotiation"));}
+                        let lane=fragments::lane(wire_raw[0]).expect("supported fragment lane");
+                        let enabled=if lane==0 {ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|accepts_extended(&p,wire_raw[1]))}
+                            else {peer_reply.as_ref().is_some_and(|(p,_)|accepts_extended(p,wire_raw[1]))};
+                        if lane==1 && let Some(c)=&client {reply_deadline=reply_deadline.min(c.obligation_deadline());}
+                        let complete=assemblies[lane].receive(wire_raw,capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu)),enabled,receipt,Instant::now(),reply_deadline)
+                            .map_err(|e|io::Error::other(format!("SSAP fragment stream retired: {e:?}")))?;
+                        let Some(complete)=complete else {continue;};
+                        receipt=complete.context;reply_deadline=complete.deadline;assembled=complete.bytes;&assembled[..]
+                    } else {
+                        if fragments::lane(wire_raw[0]).is_some_and(|lane|assemblies[lane].deadline().is_some()) {return Err(io::Error::other("complete SSAP value interleaves unfinished fragment lane"));}
+                        wire_raw
+                    };
+                    let constraint=receipt.map(|m|slk_protocol::SleSendConstraint::from_receipt(m,m.security,monotonic_deadline(reply_deadline)?)).transpose()?;
                     if !initial_done && Instant::now() >= original_deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "late SSAP reply")); }
                     if matches!(raw[0],15|16) {
                         if raw[0]==16 && pending.len()+server_load>=8{return Err(io::Error::other("SSAP ACK queue full"));}
@@ -1455,7 +1522,7 @@ async fn exchange_loop(
                             current.maintain(&mut incoming_wait,Instant::now()).map_err(io::Error::other)?;
                         }
                         let ack=incoming_packet(negotiated,raw,&mut incoming_wait)?;
-                        if !ack.is_empty(){pending.push_back(Pending{bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});}
+                        if !ack.is_empty(){pending.push_back(Pending{sent: 0,bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});}
                     } else if raw[0]==17 {
                         let Some(mut current)=update.take() else {return Err(io::Error::other("unsolicited indication ACK"));};
                         if current.mode!=2 || current.drain.is_none_or(|d|Instant::now()>=d) {
@@ -1476,21 +1543,21 @@ async fn exchange_loop(
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
                         next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
-                        server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:negotiated,level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
+                        server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:if matches!(raw[0],8|10|13) && ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)){fragments::LOGICAL_MTU}else{negotiated},level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
                     } else if matches!(raw[0],1|5|7|9|11|14) {
-                        let Some(ClientRequest{bytes:request,deadline,minimum,epoch,admitted,cleanup_deadline,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        let Some(ClientRequest{bytes:request,deadline,minimum,epoch,admitted,submitted_all,cleanup_deadline,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
                         let reply=reply.filter(|r| !r.is_closed() && Instant::now()<deadline);
                         if let Some(epoch)=epoch {
                             let m=receipt.ok_or_else(||io::Error::other("missing reply receipt"))?;
                             if m.security_epoch!=epoch || m.security<minimum{return Err(io::Error::other("SSAP reply differs from original request security intent"));}
                         }
-                        if !admitted || cleanup_deadline.is_none_or(|at|Instant::now()>=at) {return Err(io::Error::other("SSAP reply before admission or after physical drain deadline"));}
+                        if !admitted || !submitted_all || cleanup_deadline.is_none_or(|at|Instant::now()>=at) {return Err(io::Error::other("SSAP reply before admission or after physical drain deadline"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         if request[0]==10 {
                             let r=slk_protocol::ssap::read_uuid::Request::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local UUID request"))?;
                             if let Ok(ValuePdu::ReadError(16))=ValuePdu::decode(negotiated,raw){finish_client(reply,Err("peer requires unsupported SSAP fragmentation".into()));continue;}
                             if let Ok(ValuePdu::Error{request:10,error,..})=ValuePdu::decode(negotiated,raw){finish_client(reply,Err(format!("peer read UUID protocol error {error}")));continue;}
-                            let entries=slk_protocol::ssap::read_uuid::decode(negotiated,raw).map_err(|_|io::Error::other("invalid read UUID response"))?;
+                            let entries=slk_protocol::ssap::read_uuid::decode(if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{negotiated},raw).map_err(|_|io::Error::other("invalid read UUID response"))?;
                             if entries.iter().any(|i|i.handle<r.start || i.handle>r.end) {return Err(io::Error::other("read UUID response outside requested range"));}
                             finish_client(reply,Ok(raw.to_vec()));continue;
                         }
@@ -1500,8 +1567,9 @@ async fn exchange_loop(
                             else {slk_protocol::ssap::discovery::decode_page(request,negotiated,raw).map_err(|_|io::Error::other("invalid find response"))?;}
                             finish_client(reply,Ok(raw.to_vec()));continue;
                         }
-                        let parsed=ValuePdu::decode(negotiated,raw).map_err(|_|io::Error::other("invalid value response"))?;
-                        let result=match (ValuePdu::decode(capabilities.mtu,&request).map_err(|_|io::Error::other("invalid local request"))?,parsed) {
+                        let value_budget=if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{negotiated};
+                        let parsed=ValuePdu::decode(value_budget,raw).map_err(|_|io::Error::other("invalid value response"))?;
+                        let result=match (ValuePdu::decode(value_budget,&request).map_err(|_|io::Error::other("invalid local request"))?,parsed) {
                             (ValuePdu::Read{..},ValuePdu::ReadValue(value))=>Ok(value.to_vec()),
                             (ValuePdu::Read{..},ValuePdu::ReadError(error))=>Err(format!("peer read error {error}")),
                             (ValuePdu::Write{handle,data_type,value,verify:true},ValuePdu::WrittenValue{handle:h,data_type:t,value:v}) if (handle,data_type,value)==(h,t,v)=>Ok(v.to_vec()),
@@ -1514,7 +1582,7 @@ async fn exchange_loop(
                             Ok(info)=>info,
                             Err(_) if raw[0]==2 => {
                                 if pending.len()>=8 {return Err(io::Error::other("SSAP invalid-PDU response queue full"));}
-                                pending.push_back(Pending {bytes:vec![1,0,2,0,0,1],purpose:Purpose::Error,constraint,deadline:Instant::now()+Duration::from_secs(5)});
+                                pending.push_back(Pending {sent: 0,bytes:vec![1,0,2,0,0,1],purpose:Purpose::Error,constraint,deadline:Instant::now()+Duration::from_secs(5)});
                                 continue;
                             }
                             Err(_)=>return Err(io::Error::other("invalid ExchangeInfo response")),
@@ -1527,13 +1595,13 @@ async fn exchange_loop(
                             if response_owed || pending.len() >= 8 { return Err(io::Error::other("SSAP response queue full")); }
                             if let Some((peer,_)) = &peer_reply && peer.mtu != info.mtu { return Err(io::Error::other("peer dual-role MTU mismatch")); }
                             peer_request = raw.to_vec();
-                            pending.push_back(Pending { bytes: response.clone(), purpose: Purpose::Response,constraint,
+                            pending.push_back(Pending {sent: 0, bytes: response.clone(), purpose: Purpose::Response,constraint,
                                 deadline: if initial_done { Instant::now() + Duration::from_secs(5) } else { original_deadline } });
                         }
                     } else if matches!(raw[0] & 0x7f, 4 | 6 | 8 | 10 | 13 | 19) {
                         if pending.len() >= 8 { return Err(io::Error::other("SSAP error queue full")); }
                         // T/XS20001 table50: complete ErrorRsp including RFU MCC.
-                        pending.push_back(Pending { bytes: vec![1,0,raw[0],0,0,2], purpose: Purpose::Error,constraint,
+                        pending.push_back(Pending {sent: 0, bytes: vec![1,0,raw[0],0,0,2], purpose: Purpose::Error,constraint,
                             deadline: Instant::now() + Duration::from_secs(5) });
                     } else if matches!(raw[0], 12 | 18) {
                         // Unsupported commands/notifications carry no response obligation.
@@ -1572,17 +1640,20 @@ mod tests {
                 bytes: vec![8, 0, 17, 0],
                 deadline: now + Duration::from_secs(1),
                 admitted: false,
+                submitted_all: false,
                 cleanup_deadline: None,
                 reply: Some(tx),
             });
             let mut pending = VecDeque::from([
                 Pending {
+                    sent: 0,
                     bytes: vec![1],
                     deadline: now + Duration::from_secs(2),
                     purpose: Purpose::Response,
                     constraint: None,
                 },
                 Pending {
+                    sent: 0,
                     bytes: vec![8, 0, 17, 0],
                     deadline: now + Duration::from_secs(1),
                     purpose: Purpose::Client,
@@ -1627,6 +1698,7 @@ mod tests {
             bytes: vec![8, 0, 17, 0],
             deadline: original,
             admitted: true,
+            submitted_all: true,
             cleanup_deadline: Some(drain),
             reply: Some(tx),
         });
@@ -1653,6 +1725,60 @@ mod tests {
         finish_client(c.reply.take(), Ok(vec![99]));
         assert_eq!(rx.try_recv(), Err(oneshot::error::TryRecvError::Closed));
         assert!(pending.is_empty());
+    }
+    #[test]
+    fn extended_complete_and_sequence_capabilities_remain_distinct() {
+        let mut p = ExchangeInfo {
+            kind: ExchangeKind::Response,
+            mtu: Some(2042),
+            version: Some([1, 2]),
+            extension: None,
+            reliable: false,
+        };
+        assert!(!accepts_extended(&p, 3));
+        assert!(!accepts_extended(&p, 0));
+        p.extension = Some(ExtensionCapabilities {
+            fragment_sequence: false,
+            transaction_capacity: None,
+        });
+        assert!(accepts_extended(&p, 3));
+        assert!(!accepts_extended(&p, 0));
+        p.extension.as_mut().unwrap().fragment_sequence = true;
+        for c in 0..4 {
+            assert!(accepts_extended(&p, c));
+        }
+    }
+    #[test]
+    fn actual_fragment_admissions_start_one_drain_and_keep_author_deadline() {
+        let now = Instant::now();
+        let deadline = now + Duration::from_secs(1);
+        let (tx, _rx) = oneshot::channel();
+        let mut c = ClientRequest {
+            minimum: 0,
+            epoch: None,
+            bytes: vec![13, 35, 17, 0, 0],
+            deadline,
+            admitted: false,
+            submitted_all: false,
+            cleanup_deadline: None,
+            reply: Some(tx),
+        };
+        c.admit_part(now, false);
+        let first = c.cleanup_deadline;
+        assert!(c.admitted);
+        assert!(!c.submitted_all);
+        assert_eq!(first, Some(now + Duration::from_secs(5)));
+        c.admit_part(now + Duration::from_millis(900), true);
+        assert!(c.submitted_all);
+        assert_eq!(c.cleanup_deadline, first);
+        assert_eq!(c.deadline, deadline);
+        let mut client = Some(c);
+        let mut pending = VecDeque::new();
+        retire_client_wait(&mut client, &mut pending, deadline);
+        let c = client.unwrap();
+        assert!(c.reply.is_none());
+        assert_eq!(c.cleanup_deadline, first);
+        assert_eq!(c.obligation_deadline(), first.unwrap());
     }
     #[tokio::test]
     async fn actual_observer_original_deadline_bounds_negotiation_and_never_enqueues_late_value() {
@@ -1768,10 +1894,10 @@ mod tests {
         for info in [negotiated(r0).await, negotiated(r1).await] {
             assert_eq!(info.4, 249);
             assert_eq!(info.5, 249);
-            assert_eq!(info.6, [2, 3, 249, 0, 1, 2]);
-            assert_eq!(info.7, [3, 3, 249, 0, 1, 2]);
-            assert_eq!(info.8, [2, 3, 249, 0, 1, 2]);
-            assert_eq!(info.9, [3, 3, 249, 0, 1, 2]);
+            assert_eq!(info.6, [2, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+            assert_eq!(info.7, [3, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+            assert_eq!(info.8, [2, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+            assert_eq!(info.9, [3, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
         }
         let observer = Observer {
             state: state0,

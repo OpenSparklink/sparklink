@@ -1274,12 +1274,14 @@ async fn actual_update_wait_cancellation_keeps_admitted_identity_and_original_dr
         });
         let mut pending = VecDeque::from([
             Pending {
+                sent: 0,
                 bytes: vec![16, 3, 17, 0, 0, 0],
                 deadline,
                 purpose: Purpose::Update,
                 constraint: None,
             },
             Pending {
+                sent: 0,
                 bytes: vec![1],
                 deadline,
                 purpose: Purpose::ValueResponse,

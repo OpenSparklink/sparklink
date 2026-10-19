@@ -28,6 +28,30 @@ def fixture(rounds=4,message_bytes=61,boundaries=False):
     return dict(rounds=rounds,message_bytes=message_bytes,boundary_check=boundaries,applications=apps)
 
 
+class ResidualSsapAttribution(unittest.TestCase):
+    def test_current_update_and_sequence_contracts_reject_unclaimed_parts(self):
+        from ws73_channel_socket import reject_unattributed_ssap
+        for contract in [{'ssap_update_delivery_version':2}, {'ssap_value_lengths_version':4}]:
+            row=dict(start_wall_ns=10,end_wall_ns=20,**contract)
+            for opcode in (8,9,13,14,15,16,17,0x88,0x89,0x8d,0x8e,0x8f,0x90,0x91):
+                packet=dict(data=(b'\x0a\0\x02\0'+bytes([opcode,3])).hex(),wall_ns=15)
+                with self.subTest(contract=contract,opcode=opcode),self.assertRaises(CaptureError):
+                    reject_unattributed_ssap(row,[packet])
+            for raw,time in [('0a0002000203',15),('0a0002000303',15),
+                             ('1f0002000f03',15),('0a000200',15),
+                             ('0a0002000f03',9),('0a0002000f03',21)]:
+                reject_unattributed_ssap(row,[dict(data=raw,wall_ns=time)])
+            reject_unattributed_ssap(row,[])
+
+    def test_legacy_contract_retains_original_opcode_interpretation(self):
+        from ws73_channel_socket import reject_unattributed_ssap
+        row=dict(start_wall_ns=10,end_wall_ns=20,ssap_update_delivery_version=1)
+        for opcode in (15,16,17,0x8d,0x8f):
+            reject_unattributed_ssap(row,[dict(data=f'0a000200{opcode:02x}03',wall_ns=15)])
+        with self.assertRaises(CaptureError):
+            reject_unattributed_ssap(row,[dict(data='0a0002000d03',wall_ns=15)])
+
+
 class ApplicationProof(unittest.TestCase):
     def test_relative_artifact_root_keeps_exact_sealed_file_and_hash_checks(self):
         import os

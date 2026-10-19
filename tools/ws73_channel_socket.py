@@ -514,6 +514,30 @@ def protected_ssap_wire(row,capture,sdus):
         packets+=len(frames);controllers.append(dict(index=owner['index'],generation=obj['generation'],lifetime=obj['lifetime'],handle=handle,cipher_record=events[0]['record'],packets=len(frames)))
     return dict(required=required,controllers=controllers,packets=packets,scope='Same SMTC actual post-install TX/opposite RX and ordinary peer database checks;not attribute authorization,Bond or RF cipher attestation')
 
+def reject_unattributed_ssap(row, sdus):
+    """Check the residual SDUs after the versioned evidence matchers consume them.
+
+    Preserve historical gate decoding; current sequence/update contracts must
+    also account for updates, acknowledgements and the extended opcode bit.
+    This is capture attribution, not permission to accept an unknown PDU.
+    """
+    tracked = ((1,4,5,6,7,8,9,10,11,13,14) if row.get('ssap_access_required',False)
+               else (1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False)
+               else (8,9,13,14))
+    current = (row.get('ssap_value_lengths_version') == 4
+               or row.get('ssap_update_delivery_version') == 2)
+    if current:
+        tracked += (15,16,17)
+    for packet in sdus:
+        raw = packet['data']
+        if (not raw.startswith('0a00') or len(raw) < 10
+                or not row['start_wall_ns'] <= packet['wall_ns'] <= row['end_wall_ns']):
+            continue
+        opcode = int(raw[8:10],16)
+        if (opcode & 0x7f if current else opcode) in tracked:
+            raise CaptureError('extra/unattributed SSAP value USB packet')
+
+
 def corroborate(run,capture):
     rows=run.get('channel_socket')
     if rows is None or len(rows)!=2:raise CaptureError('two connection direction phases required')
@@ -596,7 +620,7 @@ def corroborate(run,capture):
                 from ws73_ssap_requester_lifecycle import corroborate as requester_corroborate
                 ssap_requester_lifecycle,requester_credit=requester_corroborate(row,value_matched,sdus)
                 for key in ssap_credit:ssap_credit[key]+=requester_credit[key]
-            if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in ((1,4,5,6,7,8,9,10,11,13,14) if row.get('ssap_access_required',False) else (1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False) else (8,9,13,14)) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
+            reject_unattributed_ssap(row,sdus)
         legs=[]
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
             if data[8:24] in all_nonces:raise CaptureError('random nonce reused across direction phases')

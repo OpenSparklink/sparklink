@@ -54,9 +54,11 @@ def ssap_receipt(app,entry):
         raise CaptureError('exact actual SSAP executable and arguments required')
 
 
-def ssap_command(run,row,entry,args,expected):
+def ssap_command(run,row,entry,args,expected,*,api=None):
     if not isinstance(expected,bytes) or len(expected)!=32:raise CaptureError('original random expected SSAP value required')
-    position=row['owners'].index(entry);api='c' if position==row['phase'] else 'python'
+    position=row['owners'].index(entry)
+    if api is None:api='c' if position==row['phase'] else 'python'
+    if api not in ('c','python'):raise CaptureError('explicit SDK consumer required')
     command=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['ssap',str(entry['owner']['index']),str(entry['owner']['generation']),args[1],args[0],args[2],expected.hex()]
     if args[0]=='ssap-write':command.append(args[3])
     items=row.setdefault('ssap_language_clients',[]);number=len(items)
@@ -142,11 +144,11 @@ def channel_pair(run, row):
             row.setdefault('end_wall_ns',time.time_ns());run.save()
 
 
-def owned_arguments(api,owner,service,uuid,initial,policy):
-    if api not in ('c','python') or policy not in ('allow','deny','ask'):
+def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False):
+    if api not in ('c','python') or policy not in ('none','allow','deny','ask') or type(read_only)is not bool or (read_only and policy!='none'):
         raise CaptureError('explicit SDK language and application policy required')
     prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
-    return prefix+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial,policy]
+    return prefix+['owned-readonly'if read_only else'owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial]+([]if policy=='none'else[policy])
 
 
 @contextmanager

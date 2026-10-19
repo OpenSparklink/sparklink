@@ -1707,5 +1707,5 @@ validity = "底层操作有准确artifact自动门禁；交互示例静态校验
 applicable_version = "unreleased Owned language API after25bb;qualification pinned separately"
 authority = "crates/libsparklink;bindings/python;project/current-capabilities.md"
 disposition = "任务指南；资格只链接唯一入口，不复制计划或把本地回执写成远端发布"
-source_sha256 = "14f558d13764c91ce76ce5c6411b606c98db28602e4399f810f2d8e7cb4903e0"
+source_sha256 = "e912c929010190e2fb9c1fcd43938d93a6bf852d784ddd1131c6d0c5327615e3"
 publication = "html"

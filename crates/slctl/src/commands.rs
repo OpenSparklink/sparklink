@@ -175,12 +175,7 @@ impl Context {
                 let link = self.application_connection(args[1]).await?;
                 let object = link.ssap();
                 let handle: u16 = args[2].parse()?;
-                let modes: u8 = match args.get(3).copied().unwrap_or("both") {
-                    "notify" => 1,
-                    "indicate" => 2,
-                    "both" => 3,
-                    _ => anyhow::bail!("invalid local receive mode"),
-                };
+                let modes = crate::ssap_subscription::mode(args.get(3).copied().unwrap_or("both"))?;
                 let wait: u32 = args.get(4).copied().unwrap_or("5000").parse()?;
                 let (indication, raw) = object.receive_update(vec![handle], modes, wait).await?;
                 let packet = slk_protocol::ssap::updates::Update::decode(65535, &raw)
@@ -199,6 +194,10 @@ impl Context {
                     );
                 }
                 Ok(())
+            }
+            "ssap-subscribe" if args.len() >= 3 => {
+                let link = self.application_connection(args[1]).await?;
+                crate::ssap_subscription::run(&link, &args[2..]).await
             }
             "ssap-read-uuid" => {
                 if !(5..=6).contains(&args.len()) {

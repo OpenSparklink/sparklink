@@ -1,6 +1,7 @@
 mod commands;
 mod security_agent;
 mod ssap_server;
+mod ssap_subscription;
 
 use std::process;
 
@@ -147,6 +148,7 @@ Commands:
   ssap-remove <start-handle>                 Remove local service (handles not reused)
   ssap-local-read <handle>                   Inspect local database, not peer receipt
   ssap-receive <path> <handle> [notify|indicate|both] [wait-ms] Authenticated CPCD enable, one update, verified disable
+  ssap-subscribe <path> <handle> [notify|indicate|both] [count] [lease-ms] Finite leased updates, explicit cleanup; no auto-renew
   ssap-read-uuid <path> <start> <end> <uuid-hex> [minimum] Read actual peer values by UUID
   ssap-read <path> <handle> [minimum]                  Read actual peer value on SMTC
   ssap-write <path> <handle> <value-hex> [minimum]      Write with peer verification and reply

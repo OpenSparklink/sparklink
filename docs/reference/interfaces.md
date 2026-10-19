@@ -241,6 +241,7 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 | `write(handle, value, minimum)` | `WriteSsapValue` | 原短写协议；不截断、不echo、不实现新长写 |
 | `read_by_uuid(start, end, data_type, uuid, minimum)` | `ReadSsapByUuid` | 返回每项结果及原trace；不是本地构造成功 |
 | `receive_update(handles, modes, wait_ms)` / `receive_until(..., Deadline)` | `ReceiveSsapUpdate` | 单次CPCD启用/接收/验证停用；需真实认证及拥有者授权；不覆盖已有配置 |
+| `subscribe(handles, modes, duration_ms, Deadline)` | `SubscribeSsapUpdates` | 持有原 caller／lifetime 的有限接收租约；读取、续租与关闭复用同一 Engine，当前一 actor 一个租约 |
 | `send_owned_update(handle, indication, Deadline)` | `SendOwnedSsapUpdate` | 同一原caller拥有的本地属性；stage1软件准入，stage2对端接收队列ACK，均非应用处理 |
 | `owned_configuration(handle, Deadline)` | `GetOwnedSsapConfiguration` | 观察原caller属性在本Session的配置，不制造Ready、授权或新配置 |
 | `exchange_info()` | `GetSsapInfo` | 真实协商观察，核对返回完整身份；不是服务发现或安全资格 |
@@ -577,8 +578,11 @@ NotSupported。只允许一个call-owned等待者；busy、原期限、caller退
 
 ### 持续 SSAP 接收租约（开发中，未发布）
 
-以下是同一 Connection／SSAP actor 的 daemon 接线，不是新 Host 或 wire Engine。
-SDK、CLI、C／Python、实际部署权限和新实机门禁尚未完成，不能据方法存在推导可用资格。
+以下是同一 Connection／SSAP actor 的源码接线，不是新 Host 或 wire Engine。
+Rust／C／Python／CLI 已复用同一客户端，实际部署权限和新实机门禁尚未完成；
+源码、参数／私有总线检查及接口存在不能推导实机资格。当前系统总线策略仍只向管理组
+开放这些 Connection SSAP 方法，`sparklink-apps` 专用身份尚未开放；不能把加入管理组
+作为普通应用权限分离已完成的证明。
 单次 `ReceiveSsapUpdate` 的原语义保留。首版仅允许每物理 actor 一个接收租约；第二个
 请求明确 busy，不覆盖旧 CPCD，也不代表多应用共享订阅已经实现。
 
@@ -598,6 +602,30 @@ SDK、CLI、C／Python、实际部署权限和新实机门禁尚未完成，不�
 最多 5 秒，未知结果失败／隔离同一 actor，不报告 Free。等待更新时让出原客户端请求
 通道供普通读写使用，配置／清理仍通过同一请求序列。它是有限 D-Bus 租约，不提供
 应用 socket 的 dup、SCM_RIGHTS 或最终 fd 释放承诺；不授 controller 管理权限。
+
+Rust 通过 `connection.ssap().subscribe(handles, modes, duration_ms, Deadline)` 获取
+`ssap::subscription::Subscription`，调用 `read(wait, Deadline)`、
+`renew(duration_ms, Deadline)`、`close(Deadline)`。它保留原 caller，释放父 Connection
+视图不会断链或结束此租约。`info()` 是最后验证的观察；`is_closed()` 仅表示本地读取／
+续租准入已结束，不是远端清理证明。Drop 仅在已有 Tokio runtime 中尝试撤回，不能替代
+显式清理；未知续租结果不自动重试，也不能刷新原读取、包或首次清理期限。
+
+| 语言入口 | 结果与所有权 |
+| --- | --- |
+| C `slk_connection_ssap_subscribe` | 非零原句柄列表、modes1..3、租期250..60000ms；输出独占 `SlkSsapSubscription*`，父 Client／Connection 可先释放 |
+| C `slk_ssap_subscription_info/read/renew/release/free` | Info为120字节；Packet为2072字节；完整Batch为33312字节，最多16包；read无peek／长度查询或截断。release观察远端清理，free只释放本地；错误保留输出，当前并发操作返回EAGAIN |
+| Python `connection.ssap().subscribe(...)` | `read(deadline_ns=..., wait=True)`、`renew(duration_ms, deadline_ns=...)`、`release(deadline_ns=...)`；`close()`／context退出仅本地释放。禁止fork后使用；不另建D-Bus客户端或解码器 |
+
+C 输出须为完整、独占、正确对齐的结构区域；无效地址属于调用者违反 FFI 契约，不等同于
+内核坏用户地址测试。未使用的数组／保留字节归零。Rust 统一检查原身份、epoch、递增序号、
+计数及包预算，复用现有 Update decoder；Python 只检查 ABI 表示并转换不可变值。
+已被远端消费、但本地等待结束的批次可能不确定；不会偷偷重读或称为无损投递。
+
+`slctl ssap-subscribe CONNECTION HANDLE [notify|indicate|both] [COUNT] [LEASE_MS]`
+是有限交互命令：默认至少8个完整PDU、60000ms租期，无自动续租；COUNT1..4096，
+LEASE_MS250..60000。完整批次可能超过COUNT，全部显示，不截断。先实际发现所需属性，
+每次读取原期限最多5秒；到期／中断／错误后仍尝试同一token清理。未收到目标数量或
+清理未确认时失败，不能把日志或协议ACK当作对端应用校验回复。日常交互不替代 slktest。
 
 ## Delegated channel TX status（未发布 v1）
 

@@ -97,6 +97,33 @@ def execute(run,row):
             i['guard_read']=command(['ssap-read',source['object']['path'],str(g['handle']),str(level)])
             if i['guard_read']['exit'] or f'value={g["secret"]}' not in i['guard_read']['stdout']:raise CaptureError('another actual owner must continue remote delivery')
             i.update(guard_handle=g['handle'],guard_value=g['secret']);run.save()
+        # A deliberately expired physical obligation can retire this Engine.
+        # Finish the live-scope gate first;do not reset its original deadline.
+        if mode=='sdk':
+            with owner_publisher(run,row,sender,'ask',collection='ssap_owner_lifecycle',label='close-pending') as (owner,i):
+                i['case']='close-pending'
+                def close_barrier(process,record):
+                    record['credentials']=credentials(process.pid)
+                    event=prompt(owner,i,target,1);show_other(i)
+                    i['close_input']=dict(wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns())
+                    owner.stdin.write('close\n');owner.stdin.flush()
+                    matches,_=wait_text(owner,Path(i['output_files'][0]),r'^SdkServiceClosed: (.+)$',time.monotonic()+2)
+                    if len(matches)!=1:raise CaptureError('one original service-close receipt required')
+                    i['close_receipt']=json.loads(matches[0]);i['process_alive_after_close']=owner.poll() is None
+                    i['after_scope_close']=await_removed(run,target,i['start'])
+                    if owner.poll() is not None:raise CaptureError('scope cleanup must happen while publisher is alive')
+                    run.save()
+                i['write']=command(['ssap-write',source['object']['path'],str(i['handle']),i['value'],str(level)],close_barrier)
+                errors=re.findall(r'peer write error (\d+)',i['write']['stderr'])
+                if not i['write']['exit'] or len(errors)!=1 or int(errors[0]) not in (4,9):raise CaptureError('closed original scope must refuse actual pending peer write')
+                i['peer_error']=int(errors[0]);i['removed_read']=command(['ssap-read',source['object']['path'],str(i['handle']),str(level)])
+                if not i['removed_read']['exit'] or 'peer read error 4' not in i['removed_read']['stderr']:raise CaptureError('closed scope handle must stay retired')
+                i['guard_read']=command(['ssap-read',source['object']['path'],str(g['handle']),str(level)])
+                if i['guard_read']['exit'] or f'value={g["secret"]}' not in i['guard_read']['stdout']:raise CaptureError('independent actual service must survive last view close')
+                i.update(guard_handle=g['handle'],guard_value=g['secret'])
+                owner.stdin.write('quit\n');owner.stdin.flush();owner.wait(timeout=2);i['closed_exit']=owner.returncode
+                if owner.returncode!=0:raise CaptureError('closed publisher must exit normally after cleanup')
+                run.save()
         with owner_publisher(run,row,sender,'ask',collection='ssap_owner_lifecycle',label='original-deadline') as (owner,i):
             i['case']='original-deadline'
             def deny_barrier(process,record):
@@ -128,31 +155,6 @@ def execute(run,row):
             token=int(i['prompt_events'][1]['fields'][0]);i['late_input']=dict(token=token,wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns())
             owner.stdin.write(f'yes {token}\n');owner.stdin.flush();value_snapshot(owner,i,i['secret']);run.save()
             if 'approved=true' in Path(i['output_files'][0]).read_text():raise CaptureError('old/late prompt decision granted authorization')
-        if mode=='sdk':
-            with owner_publisher(run,row,sender,'ask',collection='ssap_owner_lifecycle',label='close-pending') as (owner,i):
-                i['case']='close-pending'
-                def close_barrier(process,record):
-                    record['credentials']=credentials(process.pid)
-                    event=prompt(owner,i,target,1);show_other(i)
-                    i['close_input']=dict(wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns())
-                    owner.stdin.write('close\n');owner.stdin.flush()
-                    matches,_=wait_text(owner,Path(i['output_files'][0]),r'^SdkServiceClosed: (.+)$',time.monotonic()+2)
-                    if len(matches)!=1:raise CaptureError('one original service-close receipt required')
-                    i['close_receipt']=json.loads(matches[0]);i['process_alive_after_close']=owner.poll() is None
-                    i['after_scope_close']=await_removed(run,target,i['start'])
-                    if owner.poll() is not None:raise CaptureError('scope cleanup must happen while publisher is alive')
-                    run.save()
-                i['write']=command(['ssap-write',source['object']['path'],str(i['handle']),i['value'],str(level)],close_barrier)
-                errors=re.findall(r'peer write error (\d+)',i['write']['stderr'])
-                if not i['write']['exit'] or len(errors)!=1 or int(errors[0]) not in (4,9):raise CaptureError('closed original scope must refuse actual pending peer write')
-                i['peer_error']=int(errors[0]);i['removed_read']=command(['ssap-read',source['object']['path'],str(i['handle']),str(level)])
-                if not i['removed_read']['exit'] or 'peer read error 4' not in i['removed_read']['stderr']:raise CaptureError('closed scope handle must stay retired')
-                i['guard_read']=command(['ssap-read',source['object']['path'],str(g['handle']),str(level)])
-                if i['guard_read']['exit'] or f'value={g["secret"]}' not in i['guard_read']['stdout']:raise CaptureError('independent actual service must survive last view close')
-                i.update(guard_handle=g['handle'],guard_value=g['secret'])
-                owner.stdin.write('quit\n');owner.stdin.flush();owner.wait(timeout=2);i['closed_exit']=owner.returncode
-                if owner.returncode!=0:raise CaptureError('closed publisher must exit normally after cleanup')
-                run.save()
         value_snapshot(guard,g,g['secret']);g['other_owner_after_failed_request']=True;run.save()
     row['ssap_owner_lifecycle_status']=STATUS;run.save()
 
@@ -188,9 +190,9 @@ def corroborate(row,matched,sdus):
     items=row.get('ssap_owner_lifecycle',[]);owners=row['owners'];s=row['phase']%2;t=1-s
     mode=row.get('ssap_owner_publisher','cli')
     if mode not in ('cli','sdk'):raise CaptureError('original lifecycle publisher selector required')
-    expected=['guard','owner-exit','original-deadline']+(['close-pending'] if mode=='sdk' else [])
+    expected=['guard','owner-exit']+(['close-pending'] if mode=='sdk' else [])+['original-deadline']
     if row.get('ssap_owner_lifecycle_status')!=STATUS or [v.get('case')for v in items]!=expected:raise CaptureError('all finite completed original owner interleavings required')
-    g,ex,expired=items[:3];closed=items[3] if mode=='sdk' else None;credit={0:0,1:0};proof=[]
+    g,ex=items[:2];expired=items[-1];closed=items[2] if mode=='sdk' else None;credit={0:0,1:0};proof=[]
     def exchange(item,name,request,response=None,window=None):
         command=item[name];window=window or command
         if not item['start_wall_ns']<=command['start_wall_ns']<=command['end_wall_ns']<=item['end_wall_ns']:raise CaptureError('original lifecycle command interval required')
@@ -258,6 +260,7 @@ def corroborate(row,matched,sdus):
     if len(set(epochs))!=1:raise CaptureError('unexpected original security epoch change within this basic gate')
     if second['token']<=first['token'] or expired['denial_input']['token']!=first['token'] or expired['stale_input']['token']!=first['token'] or expired['late_input']['token']!=second['token'] or not expired['stale_input']['monotonic_ns']<second['deadline']<expired['late_input']['monotonic_ns']:raise CaptureError('unique original tokens with stale-before/late-after-deadline inputs required')
     if mode=='sdk':
+        if not closed['end_wall_ns']<=expired['start_wall_ns']:raise CaptureError('live scope close must finish before deliberate terminal obligation expiry')
         for item in [ex,expired,closed]:sdk_prompt_contexts(item)
         replies=sdk_replies(expired)
         expected_replies=[(first['token'],first['token'],False,True,0),(first['token'],second['token'],True,False,-errno.ESTALE),(second['token'],second['token'],True,True,-errno.ETIMEDOUT)]

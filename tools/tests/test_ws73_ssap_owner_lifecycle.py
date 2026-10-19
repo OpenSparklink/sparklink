@@ -125,6 +125,28 @@ def sdk_wire_fixture(phase=0,late=True):
     wire(s,t,b'\x0d\x23\x17\0\0'+bytes.fromhex(closed['value']),12.72);wire(t,s,b'\x0e\x07\x01\x17\0\x09',12.95)
     wire(s,t,b'\x08\x03\x17\0\0',13.22);wire(t,s,b'\x09\x0b\x04\0',13.25)
     wire(s,t,b'\x08\x03\x11\0\0',13.42);wire(t,s,b'\x09\x03'+bytes.fromhex(g['secret']),13.45)
+    # Match the production sequence:live close is completed before deliberate
+    # terminal obligation expiry. Preserve the original CLI deadline fixture.
+    def earlier(value):
+        if isinstance(value,dict):
+            for key,entry in value.items():
+                if key.endswith('_wall_ns'):value[key]=entry-int(8.5*N)
+                elif key.endswith('_monotonic_ns') or key in ('monotonic_ns','wall_ns','closed_ns'):value[key]=entry-int(8.5*N)
+                else:earlier(entry)
+        elif isinstance(value,list):
+            for entry in value:earlier(entry)
+    old=closed['prompt_events'][0]['fields'][11];earlier(closed)
+    closed['end_wall_ns']=wall(5)
+    closed['prompt_events'][0]['fields'][11]=str(int(old)-int(8.5*N))
+    closed['stdout']=closed['stdout'].replace(old,closed['prompt_events'][0]['fields'][11])
+    # Context/deadline and close JSON must reflect the original shifted times.
+    lines=[]
+    for line in closed['stdout'].splitlines():
+        if line.startswith('SdkServiceClosed: '):line='SdkServiceClosed: '+json.dumps(closed['close_receipt'])
+        lines.append(line)
+    closed['stdout']='\n'.join(lines)+'\n'
+    for entry in sdus[-12:]:entry['wall_ns']-=int(8.5*N)
+    row['ssap_owner_lifecycle']=[g,ex,closed,e]
     return row,matched,sdus,remaining
 
 
@@ -139,14 +161,15 @@ class LifecycleReceipts(unittest.TestCase):
                 self.assertEqual(len(proof[0]['wire']),15+int(late));self.assertEqual(remaining,[])
 
     def test_sdk_proposals_actual_replies_and_live_close_cannot_be_omitted(self):
-        for kind in ['mode','api','environment','args','header','missing-close','early-exit','snapshot','fd','accepted','time','cleanup','guard','removed','request','proposal','fake-api','stale-current','late-result']:
-            row,matched,sdus,_=sdk_wire_fixture();g,ex,e,c=row['ssap_owner_lifecycle']
-            if kind=='mode':row['ssap_owner_publisher']='cli'
+        for kind in ['order','mode','api','environment','args','header','missing-close','early-exit','snapshot','fd','accepted','time','cleanup','guard','removed','request','proposal','fake-api','stale-current','late-result']:
+            row,matched,sdus,_=sdk_wire_fixture();g,ex,c,e=row['ssap_owner_lifecycle']
+            if kind=='order':c['end_wall_ns']=e['start_wall_ns']+1
+            elif kind=='mode':row['ssap_owner_publisher']='cli'
             elif kind=='api':c['publisher_api']='python'
             elif kind=='environment':c['environment']['LIBSPARKLINK_PATH']='/unrelated'
             elif kind=='args':c['args'][-1]='allow'
             elif kind=='header':c['stdout']=c['stdout'].replace('client_closed=true','client_closed=false')
-            elif kind=='missing-close':row['ssap_owner_lifecycle'].pop()
+            elif kind=='missing-close':del row['ssap_owner_lifecycle'][2]
             elif kind=='early-exit':c['process_alive_after_close']=False
             elif kind in ['snapshot','fd','accepted','time']:
                 data=c['close_receipt'];old=json.dumps(data)

@@ -16,6 +16,24 @@ def error(code, call):
     else:
         raise AssertionError("operation incorrectly succeeded")
 
+def threads_converged(expected, budget_ns=250_000_000):
+    # Same exact resource invariant;pthread join is not an atomic procfs scan.
+    original=time.monotonic_ns()+budget_ns
+    while time.monotonic_ns()<original:
+        if len(os.listdir('/proc/self/task'))==expected:return True
+        time.sleep(.001)
+    return False
+
+before_observer=len(os.listdir('/proc/self/task'))
+release_observer=threading.Event()
+held_observer=threading.Thread(target=release_observer.wait)
+held_observer.start()
+try:
+    assert not threads_converged(before_observer,20_000_000)  # Actual live task.
+finally:
+    release_observer.set();held_observer.join()
+assert threads_converged(before_observer)
+
 error(errno.ETIMEDOUT, lambda: Client(deadline_ns=1))
 threads_before,fds_cold = len(os.listdir('/proc/self/task')),len(os.listdir('/proc/self/fd'))
 # Exact pinned Tokio1.51/full process-global signal pair; original cold-zero
@@ -24,12 +42,12 @@ with Client(deadline_ns=deadline()):
     pass
 fds_before = len(os.listdir('/proc/self/fd'))
 assert fds_before == fds_cold + 2
-assert len(os.listdir('/proc/self/task')) == threads_before
+assert threads_converged(threads_before)
 for _ in range(16):
     with Client(deadline_ns=deadline()):
         pass
     assert len(os.listdir('/proc/self/fd')) == fds_before
-    assert len(os.listdir('/proc/self/task')) == threads_before
+    assert threads_converged(threads_before)
 with Client(deadline_ns=deadline()) as client:
     assert client.controllers(deadline_ns=deadline()) == (ControllerId(2, 7), ControllerId(3, 9))
     error(errno.ESTALE, lambda: client.open_channel(ControllerId(2, 8), PATH, deadline_ns=deadline()))
@@ -108,7 +126,7 @@ except ValueError:
     pass
 else:
     raise AssertionError("closed connection view revived")
-assert len(os.listdir('/proc/self/task')) == threads_before
 assert len(os.listdir('/proc/self/fd')) == fds_before
+assert threads_converged(threads_before)
 print("CURRENT_APPLICATION_CONNECTION_SSAP_FIXTURE_PASS_NOT_RF")
 print("CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS")

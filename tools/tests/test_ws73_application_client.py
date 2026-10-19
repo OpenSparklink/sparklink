@@ -27,12 +27,12 @@ def sdk_ssap_fixture(row,sdus):
     for i,item in enumerate(base['ssap_local_registrations']):item['owner']=owners[i]
     row.update({k:v for k,v in base.items() if k!='owners'})
     row['ssap_language_required']=True;row['ssap_language_clients']=[]
-    row.update(ssap_registration_kind='owned-sdk-v1',ssap_owned_publishers_required=True,ssap_owned_publishers=[])
+    row.update(ssap_registration_kind='owned-sdk-requests-v1',ssap_owned_publishers_required=True,ssap_owned_publishers=[])
     for position,registered in enumerate(row['ssap_local_registrations']):
         registered['service_uuid']=(bytes([160+n,position+1])*8).hex()
         api='c' if position==n else 'python';owner=owners[position];handle=registered['handle'];begin=registered['start']
         app=dict(api=api,position=position,pid=200+position,credentials=dict(uids=[1005]*4,gids=[1005]*4,groups=[],capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']}),environment=application_environment(),start_wall_ns=n*10000+900,end_wall_ns=n*10000+2000,exit=0,stderr='',value_snapshots=[])
-        app['args']=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),registered['service_uuid'],registered['property_uuid'],'ab'*32]
+        app['args']=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),registered['service_uuid'],registered['property_uuid'],'ab'*32,'allow']
         app['stdout']=f'SdkOwnedAPI: api={api} client_closed=true\nSsapOwnedService: start={begin} end={handle} property={handle}; local registration only\n'
         registered['registration']=app;row['ssap_owned_publishers'].append(app)
     normal_count=8*12
@@ -50,7 +50,16 @@ def sdk_ssap_fixture(row,sdus):
         publisher=row['ssap_owned_publishers'][item['target']];ordinal=len(publisher['value_snapshots'])+1
         observation=dict(api=publisher['api'],publisher_pid=publisher['pid'],handle=item['handle'],value=item['value'],ordinal=ordinal,start_wall_ns=start+26,end_wall_ns=start+28)
         item['local_check']=observation;publisher['value_snapshots'].append(observation)
-        publisher['stdout']+=f"SsapOwnedValue: handle={item['handle']} value={item['value']}\n"
+        for j,name in enumerate(['uuid_read_before','read_before','write','read_after','uuid_read_after']):
+            obj=row['owners'][item['target']]['object'];owner=row['owners'][item['target']]['owner']
+            token=(ordinal-1)*5+j+1
+            decision=dict(api=publisher['api'],index=owner['index'],generation=owner['generation'],
+                token=token,request_id=token+10,lifetime=obj['lifetime'],handle=obj['handle'],
+                epoch=1,level=0,deadline_ns=10_000_000_000,property=item['handle'],write=name=='write',
+                value=item['value'] if name=='write' else '',local_tcid=10,remote_tcid=10,pi=0,
+                allow=True,decision_ns=9_000_000_000+token,decision_wall_ns=item[name]['start_wall_ns']+2)
+            publisher['stdout']+='SdkAuthorizationDecision: '+json.dumps(decision)+'\n'
+            if name=='write':publisher['stdout']+=f"SsapOwnedValue: handle={item['handle']} value={item['value']}\n"
         normal=wire[i*12:(i+1)*12];uuid=wire[normal_count+i*8:normal_count+(i+1)*8]
         for part,offset in [(normal[:4],10),(normal[4:8],20),(normal[8:12],30),(uuid[:4],1),(uuid[4:8],40)]:
             for position,direction,payload,_ in part:
@@ -90,6 +99,35 @@ def fixture():
 
 
 class ApplicationClientEvidence(unittest.TestCase):
+    def test_policy_decisions_must_match_original_lifetime_proposal_and_window(self):
+        cases=['missing','duplicate','deny','lifetime','generation','index-bool','handle','epoch',
+               'property','late','wrong-value','write','wall','token','request','unknown','malformed','old-mode']
+        for case in cases:
+            run,sdus=fixture();row=run['application_clients'][0];app=row['ssap_owned_publishers'][0]
+            lines=app['stdout'].splitlines();positions=[i for i,line in enumerate(lines) if line.startswith('SdkAuthorizationDecision: ')]
+            at=positions[2];data=json.loads(lines[at].removeprefix('SdkAuthorizationDecision: '))
+            if case=='missing':lines.pop(at)
+            elif case=='duplicate':lines.insert(at,lines[at])
+            elif case=='deny':data['allow']=False
+            elif case=='lifetime':data['lifetime']+=1
+            elif case=='generation':data['generation']+=1
+            elif case=='index-bool':data['index']=False
+            elif case=='handle':data['handle']+=1
+            elif case=='epoch':data['epoch']=0
+            elif case=='property':data['property']+=1
+            elif case=='late':data['decision_ns']=data['deadline_ns']
+            elif case=='wrong-value':data['value']='00'*32
+            elif case=='write':data['write']=False
+            elif case=='wall':data['decision_wall_ns']=1
+            elif case=='token':data['token']=1
+            elif case=='request':data['request_id']=1
+            elif case=='unknown':data['extra']='ignored'
+            elif case=='old-mode':row['ssap_registration_kind']='owned-sdk-v1'
+            if case not in ['missing','duplicate']:
+                lines[at]='SdkAuthorizationDecision: '+('{' if case=='malformed' else json.dumps(data))
+            app['stdout']='\n'.join(lines)+'\n'
+            with self.subTest(case=case),patch('ws73_application_client.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(run,{})
+
     def test_owned_publishers_cannot_be_replaced_by_manager_or_fake_cleanup(self):
         for kind in ['manager','missing','role','caps','failed','parent-open','missing-remove','snapshot','wrong-api','unknown-cleanup']:
             run,sdus=fixture();row=run['application_clients'][0];app=row['ssap_owned_publishers'][0]

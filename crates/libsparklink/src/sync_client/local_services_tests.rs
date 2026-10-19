@@ -1,5 +1,5 @@
 //! Actual C exports -> SyncClient -> Rust Owned receipt -> real private bus.
-//! Scripted metadata/errors only;not a database,callback,Native or RF fixture.
+//! Scripted metadata/errors and actual callback RPC only;not a DB/Native/RF fixture.
 use super::*;
 use crate::{ffi_client::*, ffi_local_services::*, test_support as support};
 use std::sync::{
@@ -14,6 +14,7 @@ struct Script {
     reads: AtomicU64,
     removals: AtomicU64,
     owner: Mutex<String>,
+    authorizer: Mutex<String>,
     stamps: Mutex<Vec<slk_contract::Deadline>>,
 }
 struct Manager;
@@ -32,6 +33,16 @@ impl Adapter {
     }
 }
 struct Services(Arc<Script>);
+fn approval_prompt(deadline: u64) -> slk_protocol::ssap::SsapAuthorizationPrompt {
+    (
+        1,
+        (2, 7, 13, 1, 41, 0, 10, 10, 0),
+        17,
+        false,
+        deadline,
+        vec![],
+    )
+}
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
 impl Services {
     async fn register_owned_local_service(
@@ -43,8 +54,18 @@ impl Services {
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
         assert_eq!(uuid, [1, 0]);
-        assert_eq!(properties, [(vec![2, 0], 5, 0, vec![7, 8, 9])]);
-        assert_eq!(authorizer.as_str(), "/");
+        let access = properties[0].2;
+        assert!(matches!(access, 0 | 36));
+        assert_eq!(properties, [(vec![2, 0], 5, access, vec![7, 8, 9])]);
+        assert_eq!(
+            authorizer.as_str(),
+            if access == 36 {
+                crate::ssap::authorization::inbox::PATH
+            } else {
+                "/"
+            }
+        );
+        *self.0.authorizer.lock().unwrap() = authorizer.to_string();
         self.0.stamps.lock().unwrap().push(deadline);
         self.0.registrations.fetch_add(1, Ordering::SeqCst);
         *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
@@ -65,11 +86,31 @@ impl Services {
         handle: u16,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
     ) -> zbus::fdo::Result<Vec<u8>> {
         assert_eq!(handle, 17);
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
         self.0.stamps.lock().unwrap().push(deadline);
         self.0.reads.fetch_add(1, Ordering::SeqCst);
+        if self.0.mode.load(Ordering::SeqCst) == 8 {
+            let owner = self.0.owner.lock().unwrap().clone();
+            let path = self.0.authorizer.lock().unwrap().clone();
+            let prompt = approval_prompt(deadline.0);
+            let message = connection
+                .call_method(
+                    Some(owner.as_str()),
+                    path.as_str(),
+                    Some("org.sparklink.SsapAuthorizer"),
+                    "AuthorizeValue",
+                    &(prompt,),
+                )
+                .await?;
+            if !message.body().deserialize::<bool>()? {
+                return Err(zbus::fdo::Error::AccessDenied(
+                    "actual application denied fixture read".into(),
+                ));
+            }
+        }
         if self.0.mode.load(Ordering::SeqCst) == 4 {
             return Err(zbus::fdo::Error::UnknownObject(
                 "original service absent".into(),
@@ -169,6 +210,7 @@ unsafe fn acquire(c: *const SlkClient, deadline: u64) -> (i32, *mut SlkLocalServ
             2,
             &property(),
             1,
+            0,
             deadline,
             &mut output,
         )
@@ -282,6 +324,7 @@ async fn invalid_owned_ffi_never_invokes_broker_or_changes_outputs() {
                     2,
                     &p,
                     count,
+                    0,
                     deadline,
                     &mut out,
                 )
@@ -320,6 +363,7 @@ async fn failed_owned_ffi_keeps_denial_bad_receipt_deadline_and_uncertain_remova
                     2,
                     &property(),
                     1,
+                    0,
                     deadline,
                     &mut output,
                 )
@@ -365,3 +409,6 @@ async fn failed_owned_ffi_keeps_denial_bad_receipt_deadline_and_uncertain_remova
     server.release_name("org.sparklink").await.unwrap();
     unsafe { slk_client_close(c) };
 }
+
+#[path = "service_authorization_tests.rs"]
+mod service_authorization_tests;

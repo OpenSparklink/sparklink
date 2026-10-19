@@ -23,6 +23,17 @@
 
 #define SSAP_ACCESS_VALID_MASK 63
 
+#define SLK_SERVICE_AUTHORIZATION_NONE 0
+
+#define SLK_SERVICE_AUTHORIZATION_REQUESTS 1
+
+/**
+ * One delivered request. Holds no caller/registration/Native fd. Freeing an
+ * unanswered request denies it. Its slot is retained until callback drain AND
+ * request release; old handles cannot approve a later request.
+ */
+typedef struct SlkAuthorizationRequest SlkAuthorizationRequest;
+
 /**
  * Opaque caller connection. One bounded local executor; not a controller lease.
  */
@@ -234,6 +245,31 @@ typedef struct SlkServiceReceipt {
     uint8_t reserved[2];
     uint16_t handles[64];
 } SlkServiceReceipt;
+
+/**
+ * Immutable original context;local observation,not authenticated peer/Grant.
+ * value[0..value_length] is the proposed write;reads have no value.
+ * Fully zeroed reserved/tail/unused value bytes. May be read after service close.
+ */
+typedef struct SlkAuthorizationRequestInfo {
+    struct SlkControllerId controller;
+    uint64_t token;
+    uint64_t request_id;
+    uint64_t connection_lifetime;
+    uint64_t security_epoch;
+    uint64_t deadline_ns;
+    uint32_t security_level;
+    uint16_t connection_handle;
+    uint16_t property;
+    uint16_t value_length;
+    uint8_t write;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t reserved[2];
+    uint8_t value[2042];
+    uint8_t tail[6];
+} SlkAuthorizationRequestInfo;
 
 #ifdef __cplusplus
 extern "C" {
@@ -563,8 +599,9 @@ void slk_discovery_free(struct SlkDiscovery *view);
 /**
  * Register one caller-owned service through the sole Rust LocalServices API.
  * uuid length2/16 with a nonzero byte; properties1..64, values0..2042. Only
- * READ/WRITE_WITH_RSP are supported. Local authorization bits are explicitly
- * EOPNOTSUPP until this language view has a real authorizer; no fake approval.
+ * READ/WRITE_WITH_RSP are supported. authorization=0 has no policy inbox and
+ * refuses local authorization bits;1 requires explicit application decisions
+ * via the bounded inbox. Unknown modes EOPNOTSUPP;never automatic approval.
  * A local receipt is not remote discovery/publication or peer delivery.
  * deadline_ns is original absolute CLOCK_MONOTONIC, future <=30s. No retry or
  * fallback.0/-errno; output unchanged on error. Timeout/lost receipt can leave
@@ -581,6 +618,7 @@ int slk_client_register_local_service(const struct SlkClient *client,
                                       uintptr_t uuid_length,
                                       const struct SlkServiceProperty *properties,
                                       uintptr_t count,
+                                      uint32_t authorization,
                                       uint64_t deadline_ns,
                                       struct SlkLocalService **output);
 
@@ -628,6 +666,53 @@ int slk_local_service_unregister(const struct SlkLocalService *view, uint64_t de
  * or later use. Never use inherited Client/service objects after fork.
  */
 void slk_local_service_free(struct SlkLocalService *view);
+
+/**
+ * Duplicate a CLOEXEC notification fd;caller closes it. Poll only,never
+ * read/write its counter. Before waiting,try next;after readiness retry next.
+ * This fd carries no decision/Native authority and does not retain the caller.
+ * Service close/unregister/owner loss wakes it;old request/context stays stale.
+ * One consuming application per service.0/-errno,output unchanged on error.
+ * # Safety
+ * view live immutable;output exclusive aligned writable;no concurrent free.
+ */
+int slk_local_service_authorization_fd(const struct SlkLocalService *view, int *output);
+
+/**
+ * Nonblocking next request;EAGAIN means no undelivered request. ESHUTDOWN means
+ * local policy stopped,ESTALE original daemon lost. Output unchanged on error.
+ * Keep one request alive until its decision/inspection finishes,then free it.
+ * This function never queues an RPC or runs application code.
+ * # Safety
+ * view live;output exclusive aligned nonaliasing;no concurrent view free.
+ */
+int slk_local_service_next_authorization(const struct SlkLocalService *view,
+                                         struct SlkAuthorizationRequest **output);
+
+/**
+ * Copy original request context,even after expiry/close;no current qualification.
+ * # Safety
+ * request live immutable;output exclusive aligned writable and nonaliasing.
+ */
+int slk_authorization_request_info(const struct SlkAuthorizationRequest *request,
+                                   struct SlkAuthorizationRequestInfo *output);
+
+/**
+ * Reply0/1 to THIS opaque request.0 means local policy accepted,not daemon
+ * commit,USB/protocol ACK or application processing. Duplicate/old replies
+ * ESTALE;expired ETIMEDOUT;stopped ESHUTDOWN. No new original deadline/retry.
+ * # Safety
+ * request live;no concurrent free. Never use inherited objects after fork.
+ */
+int slk_authorization_request_reply(const struct SlkAuthorizationRequest *request, uint32_t allow);
+
+/**
+ * Release one request,NULL allowed. An unanswered request is denied;release
+ * does not prove callback drain,remote cleanup or any physical completion.
+ * # Safety
+ * One live owned pointer,freed once;no concurrent calls/later use/fork copies.
+ */
+void slk_authorization_request_free(struct SlkAuthorizationRequest *request);
 
 #ifdef __cplusplus
 }  // extern "C"

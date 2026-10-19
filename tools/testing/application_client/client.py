@@ -127,15 +127,17 @@ def discovery_mode():
 
 def owned_mode():
     from sparklink import LocalProperty, SsapOperations, SsapAccess
-    if len(sys.argv)!=7:raise ValueError('owned index generation service property initial-hex')
+    if len(sys.argv) not in (7,8):raise ValueError('owned index generation service property initial-hex [allow|deny]')
+    policy=sys.argv[7] if len(sys.argv)==8 else None
+    if policy not in (None,'allow','deny'):raise ValueError('explicit allow/deny application test policy required')
     index,generation=int(sys.argv[2]),int(sys.argv[3])
     service,uuid,value=(bytes.fromhex(v) for v in sys.argv[4:7])
     identity=ControllerId(index,generation)
     original=time.monotonic_ns()+5_000_000_000
     with Client(deadline_ns=original) as client:
         view=client.register_local_service(identity,service,
-            [LocalProperty(uuid,SsapOperations(5),SsapAccess(0),value)],
-            deadline_ns=original)
+            [LocalProperty(uuid,SsapOperations(5),SsapAccess(36 if policy else 0),value)],
+            deadline_ns=original,authorization='requests' if policy else 'none')
     with view:
         receipt=view.receipt
         if len(receipt.handles)!=1:raise ValueError('one owned property required')
@@ -143,17 +145,52 @@ def owned_mode():
         print('SdkOwnedAPI: api=python client_closed=true',flush=True)
         print(f'SsapOwnedService: start={receipt.start} end={receipt.end} property={handle}; local registration only',flush=True)
         end=time.monotonic_ns()+30_000_000_000
-        while True:
-            wait(sys.stdin.fileno(),select.POLLIN,end)
-            line=sys.stdin.readline()
-            if line=='value\n':
-                actual=view.read_local(handle,deadline_ns=time.monotonic_ns()+5_000_000_000)
-                print(f'SsapOwnedValue: handle={handle} value={actual.hex()}',flush=True)
-            elif line=='quit\n':
-                view.unregister(deadline_ns=time.monotonic_ns()+5_000_000_000)
-                print(f'SdkOwnedRemoved: api=python start={receipt.start}',flush=True)
-                return
-            else:raise ValueError('bounded owned command required')
+        fd=view.authorization_fd() if policy else None
+        line=bytearray();poller=select.poll();poller.register(0,select.POLLIN)
+        if fd is not None:poller.register(fd,select.POLLIN)
+        try:
+            while True:
+                if policy:
+                    try:request=view.next_authorization()
+                    except OSError as error:
+                        if error.errno!=errno.EAGAIN:raise
+                    else:
+                        with request:
+                            info=request.info
+                            decision,wall=time.monotonic_ns(),time.time_ns()
+                            request.reply(policy=='allow')
+                            print('SdkAuthorizationDecision: '+json.dumps(dict(api='python',
+                                index=info.controller.index,generation=info.controller.generation,
+                                token=info.token,request_id=info.request_id,lifetime=info.connection_lifetime,
+                                handle=info.connection_handle,epoch=info.security_epoch,level=info.security_level,
+                                deadline_ns=info.deadline_ns,property=info.property,write=info.write,
+                                value=info.value.hex(),local_tcid=info.local_tcid,remote_tcid=info.remote_tcid,
+                                pi=info.pi,allow=policy=='allow',decision_ns=decision,decision_wall_ns=wall)),flush=True)
+                left=end-time.monotonic_ns()
+                if left<=0:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
+                ready=dict(poller.poll((left+999999)//1000000))
+                if fd is not None and ready.get(fd,0)&(select.POLLERR|select.POLLHUP|select.POLLNVAL):
+                    raise OSError(errno.EIO,'approval notification failed')
+                if not ready.get(0,0)&select.POLLIN:
+                    if ready.get(0,0)&(select.POLLERR|select.POLLHUP|select.POLLNVAL):raise BrokenPipeError('publisher input closed')
+                    continue
+                byte=os.read(0,1)
+                if not byte:raise BrokenPipeError('publisher input closed')
+                line+=byte
+                if byte!=b'\n':
+                    if len(line)>=31:raise ValueError('bounded owned command required')
+                    continue
+                if line==b'value\n':
+                    actual=view.read_local(handle,deadline_ns=time.monotonic_ns()+5_000_000_000)
+                    print(f'SsapOwnedValue: handle={handle} value={actual.hex()}',flush=True)
+                elif line==b'quit\n':
+                    view.unregister(deadline_ns=time.monotonic_ns()+5_000_000_000)
+                    print(f'SdkOwnedRemoved: api=python start={receipt.start}',flush=True)
+                    return
+                else:raise ValueError('bounded owned command required')
+                line.clear()
+        finally:
+            if fd is not None:os.close(fd)
 
 
 if __name__=="__main__":main()

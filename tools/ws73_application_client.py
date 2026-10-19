@@ -148,13 +148,13 @@ def owned_services(run,row,live):
     from ws73_application_role import require_vm
     from ws73_ssap_owned import wait_text
     import secrets,sys
-    require_vm();row['ssap_registration_kind']='owned-sdk-v1';row['ssap_owned_publishers_required']=True
+    require_vm();row['ssap_registration_kind']='owned-sdk-requests-v1';row['ssap_owned_publishers_required']=True
     local=[];processes=[]
     with ExitStack() as files:
         try:
             for position,owner in enumerate(row['owners']):
                 api='c' if position==row['phase'] else 'python';value=secrets.token_bytes(32);service=secrets.token_hex(16);uuid=secrets.token_hex(16)
-                args=([row['tools']['c']['path']] if api=='c' else ['/bin/python3',row['tools']['python']['path']])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,value.hex()]
+                args=([row['tools']['c']['path']] if api=='c' else ['/bin/python3',row['tools']['python']['path']])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,value.hex(),'allow']
                 prefix=run.output/f"owned-sdk-{row['phase']}-{api}";out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
                 app=dict(api=api,position=position,args=args,environment=application_environment(),start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
                 row.setdefault('ssap_owned_publishers',[]).append(app);run.save()
@@ -218,10 +218,35 @@ def execute(run, phase):
         row.update(status='FAIL',error=str(exc),end_wall_ns=time.time_ns());run.save();raise
 
 
+def authorization_decisions(app):
+    """Original frontend output;not Native authorization or peer delivery."""
+    try:
+        rows=[json.loads(line.removeprefix('SdkAuthorizationDecision: '))
+              for line in app['stdout'].splitlines() if line.startswith('SdkAuthorizationDecision: ')]
+    except (ValueError,TypeError) as error:raise CaptureError('original approval JSON required') from error
+    fields={'api','index','generation','token','request_id','lifetime','handle','epoch','level',
+            'deadline_ns','property','write','value','local_tcid','remote_tcid','pi','allow',
+            'decision_ns','decision_wall_ns'}
+    for d in rows:
+        if (not isinstance(d,dict) or set(d)!=fields or d['api']!=app['api']
+                or type(d['write']) is not bool or d['allow'] is not True
+                or any(type(d[k]) is not int or not 0<=d[k]<2**64
+                       for k in fields-{'api','write','value','allow'})
+                or not all(d[k] for k in ['generation','token','request_id','lifetime','epoch','deadline_ns','property','decision_ns','decision_wall_ns'])
+                or not 0<d['deadline_ns']-d['decision_ns']<=5_000_000_000
+                or (d['local_tcid'],d['remote_tcid'],d['pi'],d['level'])!=(10,10,0,0)
+                or not isinstance(d['value'],str)):
+            raise CaptureError('complete original basic approval context and deadline required')
+    if (len(rows)!=20 or any(a['token']>=b['token'] or a['request_id']>=b['request_id']
+                             for a,b in zip(rows,rows[1:]))):
+        raise CaptureError('twenty distinct ordered decisions per actual publisher required')
+    return rows
+
+
 def verify_owned_publishers(row):
     """Terminal source/role/stream contract;not an independent USB decoder."""
     import re
-    if row.get('ssap_registration_kind')!='owned-sdk-v1' or row.get('ssap_owned_publishers_required')is not True or row.get('owned_publisher_cleanup_errors'):raise CaptureError('current SDK gate requires actual Owned publishers and cleanup')
+    if row.get('ssap_registration_kind')!='owned-sdk-requests-v1' or row.get('ssap_owned_publishers_required')is not True or row.get('owned_publisher_cleanup_errors'):raise CaptureError('current SDK gate requires actual approving Owned publishers and cleanup')
     publishers=row.get('ssap_owned_publishers',[]);registrations=row.get('ssap_local_registrations',[])
     if len(publishers)!=2 or len(registrations)!=2:raise CaptureError('two opposite actual Owned SDK publishers required')
     for position,(app,registered) in enumerate(zip(publishers,registrations,strict=True)):
@@ -230,8 +255,20 @@ def verify_owned_publishers(row):
                 or app['environment']!=application_environment() or credentials['uids']!=[1005]*4 or credentials['gids']!=[1005]*4 or credentials['groups']
                 or set(credentials['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in credentials['capabilities'].values())):raise CaptureError('actual successful service-only cap-zero publisher required')
         expected=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),registered['service_uuid'],registered['property_uuid']]
-        if app['args'][:-1]!=expected or len(bytes.fromhex(app['args'][-1]))!=32 or not row['start_wall_ns']<=app['start_wall_ns']<=app['end_wall_ns']<=row['end_wall_ns']:raise CaptureError('actual original SDK publisher arguments/interval required')
-        lines=app['stdout'].splitlines();start,handle=registered['start'],registered['handle']
+        if app['args'][:-2]!=expected or app['args'][-1]!='allow' or len(bytes.fromhex(app['args'][-2]))!=32 or not row['start_wall_ns']<=app['start_wall_ns']<=app['end_wall_ns']<=row['end_wall_ns']:raise CaptureError('actual explicit-policy SDK publisher arguments/interval required')
+        decisions=authorization_decisions(app)
+        expected_calls=[(item,name) for item in row.get('ssap_values',[]) if item['target']==position
+                        for name in ['uuid_read_before','read_before','write','read_after','uuid_read_after']]
+        if len(expected_calls)!=20:raise CaptureError('complete actual authorization operation coverage required')
+        for d,(item,name) in zip(decisions,expected_calls,strict=True):
+            obj=owner['object'];identity=owner['owner'];window=item[name]
+            if ((d['index'],d['generation'],d['lifetime'],d['handle'],d['property'])
+                    !=(identity['index'],identity['generation'],obj['lifetime'],obj['handle'],registered['handle'])
+                    or d['write']!=(name=='write') or d['value']!=(item['value'] if name=='write' else '')
+                    or not window['start_wall_ns']<=d['decision_wall_ns']<=window['end_wall_ns']):
+                raise CaptureError('decision must match actual operation,proposal and original receiver lifetime/window')
+        lines=[line for line in app['stdout'].splitlines() if not line.startswith('SdkAuthorizationDecision: ')]
+        start,handle=registered['start'],registered['handle']
         if lines[:2]!=[f'SdkOwnedAPI: api={api} client_closed=true',f'SsapOwnedService: start={start} end={handle} property={handle}; local registration only'] or lines[-1:]!=[f'SdkOwnedRemoved: api={api} start={start}'] or len(lines)!=7:raise CaptureError('actual retained caller/register/four values/unregister stream required')
         observations=app.get('value_snapshots',[])
         if len(observations)!=4 or [o['ordinal'] for o in observations]!=[1,2,3,4]:raise CaptureError('all four original owner value observations required')
@@ -265,8 +302,8 @@ def corroborate_ssap(rows,capture):
         for value in values:
             if value['value']in payloads:raise CaptureError('fresh SSAP payloads required across connection roles')
             payloads.add(value['value'])
-        proofs.append(dict(phase=n,applications=apps,values=values,publishers=publishers))
-    return dict(status='C_PYTHON_SSAP_VALUE_USB_CORROBORATED',operations=16,api_calls=48,proofs=proofs)
+        proofs.append(dict(phase=n,applications=apps,values=values,publishers=publishers,authorization_requests=40))
+    return dict(status='C_PYTHON_SSAP_VALUE_USB_CORROBORATED',operations=16,api_calls=48,authorization_requests=80,proofs=proofs)
 
 
 def corroborate(run,capture):
@@ -308,12 +345,13 @@ def valid_summary(proof):
     try:
         if proof['status']!='C_PYTHON_APPS_ONLY_CHANNEL_AND_OWNED_SSAP_USB_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
         ssap=proof['ssap']
-        if ssap['status']!='C_PYTHON_SSAP_VALUE_USB_CORROBORATED' or ssap['operations']!=16 or ssap['api_calls']!=48 or len(ssap['proofs'])!=2:return False
+        if ssap['status']!='C_PYTHON_SSAP_VALUE_USB_CORROBORATED' or ssap['operations']!=16 or ssap['api_calls']!=48 or ssap.get('authorization_requests')!=80 or len(ssap['proofs'])!=2:return False
         for n,row in enumerate(ssap['proofs']):
             if row['phase']!=n or len(row['values'])!=8 or len(row['applications'])!=24:return False
-            if len(row.get('publishers',[]))!=2:return False
+            if len(row.get('publishers',[]))!=2 or row.get('authorization_requests')!=40:return False
             for i,publisher in enumerate(row['publishers']):
                 if publisher['api']!=('c' if i==n else 'python') or publisher['exit'] or publisher['stderr'] or publisher['credentials']['uids']!=[1005]*4 or len(publisher.get('value_snapshots',[]))!=4:return False
+                authorization_decisions(publisher)
             for app in row['applications']:
                 if app['position']not in (0,1) or app['api']!=('c' if app['position']==n else 'python') or app['exit'] or app['stderr']:return False
             for value in row['values']:

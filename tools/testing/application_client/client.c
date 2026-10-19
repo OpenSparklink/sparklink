@@ -17,6 +17,8 @@ _Static_assert(sizeof(struct SlkServiceProperty)==2076,"Owned property ABI");
 _Static_assert(sizeof(struct SlkServiceReceipt)==152,"Owned receipt ABI");
 _Static_assert(offsetof(struct SlkServiceProperty,value)==32,"Owned value ABI");
 _Static_assert(offsetof(struct SlkServiceReceipt,handles)==24,"Owned handles ABI");
+_Static_assert(sizeof(struct SlkAuthorizationRequestInfo)==2120,"approval context ABI");
+_Static_assert(offsetof(struct SlkAuthorizationRequestInfo,value)==72,"approval value ABI");
 _Static_assert(sizeof(struct SlkDiscoveryBatch)==40,"discovery batch ABI");
 _Static_assert(sizeof(struct SlkDiscoveryReport)==312,"discovery report ABI");
 _Static_assert(offsetof(struct SlkDiscoveryReport,data)==51,"discovery data offset");
@@ -24,6 +26,11 @@ _Static_assert(offsetof(struct SlkDiscoveryReport,data)==51,"discovery data offs
 static uint64_t now_ns(void) {
     struct timespec t;
     if (clock_gettime(CLOCK_MONOTONIC, &t)) exit(2);
+    return (uint64_t)t.tv_sec * 1000000000ULL + t.tv_nsec;
+}
+static uint64_t wall_ns(void) {
+    struct timespec t;
+    if (clock_gettime(CLOCK_REALTIME, &t)) exit(2);
     return (uint64_t)t.tv_sec * 1000000000ULL + t.tv_nsec;
 }
 static int wait_fd(int fd, short events, uint64_t end) {
@@ -143,27 +150,75 @@ done:
 }
 
 
+/* Explicit test-application policy, never a default policy in the SDK/daemon. */
+static int owned_decision(struct SlkLocalService *view,const struct SlkServiceReceipt *receipt,int allow) {
+    struct SlkAuthorizationRequest *request=NULL;
+    struct SlkAuthorizationRequestInfo info={0};
+    int error=slk_local_service_next_authorization(view,&request);
+    if (error==-EAGAIN) return 0;
+    if (error) return error;
+    error=slk_authorization_request_info(request,&info);
+    if (!error && (info.controller.index!=receipt->controller.index
+        || info.controller.generation!=receipt->controller.generation
+        || info.property!=receipt->handles[0] || !info.token || !info.request_id
+        || !info.connection_lifetime || !info.security_epoch || !info.deadline_ns
+        || info.security_level>2 || info.write>1 || info.value_length>2042
+        || (!info.write && info.value_length)
+        || info.local_tcid!=10 || info.remote_tcid!=10 || info.pi)) error=-EPROTO;
+    /* Call-start observations,not the internal decision linearization point. */
+    uint64_t decision=now_ns(),wall=wall_ns();
+    if (!error) error=slk_authorization_request_reply(request,(uint32_t)allow);
+    if (!error) {
+        printf("SdkAuthorizationDecision: {\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"token\":%"PRIu64",\"request_id\":%"PRIu64",\"lifetime\":%"PRIu64",\"handle\":%u,\"epoch\":%"PRIu64",\"level\":%u,\"deadline_ns\":%"PRIu64",\"property\":%u,\"write\":%s,\"value\":\"",
+            info.controller.index,info.controller.generation,info.token,info.request_id,info.connection_lifetime,
+            info.connection_handle,info.security_epoch,info.security_level,info.deadline_ns,info.property,info.write?"true":"false");
+        hex_print(info.value,info.value_length);
+        printf("\",\"local_tcid\":%u,\"remote_tcid\":%u,\"pi\":%u,\"allow\":%s,\"decision_ns\":%"PRIu64",\"decision_wall_ns\":%"PRIu64"}\n",info.local_tcid,info.remote_tcid,info.pi,allow?"true":"false",decision,wall);fflush(stdout);
+    }
+    slk_authorization_request_free(request);
+    return error;
+}
+
 /* Actual Owned SDK publisher. No wire codec, database or callback simulation. */
 static int owned_mode(int argc,char **argv) {
-    if (argc!=7) return 2;
+    if (argc!=7 && argc!=8) return 2;
+    int requests=argc==8,allow=requests && !strcmp(argv[7],"allow");
+    if (requests && !allow && strcmp(argv[7],"deny")) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]);
     uint8_t service[2042],property_uuid[2042],initial[2042];
     size_t service_n=bytes(argv[4],service),property_n=bytes(argv[5],property_uuid),initial_n=bytes(argv[6],initial);
     if (index>UINT16_MAX || !generation || (service_n!=2 && service_n!=16) || (property_n!=2 && property_n!=16)) return 2;
-    struct SlkServiceProperty property={.operations=5,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
+    struct SlkServiceProperty property={.operations=5,.access=requests?36:0,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
     memcpy(property.uuid,property_uuid,property_n);memcpy(property.value,initial,initial_n);
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkLocalService *view=NULL;struct SlkServiceReceipt receipt={0};
-    int status=1,error;const uint64_t original=now_ns()+5000000000ULL;
+    int status=1,error,approval_fd=-1;const uint64_t original=now_ns()+5000000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
-    error=slk_client_register_local_service(client,&id,service,service_n,&property,1,original,&view);if (error) {errno=-error;goto done;}
+    error=slk_client_register_local_service(client,&id,service,service_n,&property,1,requests?SLK_SERVICE_AUTHORIZATION_REQUESTS:SLK_SERVICE_AUTHORIZATION_NONE,original,&view);if (error) {errno=-error;goto done;}
     error=slk_local_service_receipt(view,&receipt);if (error) {errno=-error;goto done;}
     if (receipt.controller.index!=id.index || receipt.controller.generation!=generation || receipt.property_count!=1 || !receipt.start || receipt.handles[0]<=receipt.start || receipt.handles[0]>receipt.end) {errno=EPROTO;goto done;}
+    if (requests) {error=slk_local_service_authorization_fd(view,&approval_fd);if (error) {errno=-error;goto done;}}
     slk_client_close(client);client=NULL;
     printf("SdkOwnedAPI: api=c client_closed=true\nSsapOwnedService: start=%u end=%u property=%u; local registration only\n",receipt.start,receipt.end,receipt.handles[0]);fflush(stdout);
-    const uint64_t end=now_ns()+30000000000ULL;
+    const uint64_t end=now_ns()+30000000000ULL;char line[32];size_t used=0;
     for (;;) {
-        char line[32];if (wait_fd(STDIN_FILENO,POLLIN,end) || !fgets(line,sizeof line,stdin)) {errno=EPROTO;goto done;}
+        /* Try next before sleeping;the duplicated eventfd is poll-only. */
+        if (requests) {error=owned_decision(view,&receipt,allow);if (error) {errno=-error;goto done;}}
+        uint64_t now=now_ns();if (now>=end) {errno=ETIMEDOUT;goto done;}
+        struct pollfd fds[2]={{.fd=STDIN_FILENO,.events=POLLIN},{.fd=approval_fd,.events=POLLIN}};
+        int count=poll(fds,requests?2:1,(int)((end-now+999999)/1000000));
+        if (count<0 && errno==EINTR) continue;
+        if (count<=0) {if (!count) errno=ETIMEDOUT;goto done;}
+        if (requests && fds[1].revents&(POLLERR|POLLHUP|POLLNVAL)) {errno=EIO;goto done;}
+        if (!(fds[0].revents&POLLIN)) {
+            if (fds[0].revents&(POLLERR|POLLHUP|POLLNVAL)) {errno=EPIPE;goto done;}
+            continue;
+        }
+        ssize_t n=read(STDIN_FILENO,line+used,1);
+        if (n<0 && errno==EINTR) continue;
+        if (n!=1) {errno=EPIPE;goto done;}
+        if (line[used++]!='\n') {if (used==sizeof line-1) {errno=E2BIG;goto done;}continue;}
+        line[used]='\0';used=0;
         if (!strcmp(line,"value\n")) {
             uint8_t value[2042];uintptr_t length=0;
             error=slk_local_service_read(view,receipt.handles[0],value,sizeof value,&length,now_ns()+5000000000ULL);if (error) {errno=-error;goto done;}
@@ -176,6 +231,7 @@ static int owned_mode(int argc,char **argv) {
     }
 done:
     if (status) perror("application-client-c-owned");
+    if (approval_fd>=0) close(approval_fd);
     slk_local_service_free(view);slk_client_close(client);return status;
 }
 

@@ -68,6 +68,9 @@ impl Drop for LossOnExit {
     }
 }
 impl Client {
+    pub(crate) fn bus(&self) -> &Connection {
+        &self.bus
+    }
     pub async fn open_system() -> Result<Self> {
         Self::from_connection(Connection::system().await?).await
     }

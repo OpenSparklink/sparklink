@@ -220,6 +220,7 @@ Python通过 `Client.register_local_service(controller, uuid, [LocalProperty(...
 完整回调／通知、退出及部署矩阵仍单列验收。
 
 
+(ssap-language-authorization-requests)=
 ### C/Python 的显式审批请求
 
 Python 登记时选 authorization="requests"；默认仍为 "none"。每个 caller 使用一个

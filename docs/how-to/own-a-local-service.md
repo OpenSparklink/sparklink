@@ -20,7 +20,7 @@ VM 内需要运行当前 `slkd`、安装匹配的 Python 绑定与应用库，�
 
 将下面代码保存为 `owned_service.py`。使用演示值；`SsapAccess(0)` 不要求加密或认证。
 默认 `authorization="none"` 模式拒绝本地审批权限位。需要逐请求审批时使用
-[显式请求接口](../reference/ssap-permissions.md#cpython的显式审批请求)，不能把基础示例
+[显式请求接口](../reference/ssap-permissions.md#ssap-language-authorization-requests)，不能把基础示例
 改为默认批准；该新接口的实机资格仍须按准确 artifact 单列核对。
 
 ```python

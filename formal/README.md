@@ -1,5 +1,31 @@
 # SparkLink 验证边界与可复现入口
 
+## SSAP 客户端部分准入与作者终态
+
+`tools/run_formal.py --ssap-client-only --output NEW_DIRECTORY` 使用现有 TLC
+入口运行 `lifecycle/SSAPClientObligation.tla`，以及过早接受回复、重复启动排空
+期限两项弱化负对照。独立 worktree 可显式设置 `SPARKLINK_KERNEL_SOURCE`；
+报告绑定该 checkout，不静默改用另一个内核。缺失任一规定性质、改变边界、工具
+超时、unsupported 或未完成时序检查，都不能记为通过。
+
+映射到 `crates/slkd/src/ssap_engine.rs` 的实际生产转换：
+
+| 模型动作／性质 | 生产对应 | 明确未覆盖 |
+| --- | --- | --- |
+| Admit、DrainNotRenewed | `ClientRequest::admit_part`、首个 `cleanup_deadline` | Native 票据／USB／控制器完成 |
+| Withdraw、Cancel、AuthorTimeout | `retire_client_wait`、oneshot 作者关闭与原期限 | Tokio、D-Bus 或 VFS 的完整调度／引用 refinement |
+| OriginalAdmissionBound | `Pending.deadline` 和实际 writable 分支的提交前检查 | 调用检查到 syscall 的全部组合线性化 |
+| Response、NoPrematureSuccess、NoLateSuccess | `ClientRequest::validate_reply` 及其后的原作者过滤 | wire decoder、Native receipt 身份认证、旧 lifetime 复用 |
+| EventuallyResolved | 原期限／首片排空到期后的 actor 退休 | 物理 drain 完成、NOCP 准确性、实际秒数内调度保证 |
+
+边界为一个已经固定身份的请求、两片、作者期限 3 个离散时间单位、首片排空
+预算 5、时钟 0–8；两片不代表所有最大分片数已被检查。时序性质只在时钟和
+到期处理弱公平的假设下成立，不假设固件必然响应，不证明实时调度上界。
+模型通过不是实现 refinement 通过；实际生产方法／codec 与 AF_UNIX 背压回归
+从已固定 Native 身份后的状态开始，保留 Native ioctl 对该 fixture 的拒绝，
+不能宣称完整 actor、内核并发、安全、credit、USB 或 WS73 部分流已通过。
+弱化反例对应实际方法的固定回归；准确源码与结果只从资格入口及绑定报告读取。
+
 本目录补充 ADR 0002 和完整 S0–S6。形式化验证与真实数据面纵向开发并行，
 只将本次改动相关的不变量作为门禁。VM-only 适用于实验驱动和真实设备 I/O；
 这些纯模型/编译工具在主机运行，不安装内核、不加载模块、不操作 WS73。

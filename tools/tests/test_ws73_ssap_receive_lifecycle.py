@@ -239,6 +239,7 @@ class ReceiveLifecycle(unittest.TestCase):
             'missing-owner-stream':lambda r:r['ssap_receive_lifecycle'][0].update(stdout=''),
             'root':lambda r:r['ssap_receive_lifecycle'][0]['cases'][0]['application']['credentials'].update(uids=[0]*4),
             'missing-capabilities':lambda r:r['ssap_receive_lifecycle'][0]['cases'][0]['application']['credentials'].update(capabilities={}),
+            'missing-inheritable-observation':lambda r:r['ssap_receive_lifecycle'][0]['cases'][0]['application']['credentials']['capabilities'].pop('CapInh'),
             'caller-survives':lambda r:r['ssap_receive_lifecycle'][0]['cases'][0]['application'].update(exit=0),
             'deadline-renewed':lambda r:r['ssap_receive_lifecycle'][0]['cases'][2]['call'].update(deadline_ns=10**18),
             'cleanup-renewed':lambda r:r['ssap_receive_lifecycle'][0]['cases'][0].update(cleanup_observation_deadline_ns=10**18),

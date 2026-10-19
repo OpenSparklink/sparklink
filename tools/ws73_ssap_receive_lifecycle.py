@@ -17,7 +17,7 @@ import tempfile
 import time
 
 from ws73_capture import CaptureError, read_capture
-from ws73_application_client import application_environment, authorization_context, owned_arguments
+from ws73_application_client import application_environment, authorization_context, owned_arguments, process_identity
 from ws73_ssap_owned import publisher, wait_text, await_removed
 from ws73_ssap_update_delivery import configuration, discover, discovery_wire, sdk_receipt
 from ws73_daemon_hold import Invocation
@@ -236,6 +236,7 @@ def execute(run,row,business):
     s=row['phase']%2;peer,server=row['owners'][s],row['owners'][1-s]
     api='c'if s==0 else'python';other='python'if api=='c'else'c';mode=1+s
     with publisher(run,row,s,'ask',collection='ssap_receive_lifecycle',label='receive-lifecycle',sdk_api=api,updates=True)as(owner,item):
+        item['credentials'],item['process_status']=process_identity(owner.pid)
         discover(run,peer,item);item['cases']=[];run.save()
         for kind in CASES:
             case=dict(kind=kind,mode=mode,start_wall_ns=time.time_ns());item['cases'].append(case);run.save()
@@ -245,8 +246,7 @@ def execute(run,row,business):
             else:arguments += [secrets.token_hex(32),secrets.token_hex(32)]
             def read():return run.command([str(run.args.slctl),'--adapter',peer['owner']['path'],'ssap-read',peer['object']['path'],str(item['handle']),'2'],2,collection='ssap_receive_observations')
             def barrier(process,record):
-                from ws73_channel_socket import credentials
-                record['credentials']=credentials(process.pid);case['application']=record;run.save()
+                record['credentials'],record['process_status']=process_identity(process.pid);case['application']=record;run.save()
                 raw=invocation.until(rb'^(\{[^\n]*"stage"\s*:\s*"ssap_update_wait"[^\n]*\})\n',timeout=3,limit=4096,label='original SDK receive call')
                 call=json.loads(raw);case['call']=call
                 enabled=prompt(owner,item,server,mode);case['enable_prompt']=enabled;run.save()

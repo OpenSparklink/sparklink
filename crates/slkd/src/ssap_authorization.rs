@@ -12,9 +12,10 @@ pub(crate) struct Owner {
     // retain Connection -> object server -> AdapterState -> database.
     connection: Weak<Connection>,
     active: watch::Sender<bool>,
+    // Only initial DB insertion uses this; active service requests get their own deadlines.
+    registration_deadline: Instant,
     task: Mutex<Option<tokio::task::JoinHandle<()>>>,
     // At most 16 registered or being-registered owner watches per adapter.
-    _slot: OwnedSemaphorePermit,
 }
 impl Owner {
     pub(crate) async fn pin(
@@ -23,7 +24,13 @@ impl Owner {
         path: OwnedObjectPath,
         store: &Store,
         slot: OwnedSemaphorePermit,
+        original: Instant,
     ) -> zbus::fdo::Result<Arc<Self>> {
+        if Instant::now() >= original {
+            return Err(zbus::fdo::Error::Timeout(
+                "owner registration original deadline".into(),
+            ));
+        }
         let (active, mut revoked) = watch::channel(true);
         let callback_connection = Arc::new(connection.clone());
         let owner = Arc::new(Self {
@@ -31,15 +38,18 @@ impl Owner {
             path,
             connection: Arc::downgrade(&callback_connection),
             active,
+            registration_deadline: original,
             task: Mutex::new(None),
-            _slot: slot,
         });
         let weak = Arc::downgrade(&owner);
         let database = Arc::downgrade(store);
         let connection = callback_connection;
         let (ready, result) = oneshot::channel();
-        let original_deadline = Instant::now() + std::time::Duration::from_secs(2);
+        let original_deadline = original.min(Instant::now() + std::time::Duration::from_secs(2));
         let task = tokio::spawn(async move {
+            // Keep capacity until actual watch-future destruction,including
+            // cancellation before first poll. Requesting abort is not drain.
+            let _slot = slot;
             let bus = match tokio::time::timeout_at(
                 original_deadline,
                 zbus::fdo::DBusProxy::new(&connection),
@@ -96,6 +106,9 @@ impl Owner {
             return Err(zbus::fdo::Error::Failed("service owner retired".into()));
         }
         Ok(owner)
+    }
+    pub(crate) fn can_register(&self) -> bool {
+        self.current() && Instant::now() < self.registration_deadline
     }
     pub(crate) fn current(&self) -> bool {
         *self.active.borrow()

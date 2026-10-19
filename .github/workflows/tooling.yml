@@ -5,6 +5,8 @@ on:
     paths:
       - 'tools/**'
       - 'crates/libsparklink/**'
+      - 'crates/slkd/**'
+      - 'crates/slctl/**'
       - 'crates/slk-channel/**'
       - 'crates/slk-contract/**'
       - 'crates/slk-protocol/**'
@@ -21,6 +23,8 @@ on:
     paths:
       - 'tools/**'
       - 'crates/libsparklink/**'
+      - 'crates/slkd/**'
+      - 'crates/slctl/**'
       - 'crates/slk-channel/**'
       - 'crates/slk-contract/**'
       - 'crates/slk-protocol/**'
@@ -99,8 +103,8 @@ jobs:
         run: |
           cargo +1.96.1 fmt --all -- --check
           cargo +1.96.1 build --locked --workspace
-          cargo +1.96.1 clippy --locked -p libsparklink --all-targets --all-features -- -D warnings
-          cargo +1.96.1 test --locked -p libsparklink --all-features
+          cargo +1.96.1 clippy --locked -p libsparklink -p slkd -p slctl --all-targets --all-features -- -D warnings
+          cargo +1.96.1 test --locked -p libsparklink -p slkd -p slctl --all-features
           python3 tools/check_public_symbols.py --application-library target/debug/liblibsparklink.so --native-library target/debug/libslk_native.so
       - name: Real Python ABI libraries and independent UAPI checks
         env:

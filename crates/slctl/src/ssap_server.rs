@@ -180,6 +180,7 @@ pub(crate) async fn serve(
             service,
             vec![(property, ops, access, value)],
             zbus::zvariant::OwnedObjectPath::try_from(PATH)?,
+            libsparklink::Deadline::after(std::time::Duration::from_secs(5))?,
         )
         .await;
     let mut registration = match result {
@@ -219,7 +220,7 @@ pub(crate) async fn serve(
                     let Some(line)=line? else {return Ok(());};
                     if line=="quit" {return Ok(());}
                     if line=="value" {
-                        let value:Vec<u8>=registration.read_local(registered.2[0]).await?;
+                        let value:Vec<u8>=registration.read_local(registered.2[0], libsparklink::Deadline::after(std::time::Duration::from_secs(5))?).await?;
                         println!("SsapOwnedValue: handle={} value={}",registered.2[0],crate::commands::hex_bytes(&value));
                         continue;
                     }
@@ -230,11 +231,14 @@ pub(crate) async fn serve(
             }
         }
     }.await;
-    let removed =
-        tokio::time::timeout(std::time::Duration::from_secs(1), registration.unregister()).await;
+    let removed = registration
+        .unregister(libsparklink::Deadline::after(
+            std::time::Duration::from_secs(1),
+        )?)
+        .await;
     let _ = conn.object_server().remove::<Authorizer, _>(PATH).await;
     result?;
-    removed??;
+    removed?;
     Ok(())
 }
 

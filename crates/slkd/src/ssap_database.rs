@@ -128,6 +128,11 @@ impl Database {
             })
             .collect::<BTreeMap<_, _>>();
         let handles = properties.keys().copied().collect();
+        // Final owned-registration admission, after validation/allocation and
+        // under the same DB lock as removal/value admission. No await follows.
+        if owner.as_ref().is_some_and(|o| !o.can_register()) {
+            return Err("service owner retired or registration deadline expired".into());
+        }
         self.services.insert(
             start,
             Service {

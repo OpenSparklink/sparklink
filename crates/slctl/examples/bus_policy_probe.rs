@@ -6,6 +6,11 @@ use zbus::{Connection, fdo::DBusProxy, zvariant::Value};
 
 const SERVICE: &str = "org.sparklink";
 const ADAPTER: &str = "org.sparklink.Adapter";
+fn owned_deadline() -> anyhow::Result<slk_contract::Deadline> {
+    Ok(slk_contract::deadline_wire(
+        libsparklink::Deadline::after(std::time::Duration::from_secs(5))?.stamp(),
+    ))
+}
 
 fn denied(label: &str, result: zbus::Result<zbus::Message>) -> anyhow::Result<()> {
     match result {
@@ -500,6 +505,7 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
         vec![1u8, 2],
         vec![(vec![3u8, 4], 5u32, 0u32, vec![7u8])],
         zbus::zvariant::OwnedObjectPath::try_from("/")?,
+        owned_deadline()?,
     );
     let own = connection
         .call_method(
@@ -513,13 +519,53 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
     if role == "service-only" {
         let (begin, _, handles): (u16, u16, Vec<u16>) = own?.body().deserialize()?;
         ensure!(handles.len() == 1, "one actual owned value required");
+        let mut expired = owned_deadline()?;
+        expired.0 = 1;
+        let mut expired_definition = definition.clone();
+        expired_definition.3 = expired;
+        let mut rejected = vec![(
+            "register",
+            connection
+                .call_method(
+                    Some(SERVICE),
+                    server.as_str(),
+                    Some("org.sparklink.ServiceManager"),
+                    "RegisterOwnedLocalService",
+                    &expired_definition,
+                )
+                .await,
+        )];
+        for (label, method, value) in [
+            ("read", "ReadOwnedLocalValue", handles[0]),
+            ("remove", "UnregisterOwnedLocalService", begin),
+        ] {
+            rejected.push((
+                label,
+                connection
+                    .call_method(
+                        Some(SERVICE),
+                        server.as_str(),
+                        Some("org.sparklink.ServiceManager"),
+                        method,
+                        &(value, expired),
+                    )
+                    .await,
+            ));
+        }
+        for (label, result) in rejected {
+            ensure!(
+                matches!(result,Err(zbus::Error::MethodError(ref name,_,_)) if name.as_str()=="org.freedesktop.DBus.Error.Timeout"),
+                "expired owned {label} must be refused: {result:?}"
+            );
+        }
+        println!("AUTH_OWNED_DEADLINE: register/read/remove expired=true");
         let value: Vec<u8> = connection
             .call_method(
                 Some(SERVICE),
                 server.as_str(),
                 Some("org.sparklink.ServiceManager"),
                 "ReadOwnedLocalValue",
-                &(handles[0],),
+                &(handles[0], owned_deadline()?),
             )
             .await?
             .body()
@@ -533,7 +579,7 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
                     server.as_str(),
                     None::<&str>,
                     "ReadOwnedLocalValue",
-                    &(handles[0],),
+                    &(handles[0], owned_deadline()?),
                 )
                 .await,
         )?;
@@ -544,7 +590,7 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
                 server.as_str(),
                 Some("org.sparklink.ServiceManager"),
                 "UnregisterOwnedLocalService",
-                &(begin,),
+                &(begin, owned_deadline()?),
             )
             .await?;
         println!(
@@ -559,8 +605,17 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
             ("ReadOwnedLocalValue", "foreign-owned-read"),
             ("ReadLocalValue", "global-value-read"),
         ] {
-            denied(
-                label,
+            let response = if method == "ReadOwnedLocalValue" {
+                connection
+                    .call_method(
+                        Some(destination),
+                        server.as_str(),
+                        Some("org.sparklink.ServiceManager"),
+                        method,
+                        &(handle, owned_deadline()?),
+                    )
+                    .await
+            } else {
                 connection
                     .call_method(
                         Some(destination),
@@ -569,8 +624,9 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
                         method,
                         &(handle,),
                     )
-                    .await,
-            )?;
+                    .await
+            };
+            denied(label, response)?;
         }
         denied(
             "foreign-owned-remove",
@@ -580,7 +636,7 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
                     server.as_str(),
                     Some("org.sparklink.ServiceManager"),
                     "UnregisterOwnedLocalService",
-                    &(start,),
+                    &(start, owned_deadline()?),
                 )
                 .await,
         )?;
@@ -629,7 +685,7 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
                         server.as_str(),
                         None::<&str>,
                         "ReadOwnedLocalValue",
-                        &(handle,),
+                        &(handle, owned_deadline()?),
                     )
                     .await,
             )?;

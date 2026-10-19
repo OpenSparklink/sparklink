@@ -1,6 +1,7 @@
 //! Thin local service manager calls. No database, protocol Engine or cached
 //! publication state; a successful register is local staging only.
-use crate::{ApplicationError, controller::Controller};
+use crate::{ApplicationError, client::bounded, controller::Controller};
+use slk_channel::deadline::Deadline;
 use slk_contract::ssap::local as wire;
 type Result<T> = std::result::Result<T, ApplicationError>;
 #[derive(Clone)]
@@ -45,41 +46,81 @@ impl LocalServices {
     pub(crate) fn new(controller: Controller) -> Self {
         Self { controller }
     }
-    /// Local registration only, not RF publication. No implicit retry: a lost
-    /// reply/cancelled future can leave an owner-bound registration until bus
-    /// owner exit. Drop of this view does not close the caller's connection.
+    /// Local registration only, not RF publication. The original absolute
+    /// deadline includes generation/owner checks and broker admission. A lost
+    /// reply/cancelled future can leave an owner-bound registration until caller
+    /// exit. A received valid receipt on scope/deadline failure gets one separate
+    /// <=1s withdrawal attempt; this never renews registration admission and is
+    /// not a cleanup guarantee. Dropping this view does not close the caller.
     pub async fn register_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<wire::PropertyDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
     ) -> Result<ServiceRegistration> {
         let id = self.controller.id();
-        self.controller.client.check_generation(id).await?;
         let path = format!("{}/services", self.controller.path());
-        let receipt: wire::Registration = self
-            .controller
-            .client
-            .proxy(&path, wire::MANAGER)
-            .await?
-            .call(wire::REGISTER_OWNED, &(uuid, properties, authorizer))
-            .await?;
+        let expected = properties.len();
+        let mut received = None;
+        let result = bounded(&self.controller.client, original, async {
+            self.controller.client.check_generation(id).await?;
+            original.remaining()?;
+            let receipt: wire::Registration = self
+                .controller
+                .client
+                .proxy(&path, wire::MANAGER)
+                .await?
+                .call(
+                    wire::REGISTER_OWNED,
+                    &(
+                        uuid,
+                        properties,
+                        authorizer,
+                        slk_contract::deadline_wire(original.stamp()),
+                    ),
+                )
+                .await?;
+            // Never guess a cleanup target from a malformed/foreign receipt.
+            if !valid_receipt(&receipt, expected) {
+                return Err(ApplicationError::Identity(
+                    "malformed owned-service receipt;remote effects uncertain",
+                ));
+            }
+            received = Some(receipt);
+            self.controller.client.check_generation(id).await?;
+            original.remaining()?;
+            Ok(())
+        })
+        .await;
+        let Some(receipt) = received else {
+            return Err(result.err().unwrap_or(ApplicationError::Identity(
+                "owned registration missing receipt",
+            )));
+        };
         let mut registration = ServiceRegistration {
             controller: self.controller.clone(),
             receipt,
             active: true,
         };
-        if let Err(error) = self.controller.client.check_generation(id).await {
-            // We have a receipt: withdraw only it at the original unique owner,
-            // bounded independently of any replacement daemon's availability.
-            let _ =
-                tokio::time::timeout(std::time::Duration::from_secs(1), registration.unregister())
-                    .await;
+        if let Err(error) = result {
+            if let Ok(cleanup) = Deadline::after(std::time::Duration::from_secs(1)) {
+                let _ = registration.unregister(cleanup).await;
+            }
             return Err(error);
         }
         Ok(registration)
     }
 }
+fn valid_receipt(value: &wire::Registration, expected: usize) -> bool {
+    (1..=64).contains(&expected)
+        && value.0 != 0
+        && value.1 > value.0
+        && value.2.len() == expected
+        && value.2.iter().all(|h| *h > value.0 && *h <= value.1)
+        && value.2.windows(2).all(|w| w[0] < w[1])
+}
+
 /// A receipt, not a wire Engine or a protocol lifetime. Explicit unregister (or
 /// actual bus owner exit) removes it. Drop never starts untracked async cleanup.
 /// This object is not Clone: a second handle must not silently own its removal.
@@ -92,30 +133,52 @@ impl ServiceRegistration {
     pub fn receipt(&self) -> &wire::Registration {
         &self.receipt
     }
-    pub async fn read_local(&self, handle: u16) -> Result<Vec<u8>> {
+    pub async fn read_local(&self, handle: u16, original: Deadline) -> Result<Vec<u8>> {
         if !self.active || !self.receipt.2.contains(&handle) {
             return Err(ApplicationError::Invalid(
                 "inactive or foreign service handle",
             ));
         }
-        self.controller
-            .call(wire::MANAGER, wire::READ_OWNED, &(handle,))
-            .await
+        let result = bounded(
+            &self.controller.client,
+            original,
+            self.controller.call(
+                wire::MANAGER,
+                wire::READ_OWNED,
+                &(handle, slk_contract::deadline_wire(original.stamp())),
+            ),
+        )
+        .await?;
+        original.remaining()?;
+        Ok(result)
     }
     /// Withdrawal is allowed after local owner-scope loss. It targets only the
     /// original unique daemon + immutable generation path + owner-bound start
     /// handle (not reused within that database). It cannot admit new work.
-    pub async fn unregister(&mut self) -> Result<()> {
+    pub async fn unregister(&mut self, original: Deadline) -> Result<()> {
         if !self.active {
             return Err(ApplicationError::Invalid("service already unregistered"));
         }
         let path = format!("{}/services", self.controller.path());
-        self.controller
-            .client
-            .original_proxy(&path, wire::MANAGER)
-            .await?
-            .call::<_, _, ()>(wire::UNREGISTER_OWNED, &(self.receipt.0,))
-            .await?;
+        original.remaining()?;
+        // Withdrawal remains allowed after local owner/generation scope loss,
+        // pinned to the original unique daemon and immutable generation path.
+        tokio::time::timeout_at(original.instant().into(), async {
+            let request: wire::OwnedHandleRequest = (
+                self.receipt.0,
+                slk_contract::deadline_wire(original.stamp()),
+            );
+            self.controller
+                .client
+                .original_proxy(&path, wire::MANAGER)
+                .await?
+                .call::<_, _, ()>(wire::UNREGISTER_OWNED, &request)
+                .await?;
+            Ok::<_, ApplicationError>(())
+        })
+        .await
+        .map_err(|_| std::io::Error::from_raw_os_error(nix::libc::ETIMEDOUT))??;
+        original.remaining()?;
         self.active = false;
         Ok(())
     }

@@ -488,9 +488,14 @@ struct UpdateRequest {
     reply: Option<oneshot::Sender<Result<slk_contract::ssap::UpdateReceipt, String>>>,
 }
 impl UpdateRequest {
+    fn needs_withdrawal_watch(&self) -> bool {
+        self.reply.is_some() || !self.submitted_all
+    }
     async fn withdrawn(&mut self) {
         let Some(reply) = self.reply.as_mut() else {
-            return std::future::pending().await;
+            // The author is gone, but an unfinished stream still has an
+            // owner. Its later revocation must wake the same actor too.
+            return self.owner.withdrawn().await;
         };
         tokio::select! {
             _ = self.owner.withdrawn() => {},
@@ -534,6 +539,22 @@ fn retire_update_wait(
         pending.retain(|p| !matches!(p.purpose, Purpose::Update));
         *update = None;
     }
+}
+fn retire_update_event(
+    update: &mut Option<UpdateRequest>,
+    pending: &mut VecDeque<Pending>,
+    now: Instant,
+) -> io::Result<()> {
+    retire_update_wait(update, pending, now);
+    if update
+        .as_ref()
+        .is_some_and(|v| !v.owner.current() && v.drain.is_some() && !v.submitted_all)
+    {
+        return Err(io::Error::other(
+            "partial update owner withdrawn;retire SSAP actor",
+        ));
+    }
+    Ok(())
 }
 pub(super) struct IncomingWait {
     pub(super) handles: Vec<u16>,
@@ -1358,13 +1379,11 @@ async fn exchange_loop(
         tokio::select! {
             _ = &mut *stopped => return Ok(()),
             _ = async { update.as_mut().expect("guarded update wait").withdrawn().await },
-                if update.as_ref().is_some_and(|v|v.reply.is_some()) => {
-                retire_update_wait(&mut update, &mut pending, Instant::now());
-                if update.as_ref().is_some_and(|v| !v.owner.current() && v.drain.is_some() && !v.submitted_all) {
-                    return Err(io::Error::other("partial update owner withdrawn;retire SSAP actor"));
-                }
+                if update.as_ref().is_some_and(UpdateRequest::needs_withdrawal_watch) => {
+                retire_update_event(&mut update, &mut pending, Instant::now())?;
                 // A withdrawn author does not erase admitted work or its
-                // original drain. reply=None disarms this wake branch.
+                // original drain. All-admitted work without an author no
+                // longer watches; an unfinished stream keeps its owner watch.
             }
             _ = tokio::time::sleep_until(deadline) => {
                 retire_client_wait(&mut client, &mut pending, Instant::now());

@@ -10,6 +10,69 @@ use tokio::sync::mpsc;
 use zbus::{Connection, zvariant::OwnedObjectPath};
 
 #[tokio::test]
+async fn partial_update_caller_close_then_owner_exit_still_wakes() {
+    // A real bus-owner loss after the author wait is gone. The unsubmitted
+    // remainder must not lose its owner watch along with that author wait.
+    let bus = PrivateBus::start();
+    let server = client(&bus).await;
+    let caller = client(&bus).await;
+    let db = std::sync::Arc::new(std::sync::Mutex::new(
+        crate::ssap_database::Database::default(),
+    ));
+    let slots = std::sync::Arc::new(tokio::sync::Semaphore::new(1));
+    let first = Instant::now();
+    let owner = crate::ssap_authorization::Owner::pin(
+        &server,
+        caller.unique_name().unwrap().to_string(),
+        OwnedObjectPath::try_from("/").unwrap(),
+        &db,
+        slots.clone().try_acquire_owned().unwrap(),
+        first + Duration::from_secs(5),
+    )
+    .await
+    .unwrap();
+    let (reply, mut result) = oneshot::channel();
+    let mut current = UpdateRequest {
+        submitted_all: false,
+        handle: 17,
+        owner: owner.clone(),
+        mode: 2,
+        epoch: 41,
+        deadline: first + Duration::from_secs(4),
+        drain: None,
+        pdu: vec![16, 3, 17, 0, 0, 0],
+        reply: Some(reply),
+    };
+    current.admit_part(first, false);
+    let mut update = Some(current);
+    let mut pending = VecDeque::from([Pending {
+        sent: 1,
+        bytes: vec![16, 3, 17, 0, 0, 0],
+        deadline: first + Duration::from_secs(4),
+        purpose: Purpose::Update,
+        constraint: None,
+    }]);
+    result.close();
+    update.as_mut().unwrap().withdrawn().await;
+    retire_update_wait(&mut update, &mut pending, Instant::now());
+    assert!(update.as_ref().unwrap().reply.is_none());
+    assert!(update.as_ref().unwrap().needs_withdrawal_watch());
+    caller.close().await.unwrap();
+    tokio::time::timeout(Duration::from_secs(1), update.as_mut().unwrap().withdrawn())
+        .await
+        .expect("partial update lost owner wake after caller close");
+    assert!(!owner.current());
+    assert!(retire_update_event(&mut update, &mut pending, Instant::now()).is_err());
+    assert_eq!(
+        update.as_ref().unwrap().drain,
+        Some(first + Duration::from_secs(5))
+    );
+    assert_eq!(pending.len(), 1);
+    owner.shutdown().await;
+    assert_eq!(slots.available_permits(), 1);
+}
+
+#[tokio::test]
 async fn update_withdrawal_wakes_without_renewing_or_forgetting_admitted_work() {
     // Actual Owner watch, oneshot and production UpdateRequest methods. No
     // Native socket/USB/credit result is supplied by this test.
@@ -66,13 +129,17 @@ async fn update_withdrawal_wakes_without_renewing_or_forgetting_admitted_work() 
             let original = current.deadline;
             let drain = current.drain;
             let mut update = Some(current);
-            let mut pending = VecDeque::from([Pending {
-                sent: admitted_parts as usize,
-                bytes: vec![16, 3, 17, 0, 0, 0],
-                deadline: original,
-                purpose: Purpose::Update,
-                constraint: None,
-            }]);
+            let mut pending = if admitted_parts == 2 {
+                VecDeque::new()
+            } else {
+                VecDeque::from([Pending {
+                    sent: admitted_parts as usize,
+                    bytes: vec![16, 3, 17, 0, 0, 0],
+                    deadline: original,
+                    purpose: Purpose::Update,
+                    constraint: None,
+                }])
+            };
             retire_update_wait(&mut update, &mut pending, Instant::now());
             if owner_exit {
                 assert!(result.await.unwrap().is_err());
@@ -85,12 +152,25 @@ async fn update_withdrawal_wakes_without_renewing_or_forgetting_admitted_work() 
                 assert_eq!(current.deadline, original);
                 assert_eq!(current.drain, drain);
                 assert_eq!(current.submitted_all, admitted_parts == 2);
-                assert_eq!(pending.len(), 1);
-                assert_eq!(pending[0].deadline, original);
-                assert!(
-                    tokio::time::timeout(Duration::from_millis(1), current.withdrawn())
-                        .await
-                        .is_err()
+                assert_eq!(pending.len(), usize::from(admitted_parts == 1));
+                assert_eq!(current.needs_withdrawal_watch(), admitted_parts == 1);
+                if admitted_parts == 1 {
+                    assert_eq!(pending[0].deadline, original);
+                    if owner_exit {
+                        tokio::time::timeout(Duration::from_secs(1), current.withdrawn())
+                            .await
+                            .unwrap();
+                    } else {
+                        assert!(
+                            tokio::time::timeout(Duration::from_millis(1), current.withdrawn())
+                                .await
+                                .is_err()
+                        );
+                    }
+                }
+                assert_eq!(
+                    retire_update_event(&mut update, &mut pending, Instant::now()).is_err(),
+                    owner_exit && admitted_parts == 1
                 );
                 retire_update_wait(&mut update, &mut pending, Instant::now());
                 assert!(update.as_ref().unwrap().reply.is_none());

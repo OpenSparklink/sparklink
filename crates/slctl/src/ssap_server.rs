@@ -2,10 +2,8 @@
 use crate::security_agent::{Input, remaining};
 use anyhow::{bail, ensure};
 use libsparklink::ssap::authorization::{self, AuthorizationContext};
-use slk_protocol::{
-    SsapOperations,
-    ssap::{SsapAuthorizationPrompt as Prompt, access::SsapAccess},
-};
+use slk_contract::ssap::SsapAuthorizationPrompt as Prompt;
+use slk_protocol::{SsapOperations, ssap::access::SsapAccess};
 use std::sync::{Arc, Mutex};
 use tokio::sync::{Semaphore, mpsc, oneshot, watch};
 use zbus::Connection;

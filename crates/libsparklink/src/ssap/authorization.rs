@@ -3,10 +3,8 @@
 //! authority, registration database or protocol Engine. The daemon still
 //! validates the original registration and physical Session before committing.
 use slk_contract::ControllerId;
-use slk_protocol::{
-    SsapOperations,
-    ssap::{SsapAuthorizationPrompt as Prompt, access::SsapAccess},
-};
+use slk_contract::ssap::SsapAuthorizationPrompt as Prompt;
+use slk_protocol::{SsapOperations, ssap::access::SsapAccess};
 use std::time::Instant;
 use tokio::sync::{oneshot, watch};
 pub(crate) mod inbox;

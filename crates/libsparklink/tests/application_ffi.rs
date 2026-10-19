@@ -501,7 +501,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                         .stamp()
                         .monotonic_ns;
                 let value = if write { vec![4u8, 5, 6] } else { vec![] };
-                let prompt: slk_protocol::ssap::SsapAuthorizationPrompt = (
+                let prompt: slk_contract::ssap::SsapAuthorizationPrompt = (
                     request_id,
                     (2, 7, 13, 3, 41, 0, 10, 10, 0),
                     17,

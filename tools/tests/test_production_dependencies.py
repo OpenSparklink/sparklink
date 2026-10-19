@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from check_production_dependencies import check_tree,check_native_creators
+from check_production_dependencies import check_tree,check_native_creators,check_authorizer_contract
 
 
 class DependencyBoundary(unittest.TestCase):
@@ -34,6 +34,22 @@ class DependencyBoundary(unittest.TestCase):
     def test_missing_truncated_or_unrecognized_cargo_output_fails(self):
         for output in ['', 'cargo failed', 'slkd v0.1.0\ntruncated line', 'libsparklink v0.1.0\n']:
             with self.subTest(output=output),self.assertRaises(ValueError):check_tree('slkd',output,self.internal)
+
+
+    def test_retired_authorizer_types_cannot_return_to_protocol_layer(self):
+        check_authorizer_contract([
+            ('crates/slk-contract/src/lib.rs','pub type SsapAuthorizationPrompt = (u64, bool);'),
+            ('crates/slkd/src/policy.rs','use slk_contract::ssap::SsapAuthorizationPrompt;'),
+            ('crates/slk-protocol/src/ssap.rs','pub enum ValuePdu { Read }'),
+        ])
+        for name,source in [
+            ('crates/slk-protocol/src/ssap.rs','pub type SsapAuthorizationPrompt = ();'),
+            ('crates/slk-protocol/src/lib.rs','pub use slk_contract::ssap::SsapAuthorizationIdentity;'),
+            ('crates/slkd/src/policy.rs','use slk_protocol::ssap::SsapAuthorizationPrompt;'),
+            ('crates/libsparklink/src/lib.rs','use slk_protocol :: ssap :: {access::SsapAccess, SsapAuthorizationIdentity};'),
+        ]:
+            with self.subTest(name=name,source=source),self.assertRaises(ValueError):
+                check_authorizer_contract([(name,source)])
 
 
 if __name__=='__main__':unittest.main()

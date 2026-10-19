@@ -4,10 +4,8 @@
 use super::{AuthorizationContext, admit, await_decision, check_sender};
 use crate::{ApplicationError, Client};
 use slk_contract::ControllerId;
-use slk_protocol::{
-    SsapOperations,
-    ssap::{SsapAuthorizationPrompt as Prompt, access::SsapAccess},
-};
+use slk_contract::ssap::SsapAuthorizationPrompt as Prompt;
+use slk_protocol::{SsapOperations, ssap::access::SsapAccess};
 use std::{
     os::fd::{AsRawFd, FromRawFd, OwnedFd},
     sync::{Arc, Mutex, Weak},

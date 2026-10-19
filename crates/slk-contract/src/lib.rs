@@ -68,6 +68,15 @@ pub type DynamicRequest = (u16, u16, u16, u16, u16, u8, bool);
 
 /// Existing daemon SSAP wire contract, not a second protocol implementation.
 pub mod ssap {
+    /// D-Bus service authorization context, not a kernel Grant or peer identity:
+    /// controller, generation, lifetime, connection handle, original RX security
+    /// epoch/level, local TCID, remote TCID, PI.
+    pub type SsapAuthorizationIdentity = (u16, u64, u64, u16, u64, u32, u8, u8, u8);
+    /// Request ID, original context, local property, write?, original monotonic
+    /// deadline, proposed write value (empty for reads). Reads disclose no value
+    /// to the authorizer before its decision. This is a D-Bus-only tuple contract.
+    pub type SsapAuthorizationPrompt = (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>);
+
     /// Local manager staging and caller-owned registration are distinct roles.
     pub mod local {
         pub const MANAGER: &str = "org.sparklink.ServiceManager";
@@ -223,6 +232,25 @@ pub fn matches_connection(controller: ControllerId, path: &str, info: &Connectio
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn authorizer_contract_preserves_literal_field_order_and_signatures() {
+        use zvariant::Type;
+        let identity: ssap::SsapAuthorizationIdentity = (2, 7, 11, 3, 19, 1, 10, 10, 0);
+        let prompt: ssap::SsapAuthorizationPrompt = (23, identity, 29, true, 31, vec![37]);
+        assert_eq!(
+            prompt,
+            (23, (2, 7, 11, 3, 19, 1, 10, 10, 0), 29, true, 31, vec![37])
+        );
+        assert_eq!(
+            ssap::SsapAuthorizationIdentity::SIGNATURE.to_string(),
+            "(qttqtuyyy)"
+        );
+        assert_eq!(
+            ssap::SsapAuthorizationPrompt::SIGNATURE.to_string(),
+            "(t(qttqtuyyy)qbtay)"
+        );
+    }
+
     #[test]
     fn deadline_has_literal_field_order_and_dbus_shape() {
         use zvariant::Type;

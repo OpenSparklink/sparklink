@@ -462,3 +462,26 @@ Root collector同时等待Rust、C、Python的实际初始输出屏障，三者�
 已映射应用库分别核对；原始maps有界保留，缺失、错误库、Native库或来源不符拒绝。
 每个进程正常退出且原daemon、目录游标/身份、Native返回及对端业务门禁一致才通过。
 该检查不是Native Ready/Down/drain、物理拔插、自然恢复或完整语言SDK资格。
+
+
+## SSAP 接收者退出与确认清理门禁
+
+未发布 runner 的 `--ssap-update-lifecycle-verify` 只能与
+`--ssap-update-delivery-verify`、实际 numeric-approve 机制及普通短包双设备门禁
+一起使用；不组合其他故障、长度或压力场景。它复用同一 Session、actor、SDK
+消费者和双端核对器，不安装测试 Host。选项存在不代表新 artifact 已取得实机资格。
+
+固定场景为启用审批挂起时接收进程退出、已观察真实启用回复后退出，以及原接收
+期限到期。每个场景要求实际类型2审批、双端启用/停用回复、零配置观察和同一 actor
+上的后续真实读取；审批挂起窗口还须完成普通通道应用校验回复。启用状态查询不能
+代替接收端 USB 回复屏障。live capture 前缀的长度/hash 须从封存原始捕获重建，
+最终仍须完整双端捕获与零丢包统计。
+
+专用 C/Python 消费者的 `update-error` 参数为 index、generation、Connection 路径、
+handle、mode、errno 和原始毫秒预算；当前只接受 ETIMEDOUT 和50至5000毫秒。
+错误必须来自真实公共 SDK，意外成功或其他错误均失败，不合成超时结果。
+接收者退出不取消已经开始的物理义务；没有确认停用的场景不得计作清理通过。
+作者原期限与固定清理预算分别记录，不能用延长原期限隐藏未知结果。
+
+该有限场景不证明全部撤权、断链、安全 epoch、最后引用、无编号ACK/NOCP复用、
+多应用订阅或故障恢复组合；准确资格与缺口仍只读取唯一能力记录。

@@ -167,9 +167,12 @@ def execute(run, phase):
         if getattr(run.args,'ssap_requester_lifecycle_verify',False):
             from ws73_ssap_requester_lifecycle import execute as requester_execute
             requester_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
+        if getattr(run.args,'ssap_update_lifecycle_verify',False):
+            from ws73_ssap_receive_lifecycle import execute as receive_execute
+            receive_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
         if hasattr(run, 'channel_barrier'):
             run.channel_barrier(row)
-        if not getattr(run.args,'ssap_requester_lifecycle_verify',False):
+        if not (getattr(run.args,'ssap_requester_lifecycle_verify',False) or getattr(run.args,'ssap_update_lifecycle_verify',False)):
             run_applications(run,row,processes,files)
         # Passive VFS checks use current full records; old read/stats never
         # re-enter the producer. Older packages have no such test artifact and
@@ -568,6 +571,11 @@ def corroborate(run,capture):
                 from ws73_ssap_owned import corroborate as owned_corroborate
                 ssap_owned,owned_credit=owned_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=owned_credit[key]
+            ssap_receive_lifecycle=[]
+            if row.get('ssap_receive_lifecycle_required',False):
+                from ws73_ssap_receive_lifecycle import corroborate as receive_corroborate
+                ssap_receive_lifecycle,receive_credit=receive_corroborate(row,value_matched,sdus)
+                for key in ssap_credit:ssap_credit[key]+=receive_credit[key]
             ssap_owned_updates=[]
             ssap_update_delivery=[]
             if row.get('ssap_update_delivery_required',False):
@@ -664,6 +672,7 @@ def corroborate(run,capture):
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
         if row.get('ssap_owned_update_required',False):entry['ssap_owned_updates']=ssap_owned_updates
         if row.get('ssap_update_delivery_required',False):entry['ssap_update_delivery']=ssap_update_delivery
+        if row.get('ssap_receive_lifecycle_required',False):entry['ssap_receive_lifecycle']=ssap_receive_lifecycle
         if row.get('ssap_owner_lifecycle_required',False):entry['ssap_owner_lifecycle']=ssap_owner_lifecycle
         if row.get('ssap_requester_lifecycle_required',False):entry['ssap_requester_lifecycle']=ssap_requester_lifecycle
         if protected is not None:entry['protected_ssap']=protected

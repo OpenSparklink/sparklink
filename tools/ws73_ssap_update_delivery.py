@@ -66,6 +66,16 @@ def configuration(process,item,wanted,peer=None):
         if time.monotonic()>=deadline or len(observations)>=12:raise CaptureError('actual CPCD state barrier not reached')
         time.sleep(.1)
 
+def discover(run,peer,item):
+    # The one advisory cache is published only by complete hierarchy
+    # discovery. A filtered result does not replace it or grant access.
+    item['full_discovery']=run.command([str(run.args.slctl),'--adapter',peer['owner']['path'],
+        'ssap-discover',peer['object']['path']],10,collection='ssap_update_delivery_discovery')
+    if item['full_discovery']['exit']:raise CaptureError('actual complete peer hierarchy refresh failed')
+    item['discovery']=run.command([str(run.args.slctl),'--adapter',peer['owner']['path'],
+        'ssap-discover',peer['object']['path'],'property',item['uuid']],10,collection='ssap_update_delivery_discovery')
+    if item['discovery']['exit']:raise CaptureError('actual owned CPCD property discovery failed')
+
 def execute(run,row):
     if row.get('security_requirement')!=2 or not row.get('message_security_required'):
         raise CaptureError('update delivery requires actual protected2 baseline,not local approval')
@@ -74,14 +84,7 @@ def execute(run,row):
         peer,server=row['owners'][sender],row['owners'][1-sender]
         api='c'if(row['phase']+sender)%2==0 else'python';peer_api='python'if api=='c'else'c'
         with publisher(run,row,sender,'allow',collection='ssap_update_delivery',label='delivery',sdk_api=api,updates=True) as (owner,item):
-            # The one advisory cache is published only by complete hierarchy
-            # discovery. A filtered result does not replace it or grant access.
-            item['full_discovery']=run.command([str(run.args.slctl),'--adapter',peer['owner']['path'],
-                'ssap-discover',peer['object']['path']],10,collection='ssap_update_delivery_discovery')
-            if item['full_discovery']['exit']:raise CaptureError('actual complete peer hierarchy refresh failed')
-            item['discovery']=run.command([str(run.args.slctl),'--adapter',peer['owner']['path'],
-                'ssap-discover',peer['object']['path'],'property',item['uuid']],10,collection='ssap_update_delivery_discovery')
-            if item['discovery']['exit']:raise CaptureError('actual owned CPCD property discovery failed')
+            discover(run,peer,item)
             item['cases']=[];run.save()
             for mode in (1,2):
                 value=secrets.token_hex(32);reply=secrets.token_hex(32)
@@ -128,6 +131,27 @@ def sdk_receipt(observation,api,handle,kind):
         raise CaptureError('original bounded SDK operation interval required')
     return receipt
 
+def discovery_wire(item,peer,exchange):
+    s,t,h=item['sender'],item['target'],item['handle']
+    discovery=item['discovery'];uuid=bytes.fromhex(item['uuid']);end=(h+1).to_bytes(2,'little')
+    full=item['full_discovery'];start=item['start'].to_bytes(2,'little');handle=h.to_bytes(2,'little')
+    fq=[b'\x04\x11\x01\0\xff\xff',b'\x04\x11'+end+b'\xff\xff',b'\x04\x13'+start+handle]
+    fr=[b'\x05\x0b\x81'+start+handle+bytes.fromhex(item['service'])+b'\x02',
+        b'\x01\0\x04'+end+b'\x0b',b'\x05\x0b\x81'+handle+uuid+(541).to_bytes(4,'little')+b'\x01\x02']
+    full_summary=re.findall(r'^SsapRemoteDiscovery: path=(\S+) kind=(\d+) entries=(\d+) requests=([0-9a-f|]+) responses=([0-9a-f|]+)$',full['stdout'],re.M)
+    if (type(full.get('exit'))is not int or full['exit']!=0 or full['stderr']
+            or full['args']!=[discovery['args'][0],'--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path']]
+            or full_summary!=[(peer['object']['path'],'1','2','|'.join(v.hex()for v in fq),'|'.join(v.hex()for v in fr))]
+            or not item['start_wall_ns']<=full['start_wall_ns']<=full['end_wall_ns']<=discovery['start_wall_ns']<=discovery['end_wall_ns']<=item['end_wall_ns']):
+        raise CaptureError('original complete hierarchy must refresh this lifetime before filtered discovery')
+    for req,rsp in zip(fq,fr,strict=True):exchange(s,t,req,full);exchange(t,s,rsp,full)
+    queries=[b'\x06\x13\x01\0\xff\xff'+uuid,b'\x06\x13'+end+b'\xff\xff'+uuid]
+    responses=[b'\x07\x0b\x81'+h.to_bytes(2,'little')+uuid+(541).to_bytes(4,'little')+b'\x01\x02',b'\x01\0\x06'+end+b'\x0b']
+    if discovery['exit']or discovery['stderr']or discovery['args']!=[item['discovery']['args'][0],'--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path'],'property',item['uuid']]:raise CaptureError('original filtered discovery required')
+    summary=re.findall(r'^SsapRemoteDiscovery: path=(\S+) kind=(\d+) entries=(\d+) requests=([0-9a-f|]+) responses=([0-9a-f|]+)$',discovery['stdout'],re.M)
+    if summary!=[(peer['object']['path'],'3','1','|'.join(v.hex()for v in queries),'|'.join(v.hex()for v in responses))]:raise CaptureError('actual discovered CPCD operations/schema mismatch')
+    for req,rsp in zip(queries,responses,strict=True):exchange(s,t,req,discovery);exchange(t,s,rsp,discovery)
+
 def corroborate(row,matched):
     if not row.get('ssap_update_delivery_required',False):return [],{0:0,1:0}
     items=row.get('ssap_update_delivery',[]);owners=row['owners'];proof=[];credit={0:0,1:0};fresh=set()
@@ -163,24 +187,7 @@ def corroborate(row,matched):
         def exchange(a,b,pdu,window):
             frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
             legs.append(dict(tx=matched(owners[a],'out',frame,window),rx=matched(owners[b],'in',frame,window)));credit[a]+=1
-        discovery=item['discovery'];uuid=bytes.fromhex(item['uuid']);end=(h+1).to_bytes(2,'little')
-        full=item['full_discovery'];start=item['start'].to_bytes(2,'little');handle=h.to_bytes(2,'little')
-        fq=[b'\x04\x11\x01\0\xff\xff',b'\x04\x11'+end+b'\xff\xff',b'\x04\x13'+start+handle]
-        fr=[b'\x05\x0b\x81'+start+handle+bytes.fromhex(item['service'])+b'\x02',
-            b'\x01\0\x04'+end+b'\x0b',b'\x05\x0b\x81'+handle+uuid+(541).to_bytes(4,'little')+b'\x01\x02']
-        full_summary=re.findall(r'^SsapRemoteDiscovery: path=(\S+) kind=(\d+) entries=(\d+) requests=([0-9a-f|]+) responses=([0-9a-f|]+)$',full['stdout'],re.M)
-        if (type(full.get('exit'))is not int or full['exit']!=0 or full['stderr']
-                or full['args']!=[discovery['args'][0],'--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path']]
-                or full_summary!=[(peer['object']['path'],'1','2','|'.join(v.hex()for v in fq),'|'.join(v.hex()for v in fr))]
-                or not item['start_wall_ns']<=full['start_wall_ns']<=full['end_wall_ns']<=discovery['start_wall_ns']<=discovery['end_wall_ns']<=item['end_wall_ns']):
-            raise CaptureError('original complete hierarchy must refresh this lifetime before filtered discovery')
-        for req,rsp in zip(fq,fr,strict=True):exchange(s,t,req,full);exchange(t,s,rsp,full)
-        queries=[b'\x06\x13\x01\0\xff\xff'+uuid,b'\x06\x13'+end+b'\xff\xff'+uuid]
-        responses=[b'\x07\x0b\x81'+h.to_bytes(2,'little')+uuid+(541).to_bytes(4,'little')+b'\x01\x02',b'\x01\0\x06'+end+b'\x0b']
-        if discovery['exit']or discovery['stderr']or discovery['args']!=[item['discovery']['args'][0],'--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path'],'property',item['uuid']]:raise CaptureError('original filtered discovery required')
-        summary=re.findall(r'^SsapRemoteDiscovery: path=(\S+) kind=(\d+) entries=(\d+) requests=([0-9a-f|]+) responses=([0-9a-f|]+)$',discovery['stdout'],re.M)
-        if summary!=[(peer['object']['path'],'3','1','|'.join(v.hex()for v in queries),'|'.join(v.hex()for v in responses))]:raise CaptureError('actual discovered CPCD operations/schema mismatch')
-        for req,rsp in zip(queries,responses,strict=True):exchange(s,t,req,discovery);exchange(t,s,rsp,discovery)
+        discovery_wire(item,peer,exchange)
         modes=[]
         for case in item['cases']:
             mode=case['mode'];modes.append(mode);value=bytes.fromhex(case['value']);reply=bytes.fromhex(case['reply']);app=case['application']

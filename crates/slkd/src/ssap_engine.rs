@@ -693,6 +693,30 @@ struct ClientRequest {
     reply: Option<oneshot::Sender<Result<Vec<u8>, ClientFailure>>>,
 }
 impl ClientRequest {
+    /// A response cannot discharge a partially admitted stream or a stale
+    /// physical obligation. Native validates receipt lifetime before this
+    /// actor-level check; this does not authenticate a caller-provided receipt.
+    fn validate_reply(
+        &self,
+        receipt: Option<slk_protocol::SleMessageSecurity>,
+        now: Instant,
+    ) -> io::Result<()> {
+        if let Some(epoch) = self.epoch {
+            let m = receipt.ok_or_else(|| io::Error::other("missing reply receipt"))?;
+            if m.security_epoch != epoch || m.security < self.minimum {
+                return Err(io::Error::other(
+                    "SSAP reply differs from original request security intent",
+                ));
+            }
+        }
+        if !self.admitted || !self.submitted_all || self.cleanup_deadline.is_none_or(|at| now >= at)
+        {
+            return Err(io::Error::other(
+                "SSAP reply before admission or after physical drain deadline",
+            ));
+        }
+        Ok(())
+    }
     fn admit_part(&mut self, now: Instant, last: bool) {
         if !self.admitted {
             self.admitted = true;
@@ -1680,13 +1704,10 @@ async fn exchange_loop(
                         next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
                         server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:if matches!(raw[0],8|10|13) && ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)){fragments::LOGICAL_MTU}else{negotiated},level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
                     } else if matches!(raw[0],1|5|7|9|11|14) {
-                        let Some(ClientRequest{bytes:request,deadline,minimum,epoch,admitted,submitted_all,cleanup_deadline,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        let Some(current)=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        current.validate_reply(receipt,Instant::now())?;
+                        let ClientRequest{bytes:request,deadline,reply,..}=current;
                         let reply=reply.filter(|r| !r.is_closed() && Instant::now()<deadline);
-                        if let Some(epoch)=epoch {
-                            let m=receipt.ok_or_else(||io::Error::other("missing reply receipt"))?;
-                            if m.security_epoch!=epoch || m.security<minimum{return Err(io::Error::other("SSAP reply differs from original request security intent"));}
-                        }
-                        if !admitted || !submitted_all || cleanup_deadline.is_none_or(|at|Instant::now()>=at) {return Err(io::Error::other("SSAP reply before admission or after physical drain deadline"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         if request[0]==10 {
                             let r=slk_protocol::ssap::read_uuid::Request::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local UUID request"))?;
@@ -1934,6 +1955,202 @@ mod tests {
         assert!(c.reply.is_none());
         assert_eq!(c.cleanup_deadline, first);
         assert_eq!(c.obligation_deadline(), first.unwrap());
+    }
+    #[tokio::test]
+    async fn actual_partial_client_backpressure_preserves_cancelled_stream_and_reply_guard() {
+        // Actual production codec/Plan/Wire::send/request transitions with
+        // explicit AF_UNIX dependencies. This starts AFTER Native admission;
+        // it does not bypass ClientAdmission's real ioctl or invent security.
+        let (fd, peer) = transport_pair();
+        let small = 1024i32;
+        assert_eq!(
+            unsafe {
+                nix::libc::setsockopt(
+                    fd.as_raw_fd(),
+                    nix::libc::SOL_SOCKET,
+                    nix::libc::SO_SNDBUF,
+                    (&small as *const i32).cast(),
+                    std::mem::size_of_val(&small) as nix::libc::socklen_t,
+                )
+            },
+            0
+        );
+        let wire = Wire::fixture(AsyncFd::new(fd).unwrap());
+        let first = Instant::now();
+        let deadline = first + Duration::from_secs(1);
+        let value = vec![0xa7; 2042];
+        let mut raw = vec![0; usize::from(fragments::LOGICAL_MTU)];
+        let size = ValuePdu::Write {
+            handle: 17,
+            data_type: 0,
+            value: &value,
+            verify: true,
+        }
+        .encode(fragments::LOGICAL_MTU, &mut raw)
+        .unwrap();
+        raw.truncate(size);
+        let plan = fragments::Plan::new(&raw, 249, true).unwrap();
+        assert!(plan.count() > 1);
+        let (reply, author) = oneshot::channel();
+        let mut current = ClientRequest {
+            minimum: 0,
+            epoch: None,
+            bytes: raw.clone(),
+            deadline,
+            admitted: false,
+            submitted_all: false,
+            cleanup_deadline: None,
+            reply: Some(reply),
+        };
+        let mut packet = Pending {
+            sent: 0,
+            bytes: raw.clone(),
+            deadline,
+            purpose: Purpose::Client,
+            constraint: None,
+        };
+        let mut frames = Vec::new();
+        while packet.sent < plan.count() {
+            let mut part = vec![0; 249];
+            let n = plan.encode(packet.sent, &mut part).unwrap();
+            part.truncate(n);
+            match wire.send(wire.fd.get_ref(), &packet, &part) {
+                Ok(()) => {
+                    packet.sent += 1;
+                    current.admit_part(
+                        first + Duration::from_millis(packet.sent as u64),
+                        packet.sent == plan.count(),
+                    );
+                    frames.push(part);
+                }
+                Err(error) if error.kind() == io::ErrorKind::WouldBlock => break,
+                Err(error) => panic!("actual fixture send failed: {error}"),
+            }
+        }
+        assert!(
+            packet.sent > 0 && packet.sent < plan.count(),
+            "actual partial software admission required"
+        );
+        assert!(current.admitted && !current.submitted_all);
+        let first_drain = current.cleanup_deadline.unwrap();
+        assert_eq!(
+            first_drain,
+            first + Duration::from_millis(1) + Duration::from_secs(5)
+        );
+        assert!(
+            current
+                .validate_reply(None, first + Duration::from_millis(100))
+                .is_err()
+        );
+        drop(author);
+        let original = current.bytes.clone();
+        let mut client = Some(current);
+        let mut pending = VecDeque::from([packet]);
+        retire_client_wait(
+            &mut client,
+            &mut pending,
+            first + Duration::from_millis(100),
+        );
+        let current = client.as_mut().unwrap();
+        assert!(current.reply.is_none() && current.admitted && !current.submitted_all);
+        assert_eq!(current.bytes, original);
+        assert_eq!(current.cleanup_deadline, Some(first_drain));
+        assert_eq!(current.obligation_deadline(), first_drain);
+        assert_eq!(pending.front().unwrap().deadline, deadline);
+        // Drain only the genuine socket records. No generated peer response,
+        // credit, completion or successful author result is substituted.
+        let mut observed = Vec::new();
+        for _ in 0..frames.len() {
+            let mut received = [0; 249];
+            let size = receive_fixture(&peer, &mut received).unwrap();
+            observed.push(received[..size].to_vec());
+        }
+        assert_eq!(observed, frames);
+        assert_eq!(
+            receive_fixture(&peer, &mut [0; 249]).unwrap_err().kind(),
+            io::ErrorKind::WouldBlock
+        );
+        while pending.front().unwrap().sent < plan.count() {
+            let packet = pending.front_mut().unwrap();
+            let mut part = vec![0; 249];
+            let n = plan.encode(packet.sent, &mut part).unwrap();
+            part.truncate(n);
+            wire.send(wire.fd.get_ref(), packet, &part).unwrap();
+            packet.sent += 1;
+            current.admit_part(
+                first + Duration::from_millis(200),
+                packet.sent == plan.count(),
+            );
+            let mut received = [0; 249];
+            let size = receive_fixture(&peer, &mut received).unwrap();
+            assert_eq!(&received[..size], part);
+        }
+        assert!(current.submitted_all && current.reply.is_none());
+        assert_eq!(current.cleanup_deadline, Some(first_drain));
+        assert_eq!(current.deadline, deadline);
+        // A valid late reply could drain this complete stream; it cannot
+        // revive the cancelled author. The boundary itself stays exclusive.
+        current
+            .validate_reply(None, first_drain - Duration::from_nanos(1))
+            .unwrap();
+        assert!(current.validate_reply(None, first_drain).is_err());
+    }
+    #[test]
+    fn actual_reply_guard_keeps_admission_drain_and_security_independent() {
+        let now = Instant::now();
+        let (reply, _author) = oneshot::channel();
+        let mut request = ClientRequest {
+            minimum: 2,
+            epoch: Some(37),
+            bytes: vec![8, 3, 17, 0],
+            deadline: now + Duration::from_secs(1),
+            admitted: false,
+            submitted_all: false,
+            cleanup_deadline: None,
+            reply: Some(reply),
+        };
+        let valid = slk_protocol::SleMessageSecurity {
+            security: 2,
+            security_epoch: 37,
+            ..Default::default()
+        };
+        assert!(request.validate_reply(Some(valid), now).is_err());
+        request.admit_part(now, false);
+        assert!(request.validate_reply(Some(valid), now).is_err());
+        request.admit_part(now + Duration::from_millis(1), true);
+        assert!(
+            request
+                .validate_reply(None, now)
+                .unwrap_err()
+                .to_string()
+                .contains("missing reply receipt")
+        );
+        for wrong in [
+            slk_protocol::SleMessageSecurity {
+                security_epoch: 38,
+                ..valid
+            },
+            slk_protocol::SleMessageSecurity {
+                security: 1,
+                ..valid
+            },
+        ] {
+            assert!(
+                request
+                    .validate_reply(Some(wrong), now)
+                    .unwrap_err()
+                    .to_string()
+                    .contains("original request security intent")
+            );
+        }
+        request.validate_reply(Some(valid), now).unwrap();
+        assert!(
+            request
+                .validate_reply(Some(valid), now + Duration::from_secs(5))
+                .is_err()
+        );
+        assert_eq!(request.cleanup_deadline, Some(now + Duration::from_secs(5)));
+        assert_eq!(request.deadline, now + Duration::from_secs(1));
     }
     #[tokio::test]
     async fn actual_observer_original_deadline_bounds_negotiation_and_never_enqueues_late_value() {

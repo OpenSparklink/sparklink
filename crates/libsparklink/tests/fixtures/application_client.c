@@ -4,24 +4,49 @@
 #include <assert.h>
 #include <dirent.h>
 #include <errno.h>
+#include <pthread.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
 
-static uint64_t deadline(void) {
+static uint64_t monotonic_ns(void) {
     struct timespec now;
     assert(clock_gettime(CLOCK_MONOTONIC, &now) == 0);
-    return (uint64_t)now.tv_sec * 1000000000ULL + now.tv_nsec + 3000000000ULL;
+    return (uint64_t)now.tv_sec * 1000000000ULL + now.tv_nsec;
 }
+static uint64_t deadline(void) { return monotonic_ns()+3000000000ULL; }
 static unsigned entries(const char *path) {
     DIR *directory=opendir(path);assert(directory);
     unsigned count=0;struct dirent *entry;
     while ((entry=readdir(directory))) if (strcmp(entry->d_name,".") && strcmp(entry->d_name,"..")) ++count;
     assert(closedir(directory)==0);return count;
 }
+/* pthread_join waits for user-thread termination,not an atomic procfs view.
+   Linux mm_release wakes clear_child_tid before final task-list removal.
+   Exact convergence is required before the next caller;no per-caller slack. */
+static int threads_converged(unsigned expected,uint64_t budget) {
+    const uint64_t end=monotonic_ns()+budget;
+    while (monotonic_ns()<end) {
+        if (entries("/proc/self/task")==expected) return 1;
+        struct timespec pause={.tv_nsec=1000000};nanosleep(&pause,NULL);
+    }
+    return 0;
+}
+static void *held_thread(void *arg) {
+    char byte;assert(read(*(int *)arg,&byte,1)==1);return NULL;
+}
+static void thread_observer_negative_control(void) {
+    const unsigned expected=entries("/proc/self/task");int pipefd[2];pthread_t thread;
+    assert(pipe(pipefd)==0 && pthread_create(&thread,NULL,held_thread,&pipefd[0])==0);
+    assert(!threads_converged(expected,20000000ULL)); /* Real live task cannot PASS. */
+    assert(write(pipefd[1],"x",1)==1 && pthread_join(thread,NULL)==0);
+    assert(close(pipefd[0])==0 && close(pipefd[1])==0);
+    assert(threads_converged(expected,250000000ULL));
+}
 int main(void) {
+    thread_observer_negative_control();
     const unsigned threads_before=entries("/proc/self/task"),fds_cold=entries("/proc/self/fd");
     /* Pinned Tokio1.51/full initializes one process-global signal socketpair.
        The original cold-zero assertion failed and actual C strace attributed
@@ -31,13 +56,14 @@ int main(void) {
     assert(slk_client_open_system(deadline(),&warm)==0 && warm);
     slk_client_close(warm);
     const unsigned fds_before=entries("/proc/self/fd");
-    assert(fds_before==fds_cold+2 && entries("/proc/self/task")==threads_before);
+    assert(fds_before==fds_cold+2);
+    assert(threads_converged(threads_before,250000000ULL));
     for (unsigned i=0;i<16;++i) {
         struct SlkClient *next=NULL;
         assert(slk_client_open_system(deadline(),&next)==0 && next);
         slk_client_close(next);
         assert(entries("/proc/self/fd")==fds_before);
-        assert(entries("/proc/self/task")==threads_before);
+        assert(threads_converged(threads_before,250000000ULL));
     }
     _Static_assert(sizeof(struct SlkControllerId) == 16, "controller C ABI");
     _Static_assert(offsetof(struct SlkControllerId, index) == 8, "controller C offsets");
@@ -127,8 +153,8 @@ int main(void) {
     assert(length==99 && !memcmp(output,original,sizeof output));
     slk_connection_close(link);
     slk_connection_close(NULL);
-    assert(entries("/proc/self/task")==threads_before);
     assert(entries("/proc/self/fd")==fds_before);
+    assert(threads_converged(threads_before,250000000ULL));
     puts("CURRENT_APPLICATION_CONNECTION_SSAP_FIXTURE_PASS_NOT_RF");
     puts("CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS");
     return 0;

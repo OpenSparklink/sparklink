@@ -313,7 +313,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     )?;
     let c = directory.join("client");
     let compile = Command::new(&compiler)
-        .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
+        .args(["-std=c11", "-Wall", "-Wextra", "-Werror", "-pthread"])
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.c"))
         .arg("-I")
         .arg(root.join("crates/libsparklink/include"))

@@ -26,6 +26,21 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
 仅开放已接通的类型化方法，高阶 API 分批迁移，不以空门面补齐目标树。
 完整参数/错误、fork 与 fd 生命周期见[接口参考](../reference/interfaces.md)。
 
+持续 SSAP 更新使用同一物理 Engine 的 caller-owned 接收租约，不能给每种语言另建
+收发循环或协议状态。它固定原 daemon／controller generation／connection lifetime
+及 Native 安全 epoch，有限队列在满时区分通知丢弃与指示拒绝；协议确认只是队列
+准入，不是应用处理。配置／清理占用原客户端事务序列，持续等待期间让出普通读写。
+资源租期与各次请求、包和首次清理期限分开，续租不刷新后者。
+
+派生订阅保留原 caller，释放父 Client／Connection 观察不隐式断链或撤回其他资源。
+Rust 显式 close、C／Python 显式 release 才观察远端配置清理；本地 free、Python
+context 退出或 Rust Drop 不构成清理收据。Drop 的尽力撤回、owner-loss 与有限租期
+也不能当作所有 callback／Native 引用已排空。opaque 租约不继承 socket 的 dup／
+SCM_RIGHTS 契约。首版单租约限制、共享 CPCD 多应用分配及同 lifetime 在途更新的
+交付边界分别验收；不能从一次停用回复推导所有旧消息都已排空或已被应用处理。
+普通应用总线准入、服务拥有者权限与 controller 管理权限仍分别门禁，接口出现不
+改变原权限策略，也不能以管理组调用代替 apps-only 资格。
+
 派生C/Python Connection引用与Client引用共享原caller／执行器；关闭Client不关闭仍
 被Connection引用的caller，最后本地引用才join。Connection固定现有Rust视图的
 identity，远端SSAP读／短写使用同一RemoteSsap方法和daemon Engine。对象释放不

@@ -14,6 +14,10 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](../docs/decision
 目标描述不表示代码已接通；最新事实与调整见[采用记录](../history/architecture/architecture-adoption-20261013.json)。
 
 实现状态、逐轮门禁和历史失败不在本页维护，参阅唯一资格与实施计划。
+持续 SSAP 更新的应用租约与物理 Session、Native Grant、socket Binding 分开持有；
+各语言复用唯一客户端与 Engine，配置／清理复用原事务序列，等待数据让出普通读写。
+租期、请求期限、在途义务与首次清理期限各自保留；协议确认、本地释放及远端清理
+不能互相代替。所有权与交付边界见 ADR0004，实际开放范围仍只按资格入口读取。
 [拆分前的历史原文](https://github.com/OpenSparklink/sparklink/blob/670674736ac90ec0f89ca0330849e22b1bc8f81b/docs/ARCHITECTURE.md)保留原始源码身份及全部限定范围。目标职责及以下架构决策保持不变。
 
 采用 [ADR0006](../docs/decisions/0006-event-driven-session-and-performance-evidence.md)：

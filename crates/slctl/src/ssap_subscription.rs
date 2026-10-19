@@ -59,7 +59,7 @@ pub(crate) async fn run(link: &ApplicationConnection, args: &[&str]) -> anyhow::
         options.count
     );
     std::io::stdout().flush()?;
-    let mut observed_cleanup=None;
+    let mut observed_cleanup = None;
     let outcome: anyhow::Result<usize>=async {
         let mut received=0;
         while received<options.count {
@@ -91,8 +91,12 @@ pub(crate) async fn run(link: &ApplicationConnection, args: &[&str]) -> anyhow::
     // Always attempt the same original token's cleanup;never create another
     // lease to conceal a timeout,interrupt or malformed/lost receipt.
     let cleanup = match observed_cleanup {
-        Some(batch)=>Ok(batch),
-        None=>subscription.close(Deadline::after(Duration::from_secs(5))?).await,
+        Some(batch) => Ok(batch),
+        None => {
+            subscription
+                .close(Deadline::after(Duration::from_secs(5))?)
+                .await
+        }
     };
     match (outcome, cleanup) {
         (Ok(received), Ok(batch)) => {

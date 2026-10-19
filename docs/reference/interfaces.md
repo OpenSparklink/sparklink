@@ -559,7 +559,8 @@ NotSupported。只允许一个call-owned等待者；busy、原期限、caller退
 处理、最终RPC返回或业务回复。未知、已知关闭、过期、不匹配或事件ACK0；NTF无回复。
 旧ObserveSsapIncoming/ssap-observe入口已退休，无兼容别名；历史记录保留原命令身份。
 多条同handle实例、分包和事件投递未支持；malformed packet当前失败SSAP actor。
-真实正向更新/TX/CCC/security尚未验收。仅原路径回归与能力拒绝有实机证据。
+正向更新、传输及机制的限定资格按准确产物读取；不能继承旧本地观察的结果，
+也不能把有限正向范围当作完整安全或生命周期资格。
 受保护SMTC的初始化保留原错误类型；只有已完成且未返回fd的确定安全准入拒绝，
 才能在真实安全完成事件后join并重新尝试。新bind仍由内核核对原租约及实际机制；
 未知失败、超时、已启动Engine与退休owner不重开。原拒绝的公开错误名称/正文保持。
@@ -676,8 +677,8 @@ handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C�
 
 ## 客户端配置与 SSAP 更新的当前限制
 
-新源码接通单次CPCD事务及Owned发送，实机资格仍待新artifact验收，不能继承历史
-属性读写或旧本地观察PASS。表40要求CPCD写认证和授权；no-mitm/Agent同意不满足。
+单次CPCD事务及Owned发送的资格只由当前能力入口中的准确artifact记录授权，不能
+继承历史属性读写或旧本地观察PASS。表40要求CPCD写认证和授权；no-mitm/Agent同意不满足。
 配置由唯一物理actor按lifetime持有，拥有者退休或安全epoch变化使旧配置失效。
 本地替换不自动通知。SendOwnedSsapUpdate只发送原caller当前拥有的属性快照，仍受
 协商MTU、CPCD、原期限及每次Native提交检查约束；长值不分片、不截断。

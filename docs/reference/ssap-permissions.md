@@ -286,7 +286,8 @@ Rust `ServiceRegistration.replace_local`、C `slk_local_service_replace` 与 Pyt
 超时/答复丢失可能发生在提交之后，效果不确定；不自动重试。对端须另行实际读取，仍
 遵守协商MTU及现有无SSAP分片限制。动态provider和SSAP分片仍未接通；新CPCD及
 Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与-ssap-更新的当前限制)，
-其新artifact实机资格待验收，旧本地替换PASS不升级为主动发送资格。
+主动发送资格按当前能力入口的准确artifact及限定范围读取，旧本地替换PASS不升级
+为主动发送、持续订阅或完整生命周期资格。
 
 开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
 仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。

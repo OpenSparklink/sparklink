@@ -575,6 +575,30 @@ NotSupported。只允许一个call-owned等待者；busy、原期限、caller退
 完整生命周期仍有独立门禁。不得通过基本回退、第二Engine或同lifetime重绑绕过。
 
 
+### 持续 SSAP 接收租约（开发中，未发布）
+
+以下是同一 Connection／SSAP actor 的 daemon 接线，不是新 Host 或 wire Engine。
+SDK、CLI、C／Python、实际部署权限和新实机门禁尚未完成，不能据方法存在推导可用资格。
+单次 `ReceiveSsapUpdate` 的原语义保留。首版仅允许每物理 actor 一个接收租约；第二个
+请求明确 busy，不覆盖旧 CPCD，也不代表多应用共享订阅已经实现。
+
+| 方法 | 输入 | 结果及限制 |
+| --- | --- | --- |
+| `SubscribeSsapUpdates` | `handles:aq, modes:y, duration_ms:u, deadline:(ttttt)` | 1..32 个实际发现的唯一 property；租期 250..60000 ms，创建原期限最多 5 秒；返回原 controller／generation／lifetime／安全 epoch、token、到期及状态 |
+| `ReadSsapUpdates` | `token:t, wait:b, deadline:(ttttt)` | 一个在途 reader，原期限最多 10 秒；返回有限批次、序号及累计丢弃／拒绝计数；重新检查实际 Native 上下文及原 epoch |
+| `RenewSsapSubscription` | `token:t, duration_ms:u, deadline:(ttttt)` | 原 caller 且仍 Active 才能续租；不会续订创建、读取、在途包或首次清理期限 |
+| `CloseSsapSubscription` | `token:t, deadline:(ttttt)` | 仅关闭自己的 token；确认原配置停用后才返回清理确认，不隐式断开物理连接 |
+
+队列最多 16 个完整 PDU／32768 字节。满队列丢弃新通知并计数，指示返回拒绝；ACK1
+只表示完整包进入本地队列，不表示应用读取或处理。返回包带原 Native 安全收据及
+递增序号；取消读取不释放租约，远端回复是否已被消费可能不确定，不能自动重试或
+凭 RPC 超时补造交付。取消后实际未被本地 oneshot 接受的批次才允许原样放回队列。
+
+原 D-Bus unique owner 退出或租约到期触发清理；关闭丢弃排队包并报告数量，首次清理
+最多 5 秒，未知结果失败／隔离同一 actor，不报告 Free。等待更新时让出原客户端请求
+通道供普通读写使用，配置／清理仍通过同一请求序列。它是有限 D-Bus 租约，不提供
+应用 socket 的 dup、SCM_RIGHTS 或最终 fd 释放承诺；不授 controller 管理权限。
+
 ## Delegated channel TX status（未发布 v1）
 
 源码契约：K `49467d4df595`／U `d74421c210ee`，不由接口存在推导实机资格。

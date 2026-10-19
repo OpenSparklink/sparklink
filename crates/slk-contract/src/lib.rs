@@ -124,6 +124,76 @@ pub mod ssap {
     pub type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
     pub type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);
     pub type Incoming = (bool, Vec<u8>);
+    /// One caller-owned leased receive scope on the original physical actor.
+    /// A protocol ACK means bounded queue acceptance,not application handling.
+    pub mod subscription {
+        pub const CREATE: &str = "SubscribeSsapUpdates";
+        pub const READ: &str = "ReadSsapUpdates";
+        pub const RENEW: &str = "RenewSsapSubscription";
+        pub const CLOSE: &str = "CloseSsapSubscription";
+        pub const CAPACITY: usize = 16;
+        pub const BYTE_BUDGET: usize = 32768;
+        pub const STARTING: u8 = 0;
+        pub const ACTIVE: u8 = 1;
+        pub const CLOSING: u8 = 2;
+        pub const CLOSED: u8 = 3;
+        pub const RELEASED: u8 = 1;
+        pub const EXPIRED: u8 = 2;
+        pub const OWNER_LOST: u8 = 3;
+        pub const INITIALIZATION_CANCELLED: u8 = 4;
+        pub const CLEANUP_CONFIRMED: u32 = 1;
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Info {
+            pub version: u32,
+            pub controller: u16,
+            pub generation: u64,
+            pub lifetime: u64,
+            pub handle: u16,
+            pub security_epoch: u64,
+            pub token: u64,
+            pub expires_ns: u64,
+            pub handles: Vec<u16>,
+            pub modes: u8,
+            pub state: u8,
+            pub capacity: u16,
+        }
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Packet {
+            pub sequence: u64,
+            pub security_epoch: u64,
+            pub security_level: u32,
+            pub indication: bool,
+            pub pdu: Vec<u8>,
+        }
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Batch {
+            pub info: Info,
+            pub last_sequence: u64,
+            pub dropped_notifications: u64,
+            pub refused_indications: u64,
+            pub discarded_on_close: u64,
+            pub flags: u32,
+            pub reason: u8,
+            pub packets: Vec<Packet>,
+        }
+        pub fn valid_request(handles: &[u16], modes: u8, duration_ms: u32) -> bool {
+            !handles.is_empty()
+                && handles.len() <= 32
+                && !handles.contains(&0)
+                && handles
+                    .iter()
+                    .enumerate()
+                    .all(|(i, h)| !handles[..i].contains(h))
+                && (1..=3).contains(&modes)
+                && (250..=60000).contains(&duration_ms)
+        }
+    }
     pub type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
     pub type ExchangeInfo = (
         u16,

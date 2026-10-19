@@ -24,7 +24,7 @@ def wait(fd, event, deadline):
 
 def main():
     if sys.argv[1:2] in (['owned'],['owned-readonly'],['owned-updates']):return owned_mode()
-    if sys.argv[1:2] in (['update-peer'],['update-error']):return update_peer_mode()
+    if sys.argv[1:2] in (['update-peer'],['update-error'],['update-retired']):return update_peer_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
     if len(sys.argv)!=7:raise ValueError("index generation connection role request reply required")
@@ -266,11 +266,14 @@ def owned_mode():
 def update_peer_mode():
     if len(sys.argv)!=9:raise ValueError('update-peer index generation connection handle mode expected reply')
     index,generation=int(sys.argv[2]),int(sys.argv[3]);path=sys.argv[4]
-    handle,mode=int(sys.argv[5]),int(sys.argv[6]);negative=sys.argv[1]=='update-error'
+    handle,mode=int(sys.argv[5]),int(sys.argv[6]);retired=sys.argv[1]=='update-retired'
+    negative=sys.argv[1] in ('update-error','update-retired')
     expected,reply=(b'',b'') if negative else map(bytes.fromhex,sys.argv[7:9])
     budget_ms=int(sys.argv[8]) if negative else 5000
-    if negative and (int(sys.argv[7])!=errno.ETIMEDOUT or not 50<=budget_ms<=5000):
-        raise ValueError('update-error requires actual ETIMEDOUT and bounded original milliseconds')
+    expected_error=errno.EIO if retired else errno.ETIMEDOUT
+    if negative and (int(sys.argv[7])!=expected_error or not 50<=budget_ms<=5000
+                     or (retired and (mode!=2 or budget_ms!=5000))):
+        raise ValueError('bounded explicit receive-error case required;retirement requires EIO,indication,5000ms')
     if mode not in (1,2) or not 1<=handle<=65535 or len(expected)>2042 or len(reply)>2042 or (not negative and expected==reply):
         raise ValueError('bounded independent update/reply required')
     started=time.monotonic_ns();original=started+budget_ms*1_000_000
@@ -282,11 +285,11 @@ def update_peer_mode():
         print(json.dumps(call),flush=True)
         try:received=link.ssap().receive_update(handle,deadline_ns=original,modes=mode)
         except OSError as error:
-            if not negative or error.errno!=errno.ETIMEDOUT:raise
+            if not negative or error.errno!=expected_error:raise
             print(json.dumps(dict(stage='ssap_update_error',api='python',handle=handle,mode=mode,
                 errno=error.errno,deadline_ns=original,returned_ns=time.monotonic_ns())),flush=True)
             return
-        if negative:raise ValueError('receive unexpectedly succeeded instead of original timeout')
+        if negative:raise ValueError('receive unexpectedly succeeded instead of required original error')
         exact=bytes([16 if mode==2 else 15,3])+handle.to_bytes(2,'little')+len(expected).to_bytes(2,'little')+expected
         if received.stage!=3 or received.pdu!=exact or received.acknowledgement:
             raise ValueError('actual peer complete random update mismatch')

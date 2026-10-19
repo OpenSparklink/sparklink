@@ -28,6 +28,11 @@ static uint64_t now_ns(void) {
     if (clock_gettime(CLOCK_MONOTONIC, &t)) exit(2);
     return (uint64_t)t.tv_sec * 1000000000ULL + t.tv_nsec;
 }
+static uint64_t wall_ns(void) {
+    struct timespec t;
+    if (clock_gettime(CLOCK_REALTIME, &t)) exit(2);
+    return (uint64_t)t.tv_sec * 1000000000ULL + t.tv_nsec;
+}
 static int wait_fd(int fd, short events, uint64_t end) {
     for (;;) {
         uint64_t now=now_ns();
@@ -160,13 +165,15 @@ static int owned_decision(struct SlkLocalService *view,const struct SlkServiceRe
         || info.security_level>2 || info.write>1 || info.value_length>2042
         || (!info.write && info.value_length)
         || info.local_tcid!=10 || info.remote_tcid!=10 || info.pi)) error=-EPROTO;
+    /* Call-start observations,not the internal decision linearization point. */
+    uint64_t decision=now_ns(),wall=wall_ns();
     if (!error) error=slk_authorization_request_reply(request,(uint32_t)allow);
     if (!error) {
         printf("SdkAuthorizationDecision: {\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"token\":%"PRIu64",\"request_id\":%"PRIu64",\"lifetime\":%"PRIu64",\"handle\":%u,\"epoch\":%"PRIu64",\"level\":%u,\"deadline_ns\":%"PRIu64",\"property\":%u,\"write\":%s,\"value\":\"",
             info.controller.index,info.controller.generation,info.token,info.request_id,info.connection_lifetime,
             info.connection_handle,info.security_epoch,info.security_level,info.deadline_ns,info.property,info.write?"true":"false");
         hex_print(info.value,info.value_length);
-        printf("\",\"local_tcid\":%u,\"remote_tcid\":%u,\"pi\":%u,\"allow\":%s,\"decision_ns\":%"PRIu64"}\n",info.local_tcid,info.remote_tcid,info.pi,allow?"true":"false",now_ns());fflush(stdout);
+        printf("\",\"local_tcid\":%u,\"remote_tcid\":%u,\"pi\":%u,\"allow\":%s,\"decision_ns\":%"PRIu64",\"decision_wall_ns\":%"PRIu64"}\n",info.local_tcid,info.remote_tcid,info.pi,allow?"true":"false",decision,wall);fflush(stdout);
     }
     slk_authorization_request_free(request);
     return error;

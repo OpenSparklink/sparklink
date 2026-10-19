@@ -482,6 +482,9 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                     deadline,
                     value.clone(),
                 );
+                let wall_start = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)?
+                    .as_nanos() as u64;
                 let message = server
                     .call_method(
                         Some(owner.as_str()),
@@ -491,6 +494,9 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                         &(prompt,),
                     )
                     .await?;
+                let wall_end = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)?
+                    .as_nanos() as u64;
                 assert_eq!(message.body().deserialize::<bool>()?, policy == "allow");
                 let mut line = String::new();
                 stdout.read_line(&mut line)?;
@@ -520,6 +526,10 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 assert!(token > last_token);
                 last_token = token;
                 assert!(decision["decision_ns"].as_u64().unwrap() < deadline);
+                assert!(
+                    (wall_start..=wall_end)
+                        .contains(&decision["decision_wall_ns"].as_u64().unwrap())
+                );
                 transcript.push_str(&line);
             }
             process

@@ -78,7 +78,7 @@ def corroborate(row,matched):
         if len(value)!=32 or len(before)!=32 or int.from_bytes(value[:4],'little')!=item['sequence']:raise CaptureError('SSAP random payload/sequence required')
         registrations=row.get('ssap_local_registrations',[])
         if len(registrations)!=2 or registrations[target]['owner']!=destination or registrations[target]['handle']!=handle:raise CaptureError('actual target local service identity required')
-        registered=registrations[target];owned=row.get('ssap_registration_kind')=='owned-sdk-v1'
+        registered=registrations[target];owned=row.get('ssap_registration_kind') in ('owned-sdk-v1','owned-sdk-requests-v1')
         expected_local=(f"SsapOwnedService: start={registered['start']} end={handle} property={handle}; local registration only" if owned else f"SsapLocalService: start={registered['start']} end={handle} properties={handle}")
         if registered['registration']['exit'] or registered['registration']['stdout'].splitlines().count(expected_local)!=1:raise CaptureError('original local database registration required')
         for name,op,expected in [('read_before','ssap-read',before),('write','ssap-write',value),('read_after','ssap-read',value)]:

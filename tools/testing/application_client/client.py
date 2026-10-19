@@ -157,6 +157,7 @@ def owned_mode():
                     else:
                         with request:
                             info=request.info
+                            decision,wall=time.monotonic_ns(),time.time_ns()
                             request.reply(policy=='allow')
                             print('SdkAuthorizationDecision: '+json.dumps(dict(api='python',
                                 index=info.controller.index,generation=info.controller.generation,
@@ -164,7 +165,7 @@ def owned_mode():
                                 handle=info.connection_handle,epoch=info.security_epoch,level=info.security_level,
                                 deadline_ns=info.deadline_ns,property=info.property,write=info.write,
                                 value=info.value.hex(),local_tcid=info.local_tcid,remote_tcid=info.remote_tcid,
-                                pi=info.pi,allow=policy=='allow',decision_ns=time.monotonic_ns())),flush=True)
+                                pi=info.pi,allow=policy=='allow',decision_ns=decision,decision_wall_ns=wall)),flush=True)
                 left=end-time.monotonic_ns()
                 if left<=0:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
                 ready=dict(poller.poll((left+999999)//1000000))

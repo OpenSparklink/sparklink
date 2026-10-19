@@ -46,6 +46,12 @@ typedef struct SlkControllerEvents SlkControllerEvents;
  */
 typedef struct SlkDiscovery SlkDiscovery;
 
+/**
+ * Retains the original caller executor. Explicit unregister and local free
+ * are separate; free does not silently withdraw or disconnect anything.
+ */
+typedef struct SlkLocalService SlkLocalService;
+
 typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
     uint16_t version;
     uint16_t size;
@@ -200,6 +206,34 @@ typedef struct SlkDiscoveryReport {
     uint8_t data[255];
     uint8_t reserved[6];
 } SlkDiscoveryReport;
+
+/**
+ * Inline bounded input. Only uuid[0..uuid_length] and value[0..value_length]
+ * are meaningful. Initialize the entire struct; reserved and tail must be zero.
+ */
+typedef struct SlkServiceProperty {
+    uint32_t operations;
+    uint32_t access;
+    uint16_t value_length;
+    uint8_t uuid_length;
+    uint8_t reserved[5];
+    uint8_t uuid[16];
+    uint8_t value[2042];
+    uint8_t tail[2];
+} SlkServiceProperty;
+
+/**
+ * Immutable local receipt, not remote publication, Ready or authorization.
+ * Only handles[0..property_count] are meaningful; all remaining bytes are zero.
+ */
+typedef struct SlkServiceReceipt {
+    struct SlkControllerId controller;
+    uint16_t start;
+    uint16_t end;
+    uint16_t property_count;
+    uint8_t reserved[2];
+    uint16_t handles[64];
+} SlkServiceReceipt;
 
 #ifdef __cplusplus
 extern "C" {
@@ -525,6 +559,75 @@ int slk_discovery_release(const struct SlkDiscovery *view, uint64_t deadline_ns,
  * view is NULL or one live owned pointer,freed once,no concurrent calls or later use.
  */
 void slk_discovery_free(struct SlkDiscovery *view);
+
+/**
+ * Register one caller-owned service through the sole Rust LocalServices API.
+ * uuid length2/16 with a nonzero byte; properties1..64, values0..2042. Only
+ * READ/WRITE_WITH_RSP are supported. Local authorization bits are explicitly
+ * EOPNOTSUPP until this language view has a real authorizer; no fake approval.
+ * A local receipt is not remote discovery/publication or peer delivery.
+ * deadline_ns is original absolute CLOCK_MONOTONIC, future <=30s. No retry or
+ * fallback.0/-errno; output unchanged on error. Timeout/lost receipt can leave
+ * a registration until actual caller exit; neither timeout nor free proves
+ * removal. Other derived objects can keep that caller alive after Client close.
+ * # Safety
+ * Client/controller/uuid/properties are live immutable initialized regions;
+ * properties has count aligned elements. Output is exclusive aligned writable,
+ * nonaliasing inputs. No concurrent Client close or use across fork.
+ */
+int slk_client_register_local_service(const struct SlkClient *client,
+                                      const struct SlkControllerId *controller,
+                                      const uint8_t *uuid,
+                                      uintptr_t uuid_length,
+                                      const struct SlkServiceProperty *properties,
+                                      uintptr_t count,
+                                      uint64_t deadline_ns,
+                                      struct SlkLocalService **output);
+
+/**
+ * Copy the immutable local receipt, even after unregister. This never checks
+ * current owner/Ready or mints permission; it performs no RPC.
+ * # Safety
+ * view is live immutable; output is exclusive aligned and nonaliasing.
+ */
+int slk_local_service_receipt(const struct SlkLocalService *view, struct SlkServiceReceipt *output);
+
+/**
+ * Observe this owner's current local value using the existing Rust receipt.
+ * capacity0..2042. ENOBUFS sets required length and leaves buffer untouched;
+ * no truncation. A later read may observe a new value, not a cached size query.
+ * Other errors leave outputs unchanged. Original deadline includes local queue,
+ * receipt mutex and RPC. This is not remote delivery or authorization.
+ * # Safety
+ * view live; length exclusive aligned; buffer nonaliasing writable capacity
+ * bytes,null only for0. No concurrent free; do not use after fork.
+ */
+int slk_local_service_read(const struct SlkLocalService *view,
+                           uint16_t handle,
+                           uint8_t *buffer,
+                           uintptr_t capacity,
+                           uintptr_t *length,
+                           uint64_t deadline_ns);
+
+/**
+ * Explicitly unregister this original owner's registration. No controller stop,
+ * peer disconnect, new-owner fallback or blanket removal. Timely success is the
+ * original broker's local removal acknowledgement,not remote peer completion.
+ * Timeout does not prove removal; the same Rust receipt keeps uncertain state.
+ * # Safety
+ * view live throughout; no concurrent free or use across fork.
+ */
+int slk_local_service_unregister(const struct SlkLocalService *view, uint64_t deadline_ns);
+
+/**
+ * Release this local view only,NULL allowed. Explicit unregister is separate.
+ * Other references may keep the same caller/service alive. Final executor
+ * release joins bounded local work; actual caller exit invokes broker cleanup.
+ * # Safety
+ * view NULL or one live owned pointer freed exactly once; no concurrent calls
+ * or later use. Never use inherited Client/service objects after fork.
+ */
+void slk_local_service_free(struct SlkLocalService *view);
 
 #ifdef __cplusplus
 }  // extern "C"

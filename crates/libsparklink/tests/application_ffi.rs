@@ -6,7 +6,7 @@ use std::{
     path::PathBuf,
     process::{Command, Stdio},
     sync::{
-        Arc,
+        Arc, Mutex,
         atomic::{AtomicU64, AtomicUsize, Ordering},
     },
 };
@@ -189,6 +189,58 @@ impl Link {
     }
 }
 
+// Finite local metadata fixture,not a service DB,callback or wire Engine.
+#[derive(Default)]
+struct OwnedMetadata {
+    owner: Mutex<String>,
+    registered: AtomicUsize,
+    read: AtomicUsize,
+    removed: AtomicUsize,
+}
+struct OwnedServices(Arc<OwnedMetadata>);
+#[zbus::interface(name = "org.sparklink.ServiceManager")]
+impl OwnedServices {
+    fn register_owned_local_service(
+        &self,
+        uuid: Vec<u8>,
+        properties: Vec<slk_contract::ssap::local::PropertyDefinition>,
+        authorizer: zbus::zvariant::OwnedObjectPath,
+        stamp: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> (u16, u16, Vec<u16>) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        assert_eq!(uuid, [1, 0]);
+        assert_eq!(properties, [(vec![2, 0], 5, 0, vec![7, 8, 9])]);
+        assert_eq!(authorizer.as_str(), "/");
+        *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
+        self.0.registered.fetch_add(1, Ordering::SeqCst);
+        (16, 17, vec![17])
+    }
+    fn read_owned_local_value(
+        &self,
+        handle: u16,
+        stamp: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> Vec<u8> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        assert_eq!(handle, 17);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.read.fetch_add(1, Ordering::SeqCst);
+        vec![7, 8, 9]
+    }
+    fn unregister_owned_local_service(
+        &self,
+        start: u16,
+        stamp: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        assert_eq!(start, 16);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.removed.fetch_add(1, Ordering::SeqCst);
+    }
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
 -> anyhow::Result<()> {
@@ -290,6 +342,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.py"))
         .arg(root.join("tools/testing/application_client/client.c"))
         .arg(root.join("tools/testing/application_client/client.py"))
+        .arg(root.join("bindings/python/sparklink/local_services.py"))
         .output()?;
     anyhow::ensure!(
         identities.status.success() && identities.stderr.is_empty(),
@@ -300,16 +353,80 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let calls = Arc::new(AtomicUsize::new(0));
     let ssap_calls = Arc::new(AtomicUsize::new(0));
     let lifetime = Arc::new(AtomicU64::new(11));
+    let owned = Arc::new(OwnedMetadata::default());
     let _server = zbus::connection::Builder::address(bus.address.as_str())?
         .name("org.sparklink")?
         .serve_at("/org/sparklink", Manager)?
         .serve_at(BASE, Adapter)?
+        .serve_at(format!("{BASE}/services"), OwnedServices(owned.clone()))?
         .serve_at(
             PATH,
             Link(calls.clone(), ssap_calls.clone(), lifetime.clone()),
         )?
         .build()
         .await?;
+    for language in ["c", "python"] {
+        let mut cmd = Command::new("timeout");
+        cmd.arg("10s");
+        if language == "c" {
+            cmd.arg(&sdk_probe);
+        } else {
+            cmd.arg("python3")
+                .arg(root.join("tools/testing/application_client/client.py"));
+        }
+        let mut process = cmd
+            .args(["owned", "2", "7", "0100", "0200", "070809"])
+            .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+            .env("LIBSPARKLINK_PATH", &runtime_library)
+            .env("PYTHONPATH", root.join("bindings/python"))
+            .env("LD_LIBRARY_PATH", &directory)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()?;
+        let mut stdout = std::io::BufReader::new(process.stdout.take().unwrap());
+        let mut transcript = String::new();
+        for expected in [
+            format!("SdkOwnedAPI: api={language} client_closed=true\n"),
+            "SsapOwnedService: start=16 end=17 property=17; local registration only\n".into(),
+        ] {
+            let mut line = String::new();
+            stdout.read_line(&mut line)?;
+            assert_eq!(line, expected);
+            transcript.push_str(&line);
+        }
+        process.stdin.as_mut().unwrap().write_all(b"value\n")?;
+        let mut line = String::new();
+        stdout.read_line(&mut line)?;
+        assert_eq!(line, "SsapOwnedValue: handle=17 value=070809\n");
+        transcript.push_str(&line);
+        process.stdin.as_mut().unwrap().write_all(b"quit\n")?;
+        let mut rest = String::new();
+        stdout.read_to_string(&mut rest)?;
+        assert_eq!(rest, format!("SdkOwnedRemoved: api={language} start=16\n"));
+        transcript.push_str(&rest);
+        let output = process.wait_with_output()?;
+        std::fs::write(
+            directory.join(format!("{language}-owned.stdout")),
+            transcript,
+        )?;
+        std::fs::write(
+            directory.join(format!("{language}-owned.stderr")),
+            &output.stderr,
+        )?;
+        assert!(
+            output.status.success() && output.stderr.is_empty(),
+            "{language} Owned consumer failed: {output:?}"
+        );
+    }
+    assert_eq!(
+        (
+            owned.registered.load(Ordering::SeqCst),
+            owned.read.load(Ordering::SeqCst),
+            owned.removed.load(Ordering::SeqCst)
+        ),
+        (2, 2, 2)
+    );
     for language in ["c", "python"] {
         let mut command = Command::new("timeout");
         command.arg("10s");

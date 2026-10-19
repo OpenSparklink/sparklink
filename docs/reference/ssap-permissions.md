@@ -179,3 +179,30 @@ generation/lifetime/handle/security epoch及原期限。原期限外、旧token�
 输入 `value` 通过同 owner 读取实际本地值，`quit` 主动注销；进程被杀时由 unique owner
 退出清理。新入口沿用唯一 Engine，不新增远端协议引擎。实现、私有 D-Bus、VM 实机和
 形式化结果分别记于能力入口，不继承旧 artifact 的资格。
+
+
+### C/Python 的基础 Owned 登记
+
+C 的 `slk_client_register_local_service` 接收明确 ControllerId、非零2/16字节服务 UUID
+和1..64个 `SlkServiceProperty`。每属性沿用 `SsapOperations`／`SsapAccess`，初值0..2042
+字节，超限拒绝，不截断；目前只支持 READ／WRITE_WITH_RSP。C/Python 尚无真实的
+审批 callback 接口，需要 WRITE_AUTHORIZED／READ_AUTHORIZED 时返回 EOPNOTSUPP，
+不能隐式批准。加密／认证需求继续由现有 Engine 与真实 RX 机制状态核对。
+
+`SlkServiceProperty` 大小2076，value偏移32；`SlkServiceReceipt`大小152，handles偏移24。
+整个输入需初始化，reserved/tail必须为零。UUID／value只有指定长度部分有意义。
+输出回执的未用字段归零，只是不可变本地身份；不表示 Ready、仍存续或远端发布。
+C函数返回0／负errno，失败不改输出。读值容量0..2042，ENOBUFS仅更新所需长度，不改
+buffer；再次读取可能观察到新值，不是无副作用的稳定size-query。其他错误不改两者。
+
+Python通过 `Client.register_local_service(controller, uuid, [LocalProperty(...)], deadline_ns=...)`
+取得 `LocalService`。属性使用已验证 `SsapOperations`／`SsapAccess` 类型，`receipt`为本地
+不可变观察，`read_local(handle, deadline_ns=...)`读当前值，`unregister(deadline_ns=...)`
+显式撤回原登记。C/Python均使用原绝对CLOCK_MONOTONIC纳秒，最多30秒，覆盖本地队列、
+原receipt mutex及RPC；初次登记期限不是服务TTL。超时不能证明回滚／移除。
+
+`slk_local_service_free`／Python close、context退出及析构只释放本地引用，不隐式做RPC。
+派生view保留同caller，因此Client可先close；其他派生引用也可能让caller及服务继续存续。
+最后executor释放时排空有界本地工作，真实bus owner退出由daemon清理。未知／丢失回执
+不猜测删除目标。禁止C无效指针、并发free或fork后使用；Python在获取继承锁前拒绝fork
+对象，析构也不操作继承副本。未完成的回调／通知、完整退出及部署矩阵仍单列验收。

@@ -2,7 +2,8 @@
 """Finite disposable-VM role supervisor, not an installed privilege broker.
 
 Reuse the existing SDK one-shot pair and real system-bus probe. Root opens only
-fixed evidence paths and drops each child to UID/GID1004 with no extra groups.
+fixed evidence paths and drops channels to UID/GID1004,SSAP publishers to1005
+and peer SDK/CLI calls to1000,each with no extra groups.
 No protocol bytes, Native lease, Host, fake reply or arbitrary command service.
 """
 from pathlib import Path
@@ -20,6 +21,10 @@ from ws73_north_star import daemon_identity, file_record
 
 ROOT=Path('/evidence/application-role')
 INPUT=Path('/evidence/application/passthrough-control')
+SSAP_FIELDS=('ssap_language_required','ssap_language_clients','ssap_registration_kind',
+    'ssap_owned_publishers_required','ssap_owned_publishers','ssap_value_required',
+    'ssap_read_uuid_required','ssap_update_local_rejection_required','ssap_values',
+    'ssap_local_registrations','ssap_discovery_required','ssap_discoveries','unsupported_incoming','role_ssap_commands')
 DENIALS=['StopControllerScan','SubmitDisconnect','ReadSsapValue','WriteSsapValue',
          'AllocateReferenceSecurity','interface-less-GetInfo','unknown-method']
 
@@ -100,13 +105,16 @@ def request_pair(run,row):
     while not response.is_file():
         if time.monotonic()>=end:raise CaptureError('role supervisor original wait deadline')
         time.sleep(.01)
-    result=read_json(response,0)
+    result=read_json(response,0,limit=512*1024)
     for key in ('phase','owners','request','reply','tools','start_wall_ns'):
         if result[key]!=row[key]:raise CaptureError('role helper changed original operation identity')
     if result.get('pair_status')!='CHANNEL_PAIR_EVIDENCE_PENDING':
         raise CaptureError('actual application-only pair failed: '+str(result.get('error')))
     verify_probe(result)
-    for key in ('applications','start_barrier_wall_ns','role_probe','channel_role','role_supervisor'):
+    if result.get('ssap_gate_status')!='OWNED_SDK_VALUE_EVIDENCE_PENDING':raise CaptureError('actual root-supervised Owned SDK phase missing')
+    for key in SSAP_FIELDS:
+        if key not in result:raise CaptureError('missing root-supervised SDK field: '+key)
+    for key in ('applications','start_barrier_wall_ns','role_probe','channel_role','role_supervisor',*SSAP_FIELDS):
         row[key]=result[key]
     run.save()
 
@@ -121,11 +129,11 @@ def verify_supervisor_artifacts(control,evidence):
     for phase,row in enumerate(control['application_clients']):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
         verify_probe(original)
-        for key in ('phase','owners','request','reply','tools','applications','role_probe','channel_role','role_supervisor','start_barrier_wall_ns'):
+        for key in ('phase','owners','request','reply','tools','applications','role_probe','channel_role','role_supervisor','start_barrier_wall_ns',*SSAP_FIELDS):
             if row[key]!=original[key]:raise CaptureError('root-supervised phase differs from control record')
         if original.get('pair_status')!='CHANNEL_PAIR_EVIDENCE_PENDING' or original['role_supervisor']!=finished['supervisor']:
             raise CaptureError('completed original role phase required')
-        for app in [*original['applications'],original['role_probe']]:
+        for app in [*original['applications'],original['role_probe'],*original['ssap_owned_publishers'],*original['ssap_language_clients']]:
             for filename in app['output_files']:
                 path=evidence/Path(filename).relative_to('/evidence')
                 if path.read_text()!=app['stdout'if path.suffix=='.stdout'else'stderr']:
@@ -192,6 +200,16 @@ def supervise(daemon_pid):
                     process.wait()
                     probe.update(exit=process.returncode,stdout=out.read_text(),stderr=err.read_text(),end_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
             verify_probe(row);channel_pair(context,row)
+            from ws73_north_star import Run
+            from ws73_application_client import ssap_phase
+            context.args=SimpleNamespace(slctl=Path('/bin/slctl'));context.data={}
+            row['role_ssap_commands']=context.data.setdefault('ssap_values',[])
+            def observed(process,record):
+                record['credentials'],record['process_status']=process_identity(process.pid,1000)
+            context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
+                child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
+            ssap_phase(context,row)
+            row.update(ssap_gate_status='OWNED_SDK_VALUE_EVIDENCE_PENDING',end_wall_ns=time.time_ns())
             if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed during pair')
         except BaseException as error:
             row.update(pair_status='FAIL',error=str(error),error_traceback=traceback.format_exc());raise

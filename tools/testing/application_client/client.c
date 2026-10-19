@@ -13,6 +13,10 @@
 #include <time.h>
 #include <unistd.h>
 #include <stddef.h>
+_Static_assert(sizeof(struct SlkServiceProperty)==2076,"Owned property ABI");
+_Static_assert(sizeof(struct SlkServiceReceipt)==152,"Owned receipt ABI");
+_Static_assert(offsetof(struct SlkServiceProperty,value)==32,"Owned value ABI");
+_Static_assert(offsetof(struct SlkServiceReceipt,handles)==24,"Owned handles ABI");
 _Static_assert(sizeof(struct SlkDiscoveryBatch)==40,"discovery batch ABI");
 _Static_assert(sizeof(struct SlkDiscoveryReport)==312,"discovery report ABI");
 _Static_assert(offsetof(struct SlkDiscoveryReport,data)==51,"discovery data offset");
@@ -138,7 +142,45 @@ done:
     slk_discovery_free(view);slk_client_close(client);return status;
 }
 
+
+/* Actual Owned SDK publisher. No wire codec, database or callback simulation. */
+static int owned_mode(int argc,char **argv) {
+    if (argc!=7) return 2;
+    uint64_t index=number(argv[2]),generation=number(argv[3]);
+    uint8_t service[2042],property_uuid[2042],initial[2042];
+    size_t service_n=bytes(argv[4],service),property_n=bytes(argv[5],property_uuid),initial_n=bytes(argv[6],initial);
+    if (index>UINT16_MAX || !generation || (service_n!=2 && service_n!=16) || (property_n!=2 && property_n!=16)) return 2;
+    struct SlkServiceProperty property={.operations=5,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
+    memcpy(property.uuid,property_uuid,property_n);memcpy(property.value,initial,initial_n);
+    struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
+    struct SlkClient *client=NULL;struct SlkLocalService *view=NULL;struct SlkServiceReceipt receipt={0};
+    int status=1,error;const uint64_t original=now_ns()+5000000000ULL;
+    error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
+    error=slk_client_register_local_service(client,&id,service,service_n,&property,1,original,&view);if (error) {errno=-error;goto done;}
+    error=slk_local_service_receipt(view,&receipt);if (error) {errno=-error;goto done;}
+    if (receipt.controller.index!=id.index || receipt.controller.generation!=generation || receipt.property_count!=1 || !receipt.start || receipt.handles[0]<=receipt.start || receipt.handles[0]>receipt.end) {errno=EPROTO;goto done;}
+    slk_client_close(client);client=NULL;
+    printf("SdkOwnedAPI: api=c client_closed=true\nSsapOwnedService: start=%u end=%u property=%u; local registration only\n",receipt.start,receipt.end,receipt.handles[0]);fflush(stdout);
+    const uint64_t end=now_ns()+30000000000ULL;
+    for (;;) {
+        char line[32];if (wait_fd(STDIN_FILENO,POLLIN,end) || !fgets(line,sizeof line,stdin)) {errno=EPROTO;goto done;}
+        if (!strcmp(line,"value\n")) {
+            uint8_t value[2042];uintptr_t length=0;
+            error=slk_local_service_read(view,receipt.handles[0],value,sizeof value,&length,now_ns()+5000000000ULL);if (error) {errno=-error;goto done;}
+            if (length>sizeof value) {errno=EPROTO;goto done;}
+            printf("SsapOwnedValue: handle=%u value=",receipt.handles[0]);hex_print(value,length);printf("\n");fflush(stdout);
+        } else if (!strcmp(line,"quit\n")) {
+            error=slk_local_service_unregister(view,now_ns()+5000000000ULL);if (error) {errno=-error;goto done;}
+            printf("SdkOwnedRemoved: api=c start=%u\n",receipt.start);fflush(stdout);status=0;break;
+        } else {errno=EINVAL;goto done;}
+    }
+done:
+    if (status) perror("application-client-c-owned");
+    slk_local_service_free(view);slk_client_close(client);return status;
+}
+
 int main(int argc,char **argv) {
+    if (argc>1 && !strcmp(argv[1],"owned")) return owned_mode(argc,argv);
     if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);
     if (argc!=7 || strlen(argv[3])>256) return 2;

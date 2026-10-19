@@ -1,26 +1,38 @@
 """Actual ordinary-user SSAP operations. Local configuration is not RF proof."""
 import re,secrets,time
+from contextlib import contextmanager
 from ws73_channel_socket import CaptureError
 
 
-def execute(run,row,*,value_command=None):
+def execute(run,row,*,value_command=None,services=None,local_value_command=None):
     row['ssap_value_required']=True;row['ssap_read_uuid_required']=True;row['ssap_update_local_rejection_required']=True;row['ssap_values']=[]
     owners=row['owners'];local=[]
     def command(owner,args,expected=None):
-        if value_command is not None and args[0] in ('ssap-read','ssap-write'):
+        if local_value_command is not None and args[0]=='ssap-local-read':
+            return local_value_command(owner,args,expected)
+        elif value_command is not None and args[0] in ('ssap-read','ssap-write'):
             receipt=value_command(owner,args,expected)
         else:
             receipt=run.command([str(run.args.slctl),'--adapter',owner['owner']['path'],*args],10,collection='ssap_values')
         if receipt['exit']:raise CaptureError('actual SSAP application operation failed')
         return receipt
-    for owner in owners:
-        value=secrets.token_bytes(32)
-        service=secrets.token_bytes(16);property_uuid=secrets.token_bytes(16)
-        registered=command(owner,['ssap-register',service.hex(),property_uuid.hex(),'5','0',value.hex()])
-        matches=re.findall(r'^SsapLocalService: start=(\d+) end=(\d+) properties=(\d+)$',registered['stdout'],re.M)
-        if len(matches)!=1:raise CaptureError('one actual local database registration required')
-        start,end,handle=map(int,matches[0]);local.append(dict(owner=owner,start=start,handle=handle,value=value,registration=registered,service_uuid=service.hex(),property_uuid=property_uuid.hex()))
-    try:
+    @contextmanager
+    def manager_services():
+        local=[]
+        try:
+            for owner in owners:
+                value=secrets.token_bytes(32)
+                service=secrets.token_bytes(16);property_uuid=secrets.token_bytes(16)
+                registered=command(owner,['ssap-register',service.hex(),property_uuid.hex(),'5','0',value.hex()])
+                matches=re.findall(r'^SsapLocalService: start=(\d+) end=(\d+) properties=(\d+)$',registered['stdout'],re.M)
+                if len(matches)!=1:raise CaptureError('one actual local database registration required')
+                start,end,handle=map(int,matches[0]);local.append(dict(owner=owner,start=start,handle=handle,value=value,registration=registered,service_uuid=service.hex(),property_uuid=property_uuid.hex()))
+            yield local
+        finally:
+            row['ssap_local_registrations']=[dict(owner=p['owner'],start=p['start'],handle=p['handle'],registration=p['registration'],service_uuid=p['service_uuid'],property_uuid=p['property_uuid']) for p in local]
+            for p in local:command(p['owner'],['ssap-remove',str(p['start'])])
+            run.save()
+    with services(run,row,command) if services is not None else manager_services() as local:
         from ws73_ssap_discovery import execute as discover
         discover(run,row,command,local)
         row['unsupported_incoming']=[]
@@ -38,7 +50,7 @@ def execute(run,row,*,value_command=None):
                 item['uuid_read_before']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
                 item['read_before']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],prop['value'])
                 item['write']=command(source,['ssap-write',source['object']['path'],str(prop['handle']),payload.hex()],payload)
-                item['local_check']=command(destination,['ssap-local-read',str(prop['handle'])])
+                item['local_check']=command(destination,['ssap-local-read',str(prop['handle'])],payload)
                 item['read_after']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],payload)
                 item['uuid_read_after']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
                 item['end_wall_ns']=time.time_ns();row['ssap_values'].append(item);run.save()
@@ -46,12 +58,11 @@ def execute(run,row,*,value_command=None):
                     expected=f"SsapPeerValue: operation={operation} path={source['object']['path']} handle={prop['handle']} value={value}"
                     return expected in record['stdout'].splitlines()
                 if not peer_value(item['read_before'],'ssap-read',prop['value'].hex()) or not peer_value(item['write'],'ssap-write',payload.hex()) or not peer_value(item['read_after'],'ssap-read',payload.hex()):raise CaptureError('peer SSAP application did not validate random original/updated value')
-                if f"SsapLocalValue: handle={prop['handle']} value={payload.hex()}" not in item['local_check']['stdout'].splitlines():raise CaptureError('opposite application local database validation failed')
+                if local_value_command is not None:
+                    if item['local_check'].get('value')!=payload.hex():raise CaptureError('actual owner SDK value observation required')
+                elif f"SsapLocalValue: handle={prop['handle']} value={payload.hex()}" not in item['local_check']['stdout'].splitlines():raise CaptureError('opposite application local database validation failed')
                 prop['value']=payload
-    finally:
-        row['ssap_local_registrations']=[dict(owner=p['owner'],start=p['start'],handle=p['handle'],registration=p['registration'],service_uuid=p['service_uuid'],property_uuid=p['property_uuid']) for p in local]
-        for p in local:command(p['owner'],['ssap-remove',str(p['start'])])
-        run.save()
+
 
 
 def corroborate(row,matched):
@@ -67,13 +78,24 @@ def corroborate(row,matched):
         if len(value)!=32 or len(before)!=32 or int.from_bytes(value[:4],'little')!=item['sequence']:raise CaptureError('SSAP random payload/sequence required')
         registrations=row.get('ssap_local_registrations',[])
         if len(registrations)!=2 or registrations[target]['owner']!=destination or registrations[target]['handle']!=handle:raise CaptureError('actual target local service identity required')
-        registered=registrations[target];expected_local=f"SsapLocalService: start={registered['start']} end={handle} properties={handle}"
+        registered=registrations[target];owned=row.get('ssap_registration_kind')=='owned-sdk-v1'
+        expected_local=(f"SsapOwnedService: start={registered['start']} end={handle} property={handle}; local registration only" if owned else f"SsapLocalService: start={registered['start']} end={handle} properties={handle}")
         if registered['registration']['exit'] or registered['registration']['stdout'].splitlines().count(expected_local)!=1:raise CaptureError('original local database registration required')
         for name,op,expected in [('read_before','ssap-read',before),('write','ssap-write',value),('read_after','ssap-read',value)]:
             c=item[name];line=f"SsapPeerValue: operation={op} path={source['object']['path']} handle={handle} value={expected.hex()}"
             if c['exit'] or c['stdout'].splitlines().count(line)!=1:raise CaptureError('original peer application receipt required')
-        c=item['local_check'];line=f"SsapLocalValue: handle={handle} value={value.hex()}"
-        if c['exit'] or c['stdout'].splitlines().count(line)!=1:raise CaptureError('opposite actual local-value validation required')
+        c=item['local_check']
+        if owned:
+            publisher=registered['registration'];observations=publisher.get('value_snapshots',[])
+            values=re.findall(r'^SsapOwnedValue: handle=(\d+) value=([0-9a-f]*)$',publisher['stdout'],re.M)
+            ordinal=c.get('ordinal',0)
+            if (c not in observations or not 1<=ordinal<=len(values) or values[ordinal-1]!=(str(handle),value.hex())
+                    or c.get('api')!=publisher['api'] or c.get('publisher_pid')!=publisher['pid']
+                    or c['handle']!=handle or c['value']!=value.hex()
+                    or not item['write']['end_wall_ns']<=c['start_wall_ns']<=c['end_wall_ns']<=item['read_after']['start_wall_ns']):raise CaptureError('actual original owner SDK value snapshot required')
+        else:
+            line=f"SsapLocalValue: handle={handle} value={value.hex()}"
+            if c['exit'] or c['stdout'].splitlines().count(line)!=1:raise CaptureError('opposite actual local-value validation required')
         def frame(payload):return bytes([10,0])+len(payload).to_bytes(2,'little')+payload
         read=bytes([8,3])+handle.to_bytes(2,'little')+b'\0';write=bytes([13,35])+handle.to_bytes(2,'little')+b'\0'+value
         wire=[]

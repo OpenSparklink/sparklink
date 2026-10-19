@@ -163,7 +163,7 @@ Ready仍取决于真实协商。Native操作未返回时保留引用等待清理
 远端副作用。协议结果也不等于对端应用已经处理业务。新入口的[17b4限定实机报告](../evidence/application-connection-ssap-clients-real-20261018.json)
 单列管理组普通UID的32字节SSAP协议结果与对端本地反查，不继承旧CLI或basic资格。
 它不授予apps-only权限，也不等于Owned／ServiceAuthorizer或独立应用语义ACK验收。
-完整高阶发现、Owned、Agent及通用API仍待整改，不能由这些方法推导已支持。
+完整高阶发现、Owned 回调、Agent及通用API仍待整改，不能由这些方法推导已支持。
 
 这些是当前源码接口，不把私有 bus 的拒绝/错误 fd 回归升级成实际部署权限或
 WS73 正向交付资格。准确产物与未完成的高阶客户端见唯一能力入口。
@@ -199,6 +199,14 @@ SDK在实际调用前后检查owner/generation，并校验结果中原请求身�
 Owned 的 register/read_local/unregister 显式接收原 Deadline；三条 D-Bus 请求携带
 同一五字段 stamp。初次登记期限不充当服务 TTL。超时不表示已经发生的远端效果被
 回滚，原 owner 定向清理与本地对象释放分开；完整规则见[SSAP 权限](ssap-permissions.md)。
+
+C/Python 的基础 Owned 视图复用同一个 Rust `ServiceRegistration`：
+`slk_client_register_local_service`／`Client.register_local_service`，随后通过
+`slk_local_service_receipt/read/unregister/free`／`LocalService.receipt/read_local/unregister/close`
+访问。支持 READ/WRITE_WITH_RSP 和有界初值，当前语言视图没有 authorizer callback，
+需要本地授权位时明确 EOPNOTSUPP。管理 staging 与安全 Agent 仍是独立用途。
+回执不是远端发布；跨语言生命周期、错误和布局见[SSAP 权限](ssap-permissions.md)。
+实机范围始终绑定准确编译 artifact，不从新增 API 名字推导资格。
 
 `Controller.register_agent(path,method)`返回带daemon实际epoch的`AgentRegistration`。
 旧epoch不能撤销同caller/path的新登记。`ApplicationConnection.allocate_reference_security()`

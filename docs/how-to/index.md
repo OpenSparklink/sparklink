@@ -6,12 +6,13 @@
 
 先看[实验 VM 中的双设备消息教程](../tutorials/first-ws73-message.md)与
 [当前能力和限制](../../project/current-capabilities.md)。完整安装、首次发现/建链、
-通用应用与 SSAP 使用指南仍待补齐，不能用下面的测试任务冒充。
+通用应用与完整 SSAP 使用指南仍待补齐，不能用下面的测试任务冒充。
 
 ```{toctree}
 :maxdepth: 1
 
 request-reference-security
+own-a-local-service
 ```
 
 ## 集成和测试

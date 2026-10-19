@@ -3,7 +3,7 @@
 
 No synthetic controller, protocol Engine, load generator or performance claim.
 """
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 import json
 import os
 from pathlib import Path
@@ -24,11 +24,11 @@ def process_identity(pid, uid=1000):
     fields=dict(line.split(':',1) for line in status.splitlines() if ':' in line)
     identity=dict(uids=list(map(int,fields['Uid'].split())),
                   capabilities={k:fields[k].strip() for k in ['CapEff','CapPrm','CapAmb','CapInh']})
-    if uid not in (1000,1004) or identity['uids']!=[uid]*4 or any(int(v,16) for v in identity['capabilities'].values()):
+    if uid not in (1000,1004,1005) or identity['uids']!=[uid]*4 or any(int(v,16) for v in identity['capabilities'].values()):
         raise CaptureError('exact cap-zero test role required')
     identity['gids']=list(map(int,fields['Gid'].split()))
     identity['groups']=list(map(int,fields['Groups'].split()))
-    if uid==1004 and (identity['gids']!=[1004]*4 or identity['groups']):
+    if uid in (1004,1005) and (identity['gids']!=[uid]*4 or identity['groups']):
         raise CaptureError('application-only child inherited authority groups')
     return identity,status
 
@@ -64,7 +64,7 @@ def ssap_command(run,row,entry,args,expected):
     app=dict(api=api,args=command,position=position,environment=application_environment(),ssap_operation=args[0],ssap_path=args[1],ssap_handle=int(args[2]),ssap_expected=expected.hex(),start_wall_ns=time.time_ns(),output_files=[str(stdout),str(stderr)])
     items.append(app);run.data.setdefault('ssap_values',[]).append(app);run.save()
     with stdout.open('xb')as out,stderr.open('xb')as err:
-        proc=subprocess.Popen(command,env=dict(os.environ,**app['environment']),stdin=subprocess.PIPE,stdout=out,stderr=err)
+        proc=subprocess.Popen(command,env=dict(os.environ,**app['environment']),stdin=subprocess.PIPE,stdout=out,stderr=err,**({'user':1000,'group':1000,'extra_groups':[]} if os.geteuid()==0 else {}))
         try:
             app['pid']=proc.pid;app['credentials'],app['process_status']=process_identity(proc.pid);run.save()
             end=time.monotonic()+5
@@ -142,6 +142,62 @@ def channel_pair(run, row):
             row.setdefault('end_wall_ns',time.time_ns());run.save()
 
 
+@contextmanager
+def owned_services(run,row,live):
+    """Real SDK publishers,not manager staging. Existing value loop is reused."""
+    from ws73_application_role import require_vm
+    from ws73_ssap_owned import wait_text
+    import secrets,sys
+    require_vm();row['ssap_registration_kind']='owned-sdk-v1';row['ssap_owned_publishers_required']=True
+    local=[];processes=[]
+    with ExitStack() as files:
+        try:
+            for position,owner in enumerate(row['owners']):
+                api='c' if position==row['phase'] else 'python';value=secrets.token_bytes(32);service=secrets.token_hex(16);uuid=secrets.token_hex(16)
+                args=([row['tools']['c']['path']] if api=='c' else ['/bin/python3',row['tools']['python']['path']])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,value.hex()]
+                prefix=run.output/f"owned-sdk-{row['phase']}-{api}";out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
+                app=dict(api=api,position=position,args=args,environment=application_environment(),start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
+                row.setdefault('ssap_owned_publishers',[]).append(app);run.save()
+                process=subprocess.Popen(args,env=dict(os.environ,**app['environment']),user=1005,group=1005,extra_groups=[],stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
+                processes.append((process,app));app['pid']=process.pid;app['credentials'],app['process_status']=process_identity(process.pid,1005)
+                matches,text=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
+                if len(matches)!=1 or text.splitlines()[0]!=f'SdkOwnedAPI: api={api} client_closed=true':raise CaptureError('actual original SDK owner and Client-close barrier required')
+                start,end,handle=map(int,matches[0]);app.update(start=start,end=end,handle=handle);live[owner['owner']['path']]=(process,app)
+                local.append(dict(owner=owner,start=start,handle=handle,value=value,registration=app,service_uuid=service,property_uuid=uuid));run.save()
+            yield local
+        finally:
+            active_error=sys.exc_info()[0] is not None;errors=[]
+            for process,app in processes:
+                try:
+                    if process.poll() is None:process.stdin.write('quit\n');process.stdin.flush()
+                    process.wait(timeout=5)
+                except (OSError,subprocess.TimeoutExpired) as e:errors.append(str(e))
+                finally:
+                    if process.poll() is None:process.kill();process.wait(timeout=2)
+                    if process.stdin:process.stdin.close()
+                    app.update(exit=process.returncode,end_wall_ns=time.time_ns(),stdout=Path(app['output_files'][0]).read_text(),stderr=Path(app['output_files'][1]).read_text())
+                    if app['exit'] or app['stderr'] or app['stdout'].splitlines().count(f"SdkOwnedRemoved: api={app['api']} start={app.get('start')}")!=1:errors.append('actual SDK owner unregister acknowledgement missing')
+            row['ssap_local_registrations']=[dict(owner=p['owner'],start=p['start'],handle=p['handle'],registration=p['registration'],service_uuid=p['service_uuid'],property_uuid=p['property_uuid']) for p in local]
+            if errors:row['owned_publisher_cleanup_errors']=errors
+            run.save();live.clear()
+            if errors and not active_error:raise CaptureError(';'.join(errors))
+
+
+def owned_value_snapshot(run,live,owner,args,expected):
+    from ws73_ssap_owned import value_snapshot
+    process,app=live[owner['owner']['path']]
+    if args!=['ssap-local-read',str(app['handle'])] or expected is None:raise CaptureError('original local SDK observation target required')
+    observation=value_snapshot(process,app,expected.hex());observation.update(api=app['api'],publisher_pid=app['pid']);run.save();return observation
+
+
+def ssap_phase(run,row):
+    from ws73_ssap_value import execute as ssap_execute
+    row['ssap_language_required']=True;run.save()
+    live={}
+    ssap_execute(run,row,value_command=lambda entry,args,expected:ssap_command(run,row,entry,args,expected),
+        services=lambda _run,_row,_command:owned_services(_run,_row,live),
+        local_value_command=lambda owner,args,expected:owned_value_snapshot(run,live,owner,args,expected))
+
 def execute(run, phase):
     n=len(run.data['connection_control']['phases'])-1
     c=Path('/bin/ws73-application-client-c');python=Path('/usr/share/sparklink/tools/ws73-application-client.py')
@@ -155,9 +211,6 @@ def execute(run, phase):
         request_pair(run,row)
         run.alive()
         for entry in row['owners']:run.check(entry['owner'])
-        from ws73_ssap_value import execute as ssap_execute
-        row['ssap_language_required']=True;run.save()
-        ssap_execute(run,row,value_command=lambda entry,args,expected:ssap_command(run,row,entry,args,expected))
         run.alive()
         for entry in row['owners']:run.check(entry['owner'])
         row.update(status='APPLICATION_CLIENT_EVIDENCE_PENDING',end_wall_ns=time.time_ns());run.save()
@@ -165,11 +218,33 @@ def execute(run, phase):
         row.update(status='FAIL',error=str(exc),end_wall_ns=time.time_ns());run.save();raise
 
 
+def verify_owned_publishers(row):
+    """Terminal source/role/stream contract;not an independent USB decoder."""
+    import re
+    if row.get('ssap_registration_kind')!='owned-sdk-v1' or row.get('ssap_owned_publishers_required')is not True or row.get('owned_publisher_cleanup_errors'):raise CaptureError('current SDK gate requires actual Owned publishers and cleanup')
+    publishers=row.get('ssap_owned_publishers',[]);registrations=row.get('ssap_local_registrations',[])
+    if len(publishers)!=2 or len(registrations)!=2:raise CaptureError('two opposite actual Owned SDK publishers required')
+    for position,(app,registered) in enumerate(zip(publishers,registrations,strict=True)):
+        owner=row['owners'][position];api='c' if position==row['phase'] else 'python';credentials=app['credentials']
+        if (registered['owner']!=owner or registered['registration']!=app or app['api']!=api or app['position']!=position or app['exit'] or app['stderr']
+                or app['environment']!=application_environment() or credentials['uids']!=[1005]*4 or credentials['gids']!=[1005]*4 or credentials['groups']
+                or set(credentials['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in credentials['capabilities'].values())):raise CaptureError('actual successful service-only cap-zero publisher required')
+        expected=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),registered['service_uuid'],registered['property_uuid']]
+        if app['args'][:-1]!=expected or len(bytes.fromhex(app['args'][-1]))!=32 or not row['start_wall_ns']<=app['start_wall_ns']<=app['end_wall_ns']<=row['end_wall_ns']:raise CaptureError('actual original SDK publisher arguments/interval required')
+        lines=app['stdout'].splitlines();start,handle=registered['start'],registered['handle']
+        if lines[:2]!=[f'SdkOwnedAPI: api={api} client_closed=true',f'SsapOwnedService: start={start} end={handle} property={handle}; local registration only'] or lines[-1:]!=[f'SdkOwnedRemoved: api={api} start={start}'] or len(lines)!=7:raise CaptureError('actual retained caller/register/four values/unregister stream required')
+        observations=app.get('value_snapshots',[])
+        if len(observations)!=4 or [o['ordinal'] for o in observations]!=[1,2,3,4]:raise CaptureError('all four original owner value observations required')
+        if any(not re.fullmatch(r'SsapOwnedValue: handle=\d+ value=[0-9a-f]{64}',line) for line in lines[2:-1]):raise CaptureError('bounded original publisher values required')
+    return publishers
+
+
 def corroborate_ssap(rows,capture):
     from ws73_ssap_value import corroborate as value_corroborate
     sdus=reassemble_acb(capture);proofs=[];payloads=set()
     for n,row in enumerate(rows):
         if row.get('ssap_language_required')is not True:raise CaptureError('current gate requires actual SDK SSAP consumers')
+        publishers=verify_owned_publishers(row)
         apps=row.get('ssap_language_clients',[])
         if len(apps)!=24:raise CaptureError('both directions/four repeated read-write-read SDK calls required')
         used=[]
@@ -190,7 +265,7 @@ def corroborate_ssap(rows,capture):
         for value in values:
             if value['value']in payloads:raise CaptureError('fresh SSAP payloads required across connection roles')
             payloads.add(value['value'])
-        proofs.append(dict(phase=n,applications=apps,values=values))
+        proofs.append(dict(phase=n,applications=apps,values=values,publishers=publishers))
     return dict(status='C_PYTHON_SSAP_VALUE_USB_CORROBORATED',operations=16,api_calls=48,proofs=proofs)
 
 
@@ -225,17 +300,20 @@ def corroborate(run,capture):
             legs.append(leg)
         proofs.append(dict(phase=n,applications=values,legs=legs,role_probe=row['role_probe'],channel_role=row['channel_role']))
     ssap=corroborate_ssap(rows,capture)
-    return dict(status='C_PYTHON_APPS_ONLY_CHANNEL_AND_MANAGER_SSAP_USB_SCOPED_PASS',round_trips=2,proofs=proofs,ssap=ssap,remaining=['Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification','Other lifecycle combinations and original gates remainrequired'])
+    return dict(status='C_PYTHON_APPS_ONLY_CHANNEL_AND_OWNED_SSAP_USB_SCOPED_PASS',round_trips=2,proofs=proofs,ssap=ssap,remaining=['Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification','Other lifecycle combinations and original gates remainrequired'])
 
 
 def valid_summary(proof):
     """Terminal shape check only; never substitutes for raw corroborate()."""
     try:
-        if proof['status']!='C_PYTHON_APPS_ONLY_CHANNEL_AND_MANAGER_SSAP_USB_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
+        if proof['status']!='C_PYTHON_APPS_ONLY_CHANNEL_AND_OWNED_SSAP_USB_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
         ssap=proof['ssap']
         if ssap['status']!='C_PYTHON_SSAP_VALUE_USB_CORROBORATED' or ssap['operations']!=16 or ssap['api_calls']!=48 or len(ssap['proofs'])!=2:return False
         for n,row in enumerate(ssap['proofs']):
             if row['phase']!=n or len(row['values'])!=8 or len(row['applications'])!=24:return False
+            if len(row.get('publishers',[]))!=2:return False
+            for i,publisher in enumerate(row['publishers']):
+                if publisher['api']!=('c' if i==n else 'python') or publisher['exit'] or publisher['stderr'] or publisher['credentials']['uids']!=[1005]*4 or len(publisher.get('value_snapshots',[]))!=4:return False
             for app in row['applications']:
                 if app['position']not in (0,1) or app['api']!=('c' if app['position']==n else 'python') or app['exit'] or app['stderr']:return False
             for value in row['values']:

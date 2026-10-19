@@ -538,3 +538,18 @@ permit 所有者，没有另造验证状态机。private-bus/生产 DB 检查、
 客户端未知效果不猜测回滚；仅有合法回执时允许一次独立、有界的原 owner 定向撤回。
 拒绝旧签名由当前 zbus 解码层完成；没有长期旧接口 fallback。原生固件、空口、credit
 及提交票据职责未改变。未完成 C/Python Owned/callback、通知、部署及恢复范围保持开放。
+
+
+### 语言 Owned view 与角色监督
+
+C/Python只包装唯一 Rust ServiceRegistration 和既有有界 SyncClient；可变活动状态
+仍在原 Rust receipt，语言层只持本地引用和不可变身份。无另一个数据库／权限状态机。
+显式withdrawal与free分开；GC、超时、Client先关闭都不能伪称撤回完成。基础版本不导出
+callback，授权位明确拒绝；后续审批接口需复用现有验证和原期限，不能复制CLI guard。
+
+真实门禁延用原application SDK角色监督器、SSAP value循环和USB decoder。固定阶段由
+现有VM root监督器启动 UID1005发布者及UID1000远端调用者，各自无额外组／cap；
+原apps-only UID1004通道与权限探针保留。默认普通监督入口不能提权创建其他uid。
+新role结果回传预算512KiB，原不可信请求仍131072字节；不得成为安装的任意命令broker。
+本地观察不伪造子进程exit或Complete；原输出、实际凭据及两端USB分别校验。
+工具重组不授予整个权限、生命周期、安全或自然恢复资格，仍须新artifact实机证据。

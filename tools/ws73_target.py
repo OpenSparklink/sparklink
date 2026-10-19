@@ -1387,8 +1387,16 @@ def _run(args):
                     identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(selected_count)]
                 if physical_boundary:
                     checks=[]
+                    if channel_grant and len(probe['hcc_observations'])!=len(identities):
+                        raise ValueError('one HCC observation per actual Native controller required')
                     for slot,model in enumerate(physical_boundary.models):
-                        observed=json.loads((share/f'ready-{slot}.json').read_text())
+                        if channel_grant:
+                            observed=probe['hcc_observations'][slot]
+                            wanted=dict(identities[slot],port=f'1-{slot+1}')
+                            if any(observed[k]!=wanted[k] for k in ('port','index','generation','bus','device','address')):
+                                raise ValueError('standalone HCC observation differs from actual Native gate identity')
+                        else:
+                            observed=json.loads((share/f'ready-{slot}.json').read_text())
                         chip=resources.check_hcc(observed['hcc_chip']['raw'],model)
                         checks.append(dict(host_port=args.ports[slot],guest_port=observed['port'],
                                            generation=observed['generation'],**chip))

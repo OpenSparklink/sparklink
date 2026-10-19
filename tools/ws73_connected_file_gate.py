@@ -442,6 +442,13 @@ def run(args):
         for n in [0,1]:
             path=Path(f'/sys/bus/usb/devices/1-{n+1}')
             r['usb'].append(dict(bus=int((path/'busnum').read_text()),device=int((path/'devnum').read_text())))
+        models=[v.split('=',1)[1].split(',') for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.expected_models=')]
+        if models:
+            if len(models)!=1 or len(models[0])!=2:raise ValueError('exact selected Native board models required')
+            from ws73_lab_resources import observe_guest_hcc
+            r['hcc_observations']=[observe_guest_hcc(dict(r['usb'][n],port=f'1-{n+1}',index=n,
+                generation=s.generation,address=':'.join(f'{v:02X}' for v in s.address)),models[0][n]) for n,s in enumerate(snapshots)]
+            save()
         writers=[NativeAdapter(n,snapshots[n].generation) for n in [0,1]];handles+=writers
         leases=[a.acquire_management(1) for a in writers];r['leases']=leases;save()
         def drain():

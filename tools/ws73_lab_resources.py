@@ -302,6 +302,28 @@ def check_hcc(raw, expected):
     return dict(source='HCC_GET_CHIP_TYPE', model=expected, bus='USB', raw=raw)
 
 
+def observe_guest_hcc(identity, expected, sysfs=Path('/sys/bus/usb/devices')):
+    """Bind existing driver HCC metadata to a live registration, without slkd.
+
+    This observes runtime metadata; it neither downloads nor attests RAM/cold
+    ROM. Read registration on both sides so replacement cannot reuse a cached
+    chip result. Never manufacture a daemon Ready document for Native gates.
+    """
+    from ws73_north_star import registration, stable
+    before = registration(identity['port'], sysfs)
+    keys = ('port', 'index', 'generation', 'bus', 'device', 'address')
+    if any(before[k] != identity[k] for k in keys):
+        raise ValueError('HCC observation differs from selected Native registration')
+    root = sysfs / identity['port']
+    interfaces = list(root.glob(identity['port'] + ':*'))
+    if len(interfaces) != 1:
+        raise ValueError('one current guest HCC interface required')
+    chip = check_hcc((interfaces[0] / 'chip_information').read_text().strip(), expected)
+    if not stable(before, registration(identity['port'], sysfs)):
+        raise ValueError('guest registration changed during HCC observation')
+    return dict(before, hcc_chip=chip)
+
+
 class PhysicalBoundary:
     """Recheck the same allocation on *every* QMP attach, including ROM return.
 

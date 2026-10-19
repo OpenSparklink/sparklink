@@ -259,5 +259,27 @@ class AllocatedResources(unittest.TestCase):
                 with self.assertRaises(ValueError):resource.check_hcc(bad,model)
             with self.assertRaises(ValueError):resource.check_hcc(raw,'E' if model=='U' else 'U')
 
+    def test_standalone_hcc_binds_registration_and_rejects_change_or_missing_metadata(self):
+        # Real metadata reader/checker; registration is a visible fixture here,
+        # not actual kernel concurrency, firmware provenance or RF acceptance.
+        identity=dict(port='1-1',index=0,generation=7,bus=1,device=2,address='00:01:09:32:54:CD')
+        current=dict(identity,path='/org/sparklink/slk0_g7',version='00'*5,features='00'*10)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);interface=root/'1-1/1-1:1.0';interface.mkdir(parents=True)
+            chip=interface/'chip_information'
+            chip.write_text('source=HCC_GET_CHIP_TYPE model=WS73U model_id=0 bus=USB bus_id=0\n')
+            with patch('ws73_north_star.registration',return_value=current):
+                observed=resource.observe_guest_hcc(identity,'U',root)
+                self.assertEqual(observed['generation'],7)
+                self.assertEqual(observed['hcc_chip']['model'],'U')
+                for key,value in [('generation',8),('device',3),('index',1),('address','00:01:09:32:54:F9')]:
+                    with self.assertRaises(ValueError):resource.observe_guest_hcc(dict(identity,**{key:value}),'U',root)
+                with self.assertRaises(ValueError):resource.observe_guest_hcc(identity,'E',root)
+                chip.unlink()
+                with self.assertRaises(FileNotFoundError):resource.observe_guest_hcc(identity,'U',root)
+            chip.write_text('source=HCC_GET_CHIP_TYPE model=WS73U model_id=0 bus=USB bus_id=0')
+            with patch('ws73_north_star.registration',side_effect=[current,dict(current,generation=8)]):
+                with self.assertRaises(ValueError):resource.observe_guest_hcc(identity,'U',root)
+
 
 if __name__=='__main__':unittest.main()

@@ -557,9 +557,10 @@ NotSupported。只允许一个call-owned等待者；busy、原期限、caller退
 旧ObserveSsapIncoming/ssap-observe入口已退休，无兼容别名；历史记录保留原命令身份。
 多条同handle实例、分包和事件投递未支持；malformed packet当前失败SSAP actor。
 真实正向更新/TX/CCC/security尚未验收。仅原路径回归与能力拒绝有实机证据。
-受保护SMTC在机制建立前请求初始化时，错误包装与初始化终态的保留仍需整改；
-不得通过基本模式回退、第二Engine或同lifetime重绑绕过。这条新更新路径暂不作为
-已可用服务承诺。
+受保护SMTC的初始化保留原错误类型；只有已完成且未返回fd的确定安全准入拒绝，
+才能在真实安全完成事件后join并重新尝试。新bind仍由内核核对原租约及实际机制；
+未知失败、超时、已启动Engine与退休owner不重开。原拒绝的公开错误名称/正文保持。
+新产物正向更新门禁仍待验收；不得通过基本回退、第二Engine或同lifetime重绑绕过。
 
 
 ## Delegated channel TX status（未发布 v1）

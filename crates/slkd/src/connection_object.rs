@@ -218,26 +218,28 @@ impl PeerIface {
 
 enum Initialization {
     NotStarted,
-    Running(tokio::task::JoinHandle<Result<(), String>>),
-    Completed(Result<(), String>),
+    Running(tokio::task::JoinHandle<zbus::fdo::Result<()>>),
+    Completed(zbus::fdo::Result<()>),
 }
 impl Initialization {
     fn begin<F>(&mut self, initialize: impl FnOnce() -> F)
     where
-        F: std::future::Future<Output = Result<(), String>> + Send + 'static,
+        F: std::future::Future<Output = zbus::fdo::Result<()>> + Send + 'static,
     {
         if matches!(self, Self::NotStarted) {
             *self = Self::Running(tokio::spawn(initialize()));
         }
     }
 
-    async fn finish(&mut self) -> Result<(), String> {
+    async fn finish(&mut self) -> zbus::fdo::Result<()> {
         let result = match self {
             Self::NotStarted => return Ok(()),
             Self::Completed(result) => return result.clone(),
-            Self::Running(task) => task
-                .await
-                .unwrap_or_else(|error| Err(format!("SSAP initialization task: {error}"))),
+            Self::Running(task) => task.await.unwrap_or_else(|error| {
+                Err(zbus::fdo::Error::Failed(format!(
+                    "SSAP initialization task: {error}"
+                )))
+            }),
         };
         *self = Self::Completed(result.clone());
         result
@@ -249,24 +251,34 @@ async fn initialize_once<F>(
     slot: &tokio::sync::Mutex<Initialization>,
     retiring: &std::sync::atomic::AtomicBool,
     initialize: impl FnOnce() -> F + Send + 'static,
-) -> Result<(), String>
+) -> zbus::fdo::Result<()>
 where
-    F: std::future::Future<Output = Result<(), String>> + Send + 'static,
+    F: std::future::Future<Output = zbus::fdo::Result<()>> + Send + 'static,
 {
     use std::sync::atomic::Ordering;
     if retiring.load(Ordering::Acquire) {
-        return Err("SSAP owner retiring".into());
+        return Err(zbus::fdo::Error::Failed("SSAP owner retiring".into()));
     }
     let mut slot = slot.lock().await;
     if retiring.load(Ordering::Acquire) {
-        return Err("SSAP owner retiring".into());
+        return Err(zbus::fdo::Error::Failed("SSAP owner retiring".into()));
     }
     slot.begin(initialize);
     let result = slot.finish().await;
     if retiring.load(Ordering::Acquire) {
-        return Err("SSAP owner retiring".into());
+        return Err(zbus::fdo::Error::Failed("SSAP owner retiring".into()));
     }
     result
+}
+
+// Keep the established public Native refusal name/body. Internally AccessDenied
+// identifies only EACCES returned by a completed creation with no returned fd;
+// never infer retry eligibility by matching an error string.
+fn public_native_error(error: zbus::fdo::Error) -> zbus::fdo::Error {
+    match error {
+        zbus::fdo::Error::AccessDenied(message) => zbus::fdo::Error::Failed(message),
+        other => other,
+    }
 }
 
 /// Native socket creation can sleep in the kernel. Its actual admission guard
@@ -298,6 +310,10 @@ async fn bind_off_worker(
                 zbus::fdo::Error::NotSupported(
                     "channel mode or same-lifetime rebinding is not supported".into(),
                 )
+            } else if error.raw_os_error() == Some(nix::libc::EACCES) {
+                // open_service's failed socket/bind closes its unbound fd.
+                // sl_publish_binding rejects before attaching or kicking SMTC.
+                zbus::fdo::Error::AccessDenied(format!("native channel bind: {error}"))
             } else {
                 zbus::fdo::Error::Failed(format!("native channel bind: {error}"))
             }
@@ -372,7 +388,9 @@ impl ConnectionOwner {
             .clone()
             .try_lock_owned()
             .map_err(|_| zbus::fdo::Error::Failed("connection Native creation busy".into()))?;
-        bind_off_worker(self.ssap_retiring.clone(), creation, admission, None, bind).await
+        bind_off_worker(self.ssap_retiring.clone(), creation, admission, None, bind)
+            .await
+            .map_err(public_native_error)
     }
 
     pub(crate) fn new(
@@ -730,10 +748,16 @@ impl ConnectionOwner {
     ) -> Result<(), String> {
         // Same production owned slot and transition; only the Native
         // dependency is controlled. No socket/protocol success is simulated.
-        initialize_once(&self.ssap_initialization, &self.ssap_retiring, move || {
-            dependency
-        })
+        initialize_once(
+            &self.ssap_initialization,
+            &self.ssap_retiring,
+            move || async move { dependency.await.map_err(zbus::fdo::Error::Failed) },
+        )
         .await
+        .map_err(|error| match error {
+            zbus::fdo::Error::Failed(message) => message,
+            other => other.to_string(),
+        })
     }
 
     async fn ssap_context(
@@ -773,7 +797,7 @@ impl ConnectionOwner {
     fn ssap_initializer(
         self: std::sync::Arc<Self>,
         original: tokio::time::Instant,
-    ) -> impl std::future::Future<Output = Result<(), String>> + Send + 'static {
+    ) -> impl std::future::Future<Output = zbus::fdo::Result<()>> + Send + 'static {
         // Executed only by the first admitted slot, before physical publication.
         // Reserving this gate cannot start wire work or confer a kernel grant.
         let reserved = self.native_creations.clone().try_lock_owned().ok();
@@ -788,8 +812,10 @@ impl ConnectionOwner {
             })
             .await
             {
-                Ok(result) => result.map_err(|error| error.to_string()),
-                Err(_) => Err("SSAP initialization original deadline".into()),
+                Ok(result) => result,
+                Err(_) => Err(zbus::fdo::Error::Timeout(
+                    "SSAP initialization original deadline".into(),
+                )),
             };
             if let Err(error) = &result {
                 tracing::warn!(%error,lifetime=owner.reference.lifetime,"SSAP initializer ended with error");
@@ -804,7 +830,41 @@ impl ConnectionOwner {
             owner.ssap_initializer(original)
         })
         .await
-        .map_err(zbus::fdo::Error::Failed)
+        .map_err(public_native_error)
+    }
+    /// Only the real completed-security path calls this. Joining comes before
+    /// clearing a definite, no-fd admission refusal. Unknown failures and any
+    /// already-started Engine remain terminal; bind rechecks actual authority.
+    pub(crate) async fn start_ssap_after_security(
+        self: &std::sync::Arc<Self>,
+    ) -> zbus::fdo::Result<()> {
+        self.rearm_refused_initialization().await?;
+        self.start_ssap().await
+    }
+    async fn rearm_refused_initialization(&self) -> zbus::fdo::Result<()> {
+        use std::sync::atomic::Ordering;
+        if self.ssap_security != 0 {
+            let mut slot = self.ssap_initialization.lock().await;
+            if self.ssap_retiring.load(Ordering::Acquire) {
+                return Err(zbus::fdo::Error::Failed("SSAP owner retiring".into()));
+            }
+            let _ = slot.finish().await;
+            if self.ssap_retiring.load(Ordering::Acquire) {
+                return Err(zbus::fdo::Error::Failed("SSAP owner retiring".into()));
+            }
+            if matches!(
+                &*slot,
+                Initialization::Completed(Err(zbus::fdo::Error::AccessDenied(_)))
+            ) {
+                if self.ssap.lock().await.is_some() {
+                    return Err(zbus::fdo::Error::Failed(
+                        "refused initializer unexpectedly owns an Engine".into(),
+                    ));
+                }
+                *slot = Initialization::NotStarted;
+            }
+        }
+        Ok(())
     }
     async fn initialize_ssap(
         &self,
@@ -1843,8 +1903,125 @@ mod grant_tests {
                 matches!(error, zbus::fdo::Error::NotSupported(_)),
                 errno == nix::libc::EOPNOTSUPP
             );
+            assert_eq!(
+                matches!(error, zbus::fdo::Error::AccessDenied(_)),
+                errno == nix::libc::EACCES
+            );
+            if errno == nix::libc::EACCES {
+                assert_eq!(
+                    public_native_error(error),
+                    zbus::fdo::Error::Failed(
+                        "native channel bind: Permission denied (os error 13)".into()
+                    )
+                );
+            }
             assert!(lease.try_lock().is_ok());
         }
+    }
+
+    #[tokio::test]
+    async fn definite_refusal_keeps_public_contract_and_joins_before_security_rearm() {
+        // Actual production slot/offload/guards, with a bounded failing Native
+        // dependency. No successful kernel, mechanism, fd or Engine is supplied.
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(std::path::Path::new("/tmp"), "refused-init"),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let owner = ConnectionOwner::new(&state, 7, SleLinkInfo::default(), 2);
+        let lease = bind_lease();
+        let admission = lease.clone().lock_owned().await;
+        let creation = owner.native_creations.clone().lock_owned().await;
+        let (entered, started) = tokio::sync::oneshot::channel();
+        let (release, released) = std::sync::mpsc::sync_channel(0);
+        let retiring = owner.ssap_retiring.clone();
+        owner
+            .ssap_initialization
+            .lock()
+            .await
+            .begin(move || async move {
+                bind_off_worker(retiring, creation, admission, None, move || {
+                    entered.send(()).unwrap();
+                    released
+                        .recv_timeout(std::time::Duration::from_secs(3))
+                        .unwrap();
+                    Err(std::io::Error::from_raw_os_error(nix::libc::EACCES))
+                })
+                .await
+                .map(|_| panic!("fixture never returns an fd"))
+            });
+        started.await.unwrap();
+        assert!(
+            tokio::time::timeout(
+                std::time::Duration::from_millis(20),
+                owner.rearm_refused_initialization()
+            )
+            .await
+            .is_err()
+        );
+        assert!(matches!(
+            *owner.ssap_initialization.lock().await,
+            Initialization::Running(_)
+        ));
+        assert!(lease.try_lock().is_err());
+        assert!(owner.native_creations.try_lock().is_err());
+        release.send(()).unwrap();
+        assert_eq!(
+            owner.start_ssap().await.unwrap_err(),
+            zbus::fdo::Error::Failed("native channel bind: Permission denied (os error 13)".into())
+        );
+        assert!(matches!(
+            *owner.ssap_initialization.lock().await,
+            Initialization::Completed(Err(zbus::fdo::Error::AccessDenied(_)))
+        ));
+        assert!(lease.try_lock().is_ok());
+        assert!(owner.native_creations.try_lock().is_ok());
+        owner.rearm_refused_initialization().await.unwrap();
+        assert!(matches!(
+            *owner.ssap_initialization.lock().await,
+            Initialization::NotStarted
+        ));
+        assert!(owner.ssap.lock().await.is_none()); // No grant/readiness fabricated.
+    }
+
+    #[tokio::test]
+    async fn security_wakeup_does_not_rearm_unknown_timeout_started_or_retiring_owner() {
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(std::path::Path::new("/tmp"), "terminal-init"),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let owner = ConnectionOwner::new(&state, 7, SleLinkInfo::default(), 2);
+        // Explicit terminal fixtures exercise the actual state transition; a
+        // successful initializer marker is not a successful Native backend.
+        for result in [
+            Err(zbus::fdo::Error::Failed(
+                "native channel bind: Permission denied (os error 13)".into(),
+            )),
+            Err(zbus::fdo::Error::Timeout("unknown physical return".into())),
+            Err(zbus::fdo::Error::NotSupported(
+                "same-lifetime rebinding".into(),
+            )),
+            Ok(()),
+        ] {
+            *owner.ssap_initialization.lock().await = Initialization::Completed(result.clone());
+            owner.rearm_refused_initialization().await.unwrap();
+            match &*owner.ssap_initialization.lock().await {
+                Initialization::Completed(actual) => assert_eq!(actual, &result),
+                _ => panic!("only a typed completed no-fd refusal may be rearmed"),
+            }
+        }
+        *owner.ssap_initialization.lock().await = Initialization::Completed(Err(
+            zbus::fdo::Error::AccessDenied("definite no-fd refusal".into()),
+        ));
+        owner.retire();
+        assert!(owner.rearm_refused_initialization().await.is_err());
+        assert!(matches!(
+            *owner.ssap_initialization.lock().await,
+            Initialization::Completed(Err(zbus::fdo::Error::AccessDenied(_)))
+        ));
     }
 
     #[tokio::test]
@@ -2089,7 +2266,9 @@ mod grant_tests {
                     called.fetch_add(1, Ordering::SeqCst);
                     entered.send(()).unwrap();
                     released.await.unwrap();
-                    Err("finite dependency failure before publication".into())
+                    Err(zbus::fdo::Error::Failed(
+                        "finite dependency failure before publication".into(),
+                    ))
                 })
                 .await
             }
@@ -2108,7 +2287,7 @@ mod grant_tests {
         .await;
         assert_eq!(
             result.unwrap_err(),
-            "finite dependency failure before publication"
+            zbus::fdo::Error::Failed("finite dependency failure before publication".into())
         );
         assert_eq!(calls.load(Ordering::SeqCst), 1);
         assert_eq!(constructed.load(Ordering::SeqCst), 0);
@@ -2146,7 +2325,9 @@ mod grant_tests {
                 move || async move {
                     entered.send(()).unwrap();
                     released.await.unwrap();
-                    Err("failure after held dependency returned".into())
+                    Err(zbus::fdo::Error::Failed(
+                        "failure after held dependency returned".into(),
+                    ))
                 },
             )
             .await
@@ -2173,7 +2354,14 @@ mod grant_tests {
                 .unwrap();
         assert!(denied.is_err());
         release.send(()).unwrap();
-        assert!(start.await.unwrap().unwrap_err().contains("retiring"));
+        assert!(
+            start
+                .await
+                .unwrap()
+                .unwrap_err()
+                .to_string()
+                .contains("retiring")
+        );
         stop.await.unwrap();
         assert!(iface.ssap.lock().await.is_none());
         assert!(matches!(

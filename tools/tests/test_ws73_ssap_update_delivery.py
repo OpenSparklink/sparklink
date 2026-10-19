@@ -63,6 +63,30 @@ def fixture(phase=0):
 def matched(owner,direction,payload,window):return dict(data=payload.hex(),direction=direction,controller=owner['owner']['index'])
 
 class UpdateDelivery(unittest.TestCase):
+    def test_terminal_contract_requires_numeric_security_success_not_plain_passthrough(self):
+        # Explicit report-shape fixtures,not successful Native dependencies.
+        from ws73_target import run_exit_code
+        rows=[]
+        for phase in(0,1):
+            rows.append(dict(phase=phase,ssap_update_delivery=gate.corroborate(fixture(phase),matched)[0],
+                protected_ssap=dict(required=2,controllers=[{'fixture':0},{'fixture':1}]),
+                ssap_values=[{'fixture':'checked-elsewhere'}],ssap_discovery=[{'fixture':'checked-elsewhere'}]))
+        record=dict(status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS',qemu_exit=0,supervisor_exit=0,
+            ssap_update_delivery_requested=True,ssap_update_delivery_acceptance=True,
+            ordinary_channel_socket_acceptance=True,live_ssap_security_requirement=2,
+            live_security_agent_requested='numeric-approve',qemu_args=['ws73.ssap_update_delivery=1'],
+            channel_socket_corroboration=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=rows,round_trips=8),
+            security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',
+                phases=[dict(mode='numeric-approve',ssap_security_requirement=2)for _ in(0,1)],business_round_trips=8))
+        self.assertEqual(run_exit_code(record),0)
+        for changes in [dict(status='PASSTHROUGH_SUPPORT_PASS'),dict(status='FAIL'),dict(qemu_exit=1),
+                dict(supervisor_exit=1),dict(live_ssap_security_requirement=1),
+                dict(live_security_agent_requested='approve'),dict(ssap_update_delivery_acceptance=False),
+                dict(ordinary_channel_socket_acceptance=False),dict(qemu_args=[]),dict(security_agent_corroboration={})]:
+            with self.subTest(changes=changes):self.assertEqual(run_exit_code(record|changes),1)
+        record['channel_socket_corroboration']['proofs'][0]['ssap_update_delivery'].pop()
+        self.assertEqual(run_exit_code(record),1)
+
     def test_finite_fixture_replays_both_directions_and_stages(self):
         summaries=[]
         for phase in(0,1):

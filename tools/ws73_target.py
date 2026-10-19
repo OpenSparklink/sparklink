@@ -1978,7 +1978,11 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if delivery_boot!=(['ws73.ssap_update_delivery=1']if delivery else[]):return 1
     if delivery:
         from ws73_ssap_update_delivery import valid_summary as delivery_summary
-        if record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0 or record.get('ssap_update_delivery_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or record.get('live_ssap_security_requirement')!=2 or not delivery_summary(channel_proof):return 1
+        if (record.get('status')!='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS'
+                or record.get('live_security_agent_requested')!='numeric-approve'
+                or record.get('qemu_exit')!=0 or record.get('ssap_update_delivery_acceptance')is not True
+                or record.get('ordinary_channel_socket_acceptance')is not True
+                or record.get('live_ssap_security_requirement')!=2 or not delivery_summary(channel_proof)):return 1
     elif record.get('ssap_update_delivery_acceptance')or any(p.get('ssap_update_delivery')for p in channel_proof.get('proofs',[])):return 1
     update=record.get('ssap_owned_update_requested',False)
     if type(update)is not bool:return 1

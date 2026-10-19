@@ -538,7 +538,9 @@ UUID须2/16字节，范围非零且start≤end；无效本地参数为InvalidArg
 实机只验每端一个custom property，其他类别与错误矩阵仍待扩大；
 [源码映射和精确范围](../evidence/ssap-read-uuid-progress-20261014.json)。
 
-### 单次客户端配置与更新事务（新源码接线，实机待验收）
+<a id="单次客户端配置与更新事务新源码接线实机待验收"></a>
+
+### 单次客户端配置与更新事务（实验接口）
 
 Connection.ReceiveSsapUpdate(handles:aq,modes:y,deadline:(ttttt))返回单个结构`(bay)`
 （indication:b、raw:ay），不是两个D-Bus返回参数。

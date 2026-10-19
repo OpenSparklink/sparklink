@@ -153,3 +153,80 @@ class ActualValueEvidence(unittest.TestCase):
         root=Path(__file__).resolve().parents[1]
         for name in ['ws73_target.py','ws73_target_control.py','ws73_target_init.sh']:
             self.assertIn('--ssap-value-lengths-verify',(root/name).read_text())
+
+class ReadLimitEvidence(unittest.TestCase):
+    def test_current_terminal_requires_read_limits_while_legacy_is_not_upgraded(self):
+        from ws73_ssap_value import corroborate_read_limits
+        from ws73_target import run_exit_code
+        original,matched,_=ActualValueEvidence().length_fixture();values,_=corroborate(original,matched)
+        edges,matched,_=self.fixture();limits,_=corroborate_read_limits(edges,matched)
+        gate=values[0]['length_gate'];gate.update(version=2,read_limits=limits)
+        proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8,proofs=[dict(phase=p,ssap_values=copy.deepcopy(values))for p in (0,1)])
+        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,ordinary_channel_socket_acceptance=True,ssap_value_lengths_requested=True,ssap_value_lengths_acceptance=True,ssap_value_lengths_contract_version=2,qemu_args=['ws73.ssap_value_lengths=1'],channel_socket_corroboration=proof)
+        self.assertTrue(valid_length_summary(proof,expected_version=2));self.assertEqual(run_exit_code(record),0)
+        for kind in ['missing','partial','wrong-success','legacy']:
+            bad=copy.deepcopy(proof);g=bad['proofs'][0]['ssap_values'][0]['length_gate']
+            if kind=='missing':g.pop('read_limits')
+            elif kind=='partial':g['read_limits'].pop()
+            elif kind=='wrong-success':g['read_limits'][-1]['read_success']=True
+            else:g.pop('version')
+            self.assertFalse(valid_length_summary(bad,expected_version=2));self.assertEqual(run_exit_code(record|dict(channel_socket_corroboration=bad)),1)
+
+    def fixture(self):
+        # Reuse the existing independent discovery verdict fixture. This is
+        # synthetic evidence for checker tests, not a real peer or kernel.
+        sys.path.insert(0,str(Path(__file__).resolve().parent))
+        import test_ws73_ssap_discovery as discovery_fixture
+        row=dict(owners=None,ssap_read_limits=[],ssap_values=[dict(start_wall_ns=100000)],ssap_receipts=[dict(args=['slctl'])]);packets=[]
+        for number,size in enumerate([2038,2039,2040,2041,2042]):
+            group,_,wire=discovery_fixture.DiscoveryEvidence().fixture();base=(number+1)*10000
+            if row['owners']is None:row['owners']=group['owners']
+            group.update(application_bytes=size,cases=[],start_wall_ns=base,end_wall_ns=base+8000)
+            for d in group['ssap_discoveries']:
+                d['receipt']['start_wall_ns']+=base;d['receipt']['end_wall_ns']+=base
+            packets.extend((a,b,p,stamp+base)for a,b,p,stamp in wire)
+            for target,r in enumerate(group['ssap_local_registrations']):
+                value=(hashlib.sha256(f'{size}/{target}'.encode()).digest()*64)[:size]
+                r.update(owner=group['owners'][target],value=value.hex(),registration=dict(exit=0,stdout='SsapLocalService: start=16 end=17 properties=17\n',args=['slctl','--adapter',f'/adapter{target}','ssap-register',r['service_uuid'],r['property_uuid'],'5','0',value.hex()]))
+            for sender in (0,1):
+                target=1-sender;r=group['ssap_local_registrations'][target];v=bytes.fromhex(r['value']);stamp=base+1000+sender*1000
+                item=dict(sender=sender,target=target,handle=17,value=v.hex(),start_wall_ns=stamp,end_wall_ns=stamp+8)
+                for name,request,limit in [('read',b'\x08\x03\x11\0\0',2040),('uuid_read',b'\x0a\x01\x10\0\xff\xff\0'+bytes.fromhex(r['property_uuid']),2038)]:
+                    response=(b'\x09\x03'+v if name=='read'else b'\x0b\x03\x11\0'+v)if size<=limit else b'\x09\x0b\x10\0'
+                    words=['ssap-read',f'/adapter{sender}/link','17']if name=='read'else['ssap-read-uuid',f'/adapter{sender}/link','16','65535',r['property_uuid']]
+                    c=dict(exit=0 if size<=limit else 1,stderr='',stdout='',start_wall_ns=stamp+1,end_wall_ns=stamp+2,args=['slctl','--adapter',f'/adapter{sender}',*words])
+                    if size<=limit:
+                        c['stdout']=(f'SsapPeerValue: operation=ssap-read path=/adapter{sender}/link handle=17 value={v.hex()}\n'if name=='read'else f'SsapUuidValue: path=/adapter{sender}/link handle=17 success=true error=0 value={v.hex()}\nSsapUuidTrace: request={request.hex()} response={response.hex()}\n')
+                    else:c['stderr']='peer read error 16'if name=='read'else'peer requires unsupported SSAP fragmentation'
+                    item[name]=c
+                    for a,b,pdu in [(sender,target,request),(target,sender,response)]:
+                        frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu;packets.extend([(a,'out',frame,stamp+1),(b,'in',frame,stamp+1)])
+                item['local_check']=dict(exit=0,stdout=f'SsapLocalValue: handle=17 value={v.hex()}\n',args=['slctl','--adapter',f'/adapter{target}','ssap-local-read','17'],start_wall_ns=stamp+3,end_wall_ns=stamp+4);group['cases'].append(item)
+            row['ssap_read_limits'].append(group)
+        def match(owner,direction,payload,command):
+            key=(row['owners'].index(owner),direction,payload,command['start_wall_ns'])
+            if key not in packets:raise CaptureError('missing original paired limit packet')
+            packets.remove(key);return dict(data=payload.hex())
+        return row,match,packets
+
+    def test_independent_read_uuid_limits_keep_raw_refusals_and_unchanged_values(self):
+        from ws73_ssap_value import corroborate_read_limits
+        row,match,packets=self.fixture();proof,credit=corroborate_read_limits(row,match)
+        self.assertEqual(len(proof),10);self.assertEqual(sum(v['read_success']for v in proof),6);self.assertEqual(sum(v['uuid_success']for v in proof),2)
+        self.assertEqual(credit,{0:110,1:110});self.assertFalse(packets)
+        self.assertTrue(all(v['wire'][-1]['rx']['data'].endswith('090b1000') for v in proof if not v['uuid_success']))
+
+    def test_missing_group_bad_handle_wrong_error_payload_and_caller_fail_closed(self):
+        from ws73_ssap_value import corroborate_read_limits
+        for kind in ['group','handle','error','payload','local','caller','registration','time','peer']:
+            row,match,packets=self.fixture();c=row['ssap_read_limits'][-1]['cases'][0]
+            if kind=='group':row['ssap_read_limits'].pop()
+            elif kind=='handle':c['handle']=18
+            elif kind=='error':c['read']['stderr']='peer protocol error 16'
+            elif kind=='payload':c['value']='00'*2042
+            elif kind=='local':c['local_check']['stdout']='fake successful local check'
+            elif kind=='caller':c['read']['args'][3]='ssap-local-read'
+            elif kind=='registration':row['ssap_read_limits'][-1]['ssap_local_registrations'][1]['registration']['exit']=1
+            elif kind=='time':c['end_wall_ns']=1
+            else:packets.pop()
+            with self.subTest(kind=kind),self.assertRaises((CaptureError,ValueError)):corroborate_read_limits(row,match)

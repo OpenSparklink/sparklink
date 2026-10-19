@@ -663,11 +663,9 @@ impl Database {
                             .unwrap_err(),
                     ))
                 }
-                Some(p) if p.value.len() + 2 > usize::from(mtu) => ValuePdu::Error {
-                    request: 8,
-                    handle: 0,
-                    error: 16,
-                },
+                // T/XS 20001-2025 §7.4.4.5 requires READ_RSP for this
+                // unsupported-fragmentation result, as with read-by-UUID.
+                Some(p) if p.value.len() + 2 > usize::from(mtu) => ValuePdu::ReadError(16),
                 Some(p) => ValuePdu::ReadValue(&p.value),
             },
             ValuePdu::Write {
@@ -934,6 +932,40 @@ mod tests {
                 .value,
             Ok(&[1, 2][..])
         );
+    }
+
+    #[test]
+    fn complete_read_boundary_rejects_without_mutation_then_accepts_next_operation() {
+        for size in [62, 63, 64] {
+            let mut d = Database::default();
+            let value = vec![0x5a; size];
+            let (_, _, handles) = d
+                .register(vec![1, 0], vec![(vec![2, 0], 5, 0, value.clone())])
+                .unwrap();
+            let handle = handles[0];
+            let read = ValuePdu::Read {
+                handle,
+                data_type: 0,
+            };
+            let raw = d.answer(read, 64, 0).unwrap();
+            if size == 62 {
+                assert_eq!(raw, [vec![9, 3], value.clone()].concat());
+            } else {
+                assert_eq!(raw, [9, 11, 16, 0]);
+            }
+            assert_eq!(d.local_read(handle).unwrap(), value);
+            let next = ValuePdu::Write {
+                handle,
+                data_type: 0,
+                value: &[1, 2],
+                verify: true,
+            };
+            assert_eq!(
+                d.answer(next, 64, 0).unwrap(),
+                [14, 3, handle as u8, (handle >> 8) as u8, 0, 1, 2]
+            );
+            assert_eq!(d.answer(read, 64, 0).unwrap(), [9, 3, 1, 2]);
+        }
     }
     #[test]
     fn permissions_budget_and_nonreuse_are_production_state() {

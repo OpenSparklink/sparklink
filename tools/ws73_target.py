@@ -832,6 +832,7 @@ def _run(args):
     m['ssap_value_acceptance']=False
     m['ssap_value_lengths_requested']=value_lengths
     m['ssap_value_lengths_acceptance']=False
+    if value_lengths:m['ssap_value_lengths_contract_version']=2
     if value_lengths:m['ssap_value_lengths_verifier']=file_record(HERE/'ws73_ssap_value.py')
     m['ssap_access_acceptance']=False
     m['ssap_update_delivery_requested']=update_delivery
@@ -1569,7 +1570,7 @@ def _run(args):
                     if any(bool(row.get('ssap_value_lengths_required',False))!=value_lengths for row in control['channel_socket']):raise ValueError('SSAP lengths request/evidence mismatch')
                     if value_lengths:
                         from ws73_ssap_value import valid_length_summary
-                        if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration']):raise ValueError('exact SSAP length verifier and complete evidence required')
+                        if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration'],expected_version=2):raise ValueError('exact SSAP length verifier and complete evidence required')
                     m['ssap_value_lengths_acceptance']=value_lengths
                     m['ssap_receive_lifecycle_acceptance']=receive_lifecycle
                     m['ssap_update_delivery_acceptance']=update_delivery
@@ -2007,7 +2008,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if length_boot!=(['ws73.ssap_value_lengths=1']if length_gate else[]):return 1
     if length_gate:
         from ws73_ssap_value import valid_length_summary
-        if record.get('ssap_value_lengths_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or record.get('qemu_exit')!=0 or not valid_length_summary(channel_proof):return 1
+        if record.get('ssap_value_lengths_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or record.get('qemu_exit')!=0 or not valid_length_summary(channel_proof,expected_version=record.get('ssap_value_lengths_contract_version',1)):return 1
     elif record.get('ssap_value_lengths_acceptance')or any(v.get('length_gate')for p in channel_proof.get('proofs',[])for v in p.get('ssap_values',[])):return 1
     delivery=record.get('ssap_update_delivery_requested',False)
     if type(delivery)is not bool:return 1

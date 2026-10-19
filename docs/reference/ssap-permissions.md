@@ -33,6 +33,11 @@ legacy narrowing 仅保留历史 ABI/权限回归，不再有生产 facade 消�
 旧 AddProperty/WriteProperty/RemoteService.Write/CallMethod 等未发布入口已删除，
 CLI 和观察者白名单同步退休。原权限、超限和不截断语义由实际 codec/数据库及
 现有纯测试保留；不再把历史 248/252 输入限值描述成当前 Engine 的协商 MTU。
+
+完整PDU阶段按opcode开销限制远端值：read最多为协商MTU减2字节，单项UUID读取
+最多为MTU减4字节。本地数据库的2042字节预算不代表该值能装进任意响应。
+超过响应MTU而尚未实现SSAP分片时，两种读取都返回READ_RSP的不支持分片错误16，
+不截断、不换成通用错误响应、不更改属性值；同一actor仍可继续处理后续合法请求。
 真实读写仍核对操作位、连接身份、安全上下文、原期限和本地授权；登记成功不能
 代替对端收到。通知/指示和长写的未实现部分继续明确拒绝。
 

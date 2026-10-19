@@ -555,10 +555,17 @@ NotSupported。只允许一个call-owned等待者；busy、原期限、caller退
 5秒上限；无法确认时该SSAP actor失败，不能重开同lifetime伪装Free。不会清除已有
 非零配置。一个call拥有客户端事务序列，其他竞争调用明确busy；尚无持续多应用聚合。
 
+清理收到匹配原写请求和handle的类型化 `WriteError(4)` 时，该属性被明确报告为
+不可用：当前接收仍返回失败，内部收到的值不会作为成功结果交付，也不宣称CPCD已
+验证为零。该请求的失败回复已到达，其他handle仍按同一清理期限处理；独立业务
+不因这个已知失败自动退休。未知失败、超时、错误handle及仅有相同字样的错误字符串
+不适用这一分支，仍须保守退休。它不更改Native授权、安全等级或credit。
+
 完整property packet进入有界内部槽；IND的ACK1只表示该接收准入，不代表调用者
 处理、最终RPC返回或业务回复。未知、已知关闭、过期、不匹配或事件ACK0；NTF无回复。
 旧ObserveSsapIncoming/ssap-observe入口已退休，无兼容别名；历史记录保留原命令身份。
-多条同handle实例、分包和事件投递未支持；malformed packet当前失败SSAP actor。
+多条同handle实例、事件投递及未协商序号的长报文仍不支持；已协商的单值序号
+分片范围见[片段边界](../explanation/ssap-value-fragments.md)。malformed packet失败SSAP actor。
 正向更新、传输及机制的限定资格按准确产物读取；不能继承旧本地观察的结果，
 也不能把有限正向范围当作完整安全或生命周期资格。
 受保护SMTC的初始化保留原错误类型；只有已完成且未返回fd的确定安全准入拒绝，

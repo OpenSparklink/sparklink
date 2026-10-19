@@ -65,7 +65,7 @@ enum Query {
         bytes: Vec<u8>,
         deadline: Instant,
         minimum: u32,
-        reply: oneshot::Sender<Result<Vec<u8>, String>>,
+        reply: oneshot::Sender<Result<Vec<u8>, ClientFailure>>,
     },
 }
 type Store = std::sync::Arc<std::sync::Mutex<crate::ssap_database::Database>>;
@@ -218,6 +218,7 @@ impl Observer {
             .await
             .map_err(|_| "SSAP discovery original deadline".to_string())?
             .map_err(|_| "SSAP actor stopped during discovery".to_string())?
+            .map_err(|error| error.to_string())
     }
     pub(crate) async fn discover(
         self,
@@ -414,6 +415,7 @@ impl Observer {
             .await
             .map_err(|_| "SSAP value original deadline".to_string())?
             .map_err(|_| "SSAP actor stopped during value operation".to_string())?
+            .map_err(|error| error.to_string())
     }
     /// Native metadata through the existing owned fd; no SSAP request or new
     /// binding. Cancellation/queueing preserve this original metadata deadline.
@@ -599,6 +601,85 @@ fn incoming_packet(
     out.truncate(n);
     Ok(out)
 }
+/// Retain a correlated peer result until its owning transaction handles it.
+/// A diagnostic string,even one resembling a peer error,is not this evidence.
+/// This classification grants no identity,security,credit or native authority.
+#[derive(Debug, PartialEq, Eq)]
+pub(super) enum ClientFailure {
+    Message(String),
+    WriteError { handle: u16, error: u8 },
+}
+impl std::fmt::Display for ClientFailure {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Message(message) => f.write_str(message),
+            Self::WriteError { error, .. } => write!(f, "peer write error {error}"),
+        }
+    }
+}
+impl From<String> for ClientFailure {
+    fn from(value: String) -> Self {
+        Self::Message(value)
+    }
+}
+impl From<&str> for ClientFailure {
+    fn from(value: &str) -> Self {
+        Self::Message(value.into())
+    }
+}
+
+fn client_value_response(
+    budget: u16,
+    request: &[u8],
+    raw: &[u8],
+) -> io::Result<Result<Vec<u8>, ClientFailure>> {
+    let request =
+        ValuePdu::decode(budget, request).map_err(|_| io::Error::other("invalid local request"))?;
+    let parsed =
+        ValuePdu::decode(budget, raw).map_err(|_| io::Error::other("invalid value response"))?;
+    Ok(match (request, parsed) {
+        (ValuePdu::Read { .. }, ValuePdu::ReadValue(value)) => Ok(value.to_vec()),
+        (ValuePdu::Read { .. }, ValuePdu::ReadError(error)) => {
+            Err(format!("peer read error {error}").into())
+        }
+        (
+            ValuePdu::Write {
+                handle,
+                data_type,
+                value,
+                verify: true,
+            },
+            ValuePdu::WrittenValue {
+                handle: h,
+                data_type: t,
+                value: v,
+            },
+        ) if (handle, data_type, value) == (h, t, v) => Ok(v.to_vec()),
+        (ValuePdu::Write { handle, .. }, ValuePdu::WriteError { handle: h, error })
+            if handle == h =>
+        {
+            Err(ClientFailure::WriteError { handle, error })
+        }
+        (
+            ValuePdu::Read { .. },
+            ValuePdu::Error {
+                request: 8, error, ..
+            },
+        )
+        | (
+            ValuePdu::Write { .. },
+            ValuePdu::Error {
+                request: 13, error, ..
+            },
+        ) => Err(format!("peer protocol error {error}").into()),
+        _ => {
+            return Err(io::Error::other(
+                "SSAP response does not match original operation",
+            ));
+        }
+    })
+}
+
 struct ClientRequest {
     minimum: u32,
     epoch: Option<u64>,
@@ -609,7 +690,7 @@ struct ClientRequest {
     // Starts once at software admission, when physical submission is possible.
     // This is a drain bound, never a renewed author/admission/TX deadline.
     cleanup_deadline: Option<Instant>,
-    reply: Option<oneshot::Sender<Result<Vec<u8>, String>>>,
+    reply: Option<oneshot::Sender<Result<Vec<u8>, ClientFailure>>>,
 }
 impl ClientRequest {
     fn admit_part(&mut self, now: Instant, last: bool) {
@@ -635,8 +716,8 @@ impl ClientRequest {
     }
 }
 fn finish_client(
-    reply: Option<oneshot::Sender<Result<Vec<u8>, String>>>,
-    result: Result<Vec<u8>, String>,
+    reply: Option<oneshot::Sender<Result<Vec<u8>, ClientFailure>>>,
+    result: Result<Vec<u8>, ClientFailure>,
 ) {
     if let Some(reply) = reply {
         let _ = reply.send(result);
@@ -691,7 +772,7 @@ impl ClientAdmission<'_> {
         bytes: Vec<u8>,
         deadline: Instant,
         minimum: u32,
-        reply: oneshot::Sender<Result<Vec<u8>, String>>,
+        reply: oneshot::Sender<Result<Vec<u8>, ClientFailure>>,
     ) -> bool {
         let Self {
             wire,
@@ -718,7 +799,7 @@ impl ClientAdmission<'_> {
         let constraint = match prepared {
             Ok(c) => c,
             Err(e) => {
-                let _ = reply.send(Err(format!("SSAP send intent refused: {e}")));
+                let _ = reply.send(Err(format!("SSAP send intent refused: {e}").into()));
                 return false;
             }
         };
@@ -1610,7 +1691,7 @@ async fn exchange_loop(
                         if request[0]==10 {
                             let r=slk_protocol::ssap::read_uuid::Request::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local UUID request"))?;
                             if let Ok(ValuePdu::ReadError(16))=ValuePdu::decode(negotiated,raw){finish_client(reply,Err("peer requires unsupported SSAP fragmentation".into()));continue;}
-                            if let Ok(ValuePdu::Error{request:10,error,..})=ValuePdu::decode(negotiated,raw){finish_client(reply,Err(format!("peer read UUID protocol error {error}")));continue;}
+                            if let Ok(ValuePdu::Error{request:10,error,..})=ValuePdu::decode(negotiated,raw){finish_client(reply,Err(format!("peer read UUID protocol error {error}").into()));continue;}
                             let entries=slk_protocol::ssap::read_uuid::decode(if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{negotiated},raw).map_err(|_|io::Error::other("invalid read UUID response"))?;
                             if entries.iter().any(|i|i.handle<r.start || i.handle>r.end) {return Err(io::Error::other("read UUID response outside requested range"));}
                             finish_client(reply,Ok(raw.to_vec()));continue;
@@ -1622,15 +1703,9 @@ async fn exchange_loop(
                             finish_client(reply,Ok(raw.to_vec()));continue;
                         }
                         let value_budget=if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{negotiated};
-                        let parsed=ValuePdu::decode(value_budget,raw).map_err(|_|io::Error::other("invalid value response"))?;
-                        let result=match (ValuePdu::decode(value_budget,&request).map_err(|_|io::Error::other("invalid local request"))?,parsed) {
-                            (ValuePdu::Read{..},ValuePdu::ReadValue(value))=>Ok(value.to_vec()),
-                            (ValuePdu::Read{..},ValuePdu::ReadError(error))=>Err(format!("peer read error {error}")),
-                            (ValuePdu::Write{handle,data_type,value,verify:true},ValuePdu::WrittenValue{handle:h,data_type:t,value:v}) if (handle,data_type,value)==(h,t,v)=>Ok(v.to_vec()),
-                            (ValuePdu::Write{handle,..},ValuePdu::WriteError{handle:h,error}) if handle==h=>Err(format!("peer write error {error}")),
-                            (ValuePdu::Read{..},ValuePdu::Error{request:8,error,..})|(ValuePdu::Write{..},ValuePdu::Error{request:13,error,..})=>Err(format!("peer protocol error {error}")),
-                            _=>return Err(io::Error::other("SSAP response does not match original operation")),
-                        };finish_client(reply,result);
+                        // Admission,lifetime andsecurity checks above still
+                        // precede classification;never parse diagnostics.
+                        finish_client(reply,client_value_response(value_budget,&request,raw)?);
                     } else if raw[0] == 2 || raw[0] == 3 {
                         let info = match ExchangeInfo::decode(capabilities.mtu,raw) {
                             Ok(info)=>info,
@@ -1735,6 +1810,7 @@ mod tests {
                     rx.try_recv()
                         .unwrap()
                         .unwrap_err()
+                        .to_string()
                         .contains("before admission")
                 );
             }
@@ -1762,6 +1838,7 @@ mod tests {
             rx.try_recv()
                 .unwrap()
                 .unwrap_err()
+                .to_string()
                 .contains("original deadline")
         );
         let c = client.as_ref().unwrap();
@@ -1779,6 +1856,19 @@ mod tests {
         finish_client(c.reply.take(), Ok(vec![99]));
         assert_eq!(rx.try_recv(), Err(oneshot::error::TryRecvError::Closed));
         assert!(pending.is_empty());
+    }
+    #[test]
+    fn typed_write_rejection_requires_original_handle_operation_and_layout() {
+        let request = [13, 35, 17, 0, 2, 0, 0];
+        let result = client_value_response(249, &request, &[14, 7, 1, 17, 0, 4]).unwrap();
+        assert_eq!(result, Err(ClientFailure::WriteError { handle: 17, error: 4 }));
+        assert_eq!(result.unwrap_err().to_string(), "peer write error 4");
+        for raw in [&[14, 7, 1, 18, 0, 4][..], &[14, 11, 4, 0], &[9, 11, 4, 0]] {
+            assert!(client_value_response(249, &request, raw).is_err());
+        }
+        assert!(matches!(client_value_response(249, &request, &[1, 0, 13, 17, 0, 4]).unwrap(),
+            Err(ClientFailure::Message(_))));
+        assert_eq!(client_value_response(249, &request, &[14, 3, 17, 0, 2, 0, 0]).unwrap(), Ok(vec![0, 0]));
     }
     #[test]
     fn extended_complete_and_sequence_capabilities_remain_distinct() {

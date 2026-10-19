@@ -1,7 +1,7 @@
 //! One call-owned receive transaction inside the existing physical SSAP actor.
 //! This is phase/ownership bookkeeping, not another wire loop or codec. The
 //! actor's sole ClientRequest performs every real read/write and keeps debt.
-use super::ssap_engine::{Incoming, IncomingWait};
+use super::ssap_engine::{ClientFailure, Incoming, IncomingWait};
 use std::time::Duration;
 use tokio::{sync::oneshot, time::Instant};
 
@@ -14,7 +14,7 @@ enum Phase {
 }
 pub(crate) enum Event {
     Cancelled,
-    Wire(Result<Vec<u8>, String>),
+    Wire(Result<Vec<u8>, ClientFailure>),
     Data(Result<Incoming, String>),
 }
 pub(crate) struct ReceiveTransaction {
@@ -28,7 +28,7 @@ pub(crate) struct ReceiveTransaction {
     failure: Option<String>,
     payload: Option<Incoming>,
     reply: oneshot::Sender<Result<Incoming, String>>,
-    wire: Option<oneshot::Receiver<Result<Vec<u8>, String>>>,
+    wire: Option<oneshot::Receiver<Result<Vec<u8>, ClientFailure>>>,
     data_send: Option<oneshot::Sender<Result<Incoming, String>>>,
     data: Option<oneshot::Receiver<Result<Incoming, String>>>,
 }
@@ -127,7 +127,7 @@ impl ReceiveTransaction {
     pub(crate) fn submitted(
         &mut self,
         handle: u16,
-        receiver: oneshot::Receiver<Result<Vec<u8>, String>>,
+        receiver: oneshot::Receiver<Result<Vec<u8>, ClientFailure>>,
         admitted: bool,
     ) {
         if admitted && matches!(self.phase, Phase::Enable(_)) {
@@ -165,6 +165,18 @@ impl ReceiveTransaction {
                 self.wire.take();
                 match self.phase {
                     Phase::Disable => {
+                        if let Err(ClientFailure::WriteError { handle, error: 4 }) = &result
+                            && self.possibly_enabled.first() == Some(handle)
+                        {
+                            // A matching,decoded response closes this physical
+                            // request with failure: the remote property is no
+                            // longer available. Not a verified disable or an
+                            // application delivery;other handles remain owed.
+                            self.failure.get_or_insert_with(||
+                                "remote client configuration property unavailable".into());
+                            self.possibly_enabled.remove(0);
+                            return Ok(());
+                        }
                         if result.as_deref() != Ok(&[0, 0][..]) {
                             return Err(
                                 "client configuration disable not verified; retire SSAP actor"
@@ -232,13 +244,85 @@ mod tests {
     //! Pure production phase bookkeeping with explicit reply fixtures. This
     //! does not supply successful Native ioctls,security,credit or a second peer.
     use super::*;
-    async fn wire(t: &mut ReceiveTransaction, result: Result<Vec<u8>, String>, handle: u16) {
+    async fn wire(t: &mut ReceiveTransaction, result: Result<Vec<u8>, ClientFailure>, handle: u16) {
         let (tx, rx) = oneshot::channel();
         t.submitted(handle, rx, true);
         tx.send(result).unwrap();
         let e = t.event().await;
         t.apply(e).unwrap();
     }
+    #[tokio::test]
+    async fn typed_missing_property_fails_call_but_preserves_other_cleanup_and_deadline() {
+        let original = Instant::now() + Duration::from_secs(3);
+        let (reply, result) = oneshot::channel();
+        let mut t = ReceiveTransaction::new(vec![17, 18], 2, original, reply);
+        let mut waiter = None;
+        for handle in [17, 18] {
+            assert_eq!(t.next(&mut waiter), Some((handle, None, original)));
+            wire(&mut t, Ok(vec![0, 0]), handle).await;
+        }
+        for handle in [17, 18] {
+            assert_eq!(t.next(&mut waiter), Some((handle, Some([2, 0]), original)));
+            wire(&mut t, Ok(vec![2, 0]), handle).await;
+        }
+        waiter.take().unwrap().reply.send(Ok((true, vec![16, 3, 17, 0, 0, 0]))).unwrap();
+        let data = t.event().await;
+        t.apply(data).unwrap();
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        let fixed = t.wake_deadline();
+        assert_eq!(t.next(&mut waiter), Some((17, Some([0, 0]), fixed)));
+        wire(&mut t, Err(ClientFailure::WriteError { handle: 17, error: 4 }), 17).await;
+        assert_eq!(t.possibly_enabled, vec![18]);
+        assert!(!t.finished());
+        assert_eq!(t.wake_deadline(), fixed);
+        assert_eq!(t.next(&mut waiter), Some((18, Some([0, 0]), fixed)));
+        wire(&mut t, Ok(vec![0, 0]), 18).await;
+        assert!(t.finished());
+        t.finish();
+        // The internally received value is never upgraded to application
+        // success when its original remote configuration disappeared.
+        assert_eq!(result.await.unwrap(), Err("remote client configuration property unavailable".into()));
+    }
+
+    #[test]
+    fn opaque_similar_error_wrong_handle_and_other_peer_error_still_retire() {
+        for error in [
+            ClientFailure::Message("peer write error 4".into()),
+            ClientFailure::WriteError { handle: 18, error: 4 },
+            ClientFailure::WriteError { handle: 17, error: 9 },
+        ] {
+            // Explicit phase fixture;the full transition above uses actual
+            // production admission/event methods. No Native or USB fixture.
+            let (reply, _result) = oneshot::channel();
+            let mut t = ReceiveTransaction::new(vec![17], 2, Instant::now() + Duration::from_secs(3), reply);
+            t.phase = Phase::Disable;
+            t.possibly_enabled.push(17);
+            t.cleanup = Some(Instant::now() + Duration::from_secs(5));
+            let fixed = t.wake_deadline();
+            assert!(t.apply(Event::Wire(Err(error))).is_err());
+            assert_eq!(t.possibly_enabled, vec![17]);
+            assert_eq!(t.wake_deadline(), fixed);
+            assert!(!t.finished());
+        }
+    }
+
+    #[tokio::test]
+    async fn cancelled_author_does_not_turn_known_absence_into_late_success() {
+        let (reply, mut result) = oneshot::channel();
+        let mut t = ReceiveTransaction::new(vec![17], 2, Instant::now() + Duration::from_secs(3), reply);
+        t.possibly_enabled.push(17);
+        result.close();
+        let mut waiter = None;
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        let fixed = t.wake_deadline();
+        assert_eq!(t.next(&mut waiter), Some((17, Some([0, 0]), fixed)));
+        t.apply(Event::Wire(Err(ClientFailure::WriteError { handle: 17, error: 4 }))).unwrap();
+        assert_eq!(t.wake_deadline(), fixed);
+        assert!(t.finished());
+        t.finish();
+        assert_eq!(result.try_recv(), Err(oneshot::error::TryRecvError::Closed));
+    }
+
     #[tokio::test]
     async fn transaction_checks_baselines_enables_once_and_returns_only_after_verified_disable() {
         let original = Instant::now() + Duration::from_secs(3);

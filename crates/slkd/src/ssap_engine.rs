@@ -488,6 +488,15 @@ struct UpdateRequest {
     reply: Option<oneshot::Sender<Result<slk_contract::ssap::UpdateReceipt, String>>>,
 }
 impl UpdateRequest {
+    async fn withdrawn(&mut self) {
+        let Some(reply) = self.reply.as_mut() else {
+            return std::future::pending().await;
+        };
+        tokio::select! {
+            _ = self.owner.withdrawn() => {},
+            _ = reply.closed() => {},
+        }
+    }
     fn admit_part(&mut self, now: Instant, last: bool) {
         self.drain.get_or_insert(now + Duration::from_secs(5));
         self.submitted_all = last;
@@ -1348,6 +1357,15 @@ async fn exchange_loop(
         };
         tokio::select! {
             _ = &mut *stopped => return Ok(()),
+            _ = async { update.as_mut().expect("guarded update wait").withdrawn().await },
+                if update.as_ref().is_some_and(|v|v.reply.is_some()) => {
+                retire_update_wait(&mut update, &mut pending, Instant::now());
+                if update.as_ref().is_some_and(|v| !v.owner.current() && v.drain.is_some() && !v.submitted_all) {
+                    return Err(io::Error::other("partial update owner withdrawn;retire SSAP actor"));
+                }
+                // A withdrawn author does not erase admitted work or its
+                // original drain. reply=None disarms this wake branch.
+            }
             _ = tokio::time::sleep_until(deadline) => {
                 retire_client_wait(&mut client, &mut pending, Instant::now());
                 retire_update_wait(&mut update, &mut pending, Instant::now());

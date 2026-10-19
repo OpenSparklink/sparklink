@@ -113,6 +113,13 @@ impl Owner {
     pub(crate) fn current(&self) -> bool {
         *self.active.borrow()
     }
+    /// Notification only: admission must still recheck under the DB mutex.
+    /// Subscribe before checking the value so an earlier or concurrent revoke
+    /// cannot leave an existing operation asleep until its original deadline.
+    pub(crate) async fn withdrawn(&self) {
+        let mut active = self.active.subscribe();
+        let _ = active.wait_for(|current| !*current).await;
+    }
     /// Database removal/owner loss call this under the SAME database mutex as
     /// value admission. Revocation does not undo already committed writes.
     pub(crate) fn revoke(&self) {

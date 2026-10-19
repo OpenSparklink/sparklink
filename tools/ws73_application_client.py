@@ -33,7 +33,7 @@ def process_identity(pid, uid=1000):
     return identity,status
 
 
-def ssap_receipt(app,entry):
+def ssap_receipt(app,entry,*,expected_size=32):
     if app['environment']!=application_environment() or app['exit'] or app['stderr']:
         raise CaptureError('actual successful SSAP consumer and staged SDK required')
     identity=app['credentials']
@@ -43,7 +43,7 @@ def ssap_receipt(app,entry):
     if len(lines)!=2 or json.loads(lines[0])!=dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):
         raise CaptureError('original retained-caller start barrier required')
     operation,path,handle,expected=app['ssap_operation'],app['ssap_path'],app['ssap_handle'],app['ssap_expected']
-    if operation not in ('ssap-read','ssap-write') or path!=entry['object']['path'] or not 1<=handle<=65535 or len(bytes.fromhex(expected))!=32:
+    if operation not in ('ssap-read','ssap-write') or path!=entry['object']['path'] or not 1<=handle<=65535 or type(expected_size)is not int or not 1<=expected_size<=2042 or len(bytes.fromhex(expected))!=expected_size:
         raise CaptureError('original exact SSAP caller identity and bounded value required')
     if lines[1]!=f'SsapPeerValue: operation={operation} path={path} handle={handle} value={expected}':
         raise CaptureError('actual SDK must validate the complete peer result')
@@ -54,8 +54,8 @@ def ssap_receipt(app,entry):
         raise CaptureError('exact actual SSAP executable and arguments required')
 
 
-def ssap_command(run,row,entry,args,expected,*,api=None):
-    if not isinstance(expected,bytes) or len(expected)!=32:raise CaptureError('original random expected SSAP value required')
+def ssap_command(run,row,entry,args,expected,*,api=None,expected_size=32):
+    if type(expected_size)is not int or not 1<=expected_size<=2042 or not isinstance(expected,bytes) or len(expected)!=expected_size:raise CaptureError('original bounded expected SSAP value required')
     position=row['owners'].index(entry)
     if api is None:api='c' if position==row['phase'] else 'python'
     if api not in ('c','python'):raise CaptureError('explicit SDK consumer required')
@@ -83,7 +83,7 @@ def ssap_command(run,row,entry,args,expected,*,api=None):
             if proc.poll()is None:proc.kill()
             proc.wait();proc.stdin.close()
             app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=stdout.read_text(),stderr=stderr.read_text());run.save()
-    ssap_receipt(app,entry)
+    ssap_receipt(app,entry,expected_size=expected_size)
     return app
 
 

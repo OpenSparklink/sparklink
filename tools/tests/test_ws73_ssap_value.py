@@ -1,4 +1,4 @@
-import copy,hashlib,sys,unittest
+import copy,hashlib,sys,unittest,json
 from pathlib import Path
 from types import SimpleNamespace
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -230,3 +230,29 @@ class ReadLimitEvidence(unittest.TestCase):
             elif kind=='time':c['end_wall_ns']=1
             else:packets.pop()
             with self.subTest(kind=kind),self.assertRaises((CaptureError,ValueError)):corroborate_read_limits(row,match)
+
+    def test_actual_sdk_boundary_receipts_are_bounded_and_cannot_replace_the_old_default(self):
+        from ws73_application_client import ssap_receipt,application_environment
+        from ws73_ssap_value import corroborate_read_limits
+        row,_,packets=self.fixture();row.update(phase=0,ssap_language_clients=[])
+        for group in row['ssap_read_limits']:
+            for i,owner in enumerate(group['owners']):owner['owner'].update(index=i,generation=i+1)
+        for group in row['ssap_read_limits']:
+            size=group['application_bytes']
+            if size>2040:continue
+            for item in group['cases']:
+                sender=item['sender'];owner=row['owners'][sender];api='c'if sender==0 else'python';path=owner['object']['path'];start=item['start_wall_ns']+5
+                args=(['/bin/ws73-application-client-c']if api=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['ssap',str(sender),str(sender+1),path,'ssap-read','17',item['value']]
+                app=dict(api=api,position=sender,args=args,environment=application_environment(),exit=0,stderr='',stdout=json.dumps(dict(stage='ssap_start_barrier',api=api,client_closed=True))+'\n'+f'SsapPeerValue: operation=ssap-read path={path} handle=17 value={item["value"]}\n',credentials=dict(uids=[1000]*4,capabilities={k:'0'for k in ['CapEff','CapPrm','CapAmb','CapInh']}),ssap_operation='ssap-read',ssap_path=path,ssap_handle=17,ssap_expected=item['value'],start_wall_ns=start,end_wall_ns=start+1)
+                item['sdk_read']=app;row['ssap_language_clients'].append(app);item['local_check'].update(start_wall_ns=start+2,end_wall_ns=start+3);item['end_wall_ns']=start+4
+                for a,b,pdu in [(sender,1-sender,b'\x08\x03\x11\0\0'),(1-sender,sender,b'\x09\x03'+bytes.fromhex(item['value']))]:
+                    frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu;packets.extend([(a,'out',frame,start),(b,'in',frame,start)])
+                ssap_receipt(app,owner,expected_size=size)
+                with self.assertRaises(CaptureError):ssap_receipt(app,owner)
+        def match(owner,direction,payload,command):
+            key=(row['owners'].index(owner),direction,payload,command['start_wall_ns'])
+            if key not in packets:raise CaptureError('missing actual-format SDK endpoint')
+            packets.remove(key);return dict(data=payload.hex())
+        proof,credit=corroborate_read_limits(row,match,version=3);self.assertFalse(packets);self.assertEqual(credit,{0:116,1:116});self.assertEqual(sum(v['sdk']is not None for v in proof),6)
+        broken=copy.deepcopy(row);broken['ssap_language_clients'].pop()
+        with self.assertRaises(CaptureError):corroborate_read_limits(broken,match,version=3)

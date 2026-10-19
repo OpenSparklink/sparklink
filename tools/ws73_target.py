@@ -832,7 +832,7 @@ def _run(args):
     m['ssap_value_acceptance']=False
     m['ssap_value_lengths_requested']=value_lengths
     m['ssap_value_lengths_acceptance']=False
-    if value_lengths:m['ssap_value_lengths_contract_version']=2
+    if value_lengths:m['ssap_value_lengths_contract_version']=3
     if value_lengths:m['ssap_value_lengths_verifier']=file_record(HERE/'ws73_ssap_value.py')
     m['ssap_access_acceptance']=False
     m['ssap_update_delivery_requested']=update_delivery
@@ -1569,8 +1569,10 @@ def _run(args):
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
                     if any(bool(row.get('ssap_value_lengths_required',False))!=value_lengths for row in control['channel_socket']):raise ValueError('SSAP lengths request/evidence mismatch')
                     if value_lengths:
+                        from ws73_ssap_update_delivery import validate_tools as validate_read_tools
+                        for row in control['channel_socket']:validate_read_tools(row['ssap_read_limit_tools'],args.prepared/'root',package['guest_files'])
                         from ws73_ssap_value import valid_length_summary
-                        if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration'],expected_version=2):raise ValueError('exact SSAP length verifier and complete evidence required')
+                        if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration'],expected_version=3):raise ValueError('exact SSAP length verifier and complete evidence required')
                     m['ssap_value_lengths_acceptance']=value_lengths
                     m['ssap_receive_lifecycle_acceptance']=receive_lifecycle
                     m['ssap_update_delivery_acceptance']=update_delivery

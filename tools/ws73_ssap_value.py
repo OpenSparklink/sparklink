@@ -9,7 +9,8 @@ LENGTHS = (32,32,32,32,0,1,248,249,250,251,252,253,254,255,1024,2037)
 
 def execute_read_limits(run,row,command,services):
     from ws73_ssap_discovery import execute as discover
-    row['ssap_read_limits']=[];run.save()
+    from ws73_ssap_update_delivery import tool_records
+    row['ssap_read_limit_tools']=tool_records();row['ssap_read_limits']=[];run.save()
     for size in (2038,2039,2040,2041,2042):
         group=dict(owners=row['owners'],application_bytes=size,cases=[],start_wall_ns=time.time_ns())
         row['ssap_read_limits'].append(group);run.save()
@@ -22,6 +23,9 @@ def execute_read_limits(run,row,command,services):
                 for name,args in [('read',['ssap-read',source['object']['path'],str(item['handle'])]),
                                   ('uuid_read',['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])]:
                     item[name]=run.command([str(run.args.slctl),'--adapter',source['owner']['path'],*args],10,collection='ssap_read_limits');run.save()
+                if size<=2040:
+                    from ws73_application_client import ssap_command
+                    item['sdk_read']=ssap_command(run,row,source,['ssap-read',source['object']['path'],str(item['handle'])],prop['value'],expected_size=size)
                 item['local_check']=command(target,['ssap-local-read',str(prop['handle'])],prop['value'])
                 item['end_wall_ns']=time.time_ns();run.save()
                 for name,limit,error in [('read',2040,'peer read error 16'),('uuid_read',2038,'peer requires unsupported SSAP fragmentation')]:
@@ -30,9 +34,10 @@ def execute_read_limits(run,row,command,services):
         group['end_wall_ns']=time.time_ns();run.save()
 
 
-def corroborate_read_limits(row,matched):
+def corroborate_read_limits(row,matched,*,version=2):
     from ws73_ssap_discovery import corroborate as discovery
-    groups=row.get('ssap_read_limits',[]);credit={0:0,1:0};proof=[];fresh=set()
+    groups=row.get('ssap_read_limits',[]);credit={0:0,1:0};proof=[];fresh=set();sdk_seen=[]
+    if version>=3 and len(row.get('ssap_language_clients',[]))!=6:raise CaptureError('six original bounded SDK read processes required')
     if [g.get('application_bytes')for g in groups]!=[2038,2039,2040,2041,2042]:raise CaptureError('complete actual read/UUID limit groups required')
     for group in groups:
         if group.get('owners')!=row['owners'] or len(group.get('cases',[]))!=2:raise CaptureError('same-lifetime opposite actual read cases required')
@@ -62,7 +67,20 @@ def corroborate_read_limits(row,matched):
                 for a,b,pdu in [(sender,target,request),(target,sender,response)]:
                     frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
                     packet=dict(tx=matched(row['owners'][a],'out',frame,c),rx=matched(row['owners'][b],'in',frame,c));wire.append(packet);credit[a]+=len(packet['tx'].get('fragments',[packet['tx']]))
-            proof.append(dict(sender=sender,application_bytes=size,read_success=size<=2040,uuid_success=size<=2038,wire=wire,discovery=discovered if sender==0 else None))
+            sdk=None
+            if version>=3 and size<=2040:
+                from ws73_application_client import ssap_receipt
+                app=item['sdk_read'];ssap_receipt(app,source,expected_size=size)
+                if app not in row['ssap_language_clients']or app in sdk_seen:raise CaptureError('SDK read must belong to one actual registered child')
+                sdk_seen.append(app)
+                expected_api='c'if sender==row['phase']else'python'
+                if app['api']!=expected_api or app['ssap_expected']!=item['value'] or not item['start_wall_ns']<=app['start_wall_ns']<=app['end_wall_ns']<=local['start_wall_ns']:raise CaptureError('actual swapped-role SDK complete read required')
+                for a,b,pdu in [(sender,target,b'\x08\x03'+h.to_bytes(2,'little')+b'\0'),(target,sender,b'\x09\x03'+value)]:
+                    frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu;packet=dict(tx=matched(row['owners'][a],'out',frame,app),rx=matched(row['owners'][b],'in',frame,app));wire.append(packet);credit[a]+=len(packet['tx'].get('fragments',[packet['tx']]))
+                sdk=dict(api=app['api'],application=app)
+            elif item.get('sdk_read'):raise CaptureError('unrequested SDK read cannot upgrade old contract')
+            proof.append(dict(sender=sender,application_bytes=size,read_success=size<=2040,uuid_success=size<=2038,wire=wire,discovery=discovered if sender==0 else None,**(dict(sdk=sdk)if version>=3 else{})))
+    if version>=3 and len(sdk_seen)!=6:raise CaptureError('every actual SDK child must be accounted')
     return proof,credit
 
 
@@ -100,7 +118,7 @@ def execute(run,row,*,value_command=None,services=None,local_value_command=None)
     lengths=bool(getattr(run.args,'ssap_value_lengths_verify',False))
     if lengths:
         if any(v is not None for v in (value_command,services,local_value_command)):raise CaptureError('dedicated real CLI length gate,not an unqualified SDK fixture')
-        row['ssap_value_lengths_required']=True;row['ssap_value_lengths_version']=2;row['ssap_length_mtu']=length_mtu(row);row['ssap_length_rejections']=[]
+        row['ssap_value_lengths_required']=True;row['ssap_value_lengths_version']=3;row['ssap_length_mtu']=length_mtu(row);row['ssap_length_rejections']=[]
     def command(owner,args,expected=None):
         if local_value_command is not None and args[0]=='ssap-local-read':
             return local_value_command(owner,args,expected)
@@ -253,11 +271,11 @@ def corroborate(row,matched):
             rejected.append(dict(sender=s,application_bytes=len(bytes.fromhex(item['value'])),wire=legs))
         proof[0]['length_gate']=dict(mtu=2042,lengths=list(LENGTHS),refusals=rejected,scope='Complete-PDU CLI ordinary control-role;not SSAP protocol fragmentation or C/Python length qualification')
         version=row.get('ssap_value_lengths_version',1)
-        if type(version)is not int or version not in (1,2):raise CaptureError('known explicit length contract version required')
-        if version==2:
-            read_limits,read_credit=corroborate_read_limits(row,matched)
+        if type(version)is not int or version not in (1,2,3):raise CaptureError('known explicit length contract version required')
+        if version>=2:
+            read_limits,read_credit=corroborate_read_limits(row,matched,version=version)
             for sender in credit:credit[sender]+=read_credit[sender]
-            proof[0]['length_gate'].update(version=2,read_limits=read_limits)
+            proof[0]['length_gate'].update(version=version,read_limits=read_limits)
         elif row.get('ssap_read_limits'):raise CaptureError('read limits cannot claim legacy length qualification')
     elif row.get('ssap_length_rejections') or 'ssap_length_mtu' in row:raise CaptureError('unexpected unrequested SSAP length evidence')
     if row.get('ssap_update_local_rejection_required'):
@@ -287,10 +305,11 @@ def _valid_length_summary(result,expected_version):
         gate=values[0].get('length_gate',{})
         if gate.get('mtu')!=2042 or gate.get('lengths')!=list(LENGTHS) or len(gate.get('refusals',[]))!=6:return False
         version=gate.get('version',1)
-        if type(version)is not int or version not in (1,2) or expected_version is not None and version!=expected_version:return False
-        if version==2 and (len(gate.get('read_limits',[]))!=10 or [(v.get('application_bytes'),v.get('sender')) for v in gate['read_limits']]!=[(n,s)for n in (2038,2039,2040,2041,2042)for s in (0,1)] or any(len(v.get('wire',[]))!=4 for v in gate['read_limits'])):return False
-        if version==2 and any(type(v.get('read_success'))is not bool or v['read_success']!=(v['application_bytes']<=2040) or type(v.get('uuid_success'))is not bool or v['uuid_success']!=(v['application_bytes']<=2038) for v in gate['read_limits']):return False
+        if type(version)is not int or version not in (1,2,3) or expected_version is not None and version!=expected_version:return False
+        if version>=2 and (len(gate.get('read_limits',[]))!=10 or [(v.get('application_bytes'),v.get('sender')) for v in gate['read_limits']]!=[(n,s)for n in (2038,2039,2040,2041,2042)for s in (0,1)] or any(len(v.get('wire',[]))!=(6 if version>=3 and v['application_bytes']<=2040 else 4) for v in gate['read_limits'])):return False
+        if version>=2 and any(type(v.get('read_success'))is not bool or v['read_success']!=(v['application_bytes']<=2040) or type(v.get('uuid_success'))is not bool or v['uuid_success']!=(v['application_bytes']<=2038) for v in gate['read_limits']):return False
         if version==1 and gate.get('read_limits'):return False
+        if version>=3 and any((v.get('sdk',{}).get('api')!=('c'if v['sender']==phase else'python') if v['read_success']else v.get('sdk')is not None)for v in gate['read_limits']):return False
         if [(v.get('sender'),v.get('application_bytes'))for v in gate['refusals']]!=[(s,n)for s in (0,1)for n in (2038,2042,2043)] or any(len(v.get('wire',[]))!=2 for v in gate['refusals']):return False
         if any(len(bytes.fromhex(v['value']))!=LENGTHS[v['sequence']] or len(v.get('wire',[]))!=6 or len(v.get('uuid_wire',[]))!=2 for v in values):return False
     return True

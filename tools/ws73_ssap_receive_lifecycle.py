@@ -83,42 +83,151 @@ def approve(owner,item,event):
     answer['receipt']=json.loads(rows[-1]);item['answers'].append(answer);return answer
 
 
-def response_barrier(run,row,item,case,mode,deadline):
-    """Bounded immutable prefixes of the *actual* in-progress usbmon capture.
+def barrier_request(row,item,case,mode,remaining_ms):
+    phase=row['phase'];sequence=phase*6+CASES.index(case['kind'])*2+int(mode==0)
+    owners=[dict(bus=v['owner']['bus'],device=v['owner']['device'],index=v['owner']['index'],generation=v['owner']['generation'],lifetime=v['object']['lifetime'],handle=v['object']['handle'])for v in row['owners']]
+    return dict(version=1,sequence=sequence,phase=phase,mode=mode,property=item['handle'],controllers=owners,
+        start_wall_ns=case['start_wall_ns'],deadline_wall_ns=time.time_ns()+remaining_ms*1_000_000,remaining_ms=remaining_ms)
 
-    Prefix hash/length allows reconstruction from the sealed original. Only a
-    partial tail or pending OUT is transient; malformed input never becomes a
-    retry. Final qualification still requires zero-loss complete captures.
+
+def check_request(request,sequence):
+    if (set(request)!={'version','sequence','phase','mode','property','controllers','start_wall_ns','deadline_wall_ns','remaining_ms'}
+            or any(type(request[k])is not int for k in request if k!='controllers')
+            or request['version']!=1 or request['sequence']!=sequence or not 0<=sequence<12
+            or request['phase']!=sequence//6 or request['mode']!=(0 if sequence%2 else 1+sequence//6)
+            or not 1<=request['property']<=65535 or not 1<=request['remaining_ms']<=2000
+            or not 0<request['start_wall_ns']<request['deadline_wall_ns']):raise CaptureError('invalid bounded capture barrier request')
+    owners=request['controllers']
+    if not isinstance(owners,list)or len(owners)!=2:raise CaptureError('two original controllers required')
+    for entry in owners:
+        if (not isinstance(entry,dict)or set(entry)!={'bus','device','index','generation','lifetime','handle'}
+                or any(type(v)is not int or v<0 for v in entry.values())
+                or not 0<entry['bus']<=255 or not 0<entry['device']<=127 or entry['index']>65535
+                or not 0<entry['generation']<2**64 or not 0<entry['lifetime']<2**64 or entry['handle']>4095):raise CaptureError('invalid original controller identity')
+    if (owners[0]['bus'],owners[0]['device'])==(owners[1]['bus'],owners[1]['device'])or owners[0]['index']==owners[1]['index']:raise CaptureError('distinct controllers required')
+
+
+def capture_once(output,capture,request,observations):
+    """One bounded Host-side prefix decode; never make raw capture app-readable."""
+    if len(observations)>=64:raise CaptureError('live capture observation budget exceeded')
+    with Path(capture).open('rb')as source:raw=source.read(16*1024*1024+1)
+    if len(raw)>16*1024*1024:raise CaptureError('live capture barrier byte budget exceeded')
+    observation=dict(bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest());observations.append(observation)
+    owners=request['controllers'];s=request['phase'];t=1-s;mode=request['mode'];h=request['property']
+    with tempfile.NamedTemporaryFile(dir=output,prefix='capture-prefix-')as snapshot:
+        snapshot.write(raw);snapshot.flush()
+        try:decoded=read_capture(snapshot.name,[(v['bus'],v['device'])for v in owners])
+        except CaptureError as error:
+            if str(error)not in ['truncated pcap record header','truncated USB packet/header','unfinished OUT submission at capture end']:raise
+            observation['partial']=str(error);return None
+    pdu=b'\x0e\x03'+h.to_bytes(2,'little')+bytes([2,mode,0]);frame=(b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu).hex();legs=[]
+    for index,direction in [(t,'out'),(s,'in')]:
+        entry=owners[index]
+        found=[p for p in decoded['acb_packets']if (p['bus'],p['device'],p['handle'],p['direction'],p.get('boundary',0),p['data'])==
+            (entry['bus'],entry['device'],entry['handle'],direction,0,frame)
+            and request['start_wall_ns']<=p['wall_ns']<=request['deadline_wall_ns']]
+        if len(found)>1:raise CaptureError('ambiguous repeated configuration response at live barrier')
+        legs.extend(found)
+    if len(legs)==2:return dict(mode=mode,observations=observations,tx=legs[0],rx=legs[1],host_observed_monotonic_ns=time.monotonic_ns())
+    return None
+
+
+class CaptureCoordinator:
+    """Narrow evidence-only responder on the existing Host monitor loop.
+
+    No USB access,protocol mutation or privilege grant. The guest can request
+    only twelve fixed type2 response observations,not paths or arbitrary data.
+    Host and guest monotonic clocks are never compared or subtracted.
     """
-    owners=row['owners'];s,t=item['sender'],item['target'];h=item['handle']
-    pdu=b'\x0e\x03'+h.to_bytes(2,'little')+bytes([2,mode,0])
-    frame=(b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu).hex()
-    observations=[];capture=Path('/evidence/ws73.pcap')
-    for _ in range(64):
+    def __init__(self,share,output,record):
+        self.share=Path(share);self.root=self.share/'application/passthrough-control/receive-response-barriers'
+        self.output=Path(output);self.record=record;self.active=None
+        record.update(status='WAITING_FOR_ORIGINAL_CAPTURE_REQUESTS',events=[],complete=False)
+
+    def poll(self):
+        if self.record['complete']or self.record['status']=='FAIL':return
+        sequence=len(self.record['events'])if self.active is None else self.active['sequence']
+        path=self.root/f'request-{sequence:02}.json';reply=self.root/f'reply-{sequence:02}.json'
+        if not path.exists():return
+        if (path.is_symlink()or self.root.is_symlink()or not path.resolve().is_relative_to(self.share.resolve())):
+            self.record.update(status='FAIL',error='capture request path escaped fixed evidence root');return
+        from ws73_diagnostic_hold import write_marker
+        try:
+            with path.open('rb')as stream:raw=stream.read(4097)
+            if len(raw)>4096:raise CaptureError('capture request byte budget')
+            digest=hashlib.sha256(raw).hexdigest()
+            if self.active is None:
+                request=json.loads(raw);check_request(request,sequence)
+                if raw!=(json.dumps(request)+'\n').encode():raise CaptureError('noncanonical capture request identity')
+                self.active=dict(sequence=sequence,request=request,request_sha256=digest,observations=[],status='WAITING',host_deadline_ns=time.monotonic_ns()+request['remaining_ms']*1_000_000)
+                self.record['events'].append(self.active)
+            entry=self.active
+            if digest!=entry['request_sha256']:raise CaptureError('capture request changed while pending')
+            if time.monotonic_ns()>=entry['host_deadline_ns']:raise CaptureError('original capture observation deadline')
+            result=capture_once(self.output,self.share/'ws73.pcap',entry['request'],entry['observations'])
+            if result is None:return
+            if time.monotonic_ns()>=entry['host_deadline_ns']:raise CaptureError('original capture observation deadline')
+            result.update(sequence=sequence,request_sha256=digest)
+            entry.update(status='CAPTURED',result=result)
+            write_marker(reply,dict(status='CAPTURED',sequence=sequence,request_sha256=digest,result=result))
+            self.active=None
+            if len(self.record['events'])==12:self.record.update(status='TWELVE_ORIGINAL_CAPTURE_RESPONSES_OBSERVED',complete=True)
+        except (CaptureError,ValueError,TypeError,KeyError,OSError)as error:
+            self.record.update(status='FAIL',error=str(error))
+            if not reply.exists():write_marker(reply,dict(status='FAIL',error='capture evidence rejected'))
+
+
+def response_barrier(run,row,item,case,mode,deadline):
+    from ws73_diagnostic_hold import write_marker
+    remaining_ms=int((deadline-time.monotonic())*1000)
+    request=barrier_request(row,item,case,mode,remaining_ms);check_request(request,request['sequence'])
+    root=run.output/'receive-response-barriers';root.mkdir(exist_ok=True)
+    path=root/f'request-{request["sequence"]:02}.json';reply=root/f'reply-{request["sequence"]:02}.json'
+    write_marker(path,request);digest=hashlib.sha256(path.read_bytes()).hexdigest()
+    for _ in range(512):
         if time.monotonic()>=deadline:break
-        with capture.open('rb') as source:raw=source.read(16*1024*1024+1)
-        if len(raw)>16*1024*1024:raise CaptureError('live capture barrier byte budget exceeded')
-        observation=dict(bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest())
-        observations.append(observation)
-        with tempfile.NamedTemporaryFile(dir=run.output,prefix='capture-prefix-') as snapshot:
-            snapshot.write(raw);snapshot.flush()
-            try:decoded=read_capture(snapshot.name,[(v['owner']['bus'],v['owner']['device'])for v in owners])
-            except CaptureError as error:
-                if str(error)not in ['truncated pcap record header','truncated USB packet/header','unfinished OUT submission at capture end']:raise
-                observation['partial']=str(error);time.sleep(.01);continue
-        legs=[]
-        for index,direction in [(t,'out'),(s,'in')]:
-            entry=owners[index]
-            found=[p for p in decoded['acb_packets']if (p['bus'],p['device'],p['handle'],p['direction'],p.get('boundary',0),p['data'])==
-                (entry['owner']['bus'],entry['owner']['device'],entry['object']['handle'],direction,0,frame)
-                and case['start_wall_ns']<=p['wall_ns']<=time.time_ns()]
-            if len(found)>1:raise CaptureError('ambiguous repeated configuration response at live barrier')
-            legs.extend(found)
-        if len(legs)==2:
-            return dict(mode=mode,observations=observations,tx=legs[0],rx=legs[1],
-                observed_wall_ns=time.time_ns(),observed_monotonic_ns=time.monotonic_ns())
-        time.sleep(.01)
-    raise CaptureError('actual paired configuration response barrier deadline/budget')
+        if reply.exists():
+            with reply.open('rb')as stream:raw=stream.read(128*1024+1)
+            if len(raw)>128*1024:raise CaptureError('capture responder result byte budget')
+            result=json.loads(raw)
+            if (result.get('status')!='CAPTURED'or result.get('sequence')!=request['sequence']or result.get('request_sha256')!=digest):raise CaptureError('capture observer failure/stale response')
+            value=result['result']
+            if value.get('sequence')!=request['sequence']or value.get('request_sha256')!=digest:raise CaptureError('capture response identity mismatch')
+            if time.monotonic()>=deadline:break
+            return dict(value,observed_wall_ns=time.time_ns(),observed_monotonic_ns=time.monotonic_ns(),private_capture_readable=os.access('/evidence/ws73.pcap',os.R_OK))
+        time.sleep(.005)
+    raise CaptureError('actual paired configuration response observer deadline/budget')
+
+
+def validate_coordination(rows,record):
+    if not valid_observer_summary(record):raise CaptureError('all original Host capture observations required')
+    barriers=[case[key]for row in rows for item in row['ssap_receive_lifecycle']for case in item['cases']for key in ['enable_wire_barrier','disable_wire_barrier']]
+    if len(barriers)!=12:raise CaptureError('twelve original guest barriers required')
+    for sequence,(guest,host)in enumerate(zip(barriers,record['events'],strict=True)):
+        check_request(host['request'],sequence)
+        if (host.get('status')!='CAPTURED'or host.get('sequence')!=sequence or guest.get('sequence')!=sequence
+                or type(guest.get('private_capture_readable'))is not bool
+                or guest.get('request_sha256')!=host['request_sha256']
+                or {k:v for k,v in guest.items()if k not in ['observed_wall_ns','observed_monotonic_ns','private_capture_readable']}!=host['result']):raise CaptureError('guest barrier differs from actual Host observation')
+
+
+def valid_observer_summary(record):
+    if (not isinstance(record,dict)or record.get('complete')is not True
+            or record.get('status')!='TWELVE_ORIGINAL_CAPTURE_RESPONSES_OBSERVED'
+            or not isinstance(record.get('events'),list)or len(record['events'])!=12):return False
+    try:
+        for sequence,event in enumerate(record['events']):
+            check_request(event['request'],sequence)
+            digest=hashlib.sha256((json.dumps(event['request'])+'\n').encode()).hexdigest();result=event['result']
+            if (event['status']!='CAPTURED'or type(event['sequence'])is not int or event['sequence']!=sequence
+                    or event['request_sha256']!=digest or result.get('request_sha256')!=digest
+                    or type(result.get('sequence'))is not int or result['sequence']!=sequence
+                    or type(result.get('mode'))is not int or result.get('mode')!=event['request']['mode']
+                    or not isinstance(result.get('observations'),list)or not 1<=len(result['observations'])<=64
+                    or any(not isinstance(result.get(k),dict)or not result[k]for k in ['tx','rx'])
+                    or type(result.get('host_observed_monotonic_ns'))is not int):return False
+    except (CaptureError,ValueError,TypeError,KeyError,AttributeError):return False
+    return True
 
 
 def execute(run,row,business):

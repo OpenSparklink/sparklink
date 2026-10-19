@@ -1169,6 +1169,10 @@ def _run(args):
                 hold=None
                 install_hold=None
                 initialization_hold=None
+                receive_capture=None
+                if receive_lifecycle:
+                    from ws73_ssap_receive_lifecycle import CaptureCoordinator
+                    receive_capture=CaptureCoordinator(share,output,m.setdefault('ssap_receive_capture_observations',{}))
                 if ssap_initialization:
                     from ws73_ssap_initialization import Coordinator
                     initialization_hold=Coordinator(share,m.setdefault('ssap_initialization_hold',{}),package['qemu']['path'],initialization_stage)
@@ -1235,6 +1239,7 @@ def _run(args):
                             hold.record['host_identity_at_arm'] = live_runtime_owner(
                                 args.ports[connected_index if connected_reply or channel_revoke_prefix else 0], process.pid, lab.inventory())
                         hold.poll(monitor)
+                    if receive_capture:receive_capture.poll()
                     if initialization_hold:
                         initialization_hold.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if install_hold:
@@ -1549,9 +1554,10 @@ def _run(args):
                     if any(bool(row.get('ssap_requester_lifecycle_required',False))!=requester_lifecycle for row in control['channel_socket']):raise ValueError('requester lifecycle request/evidence mismatch')
                     if any(bool(row.get('ssap_owned_required',False))!=ssap_owned for row in control['channel_socket']):raise ValueError('owned SSAP request/evidence mismatch')
                     if receive_lifecycle:
-                        from ws73_ssap_receive_lifecycle import validate_prefixes
+                        from ws73_ssap_receive_lifecycle import validate_prefixes,validate_coordination
                         if file_record(HERE/'ws73_ssap_receive_lifecycle.py')!=m['ssap_receive_lifecycle_verifier']:raise ValueError('receive lifecycle verifier changed during execution')
                         validate_prefixes(control['channel_socket'],share/'ws73.pcap')
+                        validate_coordination(control['channel_socket'],m['ssap_receive_capture_observations'])
                     if any(bool(row.get('ssap_receive_lifecycle_required',False))!=receive_lifecycle for row in control['channel_socket']):raise ValueError('receive lifecycle request/evidence mismatch')
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
                     m['ssap_receive_lifecycle_acceptance']=receive_lifecycle
@@ -2001,9 +2007,9 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     receive_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_receive_lifecycle=1']
     if receive_boot!=(['ws73.ssap_receive_lifecycle=1']if receive else[]):return 1
     if receive:
-        from ws73_ssap_receive_lifecycle import valid_summary as receive_summary
-        if not delivery or record.get('ssap_receive_lifecycle_acceptance')is not True or not receive_summary(channel_proof):return 1
-    elif record.get('ssap_receive_lifecycle_acceptance')or any(p.get('ssap_receive_lifecycle')for p in channel_proof.get('proofs',[])):return 1
+        from ws73_ssap_receive_lifecycle import valid_summary as receive_summary,valid_observer_summary
+        if not delivery or record.get('ssap_receive_lifecycle_acceptance')is not True or not receive_summary(channel_proof)or not valid_observer_summary(record.get('ssap_receive_capture_observations')):return 1
+    elif record.get('ssap_receive_lifecycle_acceptance')or record.get('ssap_receive_capture_observations')or any(p.get('ssap_receive_lifecycle')for p in channel_proof.get('proofs',[])):return 1
     update=record.get('ssap_owned_update_requested',False)
     if type(update)is not bool:return 1
     update_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_owned_update=1']

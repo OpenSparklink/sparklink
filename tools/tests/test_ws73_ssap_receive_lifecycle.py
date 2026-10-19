@@ -22,7 +22,7 @@ def fixture(phase=0):
     row=delivery_fixture(phase);s=phase;t=1-s;peer,server=row['owners'][s],row['owners'][t]
     for index,v in enumerate(row['owners']):v['owner'].update(bus=1,device=10+index)
     item=copy.deepcopy(row['ssap_update_delivery'][s]);api='c'if s==0 else'python';other='python'if s==0 else'c';mode=1+s;h=item['handle']
-    item.update(policy='ask',publisher_api=api,cases=[],prompts=[],answers=[],end_wall_ns=10**15+16_000_000_000)
+    item.update(policy='ask',publisher_api=api,cases=[],prompts=[],answers=[],end_wall_ns=10**15+phase*60_000_000_000+16_000_000_000)
     item['args']=owned_arguments(api,server,item['service'],item['uuid'],item['secret'],'ask',update_connection=server['object']['path'])
     caps={k:'00000000'for k in ['CapEff','CapPrm','CapAmb','CapInh']}
     item['credentials']=dict(uids=[1000]*4,capabilities=caps)
@@ -46,7 +46,7 @@ def fixture(phase=0):
         return dict(start_wall_ns=w,end_wall_ns=w+1_000_000,start_monotonic_ns=m,end_monotonic_ns=m+1_000_000,
             receipt=dict(api=api,handle=h,modes=value,started_ns=m+1,deadline_ns=m+5_000_000_001,returned_ns=m+2))
     for i,kind in enumerate(gate.CASES):
-        w=10**15+i*5_000_000_000;m=10**12+i*5_000_000_000;early=kind=='exit-enable-pending';timeout=kind=='original-deadline'
+        w=10**15+phase*60_000_000_000+i*5_000_000_000;m=10**12+phase*60_000_000_000+i*5_000_000_000;early=kind=='exit-enable-pending';timeout=kind=='original-deadline'
         end_offset=2_010_000_000 if timeout else 30_000_000 if early else 80_000_000
         case=dict(kind=kind,mode=mode,start_wall_ns=w,end_wall_ns=w+end_offset+100_000_000,
             exit_wall_ns=w+end_offset,exit_monotonic_ns=m+end_offset,process_exit=0 if timeout else-9)
@@ -120,31 +120,28 @@ class ReceiveLifecycle(unittest.TestCase):
             self.assertIn('before',row['collector_error']);self.assertEqual(row['stdout'],'wrong-call\n')
             self.assertEqual(Path(row['output_files'][0]).read_bytes(),b'wrong-call\n')
 
-    def test_live_barrier_uses_real_decoder_and_waits_only_for_incomplete_tail(self):
+    def test_host_capture_scan_uses_real_decoder_and_preserves_partial_prefixes(self):
         from test_ws73_north_star import aggregate,command_payload,pcap
         import struct
         row,_,_=fixture();item=row['ssap_receive_lifecycle'][0];case=item['cases'][0]
         frame=b'\x0a\0\x07\0\x0e\x03\x11\0\x02\x01\0'
-        outgoing=bytearray(command_payload(row['owners'][1]['object']['handle'],frame));outgoing[68]=0xa3
-        incoming=aggregate(b'\xa3'+struct.pack('<HH',row['owners'][0]['object']['handle'],len(frame))+frame)
+        outgoing=bytearray(command_payload(3,frame));outgoing[68]=0xa3
+        incoming=aggregate(b'\xa3'+struct.pack('<HH',2,len(frame))+frame)
         at=case['start_wall_ns']+100_000_000
         records=[(1,11,at,outgoing,'S',1,-115),(1,11,at+1000,outgoing,'C',1,0),(1,10,at+2000,incoming,'C',0x81,0)]
-        partial,complete=pcap(records[:1]),pcap(records)
-        class Prefix:
-            def __init__(self):self.count=0
-            def open(self,_):
-                self.count+=1;return io.BytesIO(partial if self.count==1 else complete)
-        source=Prefix()
-        with tempfile.TemporaryDirectory()as directory,patch.object(gate,'Path',side_effect=lambda value:source if str(value)=='/evidence/ws73.pcap'else Path(value)):
-            result=gate.response_barrier(SimpleNamespace(output=Path(directory)),row,item,case,1,time.monotonic()+1)
-        self.assertEqual(result['observations'][0]['partial'],'unfinished OUT submission at capture end')
-        self.assertEqual(result['observations'][-1]['sha256'],hashlib.sha256(complete).hexdigest())
-        self.assertEqual((result['tx']['device'],result['rx']['device']),(11,10))
+        request=gate.barrier_request(row,item,case,1,1000);gate.check_request(request,0)
+        with tempfile.TemporaryDirectory()as directory:
+            path=Path(directory)/'capture.pcap';path.write_bytes(pcap(records[:1]));observations=[]
+            self.assertIsNone(gate.capture_once(Path(directory),path,request,observations))
+            self.assertEqual(observations[0]['partial'],'unfinished OUT submission at capture end')
+            path.write_bytes(pcap(records));result=gate.capture_once(Path(directory),path,request,observations)
+            self.assertEqual(result['observations'][-1]['sha256'],hashlib.sha256(pcap(records)).hexdigest())
+            self.assertEqual((result['tx']['device'],result['rx']['device']),(11,10))
 
-    def test_live_barrier_never_uses_wrong_peer_handle_mode_or_malformed_capture(self):
+    def test_host_capture_scan_never_uses_wrong_peer_handle_mode_or_malformed_capture(self):
         from test_ws73_north_star import aggregate,command_payload,pcap
         import struct
-        row,_,_=fixture();item=row['ssap_receive_lifecycle'][0];case=item['cases'][0]
+        row,_,_=fixture();item=row['ssap_receive_lifecycle'][0];case=item['cases'][0];request=gate.barrier_request(row,item,case,1,1000)
         at=case['start_wall_ns']+100_000_000
         for kind in ['missing-peer','wrong-handle','wrong-mode','invalid-header']:
             frame=b'\x0a\0\x07\0\x0e\x03\x11\0\x02'+bytes([2 if kind=='wrong-mode'else 1,0])
@@ -153,9 +150,72 @@ class ReceiveLifecycle(unittest.TestCase):
             records=[(1,11,at,outgoing,'S',1,-115),(1,11,at+1000,outgoing,'C',1,0)]
             if kind!='missing-peer':records.append((1,10,at+2000,incoming,'C',0x81,0))
             raw=b'invalid pcap header'.ljust(24,b'x')if kind=='invalid-header'else pcap(records)
-            source=SimpleNamespace(open=lambda _:io.BytesIO(raw))
-            with self.subTest(kind=kind),tempfile.TemporaryDirectory()as directory,patch.object(gate.time,'sleep',return_value=None),patch.object(gate,'Path',side_effect=lambda value:source if str(value)=='/evidence/ws73.pcap'else Path(value)):
-                with self.assertRaises(CaptureError):gate.response_barrier(SimpleNamespace(output=Path(directory)),row,item,case,1,time.monotonic()+1)
+            with self.subTest(kind=kind),tempfile.TemporaryDirectory()as directory:
+                path=Path(directory)/'capture.pcap';path.write_bytes(raw)
+                if kind=='invalid-header':
+                    with self.assertRaises(CaptureError):gate.capture_once(Path(directory),path,request,[])
+                else:self.assertIsNone(gate.capture_once(Path(directory),path,request,[]))
+                with self.assertRaises(CaptureError):gate.capture_once(Path(directory),path,request,[{}]*64)
+
+    def test_actual_file_coordination_has_fixed_requests_no_raw_capture_access_and_distinct_clocks(self):
+        from test_ws73_north_star import aggregate,command_payload,pcap
+        from concurrent.futures import ThreadPoolExecutor
+        import struct
+        rows=[fixture(phase)[0]for phase in (0,1)];records=[]
+        with tempfile.TemporaryDirectory()as directory,ThreadPoolExecutor(max_workers=1)as worker:
+            share=Path(directory);out=share/'application/passthrough-control';out.mkdir(parents=True)
+            run=SimpleNamespace(output=out);record={};coordinator=gate.CaptureCoordinator(share,share,record)
+            for row in rows:
+                item=row['ssap_receive_lifecycle'][0];s=row['phase'];t=1-s
+                for case in item['cases']:
+                    for key,mode,offset in [('enable_wire_barrier',case['mode'],100_000_000),('disable_wire_barrier',0,200_000_000)]:
+                        pdu=b'\x0e\x03'+item['handle'].to_bytes(2,'little')+bytes([2,mode,0]);frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
+                        outgoing=bytearray(command_payload(row['owners'][t]['object']['handle'],frame));outgoing[68]=0xa3
+                        incoming=aggregate(b'\xa3'+struct.pack('<HH',row['owners'][s]['object']['handle'],len(frame))+frame)
+                        at=case['start_wall_ns']+offset
+                        records.extend([(1,10+t,at,outgoing,'S',1,-115),(1,10+t,at+1000,outgoing,'C',1,0),(1,10+s,at+2000,incoming,'C',0x81,0)])
+                        (share/'ws73.pcap').write_bytes(pcap(records))
+                        future=worker.submit(gate.response_barrier,run,row,item,case,mode,time.monotonic()+1)
+                        while not future.done():coordinator.poll();time.sleep(.001)
+                        case[key]=future.result()
+                        self.assertIn('host_observed_monotonic_ns',case[key]);self.assertIn('observed_monotonic_ns',case[key])
+            self.assertTrue(record['complete']);gate.validate_coordination(rows,record);gate.validate_prefixes(rows,share/'ws73.pcap')
+            for mutate in [lambda r:r['events'].pop(),lambda r:r['events'][0].update(request_sha256='0'*64),lambda r:r['events'][0]['result'].update(rx={})]:
+                changed=copy.deepcopy(record);mutate(changed)
+                with self.assertRaises(CaptureError):gate.validate_coordination(rows,changed)
+
+    def test_capture_request_cannot_select_paths_unbounded_work_or_old_sequence(self):
+        row,_,_=fixture();item=row['ssap_receive_lifecycle'][0];case=item['cases'][0]
+        request=gate.barrier_request(row,item,case,1,1000);gate.check_request(request,0)
+        for change in [dict(path='/private'),dict(remaining_ms=3000),dict(mode=0),dict(phase=1),dict(sequence=1),dict(controllers=[]),dict(property=0)]:
+            with self.assertRaises((CaptureError,TypeError)):gate.check_request(request|change,0)
+
+    def test_host_coordinator_rejects_bad_requests_without_reading_capture(self):
+        from ws73_diagnostic_hold import write_marker
+        row,_,_=fixture();item=row['ssap_receive_lifecycle'][0];case=item['cases'][0]
+        for changes in [dict(path='/private'),dict(sequence=11),dict(remaining_ms=5000)]:
+            with self.subTest(changes=changes),tempfile.TemporaryDirectory()as directory:
+                share=Path(directory);record={};coordinator=gate.CaptureCoordinator(share,share,record)
+                coordinator.root.mkdir(parents=True)
+                write_marker(coordinator.root/'request-00.json',gate.barrier_request(row,item,case,1,1000)|changes)
+                with patch.object(gate,'capture_once',side_effect=AssertionError('must reject before capture read')):coordinator.poll()
+                self.assertEqual(record['status'],'FAIL');self.assertFalse(record['complete'])
+                self.assertEqual(json.loads((coordinator.root/'reply-00.json').read_text())['status'],'FAIL')
+
+    def test_host_observation_deadline_is_not_renewed_and_guest_rejects_stale_reply(self):
+        from ws73_diagnostic_hold import write_marker
+        row,_,_=fixture();item=row['ssap_receive_lifecycle'][0];case=item['cases'][0]
+        with tempfile.TemporaryDirectory()as directory:
+            share=Path(directory);record={};coordinator=gate.CaptureCoordinator(share,share,record);coordinator.root.mkdir(parents=True)
+            write_marker(coordinator.root/'request-00.json',gate.barrier_request(row,item,case,1,1000))
+            with patch.object(gate,'capture_once',return_value=None):coordinator.poll()
+            coordinator.active['host_deadline_ns']=0
+            with patch.object(gate,'capture_once',side_effect=AssertionError('expired request must not decode')):coordinator.poll()
+            self.assertEqual(record['status'],'FAIL');self.assertEqual(record['events'][0]['host_deadline_ns'],0)
+        with tempfile.TemporaryDirectory()as directory:
+            out=Path(directory);root=out/'receive-response-barriers';root.mkdir()
+            write_marker(root/'reply-00.json',dict(status='CAPTURED',sequence=0,request_sha256='0'*64,result={}))
+            with self.assertRaises(CaptureError):gate.response_barrier(SimpleNamespace(output=out),row,item,case,1,time.monotonic()+1)
 
     def test_actual_guard_requires_explicit_dedicated_protected_parent_gate(self):
         self.assertFalse(gate.requested(SimpleNamespace(),passthrough=False))
@@ -225,9 +285,19 @@ class ReceiveLifecycle(unittest.TestCase):
                 ssap_values=[{'fixture':'validated by separate production gate tests'}],
                 ssap_discovery=[{'fixture':'validated by separate production gate tests'}]))
         proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=rows,round_trips=8)
+        observer=dict(status='TWELVE_ORIGINAL_CAPTURE_RESPONSES_OBSERVED',complete=True,events=[])
+        for phase in (0,1):
+            raw_row,_,_=fixture(phase);item=raw_row['ssap_receive_lifecycle'][0]
+            for case in item['cases']:
+                for key,mode in [('enable_wire_barrier',case['mode']),('disable_wire_barrier',0)]:
+                    request=gate.barrier_request(raw_row,item,case,mode,1000);sequence=request['sequence'];digest=hashlib.sha256((json.dumps(request)+'\n').encode()).hexdigest()
+                    result=dict(case[key],sequence=sequence,request_sha256=digest,host_observed_monotonic_ns=1)
+                    result.pop('observed_wall_ns');result.pop('observed_monotonic_ns')
+                    observer['events'].append(dict(status='CAPTURED',sequence=sequence,request=request,request_sha256=digest,result=result))
         record=dict(status='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS',qemu_exit=0,supervisor_exit=0,live_security_agent_requested='numeric-approve',live_ssap_security_requirement=2,ordinary_channel_socket_acceptance=True,ssap_update_delivery_requested=True,ssap_update_delivery_acceptance=True,ssap_receive_lifecycle_requested=True,ssap_receive_lifecycle_acceptance=True,qemu_args=['ws73.ssap_update_delivery=1 ws73.ssap_receive_lifecycle=1'],channel_socket_corroboration=proof,security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',phases=[dict(mode='numeric-approve',ssap_security_requirement=2)for _ in (0,1)],business_round_trips=8))
+        record['ssap_receive_capture_observations']=observer
         self.assertEqual(run_exit_code(record),0)
-        for changes in [dict(ssap_receive_lifecycle_acceptance=False),dict(ssap_update_delivery_requested=False),dict(ssap_receive_lifecycle_requested=False),dict(qemu_args=['ws73.ssap_update_delivery=1']),dict(supervisor_exit=1)]:
+        for changes in [dict(ssap_receive_capture_observations={}),dict(ssap_receive_lifecycle_acceptance=False),dict(ssap_update_delivery_requested=False),dict(ssap_receive_lifecycle_requested=False),dict(qemu_args=['ws73.ssap_update_delivery=1']),dict(supervisor_exit=1)]:
             self.assertEqual(run_exit_code(record|changes),1)
         for mutate in [lambda p:p['proofs'].pop(),lambda p:p['proofs'][0]['ssap_receive_lifecycle'][0].update(receiver_exits=True),lambda p:p['proofs'][0]['ssap_receive_lifecycle'][0]['wire'].pop(),lambda p:p['proofs'][1]['ssap_receive_lifecycle'][0].update(cases=gate.CASES[:-1])]:
             bad=copy.deepcopy(proof);mutate(bad);self.assertFalse(gate.valid_summary(bad))

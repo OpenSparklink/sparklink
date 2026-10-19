@@ -2,6 +2,8 @@
 //! Fixture replies are explicit denials/AF_UNIX fds, never a successful channel.
 #[path = "application_ffi/authorization.rs"]
 mod authorization;
+#[path = "application_ffi/subscription.rs"]
+mod subscription;
 mod support;
 #[path = "application_ffi/value_update.rs"]
 mod value_update;
@@ -107,9 +109,58 @@ impl Adapter {
         7
     }
 }
-struct Link(Arc<AtomicUsize>, Arc<AtomicUsize>, Arc<AtomicU64>);
+struct Link(
+    Arc<AtomicUsize>,
+    Arc<AtomicUsize>,
+    Arc<AtomicU64>,
+    Arc<subscription::Metadata>,
+);
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
+    fn subscribe_ssap_updates(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Info> {
+        self.3.subscribe(
+            handles,
+            modes,
+            duration_ms,
+            deadline,
+            h.sender().unwrap().to_string(),
+            self.2.load(Ordering::SeqCst),
+        )
+    }
+    fn read_ssap_updates(
+        &self,
+        token: u64,
+        _wait: bool,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Batch> {
+        self.3.read(token, deadline, h.sender().unwrap().as_str())
+    }
+    fn renew_ssap_subscription(
+        &self,
+        token: u64,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Info> {
+        self.3
+            .renew(token, duration_ms, deadline, h.sender().unwrap().as_str())
+    }
+    fn close_ssap_subscription(
+        &self,
+        token: u64,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Batch> {
+        self.3.close(token, deadline, h.sender().unwrap().as_str())
+    }
     fn get_info(&self) -> slk_contract::ConnectionInfo {
         (
             7,
@@ -382,6 +433,10 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("bindings/python/sparklink/service_authorization.py"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/authorization.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/value_update.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/subscription.rs"))
+        .arg(root.join("bindings/python/sparklink/ssap_subscription.py"))
+        .arg(root.join("crates/libsparklink/src/ssap/subscription.rs"))
+        .arg(root.join("crates/libsparklink/src/ffi_ssap_subscription.rs"))
         .output()?;
     anyhow::ensure!(
         identities.status.success() && identities.stderr.is_empty(),
@@ -392,6 +447,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let calls = Arc::new(AtomicUsize::new(0));
     let ssap_calls = Arc::new(AtomicUsize::new(0));
     let lifetime = Arc::new(AtomicU64::new(11));
+    let subscriptions = Arc::new(subscription::Metadata::default());
     let owned = Arc::new(OwnedMetadata::default());
     let server = zbus::connection::Builder::address(bus.address.as_str())?
         .name("org.sparklink")?
@@ -400,7 +456,12 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .serve_at(format!("{BASE}/services"), OwnedServices(owned.clone()))?
         .serve_at(
             PATH,
-            Link(calls.clone(), ssap_calls.clone(), lifetime.clone()),
+            Link(
+                calls.clone(),
+                ssap_calls.clone(),
+                lifetime.clone(),
+                subscriptions.clone(),
+            ),
         )?
         .build()
         .await?;
@@ -621,6 +682,15 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         &runtime_library,
         &directory,
         &bus.address,
+    )
+    .await?;
+    subscription::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &subscriptions,
     )
     .await?;
     assert_eq!(

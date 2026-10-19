@@ -17,6 +17,12 @@ _Static_assert(sizeof(struct SlkServiceProperty)==2076,"Owned property ABI");
 _Static_assert(sizeof(struct SlkSsapUpdate)==2064,"unpublished bounded SSAP update receipt ABI");
 _Static_assert(offsetof(struct SlkSsapUpdate,pdu)==8,"SSAP update PDU ABI");
 _Static_assert(offsetof(struct SlkSsapUpdate,acknowledgement)==2056,"SSAP update ACK ABI");
+_Static_assert(sizeof(struct SlkSsapSubscriptionInfo)==120,"subscription info ABI");
+_Static_assert(offsetof(struct SlkSsapSubscriptionInfo,handles)==56,"subscription handles ABI");
+_Static_assert(sizeof(struct SlkSsapSubscriptionPacket)==2072,"subscription packet ABI");
+_Static_assert(offsetof(struct SlkSsapSubscriptionPacket,pdu)==24,"subscription PDU ABI");
+_Static_assert(sizeof(struct SlkSsapSubscriptionBatch)==33312,"subscription batch ABI");
+_Static_assert(offsetof(struct SlkSsapSubscriptionBatch,packets)==160,"subscription packets ABI");
 _Static_assert(sizeof(struct SlkServiceReceipt)==152,"Owned receipt ABI");
 _Static_assert(offsetof(struct SlkServiceProperty,value)==32,"Owned value ABI");
 _Static_assert(offsetof(struct SlkServiceReceipt,handles)==24,"Owned handles ABI");
@@ -325,12 +331,22 @@ done:
 
 /* Ordinary application actually verifies the complete random update,then writes
  * a distinct business reply through the same existing SSAP/physical Session. */
+static int checked_update_write(struct SlkConnection *link,uint16_t handle,unsigned mode,
+    const uint8_t *pdu,size_t pdu_n,const uint8_t *expected,size_t n,const uint8_t *reply,size_t r) {
+    uint8_t raw[2048],echo[2042];uintptr_t count=0;
+    raw[0]=mode==2?16:15;raw[1]=3;raw[2]=(uint8_t)handle;raw[3]=(uint8_t)(handle>>8);
+    raw[4]=(uint8_t)n;raw[5]=(uint8_t)(n>>8);memcpy(raw+6,expected,n);
+    if (pdu_n!=n+6 || memcmp(pdu,raw,n+6)) {errno=EBADMSG;return -1;}
+    int error=slk_connection_ssap_write(link,handle,2,reply,r,echo,sizeof echo,&count,now_ns()+5000000000ULL);
+    if (error || count!=r || memcmp(echo,reply,r)) {errno=error?-error:EBADMSG;return -1;}
+    return 0;
+}
 static int update_peer_mode(int argc,char **argv) {
     if (argc!=9) return 2;
     const int retired=!strcmp(argv[1],"update-retired");
     const int negative=!strcmp(argv[1],"update-error") || retired;
     uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[5]),mode=number(argv[6]);
-    uint8_t expected[2042],reply[2042],raw[2048],echo[2042];
+    uint8_t expected[2042],reply[2042];
     size_t n=negative?0:bytes(argv[7],expected),r=negative?0:bytes(argv[8],reply);
     const uint64_t budget_ms=negative?number(argv[8]):5000;
     const int expected_error=retired?EIO:ETIMEDOUT;
@@ -350,10 +366,8 @@ static int update_peer_mode(int argc,char **argv) {
         printf("{\"stage\":\"ssap_update_error\",\"api\":\"c\",\"handle\":%"PRIu64",\"mode\":%"PRIu64",\"errno\":%d,\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",handle,mode,-error,original,now_ns());fflush(stdout);status=0;goto done;
     }
     if (error) {errno=-error;goto done;}
-    raw[0]=mode==2?16:15;raw[1]=3;raw[2]=(uint8_t)handle;raw[3]=(uint8_t)(handle>>8);raw[4]=(uint8_t)n;raw[5]=(uint8_t)(n>>8);memcpy(raw+6,expected,n);
-    if (result.stage!=3 || result.pdu_length!=n+6 || result.acknowledgement_length || memcmp(result.pdu,raw,n+6)) {errno=EBADMSG;goto done;}
-    uintptr_t count=0;error=slk_connection_ssap_write(link,(uint16_t)handle,2,reply,r,echo,sizeof echo,&count,now_ns()+5000000000ULL);
-    if (error || count!=r || memcmp(echo,reply,r)) {errno=error?-error:EBADMSG;goto done;}
+    if (result.stage!=3 || result.acknowledgement_length) {errno=EBADMSG;goto done;}
+    if (checked_update_write(link,(uint16_t)handle,(unsigned)mode,result.pdu,result.pdu_length,expected,n,reply,r)) goto done;
     printf("{\"stage\":\"ssap_update_checked_reply\",\"api\":\"c\",\"handle\":%"PRIu64",\"mode\":%"PRIu64",\"pdu\":\"",handle,mode);hex_print(result.pdu,result.pdu_length);
     printf("\",\"value\":\"");hex_print(expected,n);printf("\",\"reply\":\"");hex_print(reply,r);printf("\"}\n");fflush(stdout);status=0;
 done:
@@ -361,7 +375,84 @@ done:
     slk_connection_close(link);slk_client_close(client);return status;
 }
 
+/* The same real SDK/Connection,not a second receiver or wire Engine. The
+ * interactive finite commands are also used by isolated ABI contract tests. */
+static int subscription_mode(int argc,char **argv) {
+    if (argc!=8) return 2;
+    uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[5]),modes=number(argv[6]),lease=number(argv[7]);
+    if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX || modes<1 || modes>3 || lease<250 || lease>60000) return 2;
+    struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
+    struct SlkClient *client=NULL;struct SlkConnection *link=NULL;struct SlkSsapSubscription *sub=NULL;
+    int status=1,error,released=0;uint16_t target=(uint16_t)handle;
+    struct SlkSsapSubscriptionInfo info={0};struct SlkSsapSubscriptionBatch batch={0};
+    error=slk_client_open_system(now_ns()+5000000000ULL,&client);if (error){errno=-error;goto done;}
+    error=slk_client_connection(client,&id,(const uint8_t *)argv[4],strlen(argv[4]),now_ns()+5000000000ULL,&link);
+    if (error){errno=-error;goto done;}
+    slk_client_close(client);client=NULL;
+    error=slk_connection_ssap_subscribe(link,&target,1,(uint32_t)modes,(uint32_t)lease,now_ns()+5000000000ULL,&sub);
+    if (error){errno=-error;goto done;}
+    error=slk_ssap_subscription_info(sub,&info);if (error){errno=-error;goto done;}
+    printf("{\"stage\":\"ssap_subscription_active\",\"api\":\"c\",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"client_closed\":true}\n",info.token,info.security_epoch);fflush(stdout);
+    char line[16384];
+    while (fgets(line,sizeof line,stdin)) {
+        if (!strchr(line,'\n')) {errno=EMSGSIZE;goto done;}
+        char *command=strtok(line," \n"),*arg=strtok(NULL," \n"),*other=strtok(NULL," \n");
+        if (!command) {errno=EINVAL;goto done;}
+        if (!strcmp(command,"quit") && !arg) break;
+        if (!strcmp(command,"parent-close") && !arg) {
+            slk_connection_close(link);link=NULL;
+            printf("{\"stage\":\"ssap_subscription_parent_closed\",\"api\":\"c\"}\n");fflush(stdout);continue;
+        }
+        if (!strcmp(command,"renew") && arg && !other) {
+            uint64_t duration=number(arg);if (duration<250 || duration>60000) {errno=EINVAL;goto done;}
+            error=slk_ssap_subscription_renew(sub,(uint32_t)duration,&info,now_ns()+5000000000ULL);
+            if (error){errno=-error;goto done;}
+            printf("{\"stage\":\"ssap_subscription_renewed\",\"api\":\"c\",\"expires_ns\":%"PRIu64"}\n",info.expires_ns);fflush(stdout);continue;
+        }
+        if (!strcmp(command,"release") && !arg) {
+            error=slk_ssap_subscription_release(sub,&batch,now_ns()+5000000000ULL);
+            if (error){errno=-error;goto done;}released=1;
+            printf("{\"stage\":\"ssap_subscription_released\",\"api\":\"c\",\"flags\":%u,\"discarded\":%"PRIu64"}\n",batch.flags,batch.discarded_on_close);fflush(stdout);continue;
+        }
+        int check=!strcmp(command,"check");
+        if ((!check && strcmp(command,"read") && strcmp(command,"poll")) || (check?(!arg || !other || strtok(NULL," \n")):(arg!=NULL))) {errno=EINVAL;goto done;}
+        uint8_t expected[2042],reply[2042];size_t n=0,r=0;
+        if (check) {
+            n=bytes(arg,expected);r=bytes(other,reply);
+            if (!link || (n==r && !memcmp(expected,reply,n))) {errno=EINVAL;goto done;}
+        }
+        error=slk_ssap_subscription_read(sub,strcmp(command,"poll")!=0,&batch,now_ns()+5000000000ULL);
+        if (error){errno=-error;goto done;}
+        if (check) {
+            if (batch.count!=1) {errno=EBADMSG;goto done;}
+            if (checked_update_write(link,(uint16_t)handle,batch.packets[0].indication?2:1,
+                batch.packets[0].pdu,batch.packets[0].pdu_length,expected,n,reply,r)) goto done;
+            printf("{\"stage\":\"ssap_subscription_checked_reply\",\"api\":\"c\",\"sequence\":%"PRIu64",\"value\":\"",batch.packets[0].sequence);
+            hex_print(expected,n);printf("\",\"reply\":\"");hex_print(reply,r);printf("\"}\n");
+        }
+        if (batch.info.state==3 && batch.flags==1) released=1;
+        printf("{\"stage\":\"ssap_subscription_batch\",\"api\":\"c\",\"last\":%"PRIu64",\"dropped\":%"PRIu64",\"refused\":%"PRIu64",\"state\":%u,\"flags\":%u,\"reason\":%u,\"discarded\":%"PRIu64",\"packets\":[",batch.last_sequence,batch.dropped_notifications,batch.refused_indications,batch.info.state,batch.flags,batch.reason,batch.discarded_on_close);
+        for (unsigned i=0;i<batch.count;i++) {
+            if (i) {printf(",");}
+            printf("{\"sequence\":%"PRIu64",\"epoch\":%"PRIu64",\"indication\":%s,\"pdu\":\"",batch.packets[i].sequence,batch.packets[i].security_epoch,batch.packets[i].indication?"true":"false");
+            hex_print(batch.packets[i].pdu,batch.packets[i].pdu_length);printf("\"}");
+        }
+        printf("]}\n");fflush(stdout);
+    }
+    if (ferror(stdin)) goto done;
+    if (!released) {
+        error=slk_ssap_subscription_release(sub,&batch,now_ns()+5000000000ULL);
+        if (error){errno=-error;goto done;}
+        printf("{\"stage\":\"ssap_subscription_released\",\"api\":\"c\",\"flags\":%u,\"discarded\":%"PRIu64"}\n",batch.flags,batch.discarded_on_close);fflush(stdout);
+    }
+    status=0;
+done:
+    if (status) perror("application-client-c-subscription");
+    slk_ssap_subscription_free(sub);slk_connection_close(link);slk_client_close(client);return status;
+}
+
 int main(int argc,char **argv) {
+    if (argc>1 && !strcmp(argv[1],"subscription")) return subscription_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly") || !strcmp(argv[1],"owned-updates"))) return owned_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"update-peer") || !strcmp(argv[1],"update-error") || !strcmp(argv[1],"update-retired"))) return update_peer_mode(argc,argv);
     if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);

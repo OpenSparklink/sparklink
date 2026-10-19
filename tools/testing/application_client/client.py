@@ -23,6 +23,7 @@ def wait(fd, event, deadline):
 
 
 def main():
+    if sys.argv[1:2]==['subscription']:return subscription_mode()
     if sys.argv[1:2] in (['owned'],['owned-readonly'],['owned-updates']):return owned_mode()
     if sys.argv[1:2] in (['update-peer'],['update-error'],['update-retired']):return update_peer_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
@@ -263,6 +264,13 @@ def owned_mode():
             if link is not None:link.close()
 
 
+def checked_update_write(link,handle,mode,pdu,expected,reply):
+    exact=bytes([16 if mode==2 else 15,3])+handle.to_bytes(2,'little')+len(expected).to_bytes(2,'little')+expected
+    if pdu!=exact:raise ValueError('actual peer complete random update mismatch')
+    actual=link.ssap().write(handle,reply,minimum=2,deadline_ns=time.monotonic_ns()+5_000_000_000)
+    if actual!=reply:raise ValueError('actual business reply result mismatch')
+
+
 def update_peer_mode():
     if len(sys.argv)!=9:raise ValueError('update-peer index generation connection handle mode expected reply')
     index,generation=int(sys.argv[2]),int(sys.argv[3]);path=sys.argv[4]
@@ -290,13 +298,67 @@ def update_peer_mode():
                 errno=error.errno,deadline_ns=original,returned_ns=time.monotonic_ns())),flush=True)
             return
         if negative:raise ValueError('receive unexpectedly succeeded instead of required original error')
-        exact=bytes([16 if mode==2 else 15,3])+handle.to_bytes(2,'little')+len(expected).to_bytes(2,'little')+expected
-        if received.stage!=3 or received.pdu!=exact or received.acknowledgement:
+        if received.stage!=3 or received.acknowledgement:
             raise ValueError('actual peer complete random update mismatch')
-        actual=link.ssap().write(handle,reply,minimum=2,deadline_ns=time.monotonic_ns()+5_000_000_000)
-        if actual!=reply:raise ValueError('actual business reply result mismatch')
+        checked_update_write(link,handle,mode,received.pdu,expected,reply)
         print(json.dumps(dict(stage='ssap_update_checked_reply',api='python',handle=handle,mode=mode,
             pdu=received.pdu.hex(),value=expected.hex(),reply=reply.hex())),flush=True)
+
+
+def subscription_mode():
+    if len(sys.argv)!=8:raise ValueError('subscription index generation connection handle modes lease_ms')
+    index,generation=int(sys.argv[2]),int(sys.argv[3]);path=sys.argv[4]
+    handle,modes,duration_ms=map(int,sys.argv[5:8])
+    with Client(deadline_ns=time.monotonic_ns()+5_000_000_000) as client:
+        link=client.connection(ControllerId(index,generation),path,deadline_ns=time.monotonic_ns()+5_000_000_000)
+    with link,link.ssap().subscribe([handle],modes=modes,duration_ms=duration_ms,
+            deadline_ns=time.monotonic_ns()+5_000_000_000) as sub:
+        info=sub.info();released=False
+        print(json.dumps(dict(stage='ssap_subscription_active',api='python',token=info.token,
+                              epoch=info.security_epoch,client_closed=True)),flush=True)
+        while True:
+            line=sys.stdin.readline(16384)
+            if not line:break
+            if len(line)>16383 or not line.endswith('\n'):raise ValueError('bounded complete input line required')
+            args=line.split()
+            if args==['quit']:break
+            if args==['parent-close']:
+                link.close()
+                print(json.dumps(dict(stage='ssap_subscription_parent_closed',api='python')),flush=True)
+                continue
+            if len(args)==2 and args[0]=='renew':
+                info=sub.renew(int(args[1]),deadline_ns=time.monotonic_ns()+5_000_000_000)
+                print(json.dumps(dict(stage='ssap_subscription_renewed',api='python',expires_ns=info.expires_ns)),flush=True)
+                continue
+            if args==['release']:
+                batch=sub.release(deadline_ns=time.monotonic_ns()+5_000_000_000);released=True
+                print(json.dumps(dict(stage='ssap_subscription_released',api='python',flags=batch.flags,
+                                      discarded=batch.discarded_on_close)),flush=True)
+                continue
+            check=len(args)==3 and args[0]=='check'
+            if not check and args not in (['read'],['poll']):raise ValueError('unknown subscription operation')
+            if check:
+                expected,reply=map(bytes.fromhex,args[1:])
+                if not 1<=len(expected)<=2042 or not 1<=len(reply)<=2042 or expected==reply:
+                    raise ValueError('independent bounded update/reply required')
+                link._live()
+            batch=sub.read(wait=args!=['poll'],deadline_ns=time.monotonic_ns()+5_000_000_000)
+            if check:
+                if len(batch.packets)!=1:raise ValueError('exact single complete update required')
+                packet=batch.packets[0]
+                checked_update_write(link,handle,2 if packet.indication else 1,packet.pdu,expected,reply)
+                print(json.dumps(dict(stage='ssap_subscription_checked_reply',api='python',
+                    sequence=packet.sequence,value=expected.hex(),reply=reply.hex())),flush=True)
+            if batch.info.state==3 and batch.flags==1:released=True
+            print(json.dumps(dict(stage='ssap_subscription_batch',api='python',last=batch.last_sequence,
+                dropped=batch.dropped_notifications,refused=batch.refused_indications,state=batch.info.state,
+                flags=batch.flags,reason=batch.reason,discarded=batch.discarded_on_close,
+                packets=[dict(sequence=p.sequence,epoch=p.security_epoch,indication=p.indication,
+                              pdu=p.pdu.hex()) for p in batch.packets])),flush=True)
+        if not released:
+            batch=sub.release(deadline_ns=time.monotonic_ns()+5_000_000_000)
+            print(json.dumps(dict(stage='ssap_subscription_released',api='python',flags=batch.flags,
+                                  discarded=batch.discarded_on_close)),flush=True)
 
 
 if __name__=="__main__":main()

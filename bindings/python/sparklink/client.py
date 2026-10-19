@@ -311,6 +311,15 @@ class RemoteSsap:
     def __init__(self, connection):
         self._connection = connection
 
+    def subscribe(self, handles, *, deadline_ns, modes=3, duration_ms=5000):
+        """Finite caller-owned CPCD lease through the existing Rust client.
+
+        One lease per physical actor currently. release observes remote cleanup;
+        local close alone is not confirmation. No implicit retry or reconnect.
+        """
+        from .ssap_subscription import SsapSubscription
+        return SsapSubscription._acquire(self._connection, handles, modes, duration_ms, deadline_ns)
+
     def _update(self, operation, handle, mode, deadline_ns):
         _integer(handle, 16, "handle", nonzero=True)
         deadline_ns = _deadline(deadline_ns)

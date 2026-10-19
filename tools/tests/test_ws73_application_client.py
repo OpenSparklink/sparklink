@@ -27,6 +27,14 @@ def sdk_ssap_fixture(row,sdus):
     for i,item in enumerate(base['ssap_local_registrations']):item['owner']=owners[i]
     row.update({k:v for k,v in base.items() if k!='owners'})
     row['ssap_language_required']=True;row['ssap_language_clients']=[]
+    row.update(ssap_registration_kind='owned-sdk-v1',ssap_owned_publishers_required=True,ssap_owned_publishers=[])
+    for position,registered in enumerate(row['ssap_local_registrations']):
+        registered['service_uuid']=(bytes([160+n,position+1])*8).hex()
+        api='c' if position==n else 'python';owner=owners[position];handle=registered['handle'];begin=registered['start']
+        app=dict(api=api,position=position,pid=200+position,credentials=dict(uids=[1005]*4,gids=[1005]*4,groups=[],capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']}),environment=application_environment(),start_wall_ns=n*10000+900,end_wall_ns=n*10000+2000,exit=0,stderr='',value_snapshots=[])
+        app['args']=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),registered['service_uuid'],registered['property_uuid'],'ab'*32]
+        app['stdout']=f'SdkOwnedAPI: api={api} client_closed=true\nSsapOwnedService: start={begin} end={handle} property={handle}; local registration only\n'
+        registered['registration']=app;row['ssap_owned_publishers'].append(app)
     normal_count=8*12
     for i,item in enumerate(row['ssap_values']):
         start=n*10000+1000+i*100;item.update(start_wall_ns=start,end_wall_ns=start+60)
@@ -39,11 +47,18 @@ def sdk_ssap_fixture(row,sdus):
             barrier=json.dumps(dict(stage='ssap_start_barrier',api=api,client_closed=True))
             app.update(position=position,api=api,args=arguments,environment=application_environment(),ssap_operation=operation,ssap_path=entry['object']['path'],ssap_handle=item['handle'],ssap_expected=item[key],stdout=barrier+'\n'+app['stdout'],stderr='',credentials=dict(uids=[1000]*4,capabilities={k:'0'for k in ['CapEff','CapPrm','CapAmb','CapInh']}))
             row['ssap_language_clients'].append(app)
+        publisher=row['ssap_owned_publishers'][item['target']];ordinal=len(publisher['value_snapshots'])+1
+        observation=dict(api=publisher['api'],publisher_pid=publisher['pid'],handle=item['handle'],value=item['value'],ordinal=ordinal,start_wall_ns=start+26,end_wall_ns=start+28)
+        item['local_check']=observation;publisher['value_snapshots'].append(observation)
+        publisher['stdout']+=f"SsapOwnedValue: handle={item['handle']} value={item['value']}\n"
         normal=wire[i*12:(i+1)*12];uuid=wire[normal_count+i*8:normal_count+(i+1)*8]
         for part,offset in [(normal[:4],10),(normal[4:8],20),(normal[8:12],30),(uuid[:4],1),(uuid[4:8],40)]:
             for position,direction,payload,_ in part:
                 entry=owners[position];owner,obj=entry['owner'],entry['object']
                 sdus.append(dict(bus=owner['bus'],device=owner['device'],handle=obj['handle'],direction=direction,data=payload.hex(),wall_ns=start+offset+1))
+    for publisher in row['ssap_owned_publishers']:
+        publisher['stdout']+=f"SdkOwnedRemoved: api={publisher['api']} start={publisher['start'] if 'start' in publisher else row['ssap_local_registrations'][publisher['position']]['start']}\n"
+
 
 
 def fixture():
@@ -75,6 +90,21 @@ def fixture():
 
 
 class ApplicationClientEvidence(unittest.TestCase):
+    def test_owned_publishers_cannot_be_replaced_by_manager_or_fake_cleanup(self):
+        for kind in ['manager','missing','role','caps','failed','parent-open','missing-remove','snapshot','wrong-api','unknown-cleanup']:
+            run,sdus=fixture();row=run['application_clients'][0];app=row['ssap_owned_publishers'][0]
+            if kind=='manager':row['ssap_registration_kind']='manager'
+            elif kind=='missing':row['ssap_owned_publishers'].pop()
+            elif kind=='role':app['credentials']['uids']=[1000]*4
+            elif kind=='caps':app['credentials']['capabilities']['CapEff']='1'
+            elif kind=='failed':app['exit']=1
+            elif kind=='parent-open':app['stdout']=app['stdout'].replace('client_closed=true','client_closed=false')
+            elif kind=='missing-remove':app['stdout']=app['stdout'].replace('SdkOwnedRemoved:','Missing:')
+            elif kind=='snapshot':app['value_snapshots'][0]['value']='00'*32
+            elif kind=='wrong-api':app['api']='python'
+            elif kind=='unknown-cleanup':row['owned_publisher_cleanup_errors']=['timeout']
+            with self.subTest(kind=kind),patch('ws73_application_client.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(run,{})
+
     def test_private_image_has_explicit_sdk_path_without_host_native_fallback(self):
         env=application_environment(Path('/private-image'))
         self.assertEqual(env['PYTHONPATH'],'/private-image/usr/share/sparklink/python:/private-image/usr/share/sparklink/tools')

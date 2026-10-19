@@ -223,9 +223,14 @@ class Run:
             raise ValueError('provided PID disagrees with bus-authenticated slkd owner')
         return {'owner':match[1], 'pid':int(match[2]), 'uid':int(match[3])}
 
-    def command(self, command, timeout, *, collection=None, field=None, on_started=None, environment=None):
+    def command(self, command, timeout, *, collection=None, field=None, on_started=None, environment=None, child_credentials=None):
         if (collection is None) == (field is None):
             raise ValueError('one evidence location required for a command')
+        options={}
+        if child_credentials is not None:
+            if os.geteuid()!=0 or child_credentials!={'user':1000,'group':1000,'extra_groups':[]}:
+                raise ValueError('only explicit root-supervised UID1000 child drop supported')
+            options=dict(child_credentials)
         original_deadline=time.monotonic()+timeout
         record = {'args': command, 'start_wall_ns': time.time_ns(), 'start_monotonic_ns': time.monotonic_ns(), 'start_boottime_ns': time.clock_gettime_ns(time.CLOCK_BOOTTIME)}
         if environment is not None:
@@ -239,7 +244,7 @@ class Run:
         try:
             try:
                 p = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                     env=None if environment is None else dict(os.environ, **environment))
+                                     env=None if environment is None else dict(os.environ, **environment), **options)
             except OSError as error:
                 record.update({'exit': 'launch_error', 'errno': error.errno,
                                'error': str(error), 'stdout': '', 'stderr': ''})

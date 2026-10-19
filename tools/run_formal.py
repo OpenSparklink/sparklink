@@ -54,7 +54,7 @@ def classify(kind, code, output, timed_out=False):
     return "NOT_PROVEN_FAILED_OR_INCOMPLETE"
 
 
-def kani_export_verdict(data, harness, required=(), negative_marker=None):
+def kani_export_verdict(data, harness, required=(), negative_marker=None, *, allowed_unreachable=()):
     """Kani0.68 structured results, including actual expected properties.
 
     This checks tool output, not source mapping/refinement. Callers must also
@@ -74,17 +74,19 @@ def kani_export_verdict(data, harness, required=(), negative_marker=None):
         details = data['error_details']
         if len(details) != 1 or details[0]['harness_id'] != harness:
             return 'NOT_PROVEN_INCONSISTENT_ERRORS'
-        if not checks or any(c['status'] not in ('Success', 'Failure') for c in checks):
+        if not checks or any(c['status'] not in ('Success', 'Failure') and not (c['status']=='Unreachable' and (c.get('function'),c['category'],c['description'])in allowed_unreachable) for c in checks):
             return 'NOT_PROVEN_PROPERTY_STATUS'
         if any(c['category'] == 'unsupported_construct' for c in checks):
             return 'NOT_PROVEN_UNSUPPORTED'
-        if any(c['category'] not in {'assertion', 'arithmetic_overflow', 'pointer_dereference', 'unreachable', 'unwinding_assertion'} for c in checks):
+        if any(c['category'] not in {'assertion', 'arithmetic_overflow', 'pointer_dereference', 'unreachable', 'unwinding_assertion', 'division-by-zero'} for c in checks):
             return 'NOT_PROVEN_UNKNOWN_PROPERTY'
         descriptions = [c['description'] for c in checks]
         if negative_marker is None and not required:
             return 'NOT_PROVEN_MISSING_PROPERTY_SPEC'
         if any(not any(fragment in d for d in descriptions) for fragment in required):
             return 'NOT_PROVEN_MISSING_PROPERTY'
+        if any(any(c['status']!='Success' for c in checks if fragment in c['description']) for fragment in required):
+            return 'NOT_PROVEN_UNREACHABLE_REQUIRED_PROPERTY'
         failures = [c for c in checks if c['status'] == 'Failure']
         if negative_marker is not None:
             if details[0]['has_errors'] is not True or details[0]['error_type'] != 'assertion_failure':

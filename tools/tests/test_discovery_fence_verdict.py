@@ -37,3 +37,20 @@ class ExportVerdict(unittest.TestCase):
         for change in ['description','category','status']:
             bad=copy.deepcopy(d);bad['verification_results']['results'][0]['checks'][0][change]='wrong'
             self.assertNotEqual(kani_export_verdict(bad,'proofs::actual',negative_marker='CONTROL_STALE'),'EXPECTED_REJECTION_NEGATIVE_CONTROL')
+    def test_unreachable_safety_checks_need_exact_opt_in_and_never_replace_required_properties(self):
+        d=self.fixture();checks=d['verification_results']['results'][0]['checks']
+        extra=dict(function='core::num::<impl usize>::abs_diff',category='assertion',description='attempt to subtract with overflow',status='Unreachable')
+        checks.append(extra);allow=[(extra['function'],extra['category'],extra['description'])]
+        self.assertNotEqual(kani_export_verdict(d,'proofs::actual',['old epoch rejected']),'PROVED_SCOPED')
+        self.assertEqual(kani_export_verdict(d,'proofs::actual',['old epoch rejected'],allowed_unreachable=allow),'PROVED_SCOPED')
+        for field in ['function','category','description','status']:
+            bad=copy.deepcopy(d);bad['verification_results']['results'][0]['checks'][-1][field]='unknown'
+            self.assertNotEqual(kani_export_verdict(bad,'proofs::actual',['old epoch rejected'],allowed_unreachable=allow),'PROVED_SCOPED')
+        checks[0].update(function='proofs::actual',status='Unreachable')
+        allow.append(('proofs::actual','assertion','old epoch rejected'))
+        self.assertEqual(kani_export_verdict(d,'proofs::actual',['old epoch rejected'],allowed_unreachable=allow),'NOT_PROVEN_UNREACHABLE_REQUIRED_PROPERTY')
+    def test_division_by_zero_is_a_checked_failure_not_an_unknown_or_ignored_property(self):
+        d=self.fixture();checks=d['verification_results']['results'][0]['checks'];checks.append(dict(status='Success',category='division-by-zero',description='division by zero'))
+        self.assertEqual(kani_export_verdict(d,'proofs::actual',['old epoch rejected']),'PROVED_SCOPED')
+        checks[-1]['status']='Failure'
+        self.assertNotEqual(kani_export_verdict(d,'proofs::actual',['old epoch rejected']),'PROVED_SCOPED')

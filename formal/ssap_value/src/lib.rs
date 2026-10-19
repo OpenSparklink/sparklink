@@ -152,3 +152,232 @@ mod configuration_proofs {
         assert!(result.is_ok(),"negative control wrongly permits reserved client configuration");
     }
 }
+
+// The production fragmentation implementation, not a second model/codec.
+#[path = "../../../crates/slk-protocol/src/ssap/fragments.rs"]
+pub mod fragments;
+#[cfg(kani)]
+mod fragment_proofs {
+    use super::fragments::{Plan, Reassembly};
+    #[kani::proof]
+    #[kani::unwind(40)]
+    fn actual_fragment_encode_is_atomic_and_wire_bounded() {
+        let raw: [u8; 16] = kani::any();
+        let len: usize = kani::any();
+        kani::assume(len <= 16);
+        let mtu: u16 = kani::any();
+        let sequence: bool = kani::any();
+        let index: usize = kani::any();
+        let cap: usize = kani::any();
+        kani::assume(cap <= 24);
+        let mut out: [u8; 24] = kani::any();
+        let before = out;
+        if let Ok(plan) = Plan::new(&raw[..len], mtu, sequence) {
+            assert!(
+                (1..=15).contains(&plan.count()),
+                "fragment count within declared budget"
+            );
+            match plan.encode(index, &mut out[..cap]) {
+                Ok(n) => {
+                    assert!(
+                        n <= usize::from(mtu) && n <= cap,
+                        "fragment encoded output within wire MTU"
+                    );
+                    for i in n..24 {
+                        assert!(out[i] == before[i], "fragment trailing output untouched");
+                    }
+                }
+                Err(_) => {
+                    for i in 0..24 {
+                        assert!(out[i] == before[i], "fragment refusal is atomic");
+                    }
+                }
+            }
+        }
+    }
+    #[kani::proof]
+    #[kani::unwind(40)]
+    fn actual_fragment_completion_keeps_first_identity_and_deadline() {
+        let tail: [u8; 5] = kani::any();
+        let raw = [
+            13, 35, 17, 0, 0, tail[0], tail[1], tail[2], tail[3], tail[4],
+        ];
+        let plan = Plan::new(&raw, 8, true).unwrap();
+        let mut a = [0; 8];
+        let mut b = [0; 8];
+        let na = plan.encode(0, &mut a).unwrap();
+        let nb = plan.encode(1, &mut b).unwrap();
+        let identity: u8 = kani::any();
+        let next: u8 = kani::any();
+        let now: u64 = kani::any();
+        let renewed: u64 = kani::any();
+        let mut rx = Reassembly::default();
+        assert!(
+            rx.receive(&a[..na], 8, true, identity, 0u64, 10)
+                .unwrap()
+                .is_none()
+        );
+        let result = rx.receive(&b[..nb], 8, true, next, now, renewed);
+        assert!(
+            !matches!(result, Ok(None)),
+            "final fragment must have terminal outcome"
+        );
+        match result {
+            Ok(Some(c)) => {
+                assert!(
+                    identity == next && now < 10,
+                    "fragment completion has original identity before expiry"
+                );
+                assert!(
+                    c.context == identity && c.deadline == 10,
+                    "fragment original context and deadline never renewed"
+                );
+                assert!(
+                    c.bytes.len() == raw.len(),
+                    "fragment completion preserves logical length"
+                );
+                for i in 0..10 {
+                    assert!(
+                        c.bytes[i] == raw[i],
+                        "fragment completion preserves whole logical bytes"
+                    );
+                }
+            }
+            Err(_) => {
+                assert!(
+                    identity != next || now >= 10,
+                    "valid final fragment not spuriously rejected"
+                );
+                assert!(
+                    rx.deadline().is_none(),
+                    "fragment error discards partial state"
+                );
+            }
+            Ok(None) => {}
+        }
+    }
+    #[kani::proof]
+    #[kani::unwind(40)]
+    fn actual_fragment_arbitrary_next_packet_cannot_change_qualification() {
+        let raw = [9, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        let length = if kani::any() { 10 } else { 12 };
+        let plan = Plan::new(&raw[..length], 8, true).unwrap();
+        let mut first = [0; 8];
+        let n = plan.encode(0, &mut first).unwrap();
+        let next: [u8; 8] = kani::any();
+        let len: usize = kani::any();
+        kani::assume(len <= 8);
+        let identity: u8 = kani::any();
+        let now: u8 = kani::any();
+        let mut rx = Reassembly::default();
+        assert!(
+            rx.receive(&first[..n], 8, true, 7, 0u64, 10)
+                .unwrap()
+                .is_none()
+        );
+        match rx.receive(&next[..len], 8, true, identity, u64::from(now), 1000) {
+            Ok(Some(c)) => {
+                assert!(
+                    c.context == 7 && identity == 7 && now < 10,
+                    "arbitrary fragment cannot acquire new epoch or renewed deadline"
+                );
+                assert!(
+                    c.deadline == 10 && c.bytes.len() <= 2047,
+                    "arbitrary fragment keeps original bound"
+                );
+            }
+            Ok(None) => {
+                assert!(
+                    rx.deadline() == Some(10),
+                    "partial fragment never renews expiry"
+                );
+            }
+            Err(_) => {
+                assert!(
+                    rx.deadline().is_none(),
+                    "rejected fragment cannot retain work"
+                );
+            }
+        }
+    }
+}
+
+#[cfg(kani)]
+mod fragment_layout_proof {
+    use super::fragments::Layout;
+    #[kani::proof]
+    fn actual_production_layout_bounds_all_lengths_mtu_and_indices() {
+        let length: usize = kani::any();
+        let mtu: u16 = kani::any();
+        let index: usize = kani::any();
+        match Layout::new(length, mtu) {
+            Ok(layout) => {
+                assert!(
+                    length >= 2 && length <= 2047,
+                    "layout logical length stays bounded"
+                );
+                assert!(
+                    layout.count() >= 1 && layout.count() <= 15,
+                    "layout count stays bounded"
+                );
+                match layout.bounds(index) {
+                    Ok((start, end, size)) => {
+                        assert!(
+                            index < layout.count(),
+                            "layout index admitted only inside count"
+                        );
+                        assert!(
+                            start <= end && end <= length && size <= mtu as usize,
+                            "layout slice and wire bounds hold"
+                        );
+                        if layout.count() == 1 {
+                            assert!(
+                                index == 0 && start == 0 && end == length && size == length,
+                                "layout complete PDU unchanged"
+                            );
+                        } else {
+                            assert!(
+                                start >= 2 && start < end && size == end - start + 4,
+                                "layout fragment carries nonempty body and bounded header"
+                            );
+                            if index == 0 {
+                                assert!(
+                                    start == 2,
+                                    "layout first body starts after original header"
+                                );
+                            }
+                            if index + 1 == layout.count() {
+                                assert!(
+                                    end == length,
+                                    "layout last body ends at exact logical boundary"
+                                );
+                            }
+                        }
+                    }
+                    Err(_) => assert!(
+                        index >= layout.count(),
+                        "layout rejects only invalid part index"
+                    ),
+                }
+            }
+            Err(_) => {
+                if length >= 2 && length <= 2047 {
+                    assert!(
+                        length > mtu as usize,
+                        "layout never rejects fitting complete PDU"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[cfg(kani)]
+mod fragment_layout_negative {
+    #[kani::proof]
+    fn actual_layout_must_reject_the_false_single_wire_claim() {
+        if let Ok(layout)=super::fragments::Layout::new(2047,2042) {
+            assert!(layout.count()==1,"CONTROL_OVERSIZE_LOGICAL_PDU_IS_ONE_WIRE_PACKET");
+        }
+    }
+}

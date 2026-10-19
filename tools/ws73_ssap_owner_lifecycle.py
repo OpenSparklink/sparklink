@@ -14,7 +14,7 @@ from ws73_capture import CaptureError
 from ws73_channel_socket import credentials
 from ws73_ssap_owned import publisher,wait_text,value_snapshot,await_removed
 
-PROMPT=(r'^SsapAuthorizationPrompt: token=(\d+) request=(\d+) index=(\d+) generation=(\d+) lifetime=(\d+) handle=(\d+) epoch=(\d+) security=(\d+) property=(\d+) write=(true|false) bytes=(\d+) deadline_ns=(\d+); answer \'yes (\d+)\' or \'no (\d+)\'$')
+PROMPT=(r'^SsapAuthorizationPrompt: token=(\d+) request=(\d+) index=(\d+) generation=(\d+) lifetime=(\d+) handle=(\d+) epoch=(\d+) security=(\d+) property=(\d+) data_type=0 write=(true|false) bytes=(\d+) deadline_ns=(\d+); answer \'yes (\d+)\' or \'no (\d+)\'$')
 STATUS='OWNER_LIFECYCLE_USB_CUTC_EVIDENCE_PENDING'
 
 

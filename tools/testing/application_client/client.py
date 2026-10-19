@@ -129,7 +129,7 @@ def owned_info(info):
     return dict(api='python',index=info.controller.index,generation=info.controller.generation,
         token=info.token,request_id=info.request_id,lifetime=info.connection_lifetime,
         handle=info.connection_handle,epoch=info.security_epoch,level=info.security_level,
-        deadline_ns=info.deadline_ns,property=info.property,write=info.write,
+        deadline_ns=info.deadline_ns,property=info.property,data_type=info.data_type,write=info.write,
         value=info.value.hex(),local_tcid=info.local_tcid,remote_tcid=info.remote_tcid,pi=info.pi)
 
 
@@ -167,7 +167,7 @@ def owned_mode():
                         info=pending.info
                         if policy=='ask':
                             print('SdkAuthorizationRequest: '+json.dumps(owned_info(info)),flush=True)
-                            print(f"SsapAuthorizationPrompt: token={info.token} request={info.request_id} index={index} generation={generation} lifetime={info.connection_lifetime} handle={info.connection_handle} epoch={info.security_epoch} security={info.security_level} property={info.property} write={str(info.write).lower()} bytes={len(info.value)} deadline_ns={info.deadline_ns}; answer 'yes {info.token}' or 'no {info.token}'",flush=True)
+                            print(f"SsapAuthorizationPrompt: token={info.token} request={info.request_id} index={index} generation={generation} lifetime={info.connection_lifetime} handle={info.connection_handle} epoch={info.security_epoch} security={info.security_level} property={info.property} data_type={info.data_type} write={str(info.write).lower()} bytes={len(info.value)} deadline_ns={info.deadline_ns}; answer 'yes {info.token}' or 'no {info.token}'",flush=True)
                         else:
                             decision,wall=time.monotonic_ns(),time.time_ns()
                             try:pending.reply(policy=='allow')

@@ -228,7 +228,7 @@ def execute(run, phase):
 
 
 AUTHORIZATION_CONTEXT_FIELDS={'api','index','generation','token','request_id','lifetime','handle',
-    'epoch','level','deadline_ns','property','write','value','local_tcid','remote_tcid','pi'}
+    'epoch','level','deadline_ns','property','data_type','write','value','local_tcid','remote_tcid','pi'}
 
 
 def authorization_context(context,api):
@@ -239,7 +239,7 @@ def authorization_context(context,api):
                    for k in AUTHORIZATION_CONTEXT_FIELDS-{'api','write','value'})
             or not all(context[k] for k in ['generation','token','request_id','lifetime','epoch','deadline_ns','property'])
             or context['index']>65535 or context['handle']>65535 or context['property']>65535
-            or (context['local_tcid'],context['remote_tcid'],context['pi'],context['level'])!=(10,10,0,0)):
+            or (context['local_tcid'],context['remote_tcid'],context['pi'],context['level'],context['data_type'])!=(10,10,0,0,0)):
         raise CaptureError('complete original basic SDK authorization context required')
     try:value=bytes.fromhex(context['value'])
     except ValueError as error:raise CaptureError('exact proposed authorization bytes required') from error
@@ -255,7 +255,7 @@ def authorization_decisions(app):
               for line in app['stdout'].splitlines() if line.startswith('SdkAuthorizationDecision: ')]
     except (ValueError,TypeError) as error:raise CaptureError('original approval JSON required') from error
     fields={'api','index','generation','token','request_id','lifetime','handle','epoch','level',
-            'deadline_ns','property','write','value','local_tcid','remote_tcid','pi','allow',
+            'deadline_ns','property','data_type','write','value','local_tcid','remote_tcid','pi','allow',
             'decision_ns','decision_wall_ns'}
     for d in rows:
         if isinstance(d,dict):authorization_context({k:v for k,v in d.items() if k in AUTHORIZATION_CONTEXT_FIELDS},app['api'])

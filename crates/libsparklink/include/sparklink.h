@@ -266,7 +266,11 @@ typedef struct SlkAuthorizationRequestInfo {
     uint8_t local_tcid;
     uint8_t remote_tcid;
     uint8_t pi;
-    uint8_t reserved[2];
+    /**
+     * Original SSAP data type; currently property value0 only.
+     */
+    uint8_t data_type;
+    uint8_t reserved[1];
     uint8_t value[2042];
     uint8_t tail[6];
 } SlkAuthorizationRequestInfo;
@@ -649,7 +653,7 @@ int slk_local_service_read(const struct SlkLocalService *view,
 
 /**
  * Replace this owner's local property value,0..2042 bytes,without truncation.
- * Success is local commit,not publication/notification/peer delivery.
+ * Success acknowledges local commit only,not publication/notification/delivery.
  * Timeout/lost reply may follow commit;never automatically retry. Peer operation
  * and security permissions are unchanged. Foreign/inactive handles are refused.
  * # Safety

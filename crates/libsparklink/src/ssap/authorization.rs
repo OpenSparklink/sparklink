@@ -46,6 +46,7 @@ pub fn admit(
     if context.owner_lost
         || prompt.0 == 0
         || context.property != Some(prompt.2)
+        || prompt.6 != 0
         || id.0 != context.controller.index
         || id.1 != context.controller.generation
         || id.2 == 0

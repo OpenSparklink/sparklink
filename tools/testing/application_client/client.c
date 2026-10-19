@@ -156,9 +156,9 @@ struct OwnedPending {
     struct SlkAuthorizationRequestInfo info;
 };
 static void owned_info_json(const struct SlkAuthorizationRequestInfo *p) {
-    printf("{\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"token\":%"PRIu64",\"request_id\":%"PRIu64",\"lifetime\":%"PRIu64",\"handle\":%u,\"epoch\":%"PRIu64",\"level\":%u,\"deadline_ns\":%"PRIu64",\"property\":%u,\"write\":%s,\"value\":\"",
+    printf("{\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"token\":%"PRIu64",\"request_id\":%"PRIu64",\"lifetime\":%"PRIu64",\"handle\":%u,\"epoch\":%"PRIu64",\"level\":%u,\"deadline_ns\":%"PRIu64",\"property\":%u,\"data_type\":%u,\"write\":%s,\"value\":\"",
         p->controller.index,p->controller.generation,p->token,p->request_id,p->connection_lifetime,
-        p->connection_handle,p->security_epoch,p->security_level,p->deadline_ns,p->property,p->write?"true":"false");
+        p->connection_handle,p->security_epoch,p->security_level,p->deadline_ns,p->property,p->data_type,p->write?"true":"false");
     hex_print(p->value,p->value_length);
     printf("\",\"local_tcid\":%u,\"remote_tcid\":%u,\"pi\":%u",p->local_tcid,p->remote_tcid,p->pi);
 }
@@ -177,16 +177,16 @@ static int owned_receive(struct SlkLocalService *view,const struct SlkServiceRec
         || info->controller.generation!=receipt->controller.generation
         || info->property!=receipt->handles[0] || !info->token || !info->request_id
         || !info->connection_lifetime || !info->security_epoch || !info->deadline_ns
-        || info->security_level>2 || info->write>1 || info->value_length>2042
+        || info->security_level>2 || info->data_type!=0 || info->write>1 || info->value_length>2042
         || (!info->write && info->value_length)
         || info->local_tcid!=10 || info->remote_tcid!=10 || info->pi)) error=-EPROTO;
     if (error) {owned_clear(p);return error;}
     if (ask) {
         printf("SdkAuthorizationRequest: ");owned_info_json(info);printf("}\n");
-        printf("SsapAuthorizationPrompt: token=%"PRIu64" request=%"PRIu64" index=%u generation=%"PRIu64" lifetime=%"PRIu64" handle=%u epoch=%"PRIu64" security=%u property=%u write=%s bytes=%u deadline_ns=%"PRIu64"; answer 'yes %"PRIu64"' or 'no %"PRIu64"'\n",
+        printf("SsapAuthorizationPrompt: token=%"PRIu64" request=%"PRIu64" index=%u generation=%"PRIu64" lifetime=%"PRIu64" handle=%u epoch=%"PRIu64" security=%u property=%u data_type=%u write=%s bytes=%u deadline_ns=%"PRIu64"; answer 'yes %"PRIu64"' or 'no %"PRIu64"'\n",
             info->token,info->request_id,info->controller.index,info->controller.generation,
             info->connection_lifetime,info->connection_handle,info->security_epoch,info->security_level,
-            info->property,info->write?"true":"false",info->value_length,info->deadline_ns,info->token,info->token);
+            info->property,info->data_type,info->write?"true":"false",info->value_length,info->deadline_ns,info->token,info->token);
         fflush(stdout);return 0;
     }
     /* Call-start observations,not the internal decision linearization point. */

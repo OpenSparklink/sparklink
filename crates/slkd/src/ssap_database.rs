@@ -266,6 +266,7 @@ impl Database {
         }
         Some(Target {
             handle,
+            data_type: 0,
             owner: owner.clone(),
         })
     }
@@ -299,16 +300,25 @@ impl Database {
             .filter_map(|(h, _)| self.target(*h, level, false))
             .collect()
     }
-    fn locally_authorized(&self, handle: u16, approvals: &[Approval]) -> bool {
+    fn locally_authorized(
+        &self,
+        handle: u16,
+        data_type: u8,
+        write: bool,
+        approvals: &[Approval],
+    ) -> bool {
         self.services
             .values()
             .find(|s| s.properties.contains_key(&handle))
             .and_then(|s| s.owner.as_ref())
             .is_some_and(|o| {
                 o.current()
-                    && approvals
-                        .iter()
-                        .any(|a| a.handle == handle && Arc::ptr_eq(o, &a.owner))
+                    && approvals.iter().any(|a| {
+                        a.handle == handle
+                            && a.data_type == data_type
+                            && a.write == write
+                            && Arc::ptr_eq(o, &a.owner)
+                    })
             })
     }
     pub(crate) fn find(&self, request: FindRequest<'_>, mtu: u16) -> Result<Vec<u8>, String> {
@@ -402,7 +412,7 @@ impl Database {
                         } else if let Err(error) = p.access.check_authorization_result(
                             level,
                             false,
-                            self.locally_authorized(*handle, approvals),
+                            self.locally_authorized(*handle, 0, false, approvals),
                         ) {
                             Err(u16::from(error))
                         } else {
@@ -478,7 +488,7 @@ impl Database {
                         .check_authorization_result(
                             level,
                             false,
-                            self.locally_authorized(handle, approvals),
+                            self.locally_authorized(handle, data_type, false, approvals),
                         )
                         .is_err() =>
                 {
@@ -487,7 +497,7 @@ impl Database {
                             .check_authorization_result(
                                 level,
                                 false,
-                                self.locally_authorized(handle, approvals),
+                                self.locally_authorized(handle, data_type, false, approvals),
                             )
                             .unwrap_err(),
                     ))
@@ -514,7 +524,7 @@ impl Database {
                             .check_authorization_result(
                                 level,
                                 true,
-                                self.locally_authorized(handle, approvals),
+                                self.locally_authorized(handle, data_type, true, approvals),
                             )
                             .is_err() =>
                     {
@@ -522,7 +532,7 @@ impl Database {
                             .check_authorization_result(
                                 level,
                                 true,
-                                self.locally_authorized(handle, approvals),
+                                self.locally_authorized(handle, data_type, true, approvals),
                             )
                             .err()
                     }

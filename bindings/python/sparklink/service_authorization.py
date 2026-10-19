@@ -15,7 +15,7 @@ class _Info(ctypes.Structure):
                 ('property', ctypes.c_uint16), ('value_length', ctypes.c_uint16),
                 ('write', ctypes.c_uint8), ('local_tcid', ctypes.c_uint8),
                 ('remote_tcid', ctypes.c_uint8), ('pi', ctypes.c_uint8),
-                ('reserved', ctypes.c_uint8 * 2), ('value', ctypes.c_uint8 * 2042),
+                ('data_type', ctypes.c_uint8), ('reserved', ctypes.c_uint8 * 1), ('value', ctypes.c_uint8 * 2042),
                 ('tail', ctypes.c_uint8 * 6)]
 
 
@@ -35,6 +35,7 @@ class AuthorizationInfo:
     local_tcid: int
     remote_tcid: int
     pi: int
+    data_type: int
 
 
 def _configure(lib):
@@ -73,7 +74,7 @@ class AuthorizationRequest:
             _result(lib.slk_authorization_request_info(handle, ctypes.byref(raw)))
             controller = ControllerId(raw.controller.index, raw.controller.generation)
             if (controller != receipt.controller or any(raw.controller.reserved)
-                    or any(raw.reserved) or any(raw.tail) or raw.write not in (0, 1)
+                    or any(raw.reserved) or any(raw.tail) or raw.write not in (0, 1) or raw.data_type != 0
                     or not raw.token or not raw.request_id or not raw.connection_lifetime
                     or not raw.security_epoch or not raw.deadline_ns or raw.security_level > 2
                     or raw.property not in receipt.handles or raw.value_length > 2042
@@ -84,7 +85,7 @@ class AuthorizationRequest:
             self._info = AuthorizationInfo(controller, raw.token, raw.request_id,
                 raw.connection_lifetime, raw.connection_handle, raw.security_epoch,
                 raw.security_level, raw.deadline_ns, raw.property, bool(raw.write),
-                bytes(raw.value[:raw.value_length]), raw.local_tcid, raw.remote_tcid, raw.pi)
+                bytes(raw.value[:raw.value_length]), raw.local_tcid, raw.remote_tcid, raw.pi, raw.data_type)
             return self
         except BaseException:
             self.close()

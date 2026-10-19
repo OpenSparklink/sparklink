@@ -94,8 +94,8 @@ impl Authorizer {
         };
         let approved = approved && self.admission(&prompt, sender)?.is_some();
         println!(
-            "SsapAuthorizationDecision: request={} property={} write={} security={} approved={approved}; local policy only",
-            prompt.0, prompt.2, prompt.3, prompt.1.5
+            "SsapAuthorizationDecision: request={} property={} data_type={} write={} security={} approved={approved}; local policy only",
+            prompt.0, prompt.2, prompt.6, prompt.3, prompt.1.5
         );
         Ok(approved)
     }
@@ -208,7 +208,7 @@ pub(crate) async fn serve(
                     next_token=next_token.checked_add(1).ok_or_else(||anyhow::anyhow!("local prompt namespace exhausted"))?;
                     next.token=next_token;
                     input.discard_before_prompt()?;
-                    println!("SsapAuthorizationPrompt: token={} request={} index={} generation={} lifetime={} handle={} epoch={} security={} property={} write={} bytes={} deadline_ns={}; answer 'yes {}' or 'no {}'",next.token,next.prompt.0,next.prompt.1.0,next.prompt.1.1,next.prompt.1.2,next.prompt.1.3,next.prompt.1.4,next.prompt.1.5,next.prompt.2,next.prompt.3,next.prompt.5.len(),next.prompt.4,next.token,next.token);
+                    println!("SsapAuthorizationPrompt: token={} request={} index={} generation={} lifetime={} handle={} epoch={} security={} property={} data_type={} write={} bytes={} deadline_ns={}; answer 'yes {}' or 'no {}'",next.token,next.prompt.0,next.prompt.1.0,next.prompt.1.1,next.prompt.1.2,next.prompt.1.3,next.prompt.1.4,next.prompt.1.5,next.prompt.2,next.prompt.6,next.prompt.3,next.prompt.5.len(),next.prompt.4,next.token,next.token);
                     current=Some(next);
                 },
                 line=input.line()=>{
@@ -294,6 +294,7 @@ mod tests {
             false,
             deadline,
             vec![],
+            0,
         )
     }
     #[test]

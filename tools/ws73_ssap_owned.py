@@ -125,7 +125,7 @@ def corroborate(row,matched):
         if item['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in item['credentials']['capabilities'].values()):raise CaptureError('ordinary owner without capabilities required')
         if item['exit']!=-9 or item['owner_exit']!=-9 or item['stderr']:raise CaptureError('actual abrupt service owner loss required')
         if item['local_value']!=(value if allow else secret).hex() or f'SsapOwnedValue: handle={h} value={item["local_value"]}' not in item['stdout'].splitlines():raise CaptureError('actual owner-side value verification required')
-        decisions=re.findall(r'^SsapAuthorizationDecision: request=(\d+) property=(\d+) write=(true|false) security=(\d+) approved=(true|false); local policy only$',item['stdout'],re.M)
+        decisions=re.findall(r'^SsapAuthorizationDecision: request=(\d+) property=(\d+) data_type=0 write=(true|false) security=(\d+) approved=(true|false); local policy only$',item['stdout'],re.M)
         if len(decisions)!=4 or [d[2] for d in decisions]!=['false','false','true','false'] or any(int(d[1])!=h or int(d[3])!=row.get('security_requirement',0) or d[4]!=str(allow).lower() for d in decisions) or len({d[0] for d in decisions})!=4:raise CaptureError('four original per-request owner decisions required')
         wire=[]
         ops=value_operations(h,uuid,secret,value,0 if allow else 9)+[('removed_read',b'\x08\x03'+h.to_bytes(2,'little')+b'\x00',b'\x09\x0b\x04\x00')]

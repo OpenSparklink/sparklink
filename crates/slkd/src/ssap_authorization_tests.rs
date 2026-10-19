@@ -91,7 +91,7 @@ async fn actual_authorizer_bus_signature_is_independent_of_shared_aliases() {
             })
             .collect::<Vec<_>>()
     };
-    assert_eq!(arguments("in"), ["(t(qttqtuyyy)qbtay)"]);
+    assert_eq!(arguments("in"), ["(t(qttqtuyyy)qbtayy)"]);
     assert_eq!(arguments("out"), ["b"]);
 }
 
@@ -960,4 +960,52 @@ async fn actual_owned_replacement_original_expiry_and_revocation_never_commit() 
         store(&state).await.lock().unwrap().local_read(h).unwrap(),
         [7]
     );
+}
+
+#[tokio::test]
+async fn actual_database_approval_is_bound_to_the_original_data_type() {
+    let (_bus, state, _server, owner, mut seen) = setup(true, Duration::ZERO).await;
+    let (_, handle) = register(&owner, 36).await;
+    let database = store(&state).await;
+    let request = packet(
+        ValuePdu::Write {
+            handle,
+            data_type: 0,
+            value: &[9],
+            verify: true,
+        },
+        23,
+        0,
+        Duration::from_secs(1),
+    );
+    let mut decision = authorize_server(request, database.clone()).await;
+    assert_eq!(seen.recv().await.unwrap().6, 0);
+    assert_eq!(decision.approvals.len(), 1);
+    assert_eq!(decision.approvals[0].data_type, 0);
+    decision.approvals[0].data_type = 2;
+    let rejected = server_response(&decision.packet, &database, &decision.approvals).unwrap();
+    assert_eq!(
+        ValuePdu::decode(249, &rejected).unwrap(),
+        ValuePdu::WriteError { handle, error: 9 }
+    );
+    assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+    decision.approvals[0].data_type = 0;
+    decision.approvals[0].write = false;
+    let rejected = server_response(&decision.packet, &database, &decision.approvals).unwrap();
+    assert_eq!(
+        ValuePdu::decode(249, &rejected).unwrap(),
+        ValuePdu::WriteError { handle, error: 9 }
+    );
+    assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+    decision.approvals[0].write = true;
+    let committed = server_response(&decision.packet, &database, &decision.approvals).unwrap();
+    assert_eq!(
+        ValuePdu::decode(249, &committed).unwrap(),
+        ValuePdu::WrittenValue {
+            handle,
+            data_type: 0,
+            value: &[9]
+        }
+    );
+    assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [9]);
 }

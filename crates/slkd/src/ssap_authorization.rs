@@ -202,9 +202,12 @@ fn revoke(database: &Weak<Mutex<crate::ssap_database::Database>>, owner: &Weak<O
 
 pub(crate) struct Target {
     pub(crate) handle: u16,
+    pub(crate) data_type: u8,
     pub(crate) owner: Arc<Owner>,
 }
 pub(crate) struct Approval {
     pub(crate) handle: u16,
+    pub(crate) data_type: u8,
+    pub(crate) write: bool,
     pub(crate) owner: Arc<Owner>,
 }

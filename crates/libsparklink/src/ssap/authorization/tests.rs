@@ -27,6 +27,7 @@ fn prompt() -> Prompt {
             .stamp()
             .monotonic_ns,
         vec![],
+        0,
     )
 }
 
@@ -92,6 +93,22 @@ fn original_sender_identity_mode_value_and_original_deadline_are_required() {
     p.3 = true;
     p.5 = vec![0xa5; 2042];
     assert!(admit(&context(), Some(":1.10"), &p).unwrap().is_some());
+}
+
+#[test]
+fn a_property_approval_never_implicitly_covers_a_descriptor_or_unknown_data_type() {
+    for data_type in 1..=u8::MAX {
+        let mut p = prompt();
+        p.6 = data_type;
+        for write in [false, true] {
+            p.3 = write;
+            p.5 = if write { vec![1, 0] } else { vec![] };
+            assert!(
+                admit(&context(), Some(":1.10"), &p).unwrap().is_none(),
+                "unsupported target {data_type},write {write}"
+            );
+        }
+    }
 }
 
 #[test]

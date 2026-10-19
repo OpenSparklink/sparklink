@@ -74,8 +74,11 @@ pub mod ssap {
     pub type SsapAuthorizationIdentity = (u16, u64, u64, u16, u64, u32, u8, u8, u8);
     /// Request ID, original context, local property, write?, original monotonic
     /// deadline, proposed write value (empty for reads). Reads disclose no value
-    /// to the authorizer before its decision. This is a D-Bus-only tuple contract.
-    pub type SsapAuthorizationPrompt = (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>);
+    /// to the authorizer before its decision. The final byte is the original
+    /// SSAP data type (currently property value0 only); it is part of the policy
+    /// scope, not inferred from the handle or granted by a local decision.
+    pub type SsapAuthorizationPrompt =
+        (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>, u8);
 
     /// Local manager staging and caller-owned registration are distinct roles.
     pub mod local {
@@ -236,10 +239,18 @@ mod tests {
     fn authorizer_contract_preserves_literal_field_order_and_signatures() {
         use zvariant::Type;
         let identity: ssap::SsapAuthorizationIdentity = (2, 7, 11, 3, 19, 1, 10, 10, 0);
-        let prompt: ssap::SsapAuthorizationPrompt = (23, identity, 29, true, 31, vec![37]);
+        let prompt: ssap::SsapAuthorizationPrompt = (23, identity, 29, true, 31, vec![37], 0);
         assert_eq!(
             prompt,
-            (23, (2, 7, 11, 3, 19, 1, 10, 10, 0), 29, true, 31, vec![37])
+            (
+                23,
+                (2, 7, 11, 3, 19, 1, 10, 10, 0),
+                29,
+                true,
+                31,
+                vec![37],
+                0
+            )
         );
         assert_eq!(
             ssap::SsapAuthorizationIdentity::SIGNATURE.to_string(),
@@ -247,7 +258,7 @@ mod tests {
         );
         assert_eq!(
             ssap::SsapAuthorizationPrompt::SIGNATURE.to_string(),
-            "(t(qttqtuyyy)qbtay)"
+            "(t(qttqtuyyy)qbtayy)"
         );
     }
 

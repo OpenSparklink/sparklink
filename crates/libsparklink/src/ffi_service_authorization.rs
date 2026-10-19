@@ -31,7 +31,9 @@ pub struct SlkAuthorizationRequestInfo {
     pub local_tcid: u8,
     pub remote_tcid: u8,
     pub pi: u8,
-    pub reserved: [u8; 2],
+    /// Original SSAP data type; currently property value0 only.
+    pub data_type: u8,
+    pub reserved: [u8; 1],
     pub value: [u8; 2042],
     pub tail: [u8; 6],
 }
@@ -123,7 +125,8 @@ pub unsafe extern "C" fn slk_authorization_request_info(
         local_tcid: id.6,
         remote_tcid: id.7,
         pi: id.8,
-        reserved: [0; 2],
+        data_type: p.6,
+        reserved: [0; 1],
         value: [0; 2042],
         tail: [0; 6],
     };

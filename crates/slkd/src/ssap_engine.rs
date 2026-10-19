@@ -588,10 +588,13 @@ async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecisi
                 write,
                 c.deadline_monotonic_ns,
                 value.clone(),
+                target.data_type,
             );
             if target.owner.authorize(prompt, packet.deadline).await {
                 approvals.push(crate::ssap_authorization::Approval {
                     handle: target.handle,
+                    data_type: target.data_type,
+                    write,
                     owner: target.owner,
                 });
             }

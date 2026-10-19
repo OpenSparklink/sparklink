@@ -36,7 +36,8 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 复用已有方法，接收fd检查实际AF_SPARKLINK；失败不降级，不暴露管理lease。
 `slk-contract`是独立的值类型/路径/方法名契约；slkd直接依赖Native、Channel和契约，不依赖SDK。
 SSAP审批的`SsapAuthorizationIdentity`和`SsapAuthorizationPrompt`也只由该层定义；
-`slk-protocol`不再导出这两个D-Bus类型。字段、签名、审批及期限语义保持不变。
+`slk-protocol`不再导出这两个D-Bus类型。未发布的审批元组末尾增加原始`data_type:y`，
+当前只准入属性值0；旧的无类型元组明确拒绝。该字段不授予描述符访问或安全资格。
 Rust Client提供成员/连接观察、fd申请与下述已有远端SSAP方法的类型化封装；
 通用Operation/跨进程原始Deadline/EventStream尚未开放，future取消不承诺撤销已开始的物理义务。
 内核/daemon/工具既有原期限、最后关闭和Grant规则继续执行。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。

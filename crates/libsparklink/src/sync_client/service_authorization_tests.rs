@@ -135,6 +135,7 @@ async fn actual_inbox_answers_while_same_executor_is_blocked_and_holds_capacity_
         (snapshot.local_tcid, snapshot.remote_tcid, snapshot.pi),
         (10, 10, 0)
     );
+    assert_eq!(snapshot.data_type, 0);
     assert!(!ready(&fd));
     assert_eq!(
         unsafe { slk_authorization_request_reply(r, 2) },
@@ -267,9 +268,80 @@ async fn foreign_sender_and_ambiguous_receipts_never_dispatch_policy() {
         slk_client_close(c)
     };
 }
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn retired_untyped_callback_and_other_data_type_never_enter_the_policy_inbox() {
+    let (_bus, server, s, c) = fixture().await;
+    let view = unsafe { authorized(c) };
+    let fd = unsafe { notify_fd(view) };
+    let original = approval_prompt(ns());
+    let old = (
+        original.0,
+        original.1,
+        original.2,
+        original.3,
+        original.4,
+        original.5.clone(),
+    );
+    let owner = s.owner.lock().unwrap().clone();
+    let path = s.authorizer.lock().unwrap().clone();
+    let error = tokio::time::timeout(
+        Duration::from_secs(2),
+        server.call_method(
+            Some(owner.as_str()),
+            path.as_str(),
+            Some("org.sparklink.SsapAuthorizer"),
+            "AuthorizeValue",
+            &(old,),
+        ),
+    )
+    .await
+    .expect("retired-shape original test deadline")
+    .unwrap_err();
+    assert!(
+        matches!(&error, zbus::Error::MethodError(name,Some(message),_)
+            if name.as_str()=="org.freedesktop.zbus.Error"
+                && message=="Signature mismatch: got `(t(qttqtuyyy)qbtay)`, expected `(t(qttqtuyyy)qbtayy)`"),
+        "unexpected retired-shape error: {error:?}"
+    );
+    assert!(!ready(&fd));
+    for data_type in [1, 2, 3, 255] {
+        let mut p = approval_prompt(ns());
+        p.6 = data_type;
+        assert!(
+            !tokio::time::timeout(Duration::from_secs(2), callback(&server, &s, p))
+                .await
+                .expect("typed refusal original test deadline")
+                .unwrap()
+        );
+        assert!(!ready(&fd));
+    }
+    // The real production endpoint/inbox remains usable after every refusal.
+    // A dead dispatcher is not successful unsupported-target handling.
+    let valid = callback(&server, &s, approval_prompt(ns()));
+    wait_ready(&fd).await;
+    let request = unsafe { next(view) };
+    assert_eq!(unsafe { info(request) }.data_type, 0);
+    assert_eq!(unsafe { slk_authorization_request_reply(request, 1) }, 0);
+    assert!(
+        tokio::time::timeout(Duration::from_secs(2), valid)
+            .await
+            .expect("healthy request original test deadline")
+            .unwrap()
+    );
+    unsafe {
+        slk_authorization_request_free(request);
+        slk_local_service_free(view);
+        slk_client_close(c);
+    }
+}
+
 #[test]
 fn actual_request_info_layout_is_fixed_and_null_outputs_remain_unchanged() {
     assert_eq!(std::mem::size_of::<SlkAuthorizationRequestInfo>(), 2120);
+    assert_eq!(
+        std::mem::offset_of!(SlkAuthorizationRequestInfo, data_type),
+        70
+    );
     assert_eq!(std::mem::offset_of!(SlkAuthorizationRequestInfo, value), 72);
     let mut out = std::ptr::dangling_mut();
     assert_eq!(

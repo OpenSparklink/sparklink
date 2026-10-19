@@ -99,7 +99,7 @@ class AuthorizationBoundary(unittest.TestCase):
 
     def test_explicit_mode_layout_and_local_decision_ownership(self):
         self.assertEqual(self.boundary.authorization, 1)
-        self.assertEqual((ctypes.sizeof(_Info), _Info.value.offset), (2120, 72))
+        self.assertEqual((ctypes.sizeof(_Info), _Info.data_type.offset, _Info.value.offset), (2120, 70, 72))
         with self.assertRaises(TypeError):
             AuthorizationRequest()
         with self.assertRaises(OSError) as error:
@@ -113,6 +113,7 @@ class AuthorizationBoundary(unittest.TestCase):
         request = self.take()
         self.client.close()
         self.assertEqual(request.info.value, b'abc')
+        self.assertEqual(request.info.data_type, 0)
         self.assertEqual((request.info.controller, request.info.property), (ControllerId(2, 7), 17))
         for wrong in [0, 1, 'yes', None]:
             with self.assertRaises(TypeError):
@@ -124,6 +125,7 @@ class AuthorizationBoundary(unittest.TestCase):
         self.assertEqual(self.boundary.replies, [(555, 1)])
         self.view.close()
         self.assertEqual(request.info.value, b'abc')
+        self.assertEqual(request.info.data_type, 0)
         with self.assertRaises(OSError) as error:
             request.reply(True)
         self.assertEqual(error.exception.errno, errno.ESHUTDOWN)
@@ -137,6 +139,8 @@ class AuthorizationBoundary(unittest.TestCase):
             lambda v: setattr(v.controller, 'generation', 8),
             lambda v: v.controller.reserved.__setitem__(0, 1),
             lambda v: v.reserved.__setitem__(0, 1),
+            lambda v: setattr(v, 'data_type', 2),
+            lambda v: setattr(v, 'data_type', 255),
             lambda v: v.tail.__setitem__(0, 1),
             lambda v: setattr(v, 'token', 0),
             lambda v: setattr(v, 'request_id', 0),

@@ -55,7 +55,7 @@ def sdk_ssap_fixture(row,sdus):
             token=(ordinal-1)*5+j+1
             decision=dict(api=publisher['api'],index=owner['index'],generation=owner['generation'],
                 token=token,request_id=token+10,lifetime=obj['lifetime'],handle=obj['handle'],
-                epoch=1,level=0,deadline_ns=10_000_000_000,property=item['handle'],write=name=='write',
+                epoch=1,level=0,deadline_ns=10_000_000_000,property=item['handle'],data_type=0,write=name=='write',
                 value=item['value'] if name=='write' else '',local_tcid=10,remote_tcid=10,pi=0,
                 allow=True,decision_ns=9_000_000_000+token,decision_wall_ns=item[name]['start_wall_ns']+2)
             publisher['stdout']+='SdkAuthorizationDecision: '+json.dumps(decision)+'\n'
@@ -101,7 +101,7 @@ def fixture():
 class ApplicationClientEvidence(unittest.TestCase):
     def test_policy_decisions_must_match_original_lifetime_proposal_and_window(self):
         cases=['missing','duplicate','deny','lifetime','generation','index-bool','handle','epoch',
-               'property','late','wrong-value','write','wall','token','request','unknown','malformed','old-mode']
+               'property','data-type','untyped','late','wrong-value','write','wall','token','request','unknown','malformed','old-mode']
         for case in cases:
             run,sdus=fixture();row=run['application_clients'][0];app=row['ssap_owned_publishers'][0]
             lines=app['stdout'].splitlines();positions=[i for i,line in enumerate(lines) if line.startswith('SdkAuthorizationDecision: ')]
@@ -115,6 +115,8 @@ class ApplicationClientEvidence(unittest.TestCase):
             elif case=='handle':data['handle']+=1
             elif case=='epoch':data['epoch']=0
             elif case=='property':data['property']+=1
+            elif case=='data-type':data['data_type']=2
+            elif case=='untyped':data.pop('data_type')
             elif case=='late':data['decision_ns']=data['deadline_ns']
             elif case=='wrong-value':data['value']='00'*32
             elif case=='write':data['write']=False

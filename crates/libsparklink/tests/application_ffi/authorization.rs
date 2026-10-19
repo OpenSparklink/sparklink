@@ -75,6 +75,7 @@ pub(super) async fn exercise(
                 true,
                 deadline,
                 vec![4, 5, 6],
+                0,
             );
             let connection = server.clone();
             let destination = owner.clone();

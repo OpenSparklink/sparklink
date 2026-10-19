@@ -234,8 +234,9 @@ C 用 slk_local_service_authorization_fd 取得调用者负责关闭的 CLOEXEC 
 SlkAuthorizationRequest，再等待通知；EAGAIN表示没有可交付请求。fd转交仅转交就绪观察，
 不能据此在另一进程批准。对象禁止fork后使用；普通dup/exec不改变原sender或请求身份。
 
-request_info 返回2120字节的只读原上下文，value偏移72；包含controller/generation、
-lifetime/handle、epoch/level、TCID/PI、属性、原期限和本地token。读请求无值，写请求
+request_info 返回2120字节的只读原上下文，data_type偏移70、value偏移72；包含controller/generation、
+lifetime/handle、epoch/level、TCID/PI、属性、数据类型、原期限和本地token。当前data_type只支持
+属性值0，描述符及未知类型拒绝；不能由同句柄的属性值批准推导描述符批准。读请求无值，写请求
 只有被提议的0..2042字节；reserved/tail及未用字节归零。request_reply只接受0/1，
 直接进入原pending的一次性答复，不经同步RPC executor。0只表示本地决策准入，
 不是daemon提交、USB完成、协议确认或对端应用处理。重复／陈旧答复ESTALE，过期
@@ -246,6 +247,12 @@ Python service.next_authorization() 非阻塞；带 deadline_ns 时按一个不�
 原快照、reply(bool)答复并close/context退出。未答复的请求被释放即拒绝；请求保活的是
 本地审批上下文，不是Client、登记或物理连接。调用者应及时释放每个请求，不能靠保留
 旧句柄后再使用新token取得资格。任何批准都要经过同一Rust guard及daemon最终复核。
+
+未发布的`AuthorizeValue`输入为`(t(qttqtuyyy)qbtayy)`，末尾`y`是原SSAP数据类型，
+写入方向仍由原`b`字段表达。旧六字段输入在签名解码阶段拒绝；固定zbus版本返回
+`org.freedesktop.zbus.Error`及明确的旧/新签名差异，不进入审批队列，没有兼容期。daemon的批准
+收据同时绑定当前服务owner、句柄、数据类型及方向；批准不能跨目标或读写方向使用。
+C/Python及CLI快照显示该类型，SDK不依据对象路径或可修改的显示文字推断类型。
 
 合法unregister请求先停止本地审批，再尝试异步撤回；失败也不重开审批。free与daemon
 owner失效会唤醒等待者。该通知不是controller/connection状态流；物理退休、旧lifetime

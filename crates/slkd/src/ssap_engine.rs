@@ -35,6 +35,19 @@ enum Status {
     Failed(String),
 }
 enum Query {
+    Update {
+        caller: String,
+        handle: u16,
+        indication: bool,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::UpdateReceipt, String>>,
+    },
+    Configuration {
+        caller: String,
+        handle: u16,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<u8, String>>,
+    },
     Info(oneshot::Sender<Result<Info, String>>),
     TransportStatus {
         deadline: Instant,
@@ -142,6 +155,48 @@ pub(crate) struct Observer {
     queries: mpsc::Sender<Query>,
 }
 impl Observer {
+    pub(crate) async fn update(
+        &self,
+        caller: String,
+        handle: u16,
+        indication: bool,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::UpdateReceipt, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::Update {
+                caller,
+                handle,
+                indication,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "SSAP update queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "SSAP update original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during update".to_string())?
+    }
+    pub(crate) async fn configuration(
+        &self,
+        caller: String,
+        handle: u16,
+        deadline: Instant,
+    ) -> Result<u8, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::Configuration {
+                caller,
+                handle,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "SSAP configuration observation queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "SSAP configuration observation original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during observation".to_string())?
+    }
     async fn request(
         &self,
         bytes: Vec<u8>,
@@ -242,20 +297,23 @@ impl Observer {
         }
         Ok((entries, trace))
     }
-    /// One bounded, call-owned receive interest, not a remote CCC subscription.
+    /// One bounded receive transaction: baseline, enable, receive, disable.
     pub(crate) async fn incoming(
         self,
         handles: Vec<u16>,
         modes: u8,
-        wait: Duration,
+        deadline: Instant,
     ) -> Result<Incoming, String> {
-        let deadline = Instant::now() + wait;
-        let _ = Observer {
-            state: self.state.clone(),
-            queries: self.queries.clone(),
-        }
-        .info()
-        .await?;
+        let _ = tokio::time::timeout_at(
+            deadline,
+            Observer {
+                state: self.state.clone(),
+                queries: self.queries.clone(),
+            }
+            .info(),
+        )
+        .await
+        .map_err(|_| "SSAP receive original deadline".to_string())??;
         let (reply, result) = oneshot::channel();
         self.queries
             .try_send(Query::Incoming {
@@ -414,12 +472,58 @@ enum Purpose {
     Error,
     Client,
     ValueResponse,
+    Update,
 }
-struct IncomingWait {
-    handles: Vec<u16>,
-    modes: u8,
+struct UpdateRequest {
+    handle: u16,
+    owner: std::sync::Arc<crate::ssap_authorization::Owner>,
+    mode: u8,
+    epoch: u64,
     deadline: Instant,
-    reply: oneshot::Sender<Result<Incoming, String>>,
+    drain: Option<Instant>,
+    pdu: Vec<u8>,
+    reply: Option<oneshot::Sender<Result<slk_contract::ssap::UpdateReceipt, String>>>,
+}
+impl UpdateRequest {
+    fn obligation_deadline(&self) -> Instant {
+        self.drain.map_or(self.deadline, |drain| {
+            if self.reply.as_ref().is_some_and(|r| !r.is_closed()) {
+                drain.min(self.deadline)
+            } else {
+                drain
+            }
+        })
+    }
+}
+fn retire_update_wait(
+    update: &mut Option<UpdateRequest>,
+    pending: &mut VecDeque<Pending>,
+    now: Instant,
+) {
+    let Some(current) = update.as_mut() else {
+        return;
+    };
+    if current.owner.current()
+        && now < current.deadline
+        && current.reply.as_ref().is_some_and(|r| !r.is_closed())
+    {
+        return;
+    }
+    if let Some(reply) = current.reply.take() {
+        let _ = reply.send(Err(
+            "SSAP update owner/caller retired or original deadline".into()
+        ));
+    }
+    if current.drain.is_none() {
+        pending.retain(|p| !matches!(p.purpose, Purpose::Update));
+        *update = None;
+    }
+}
+pub(super) struct IncomingWait {
+    pub(super) handles: Vec<u16>,
+    pub(super) modes: u8,
+    pub(super) deadline: Instant,
+    pub(super) reply: oneshot::Sender<Result<Incoming, String>>,
 }
 /// Actual actor delivery: one complete packet fits the call-owned oneshot slot.
 /// ACK success means accepted into this application queue, not app validation.
@@ -522,6 +626,70 @@ struct Pending {
     purpose: Purpose,
     constraint: Option<slk_protocol::SleSendConstraint>,
 }
+struct ClientAdmission<'a> {
+    wire: &'a Wire,
+    client: &'a mut Option<ClientRequest>,
+    pending: &'a mut VecDeque<Pending>,
+    response_load: usize,
+    ready: bool,
+    mtu: u16,
+}
+impl ClientAdmission<'_> {
+    fn begin(
+        self,
+        bytes: Vec<u8>,
+        deadline: Instant,
+        minimum: u32,
+        reply: oneshot::Sender<Result<Vec<u8>, String>>,
+    ) -> bool {
+        let Self {
+            wire,
+            client,
+            pending,
+            response_load: load,
+            ready,
+            mtu,
+        } = self;
+        if reply.is_closed() {
+            return false;
+        }
+        if client.is_some()
+            || pending.len() + load >= 8
+            || !ready
+            || Instant::now() >= deadline
+            || bytes.len() > usize::from(mtu)
+        {
+            let _ = reply.send(Err("SSAP busy/not-ready/expired/oversize".into()));
+            return false;
+        }
+        let prepared = slk_channel::query(wire.fd.get_ref().as_raw_fd())
+            .and_then(|_| wire.prepare(minimum, deadline));
+        let constraint = match prepared {
+            Ok(c) => c,
+            Err(e) => {
+                let _ = reply.send(Err(format!("SSAP send intent refused: {e}")));
+                return false;
+            }
+        };
+        let epoch = constraint.map(|c| c.security_epoch);
+        pending.push_back(Pending {
+            bytes: bytes.clone(),
+            deadline,
+            purpose: Purpose::Client,
+            constraint,
+        });
+        *client = Some(ClientRequest {
+            bytes,
+            deadline,
+            minimum,
+            epoch,
+            admitted: false,
+            cleanup_deadline: None,
+            reply: Some(reply),
+        });
+        true
+    }
+}
 struct ServerPacket {
     bytes: Vec<u8>,
     deadline: Instant,
@@ -607,6 +775,7 @@ fn server_response(
     packet: &ServerPacket,
     database: &Store,
     approvals: &[crate::ssap_authorization::Approval],
+    configurations: &mut crate::ssap_engine_config::ClientConfigurations,
 ) -> io::Result<Vec<u8>> {
     let raw = &packet.bytes;
     let negotiated = packet.mtu;
@@ -672,6 +841,21 @@ fn server_response(
             let mut database = database
                 .lock()
                 .map_err(|_| io::Error::other("database poisoned"))?;
+            if matches!(
+                request,
+                ValuePdu::Read { data_type: 2, .. } | ValuePdu::Write { data_type: 2, .. }
+            ) {
+                return database
+                    .answer_configuration(
+                        request,
+                        negotiated,
+                        packet.level,
+                        packet.constraint.map(|c| c.security_epoch),
+                        approvals,
+                        configurations,
+                    )
+                    .map_err(io::Error::other);
+            }
             if approvals.is_empty() {
                 database.answer(request, negotiated, packet.level)
             } else {
@@ -698,7 +882,12 @@ fn server_response(
         }
     }
 }
-fn complete_server(wire: &Wire, decision: ServerDecision, database: &Store) -> io::Result<Pending> {
+fn complete_server(
+    wire: &Wire,
+    decision: ServerDecision,
+    database: &Store,
+    configurations: &mut crate::ssap_engine_config::ClientConfigurations,
+) -> io::Result<Pending> {
     if Instant::now() >= decision.packet.deadline {
         return Err(io::Error::new(
             io::ErrorKind::TimedOut,
@@ -737,7 +926,12 @@ fn complete_server(wire: &Wire, decision: ServerDecision, database: &Store) -> i
             ));
         }
     }
-    let response = server_response(&decision.packet, database, &decision.approvals)?;
+    let response = server_response(
+        &decision.packet,
+        database,
+        &decision.approvals,
+        configurations,
+    )?;
     Ok(Pending {
         bytes: response,
         deadline: decision.packet.deadline,
@@ -991,8 +1185,59 @@ async fn exchange_loop(
     let mut server_queue: VecDeque<ServerPacket> = VecDeque::new();
     let mut server: Option<(Instant, ServerTask)> = None;
     let mut next_server_id = 0u64;
+    let mut configurations = crate::ssap_engine_config::ClientConfigurations::default();
+    let mut update: Option<UpdateRequest> = None;
+    let mut receive: Option<crate::ssap_receive_transaction::ReceiveTransaction> = None;
     loop {
         retire_client_wait(&mut client, &mut pending, Instant::now());
+        retire_update_wait(&mut update, &mut pending, Instant::now());
+        if let Some(current) = receive.as_mut() {
+            current
+                .maintain(&mut incoming_wait, Instant::now())
+                .map_err(io::Error::other)?;
+            retire_client_wait(&mut client, &mut pending, Instant::now());
+            if current.finished() && client.is_none() {
+                receive.take().expect("finished transaction").finish();
+            } else if client.is_none()
+                && let Some((handle, value, deadline)) = current.next(&mut incoming_wait)
+            {
+                let mtu = capabilities.mtu.min(
+                    peer_reply
+                        .as_ref()
+                        .and_then(|(p, _)| p.mtu)
+                        .unwrap_or(capabilities.mtu),
+                );
+                let packet = match &value {
+                    Some(value) => ValuePdu::Write {
+                        handle,
+                        data_type: 2,
+                        value,
+                        verify: true,
+                    },
+                    None => ValuePdu::Read {
+                        handle,
+                        data_type: 2,
+                    },
+                };
+                let mut raw = vec![0; usize::from(mtu)];
+                let n = packet
+                    .encode(mtu, &mut raw)
+                    .map_err(|e| io::Error::other(format!("configuration request codec: {e:?}")))?;
+                raw.truncate(n);
+                let (reply, result) = oneshot::channel();
+                let load = server_queue.len() + usize::from(server.is_some());
+                let admitted = ClientAdmission {
+                    wire: &wire,
+                    client: &mut client,
+                    pending: &mut pending,
+                    response_load: load,
+                    ready: initial_done,
+                    mtu,
+                }
+                .begin(raw, deadline, 2, reply);
+                current.submitted(handle, result, admitted);
+            }
+        }
         if server.is_none()
             && let Some(packet) = server_queue.pop_front()
         {
@@ -1040,6 +1285,8 @@ async fn exchange_loop(
             .iter()
             .map(|p| p.deadline)
             .chain(client.as_ref().map(ClientRequest::obligation_deadline))
+            .chain(update.as_ref().map(UpdateRequest::obligation_deadline))
+            .chain(receive.as_ref().map(|r| r.wake_deadline()))
             .chain(server.as_ref().map(|v| v.0))
             .chain(server_queue.iter().map(|v| v.deadline))
             .chain(
@@ -1058,6 +1305,10 @@ async fn exchange_loop(
             _ = &mut *stopped => return Ok(()),
             _ = tokio::time::sleep_until(deadline) => {
                 retire_client_wait(&mut client, &mut pending, Instant::now());
+                retire_update_wait(&mut update, &mut pending, Instant::now());
+                if update.as_ref().is_some_and(|v| Instant::now() >= v.obligation_deadline()) {
+                    return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP indication obligation deadline"));
+                }
                 if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.obligation_deadline()) || server.as_ref().is_some_and(|v|Instant::now()>=v.0) || server_queue.iter().any(|v|Instant::now()>=v.deadline) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP obligation deadline"));
                 }
@@ -1065,20 +1316,54 @@ async fn exchange_loop(
             }
             query = incoming.recv() => {
                 let Some(query)=query else { return Ok(()); };
+                if let Query::Configuration { caller, handle, deadline, reply } = query {
+                    if reply.is_closed() {continue;}
+                    let result = (|| {
+                        if !initial_done || Instant::now() >= deadline {return Err("configuration observation not-ready/expired".to_string());}
+                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("native security context required")?;
+                        let db=database.lock().map_err(|_|"database poisoned")?;
+                        let (owner,_)=db.owned_update(handle,&caller)?;
+                        Ok(configurations.get(handle,&owner,context.security_epoch))
+                    })();
+                    let _=reply.send(result);continue;
+                }
+                if let Query::Update { caller, handle, indication, deadline, reply } = query {
+                    if reply.is_closed() {continue;}
+                    if update.is_some() || pending.len()+server_load>=8 || !initial_done || Instant::now()>=deadline {
+                        let _=reply.send(Err("SSAP update busy/not-ready/expired".into()));continue;
+                    }
+                    let prepared = (|| {
+                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("native security context required")?;
+                        let db=database.lock().map_err(|_|"database poisoned")?;
+                        let (owner,value)=db.owned_update(handle,&caller)?;
+                        let mode=if indication {2} else {1};
+                        if configurations.get(handle,&owner,context.security_epoch)&mode==0 {return Err("peer client configuration does not enable requested mode".to_string());}
+                        let mtu=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
+                        let packet=slk_protocol::ssap::updates::Update { indication,event:false,
+                            items:vec![slk_protocol::ssap::updates::Item{handle,value:&value}] };
+                        let mut raw=vec![0;usize::from(mtu)];
+                        let size=packet.encode(mtu,&mut raw).map_err(|e|format!("update exceeds negotiated complete PDU: {e:?}"))?;
+                        raw.truncate(size);Ok((owner,mode,context,raw))
+                    })();
+                    match prepared {
+                        Err(error)=>{let _=reply.send(Err(error));},
+                        Ok((owner,mode,context,raw))=> {
+                            pending.push_back(Pending{bytes:raw.clone(),deadline,purpose:Purpose::Update,constraint:Some(context)});
+                            update=Some(UpdateRequest{handle,owner,mode,epoch:context.security_epoch,deadline,drain:None,pdu:raw,reply:Some(reply)});
+                        }
+                    }
+                    continue;
+                }
                 if let Query::Incoming{handles,modes,deadline,reply}=query {
                     if reply.is_closed(){continue;}
-                    if incoming_wait.is_some() || !initial_done || Instant::now()>=deadline || handles.is_empty() || handles.len()>32 || modes==0 || modes&!3!=0 || handles.contains(&0) || handles.iter().enumerate().any(|(i,h)|handles[..i].contains(h)) {let _=reply.send(Err("SSAP local receive busy/not-ready/invalid/expired".into()));continue;}
+                    if receive.is_some() || client.is_some() || incoming_wait.is_some() || !initial_done || Instant::now()>=deadline || handles.is_empty() || handles.len()>32 || modes==0 || modes&!3!=0 || handles.contains(&0) || handles.iter().enumerate().any(|(i,h)|handles[..i].contains(h)) {let _=reply.send(Err("SSAP receive busy/not-ready/invalid/expired".into()));continue;}
                     slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
-                    incoming_wait=Some(IncomingWait{handles,modes,deadline,reply});continue;
+                    receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new(handles,modes,deadline,reply));continue;
                 }
                 if let Query::Value{bytes,deadline,minimum,reply}=query {
-                    if client.is_some() || pending.len()+server_load>=8 || !initial_done || Instant::now()>=deadline {let _=reply.send(Err("SSAP busy/not-ready/expired".into()));continue;}
-                    slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
-                    if bytes.len()>usize::from(capabilities.mtu) {let _=reply.send(Err("SSAP request exceeds channel".into()));continue;}
-                    if reply.is_closed(){continue;}
-                    let constraint=match wire.prepare(minimum,deadline) {Ok(c)=>c,Err(e)=>{let _=reply.send(Err(format!("SSAP send intent refused: {e}")));continue;}};
-                    let epoch=constraint.map(|c|c.security_epoch);
-                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client,constraint});client=Some(ClientRequest{bytes,deadline,minimum,epoch,admitted:false,cleanup_deadline:None,reply:Some(reply)});continue;
+                    if receive.is_some() {let _=reply.send(Err("SSAP client sequence owned by receive transaction".into()));continue;}
+                    ClientAdmission {wire:&wire,client:&mut client,pending:&mut pending,response_load:server_load,ready:initial_done,mtu:capabilities.mtu}
+                        .begin(bytes,deadline,minimum,reply);continue;
                 }
                 if let Query::TransportStatus{deadline,reply}=query {
                     if reply.is_closed() {continue;}
@@ -1105,16 +1390,33 @@ async fn exchange_loop(
                 };
                 let _=reply.send(result);
             }
+            event = async {receive.as_mut().expect("guarded receive transaction").event().await}, if receive.is_some() => {
+                receive.as_mut().expect("current receive transaction").apply(event).map_err(io::Error::other)?;
+            }
             decision = async { server.as_mut().expect("guarded server obligation").1.as_mut().await }, if server.is_some() => {
                 server.take();
-                pending.push_back(complete_server(&wire,decision,&database)?);
+                pending.push_back(complete_server(&wire,decision,&database,&mut configurations)?);
             }
             ready = wire.fd.writable(), if !pending.is_empty() => {
                 let mut ready = ready?;
                 retire_client_wait(&mut client, &mut pending, Instant::now());
+                retire_update_wait(&mut update, &mut pending, Instant::now());
                 let Some(packet) = pending.front() else { continue; };
                 if Instant::now() >= packet.deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "expired SSAP submit")); }
-                if let Ok(result) = ready.try_io(|fd| wire.send(fd.get_ref(), packet)) {
+                let is_update=matches!(packet.purpose,Purpose::Update);
+                let outcome = if is_update {
+                    // Same DB mutex as removal. This nonblocking syscall admits
+                    // one immutable value snapshot; no lock crosses an await.
+                    let db=database.lock().map_err(|_|io::Error::other("database poisoned"))?;
+                    let current=update.as_ref().ok_or_else(||io::Error::other("missing update obligation"))?;
+                    if !current.owner.current() || configurations.get(current.handle,&current.owner,current.epoch)&current.mode==0 {
+                        drop(db);
+                        if let Some(mut current)=update.take() && let Some(reply)=current.reply.take() {let _=reply.send(Err("update owner/configuration withdrawn before admission".into()));}
+                        pending.pop_front();continue;
+                    }
+                    ready.try_io(|fd| wire.send(fd.get_ref(), packet))
+                } else {ready.try_io(|fd| wire.send(fd.get_ref(), packet))};
+                if let Ok(result) = outcome {
                     result?;
                     let packet = pending.pop_front().expect("guarded queue");
                     match packet.purpose {
@@ -1122,6 +1424,16 @@ async fn exchange_loop(
                         Purpose::Response => response_admitted = packet.bytes,
                         Purpose::Error | Purpose::ValueResponse => {},
                         Purpose::Client => {if let Some(client)=&mut client {client.admitted=true;client.cleanup_deadline=Some(Instant::now()+Duration::from_secs(5));}}
+                        Purpose::Update => {
+                            let current=update.as_mut().ok_or_else(||io::Error::other("missing admitted update"))?;
+                            if current.mode==2 {current.drain=Some(Instant::now()+Duration::from_secs(5));}
+                            else {
+                                let mut current=update.take().expect("admitted notification");
+                                if let Some(reply)=current.reply.take() {let _=reply.send(Ok(slk_contract::ssap::UpdateReceipt {stage:1,pdu:current.pdu,acknowledgement:vec![]}));}
+                                // No SSAP reply is owed. Native still retains
+                                // physical TX/credit obligations independently.
+                            }
+                        }
                     }
                 }
             }
@@ -1139,8 +1451,25 @@ async fn exchange_loop(
                         if raw[0]==16 && pending.len()+server_load>=8{return Err(io::Error::other("SSAP ACK queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
+                        if let Some(current)=receive.as_mut() {
+                            current.maintain(&mut incoming_wait,Instant::now()).map_err(io::Error::other)?;
+                        }
                         let ack=incoming_packet(negotiated,raw,&mut incoming_wait)?;
                         if !ack.is_empty(){pending.push_back(Pending{bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});}
+                    } else if raw[0]==17 {
+                        let Some(mut current)=update.take() else {return Err(io::Error::other("unsolicited indication ACK"));};
+                        if current.mode!=2 || current.drain.is_none_or(|d|Instant::now()>=d) {
+                            return Err(io::Error::other("indication ACK before admission or after drain deadline"));
+                        }
+                        let m=receipt.ok_or_else(||io::Error::other("missing ACK security receipt"))?;
+                        if m.security_epoch!=current.epoch || m.security<2 {return Err(io::Error::other("indication ACK original security changed"));}
+                        let flags=slk_protocol::ssap::updates::decode_ack(capabilities.mtu,raw,false,1)
+                            .map_err(|e|io::Error::other(format!("invalid indication ACK: {e:?}")))?;
+                        if let Some(reply)=current.reply.take().filter(|r| !r.is_closed() && current.owner.current() && Instant::now()<current.deadline) {
+                            let result=if flags==[1] {Ok(slk_contract::ssap::UpdateReceipt{stage:2,pdu:current.pdu,acknowledgement:raw.to_vec()})}
+                                else {Err("peer indication receive queue refused update".into())};
+                            let _=reply.send(result);
+                        }
                     } else if matches!(raw[0],4|6|8|10|13) {
                         if !initial_done {return Err(io::Error::other("SSAP value/discovery before ExchangeInfo completion"));}
                         if pending.len()+server_load>=8 {return Err(io::Error::other("SSAP response obligation queue full"));}

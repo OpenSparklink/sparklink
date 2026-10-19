@@ -65,7 +65,7 @@ fn input_property(
         slk_protocol::SsapOperations::from_bits(p.operations).map_err(|_| nix::libc::EINVAL)?;
     let access = slk_protocol::ssap::access::SsapAccess::from_bits(p.access)
         .map_err(|_| nix::libc::EINVAL)?;
-    if ops.bits() & !5 != 0 {
+    if !slk_protocol::ssap::client_config::supported_owned(ops, true) {
         return Err(nix::libc::EOPNOTSUPP);
     }
     Ok((
@@ -78,7 +78,10 @@ fn input_property(
 
 /// Register one caller-owned service through the sole Rust LocalServices API.
 /// uuid length2/16 with a nonzero byte; properties1..64, values0..2042. Only
-/// READ/WRITE_WITH_RSP are supported. authorization=0 has no policy inbox and
+/// READ/WRITE_WITH_RSP and owned NOTIFY/INDICATE+CLIENT_CFG_WR are supported.
+/// Update capabilities require authorization=1; CPCD write also requires a
+/// genuinely authenticated Native Session,not this registration receipt.
+/// authorization=0 has no policy inbox and
 /// refuses local authorization bits;1 requires explicit application decisions
 /// via the bounded inbox. Unknown modes EOPNOTSUPP;never automatic approval.
 /// A local receipt is not remote discovery/publication or peer delivery.

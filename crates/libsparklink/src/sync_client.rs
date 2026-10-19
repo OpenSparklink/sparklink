@@ -30,9 +30,15 @@ impl Deadline {
             .map_err(|e| e.raw_os_error().unwrap_or(nix::libc::EIO))
     }
     pub(crate) fn protocol(self) -> Result<(Self, slk_channel::deadline::Deadline)> {
+        self.bounded(slk_channel::deadline::PROTOCOL_WAIT)
+    }
+    pub(crate) fn bounded(
+        self,
+        limit: Duration,
+    ) -> Result<(Self, slk_channel::deadline::Deadline)> {
         // Capture the existing protocol ceiling before entering the local queue.
         slk_channel::deadline::Deadline::from_monotonic_ns(self.1)
-            .and_then(|deadline| deadline.capped(slk_channel::deadline::PROTOCOL_WAIT))
+            .and_then(|deadline| deadline.capped(limit))
             .map(|original| {
                 (
                     Self(original.instant(), original.stamp().monotonic_ns),

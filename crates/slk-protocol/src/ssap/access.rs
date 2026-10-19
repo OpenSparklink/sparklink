@@ -12,6 +12,10 @@ pub const SSAP_ACCESS_VALID_MASK: u32 = 0x3f;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct SsapAccess(u32);
 impl SsapAccess {
+    /// Descriptor policy is independent of the property's value permissions.
+    pub const fn client_configuration() -> Self {
+        Self(SSAP_ACCESS_WRITE_AUTHENTICATED | SSAP_ACCESS_WRITE_AUTHORIZED)
+    }
     pub fn from_bits(bits: u32) -> Result<Self, &'static str> {
         if bits & !SSAP_ACCESS_VALID_MASK != 0 {
             Err("reserved SSAP access bits")

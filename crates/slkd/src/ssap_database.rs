@@ -101,9 +101,15 @@ impl Database {
                 return Err("SSAP local authorization not connected".into());
             }
             let ops = SsapOperations::from_bits(*ops).map_err(|e| e.to_string())?;
-            if !uuid_valid(uuid) || ops.bits() & !5 != 0 {
+            if !uuid_valid(uuid)
+                || !slk_protocol::ssap::client_config::supported_owned(
+                    ops,
+                    owner.as_ref().is_some_and(|o| o.supports_authorization()),
+                )
+            {
                 return Err(
-                    "only value READ/WRITE_WITH_RSP permissions currently supported".into(),
+                    "unsupported operations or update capability without owned CPCD authorizer"
+                        .into(),
                 );
             }
             if value.len() > 2042 {
@@ -271,6 +277,30 @@ impl Database {
         })
     }
     pub(crate) fn value_targets(&self, request: ValuePdu<'_>, level: u32) -> Vec<Target> {
+        if let ValuePdu::Write {
+            handle,
+            data_type: 2,
+            value,
+            ..
+        } = request
+        {
+            return self
+                .configuration_property(handle)
+                .ok()
+                .and_then(|(modes, owner)| {
+                    slk_protocol::ssap::client_config::decode(value, modes).ok()?;
+                    slk_protocol::ssap::client_config::WRITE_ACCESS
+                        .check_authorization_result(level, true, true)
+                        .ok()
+                        .map(|_| Target {
+                            handle,
+                            data_type: 2,
+                            owner,
+                        })
+                })
+                .into_iter()
+                .collect();
+        }
         let (handle, write) = match request {
             ValuePdu::Read {
                 handle,
@@ -357,7 +387,14 @@ impl Database {
                             end: *handle,
                             uuid: property.uuid.clone(),
                             operations: property.operations.bits(),
-                            descriptors: vec![],
+                            descriptors: if slk_protocol::ssap::client_config::modes(
+                                property.operations,
+                            ) != 0
+                            {
+                                vec![2]
+                            } else {
+                                vec![]
+                            },
                             members: 0,
                         });
                     }
@@ -454,6 +491,130 @@ impl Database {
         self.services
             .values()
             .find_map(|s| s.properties.get(&handle))
+    }
+    pub(crate) fn configuration_property(&self, handle: u16) -> Result<(u8, Arc<Owner>), u8> {
+        let service = self
+            .services
+            .values()
+            .find(|s| s.properties.contains_key(&handle))
+            .ok_or(4u8)?;
+        let property = service.properties.get(&handle).ok_or(4u8)?;
+        let modes = slk_protocol::ssap::client_config::modes(property.operations);
+        if modes == 0 || !property.operations.contains(SsapOperations::CLIENT_CFG_WR) {
+            return Err(13);
+        }
+        let owner = service
+            .owner
+            .as_ref()
+            .filter(|o| o.current() && o.supports_authorization())
+            .ok_or(13u8)?;
+        Ok((modes, owner.clone()))
+    }
+    pub(crate) fn owned_update(
+        &self,
+        handle: u16,
+        caller: &str,
+    ) -> Result<(Arc<Owner>, Vec<u8>), String> {
+        let (_, owner) = self
+            .configuration_property(handle)
+            .map_err(|_| "owned update capability unavailable")?;
+        if owner.name != caller {
+            return Err("property is not owned by caller".into());
+        }
+        let value = self
+            .property(handle)
+            .ok_or("property retired")?
+            .value
+            .clone();
+        Ok((owner, value))
+    }
+    /// Called under the DB admission mutex, with configuration owned by this
+    /// one physical actor. Never store per-client state in the adapter DB.
+    pub(crate) fn answer_configuration(
+        &self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        epoch: Option<u64>,
+        approvals: &[Approval],
+        configurations: &mut crate::ssap_engine_config::ClientConfigurations,
+    ) -> Result<Vec<u8>, String> {
+        use slk_protocol::ssap::client_config::{self, WRITE_ACCESS};
+        let (handle, write) = match request {
+            ValuePdu::Read {
+                handle,
+                data_type: 2,
+            } => (handle, false),
+            ValuePdu::Write {
+                handle,
+                data_type: 2,
+                ..
+            } => (handle, true),
+            _ => return Err("not a client configuration request".into()),
+        };
+        let property = self.configuration_property(handle);
+        let epoch = epoch.filter(|epoch| *epoch != 0).ok_or(9u8);
+        let mut commit = None;
+        let mut bytes = [0; 2];
+        let response = match (property, epoch) {
+            (Err(error), _) | (_, Err(error)) if write => ValuePdu::WriteError { handle, error },
+            (Err(error), _) | (_, Err(error)) => ValuePdu::ReadError(u16::from(error)),
+            (Ok((supported, owner)), Ok(epoch)) => match request {
+                ValuePdu::Read { .. } => {
+                    bytes[0] = configurations.get(handle, &owner, epoch);
+                    ValuePdu::ReadValue(&bytes)
+                }
+                ValuePdu::Write { value, verify, .. } => {
+                    let admitted = client_config::decode(value, supported)
+                        .map_err(|_| 5)
+                        .and_then(|modes| {
+                            WRITE_ACCESS
+                                .check_authorization_result(
+                                    level,
+                                    true,
+                                    self.locally_authorized(
+                                        handle,
+                                        client_config::DATA_TYPE,
+                                        true,
+                                        approvals,
+                                    ),
+                                )
+                                .map(|_| modes)
+                        });
+                    match admitted {
+                        Err(error) => ValuePdu::WriteError { handle, error },
+                        Ok(modes) => {
+                            commit = Some((owner, epoch, modes));
+                            if verify {
+                                ValuePdu::WrittenValue {
+                                    handle,
+                                    data_type: 2,
+                                    value,
+                                }
+                            } else {
+                                ValuePdu::Written
+                            }
+                        }
+                    }
+                }
+                _ => unreachable!("validated configuration operation"),
+            },
+        };
+        let mut output = vec![0; usize::from(mtu)];
+        let mut size = response
+            .encode(mtu, &mut output)
+            .map_err(|e| format!("configuration response: {e:?}"))?;
+        // Allocate/validate the response before changing state. A local commit
+        // still does not imply the peer received that response.
+        if let Some((owner, epoch, modes)) = commit
+            && let Err(error) = configurations.set(handle, &owner, epoch, modes)
+        {
+            size = ValuePdu::WriteError { handle, error }
+                .encode(mtu, &mut output)
+                .map_err(|e| format!("configuration refusal: {e:?}"))?;
+        }
+        output.truncate(size);
+        Ok(output)
     }
     pub(crate) fn local_read(&self, handle: u16) -> Result<Vec<u8>, String> {
         self.property(handle)

@@ -175,6 +175,20 @@ typedef struct SlkControllerId {
 } SlkControllerId;
 
 /**
+ * One bounded SSAP update receipt,not proof of application processing.
+ * stage1=notification software admission;2=indication peer receive-queue ACK;
+ * 3=received packet and verified remote CPCD disable. Unused bytes are zero.
+ */
+typedef struct SlkSsapUpdate {
+    uint32_t stage;
+    uint16_t pdu_length;
+    uint16_t acknowledgement_length;
+    uint8_t pdu[2042];
+    uint8_t acknowledgement[3];
+    uint8_t reserved[3];
+} SlkSsapUpdate;
+
+/**
  * A directory observation, not Ready, Down, authorization or a drain barrier.
  * kind:1 Snapshot,2 Published,3 Withdrawn,4 Gap. sequence: snapshot cursor,
  * event sequence or Gap.after. oldest/current are nonzero only for Gap.
@@ -267,7 +281,7 @@ typedef struct SlkAuthorizationRequestInfo {
     uint8_t remote_tcid;
     uint8_t pi;
     /**
-     * Original SSAP data type; currently property value0 only.
+     * Original SSAP data type: value0 or authenticated client configuration2.
      */
     uint8_t data_type;
     uint8_t reserved[1];
@@ -478,6 +492,48 @@ int slk_connection_ssap_write(const struct SlkConnection *connection,
                               uint64_t deadline_ns);
 
 /**
+ * Receive one property update through the existing Rust CPCD transaction.
+ * modes1/2/3=notification/indication/either. Original absolute deadline includes
+ * queueing and is capped at10s before admission. No pre-existing configuration
+ * is overwritten. Cancellation/timeout can leave bounded cleanup; an unknown
+ * cleanup retires this SSAP actor. Output unchanged on failure. No retries.
+ * # Safety
+ * Same live connection/fork contract as ssap_read; output is exclusive aligned
+ * writable storage for one SlkSsapUpdate,not aliasing the connection.
+ */
+int slk_connection_ssap_receive(const struct SlkConnection *connection,
+                                uint16_t handle,
+                                uint32_t modes,
+                                struct SlkSsapUpdate *output,
+                                uint64_t deadline_ns);
+
+/**
+ * Submit this original caller's owned property through the same Engine/Session.
+ * indication0/1 selects notification/indication. Requires current authenticated
+ * Session,CPCD and actual DB ownership. Original <=5s;no downgrade/retry.
+ * Success stage1/2 is not peer application delivery. Timeout can follow an
+ * admitted send;Native retains credit and indication ACK debt is drained.
+ * # Safety
+ * Same connection/output/fork contract as ssap_receive.
+ */
+int slk_connection_ssap_send_owned(const struct SlkConnection *connection,
+                                   uint16_t handle,
+                                   uint32_t indication,
+                                   struct SlkSsapUpdate *output,
+                                   uint64_t deadline_ns);
+
+/**
+ * Observe only this caller's owned property configuration on the fixed lifetime.
+ * modes0..3 is not a Ready,Grant or application-delivery receipt;no enable/write.
+ * # Safety
+ * Live connection;output is exclusive writable one-byte storage,nonaliasing.
+ */
+int slk_connection_ssap_owned_configuration(const struct SlkConnection *connection,
+                                            uint16_t handle,
+                                            uint8_t *output,
+                                            uint64_t deadline_ns);
+
+/**
  * Open the existing Rust directory stream on this Client's caller/owner scope.
  * deadline_ns is original absolute CLOCK_MONOTONIC, future and <=30s away.
  * Returns0/-errno; output unchanged on failure. Derived observer survives
@@ -603,7 +659,10 @@ void slk_discovery_free(struct SlkDiscovery *view);
 /**
  * Register one caller-owned service through the sole Rust LocalServices API.
  * uuid length2/16 with a nonzero byte; properties1..64, values0..2042. Only
- * READ/WRITE_WITH_RSP are supported. authorization=0 has no policy inbox and
+ * READ/WRITE_WITH_RSP and owned NOTIFY/INDICATE+CLIENT_CFG_WR are supported.
+ * Update capabilities require authorization=1; CPCD write also requires a
+ * genuinely authenticated Native Session,not this registration receipt.
+ * authorization=0 has no policy inbox and
  * refuses local authorization bits;1 requires explicit application decisions
  * via the bounded inbox. Unknown modes EOPNOTSUPP;never automatic approval.
  * A local receipt is not remote discovery/publication or peer delivery.

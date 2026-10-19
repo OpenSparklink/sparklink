@@ -21,6 +21,8 @@ mod service;
 mod ssap_authorization;
 mod ssap_database;
 mod ssap_engine;
+mod ssap_engine_config;
+mod ssap_receive_transaction;
 mod state;
 
 use std::{path::PathBuf, sync::Arc};

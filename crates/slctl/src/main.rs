@@ -146,7 +146,7 @@ Commands:
   ssap-serve <service-hex> <property-hex> <ops> <access> <value-hex> [ask|allow|deny] Own a foreground local service; policy decision is not peer receipt
   ssap-remove <start-handle>                 Remove local service (handles not reused)
   ssap-local-read <handle>                   Inspect local database, not peer receipt
-  ssap-observe <path> <handle> [notify|indicate|both] [wait-ms] Observe one actual incoming packet; no remote subscription
+  ssap-receive <path> <handle> [notify|indicate|both] [wait-ms] Authenticated CPCD enable, one update, verified disable
   ssap-read-uuid <path> <start> <end> <uuid-hex> [minimum] Read actual peer values by UUID
   ssap-read <path> <handle> [minimum]                  Read actual peer value on SMTC
   ssap-write <path> <handle> <value-hex> [minimum]      Write with peer verification and reply

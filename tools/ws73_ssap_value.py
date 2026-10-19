@@ -38,7 +38,7 @@ def execute(run,row,*,value_command=None,services=None,local_value_command=None)
         row['unsupported_incoming']=[]
         for sender,target in [(0,1),(1,0)]:
             source=owners[sender];prop=local[target]
-            args=[str(run.args.slctl),'--adapter',source['owner']['path'],'ssap-observe',source['object']['path'],str(prop['discovered_handle']),'notify','10']
+            args=[str(run.args.slctl),'--adapter',source['owner']['path'],'ssap-receive',source['object']['path'],str(prop['discovered_handle']),'notify','10']
             receipt=run.command(args,10,collection='ssap_values');row['unsupported_incoming'].append(dict(sender=sender,target=target,handle=prop['discovered_handle'],receipt=receipt));run.save()
             if receipt['exit']==0 or 'peer has not advertised requested property update capabilities' not in receipt['stderr']:raise CaptureError('non-notifying actual peer must explicitly reject local receive interest')
         for sequence in range(4):
@@ -123,6 +123,6 @@ def corroborate(row,matched):
         if len(rows)!=2 or {x['sender'] for x in rows}!={0,1}:raise CaptureError('both actual peer local receive rejections required')
         for item in rows:
             sender,target=item['sender'],item['target'];r=item['receipt'];source=owners[sender]
-            expected=['ssap-observe',source['object']['path'],str(item['handle']),'notify','10']
+            expected=['ssap-receive',source['object']['path'],str(item['handle']),'notify','10']
             if target!=1-sender or r['exit']==0 or r['args'][-5:]!=expected or 'peer has not advertised requested property update capabilities' not in r['stderr']:raise CaptureError('actual unsupported local receive receipt required')
     return proof,credit

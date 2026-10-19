@@ -12,6 +12,7 @@ import unittest
 from unittest.mock import patch
 
 from sparklink import Client, ControllerId
+from sparklink.client import _SsapUpdate
 
 
 class Boundary:
@@ -43,6 +44,28 @@ class Boundary:
         ctypes.cast(args[7], ctypes.POINTER(ctypes.c_size_t))[0] = 1
         return 0
 
+    def _update(self, args, stage):
+        self.calls.append(('update', stage))
+        v = _SsapUpdate()
+        raw = bytes([16 if stage == 2 else 15, 3, 17, 0, 1, 0, 0xab])
+        v.stage, v.pdu_length = stage, len(raw)
+        v.pdu[:len(raw)] = raw
+        if stage == 2:
+            v.acknowledgement_length = 3
+            v.acknowledgement[:] = [17, 3, 1]
+        ctypes.cast(args[3], ctypes.POINTER(_SsapUpdate))[0] = v
+        return 0
+
+    def slk_connection_ssap_receive(self, *args):
+        return self._update(args, 3)
+
+    def slk_connection_ssap_send_owned(self, *args):
+        return self._update(args, 2 if args[2] else 1)
+
+    def slk_connection_ssap_owned_configuration(self, *args):
+        ctypes.cast(args[2], ctypes.POINTER(ctypes.c_uint8))[0] = 3
+        return 0
+
 
 def caller(bridge):
     client = object.__new__(Client)
@@ -52,6 +75,37 @@ def caller(bridge):
 
 
 class PythonConnectionBoundary(unittest.TestCase):
+    def test_update_layout_marshalling_and_distinct_completion_stages(self):
+        self.assertEqual((ctypes.sizeof(_SsapUpdate),_SsapUpdate.pdu.offset,
+                          _SsapUpdate.acknowledgement.offset),(2056,8,2050))
+        bridge=Boundary()
+        with caller(bridge) as client, client.connection(ControllerId(2,7),'/fixture',deadline_ns=1) as connection:
+            remote=connection.ssap()
+            self.assertEqual(remote.receive_update(17,deadline_ns=1).stage,3)
+            self.assertEqual(remote.send_owned_update(17,deadline_ns=1).stage,1)
+            self.assertEqual(remote.send_owned_update(17,deadline_ns=1,indication=True).acknowledgement,b'\x11\x03\x01')
+            self.assertEqual(remote.owned_configuration(17,deadline_ns=1),3)
+            for modes in (0,4,True):
+                with self.assertRaises(ValueError):remote.receive_update(17,deadline_ns=1,modes=modes)
+            with self.assertRaises(TypeError):remote.send_owned_update(17,deadline_ns=1,indication=1)
+
+    def test_malformed_update_receipts_are_rejected_without_retry(self):
+        for mutation in ['stage','length','reserved','tail','ack']:
+            bridge=Boundary()
+            def corrupt(*args):
+                bridge._update(args,3)
+                value=ctypes.cast(args[3],ctypes.POINTER(_SsapUpdate)).contents
+                if mutation=='stage':value.stage=1
+                elif mutation=='length':value.pdu_length=2043
+                elif mutation=='reserved':value.reserved[0]=1
+                elif mutation=='tail':value.pdu[2041]=1
+                else:value.acknowledgement_length=1
+                return 0
+            bridge.slk_connection_ssap_receive=corrupt
+            with caller(bridge) as client, client.connection(ControllerId(2,7),'/fixture',deadline_ns=1) as connection:
+                with self.assertRaises(OSError) as caught:connection.ssap().receive_update(17,deadline_ns=1)
+                self.assertEqual(caught.exception.errno,errno.EPROTO)
+            self.assertEqual(len(bridge.calls),1)
     def test_delivered_native_view_is_closed_once_on_python_exception(self):
         bridge = Boundary(fail=True)
         with caller(bridge) as client:

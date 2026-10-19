@@ -83,7 +83,9 @@ def _configure(lib):
 class LocalService:
     """Create through Client.register_local_service, retaining the same caller.
 
-    Supports READ/WRITE_WITH_RSP initial values. authorization='requests' enables
+    Supports READ/WRITE_WITH_RSP initial values;NOTIFY/INDICATE require CLIENT_CFG_WR
+    and authorization='requests'. CPCD also needs an actual authenticated Session.
+    authorization='requests' enables
     explicit bounded application decisions;default 'none' refuses approval bits. Other
     mechanism requirements remain enforced by the existing daemon/Engine.
     Receipt is local metadata only. unregister acknowledges original-owner local

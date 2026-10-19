@@ -144,8 +144,8 @@ pub(crate) async fn serve(
     let access_policy = SsapAccess::from_bits(access).map_err(anyhow::Error::msg)?;
     let operations = SsapOperations::from_bits(ops)?;
     ensure!(
-        operations.bits() & !5 == 0 && value.len() <= 2042,
-        "only bounded READ/WRITE_WITH_RSP values supported"
+        slk_protocol::ssap::client_config::supported_owned(operations, true) && value.len() <= 2042,
+        "unsupported operations or missing CPCD for updates"
     );
     let view = client.controller(controller).await?;
     let generation = view.id().generation;
@@ -217,6 +217,29 @@ pub(crate) async fn serve(
                     if line=="value" {
                         let value:Vec<u8>=registration.read_local(registered.2[0], libsparklink::Deadline::after(std::time::Duration::from_secs(5))?).await?;
                         println!("SsapOwnedValue: handle={} value={}",registered.2[0],crate::commands::hex_bytes(&value));
+                        continue;
+                    }
+                    if let Some(value)=line.strip_prefix("replace ") {
+                        let value=crate::commands::parse_hex_bytes(value)?;
+                        registration.replace_local(registered.2[0],value,
+                            libsparklink::Deadline::after(std::time::Duration::from_secs(5))?).await?;
+                        println!("SsapOwnedReplaced: handle={}; local commit only",registered.2[0]);
+                        continue;
+                    }
+                    if let Some((operation,path))=line.split_once(' ')
+                        && matches!(operation,"configuration"|"notify"|"indicate") {
+                        let link=client.connection(controller,path).await?;
+                        let remote=link.ssap();
+                        let deadline=libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
+                        if operation=="configuration" {
+                            let modes=remote.owned_configuration(registered.2[0],deadline).await?;
+                            println!("SsapOwnedConfiguration: handle={} modes={modes}; observation only",registered.2[0]);
+                        } else {
+                            let receipt=remote.send_owned_update(registered.2[0],operation=="indicate",deadline).await?;
+                            println!("SsapOwnedUpdate: handle={} stage={} pdu={} ack={}; not application delivery",
+                                registered.2[0],receipt.stage,crate::commands::hex_bytes(&receipt.pdu),
+                                crate::commands::hex_bytes(&receipt.acknowledgement));
+                        }
                         continue;
                     }
                     let Some(p)=current.as_ref() else {continue;};

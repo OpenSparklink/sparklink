@@ -166,10 +166,10 @@ impl Context {
                 );
                 Ok(())
             }
-            "ssap-observe" => {
+            "ssap-receive" => {
                 if !(3..=5).contains(&args.len()) {
                     anyhow::bail!(
-                        "ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
+                        "ssap-receive CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
                     );
                 }
                 let link = self.application_connection(args[1]).await?;
@@ -182,7 +182,7 @@ impl Context {
                     _ => anyhow::bail!("invalid local receive mode"),
                 };
                 let wait: u32 = args.get(4).copied().unwrap_or("5000").parse()?;
-                let (indication, raw) = object.observe(vec![handle], modes, wait).await?;
+                let (indication, raw) = object.receive_update(vec![handle], modes, wait).await?;
                 let packet = slk_protocol::ssap::updates::Update::decode(65535, &raw)
                     .map_err(|e| anyhow::anyhow!("incoming codec: {e:?}"))?;
                 if packet.indication != indication {
@@ -1252,7 +1252,7 @@ fn print_native_result(r: slk_protocol::DiscoveryResultRecord) -> anyhow::Result
     Ok(())
 }
 
-fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
+pub(crate) fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
     if !hex.len().is_multiple_of(2) {
         anyhow::bail!("hex string must have even length");

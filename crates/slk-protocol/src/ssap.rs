@@ -13,6 +13,8 @@ pub mod value;
 
 #[path = "ssap/access.rs"]
 pub mod access;
+#[path = "ssap/client_config.rs"]
+pub mod client_config;
 
 use core::{fmt, ops::BitOr};
 

@@ -235,8 +235,9 @@ SlkAuthorizationRequest，再等待通知；EAGAIN表示没有可交付请求。
 不能据此在另一进程批准。对象禁止fork后使用；普通dup/exec不改变原sender或请求身份。
 
 request_info 返回2120字节的只读原上下文，data_type偏移70、value偏移72；包含controller/generation、
-lifetime/handle、epoch/level、TCID/PI、属性、数据类型、原期限和本地token。当前data_type只支持
-属性值0，描述符及未知类型拒绝；不能由同句柄的属性值批准推导描述符批准。读请求无值，写请求
+lifetime/handle、epoch/level、TCID/PI、属性、数据类型、原期限和本地token。data_type为
+属性值0或客户端配置2；其他类型拒绝。配置2只在声明更新/CPCD能力、真实等级2的
+两字节写请求中交付，独立于属性access；不能由同句柄的属性值批准推导配置批准。读请求无值，写请求
 只有被提议的0..2042字节；reserved/tail及未用字节归零。request_reply只接受0/1，
 直接进入原pending的一次性答复，不经同步RPC executor。0只表示本地决策准入，
 不是daemon提交、USB完成、协议确认或对端应用处理。重复／陈旧答复ESTALE，过期
@@ -283,7 +284,9 @@ controller/管理租约和登记必须仍有效，提交与远端写入/移除�
 Rust `ServiceRegistration.replace_local`、C `slk_local_service_replace` 与 Python
 `LocalService.replace_local` 使用这一入口，调用成功只表示本地提交，不发通知或指示。
 超时/答复丢失可能发生在提交之后，效果不确定；不自动重试。对端须另行实际读取，仍
-遵守协商MTU及现有无SSAP分片限制。动态provider回调、CCC、主动通知/指示发送仍未接通。
+遵守协商MTU及现有无SSAP分片限制。动态provider和SSAP分片仍未接通；新CPCD及
+Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与-ssap-更新的当前限制)，
+其新artifact实机资格待验收，旧本地替换PASS不升级为主动发送资格。
 
 开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
 仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。

@@ -188,3 +188,48 @@ async fn wait_is_bounded_by_original_expiry_owner_loss_and_actual_reply() {
     c.owner_lost = true;
     assert!(admit(&c, Some(":1.10"), &p).unwrap().is_none());
 }
+
+#[test]
+fn client_configuration_approval_is_typed_and_never_bypasses_authentication_or_operations() {
+    let mut c = context();
+    c.operations = SsapOperations::from_bits(5 | 8 | 16 | 512).unwrap();
+    // Property access requirements do not define the independent descriptor policy.
+    c.access = SsapAccess::from_bits(0).unwrap();
+    for data_type in 0..=255 {
+        for level in 0..=3 {
+            for (write, value) in [
+                (false, vec![]),
+                (true, vec![0, 0]),
+                (true, vec![1, 0]),
+                (true, vec![3, 0]),
+                (true, vec![4, 0]),
+                (true, vec![1]),
+            ] {
+                let mut p = prompt();
+                p.6 = data_type;
+                p.1.5 = level;
+                p.3 = write;
+                p.5 = value.clone();
+                let expected = level <= 2
+                    && (data_type == 0
+                        || data_type == 2
+                            && level == 2
+                            && write
+                            && value.len() == 2
+                            && value[0] & !3 == 0);
+                assert_eq!(
+                    admit(&c, Some(":1.10"), &p).unwrap().is_some(),
+                    expected,
+                    "type={data_type} level={level} write={write} value={value:?}"
+                );
+            }
+        }
+    }
+    c.operations = SsapOperations::from_bits(5 | 8 | 512).unwrap();
+    let mut p = prompt();
+    p.6 = 2;
+    p.1.5 = 2;
+    p.3 = true;
+    p.5 = vec![2, 0];
+    assert!(admit(&c, Some(":1.10"), &p).unwrap().is_none());
+}

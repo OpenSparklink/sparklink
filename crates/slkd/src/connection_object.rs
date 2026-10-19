@@ -642,6 +642,84 @@ impl ConnectionIface {
         original.remaining().map_err(deadline_error)?;
         Ok(result)
     }
+    async fn owned_ssap_preflight(
+        &self,
+        handle: u16,
+        deadline: slk_contract::Deadline,
+        header: &zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        let original =
+            slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+                .map_err(deadline_error)?;
+        original.remaining().map_err(deadline_error)?;
+        let caller = header
+            .sender()
+            .ok_or_else(|| zbus::fdo::Error::AccessDenied("missing original caller".into()))?;
+        tokio::time::timeout_at(original.instant().into(), async {
+            if self.observation().await != (true, true) {
+                return Err(zbus::fdo::Error::Failed(
+                    "owned SSAP lifetime retired".into(),
+                ));
+            }
+            let store = self.state.lock().await.ssap_database.clone();
+            store
+                .lock()
+                .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
+                .owned_update(handle, caller.as_str())
+                .map(|_| ())
+                .map_err(zbus::fdo::Error::AccessDenied)
+        })
+        .await
+        .map_err(|_| zbus::fdo::Error::Timeout("owned SSAP original preflight deadline".into()))?
+    }
+    async fn scoped_ssap_call<T, F>(
+        &self,
+        wire: slk_contract::Deadline,
+        limit: std::time::Duration,
+        header: zbus::message::Header<'_>,
+        connection: &zbus::Connection,
+        work: impl FnOnce(crate::ssap_engine::Observer, String, tokio::time::Instant) -> F,
+    ) -> zbus::fdo::Result<T>
+    where
+        F: std::future::Future<Output = zbus::fdo::Result<T>>,
+    {
+        let original =
+            slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(wire))
+                .map_err(deadline_error)?;
+        if original.remaining().map_err(deadline_error)? > limit {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "SSAP operation exceeds its original deadline limit".into(),
+            ));
+        }
+        let sender = header
+            .sender()
+            .ok_or_else(|| zbus::fdo::Error::Failed("missing SSAP owner".into()))?
+            .to_string();
+        let result = tokio::time::timeout_at(
+            original.instant().into(),
+            caller_scoped(connection, &sender, async {
+                self.get_ssap_info().await?;
+                let observer = self
+                    .ssap
+                    .lock()
+                    .await
+                    .as_ref()
+                    .ok_or_else(|| zbus::fdo::Error::Failed("SSAP actor unavailable".into()))?
+                    .observer();
+                let result = work(observer, sender.clone(), original.instant().into()).await?;
+                if self.observation().await != (true, true) {
+                    return Err(zbus::fdo::Error::Failed(
+                        "owned SSAP connection retired".into(),
+                    ));
+                }
+                Ok(result)
+            }),
+        )
+        .await
+        .map_err(|_| zbus::fdo::Error::Timeout("owned SSAP original deadline".into()))??;
+        original.remaining().map_err(deadline_error)?;
+        Ok(result)
+    }
 }
 
 impl ConnectionOwner {
@@ -1052,12 +1130,12 @@ impl ConnectionIface {
                     .collect()
             })
     }
-    /// Call-owned local receive interest. Does not configure peer CCC state.
-    async fn observe_ssap_incoming(
+    /// Own a bounded remote CPCD transaction,not an adapter-wide subscription.
+    async fn receive_ssap_update(
         &self,
         handles: Vec<u16>,
         modes: u8,
-        wait_ms: u32,
+        deadline: slk_contract::Deadline,
         #[zbus(connection)] connection: &zbus::Connection,
         #[zbus(header)] header: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<crate::ssap_engine::Incoming> {
@@ -1070,56 +1148,44 @@ impl ConnectionIface {
                 .any(|(i, h)| handles[..i].contains(h))
             || modes == 0
             || modes & !3 != 0
-            || !(10..=10000).contains(&wait_ms)
         {
             return Err(zbus::fdo::Error::InvalidArgs(
-                "1..32 unique handles, modes1..3 and wait10..10000ms required".into(),
+                "1..32 unique handles and modes1..3 required".into(),
             ));
         }
-        let _ = self.get_ssap_info().await?;
-        let cache = self.remote_services.lock().await;
-        let entries = cache.as_ref().ok_or_else(|| {
-            zbus::fdo::Error::NotSupported(
-                "actual peer discovery required before local receive interest".into(),
-            )
-        })?;
-        let required = u32::from(modes) << 3;
-        if handles.iter().any(|handle| {
-            !entries.iter().any(|e| {
-                e.handle == *handle && e.category & 7 == 2 && e.operations & required == required
-            })
-        }) {
-            return Err(zbus::fdo::Error::NotSupported(
-                "peer has not advertised requested property update capabilities".into(),
-            ));
-        }
-        drop(cache);
-        let actor = self.ssap.lock().await;
-        let observer = actor
-            .as_ref()
-            .ok_or_else(|| zbus::fdo::Error::Failed("actor unavailable".into()))?
-            .observer();
-        drop(actor);
-        let sender = header
-            .sender()
-            .ok_or_else(|| zbus::fdo::Error::Failed("missing SSAP caller identity".into()))?;
-        let result = caller_scoped(connection, sender.as_str(), async {
-            observer
-                .incoming(
-                    handles,
-                    modes,
-                    std::time::Duration::from_millis(u64::from(wait_ms)),
-                )
-                .await
-                .map_err(zbus::fdo::Error::Failed)
-        })
-        .await?;
-        if self.observation().await != (true, true) {
-            return Err(zbus::fdo::Error::Failed(
-                "retired incoming SSAP lifetime".into(),
-            ));
-        }
-        Ok(result)
+        self.scoped_ssap_call(
+            deadline,
+            std::time::Duration::from_secs(10),
+            header,
+            connection,
+            |observer, _caller, original| async move {
+                let cache = self.remote_services.lock().await;
+                let entries = cache.as_ref().ok_or_else(|| {
+                    zbus::fdo::Error::NotSupported(
+                        "actual peer discovery required before receive transaction".into(),
+                    )
+                })?;
+                let required = (u32::from(modes) << 3) | 512;
+                if handles.iter().any(|handle| {
+                    !entries.iter().any(|e| {
+                        e.handle == *handle
+                            && e.category & 7 == 2
+                            && e.operations & required == required
+                            && e.descriptors.contains(&2)
+                    })
+                }) {
+                    return Err(zbus::fdo::Error::NotSupported(
+                        "peer has not advertised requested property update capabilities".into(),
+                    ));
+                }
+                drop(cache);
+                observer
+                    .incoming(handles, modes, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
     }
     async fn read_ssap_by_uuid(
         &self,
@@ -1179,6 +1245,54 @@ impl ConnectionIface {
     ) -> zbus::fdo::Result<Vec<u8>> {
         self.scoped_ssap_value(handle, Some(value), minimum, deadline, header, connection)
             .await
+    }
+    /// A stage1 receipt is software admission; stage2 is peer queue ACK only.
+    /// The actual unique caller must still own the property at submission.
+    async fn send_owned_ssap_update(
+        &self,
+        handle: u16,
+        indication: bool,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> zbus::fdo::Result<slk_contract::ssap::UpdateReceipt> {
+        self.owned_ssap_preflight(handle, deadline, &header).await?;
+        self.scoped_ssap_call(
+            deadline,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, caller, original| async move {
+                observer
+                    .update(caller, handle, indication, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
+    /// Observe this Session's existing client configuration, not a Ready/Grant.
+    async fn get_owned_ssap_configuration(
+        &self,
+        handle: u16,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> zbus::fdo::Result<u8> {
+        self.owned_ssap_preflight(handle, deadline, &header).await?;
+        self.scoped_ssap_call(
+            deadline,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, caller, original| async move {
+                observer
+                    .configuration(caller, handle, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
     }
     /// Read-only native mechanism state via an existing owner. Do not start an
     /// SSAP Engine, open a channel, mutate credit or mint authorization here.
@@ -2094,7 +2208,11 @@ mod grant_tests {
                 vec!["(a(yqqayuayy)a(ayay))"],
             ),
             ("GetCachedSsap", vec![], vec!["a(yqqayuayy)"]),
-            ("ObserveSsapIncoming", vec!["aq", "y", "u"], vec!["(bay)"]),
+            (
+                "ReceiveSsapUpdate",
+                vec!["aq", "y", "(ttttt)"],
+                vec!["(bay)"],
+            ),
             (
                 "ReadSsapByUuid",
                 vec!["q", "q", "y", "ay", "u"],

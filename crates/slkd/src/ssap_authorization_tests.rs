@@ -133,6 +133,9 @@ async fn setup(
     (bus, state, server, owner, rx)
 }
 async fn register(owner: &Connection, access: u32) -> (u16, u16) {
+    register_operations(owner, access, 5).await
+}
+async fn register_operations(owner: &Connection, access: u32, operations: u32) -> (u16, u16) {
     let proxy = zbus::Proxy::new(
         owner,
         "org.sparklink.AuthTest",
@@ -146,7 +149,7 @@ async fn register(owner: &Connection, access: u32) -> (u16, u16) {
             "RegisterOwnedLocalService",
             &(
                 vec![1u8, 0],
-                vec![(vec![2u8, 0], 5u32, access, vec![7u8])],
+                vec![(vec![2u8, 0], operations, access, vec![7u8])],
                 OwnedObjectPath::try_from("/authorizer").unwrap(),
                 owned_deadline(),
             ),
@@ -188,7 +191,13 @@ fn packet(request: ValuePdu<'_>, id: u64, level: u32, wait: Duration) -> ServerP
 }
 async fn render(request: ServerPacket, database: &Store) -> Vec<u8> {
     let decision = authorize_server(request, database.clone()).await;
-    server_response(&decision.packet, database, &decision.approvals).unwrap()
+    server_response(
+        &decision.packet,
+        database,
+        &decision.approvals,
+        &mut crate::ssap_engine_config::ClientConfigurations::default(),
+    )
+    .unwrap()
 }
 
 #[tokio::test]
@@ -395,7 +404,15 @@ async fn original_deadline_and_native_recheck_precede_value_mutation() {
     a.set_nonblocking(true).unwrap();
     let wire = Wire::native(AsyncFd::new(OwnedFd::from(a)).unwrap());
     assert_eq!(
-        complete_server(&wire, decision, &db).err().unwrap().kind(),
+        complete_server(
+            &wire,
+            decision,
+            &db,
+            &mut crate::ssap_engine_config::ClientConfigurations::default()
+        )
+        .err()
+        .unwrap()
+        .kind(),
         io::ErrorKind::TimedOut
     );
     assert_eq!(db.lock().unwrap().local_read(h).unwrap(), [7]);
@@ -413,7 +430,15 @@ async fn original_deadline_and_native_recheck_precede_value_mutation() {
         ),
         approvals: vec![],
     };
-    assert!(complete_server(&wire, decision, &db).is_err());
+    assert!(
+        complete_server(
+            &wire,
+            decision,
+            &db,
+            &mut crate::ssap_engine_config::ClientConfigurations::default()
+        )
+        .is_err()
+    );
     assert_eq!(db.lock().unwrap().local_read(h).unwrap(), [7]);
 }
 
@@ -485,7 +510,13 @@ async fn late_approval_for_removed_property_cannot_read_recreated_value() {
     assert!(new > h);
     let decision = future.await.unwrap();
     assert!(decision.approvals.is_empty());
-    let response = server_response(&decision.packet, &db, &decision.approvals).unwrap();
+    let response = server_response(
+        &decision.packet,
+        &db,
+        &decision.approvals,
+        &mut crate::ssap_engine_config::ClientConfigurations::default(),
+    )
+    .unwrap();
     assert_eq!(
         ValuePdu::decode(249, &response).unwrap(),
         ValuePdu::ReadError(4)
@@ -983,7 +1014,13 @@ async fn actual_database_approval_is_bound_to_the_original_data_type() {
     assert_eq!(decision.approvals.len(), 1);
     assert_eq!(decision.approvals[0].data_type, 0);
     decision.approvals[0].data_type = 2;
-    let rejected = server_response(&decision.packet, &database, &decision.approvals).unwrap();
+    let rejected = server_response(
+        &decision.packet,
+        &database,
+        &decision.approvals,
+        &mut crate::ssap_engine_config::ClientConfigurations::default(),
+    )
+    .unwrap();
     assert_eq!(
         ValuePdu::decode(249, &rejected).unwrap(),
         ValuePdu::WriteError { handle, error: 9 }
@@ -991,14 +1028,26 @@ async fn actual_database_approval_is_bound_to_the_original_data_type() {
     assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
     decision.approvals[0].data_type = 0;
     decision.approvals[0].write = false;
-    let rejected = server_response(&decision.packet, &database, &decision.approvals).unwrap();
+    let rejected = server_response(
+        &decision.packet,
+        &database,
+        &decision.approvals,
+        &mut crate::ssap_engine_config::ClientConfigurations::default(),
+    )
+    .unwrap();
     assert_eq!(
         ValuePdu::decode(249, &rejected).unwrap(),
         ValuePdu::WriteError { handle, error: 9 }
     );
     assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
     decision.approvals[0].write = true;
-    let committed = server_response(&decision.packet, &database, &decision.approvals).unwrap();
+    let committed = server_response(
+        &decision.packet,
+        &database,
+        &decision.approvals,
+        &mut crate::ssap_engine_config::ClientConfigurations::default(),
+    )
+    .unwrap();
     assert_eq!(
         ValuePdu::decode(249, &committed).unwrap(),
         ValuePdu::WrittenValue {
@@ -1008,4 +1057,256 @@ async fn actual_database_approval_is_bound_to_the_original_data_type() {
         }
     );
     assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [9]);
+}
+
+/// Real owner/DB/policy and production configuration transitions. Receipt
+/// security is an explicit fixture; this does not prove Native authentication.
+#[tokio::test]
+async fn actual_client_configuration_is_session_scoped_and_requires_typed_authenticated_approval() {
+    let (_bus, state, _server, owner, mut seen) = setup(true, Duration::ZERO).await;
+    let (start, handle) = register_operations(&owner, 0, 5 | 8 | 16 | 512).await;
+    let database = store(&state).await;
+    let mut first = crate::ssap_engine_config::ClientConfigurations::default();
+    let mut other = crate::ssap_engine_config::ClientConfigurations::default();
+    let read = packet(
+        ValuePdu::Read {
+            handle,
+            data_type: 2,
+        },
+        1,
+        0,
+        Duration::from_secs(1),
+    );
+    let decode = |bytes: Vec<u8>| match ValuePdu::decode(249, &bytes).unwrap() {
+        ValuePdu::ReadValue(value) => value.to_vec(),
+        p => panic!("expected configuration read: {p:?}"),
+    };
+    assert_eq!(
+        decode(server_response(&read, &database, &[], &mut first).unwrap()),
+        [0, 0]
+    );
+    let plain = packet(
+        ValuePdu::Write {
+            handle,
+            data_type: 2,
+            value: &[1, 0],
+            verify: true,
+        },
+        2,
+        0,
+        Duration::from_secs(1),
+    );
+    let denied = authorize_server(plain, database.clone()).await;
+    assert!(denied.approvals.is_empty() && seen.try_recv().is_err());
+    assert_eq!(
+        ValuePdu::decode(
+            249,
+            &server_response(&denied.packet, &database, &[], &mut first).unwrap()
+        )
+        .unwrap(),
+        ValuePdu::WriteError { handle, error: 9 }
+    );
+    let write = packet(
+        ValuePdu::Write {
+            handle,
+            data_type: 2,
+            value: &[3, 0],
+            verify: true,
+        },
+        3,
+        2,
+        Duration::from_secs(1),
+    );
+    let mut decision = authorize_server(write, database.clone()).await;
+    let prompt = seen.recv().await.unwrap();
+    assert_eq!(
+        (prompt.6, prompt.3, prompt.1.5, prompt.5),
+        (2, true, 2, vec![3, 0])
+    );
+    assert_eq!(decision.approvals.len(), 1);
+    for (data_type, write) in [(0, true), (2, false)] {
+        decision.approvals[0].data_type = data_type;
+        decision.approvals[0].write = write;
+        assert_eq!(
+            ValuePdu::decode(
+                249,
+                &server_response(&decision.packet, &database, &decision.approvals, &mut first)
+                    .unwrap()
+            )
+            .unwrap(),
+            ValuePdu::WriteError { handle, error: 9 }
+        );
+        assert_eq!(
+            decode(server_response(&read, &database, &[], &mut first).unwrap()),
+            [0, 0]
+        );
+    }
+    decision.approvals[0].data_type = 2;
+    decision.approvals[0].write = true;
+    assert_eq!(
+        ValuePdu::decode(
+            249,
+            &server_response(&decision.packet, &database, &decision.approvals, &mut first).unwrap()
+        )
+        .unwrap(),
+        ValuePdu::WrittenValue {
+            handle,
+            data_type: 2,
+            value: &[3, 0]
+        }
+    );
+    assert_eq!(
+        decode(server_response(&read, &database, &[], &mut first).unwrap()),
+        [3, 0]
+    );
+    assert_eq!(
+        decode(server_response(&read, &database, &[], &mut other).unwrap()),
+        [0, 0]
+    );
+    assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+    let mut new_epoch = packet(
+        ValuePdu::Read {
+            handle,
+            data_type: 2,
+        },
+        4,
+        0,
+        Duration::from_secs(1),
+    );
+    new_epoch.constraint.as_mut().unwrap().security_epoch = 42;
+    assert_eq!(
+        decode(server_response(&new_epoch, &database, &[], &mut first).unwrap()),
+        [0, 0]
+    );
+    let config_owner = database
+        .lock()
+        .unwrap()
+        .configuration_property(handle)
+        .unwrap()
+        .1;
+    first.set(handle, &config_owner, 42, 1).unwrap();
+    database.lock().unwrap().remove(start).unwrap();
+    assert_eq!(first.get(handle, &config_owner, 42), 0);
+    assert!(
+        database
+            .lock()
+            .unwrap()
+            .owned_update(handle, owner.unique_name().unwrap().as_str())
+            .is_err()
+    );
+}
+
+#[tokio::test]
+async fn actual_configuration_invalid_values_never_dispatch_policy_or_mutate_property() {
+    let (_bus, state, _server, owner, mut seen) = setup(true, Duration::ZERO).await;
+    let (_, handle) = register_operations(&owner, 0, 1 | 8 | 512).await;
+    let database = store(&state).await;
+    let mut configurations = crate::ssap_engine_config::ClientConfigurations::default();
+    for value in [&[][..], &[1][..], &[1, 0, 0][..], &[2, 0][..], &[0, 1][..]] {
+        let decision = authorize_server(
+            packet(
+                ValuePdu::Write {
+                    handle,
+                    data_type: 2,
+                    value,
+                    verify: true,
+                },
+                1,
+                2,
+                Duration::from_secs(1),
+            ),
+            database.clone(),
+        )
+        .await;
+        assert!(decision.approvals.is_empty() && seen.try_recv().is_err());
+        assert_eq!(
+            ValuePdu::decode(
+                249,
+                &server_response(&decision.packet, &database, &[], &mut configurations).unwrap()
+            )
+            .unwrap(),
+            ValuePdu::WriteError { handle, error: 5 }
+        );
+        assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+    }
+    let config_owner = database
+        .lock()
+        .unwrap()
+        .configuration_property(handle)
+        .unwrap()
+        .1;
+    for handle in 1..=64 {
+        configurations.set(handle, &config_owner, 41, 1).unwrap();
+    }
+    assert_eq!(configurations.set(65, &config_owner, 41, 1), Err(5));
+    assert_eq!(configurations.set(1, &config_owner, 0, 1), Err(9));
+    assert_eq!(configurations.set(1, &config_owner, 41, 4), Err(9));
+    assert_eq!(configurations.get(1, &config_owner, 41), 1);
+    configurations.set(1, &config_owner, 41, 0).unwrap();
+    configurations.set(65, &config_owner, 41, 1).unwrap();
+}
+
+#[tokio::test]
+async fn actual_update_wait_cancellation_keeps_admitted_identity_and_original_drain() {
+    let (_bus, state, _server, owner, _) = setup(true, Duration::ZERO).await;
+    let (_, handle) = register_operations(&owner, 0, 5 | 8 | 16 | 512).await;
+    let database = store(&state).await;
+    let owner = database
+        .lock()
+        .unwrap()
+        .configuration_property(handle)
+        .unwrap()
+        .1;
+    let now = Instant::now();
+    let deadline = now + Duration::from_secs(1);
+    let drain = now + Duration::from_secs(5);
+    for admitted in [false, true] {
+        let (reply, mut result) = oneshot::channel();
+        let mut update = Some(UpdateRequest {
+            handle,
+            owner: owner.clone(),
+            mode: 2,
+            epoch: 41,
+            deadline,
+            drain: admitted.then_some(drain),
+            pdu: vec![16, 3, 17, 0, 0, 0],
+            reply: Some(reply),
+        });
+        let mut pending = VecDeque::from([
+            Pending {
+                bytes: vec![16, 3, 17, 0, 0, 0],
+                deadline,
+                purpose: Purpose::Update,
+                constraint: None,
+            },
+            Pending {
+                bytes: vec![1],
+                deadline,
+                purpose: Purpose::ValueResponse,
+                constraint: None,
+            },
+        ]);
+        result.close();
+        retire_update_wait(&mut update, &mut pending, now);
+        if admitted {
+            let current = update.as_ref().unwrap();
+            assert!(current.reply.is_none());
+            assert_eq!(
+                (
+                    current.handle,
+                    current.mode,
+                    current.epoch,
+                    current.deadline,
+                    current.obligation_deadline()
+                ),
+                (handle, 2, 41, deadline, drain)
+            );
+            retire_update_wait(&mut update, &mut pending, now + Duration::from_secs(2));
+            assert_eq!(update.as_ref().unwrap().obligation_deadline(), drain);
+        } else {
+            assert!(update.is_none());
+            assert_eq!(pending.len(), 1);
+            assert!(matches!(pending[0].purpose, Purpose::ValueResponse));
+        }
+    }
 }

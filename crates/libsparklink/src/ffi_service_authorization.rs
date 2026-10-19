@@ -31,7 +31,7 @@ pub struct SlkAuthorizationRequestInfo {
     pub local_tcid: u8,
     pub remote_tcid: u8,
     pub pi: u8,
-    /// Original SSAP data type; currently property value0 only.
+    /// Original SSAP data type: value0 or authenticated client configuration2.
     pub data_type: u8,
     pub reserved: [u8; 1],
     pub value: [u8; 2042],

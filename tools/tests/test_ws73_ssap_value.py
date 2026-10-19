@@ -61,7 +61,7 @@ class ActualValueEvidence(unittest.TestCase):
 
     def test_actual_unsupported_receive_interest_is_not_success(self):
         row,matched,wire=self.fixture();row['ssap_update_local_rejection_required']=True;row['unsupported_incoming']=[]
-        for a,b in [(0,1),(1,0)]:row['unsupported_incoming'].append(dict(sender=a,target=b,handle=2,receipt=dict(args=['slctl','--adapter',f'/adapter{a}','ssap-observe',f'/adapter{a}/link','2','notify','10'],exit=1,stderr='peer has not advertised requested property update capabilities')))
+        for a,b in [(0,1),(1,0)]:row['unsupported_incoming'].append(dict(sender=a,target=b,handle=2,receipt=dict(args=['slctl','--adapter',f'/adapter{a}','ssap-receive',f'/adapter{a}/link','2','notify','10'],exit=1,stderr='peer has not advertised requested property update capabilities')))
         proof,credit=corroborate(row,matched);self.assertEqual(len(proof),8);self.assertEqual(credit,{0:24,1:24});self.assertFalse(wire)
         row,matched,_=self.fixture();row['ssap_update_local_rejection_required']=True;row['unsupported_incoming']=[]
         with self.assertRaises(CaptureError):corroborate(row,matched)

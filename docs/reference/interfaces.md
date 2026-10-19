@@ -206,8 +206,8 @@ Owned 的 register/read_local/unregister 显式接收原 Deadline；三条 D-Bus
 C/Python 的基础 Owned 视图复用同一个 Rust `ServiceRegistration`：
 `slk_client_register_local_service`／`Client.register_local_service`，随后通过
 `slk_local_service_receipt/read/unregister/free`／`LocalService.receipt/read_local/unregister/close`
-访问。支持 READ/WRITE_WITH_RSP 和有界初值，当前语言视图没有 authorizer callback，
-需要本地授权位时明确 EOPNOTSUPP。管理 staging 与安全 Agent 仍是独立用途。
+访问。支持有界初值及显式 `authorization=requests` 审批；没有审批入口时授权位与
+更新能力明确拒绝。管理 staging 与安全 Agent 仍是独立用途。
 回执不是远端发布；跨语言生命周期、错误和布局见[SSAP 权限](ssap-permissions.md)。
 实机范围始终绑定准确编译 artifact，不从新增 API 名字推导资格。
 
@@ -240,7 +240,9 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 | `read(handle, minimum)` | `ReadSsapValue` | 原机制要求；错误原样传播，无弱化fallback |
 | `write(handle, value, minimum)` | `WriteSsapValue` | 原短写协议；不截断、不echo、不实现新长写 |
 | `read_by_uuid(start, end, data_type, uuid, minimum)` | `ReadSsapByUuid` | 返回每项结果及原trace；不是本地构造成功 |
-| `observe(handles, modes, wait_ms)` | `ObserveSsapIncoming` | 只观察实际入站；不是向对端订阅，也不表示应用已经处理 |
+| `receive_update(handles, modes, wait_ms)` / `receive_until(..., Deadline)` | `ReceiveSsapUpdate` | 单次CPCD启用/接收/验证停用；需真实认证及拥有者授权；不覆盖已有配置 |
+| `send_owned_update(handle, indication, Deadline)` | `SendOwnedSsapUpdate` | 同一原caller拥有的本地属性；stage1软件准入，stage2对端接收队列ACK，均非应用处理 |
+| `owned_configuration(handle, Deadline)` | `GetOwnedSsapConfiguration` | 观察原caller属性在本Session的配置，不制造Ready、授权或新配置 |
 | `exchange_info()` | `GetSsapInfo` | 真实协商观察，核对返回完整身份；不是服务发现或安全资格 |
 | `connection.transport_status()` | `GetTransportStatus` | 只读现有Session，不能排空credit或证明复用屏障 |
 
@@ -509,10 +511,10 @@ Connection 只读属性 `SsapSecurityRequirement`（D-Bus `u`）返回首次 SMT
 无降级/重绑行为见[SSAP权限与通道要求](ssap-permissions.md)。不改变本地 staging
 与实际远端操作的区分，也不授属性级认证、本地授权或 Bond。
 
-旧未接通facade仍NotSupported。数据库配置不是远端发布；原始门禁及安全/失败
+已退休的旧facade不再提供。数据库配置不是远端发布；原始门禁及安全/失败
 语义见准确资格和证据，不转授为完整服务支持。
 
-后续U8438594收紧本地注册：仅READ/WRITE_WITH_RSP（mask0x05）接通，
+历史U8438594收紧本地注册：当时仅READ/WRITE_WITH_RSP（mask0x05）接通，
 WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享权限类型
 仍保留标准完整语义。此拒绝只有生产数据库/实际D-Bus离线门禁，不转授Ub5实机资格。
 
@@ -536,18 +538,22 @@ UUID须2/16字节，范围非零且start≤end；无效本地参数为InvalidArg
 实机只验每端一个custom property，其他类别与错误矩阵仍待扩大；
 [源码映射和精确范围](../evidence/ssap-read-uuid-progress-20261014.json)。
 
-### 单次本地更新观察（U8e92f97；不是远端订阅）
+### 单次客户端配置与更新事务（新源码接线，实机待验收）
 
-Connection.ObserveSsapIncoming(handles:aq,modes:y,wait_ms:u)返回(indication:b,raw:ay)。
-1..32个唯一非零handle、modes1通知/2指示/3两者、wait10..10000ms；InvalidArgs拒绝
+Connection.ReceiveSsapUpdate(handles:aq,modes:y,deadline:(ttttt))返回(indication:b,raw:ay)。
+1..32个唯一非零handle、modes1通知/2指示/3两者、绝对期限最多10秒；InvalidArgs拒绝
 非法参数。必须有本lifetime实际发现的property及匹配Notify/Indicate能力，缺少时
 NotSupported。只允许一个call-owned等待者；busy、原期限、caller退出、Actor失败
-或断链为Failed，不静默成功。CLI为`ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]`。
+或断链为Failed，不静默成功。CLI为`ssap-receive CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]`。
 
-本地兴趣不写CCC。D-Bus owner-loss匹配先于owner检查/等待安装，已知调用者退出
-撤销等待。完整property packet原子交给一个oneshot接收槽；没有持续订阅/多应用
-router，满槽没有承诺无丢包。NTF不产生回复；IND只有活接收槽接受后ACK1，未知、
-过期、不匹配或不支持事件ACK0。ACK1不是CLI处理成功；确认发送仍受原物理期限。
+同一actor依次读取CPCD，只有旧配置为零才启用，收到一包后验证停用再返回；读取、
+启用与业务等待共用原绝对期限。取消或超时不抹去可能已生效的配置，清理有单独固定
+5秒上限；无法确认时该SSAP actor失败，不能重开同lifetime伪装Free。不会清除已有
+非零配置。一个call拥有客户端事务序列，其他竞争调用明确busy；尚无持续多应用聚合。
+
+完整property packet进入有界内部槽；IND的ACK1只表示该接收准入，不代表调用者
+处理、最终RPC返回或业务回复。未知、已知关闭、过期、不匹配或事件ACK0；NTF无回复。
+旧ObserveSsapIncoming/ssap-observe入口已退休，无兼容别名；历史记录保留原命令身份。
 多条同handle实例、分包和事件投递未支持；malformed packet当前失败SSAP actor。
 真实正向更新/TX/CCC/security尚未验收。仅原路径回归与能力拒绝有实机证据。
 
@@ -661,11 +667,16 @@ handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C�
 
 ## 客户端配置与 SSAP 更新的当前限制
 
-`ObserveSsapIncoming` 是本地限时接收兴趣，既不是远端CPCD写入，也不保证应用处理。
-远端配置、生产通知发送与指示确认账本仍未接通。标准T/XS20001-2025表40对CPCD
-写入要求认证和授权；`sdk111-no-mitm`和Agent同意均不足以满足，当前拒绝保持。
-只读写公开值的历史资格不能升级成通知订阅、安全或Profile资格。配置须由唯一
-ConnectionSession按物理lifetime独立持有，不按可复用handle或地址继承。
+新源码接通单次CPCD事务及Owned发送，实机资格仍待新artifact验收，不能继承历史
+属性读写或旧本地观察PASS。表40要求CPCD写认证和授权；no-mitm/Agent同意不满足。
+配置由唯一物理actor按lifetime持有，拥有者退休或安全epoch变化使旧配置失效。
+本地替换不自动通知。SendOwnedSsapUpdate只发送原caller当前拥有的属性快照，仍受
+协商MTU、CPCD、原期限及每次Native提交检查约束；长值不分片、不截断。
+
+一次最多一个待决指示，关闭/取消后仍等待匹配ACK或有限退休；ACK没有wire事务号，
+重复/晚到ACK和可靠传输假设仍须独立验证，不宣称解决了所有复用竞争。C/Python的
+SlkSsapUpdate为2056字节，stage1/2对应发送收据，stage3为收到且已验证停用；它们都
+不表示对端应用处理。完整持续订阅、provider、SSAP分片及多应用/故障矩阵继续开放。
 
 ## 动态基础通道：已接线，实机待验收
 

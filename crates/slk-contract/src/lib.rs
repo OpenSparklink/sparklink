@@ -75,7 +75,7 @@ pub mod ssap {
     /// Request ID, original context, local property, write?, original monotonic
     /// deadline, proposed write value (empty for reads). Reads disclose no value
     /// to the authorizer before its decision. The final byte is the original
-    /// SSAP data type (currently property value0 only); it is part of the policy
+    /// SSAP data type (property value0 or client configuration2); it is part of the policy
     /// scope, not inferred from the handle or granted by a local decision.
     pub type SsapAuthorizationPrompt =
         (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>, u8);
@@ -106,7 +106,17 @@ pub mod ssap {
     }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
-    pub const OBSERVE: &str = "ObserveSsapIncoming";
+    pub const RECEIVE: &str = "ReceiveSsapUpdate";
+    pub const OWNED_UPDATE: &str = "SendOwnedSsapUpdate";
+    pub const OWNED_CONFIGURATION: &str = "GetOwnedSsapConfiguration";
+    /// stage1: notification software admission only; stage2: indication accepted
+    /// by the peer's protocol receive queue. Neither means application processing.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct UpdateReceipt {
+        pub stage: u8,
+        pub pdu: Vec<u8>,
+        pub acknowledgement: Vec<u8>,
+    }
     pub const READ_UUID: &str = "ReadSsapByUuid";
     pub const READ: &str = "ReadSsapValue";
     pub const WRITE: &str = "WriteSsapValue";

@@ -187,3 +187,143 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
     });
     unsafe { copy_result(result, buffer, capacity, length) }
 }
+
+/// One bounded SSAP update receipt,not proof of application processing.
+/// stage1=notification software admission;2=indication peer receive-queue ACK;
+/// 3=received packet and verified remote CPCD disable. Unused bytes are zero.
+#[repr(C)]
+pub struct SlkSsapUpdate {
+    pub stage: u32,
+    pub pdu_length: u16,
+    pub acknowledgement_length: u16,
+    pub pdu: [u8; 2042],
+    pub acknowledgement: [u8; 3],
+    pub reserved: [u8; 3],
+}
+impl SlkSsapUpdate {
+    fn receipt(stage: u32, pdu: Vec<u8>, ack: Vec<u8>) -> Result<Self, i32> {
+        if pdu.len() > 2042 || ack.len() > 3 {
+            return Err(nix::libc::EOVERFLOW);
+        }
+        let mut result = Self {
+            stage,
+            pdu_length: pdu.len() as u16,
+            acknowledgement_length: ack.len() as u16,
+            pdu: [0; 2042],
+            acknowledgement: [0; 3],
+            reserved: [0; 3],
+        };
+        result.pdu[..pdu.len()].copy_from_slice(&pdu);
+        result.acknowledgement[..ack.len()].copy_from_slice(&ack);
+        Ok(result)
+    }
+}
+/// Receive one property update through the existing Rust CPCD transaction.
+/// modes1/2/3=notification/indication/either. Original absolute deadline includes
+/// queueing and is capped at10s before admission. No pre-existing configuration
+/// is overwritten. Cancellation/timeout can leave bounded cleanup; an unknown
+/// cleanup retires this SSAP actor. Output unchanged on failure. No retries.
+/// # Safety
+/// Same live connection/fork contract as ssap_read; output is exclusive aligned
+/// writable storage for one SlkSsapUpdate,not aliasing the connection.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_receive(
+    connection: *const SlkConnection,
+    handle: u16,
+    modes: u32,
+    output: *mut SlkSsapUpdate,
+    deadline_ns: u64,
+) -> c_int {
+    if connection.is_null() || handle == 0 || !(1..=3).contains(&modes) || output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    let result = Deadline::from_monotonic_ns(deadline_ns)
+        .and_then(|deadline| {
+            let (deadline, original) = deadline.bounded(std::time::Duration::from_secs(10))?;
+            view.inner.call(deadline, move |_| async move {
+                link.ssap()
+                    .receive_until(vec![handle], modes as u8, original)
+                    .await
+            })
+        })
+        .and_then(|(_, raw)| SlkSsapUpdate::receipt(3, raw, vec![]));
+    match result {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error,
+    }
+}
+/// Submit this original caller's owned property through the same Engine/Session.
+/// indication0/1 selects notification/indication. Requires current authenticated
+/// Session,CPCD and actual DB ownership. Original <=5s;no downgrade/retry.
+/// Success stage1/2 is not peer application delivery. Timeout can follow an
+/// admitted send;Native retains credit and indication ACK debt is drained.
+/// # Safety
+/// Same connection/output/fork contract as ssap_receive.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_send_owned(
+    connection: *const SlkConnection,
+    handle: u16,
+    indication: u32,
+    output: *mut SlkSsapUpdate,
+    deadline_ns: u64,
+) -> c_int {
+    if connection.is_null() || handle == 0 || indication > 1 || output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    let result = Deadline::from_monotonic_ns(deadline_ns)
+        .and_then(|deadline| {
+            let (deadline, original) = deadline.protocol()?;
+            view.inner.call(deadline, move |_| async move {
+                link.ssap()
+                    .send_owned_update(handle, indication != 0, original)
+                    .await
+            })
+        })
+        .and_then(|value| {
+            SlkSsapUpdate::receipt(u32::from(value.stage), value.pdu, value.acknowledgement)
+        });
+    match result {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error,
+    }
+}
+/// Observe only this caller's owned property configuration on the fixed lifetime.
+/// modes0..3 is not a Ready,Grant or application-delivery receipt;no enable/write.
+/// # Safety
+/// Live connection;output is exclusive writable one-byte storage,nonaliasing.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_owned_configuration(
+    connection: *const SlkConnection,
+    handle: u16,
+    output: *mut u8,
+    deadline_ns: u64,
+) -> c_int {
+    if connection.is_null() || handle == 0 || output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    let result = Deadline::from_monotonic_ns(deadline_ns).and_then(|deadline| {
+        let (deadline, original) = deadline.protocol()?;
+        view.inner.call(deadline, move |_| async move {
+            link.ssap().owned_configuration(handle, original).await
+        })
+    });
+    match result {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error,
+    }
+}

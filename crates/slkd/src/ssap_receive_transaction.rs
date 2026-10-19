@@ -172,8 +172,9 @@ impl ReceiveTransaction {
                             // request with failure: the remote property is no
                             // longer available. Not a verified disable or an
                             // application delivery;other handles remain owed.
-                            self.failure.get_or_insert_with(||
-                                "remote client configuration property unavailable".into());
+                            self.failure.get_or_insert_with(|| {
+                                "remote client configuration property unavailable".into()
+                            });
                             self.possibly_enabled.remove(0);
                             return Ok(());
                         }
@@ -265,13 +266,26 @@ mod tests {
             assert_eq!(t.next(&mut waiter), Some((handle, Some([2, 0]), original)));
             wire(&mut t, Ok(vec![2, 0]), handle).await;
         }
-        waiter.take().unwrap().reply.send(Ok((true, vec![16, 3, 17, 0, 0, 0]))).unwrap();
+        waiter
+            .take()
+            .unwrap()
+            .reply
+            .send(Ok((true, vec![16, 3, 17, 0, 0, 0])))
+            .unwrap();
         let data = t.event().await;
         t.apply(data).unwrap();
         t.maintain(&mut waiter, Instant::now()).unwrap();
         let fixed = t.wake_deadline();
         assert_eq!(t.next(&mut waiter), Some((17, Some([0, 0]), fixed)));
-        wire(&mut t, Err(ClientFailure::WriteError { handle: 17, error: 4 }), 17).await;
+        wire(
+            &mut t,
+            Err(ClientFailure::WriteError {
+                handle: 17,
+                error: 4,
+            }),
+            17,
+        )
+        .await;
         assert_eq!(t.possibly_enabled, vec![18]);
         assert!(!t.finished());
         assert_eq!(t.wake_deadline(), fixed);
@@ -281,20 +295,34 @@ mod tests {
         t.finish();
         // The internally received value is never upgraded to application
         // success when its original remote configuration disappeared.
-        assert_eq!(result.await.unwrap(), Err("remote client configuration property unavailable".into()));
+        assert_eq!(
+            result.await.unwrap(),
+            Err("remote client configuration property unavailable".into())
+        );
     }
 
     #[test]
     fn opaque_similar_error_wrong_handle_and_other_peer_error_still_retire() {
         for error in [
             ClientFailure::Message("peer write error 4".into()),
-            ClientFailure::WriteError { handle: 18, error: 4 },
-            ClientFailure::WriteError { handle: 17, error: 9 },
+            ClientFailure::WriteError {
+                handle: 18,
+                error: 4,
+            },
+            ClientFailure::WriteError {
+                handle: 17,
+                error: 9,
+            },
         ] {
             // Explicit phase fixture;the full transition above uses actual
             // production admission/event methods. No Native or USB fixture.
             let (reply, _result) = oneshot::channel();
-            let mut t = ReceiveTransaction::new(vec![17], 2, Instant::now() + Duration::from_secs(3), reply);
+            let mut t = ReceiveTransaction::new(
+                vec![17],
+                2,
+                Instant::now() + Duration::from_secs(3),
+                reply,
+            );
             t.phase = Phase::Disable;
             t.possibly_enabled.push(17);
             t.cleanup = Some(Instant::now() + Duration::from_secs(5));
@@ -309,14 +337,19 @@ mod tests {
     #[tokio::test]
     async fn cancelled_author_does_not_turn_known_absence_into_late_success() {
         let (reply, mut result) = oneshot::channel();
-        let mut t = ReceiveTransaction::new(vec![17], 2, Instant::now() + Duration::from_secs(3), reply);
+        let mut t =
+            ReceiveTransaction::new(vec![17], 2, Instant::now() + Duration::from_secs(3), reply);
         t.possibly_enabled.push(17);
         result.close();
         let mut waiter = None;
         t.maintain(&mut waiter, Instant::now()).unwrap();
         let fixed = t.wake_deadline();
         assert_eq!(t.next(&mut waiter), Some((17, Some([0, 0]), fixed)));
-        t.apply(Event::Wire(Err(ClientFailure::WriteError { handle: 17, error: 4 }))).unwrap();
+        t.apply(Event::Wire(Err(ClientFailure::WriteError {
+            handle: 17,
+            error: 4,
+        })))
+        .unwrap();
         assert_eq!(t.wake_deadline(), fixed);
         assert!(t.finished());
         t.finish();

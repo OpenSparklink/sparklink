@@ -1861,14 +1861,25 @@ mod tests {
     fn typed_write_rejection_requires_original_handle_operation_and_layout() {
         let request = [13, 35, 17, 0, 2, 0, 0];
         let result = client_value_response(249, &request, &[14, 7, 1, 17, 0, 4]).unwrap();
-        assert_eq!(result, Err(ClientFailure::WriteError { handle: 17, error: 4 }));
+        assert_eq!(
+            result,
+            Err(ClientFailure::WriteError {
+                handle: 17,
+                error: 4
+            })
+        );
         assert_eq!(result.unwrap_err().to_string(), "peer write error 4");
         for raw in [&[14, 7, 1, 18, 0, 4][..], &[14, 11, 4, 0], &[9, 11, 4, 0]] {
             assert!(client_value_response(249, &request, raw).is_err());
         }
-        assert!(matches!(client_value_response(249, &request, &[1, 0, 13, 17, 0, 4]).unwrap(),
-            Err(ClientFailure::Message(_))));
-        assert_eq!(client_value_response(249, &request, &[14, 3, 17, 0, 2, 0, 0]).unwrap(), Ok(vec![0, 0]));
+        assert!(matches!(
+            client_value_response(249, &request, &[1, 0, 13, 17, 0, 4]).unwrap(),
+            Err(ClientFailure::Message(_))
+        ));
+        assert_eq!(
+            client_value_response(249, &request, &[14, 3, 17, 0, 2, 0, 0]).unwrap(),
+            Ok(vec![0, 0])
+        );
     }
     #[test]
     fn extended_complete_and_sequence_capabilities_remain_distinct() {

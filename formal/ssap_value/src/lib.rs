@@ -119,3 +119,36 @@ mod local_value_negative_control {
             "negative control must reject overbudget admission claim");
     }
 }
+
+// Include the real pure protocol module and its real dependencies,not a
+// verification-specific replacement for SsapOperations or access checks.
+#[path = "../../../crates/slk-protocol/src/ssap.rs"]
+pub mod ssap;
+#[cfg(kani)]
+mod configuration_proofs {
+    #[kani::proof]
+    #[kani::unwind(2050)]
+    fn actual_configuration_decode_matches_full_runtime_value_budget() {
+        let raw:[u8;2042]=kani::any();let len:usize=kani::any();let modes:u8=kani::any();
+        kani::assume(len<=raw.len());
+        let value=u16::from_le_bytes([raw[0],raw[1]]);
+        let expected=len==2 && (1..=3).contains(&modes) && value & !u16::from(modes)==0;
+        let result=super::ssap::client_config::decode(&raw[..len],modes);
+        assert_eq!(result.is_ok(),expected,"configuration admission matches exact length reserved bits and capabilities");
+        if let Ok(accepted)=result {
+            assert_eq!(u16::from(accepted),value,"configuration accepted bytes preserve little endian value");
+            assert_eq!(accepted & !3,0,"configuration never enables reserved modes");
+        }
+    }
+    #[kani::proof]
+    fn actual_configuration_access_requires_both_authentication_and_approval() {
+        let level:u32=kani::any();let approved:bool=kani::any();
+        let result=super::ssap::client_config::WRITE_ACCESS.check_authorization_result(level,true,approved);
+        assert_eq!(result.is_ok(),level==2 && approved,"actual descriptor write requires authenticated level and separate approval");
+    }
+    #[kani::proof]
+    fn wrong_claim_configuration_reserved_bits_are_accepted() {
+        let result=super::ssap::client_config::decode(&[4,0],3);
+        assert!(result.is_ok(),"negative control wrongly permits reserved client configuration");
+    }
+}

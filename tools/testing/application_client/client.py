@@ -23,7 +23,8 @@ def wait(fd, event, deadline):
 
 
 def main():
-    if sys.argv[1:2] in (['owned'],['owned-readonly']):return owned_mode()
+    if sys.argv[1:2] in (['owned'],['owned-readonly'],['owned-updates']):return owned_mode()
+    if sys.argv[1:2] == ['update-peer']:return update_peer_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
     if len(sys.argv)!=7:raise ValueError("index generation connection role request reply required")
@@ -135,17 +136,20 @@ def owned_info(info):
 
 def owned_mode():
     from sparklink import LocalProperty, SsapOperations, SsapAccess
-    if len(sys.argv) not in (7,8):raise ValueError('owned index generation service property initial-hex [allow|deny|ask]')
-    policy=sys.argv[7] if len(sys.argv)==8 else None
+    updates=sys.argv[1]=='owned-updates'
+    if len(sys.argv) not in ((9,) if updates else (7,8)):raise ValueError('owned index generation service property initial-hex [allow|deny|ask] [update-connection]')
+    policy=sys.argv[7] if len(sys.argv)>=8 else None
     if policy not in (None,'allow','deny','ask'):raise ValueError('explicit application test policy required')
     index,generation=int(sys.argv[2]),int(sys.argv[3])
     service,uuid,value=(bytes.fromhex(v) for v in sys.argv[4:7])
     identity=ControllerId(index,generation)
     original=time.monotonic_ns()+5_000_000_000
+    link=None
     with Client(deadline_ns=original) as client:
         view=client.register_local_service(identity,service,
-            [LocalProperty(uuid,SsapOperations(1 if sys.argv[1]=='owned-readonly' else 5),SsapAccess(36 if policy else 0),value)],
+            [LocalProperty(uuid,SsapOperations(541 if updates else 1 if sys.argv[1]=='owned-readonly' else 5),SsapAccess(36 if policy and not updates else 0),value)],
             deadline_ns=original,authorization='requests' if policy else 'none')
+        if updates:link=client.connection(identity,sys.argv[8],deadline_ns=original)
     with view:
         receipt=view.receipt
         if len(receipt.handles)!=1:raise ValueError('one owned property required')
@@ -196,6 +200,17 @@ def owned_mode():
                     view.replace_local(handle,value,deadline_ns=deadline)
                     print('SdkOwnedReplaced: '+json.dumps(dict(api='python',handle=handle,value=value.hex(),
                         started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
+                elif updates and line==b'configuration\n':
+                    started=time.monotonic_ns();deadline=started+5_000_000_000
+                    modes=link.ssap().owned_configuration(handle,deadline_ns=deadline)
+                    print('SdkOwnedConfiguration: '+json.dumps(dict(api='python',handle=handle,modes=modes,
+                        started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
+                elif updates and line in (b'notify\n',b'indicate\n'):
+                    started=time.monotonic_ns();deadline=started+5_000_000_000
+                    result=link.ssap().send_owned_update(handle,deadline_ns=deadline,indication=line==b'indicate\n')
+                    print('SdkOwnedUpdate: '+json.dumps(dict(api='python',handle=handle,stage=result.stage,
+                        pdu=result.pdu.hex(),ack=result.acknowledgement.hex(),
+                        started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
                 elif policy=='ask' and (line.startswith(b'yes ') or line.startswith(b'no ')):
                     parts=line.decode('ascii').split()
                     if len(parts)!=2 or not parts[1].isascii() or not parts[1].isdecimal() or not 0<=int(parts[1])<2**64:raise ValueError('exact unsigned token required')
@@ -233,6 +248,28 @@ def owned_mode():
         finally:
             if pending:pending.close()
             if fd is not None:os.close(fd)
+            if link is not None:link.close()
+
+
+def update_peer_mode():
+    if len(sys.argv)!=9:raise ValueError('update-peer index generation connection handle mode expected reply')
+    index,generation=int(sys.argv[2]),int(sys.argv[3]);path=sys.argv[4]
+    handle,mode=int(sys.argv[5]),int(sys.argv[6]);expected,reply=map(bytes.fromhex,sys.argv[7:9])
+    if mode not in (1,2) or len(expected)>2036 or len(reply)>2042 or expected==reply:
+        raise ValueError('bounded independent update/reply required')
+    original=time.monotonic_ns()+5_000_000_000
+    with Client(deadline_ns=original) as client:link=client.connection(ControllerId(index,generation),path,deadline_ns=original)
+    with link:
+        print(json.dumps(dict(stage='ssap_update_wait',api='python',handle=handle,mode=mode,
+            deadline_ns=original,client_closed=True)),flush=True)
+        received=link.ssap().receive_update(handle,deadline_ns=original,modes=mode)
+        exact=bytes([16 if mode==2 else 15,3])+handle.to_bytes(2,'little')+len(expected).to_bytes(2,'little')+expected
+        if received.stage!=3 or received.pdu!=exact or received.acknowledgement:
+            raise ValueError('actual peer complete random update mismatch')
+        actual=link.ssap().write(handle,reply,minimum=2,deadline_ns=time.monotonic_ns()+5_000_000_000)
+        if actual!=reply:raise ValueError('actual business reply result mismatch')
+        print(json.dumps(dict(stage='ssap_update_checked_reply',api='python',handle=handle,mode=mode,
+            pdu=received.pdu.hex(),value=expected.hex(),reply=reply.hex())),flush=True)
 
 
 if __name__=="__main__":main()

@@ -14,6 +14,9 @@
 #include <unistd.h>
 #include <stddef.h>
 _Static_assert(sizeof(struct SlkServiceProperty)==2076,"Owned property ABI");
+_Static_assert(sizeof(struct SlkSsapUpdate)==2056,"SSAP update receipt ABI");
+_Static_assert(offsetof(struct SlkSsapUpdate,pdu)==8,"SSAP update PDU ABI");
+_Static_assert(offsetof(struct SlkSsapUpdate,acknowledgement)==2050,"SSAP update ACK ABI");
 _Static_assert(sizeof(struct SlkServiceReceipt)==152,"Owned receipt ABI");
 _Static_assert(offsetof(struct SlkServiceProperty,value)==32,"Owned value ABI");
 _Static_assert(offsetof(struct SlkServiceReceipt,handles)==24,"Owned handles ABI");
@@ -177,7 +180,8 @@ static int owned_receive(struct SlkLocalService *view,const struct SlkServiceRec
         || info->controller.generation!=receipt->controller.generation
         || info->property!=receipt->handles[0] || !info->token || !info->request_id
         || !info->connection_lifetime || !info->security_epoch || !info->deadline_ns
-        || info->security_level>2 || info->data_type!=0 || info->write>1 || info->value_length>2042
+        || info->security_level>2 || (info->data_type!=0 && info->data_type!=2) || info->write>1 || info->value_length>2042
+        || (info->data_type==2 && (info->security_level!=2 || !info->write || info->value_length!=2 || info->value[1] || (info->value[0]&~3)))
         || (!info->write && info->value_length)
         || info->local_tcid!=10 || info->remote_tcid!=10 || info->pi)) error=-EPROTO;
     if (error) {owned_clear(p);return error;}
@@ -211,23 +215,29 @@ static int owned_answer(struct OwnedPending *p,uint64_t token,int allow) {
 
 /* Actual Owned SDK publisher. No wire codec, database or callback simulation. */
 static int owned_mode(int argc,char **argv) {
-    if (argc!=7 && argc!=8) return 2;
-    int requests=argc==8,allow=requests && !strcmp(argv[7],"allow"),ask=requests && !strcmp(argv[7],"ask");
+    int updates=!strcmp(argv[1],"owned-updates");
+    if ((updates && argc!=9) || (!updates && argc!=7 && argc!=8)) return 2;
+    int requests=updates || argc==8,allow=requests && !strcmp(argv[7],"allow"),ask=requests && !strcmp(argv[7],"ask");
     if (requests && !allow && !ask && strcmp(argv[7],"deny")) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]);
     uint8_t service[2042],property_uuid[2042],initial[2042];
     size_t service_n=bytes(argv[4],service),property_n=bytes(argv[5],property_uuid),initial_n=bytes(argv[6],initial);
     if (index>UINT16_MAX || !generation || (service_n!=2 && service_n!=16) || (property_n!=2 && property_n!=16)) return 2;
-    struct SlkServiceProperty property={.operations=!strcmp(argv[1],"owned-readonly")?1:5,.access=requests?36:0,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
+    struct SlkServiceProperty property={.operations=updates?541:!strcmp(argv[1],"owned-readonly")?1:5,.access=requests && !updates?36:0,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
     memcpy(property.uuid,property_uuid,property_n);memcpy(property.value,initial,initial_n);
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkLocalService *view=NULL;struct SlkServiceReceipt receipt={0};
+    struct SlkConnection *link=NULL;
     int status=1,error,approval_fd=-1;struct OwnedPending pending={0};const uint64_t original=now_ns()+5000000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
     error=slk_client_register_local_service(client,&id,service,service_n,&property,1,requests?SLK_SERVICE_AUTHORIZATION_REQUESTS:SLK_SERVICE_AUTHORIZATION_NONE,original,&view);if (error) {errno=-error;goto done;}
     error=slk_local_service_receipt(view,&receipt);if (error) {errno=-error;goto done;}
     if (receipt.controller.index!=id.index || receipt.controller.generation!=generation || receipt.property_count!=1 || !receipt.start || receipt.handles[0]<=receipt.start || receipt.handles[0]>receipt.end) {errno=EPROTO;goto done;}
     if (requests) {error=slk_local_service_authorization_fd(view,&approval_fd);if (error) {errno=-error;goto done;}}
+    if (updates) {
+        error=slk_client_connection(client,&id,(const uint8_t *)argv[8],strlen(argv[8]),original,&link);
+        if (error) {errno=-error;goto done;}
+    }
     slk_client_close(client);client=NULL;
     printf("SdkOwnedAPI: api=c client_closed=true\nSsapOwnedService: start=%u end=%u property=%u; local registration only\n",receipt.start,receipt.end,receipt.handles[0]);fflush(stdout);
     const uint64_t end=now_ns()+30000000000ULL;char line[4096];size_t used=0;
@@ -263,6 +273,19 @@ static int owned_mode(int argc,char **argv) {
             if (error) {errno=-error;goto done;}
             printf("SdkOwnedReplaced: {\"api\":\"c\",\"handle\":%u,\"value\":\"",receipt.handles[0]);hex_print(value,length);
             printf("\",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",started,deadline,now_ns());fflush(stdout);
+        } else if (updates && !strcmp(line,"configuration\n")) {
+            uint8_t modes=0;uint64_t started=now_ns(),deadline=started+5000000000ULL;
+            error=slk_connection_ssap_owned_configuration(link,receipt.handles[0],&modes,deadline);
+            if (error || modes>3) {errno=error?-error:EPROTO;goto done;}
+            printf("SdkOwnedConfiguration: {\"api\":\"c\",\"handle\":%u,\"modes\":%u,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",receipt.handles[0],modes,started,deadline,now_ns());fflush(stdout);
+        } else if (updates && (!strcmp(line,"notify\n") || !strcmp(line,"indicate\n"))) {
+            int indication=!strcmp(line,"indicate\n");struct SlkSsapUpdate result={0};
+            uint64_t started=now_ns(),deadline=started+5000000000ULL;
+            error=slk_connection_ssap_send_owned(link,receipt.handles[0],(uint32_t)indication,&result,deadline);
+            if (error || result.stage!=(indication?2U:1U) || result.pdu_length>2042 || result.acknowledgement_length>3) {errno=error?-error:EPROTO;goto done;}
+            printf("SdkOwnedUpdate: {\"api\":\"c\",\"handle\":%u,\"stage\":%u,\"pdu\":\"",receipt.handles[0],result.stage);hex_print(result.pdu,result.pdu_length);
+            printf("\",\"ack\":\"");hex_print(result.acknowledgement,result.acknowledgement_length);
+            printf("\",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",started,deadline,now_ns());fflush(stdout);
         } else if (ask && (!strncmp(line,"yes ",4) || !strncmp(line,"no ",3))) {
             int answer=!strncmp(line,"yes ",4);line[strlen(line)-1]='\0';
             const char *token=line+(answer?4:3);
@@ -291,11 +314,38 @@ done:
     if (status) perror("application-client-c-owned");
     owned_clear(&pending);
     if (approval_fd>=0) close(approval_fd);
-    slk_local_service_free(view);slk_client_close(client);return status;
+    slk_local_service_free(view);slk_connection_close(link);slk_client_close(client);return status;
+}
+
+/* Ordinary application actually verifies the complete random update,then writes
+ * a distinct business reply through the same existing SSAP/physical Session. */
+static int update_peer_mode(int argc,char **argv) {
+    if (argc!=9) return 2;
+    uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[5]),mode=number(argv[6]);
+    uint8_t expected[2042],reply[2042],raw[2042],echo[2042];
+    size_t n=bytes(argv[7],expected),r=bytes(argv[8],reply);
+    if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX || (mode!=1 && mode!=2) || n>2036 || r>2042 || (n==r && !memcmp(expected,reply,n))) return 2;
+    struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};struct SlkClient *client=NULL;struct SlkConnection *link=NULL;
+    int status=1,error;const uint64_t original=now_ns()+5000000000ULL;
+    error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
+    error=slk_client_connection(client,&id,(const uint8_t *)argv[4],strlen(argv[4]),original,&link);if (error) {errno=-error;goto done;}
+    slk_client_close(client);client=NULL;
+    printf("{\"stage\":\"ssap_update_wait\",\"api\":\"c\",\"handle\":%"PRIu64",\"mode\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"client_closed\":true}\n",handle,mode,original);fflush(stdout);
+    struct SlkSsapUpdate result={0};error=slk_connection_ssap_receive(link,(uint16_t)handle,(uint32_t)mode,&result,original);if (error) {errno=-error;goto done;}
+    raw[0]=mode==2?16:15;raw[1]=3;raw[2]=(uint8_t)handle;raw[3]=(uint8_t)(handle>>8);raw[4]=(uint8_t)n;raw[5]=(uint8_t)(n>>8);memcpy(raw+6,expected,n);
+    if (result.stage!=3 || result.pdu_length!=n+6 || result.acknowledgement_length || memcmp(result.pdu,raw,n+6)) {errno=EBADMSG;goto done;}
+    uintptr_t count=0;error=slk_connection_ssap_write(link,(uint16_t)handle,2,reply,r,echo,sizeof echo,&count,now_ns()+5000000000ULL);
+    if (error || count!=r || memcmp(echo,reply,r)) {errno=error?-error:EBADMSG;goto done;}
+    printf("{\"stage\":\"ssap_update_checked_reply\",\"api\":\"c\",\"handle\":%"PRIu64",\"mode\":%"PRIu64",\"pdu\":\"",handle,mode);hex_print(result.pdu,result.pdu_length);
+    printf("\",\"value\":\"");hex_print(expected,n);printf("\",\"reply\":\"");hex_print(reply,r);printf("\"}\n");fflush(stdout);status=0;
+done:
+    if (status) perror("application-client-c-update-peer");
+    slk_connection_close(link);slk_client_close(client);return status;
 }
 
 int main(int argc,char **argv) {
-    if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly"))) return owned_mode(argc,argv);
+    if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly") || !strcmp(argv[1],"owned-updates"))) return owned_mode(argc,argv);
+    if (argc>1 && !strcmp(argv[1],"update-peer")) return update_peer_mode(argc,argv);
     if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);
     if (argc!=7 || strlen(argv[3])>256) return 2;

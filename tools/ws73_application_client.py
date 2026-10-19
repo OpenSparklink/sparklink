@@ -144,10 +144,14 @@ def channel_pair(run, row):
             row.setdefault('end_wall_ns',time.time_ns());run.save()
 
 
-def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False):
+def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,update_connection=None):
     if api not in ('c','python') or policy not in ('none','allow','deny','ask') or type(read_only)is not bool or (read_only and policy!='none'):
         raise CaptureError('explicit SDK language and application policy required')
     prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+    if update_connection is not None:
+        if read_only or policy=='none' or update_connection!=owner['object']['path']:
+            raise CaptureError('explicit original owned-update connection and policy required')
+        return prefix+['owned-updates',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial,policy,update_connection]
     return prefix+['owned-readonly'if read_only else'owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial]+([]if policy=='none'else[policy])
 
 
@@ -231,20 +235,23 @@ AUTHORIZATION_CONTEXT_FIELDS={'api','index','generation','token','request_id','l
     'epoch','level','deadline_ns','property','data_type','write','value','local_tcid','remote_tcid','pi'}
 
 
-def authorization_context(context,api):
+def authorization_context(context,api,*,level=0,data_type=0):
     """Basic-CUTC local observation only,not a Native grant/security fact."""
+    if (level,data_type) not in [(0,0),(2,2)]:raise CaptureError('unsupported explicit authorization evidence scope')
     if (not isinstance(context,dict) or set(context)!=AUTHORIZATION_CONTEXT_FIELDS or context['api']!=api
             or type(context['write']) is not bool or not isinstance(context['value'],str)
             or any(type(context[k]) is not int or not 0<=context[k]<2**64
                    for k in AUTHORIZATION_CONTEXT_FIELDS-{'api','write','value'})
             or not all(context[k] for k in ['generation','token','request_id','lifetime','epoch','deadline_ns','property'])
             or context['index']>65535 or context['handle']>65535 or context['property']>65535
-            or (context['local_tcid'],context['remote_tcid'],context['pi'],context['level'],context['data_type'])!=(10,10,0,0,0)):
+            or (context['local_tcid'],context['remote_tcid'],context['pi'],context['level'],context['data_type'])!=(10,10,0,level,data_type)):
         raise CaptureError('complete original basic SDK authorization context required')
     try:value=bytes.fromhex(context['value'])
     except ValueError as error:raise CaptureError('exact proposed authorization bytes required') from error
     if value.hex()!=context['value'] or len(value)>2042 or not context['write'] and value:
         raise CaptureError('bounded canonical proposed bytes,empty for reads,required')
+    if data_type==2 and (not context['write'] or len(value)!=2 or value[1]!=0 or value[0]&~3):
+        raise CaptureError('exact authenticated two-byte client configuration required')
     return context
 
 

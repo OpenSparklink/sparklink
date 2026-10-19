@@ -594,6 +594,8 @@ def _run(args):
     channel_burst=bool(getattr(args,'channel_socket_burst',False))
     ssap_owned=bool(getattr(args,'ssap_owned_verify',False))
     owner_lifecycle=bool(getattr(args,'ssap_owner_lifecycle_verify',False))
+    owner_publisher=getattr(args,'ssap_owner_publisher','cli')
+    if owner_publisher not in ('cli','sdk') or (owner_publisher!='cli' and not owner_lifecycle):raise ValueError('SDK owner publisher requires explicit lifecycle gate')
     requester_lifecycle=bool(getattr(args,'ssap_requester_lifecycle_verify',False))
     from ws73_ssap_initialization import requested as initialization_requested
     ssap_initialization=initialization_requested(args,passthrough=passthrough)
@@ -838,6 +840,7 @@ def _run(args):
     m['ssap_requester_lifecycle_requested']=requester_lifecycle
     m['ssap_requester_lifecycle_acceptance']=False
     m['ssap_owner_lifecycle_requested']=owner_lifecycle
+    m['ssap_owner_publisher_requested']=owner_publisher
     m['ssap_owner_lifecycle_acceptance']=False
     m['ssap_service_policy_requested']=service_policy
     m['ssap_service_policy_acceptance']=False
@@ -951,6 +954,8 @@ def _run(args):
             raise ValueError('application discovery requires the verified native VM profile')
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
+        if owner_publisher=='sdk' and 'native_vm' not in package:
+            raise ValueError('SDK lifecycle publisher requires verified native VM')
         if agent_mode and ('native_vm' not in package or 'native_security_agent_probe' not in package):raise ValueError('Agent requires native VM and staged real witness')
         if agent_mode=='install-cancel':
             from ws73_security_install_hold import validate_qemu
@@ -1056,6 +1061,7 @@ def _run(args):
                      (' ws73.application_discovery=1' if application_discovery else '')+
                      (' ws73.application_discovery_case=owner-loss' if application_discovery and getattr(args,'application_discovery_case','release')=='owner-loss' else '')+
                      (' ws73.ssap_owner_lifecycle=1' if owner_lifecycle else '')+
+                     (' ws73.ssap_owner_sdk=1' if owner_publisher=='sdk' else '')+
                      (' ws73.ssap_requester_lifecycle=1' if requester_lifecycle else '')+
                      (' ws73.native_return=1' if native_return else '')+
                      (' ws73.native_controller_return='+native_controller if native_controller else '')+
@@ -1513,6 +1519,7 @@ def _run(args):
                     binary=validate_application_tools(control,args.prepared/'root',package['guest_files'])
                     if any(row.get('application_tool')!=binary for row in control['channel_socket']):raise ValueError('channel applications must use same sealed slktest')
                     if any(bool(row.get('ssap_owner_lifecycle_required',False))!=owner_lifecycle for row in control['channel_socket']):raise ValueError('owner lifecycle request/evidence mismatch')
+                    if owner_lifecycle and any(row.get('ssap_owner_publisher','cli')!=owner_publisher for row in control['channel_socket']):raise ValueError('owner publisher selector/evidence mismatch')
                     if any(bool(row.get('ssap_requester_lifecycle_required',False))!=requester_lifecycle for row in control['channel_socket']):raise ValueError('requester lifecycle request/evidence mismatch')
                     if any(bool(row.get('ssap_owned_required',False))!=ssap_owned for row in control['channel_socket']):raise ValueError('owned SSAP request/evidence mismatch')
                     m['channel_socket_corroboration']=channel_corroborate(control,capture)
@@ -1942,13 +1949,15 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or not valid_summary(record.get('ssap_initialization_corroboration',{}))):return 1
     elif record.get('ssap_initialization_acceptance')or record.get('ssap_initialization_corroboration'):return 1
     lifecycle=record.get('ssap_owner_lifecycle_requested',False)
+    owner_publisher=record.get('ssap_owner_publisher_requested','cli')
+    if owner_publisher not in ('cli','sdk') or (owner_publisher!='cli' and lifecycle is not True):return 1
     if type(lifecycle)is not bool:return 1
     channel_proof=record.get('channel_socket_corroboration',{})
     if not isinstance(channel_proof,dict):return 1
     if lifecycle:
         from ws73_ssap_owner_lifecycle import valid_summary
         if (record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0
-                or record.get('ssap_owner_lifecycle_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or not valid_summary(channel_proof)):return 1
+                or record.get('ssap_owner_lifecycle_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or not valid_summary(channel_proof,publisher=owner_publisher)):return 1
     elif record.get('ssap_owner_lifecycle_acceptance') or any(p.get('ssap_owner_lifecycle')for p in channel_proof.get('proofs',[])):return 1
     requester=record.get('ssap_requester_lifecycle_requested',False)
     if type(requester)is not bool:return 1
@@ -2245,6 +2254,7 @@ def main():
             cmd.add_argument('--ssap-initialization-verify',action='store_true',help='real negotiation-stage lease revoke/fd convergence then ordinary same-artifact connection/socket preservation')
             cmd.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
+            cmd.add_argument('--ssap-owner-publisher',choices=['cli','sdk'],default='cli',help='explicit owner frontend;SDK selects C/Python per role,no fallback')
             cmd.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester death/old reply drain and ordinary CUTC while real owner prompt held')
             cmd.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')

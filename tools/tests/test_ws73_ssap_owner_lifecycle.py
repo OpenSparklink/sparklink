@@ -84,7 +84,133 @@ def wire_fixture(phase=0,late=True):
     return row,matched,sdus,remaining
 
 
+def sdk_wire_fixture(phase=0,late=True):
+    row,matched,sdus,remaining=wire_fixture(phase,late)
+    row['ssap_owner_publisher']='sdk';s,t=phase,1-phase;api='c'if phase==0 else'python'
+    owners=row['owners'];g,ex,e=row['ssap_owner_lifecycle'];N=1_000_000_000;W=1_800_000_000_000_000_000
+    wall=lambda n:W+int(n*N)
+    closed=copy.deepcopy(ex)
+    for key in ['peer_error','owner_exit','owner_exit_wall_ns','after_owner_exit','write','removed_read','guard_read','guard_handle','guard_value']:closed.pop(key,None)
+    closed.update(case='close-pending',start=22,end=23,handle=23,start_wall_ns=wall(12.5),end_wall_ns=wall(15),exit=0,closed_exit=0,process_alive_after_close=True)
+    for key,size in [('secret',32),('value',32),('uuid',16),('service',16)]:closed[key]=hashlib.sha256(('close-'+key).encode()).hexdigest()[:2*size]
+    fields=['1','10',str(t),str(owners[t]['owner']['generation']),'11',str(t+1),'9','0','23','true','32',str(int(17.7*N)),'1','1']
+    closed['prompt_events']=[dict(fields=fields,wall_ns=wall(12.7),monotonic_ns=int(12.7*N))]
+    closed['stdout']=f"SsapOwnedService: start=22 end=23 property=23; local registration only\nSsapAuthorizationPrompt: token=1 request=10 index={t} generation={owners[t]['owner']['generation']} lifetime=11 handle={t+1} epoch=9 security=0 property=23 write=true bytes=32 deadline_ns={fields[11]}; answer 'yes 1' or 'no 1'\n"
+    closed['peer_during_prompt']=[copy.deepcopy(ex['peer_during_prompt'][0])]
+    closed['close_input']=dict(wall_ns=wall(12.8),monotonic_ns=int(12.8*N))
+    closed['close_receipt']=dict(api=api,token=1,info_preserved=True,notification_fd_alive=True,reply_result=-116,closed_ns=int(12.9*N))
+    closed['after_scope_close']=dict(args=['slctl','--adapter',owners[t]['owner']['path'],'ssap-list'],exit=0,stdout='SsapLocalServices: []\n',stderr='',start_wall_ns=wall(13),end_wall_ns=wall(13.05))
+    closed.update(peer_error=9,guard_handle=g['handle'],guard_value=g['secret'])
+    for name,template,h,start,end,error,value in [('write',ex['write'],23,12.6,13.1,9,closed['value']),('removed_read',ex['removed_read'],23,13.2,13.3,4,None),('guard_read',ex['guard_read'],17,13.4,13.5,None,g['secret'])]:
+        c=copy.deepcopy(template);c.update(start_wall_ns=wall(start),end_wall_ns=wall(end));c['args'][5]=str(h)
+        if name=='write':c['args'][6]=value
+        c.update(exit=1 if error else 0,stdout=''if error else f'SsapPeerValue: operation=ssap-read path={owners[s]["object"]["path"]} handle=17 value={value}\n',stderr=f'peer {"write"if name=="write"else"read"} error {error}'if error else'')
+        closed[name]=c
+    closed['stdout']+='SdkServiceClosed: '+json.dumps(closed['close_receipt'])+'\n'+f'SdkOwnedClosedExit: api={api} start=22\n'
+    g['value_snapshots'][0].update(start_wall_ns=wall(15.2),end_wall_ns=wall(15.21),start_monotonic_ns=int(15.2*N),end_monotonic_ns=int(15.21*N))
+    row['ssap_owner_lifecycle'].append(closed)
+    from ws73_application_client import owned_arguments
+    for item in row['ssap_owner_lifecycle']:
+        item.update(publisher_api=api,environment=application_environment(),args=owned_arguments(api,owners[t],item['service'],item['uuid'],item['secret'],item['policy']))
+        item['stdout']=f'SdkOwnedAPI: api={api} client_closed=true\n'+item['stdout']
+        for event in item.get('prompt_events',[]):
+            f=event['fields'];context=dict(api=api,index=int(f[2]),generation=int(f[3]),token=int(f[0]),request_id=int(f[1]),lifetime=int(f[4]),handle=int(f[5]),epoch=int(f[6]),level=int(f[7]),deadline_ns=int(f[11]),property=int(f[8]),write=True,value=item['value'],local_tcid=10,remote_tcid=10,pi=0)
+            item['stdout']+='SdkAuthorizationRequest: '+json.dumps(context)+'\n'
+    for token,current,allow,called,result,key in [(1,1,False,True,0,'denial_input'),(1,2,True,False,-116,'stale_input'),(2,2,True,True,-110,'late_input')]:
+        e['stdout']+='SdkAuthorizationReply: '+json.dumps(dict(api=api,token=token,current_token=current,allow=allow,api_called=called,result=result,returned_ns=e[key]['monotonic_ns']+1_000_000))+'\n'
+    def wire(a,b,pdu,at):
+        frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
+        for index,d in [(a,'out'),(b,'in')]:
+            item=dict(index=index,direction=d,data=frame.hex(),wall_ns=wall(at));sdus.append(item);remaining.append(item)
+    wire(s,t,b'\x0d\x23\x17\0\0'+bytes.fromhex(closed['value']),12.72);wire(t,s,b'\x0e\x07\x01\x17\0\x09',12.95)
+    wire(s,t,b'\x08\x03\x17\0\0',13.22);wire(t,s,b'\x09\x0b\x04\0',13.25)
+    wire(s,t,b'\x08\x03\x11\0\0',13.42);wire(t,s,b'\x09\x03'+bytes.fromhex(g['secret']),13.45)
+    # Match the production sequence:live close is completed before deliberate
+    # terminal obligation expiry. Preserve the original CLI deadline fixture.
+    def earlier(value):
+        if isinstance(value,dict):
+            for key,entry in value.items():
+                if key.endswith('_wall_ns'):value[key]=entry-int(8.5*N)
+                elif key.endswith('_monotonic_ns') or key in ('monotonic_ns','wall_ns','closed_ns'):value[key]=entry-int(8.5*N)
+                else:earlier(entry)
+        elif isinstance(value,list):
+            for entry in value:earlier(entry)
+    old=closed['prompt_events'][0]['fields'][11];earlier(closed)
+    closed['end_wall_ns']=wall(5)
+    closed['prompt_events'][0]['fields'][11]=str(int(old)-int(8.5*N))
+    closed['stdout']=closed['stdout'].replace(old,closed['prompt_events'][0]['fields'][11])
+    # Context/deadline and close JSON must reflect the original shifted times.
+    lines=[]
+    for line in closed['stdout'].splitlines():
+        if line.startswith('SdkServiceClosed: '):line='SdkServiceClosed: '+json.dumps(closed['close_receipt'])
+        lines.append(line)
+    closed['stdout']='\n'.join(lines)+'\n'
+    for entry in sdus[-12:]:entry['wall_ns']-=int(8.5*N)
+    row['ssap_owner_lifecycle']=[g,ex,closed,e]
+    return row,matched,sdus,remaining
+
+
 class LifecycleReceipts(unittest.TestCase):
+    def test_sdk_variant_reuses_actual_wire_oracle_and_requires_all_close_cases(self):
+        for phase in (0,1):
+            for late in (False,True):
+                row,matched,sdus,remaining=sdk_wire_fixture(phase,late)
+                proof,_=corroborate(row,matched,sdus)
+                self.assertEqual(proof[0]['publisher_api'],'c'if phase==0 else'python')
+                self.assertEqual(proof[0]['sdk_reply_results'],[0,-116,-110])
+                self.assertEqual(len(proof[0]['wire']),15+int(late));self.assertEqual(remaining,[])
+
+    def test_sdk_proposals_actual_replies_and_live_close_cannot_be_omitted(self):
+        for kind in ['order','mode','api','environment','args','header','missing-close','early-exit','snapshot','fd','accepted','time','cleanup','guard','removed','request','proposal','fake-api','stale-current','late-result']:
+            row,matched,sdus,_=sdk_wire_fixture();g,ex,c,e=row['ssap_owner_lifecycle']
+            if kind=='order':c['end_wall_ns']=e['start_wall_ns']+1
+            elif kind=='mode':row['ssap_owner_publisher']='cli'
+            elif kind=='api':c['publisher_api']='python'
+            elif kind=='environment':c['environment']['LIBSPARKLINK_PATH']='/unrelated'
+            elif kind=='args':c['args'][-1]='allow'
+            elif kind=='header':c['stdout']=c['stdout'].replace('client_closed=true','client_closed=false')
+            elif kind=='missing-close':del row['ssap_owner_lifecycle'][2]
+            elif kind=='early-exit':c['process_alive_after_close']=False
+            elif kind in ['snapshot','fd','accepted','time']:
+                data=c['close_receipt'];old=json.dumps(data)
+                if kind=='snapshot':data['info_preserved']=False
+                elif kind=='fd':data['notification_fd_alive']=False
+                elif kind=='accepted':data['reply_result']=0
+                else:data['closed_ns']=1
+                c['stdout']=c['stdout'].replace(old,json.dumps(data))
+            elif kind=='cleanup':c['after_scope_close']['stdout']='SsapLocalServices: [[22]]\n'
+            elif kind=='guard':c['guard_read']['stdout']='unverified'
+            elif kind=='removed':c['removed_read']['exit']=0
+            elif kind in ['request','proposal']:
+                prefix='SdkAuthorizationRequest: ';line=next(v for v in c['stdout'].splitlines() if v.startswith(prefix));data=json.loads(line[len(prefix):]);data['request_id'if kind=='request'else'value']=0 if kind=='request'else'00'*32;c['stdout']=c['stdout'].replace(line,prefix+json.dumps(data))
+            else:
+                prefix='SdkAuthorizationReply: ';lines=[v for v in e['stdout'].splitlines() if v.startswith(prefix)];line=lines[1 if kind!='late-result'else 2];data=json.loads(line[len(prefix):])
+                if kind=='fake-api':data['api_called']=True
+                elif kind=='stale-current':data['current_token']=1
+                else:data['result']=0
+                e['stdout']=e['stdout'].replace(line,prefix+json.dumps(data))
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):corroborate(row,matched,sdus)
+
+    def test_sdk_terminal_is_explicit_typed_and_does_not_relabel_cli(self):
+        proof=summary()
+        for n,phase in enumerate(proof['proofs']):
+            p=phase['ssap_owner_lifecycle'][0];p['wire']+=copy.deepcopy(p['wire'][:6])
+            p.update(publisher_api='c'if n==0 else'python',closed_scope_peer_error=9,closed_scope_process_alive=True,sdk_reply_results=[0,-116,-110],closed_scope=dict(api='c'if n==0 else'python',token=1,info_preserved=True,notification_fd_alive=True,reply_result=-116,closed_ns=2))
+        self.assertFalse(valid_summary(proof));self.assertTrue(valid_summary(proof,publisher='sdk'))
+        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,ssap_owner_lifecycle_requested=True,ssap_owner_publisher_requested='sdk',ssap_owner_lifecycle_acceptance=True,ordinary_channel_socket_acceptance=True,channel_socket_corroboration=proof)
+        self.assertEqual(run_exit_code(record),0)
+        for kind in ['mode','missing-mode','type','closed','fd','alive','result','request']:
+            bad=copy.deepcopy(record);p=bad['channel_socket_corroboration']['proofs'][0]['ssap_owner_lifecycle'][0]
+            if kind=='mode':bad['ssap_owner_publisher_requested']='cli'
+            elif kind=='missing-mode':bad.pop('ssap_owner_publisher_requested')
+            elif kind=='type':p['sdk_reply_results'][0]=False
+            elif kind=='closed':p['closed_scope']=[]
+            elif kind=='fd':p['closed_scope']['notification_fd_alive']=False
+            elif kind=='alive':p['closed_scope_process_alive']=False
+            elif kind=='result':p['closed_scope']['reply_result']=0
+            else:bad['ssap_owner_lifecycle_requested']=False
+            with self.subTest(kind=kind):self.assertEqual(run_exit_code(bad),1)
+
     def test_finalizer_computes_supervisor_result_before_it_is_published(self):
         d=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,
                ssap_owner_lifecycle_requested=True,ssap_owner_lifecycle_acceptance=True,

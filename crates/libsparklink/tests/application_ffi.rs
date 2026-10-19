@@ -1,5 +1,7 @@
 //! Actual cdylib/header and Python public entry against a real private bus.
 //! Fixture replies are explicit denials/AF_UNIX fds, never a successful channel.
+#[path = "application_ffi/authorization.rs"]
+mod authorization;
 mod support;
 use std::{
     io::{BufRead, Read, Write},
@@ -355,6 +357,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("tools/testing/application_client/client.py"))
         .arg(root.join("bindings/python/sparklink/local_services.py"))
         .arg(root.join("bindings/python/sparklink/service_authorization.py"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/authorization.rs"))
         .output()?;
     anyhow::ensure!(
         identities.status.success() && identities.stderr.is_empty(),
@@ -568,6 +571,24 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
             owned.removed.load(Ordering::SeqCst)
         ),
         (6, 6, 6)
+    );
+    authorization::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    assert_eq!(
+        (
+            owned.registered.load(Ordering::SeqCst),
+            owned.read.load(Ordering::SeqCst),
+            owned.removed.load(Ordering::SeqCst)
+        ),
+        (8, 8, 6)
     );
     for language in ["c", "python"] {
         let mut command = Command::new("timeout");

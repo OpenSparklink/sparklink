@@ -142,6 +142,13 @@ def channel_pair(run, row):
             row.setdefault('end_wall_ns',time.time_ns());run.save()
 
 
+def owned_arguments(api,owner,service,uuid,initial,policy):
+    if api not in ('c','python') or policy not in ('allow','deny','ask'):
+        raise CaptureError('explicit SDK language and application policy required')
+    prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+    return prefix+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial,policy]
+
+
 @contextmanager
 def owned_services(run,row,live):
     """Real SDK publishers,not manager staging. Existing value loop is reused."""
@@ -154,7 +161,7 @@ def owned_services(run,row,live):
         try:
             for position,owner in enumerate(row['owners']):
                 api='c' if position==row['phase'] else 'python';value=secrets.token_bytes(32);service=secrets.token_hex(16);uuid=secrets.token_hex(16)
-                args=([row['tools']['c']['path']] if api=='c' else ['/bin/python3',row['tools']['python']['path']])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,value.hex(),'allow']
+                args=owned_arguments(api,owner,service,uuid,value.hex(),'allow')
                 prefix=run.output/f"owned-sdk-{row['phase']}-{api}";out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
                 app=dict(api=api,position=position,args=args,environment=application_environment(),start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
                 row.setdefault('ssap_owned_publishers',[]).append(app);run.save()
@@ -218,6 +225,27 @@ def execute(run, phase):
         row.update(status='FAIL',error=str(exc),end_wall_ns=time.time_ns());run.save();raise
 
 
+AUTHORIZATION_CONTEXT_FIELDS={'api','index','generation','token','request_id','lifetime','handle',
+    'epoch','level','deadline_ns','property','write','value','local_tcid','remote_tcid','pi'}
+
+
+def authorization_context(context,api):
+    """Basic-CUTC local observation only,not a Native grant/security fact."""
+    if (not isinstance(context,dict) or set(context)!=AUTHORIZATION_CONTEXT_FIELDS or context['api']!=api
+            or type(context['write']) is not bool or not isinstance(context['value'],str)
+            or any(type(context[k]) is not int or not 0<=context[k]<2**64
+                   for k in AUTHORIZATION_CONTEXT_FIELDS-{'api','write','value'})
+            or not all(context[k] for k in ['generation','token','request_id','lifetime','epoch','deadline_ns','property'])
+            or context['index']>65535 or context['handle']>65535 or context['property']>65535
+            or (context['local_tcid'],context['remote_tcid'],context['pi'],context['level'])!=(10,10,0,0)):
+        raise CaptureError('complete original basic SDK authorization context required')
+    try:value=bytes.fromhex(context['value'])
+    except ValueError as error:raise CaptureError('exact proposed authorization bytes required') from error
+    if value.hex()!=context['value'] or len(value)>2042 or not context['write'] and value:
+        raise CaptureError('bounded canonical proposed bytes,empty for reads,required')
+    return context
+
+
 def authorization_decisions(app):
     """Original frontend output;not Native authorization or peer delivery."""
     try:
@@ -228,6 +256,7 @@ def authorization_decisions(app):
             'deadline_ns','property','write','value','local_tcid','remote_tcid','pi','allow',
             'decision_ns','decision_wall_ns'}
     for d in rows:
+        if isinstance(d,dict):authorization_context({k:v for k,v in d.items() if k in AUTHORIZATION_CONTEXT_FIELDS},app['api'])
         if (not isinstance(d,dict) or set(d)!=fields or d['api']!=app['api']
                 or type(d['write']) is not bool or d['allow'] is not True
                 or any(type(d[k]) is not int or not 0<=d[k]<2**64

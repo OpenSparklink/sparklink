@@ -415,6 +415,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             done
             if grep -qw ws73.ssap_initialization_stage=exchange /proc/cmdline; then connection_arg="$connection_arg --ssap-initialization-stage exchange"; fi
             if grep -qw ws73.ssap_owner_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owner-lifecycle-verify"; fi
+            if grep -qw ws73.ssap_owner_sdk=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owner-publisher sdk"; fi
             if grep -qw ws73.ssap_requester_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-requester-lifecycle-verify"; fi
             if grep -qw ws73.ssap_owned=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owned-verify"; fi
             if grep -qw ws73.channel_fairness=1 /proc/cmdline; then connection_arg="$connection_arg --channel-fairness-verify"; fi

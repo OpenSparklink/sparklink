@@ -7,8 +7,8 @@ use std::{ffi::c_int, sync::Arc};
 /// Retains its originating caller. Release never disconnects the physical link.
 pub struct SlkConnection {
     // Release the view before the last executor reference is joined.
-    link: Arc<ApplicationConnection>,
-    inner: Arc<crate::sync_client::SyncClient>,
+    pub(crate) link: Arc<ApplicationConnection>,
+    pub(crate) inner: Arc<crate::sync_client::SyncClient>,
 }
 
 /// Bind an existing canonical connection path at its current immutable identity.

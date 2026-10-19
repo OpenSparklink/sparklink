@@ -12,6 +12,7 @@ pub mod ffi_controller_events;
 pub mod ffi_discovery;
 pub mod ffi_local_services;
 pub mod ffi_service_authorization;
+pub mod ffi_ssap_subscription;
 pub mod peer;
 pub mod security;
 pub mod ssap;

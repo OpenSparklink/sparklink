@@ -6,11 +6,12 @@ from ws73_capture import CaptureError
 import ws73_ssap_update_delivery as gate
 from ws73_application_client import application_environment,owned_arguments
 
-def fixture(phase=0):
+def fixture(phase=0,version=1):
     owners=[dict(owner=dict(index=i,generation=7,path=f'/org/sparklink/slk{i}_g7'),
         object=dict(lifetime=11+i,handle=2+i,path=f'/org/sparklink/slk{i}_g7/peer_t00_010203040506/link_000000000000000b'))for i in(0,1)]
     row=dict(phase=phase,owners=owners,security_requirement=2,message_security_required=True,
         ssap_update_delivery_required=True,ssap_update_delivery_status=gate.STATUS,ssap_update_delivery=[])
+    if version==2:row.update(ssap_update_delivery_version=2,ssap_update_delivery_lengths=list(gate.LENGTHS))
     seq=0
     def random(n):
         nonlocal seq
@@ -36,8 +37,13 @@ def fixture(phase=0):
         item['full_discovery']=dict(exit=0,stderr='',args=['slctl','--adapter',peer['owner']['path'],'ssap-discover',peer['object']['path']],
             start_wall_ns=2,end_wall_ns=4,stdout=f'SsapRemoteDiscovery: path={peer["object"]["path"]} kind=1 entries=2 requests={"|".join(v.hex()for v in fq)} responses={"|".join(v.hex()for v in fr)}\n')
         lines=[f'SdkOwnedAPI: api={api} client_closed=true','SsapOwnedService: start=16 end=17 property=17; local registration only']
-        for mode in(1,2):
-            value,reply=random(32),random(32);pdu=(bytes([16 if mode==2 else 15,3,17,0,32,0])+bytes.fromhex(value)).hex()
+        lengths=gate.LENGTHS if version==2 else(32,)
+        for sequence,(size,mode) in enumerate((size,mode)for size in lengths for mode in(1,2)):
+            value,reply=random(size),random(size)
+            if version==2:
+                value=(sequence.to_bytes(4,'little')+bytes.fromhex(value)[4:]).hex()
+                reply=((sequence|0x80000000).to_bytes(4,'little')+bytes.fromhex(reply)[4:]).hex()
+            pdu=(bytes([16 if mode==2 else 15,3,17,0])+size.to_bytes(2,'little')+bytes.fromhex(value)).hex()
             case=dict(mode=mode,value=value,reply=reply,start_wall_ns=100,end_wall_ns=300,
                 replacement=observation(api,h,value=value),before=dict(handle=h,value=value),after=dict(handle=h,value=reply),
                 enabled=[observation(api,h,modes=mode)],disabled=[observation(api,h,modes=0)],
@@ -47,6 +53,7 @@ def fixture(phase=0):
                 exit=0,stderr='',environment=application_environment(),credentials=dict(uids=[1000]*4,capabilities=dict(CapEff='0')),
                 start_wall_ns=130,end_wall_ns=250,stdout=json.dumps(dict(stage='ssap_update_wait',api=other,handle=h,mode=mode,deadline_ns=10**12,client_closed=True))+'\n'+
                     json.dumps(dict(stage='ssap_update_checked_reply',api=other,handle=h,mode=mode,pdu=pdu,value=value,reply=reply))+'\n')
+            if version==2:case.update(sequence=sequence,application_bytes=size)
             item['cases'].append(case)
             lines+=['SdkOwnedReplaced: '+json.dumps(case['replacement']['receipt']),f'SsapOwnedValue: handle=17 value={value}']
             for configured in(mode,0):
@@ -60,9 +67,49 @@ def fixture(phase=0):
         lines.append(f'SdkOwnedRemoved: api={api} start=16');item['stdout']='\n'.join(lines)+'\n';row['ssap_update_delivery'].append(item)
     return row
 
-def matched(owner,direction,payload,window):return dict(data=payload.hex(),direction=direction,controller=owner['owner']['index'])
+import itertools
+_RECORDS=itertools.count(1)
+def matched(owner,direction,payload,window):return dict(data=payload.hex(),direction=direction,controller=owner['owner']['index'],record=next(_RECORDS))
 
 class UpdateDelivery(unittest.TestCase):
+    def test_versioned_lengths_keep_baseline_and_require_maximum_fragmented_update_and_reply(self):
+        rows=[]
+        for phase in (0,1):
+            proof,credit=gate.corroborate(fixture(phase,2),matched)
+            self.assertEqual([len(v['wire'])for v in proof],[86,86])
+            # This matcher is a single-piece SDU fixture,not a254-byte
+            # controller or hardware credit proof. Real gates count actual PB.
+            self.assertEqual(credit,{0:94,1:94})
+            rows.append(dict(phase=phase,ssap_update_delivery=proof))
+        summary=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=rows)
+        self.assertTrue(gate.valid_summary(summary,expected_version=2))
+        for wanted in (1,True,False,3,'2'):
+            self.assertFalse(gate.valid_summary(summary,expected_version=wanted))
+        for control in ['missing-end','bad-control','wrong-count','wrong-value','old-contract','missing-case','wrong-sequence','wrong-size','wrong-version','wrong-matrix']:
+            row=fixture(0,2)
+            if control in ['missing-end','bad-control','wrong-count','wrong-value']:
+                wrong=copy.deepcopy(summary)
+                leg=next(v for v in wrong['proofs'][0]['ssap_update_delivery'][0]['wire']if v.get('logical_pdu','').startswith('1003')and len(v['logical_pdu'])==4096)
+                packet=leg['rx']['ssap_fragments'][-1]
+                if control=='missing-end':leg['rx']['ssap_fragments'].pop()
+                else:
+                    raw=bytearray.fromhex(packet['data']);raw[5 if control=='bad-control'else 6 if control=='wrong-count'else 8]^=1;packet['data']=raw.hex()
+                self.assertFalse(gate.valid_summary(wrong),control);continue
+            if control=='old-contract':row.pop('ssap_update_delivery_version')
+            elif control=='missing-case':row['ssap_update_delivery'][0]['cases'].pop()
+            elif control=='wrong-sequence':row['ssap_update_delivery'][0]['cases'][-1]['sequence']=0
+            elif control=='wrong-size':row['ssap_update_delivery'][0]['cases'][-1]['application_bytes']=2036
+            elif control=='wrong-version':row['ssap_update_delivery_version']=True
+            else:row['ssap_update_delivery_lengths']=[32]
+            with self.subTest(control=control),self.assertRaises((CaptureError,ValueError,KeyError)):
+                gate.corroborate(row,matched)
+
+    def test_update_package_contract_is_typed_and_old_artifacts_remain_version_one(self):
+        self.assertEqual(gate.contract_version({}),1)
+        for v in (1,2):self.assertEqual(gate.contract_version({'ssap_update_delivery_contract_version':v}),v)
+        for v in (True,False,'2',0,3,None):
+            with self.assertRaises(ValueError):gate.contract_version({'ssap_update_delivery_contract_version':v})
+
     def test_terminal_contract_requires_numeric_security_success_not_plain_passthrough(self):
         # Explicit report-shape fixtures,not successful Native dependencies.
         from ws73_target import run_exit_code

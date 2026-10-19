@@ -14,7 +14,7 @@ def physical_sends(packet):
 
 
 def fragment_parts(pdu):
-    if not 2042<len(pdu)<=2047 or pdu[0]not in (9,11,13,14) or pdu[1]&3!=3:raise CaptureError('bounded fragmented logical value required')
+    if not 2042<len(pdu)<=(2048 if pdu[0] in (15,16) else 2047) or pdu[0]not in (9,11,13,14,15,16) or pdu[1]&3!=3:raise CaptureError('bounded fragmented logical value/update required')
     begin=(pdu[1]&~3)|(8 if pdu[0]==13 else 0);end=(pdu[1]&~3)|2
     return [bytes([pdu[0]|128,begin,2,0])+pdu[2:2040],bytes([pdu[0]|128,end,2,0])+pdu[2040:]]
 
@@ -45,7 +45,10 @@ def pair_wire(row,matched,source,destination,pdu,window):
     if len(pdu)<=2042:
         frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
         return dict(tx=matched(source,'out',frame,window),rx=matched(destination,'in',frame,window))
-    if row.get('ssap_value_lengths_version',1)!=4 or not 2042<len(pdu)<=2047 or pdu[0]not in (9,11,13,14) or pdu[1]&3!=3:raise CaptureError('bounded actual negotiated sequence fragment contract required')
+    versioned_value=row.get('ssap_value_lengths_version',1)==4 and pdu[0] in (9,11,13,14)
+    versioned_update=row.get('ssap_update_delivery_version',1)==2 and pdu[0] in (9,11,13,14,15,16)
+    limit=2048 if pdu[0] in (15,16) else 2047
+    if not(versioned_value or versioned_update) or not 2042<len(pdu)<=limit or pdu[1]&3!=3:raise CaptureError('bounded actual negotiated sequence fragment contract required')
     parts=fragment_parts(pdu)
     result=dict(tx=dict(ssap_fragments=[]),rx=dict(ssap_fragments=[]),logical_pdu=pdu.hex())
     for part in parts:

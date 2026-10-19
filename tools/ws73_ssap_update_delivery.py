@@ -19,10 +19,22 @@ from ws73_channel_socket import credentials
 from ws73_ssap_owned import publisher, wait_text, value_snapshot, await_removed
 from ws73_application_client import application_environment, owned_arguments, authorization_context
 
+LENGTHS=(32,2036,2037,2042)
+
 STATUS='REAL_CPCD_UPDATE_APPLICATION_REPLY_PENDING_PAIRED_CAPTURE'
 TOOLS=['/bin/ws73-application-client-c','/usr/share/sparklink/tools/ws73-application-client.py',
     '/usr/lib/libsparklink.so.0','/usr/share/sparklink/python/sparklink/client.py',
     '/usr/share/sparklink/python/sparklink/local_services.py','/usr/share/sparklink/python/sparklink/service_authorization.py']
+
+def contract_version(package):
+    value=package.get('ssap_update_delivery_contract_version',1)
+    if type(value)is not int or value not in (1,2):raise ValueError('unknown update delivery contract')
+    return value
+
+def matrix(row):
+    value=row.get('ssap_update_delivery_version',1)
+    if type(value)is not int or value not in (1,2):raise CaptureError('explicit supported update delivery version required')
+    return (32,) if value==1 else LENGTHS
 
 def requested(args,*,passthrough):
     value=getattr(args,'ssap_update_delivery_verify',False)
@@ -79,23 +91,24 @@ def discover(run,peer,item):
 def execute(run,row):
     if row.get('security_requirement')!=2 or not row.get('message_security_required'):
         raise CaptureError('update delivery requires actual protected2 baseline,not local approval')
-    row.update(ssap_update_delivery_required=True,ssap_update_delivery=[],ssap_update_delivery_tools=tool_records());run.save()
+    row.update(ssap_update_delivery_required=True,ssap_update_delivery_version=2,ssap_update_delivery_lengths=list(LENGTHS),ssap_update_delivery=[],ssap_update_delivery_tools=tool_records());run.save()
     for sender in (0,1):
         peer,server=row['owners'][sender],row['owners'][1-sender]
         api='c'if(row['phase']+sender)%2==0 else'python';peer_api='python'if api=='c'else'c'
         with publisher(run,row,sender,'allow',collection='ssap_update_delivery',label='delivery',sdk_api=api,updates=True) as (owner,item):
             discover(run,peer,item)
             item['cases']=[];run.save()
-            for mode in (1,2):
-                value=secrets.token_hex(32);reply=secrets.token_hex(32)
+            for sequence,(size,mode) in enumerate((size,mode)for size in LENGTHS for mode in(1,2)):
+                value=(sequence.to_bytes(4,'little')+secrets.token_bytes(size-4)).hex()
+                reply=((sequence|0x80000000).to_bytes(4,'little')+secrets.token_bytes(size-4)).hex()
                 if value==reply or value==item['secret']:raise CaptureError('independent random business values required')
-                case=dict(mode=mode,value=value,reply=reply,start_wall_ns=time.time_ns());item['cases'].append(case);run.save()
+                case=dict(mode=mode,sequence=sequence,application_bytes=size,value=value,reply=reply,start_wall_ns=time.time_ns());item['cases'].append(case);run.save()
                 case['replacement']=command_receipt(owner,item,'replace '+value,'SdkOwnedReplaced')
                 case['before']=value_snapshot(owner,item,value)
                 prefix=['/bin/ws73-application-client-c']if peer_api=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
                 args=prefix+['update-peer',str(peer['owner']['index']),str(peer['owner']['generation']),
                     peer['object']['path'],str(item['handle']),str(mode),value,reply]
-                out=run.output/f'update-peer-{row["phase"]}-{sender}-{mode}.stdout';err=out.with_suffix('.stderr')
+                out=run.output/f'update-peer-{row["phase"]}-{sender}-{mode}-{size}.stdout';err=out.with_suffix('.stderr')
                 app=dict(api=peer_api,args=args,start_wall_ns=time.time_ns(),environment=application_environment(),output_files=[str(out),str(err)])
                 case['application']=app;run.save();process=None
                 try:
@@ -155,6 +168,8 @@ def discovery_wire(item,peer,exchange):
 def corroborate(row,matched):
     if not row.get('ssap_update_delivery_required',False):return [],{0:0,1:0}
     items=row.get('ssap_update_delivery',[]);owners=row['owners'];proof=[];credit={0:0,1:0};fresh=set()
+    lengths=matrix(row);version=row.get('ssap_update_delivery_version',1)
+    if version==2 and row.get('ssap_update_delivery_lengths')!=list(LENGTHS):raise CaptureError('complete explicit update length matrix required')
     if (row.get('ssap_update_delivery_status')!=STATUS or len(items)!=2
             or [i.get('sender')for i in items]!=[0,1] or row.get('security_requirement')!=2
             or not row.get('message_security_required')):raise CaptureError('both protected directions and completed delivery gate required')
@@ -166,7 +181,7 @@ def corroborate(row,matched):
                 or item['credentials']['uids']!=[1000]*4 or any(int(v,16)for v in item['credentials']['capabilities'].values())):
             raise CaptureError('ordinary actual original SDK owned provider required')
         if (not all(type(item[k])is int for k in ['start','end','handle','sender','target','exit'])
-                or not 16<=item['start']<h<=item['end']<=65535 or len(item.get('cases',[]))!=2):raise CaptureError('one real property and both update kinds required')
+                or not 16<=item['start']<h<=item['end']<=65535 or len(item.get('cases',[]))!=2*len(lengths)):raise CaptureError('one real property and both update kinds required')
         lines=item['stdout'].splitlines()
         if (lines[:2]!=[f'SdkOwnedAPI: api={api} client_closed=true',f'SsapOwnedService: start={item["start"]} end={item["end"]} property={h}; local registration only']
                 or lines[-1:]!=[f'SdkOwnedRemoved: api={api} start={item["start"]}']):raise CaptureError('complete original SDK provider stream required')
@@ -185,13 +200,17 @@ def corroborate(row,matched):
             fresh.add(value)
         legs=[]
         def exchange(a,b,pdu,window):
-            frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
-            legs.append(dict(tx=matched(owners[a],'out',frame,window),rx=matched(owners[b],'in',frame,window)));credit[a]+=1
+            from ws73_ssap_value import pair_wire,physical_sends
+            leg=pair_wire(row,matched,owners[a],owners[b],pdu,window)
+            legs.append(leg);credit[a]+=physical_sends(leg['tx'])
         discovery_wire(item,peer,exchange)
         modes=[]
-        for case in item['cases']:
+        for sequence,case in enumerate(item['cases']):
+            size=lengths[sequence//2]
+            if version==2 and (type(case.get('sequence'))is not int or case.get('sequence')!=sequence or type(case.get('application_bytes'))is not int or case.get('application_bytes')!=size):raise CaptureError('exact recorded length/order required')
             mode=case['mode'];modes.append(mode);value=bytes.fromhex(case['value']);reply=bytes.fromhex(case['reply']);app=case['application']
-            if type(mode)is not int or mode not in (1,2)or len(value)!=32 or len(reply)!=32 or value in fresh or reply in fresh or value==reply:raise CaptureError('fresh complete application values required')
+            if type(mode)is not int or mode not in (1,2)or len(value)!=size or len(reply)!=size or value in fresh or reply in fresh or value==reply:raise CaptureError('fresh complete application values required')
+            if version==2 and (value[:4]!=sequence.to_bytes(4,'little') or reply[:4]!=(sequence|0x80000000).to_bytes(4,'little')):raise CaptureError('independent sequence-bearing application payloads required')
             fresh.update([value,reply]);outgoing=bytes([16 if mode==2 else 15,3])+h.to_bytes(2,'little')+len(value).to_bytes(2,'little')+value
             replacement=sdk_receipt(case['replacement'],api,h,{'value'})
             if replacement['value']!=case['value']or case['before']['value']!=case['value']or case['after']['value']!=case['reply']:raise CaptureError('actual owner local snapshot and peer business reply required')
@@ -222,35 +241,50 @@ def corroborate(row,matched):
             exchange(s,t,disable,window);exchange(t,s,b'\x0e\x03'+h.to_bytes(2,'little')+b'\x02\0\0',window)
             exchange(s,t,b'\x0d\x23'+h.to_bytes(2,'little')+b'\0'+reply,window)
             exchange(t,s,b'\x0e\x03'+h.to_bytes(2,'little')+b'\0'+reply,window)
-        if modes!=[1,2]:raise CaptureError('both notification/indication required')
+        if modes!=[1,2]*len(lengths):raise CaptureError('both notification/indication required')
         decisions=[json.loads(v)for v in re.findall(r'^SdkAuthorizationDecision: (.+)$',item['stdout'],re.M)]
-        if len(decisions)!=4:raise CaptureError('four real enable/disable approvals required')
-        for d,value in zip(decisions,['0100','0000','0200','0000'],strict=True):
+        if len(decisions)!=4*len(lengths):raise CaptureError('complete actual enable/disable approvals required')
+        for d,value in zip(decisions,['0100','0000','0200','0000']*len(lengths),strict=True):
             context={k:v for k,v in d.items()if k not in {'allow','decision_ns','decision_wall_ns'}}
             authorization_context(context,api,level=2,data_type=2)
             expected=(server['owner']['index'],server['owner']['generation'],server['object']['lifetime'],server['object']['handle'],h)
             if ((d['index'],d['generation'],d['lifetime'],d['handle'],d['property'])!=expected or d['value']!=value or d.get('allow')is not True
                     or type(d.get('decision_ns'))is not int or d['decision_ns']>=d['deadline_ns']
                     or type(d.get('decision_wall_ns'))is not int or not item['start_wall_ns']<=d['decision_wall_ns']<=item['end_wall_ns']):raise CaptureError('exact original typed authenticated approval required')
-        proof.append(dict(sender=s,target=t,publisher=api,peer=peer_api,updates=2,application_replies=2,wire=legs,decisions=4))
+        proof.append(dict(sender=s,target=t,publisher=api,peer=peer_api,updates=2*len(lengths),application_replies=2*len(lengths),wire=legs,decisions=4*len(lengths),**(dict(version=version,lengths=list(lengths))if version==2 else{})))
     return proof,credit
 
-def valid_summary(proof):
+def valid_summary(proof,*,expected_version=None):
+    from ws73_ssap_value import valid_wire
+    if expected_version is not None and (type(expected_version)is not int or expected_version not in (1,2)):return False
     if not isinstance(proof,dict) or proof.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED':return False
     rows=proof.get('proofs')
     if not isinstance(rows,list) or len(rows)!=2:return False
+    observed_version=None
     for phase,row in enumerate(rows):
         if not isinstance(row,dict) or type(row.get('phase'))is not int or row['phase']!=phase:return False
         directions=row.get('ssap_update_delivery')
         if not isinstance(directions,list) or len(directions)!=2:return False
         for sender,value in enumerate(directions):
             if not isinstance(value,dict):return False
-            expected={'sender':sender,'target':1-sender,'updates':2,'application_replies':2,'decisions':4}
+            version=value.get('version',1)
+            if type(version)is not int or version not in (1,2) or expected_version is not None and version!=expected_version:return False
+            if observed_version is not None and observed_version!=version:return False
+            observed_version=version
+            lengths=(32,)if version==1 else LENGTHS
+            if version==2 and value.get('lengths')!=list(LENGTHS):return False
+            expected={'sender':sender,'target':1-sender,'updates':2*len(lengths),'application_replies':2*len(lengths),'decisions':4*len(lengths)}
             if any(type(value.get(k))is not int or value[k]!=v for k,v in expected.items()):return False
             publisher='c'if(phase+sender)%2==0 else'python'
             if value.get('publisher')!=publisher or value.get('peer')!=('python'if publisher=='c'else'c'):return False
             legs=value.get('wire')
-            if not isinstance(legs,list) or len(legs)!=29:return False
-            if any(not isinstance(leg,dict) or set(leg)!={'tx','rx'}
-                    or any(not isinstance(leg[k],dict) or not leg[k]for k in ['tx','rx'])for leg in legs):return False
+            if not isinstance(legs,list) or len(legs)!=10+19*len(lengths):return False
+            if version==1:
+                if any(not isinstance(leg,dict) or set(leg)!={'tx','rx'}
+                        or any(not isinstance(leg[k],dict) or not leg[k]for k in ['tx','rx'])for leg in legs):return False
+            else:
+                from collections import Counter
+                if not all(valid_wire(leg)for leg in legs):return False
+                actual=Counter((bytes.fromhex(leg['logical_pdu'])[0],len(bytes.fromhex(leg['logical_pdu'])))for leg in legs if 'logical_pdu'in leg)
+                if actual!=Counter({(15,2043):1,(16,2043):1,(15,2048):1,(16,2048):1,(13,2047):2,(14,2047):2}):return False
     return True

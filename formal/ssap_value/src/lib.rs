@@ -313,7 +313,7 @@ mod fragment_layout_proof {
         match Layout::new(length, mtu) {
             Ok(layout) => {
                 assert!(
-                    length >= 2 && length <= 2047,
+                    length >= 2 && length <= 2048,
                     "layout logical length stays bounded"
                 );
                 assert!(
@@ -361,7 +361,7 @@ mod fragment_layout_proof {
                 }
             }
             Err(_) => {
-                if length >= 2 && length <= 2047 {
+                if length >= 2 && length <= 2048 {
                     assert!(
                         length > mtu as usize,
                         "layout never rejects fitting complete PDU"

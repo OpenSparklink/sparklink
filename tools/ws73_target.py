@@ -106,6 +106,7 @@ def prepare_locked(args, build_fd):
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['firmware_evidence_contract_version'] = 1
     manifest['ssap_exchange_contract_version'] = 2
+    manifest['ssap_update_delivery_contract_version'] = 2
     try:
         module_profile = native_vm.enabled(args)
         config_required(args.kernel_build / '.config', module_profile)
@@ -955,6 +956,8 @@ def _run(args):
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
         from ws73_ssap_initialization import exchange_contract
         m['ssap_exchange_contract_version']=exchange_contract(package)
+        from ws73_ssap_update_delivery import contract_version as delivery_contract
+        m['ssap_update_delivery_contract_version']=delivery_contract(package)
         if directory_events:
             from ws73_controller_directory import staged_program
             m['controller_directory_program']=staged_program(args.prepared.resolve()/'root',package['guest_files'])
@@ -1579,6 +1582,9 @@ def _run(args):
                         if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration'],expected_version=4):raise ValueError('exact SSAP length verifier and complete evidence required')
                     m['ssap_value_lengths_acceptance']=value_lengths
                     m['ssap_receive_lifecycle_acceptance']=receive_lifecycle
+                    if update_delivery:
+                        from ws73_ssap_update_delivery import valid_summary as valid_delivery
+                        if not valid_delivery(m['channel_socket_corroboration'],expected_version=m['ssap_update_delivery_contract_version']):raise ValueError('exact prepared update delivery version/length closure required')
                     m['ssap_update_delivery_acceptance']=update_delivery
                     m['ssap_owned_update_acceptance']=owned_update
                     m['ssap_owned_acceptance']=ssap_owned
@@ -2028,7 +2034,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or record.get('live_security_agent_requested')!='numeric-approve'
                 or record.get('qemu_exit')!=0 or record.get('ssap_update_delivery_acceptance')is not True
                 or record.get('ordinary_channel_socket_acceptance')is not True
-                or record.get('live_ssap_security_requirement')!=2 or not delivery_summary(channel_proof)):return 1
+                or record.get('live_ssap_security_requirement')!=2 or not delivery_summary(channel_proof,expected_version=record.get('ssap_update_delivery_contract_version',1))):return 1
     elif record.get('ssap_update_delivery_acceptance')or any(p.get('ssap_update_delivery')for p in channel_proof.get('proofs',[])):return 1
     receive=record.get('ssap_receive_lifecycle_requested',False)
     if type(receive)is not bool:return 1

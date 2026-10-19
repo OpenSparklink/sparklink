@@ -464,6 +464,20 @@ Root collector同时等待Rust、C、Python的实际初始输出屏障，三者�
 该检查不是Native Ready/Down/drain、物理拔插、自然恢复或完整语言SDK资格。
 
 
+## SSAP 通知／指示长度门禁
+
+`--ssap-update-delivery-verify`复用同一真实numeric-approve、类型2审批和SDK消费者。
+新prepared声明契约2，固定应用值32、2036、2037、2042字节，各测试通知与指示、两个
+方向及交换连接角色。协商线上MTU2042时，2036是单项更新完整PDU上限，2037及2042
+需要真实SSAP分片；回写业务回复仍经原verified-write。schema1保留原32字节语义，
+不能转作新契约通过；包版本、工具、完整矩阵和分片缺失均拒绝。
+
+新回执ABI和C/Python调用者必须一起封存。通知软件准入、指示接收队列ACK及对端
+应用实际校验/回写分别核对；原始双端SSAP片与DLI片分别重组，并按实际TX片数记账。
+单次协议原期限、日志/队列预算不放宽，USB成功或ACK不能替代业务回复。
+该门禁不证明持续订阅、全部片数、其他MTU、完整生命周期、安全/Bond或自然恢复。
+准确artifact及未决条件只见[当前资格](../../project/current-capabilities.md)。
+
 ## SSAP 接收者退出与确认清理门禁
 
 未发布 runner 的 `--ssap-update-lifecycle-verify` 只能与

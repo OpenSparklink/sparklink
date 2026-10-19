@@ -20,7 +20,7 @@ def fixture():
         for i,(role,mode,uid,gid) in enumerate([('service','service-only',1005,1005),('channel','service-channel',1004,1004),('observer','service-observer',1001,1001)]):
             labels=['own-service']+(['interface-less-own-read']+SERVICE_DENIED*2 if role=='service' else ['RegisterOwnedLocalService']+DENIED*2)
             text=f'AUTH_CREDENTIALS: uid={uid} gid={gid} caps=0\nAUTH_SERVICE_KERNEL_ACCESS: denied\n'
-            if role=='service':text+='AUTH_SERVICE_OWNED: start=18 property=19 value=07 removed=true\nAUTH_OWNED_DEADLINE: register/read/remove expired=true\n'
+            if role=='service':text+='AUTH_SERVICE_OWNED: start=18 property=19 value=07 removed=true\nAUTH_SERVICE_REPLACED: property=19 values=08,07\nAUTH_OWNED_REPLACE_DEADLINE: expired=true\nAUTH_OWNED_DEADLINE: register/read/remove expired=true\n'
             text+=''.join('AUTH_DENIED: '+label+'\n' for label in labels)+f'AUTH_SERVICE_ROLE: {mode}\n'
             c['commands'].append(dict(role=role,args=['/bin/probe',owner['path'],mode,'16','17'],exit=0,stdout=text,stderr='',start_wall_ns=20+n*400+i*10,end_wall_ns=21+n*400+i*10))
         c['after_quit']=dict(role='ws73',args=['/bin/slctl','--adapter',owner['path'],'ssap-list'],exit=0,stdout='SsapLocalServices: []\n',stderr='',start_wall_ns=100+n*400,end_wall_ns=101+n*400)
@@ -38,7 +38,7 @@ class ServicePolicy(unittest.TestCase):
             with self.subTest(text=text),self.assertRaises(CaptureError):corroborate(r,run)
 
     def test_complete_synthetic_fixture_only_validates_verdict(self):
-        p=corroborate(*fixture());self.assertEqual(len(p),2);self.assertEqual(sum(v['denials'] for v in p),68)
+        p=corroborate(*fixture());self.assertEqual(len(p),2);self.assertEqual(sum(v['denials'] for v in p),80)
 
     def test_missing_wrong_role_scope_and_terminal_evidence_are_rejected(self):
         for kind in ('pipe','missing','uid','group','capability','probe-uid','denial','positive','kernel','registration','value','foreign-cleanup','retained','exit','stderr','daemon','late','phase','duplicate-owner','interval'):
@@ -75,6 +75,11 @@ class ServicePolicy(unittest.TestCase):
         self.assertIn('explicit service-role request/evidence mismatch',s)
         self.assertIn('service:x:1005:1005:',s)
         self.assertIn('service-policy "$daemon"',(tools/'ws73_target_init.sh').read_text())
+
+    def test_replacement_and_expired_replacement_are_mandatory(self):
+        for text in ['AUTH_SERVICE_REPLACED: property=19 values=08,07\n','AUTH_OWNED_REPLACE_DEADLINE: expired=true\n']:
+            r,run=fixture();r['cases'][0]['commands'][0]['stdout']=r['cases'][0]['commands'][0]['stdout'].replace(text,'')
+            with self.assertRaises(CaptureError):corroborate(r,run)
 
 
 if __name__=='__main__':unittest.main()

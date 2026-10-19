@@ -218,7 +218,7 @@ static int owned_mode(int argc,char **argv) {
     uint8_t service[2042],property_uuid[2042],initial[2042];
     size_t service_n=bytes(argv[4],service),property_n=bytes(argv[5],property_uuid),initial_n=bytes(argv[6],initial);
     if (index>UINT16_MAX || !generation || (service_n!=2 && service_n!=16) || (property_n!=2 && property_n!=16)) return 2;
-    struct SlkServiceProperty property={.operations=5,.access=requests?36:0,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
+    struct SlkServiceProperty property={.operations=!strcmp(argv[1],"owned-readonly")?1:5,.access=requests?36:0,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
     memcpy(property.uuid,property_uuid,property_n);memcpy(property.value,initial,initial_n);
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkLocalService *view=NULL;struct SlkServiceReceipt receipt={0};
@@ -230,7 +230,7 @@ static int owned_mode(int argc,char **argv) {
     if (requests) {error=slk_local_service_authorization_fd(view,&approval_fd);if (error) {errno=-error;goto done;}}
     slk_client_close(client);client=NULL;
     printf("SdkOwnedAPI: api=c client_closed=true\nSsapOwnedService: start=%u end=%u property=%u; local registration only\n",receipt.start,receipt.end,receipt.handles[0]);fflush(stdout);
-    const uint64_t end=now_ns()+30000000000ULL;char line[32];size_t used=0;
+    const uint64_t end=now_ns()+30000000000ULL;char line[4096];size_t used=0;
     for (;;) {
         /* Try next before sleeping;the duplicated eventfd is poll-only. */
         if (requests && view) {error=owned_receive(view,&receipt,&pending,ask,allow);if (error) {errno=-error;goto done;}}
@@ -255,6 +255,14 @@ static int owned_mode(int argc,char **argv) {
             error=slk_local_service_read(view,receipt.handles[0],value,sizeof value,&length,now_ns()+5000000000ULL);if (error) {errno=-error;goto done;}
             if (length>sizeof value) {errno=EPROTO;goto done;}
             printf("SsapOwnedValue: handle=%u value=",receipt.handles[0]);hex_print(value,length);printf("\n");fflush(stdout);
+        } else if (!strncmp(line,"replace ",8)) {
+            if (!view) {errno=ESHUTDOWN;goto done;}
+            line[strlen(line)-1]='\0';uint8_t value[2042];size_t length=line[8]?bytes(line+8,value):0;
+            uint64_t started=now_ns(),deadline=started+5000000000ULL;
+            error=slk_local_service_replace(view,receipt.handles[0],value,length,deadline);
+            if (error) {errno=-error;goto done;}
+            printf("SdkOwnedReplaced: {\"api\":\"c\",\"handle\":%u,\"value\":\"",receipt.handles[0]);hex_print(value,length);
+            printf("\",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",started,deadline,now_ns());fflush(stdout);
         } else if (ask && (!strncmp(line,"yes ",4) || !strncmp(line,"no ",3))) {
             int answer=!strncmp(line,"yes ",4);line[strlen(line)-1]='\0';
             const char *token=line+(answer?4:3);
@@ -287,7 +295,7 @@ done:
 }
 
 int main(int argc,char **argv) {
-    if (argc>1 && !strcmp(argv[1],"owned")) return owned_mode(argc,argv);
+    if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly"))) return owned_mode(argc,argv);
     if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);
     if (argc!=7 || strlen(argv[3])>256) return 2;

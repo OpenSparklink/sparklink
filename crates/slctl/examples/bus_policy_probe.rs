@@ -559,6 +559,21 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
             );
         }
         println!("AUTH_OWNED_DEADLINE: register/read/remove expired=true");
+        let expired_replace = connection
+            .call_method(
+                Some(SERVICE),
+                server.as_str(),
+                Some("org.sparklink.ServiceManager"),
+                "ReplaceOwnedLocalValue",
+                &(handles[0], vec![99u8], expired),
+            )
+            .await;
+        ensure!(
+            matches!(expired_replace,Err(zbus::Error::MethodError(ref name,_,_)) if name.as_str()=="org.freedesktop.DBus.Error.Timeout"),
+            "expired replacement must be refused"
+        );
+        println!("AUTH_OWNED_REPLACE_DEADLINE: expired=true");
+
         let value: Vec<u8> = connection
             .call_method(
                 Some(SERVICE),
@@ -571,6 +586,37 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
             .body()
             .deserialize()?;
         ensure!(value == [7], "actual owner read required");
+        for byte in [8u8, 7] {
+            connection
+                .call_method(
+                    Some(SERVICE),
+                    server.as_str(),
+                    Some("org.sparklink.ServiceManager"),
+                    "ReplaceOwnedLocalValue",
+                    &(handles[0], vec![byte], owned_deadline()?),
+                )
+                .await?;
+            let actual: Vec<u8> = connection
+                .call_method(
+                    Some(SERVICE),
+                    server.as_str(),
+                    Some("org.sparklink.ServiceManager"),
+                    "ReadOwnedLocalValue",
+                    &(handles[0], owned_deadline()?),
+                )
+                .await?
+                .body()
+                .deserialize()?;
+            ensure!(
+                actual == [byte],
+                "actual service-only replacement readback required"
+            );
+        }
+        println!(
+            "AUTH_SERVICE_REPLACED: property={} values=08,07",
+            handles[0]
+        );
+
         denied(
             "interface-less-own-read",
             connection
@@ -628,6 +674,18 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
             };
             denied(label, response)?;
         }
+        denied(
+            "foreign-owned-replace",
+            connection
+                .call_method(
+                    Some(destination),
+                    server.as_str(),
+                    Some("org.sparklink.ServiceManager"),
+                    "ReplaceOwnedLocalValue",
+                    &(handle, vec![99u8], owned_deadline()?),
+                )
+                .await,
+        )?;
         denied(
             "foreign-owned-remove",
             connection

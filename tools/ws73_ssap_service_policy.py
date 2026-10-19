@@ -18,7 +18,7 @@ from ws73_north_star import file_record,daemon_identity,stable
 from ws73_ssap_owned import wait_text
 
 STATUS='ACTUAL_GUEST_SERVICE_ROLE_EVIDENCE_PENDING'
-DENIED=['foreign-owned-read','global-value-read','foreign-owned-remove']
+DENIED=['foreign-owned-read','global-value-read','foreign-owned-replace','foreign-owned-remove']
 SERVICE_DENIED=DENIED+['RemoveLocalService','RegisterLocalService','StopControllerScan','interface-less-owned-read','OpenChannel']
 
 
@@ -113,11 +113,14 @@ def corroborate(record,run):
             if actual!=expected or re.findall(r'^AUTH_SERVICE_ROLE: (.+)$',c['stdout'],re.M)!=[mode]:raise CaptureError('all exact named/unique-owner bus denials required')
             positives=re.findall(r'^AUTH_SERVICE_OWNED: start=(\d+) property=(\d+) value=07 removed=true$',c['stdout'],re.M)
             if (role=='service' and (len(positives)!=1 or int(positives[0][1])<=int(positives[0][0]))) or (role!='service' and positives):raise CaptureError('only actual service role may register/read/remove its own value')
+            replaced=re.findall(r'^AUTH_SERVICE_REPLACED: property=(\d+) values=08,07$',c['stdout'],re.M)
+            expired_replace=re.findall(r'^AUTH_OWNED_REPLACE_DEADLINE: expired=true$',c['stdout'],re.M)
+            if (role=='service' and (len(replaced)!=1 or replaced[0]!=positives[0][1] or len(expired_replace)!=1)) or (role!='service' and (replaced or expired_replace)):raise CaptureError('actual own replacement/readback and expired replacement refusal required')
             deadlines=re.findall(r'^AUTH_OWNED_DEADLINE: (.+)$',c['stdout'],re.M)
             if deadlines != (['register/read/remove expired=true'] if role=='service' else []):raise CaptureError('actual expired Owned register/read/remove refusals required')
             denials+=len(actual);previous=c['end_wall_ns']
         c=case['after_quit'];rows=re.findall(r'^SsapLocalServices: (.+)$',c['stdout'],re.M)
         if c['args']!=[record['slctl']['path'],'--adapter',owner['path'],'ssap-list'] or not previous<=c['start_wall_ns']<=c['end_wall_ns']<=case['end_wall_ns']:raise CaptureError('same controller actual final metadata query required')
         if c['role']!='ws73' or c['exit'] or c['stderr'] or len(rows)!=1 or any(v[0]==case['start'] for v in json.loads(rows[0])):raise CaptureError('actual owner final unregister required')
-        proof.append(dict(owner=owner,denials=denials,expired_owned_requests=3,service_uid=1005,scope='Actual system-bus local ownership/role policy and expired request rejection;not application RF delivery or full multi-application lifecycle'))
+        proof.append(dict(owner=owner,denials=denials,expired_owned_requests=4,local_replacements=2,service_uid=1005,scope='Actual system-bus local ownership/role policy and expired request rejection;not application RF delivery or full multi-application lifecycle'))
     return proof

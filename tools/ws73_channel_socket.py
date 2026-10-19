@@ -155,6 +155,9 @@ def execute(run, phase):
         if getattr(run.args,'ssap_owned_verify',False):
             from ws73_ssap_owned import execute as owned_execute
             owned_execute(run,row)
+        if getattr(run.args,'ssap_owned_update_verify',False):
+            from ws73_ssap_owned_update import execute as update_execute
+            update_execute(run,row)
         if getattr(run.args,'ssap_owner_lifecycle_verify',False):
             from ws73_ssap_owner_lifecycle import execute as owner_lifecycle_execute
             owner_lifecycle_execute(run,row)
@@ -562,6 +565,11 @@ def corroborate(run,capture):
                 from ws73_ssap_owned import corroborate as owned_corroborate
                 ssap_owned,owned_credit=owned_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=owned_credit[key]
+            ssap_owned_updates=[]
+            if row.get('ssap_owned_update_required',False):
+                from ws73_ssap_owned_update import corroborate as update_corroborate
+                ssap_owned_updates,update_credit=update_corroborate(row,value_matched)
+                for key in ssap_credit:ssap_credit[key]+=update_credit[key]
             ssap_owner_lifecycle=[]
             if row.get('ssap_owner_lifecycle_required',False):
                 from ws73_ssap_owner_lifecycle import corroborate as owner_lifecycle_corroborate
@@ -646,6 +654,7 @@ def corroborate(run,capture):
         if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
+        if row.get('ssap_owned_update_required',False):entry['ssap_owned_updates']=ssap_owned_updates
         if row.get('ssap_owner_lifecycle_required',False):entry['ssap_owner_lifecycle']=ssap_owner_lifecycle
         if row.get('ssap_requester_lifecycle_required',False):entry['ssap_requester_lifecycle']=ssap_requester_lifecycle
         if protected is not None:entry['protected_ssap']=protected

@@ -21,6 +21,7 @@ class Boundary:
         if self.error:return self.error
         if cap<3:n._obj.value=3;return -errno.ENOBUFS
         buf[:3]=b'abc';n._obj.value=3;return 0
+    def slk_local_service_replace(self,v,h,value,n,d):self.replacement=(v.value,h,bytes(value[:n]),d);return self.error
     def slk_local_service_unregister(self,v,d):self.unregistered.append((v.value,d));return self.error
     def slk_local_service_free(self,v):self.freed.append(v.value)
     def slk_client_close(self,v):self.closed.append(v.value)
@@ -79,3 +80,23 @@ class LocalServicesBoundary(unittest.TestCase):
                 with self.assertRaises(RuntimeError):call()
             v._pid=original;v._lock=old;v.close()
         self.assertEqual(b.freed,[123]);self.assertEqual(b.unregistered,[(123,2)])
+
+    def test_owner_replacement_is_bounded_and_does_not_hide_uncertain_errors(self):
+        b=Boundary()
+        with patch('sparklink.local_services._configure'),caller(b) as c:
+            v=c.register_local_service(ControllerId(2,7),b'ab',[definition()],deadline_ns=1)
+            for value in [b'',b'data',b'x'*2042]:
+                v.replace_local(17,value,deadline_ns=2)
+                self.assertEqual(b.replacement,(123,17,value,2))
+            before=b.replacement
+            for handle,value in [(0,b''),(65536,b''),(17,b'x'*2043),(True,b''),(17,bytearray(b'a'))]:
+                with self.assertRaises(ValueError):v.replace_local(handle,value,deadline_ns=3)
+            self.assertEqual(b.replacement,before)
+            b.error=-errno.ENOBUFS
+            with self.assertRaises(OSError) as e:v.replace_local(17,b'data',deadline_ns=4)
+            self.assertEqual(e.exception.errno,errno.ENOBUFS)
+            b.error=-errno.ETIMEDOUT
+            with self.assertRaises(OSError) as e:v.replace_local(17,b'data',deadline_ns=5)
+            self.assertEqual(e.exception.errno,errno.ETIMEDOUT)
+            v.close()
+            with self.assertRaises(RuntimeError):v.replace_local(17,b'data',deadline_ns=6)

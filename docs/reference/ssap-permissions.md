@@ -144,12 +144,13 @@ CLI 退出时先停止本地审批准入，再异步撤回登记；撤回失败�
 登记者来自真实消息 sender 的 unique name，不能指定其他 owner。`authorizer=/`
 表示不提供审批；带授权位的登记此时返回 NotSupported。服务登记仍只表示本地配置。
 `UnregisterOwnedLocalService(start:q, deadline:(ttttt))` 和
-`ReadOwnedLocalValue(handle:q, deadline:(ttttt))->ay` 只允许
+`ReadOwnedLocalValue(handle:q, deadline:(ttttt))->ay`、
+`ReplaceOwnedLocalValue(handle:q,value:ay,deadline:(ttttt))` 只允许
 原 owner；管理组的显式全局移除/本地读权限仍独立。`sparklink-services` 策略只允许
-这三个 Owned 方法，不授 controller 管理或普通通道权限；[cd35/0568的guest最小角色门禁](../evidence/architecture-retirement-r1-20261017.json)
+这四个 Owned 方法，不授 controller 管理或普通通道权限；[cd35/0568的guest最小角色门禁](../evidence/architecture-retirement-r1-20261017.json)
 已核对实际system bus、组/凭据及设备权限，不代表service-only远端RF或完整发行版部署。
 
-三个 Owned 方法均携带现有 clock-domain 身份和绝对原期限；客户端检查、D-Bus、
+四个 Owned 方法均携带现有 clock-domain 身份和绝对原期限；客户端检查、D-Bus、
 状态锁等待、owner 监听安装及数据库最终准入共用该期限。过期返回 Timeout，
 不重置相对预算。监听安装另有两秒上限，只能缩短该请求。当前 zbus 在进入方法前
 以 `org.freedesktop.zbus.Error` 拒绝旧签名（Signature mismatch）；不兼容回退。
@@ -263,3 +264,19 @@ owner失效会唤醒等待者。该通知不是controller/connection状态流；
 
 新增接口、离线检查与实机资格分别记录于唯一能力入口；旧产物的PASS不覆盖新ABI，
 审批模式也不代表完整provider、通知/指示、安全/Bond或生命周期资格。
+
+
+`ReplaceOwnedLocalValue` 原子替换本地属性值，长度0..2042字节，服务值的共享总预算
+8192字节；空值释放该属性原值占用，超限不截断、不更改数据。原unique owner、有效
+controller/管理租约和登记必须仍有效，提交与远端写入/移除使用同一数据库锁。它不要求
+属性授予对端写权限，也不改变READ/WRITE/安全/审批位；只读对端属性可由自己的服务
+更新。InvalidArgs表示错误handle/长度，AccessDenied表示非拥有者/旧登记，LimitsExceeded
+表示共享值预算不足。C/Python分别表现为EINVAL/EACCES/ENOBUFS，原期限为ETIMEDOUT。
+
+Rust `ServiceRegistration.replace_local`、C `slk_local_service_replace` 与 Python
+`LocalService.replace_local` 使用这一入口，调用成功只表示本地提交，不发通知或指示。
+超时/答复丢失可能发生在提交之后，效果不确定；不自动重试。对端须另行实际读取，仍
+遵守协商MTU及现有无SSAP分片限制。动态provider回调、CCC、主动通知/指示发送仍未接通。
+
+开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
+仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。

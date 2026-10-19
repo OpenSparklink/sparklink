@@ -101,7 +101,7 @@ impl LocalServices {
         let mut registration = ServiceRegistration {
             controller: self.controller.clone(),
             receipt,
-            active: true,
+            state: RegistrationState::Active,
         };
         if let Err(error) = result {
             if let Ok(cleanup) = Deadline::after(std::time::Duration::from_secs(1)) {
@@ -121,20 +121,27 @@ fn valid_receipt(value: &wire::Registration, expected: usize) -> bool {
         && value.2.windows(2).all(|w| w[0] < w[1])
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum RegistrationState {
+    Active,
+    Withdrawing,
+    Removed,
+}
+
 /// A receipt, not a wire Engine or a protocol lifetime. Explicit unregister (or
 /// actual bus owner exit) removes it. Drop never starts untracked async cleanup.
 /// This object is not Clone: a second handle must not silently own its removal.
 pub struct ServiceRegistration {
     controller: Controller,
     receipt: wire::Registration,
-    active: bool,
+    state: RegistrationState,
 }
 impl ServiceRegistration {
     pub fn receipt(&self) -> &wire::Registration {
         &self.receipt
     }
     pub async fn read_local(&self, handle: u16, original: Deadline) -> Result<Vec<u8>> {
-        if !self.active || !self.receipt.2.contains(&handle) {
+        if self.state == RegistrationState::Removed || !self.receipt.2.contains(&handle) {
             return Err(ApplicationError::Invalid(
                 "inactive or foreign service handle",
             ));
@@ -152,15 +159,48 @@ impl ServiceRegistration {
         original.remaining()?;
         Ok(result)
     }
+    /// Atomically replace this owner's local property value (0..2042 bytes).
+    /// Peer READ/WRITE permissions stay unchanged. Success is local commit only;
+    /// timeout/caller loss after commit has uncertain effects, never an implicit retry.
+    pub async fn replace_local(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        original: Deadline,
+    ) -> Result<()> {
+        if self.state != RegistrationState::Active
+            || !self.receipt.2.contains(&handle)
+            || value.len() > 2042
+        {
+            return Err(ApplicationError::Invalid(
+                "inactive/foreign property or oversized value",
+            ));
+        }
+        let request: wire::OwnedValueRequest =
+            (handle, value, slk_contract::deadline_wire(original.stamp()));
+        let _: () = bounded(
+            &self.controller.client,
+            original,
+            self.controller
+                .call(wire::MANAGER, wire::REPLACE_OWNED, &request),
+        )
+        .await?;
+        original.remaining()?;
+        Ok(())
+    }
     /// Withdrawal is allowed after local owner-scope loss. It targets only the
     /// original unique daemon + immutable generation path + owner-bound start
     /// handle (not reused within that database). It cannot admit new work.
     pub async fn unregister(&mut self, original: Deadline) -> Result<()> {
-        if !self.active {
+        if self.state == RegistrationState::Removed {
             return Err(ApplicationError::Invalid("service already unregistered"));
         }
         let path = format!("{}/services", self.controller.path());
         original.remaining()?;
+        // A started withdrawal permanently closes local mutation admission,
+        // including an uncertain RPC result. Metadata reads and explicit cleanup
+        // retries remain possible on this original receipt.
+        self.state = RegistrationState::Withdrawing;
         // Withdrawal remains allowed after local owner/generation scope loss,
         // pinned to the original unique daemon and immutable generation path.
         tokio::time::timeout_at(original.instant().into(), async {
@@ -179,7 +219,7 @@ impl ServiceRegistration {
         .await
         .map_err(|_| std::io::Error::from_raw_os_error(nix::libc::ETIMEDOUT))??;
         original.remaining()?;
-        self.active = false;
+        self.state = RegistrationState::Removed;
         Ok(())
     }
 }

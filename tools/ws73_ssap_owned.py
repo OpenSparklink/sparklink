@@ -29,7 +29,7 @@ def wait_text(process, path, pattern, deadline, min_count=1):
 
 
 @contextmanager
-def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None):
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False):
     source,target=row['owners'][sender],row['owners'][1-sender]
     secret=secrets.token_hex(32);value=secrets.token_hex(32);uuid=secrets.token_hex(16);service=secrets.token_hex(16)
     prefix=run.output/f'ssap-owned-{row["phase"]}-{sender}-{label or policy}'
@@ -38,7 +38,7 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
     environment=None
     if sdk_api is not None:
         from ws73_application_client import application_environment,owned_arguments
-        args=owned_arguments(sdk_api,target,service,uuid,secret,policy)
+        args=owned_arguments(sdk_api,target,service,uuid,secret,policy,read_only=read_only)
         environment=application_environment()
     item=dict(sender=sender,target=1-sender,policy=policy,secret=secret,value=value,uuid=uuid,service=service,args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
     if sdk_api is not None:item.update(publisher_api=sdk_api,environment=environment)

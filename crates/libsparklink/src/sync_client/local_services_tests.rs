@@ -12,6 +12,7 @@ struct Script {
     mode: AtomicU8,
     registrations: AtomicU64,
     reads: AtomicU64,
+    replacements: Mutex<Vec<(u16, Vec<u8>)>>,
     removals: AtomicU64,
     owner: Mutex<String>,
     authorizer: Mutex<String>,
@@ -120,6 +121,27 @@ impl Services {
             6 => Ok(Vec::new()),
             7 => Ok(vec![1; 2043]),
             _ => Ok(vec![7, 8, 9]),
+        }
+    }
+    async fn replace_owned_local_value(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.stamps.lock().unwrap().push(deadline);
+        self.0.replacements.lock().unwrap().push((handle, value));
+        match self.0.mode.load(Ordering::SeqCst) {
+            10 => Err(zbus::fdo::Error::LimitsExceeded(
+                "explicit fixture budget rejection".into(),
+            )),
+            11 => {
+                tokio::time::sleep(Duration::from_millis(100)).await;
+                Ok(())
+            }
+            _ => Ok(()),
         }
     }
     fn unregister_owned_local_service(
@@ -412,3 +434,64 @@ async fn failed_owned_ffi_keeps_denial_bad_receipt_deadline_and_uncertain_remova
 
 #[path = "service_authorization_tests.rs"]
 mod service_authorization_tests;
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn actual_owned_replacement_ffi_has_bounds_original_deadline_and_no_fallback() {
+    let (_bus, _server, s, c) = fixture().await;
+    let byte = [1u8];
+    let (e, v) = unsafe { acquire(c, ns()) };
+    assert_eq!(e, 0);
+    unsafe { slk_client_close(c) };
+    for value in [vec![], vec![4, 5, 6], vec![8; 2042]] {
+        assert_eq!(
+            unsafe { slk_local_service_replace(v, 17, value.as_ptr(), value.len(), ns()) },
+            0
+        );
+    }
+    assert_eq!(s.replacements.lock().unwrap().len(), 3);
+    for (h, ptr, len) in [
+        (18, byte.as_ptr(), 1),
+        (0, byte.as_ptr(), 1),
+        (17, std::ptr::null(), 1),
+        (17, std::ptr::null(), 2043),
+    ] {
+        assert_eq!(
+            unsafe { slk_local_service_replace(v, h, ptr, len, ns()) },
+            -nix::libc::EINVAL
+        );
+    }
+    assert_eq!(s.replacements.lock().unwrap().len(), 3);
+    s.mode.store(10, Ordering::SeqCst);
+    assert_eq!(
+        unsafe { slk_local_service_replace(v, 17, byte.as_ptr(), 1, ns()) },
+        -nix::libc::ENOBUFS
+    );
+    s.mode.store(11, Ordering::SeqCst);
+    let short = slk_channel::deadline::Deadline::after(Duration::from_millis(20))
+        .unwrap()
+        .stamp()
+        .monotonic_ns;
+    assert_eq!(
+        unsafe { slk_local_service_replace(v, 17, byte.as_ptr(), 1, short) },
+        -nix::libc::ETIMEDOUT
+    );
+    tokio::time::sleep(Duration::from_millis(120)).await;
+    s.mode.store(5, Ordering::SeqCst);
+    assert_eq!(
+        unsafe { slk_local_service_unregister(v, ns()) },
+        -nix::libc::ETIMEDOUT
+    );
+    s.mode.store(0, Ordering::SeqCst);
+    assert_eq!(
+        unsafe { slk_local_service_replace(v, 17, byte.as_ptr(), 1, ns()) },
+        -nix::libc::EINVAL
+    );
+    s.mode.store(0, Ordering::SeqCst);
+    assert_eq!(unsafe { slk_local_service_unregister(v, ns()) }, 0);
+    assert_eq!(
+        unsafe { slk_local_service_replace(v, 17, byte.as_ptr(), 1, ns()) },
+        -nix::libc::EINVAL
+    );
+    assert_eq!(s.replacements.lock().unwrap().len(), 5);
+    unsafe { slk_local_service_free(v) };
+}

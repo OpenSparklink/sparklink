@@ -124,11 +124,15 @@ ListLocalServices() returns a(qqaya(qayuu)); RemoveLocalService(q start) and
 ReadLocalValue(q handle) operate the local database. Local registration
 success is not remote service-discovery or publication success.
 .PP
-RegisterOwnedLocalService(ay uuid,a(ayuuay) properties,o authorizer) returns
+RegisterOwnedLocalService(ay uuid,a(ayuuay) properties,o authorizer,(ttttt) deadline) returns
 (qqaq). The unique caller owns the registration; authorizer=/ cannot register
-local-authorization bits. ReadOwnedLocalValue(q) returns ay and
-UnregisterOwnedLocalService(q) acts only for the original owner.
-The sparklink-services group permits only these three Owned methods, not
+local-authorization bits. ReadOwnedLocalValue(q,(ttttt)) returns ay;
+ReplaceOwnedLocalValue(q,ay,(ttttt)) commits only this owner's local value
+(0..2042 bytes,total value budget8192),without changing peer permissions.
+UnregisterOwnedLocalService(q,(ttttt)) acts only for the original owner.
+Replacement success is local commit,not notification or peer delivery. A lost
+reply/timeout may leave uncertain effects;there is no automatic retry.
+The sparklink-services group permits only these four Owned methods, not
 controller administration, OpenChannel or kernel-device access.
 The original owner's org.sparklink.SsapAuthorizer.AuthorizeValue callback
 receives (t(qttqtuyyy)qbtay): request, original controller/generation/lifetime/

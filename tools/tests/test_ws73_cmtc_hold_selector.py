@@ -53,11 +53,12 @@ class CmtcHoldSelector(unittest.TestCase):
         return self.lib.select_reply(ctypes.create_string_buffer(raw), len(raw))
 
     def test_exchange_requires_response_and_never_matches_cmtc_or_request(self):
-        response=bytes.fromhex('0a0006000303fa070102')
+        response=bytes.fromhex('0a000a000307fa07010204000000')
         def selected(raw):return self.lib.select_exchange(ctypes.create_string_buffer(raw),len(raw))
         for handle in [0,1,0xfff]:
             raw=aggregate(frame(handle,response));self.assertTrue(selected(raw));self.assertFalse(self.selected(raw))
-        for raw in [aggregate(frame()),aggregate(frame(response=bytes.fromhex('0a0006000203fa070102'))),
+        for raw in [aggregate(frame()),aggregate(frame(response=bytes.fromhex('0a0006000303fa070102'))),
+                    aggregate(frame(response=bytes.fromhex('0a000a000207fa07010204000000'))),
                     aggregate(frame(0x1000,response)),aggregate(frame(response=response),queue=9)]:
             self.assertFalse(selected(raw))
         raw=aggregate(frame(response=response))

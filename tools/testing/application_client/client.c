@@ -321,17 +321,27 @@ done:
  * a distinct business reply through the same existing SSAP/physical Session. */
 static int update_peer_mode(int argc,char **argv) {
     if (argc!=9) return 2;
+    const int negative=!strcmp(argv[1],"update-error");
     uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[5]),mode=number(argv[6]);
     uint8_t expected[2042],reply[2042],raw[2042],echo[2042];
-    size_t n=bytes(argv[7],expected),r=bytes(argv[8],reply);
-    if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX || (mode!=1 && mode!=2) || n>2036 || r>2042 || (n==r && !memcmp(expected,reply,n))) return 2;
+    size_t n=negative?0:bytes(argv[7],expected),r=negative?0:bytes(argv[8],reply);
+    const uint64_t budget_ms=negative?number(argv[8]):5000;
+    if (negative && (number(argv[7])!=ETIMEDOUT || budget_ms<50 || budget_ms>5000)) return 2;
+    if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX || (mode!=1 && mode!=2) || n>2036 || r>2042 || (!negative && n==r && !memcmp(expected,reply,n))) return 2;
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};struct SlkClient *client=NULL;struct SlkConnection *link=NULL;
-    int status=1,error;const uint64_t original=now_ns()+5000000000ULL;
+    int status=1,error;const uint64_t started=now_ns(),original=started+budget_ms*1000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
     error=slk_client_connection(client,&id,(const uint8_t *)argv[4],strlen(argv[4]),original,&link);if (error) {errno=-error;goto done;}
     slk_client_close(client);client=NULL;
-    printf("{\"stage\":\"ssap_update_wait\",\"api\":\"c\",\"handle\":%"PRIu64",\"mode\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"client_closed\":true}\n",handle,mode,original);fflush(stdout);
-    struct SlkSsapUpdate result={0};error=slk_connection_ssap_receive(link,(uint16_t)handle,(uint32_t)mode,&result,original);if (error) {errno=-error;goto done;}
+    printf("{\"stage\":\"ssap_update_wait\",\"api\":\"c\",\"handle\":%"PRIu64",\"mode\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"client_closed\":true",handle,mode,original);
+    printf(",\"started_ns\":%"PRIu64",\"budget_ms\":%"PRIu64,started,budget_ms);
+    printf("}\n");fflush(stdout);
+    struct SlkSsapUpdate result={0};error=slk_connection_ssap_receive(link,(uint16_t)handle,(uint32_t)mode,&result,original);
+    if (negative) {
+        if (error!=-ETIMEDOUT) {errno=error?-error:EBADMSG;goto done;}
+        printf("{\"stage\":\"ssap_update_error\",\"api\":\"c\",\"handle\":%"PRIu64",\"mode\":%"PRIu64",\"errno\":%d,\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",handle,mode,-error,original,now_ns());fflush(stdout);status=0;goto done;
+    }
+    if (error) {errno=-error;goto done;}
     raw[0]=mode==2?16:15;raw[1]=3;raw[2]=(uint8_t)handle;raw[3]=(uint8_t)(handle>>8);raw[4]=(uint8_t)n;raw[5]=(uint8_t)(n>>8);memcpy(raw+6,expected,n);
     if (result.stage!=3 || result.pdu_length!=n+6 || result.acknowledgement_length || memcmp(result.pdu,raw,n+6)) {errno=EBADMSG;goto done;}
     uintptr_t count=0;error=slk_connection_ssap_write(link,(uint16_t)handle,2,reply,r,echo,sizeof echo,&count,now_ns()+5000000000ULL);
@@ -345,7 +355,7 @@ done:
 
 int main(int argc,char **argv) {
     if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly") || !strcmp(argv[1],"owned-updates"))) return owned_mode(argc,argv);
-    if (argc>1 && !strcmp(argv[1],"update-peer")) return update_peer_mode(argc,argv);
+    if (argc>1 && (!strcmp(argv[1],"update-peer") || !strcmp(argv[1],"update-error"))) return update_peer_mode(argc,argv);
     if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);
     if (argc!=7 || strlen(argv[3])>256) return 2;

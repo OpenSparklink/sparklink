@@ -5,6 +5,10 @@ export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/slkbus
 # The policy probe selects this address explicitly; the bus is type=system.
 export DBUS_SESSION_BUS_ADDRESS=$DBUS_SYSTEM_BUS_ADDRESS
 export PYTHONHOME=/usr
+# The scratch guest stages the Native SONAME in /usr/lib. The host-derived
+# loader may search /usr/lib64 instead; select the sealed Native image
+# explicitly for pre-daemon gates too, independently of the application SDK.
+export LIBSLK_NATIVE_PATH=/usr/lib/libslk_native.so.0
 fail() {
     echo "WS73_TARGET_FAILURE: $*"
     if [ -f /evidence/session-service/run.json ]; then

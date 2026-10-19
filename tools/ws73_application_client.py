@@ -33,12 +33,14 @@ def process_identity(pid, uid=1000):
     return identity,status
 
 
-def ssap_receipt(app,entry,*,expected_size=32):
+def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
     if app['environment']!=application_environment() or app['exit'] or app['stderr']:
         raise CaptureError('actual successful SSAP consumer and staged SDK required')
     identity=app['credentials']
-    if identity['uids']!=[1000]*4 or set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in identity['capabilities'].values()):
+    if expected_uid not in (1000,1004) or identity['uids']!=[expected_uid]*4 or set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in identity['capabilities'].values()):
         raise CaptureError('ordinary cap-zero SSAP application required')
+    if expected_uid==1004 and (identity.get('gids')!=[1004]*4 or identity.get('groups')!=[]):
+        raise CaptureError('SSAP application-only child inherited authority groups')
     lines=app['stdout'].splitlines()
     if len(lines)!=2 or json.loads(lines[0])!=dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):
         raise CaptureError('original retained-caller start barrier required')
@@ -54,8 +56,10 @@ def ssap_receipt(app,entry,*,expected_size=32):
         raise CaptureError('exact actual SSAP executable and arguments required')
 
 
-def ssap_command(run,row,entry,args,expected,*,api=None,expected_size=32):
+def ssap_command(run,row,entry,args,expected,*,api=None,expected_size=32,application_uid=1000):
     if type(expected_size)is not int or not 1<=expected_size<=2042 or not isinstance(expected,bytes) or len(expected)!=expected_size:raise CaptureError('original bounded expected SSAP value required')
+    if application_uid not in (1000,1004):raise CaptureError('explicit SSAP test role required')
+    if application_uid==1004 and os.geteuid()!=0:raise CaptureError('apps-only SSAP requires existing VM root role supervisor')
     position=row['owners'].index(entry)
     if api is None:api='c' if position==row['phase'] else 'python'
     if api not in ('c','python'):raise CaptureError('explicit SDK consumer required')
@@ -66,9 +70,9 @@ def ssap_command(run,row,entry,args,expected,*,api=None,expected_size=32):
     app=dict(api=api,args=command,position=position,environment=application_environment(),ssap_operation=args[0],ssap_path=args[1],ssap_handle=int(args[2]),ssap_expected=expected.hex(),start_wall_ns=time.time_ns(),output_files=[str(stdout),str(stderr)])
     items.append(app);run.data.setdefault('ssap_values',[]).append(app);run.save()
     with stdout.open('xb')as out,stderr.open('xb')as err:
-        proc=subprocess.Popen(command,env=dict(os.environ,**app['environment']),stdin=subprocess.PIPE,stdout=out,stderr=err,**({'user':1000,'group':1000,'extra_groups':[]} if os.geteuid()==0 else {}))
+        proc=subprocess.Popen(command,env=dict(os.environ,**app['environment']),stdin=subprocess.PIPE,stdout=out,stderr=err,**({'user':application_uid,'group':application_uid,'extra_groups':[]} if os.geteuid()==0 else {}))
         try:
-            app['pid']=proc.pid;app['credentials'],app['process_status']=process_identity(proc.pid);run.save()
+            app['pid']=proc.pid;app['credentials'],app['process_status']=process_identity(proc.pid,application_uid);run.save()
             end=time.monotonic()+5
             while True:
                 lines=stdout.read_text().splitlines()
@@ -83,7 +87,7 @@ def ssap_command(run,row,entry,args,expected,*,api=None,expected_size=32):
             if proc.poll()is None:proc.kill()
             proc.wait();proc.stdin.close()
             app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=stdout.read_text(),stderr=stderr.read_text());run.save()
-    ssap_receipt(app,entry,expected_size=expected_size)
+    ssap_receipt(app,entry,expected_size=expected_size,expected_uid=application_uid)
     return app
 
 
@@ -203,11 +207,11 @@ def owned_value_snapshot(run,live,owner,args,expected):
     observation=value_snapshot(process,app,expected.hex());observation.update(api=app['api'],publisher_pid=app['pid']);run.save();return observation
 
 
-def ssap_phase(run,row):
+def ssap_phase(run,row,*,application_uid=1000):
     from ws73_ssap_value import execute as ssap_execute
     row['ssap_language_required']=True;run.save()
     live={}
-    ssap_execute(run,row,value_command=lambda entry,args,expected:ssap_command(run,row,entry,args,expected),
+    ssap_execute(run,row,value_command=lambda entry,args,expected:ssap_command(run,row,entry,args,expected,application_uid=application_uid),
         services=lambda _run,_row,_command:owned_services(_run,_row,live),
         local_value_command=lambda owner,args,expected:owned_value_snapshot(run,live,owner,args,expected))
 
@@ -329,7 +333,7 @@ def corroborate_ssap(rows,capture):
                 expected_api='c' if position==n else 'python'
                 if app not in apps or app in used or app['position']!=position or app['api']!=expected_api:
                     raise CaptureError('actual independent SDK calls and swapped API roles required')
-                ssap_receipt(app,entry);used.append(app)
+                ssap_receipt(app,entry,expected_uid=1004);used.append(app)
         if len(used)!=24:raise CaptureError('every SSAP application must belong to one actual operation')
         def matched(entry,direction,payload,item):
             owner,obj=entry['owner'],entry['object']
@@ -373,15 +377,15 @@ def corroborate(run,capture):
                 if len(matches)!=1:raise CaptureError('one exact application USB TX/opposite RX required')
                 leg[direction]=matches[0]
             legs.append(leg)
-        proofs.append(dict(phase=n,applications=values,legs=legs,role_probe=row['role_probe'],channel_role=row['channel_role']))
+        proofs.append(dict(phase=n,applications=values,legs=legs,role_probe=row['role_probe'],channel_role=row['channel_role'],application_role_contract_version=row['application_role_contract_version']))
     ssap=corroborate_ssap(rows,capture)
-    return dict(status='C_PYTHON_APPS_ONLY_CHANNEL_AND_OWNED_SSAP_USB_SCOPED_PASS',round_trips=2,proofs=proofs,ssap=ssap,remaining=['Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification','Other lifecycle combinations and original gates remainrequired'])
+    return dict(status='C_PYTHON_APPS_ONLY_CHANNEL_AND_OWNED_SSAP_USB_SCOPED_PASS',application_role_contract_version=2,round_trips=2,proofs=proofs,ssap=ssap,remaining=['Not deployed group-policy/revocation/fullAPI/recovery orperformance qualification','Other lifecycle combinations and original gates remainrequired'])
 
 
 def valid_summary(proof):
     """Terminal shape check only; never substitutes for raw corroborate()."""
     try:
-        if proof['status']!='C_PYTHON_APPS_ONLY_CHANNEL_AND_OWNED_SSAP_USB_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
+        if type(proof.get('application_role_contract_version'))is not int or proof['application_role_contract_version']!=2 or proof['status']!='C_PYTHON_APPS_ONLY_CHANNEL_AND_OWNED_SSAP_USB_SCOPED_PASS' or type(proof['round_trips']) is not int or proof['round_trips']!=2 or len(proof['proofs'])!=2:return False
         ssap=proof['ssap']
         if ssap['status']!='C_PYTHON_SSAP_VALUE_USB_CORROBORATED' or ssap['operations']!=16 or ssap['api_calls']!=48 or ssap.get('authorization_requests')!=80 or len(ssap['proofs'])!=2:return False
         for n,row in enumerate(ssap['proofs']):
@@ -391,6 +395,9 @@ def valid_summary(proof):
                 if publisher['api']!=('c' if i==n else 'python') or publisher['exit'] or publisher['stderr'] or publisher['credentials']['uids']!=[1005]*4 or len(publisher.get('value_snapshots',[]))!=4:return False
                 authorization_decisions(publisher)
             for app in row['applications']:
+                if (app['credentials']['uids']!=[1004]*4 or app['credentials'].get('gids')!=[1004]*4
+                        or app['credentials'].get('groups')!=[] or set(app['credentials']['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'}
+                        or any(int(v,16)for v in app['credentials']['capabilities'].values())):return False
                 if app['position']not in (0,1) or app['api']!=('c' if app['position']==n else 'python') or app['exit'] or app['stderr']:return False
             for value in row['values']:
                 if len(value['wire'])!=6 or len(value['uuid_wire'])!=2:return False

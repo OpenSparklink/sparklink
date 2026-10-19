@@ -126,11 +126,14 @@ generation、physical lifetime、handle和peer身份。它只是观察／调用�
 可安全重试的size query**。其他失败二者不变。超出65535的回复为EOVERFLOW。
 write输入允许空值，长度超65535为EMSGSIZE；这个语言内存上限不是协商MTU或长写
 支持，实际大小／安全要求继续由daemon及通道拒绝，不截断输入。
-权限继续按实际system bus策略逐方法拒绝；当前`sparklink-apps`仅开放只读
+权限继续按实际system bus策略逐方法拒绝；`sparklink-apps`开放只读
 `Connection.GetInfo` 预检与既有 `OpenChannel`／`OpenChannelScoped`／
-`PrepareDynamicChannel`，没有开放SSAP或管理权。只读预检不制造Ready或授予权限；
-新规则的应用组实机资格另取，不能继承17b4管理组门禁。现有管理组可用的RPC不等于
-普通应用角色的SSAP授权已经完成，后者仍需独立策略／实际权限门禁。
+`PrepareDynamicChannel`，以及已有原期限约束的 `ReadSsapValue`、`WriteSsapValue`、
+`ReceiveSsapUpdate` 和下方四个持续接收方法。原身份、远端权限与机制事实仍由唯一
+Engine 校验；组成员不是 Native Grant 或服务所有者。管理权未开放。`DiscoverSsap`、
+`GetCachedSsap`、`ReadSsapByUuid`、`GetSsapInfo` 尚未通过本批原期限／调用者审计，
+继续只由管理角色调用；不能宣称完整 SSAP 客户端权限迁移完成。
+新规则的实际 system bus／应用组实机资格须单独取得，不继承管理组历史门禁。
 C调用者须提供真实有效、独占、无别名且满足声明长度的内存区域；坏指针属于FFI
 调用者契约，不能用来代替内核EFAULT门禁。
 
@@ -579,10 +582,10 @@ NotSupported。只允许一个call-owned等待者；busy、原期限、caller退
 ### 持续 SSAP 接收租约（开发中，未发布）
 
 以下是同一 Connection／SSAP actor 的源码接线，不是新 Host 或 wire Engine。
-Rust／C／Python／CLI 已复用同一客户端，实际部署权限和新实机门禁尚未完成；
-源码、参数／私有总线检查及接口存在不能推导实机资格。当前系统总线策略仍只向管理组
-开放这些 Connection SSAP 方法，`sparklink-apps` 专用身份尚未开放；不能把加入管理组
-作为普通应用权限分离已完成的证明。
+Rust／C／Python／CLI 已复用同一客户端。系统总线策略以逐方法 allowlist 向
+`sparklink-apps` 开放这四个原期限／原 caller 绑定的方法；实际权限与新的持续更新
+实机门禁单独记录，源码、无副作用的错误预检或私有总线 fixture 不构成实机资格。
+加入管理组的历史调用不能作为普通应用权限分离已完成的证明。
 单次 `ReceiveSsapUpdate` 的原语义保留。首版仅允许每物理 actor 一个接收租约；第二个
 请求明确 busy，不覆盖旧 CPCD，也不代表多应用共享订阅已经实现。
 

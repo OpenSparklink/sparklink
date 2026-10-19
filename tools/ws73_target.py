@@ -107,6 +107,7 @@ def prepare_locked(args, build_fd):
     manifest['firmware_evidence_contract_version'] = 1
     manifest['ssap_exchange_contract_version'] = 2
     manifest['ssap_update_delivery_contract_version'] = 2
+    manifest['application_role_contract_version'] = 2
     try:
         module_profile = native_vm.enabled(args)
         config_required(args.kernel_build / '.config', module_profile)
@@ -982,6 +983,9 @@ def _run(args):
             raise ValueError('application discovery requires the verified native VM profile')
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
+        if application_clients:
+            if type(package.get('application_role_contract_version'))is not int or package['application_role_contract_version']!=2:raise ValueError('application role contract2 requires newly prepared exact artifacts')
+            m['application_role_contract_version']=2
         if owner_publisher=='sdk' and 'native_vm' not in package:
             raise ValueError('SDK lifecycle publisher requires verified native VM')
         if agent_mode and ('native_vm' not in package or 'native_security_agent_probe' not in package):raise ValueError('Agent requires native VM and staged real witness')
@@ -2082,6 +2086,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if clients:
         from ws73_application_client import valid_summary
         from ws73_application_role import valid_supervision
+        if type(record.get('application_role_contract_version'))is not int or record['application_role_contract_version']!=2:return 1
         if not valid_supervision(record.get('application_role_supervision',{})):return 1
         if record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0 or record.get('application_client_acceptance') is not True or not valid_summary(record.get('application_client_corroboration',{})):return 1
     required=record.get('live_ssap_security_requirement',0)

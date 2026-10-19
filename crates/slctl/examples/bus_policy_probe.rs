@@ -765,6 +765,112 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
     Ok(())
 }
 
+// These malformed requests must reach the real daemon preflight without
+// starting protocol work. InvalidArgs is permission evidence,not SSAP delivery.
+async fn ssap_application_preflight(
+    connection: &Connection,
+    destination: &str,
+    path: &str,
+) -> anyhow::Result<()> {
+    let bad: slk_contract::Deadline = (0, 0, 0, 0, 0);
+    for (name, result) in [
+        (
+            "ReadSsapValue",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "ReadSsapValue",
+                    &(1u16, 0u32, bad),
+                )
+                .await,
+        ),
+        (
+            "WriteSsapValue",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "WriteSsapValue",
+                    &(1u16, vec![0u8], 0u32, bad),
+                )
+                .await,
+        ),
+        (
+            "ReceiveSsapUpdate",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "ReceiveSsapUpdate",
+                    &(Vec::<u16>::new(), 0u8, bad),
+                )
+                .await,
+        ),
+        (
+            "SubscribeSsapUpdates",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "SubscribeSsapUpdates",
+                    &(Vec::<u16>::new(), 0u8, 0u32, bad),
+                )
+                .await,
+        ),
+        (
+            "ReadSsapUpdates",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "ReadSsapUpdates",
+                    &(0u64, false, bad),
+                )
+                .await,
+        ),
+        (
+            "RenewSsapSubscription",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "RenewSsapSubscription",
+                    &(0u64, 0u32, bad),
+                )
+                .await,
+        ),
+        (
+            "CloseSsapSubscription",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "CloseSsapSubscription",
+                    &(0u64, bad),
+                )
+                .await,
+        ),
+    ] {
+        match result {
+            Err(zbus::Error::MethodError(error, _, _))
+                if error.as_str() == "org.freedesktop.DBus.Error.InvalidArgs" =>
+            {
+                println!("AUTH_SSAP_PREFLIGHT: {name}");
+            }
+            other => anyhow::bail!("{name}: expected actual daemon InvalidArgs,got {other:?}"),
+        }
+    }
+    Ok(())
+}
+
 // Real guest system-bus policy on a live Connection, independent of SDK wrappers.
 async fn application_channel(path: &str) -> anyhow::Result<()> {
     credentials(1004, 1004)?;
@@ -860,45 +966,83 @@ async fn application_channel(path: &str) -> anyhow::Result<()> {
                 )
                 .await,
         )?;
-        denied(
-            "ReadSsapValue",
-            connection
-                .call_method(
-                    Some(destination),
-                    path,
-                    Some(slk_contract::CONNECTION),
-                    "ReadSsapValue",
-                    &(
-                        1u16,
-                        0u32,
-                        slk_contract::deadline_wire(
-                            libsparklink::Deadline::after(std::time::Duration::from_secs(5))?
-                                .stamp(),
-                        ),
-                    ),
-                )
-                .await,
-        )?;
-        denied(
-            "WriteSsapValue",
-            connection
-                .call_method(
-                    Some(destination),
-                    path,
-                    Some(slk_contract::CONNECTION),
-                    "WriteSsapValue",
-                    &(
-                        1u16,
-                        vec![0u8],
-                        0u32,
-                        slk_contract::deadline_wire(
-                            libsparklink::Deadline::after(std::time::Duration::from_secs(5))?
-                                .stamp(),
-                        ),
-                    ),
-                )
-                .await,
-        )?;
+        ssap_application_preflight(&connection, destination, path).await?;
+        for (method, result) in [
+            (
+                "DiscoverSsap",
+                connection
+                    .call_method(
+                        Some(destination),
+                        path,
+                        Some(slk_contract::CONNECTION),
+                        "DiscoverSsap",
+                        &(vec![0u8], 255u8),
+                    )
+                    .await,
+            ),
+            (
+                "GetCachedSsap",
+                connection
+                    .call_method(
+                        Some(destination),
+                        path,
+                        Some(slk_contract::CONNECTION),
+                        "GetCachedSsap",
+                        &(),
+                    )
+                    .await,
+            ),
+            (
+                "ReadSsapByUuid",
+                connection
+                    .call_method(
+                        Some(destination),
+                        path,
+                        Some(slk_contract::CONNECTION),
+                        "ReadSsapByUuid",
+                        &(0u16, 0u16, 0u8, Vec::<u8>::new(), 0u32),
+                    )
+                    .await,
+            ),
+            (
+                "GetSsapInfo",
+                connection
+                    .call_method(
+                        Some(destination),
+                        path,
+                        Some(slk_contract::CONNECTION),
+                        "GetSsapInfo",
+                        &(),
+                    )
+                    .await,
+            ),
+            (
+                "SendOwnedSsapUpdate",
+                connection
+                    .call_method(
+                        Some(destination),
+                        path,
+                        Some(slk_contract::CONNECTION),
+                        "SendOwnedSsapUpdate",
+                        &(0u16, false, (0u64, 0u64, 0u64, 0u64, 0u64)),
+                    )
+                    .await,
+            ),
+            (
+                "GetOwnedSsapConfiguration",
+                connection
+                    .call_method(
+                        Some(destination),
+                        path,
+                        Some(slk_contract::CONNECTION),
+                        "GetOwnedSsapConfiguration",
+                        &(0u16, (0u64, 0u64, 0u64, 0u64, 0u64)),
+                    )
+                    .await,
+            ),
+        ] {
+            denied(method, result)?;
+        }
         denied(
             "AllocateReferenceSecurity",
             connection

@@ -3,7 +3,7 @@
 
 Reuse the existing SDK one-shot pair and real system-bus probe. Root opens only
 fixed evidence paths and drops channels to UID/GID1004,SSAP publishers to1005
-and peer SDK/CLI calls to1000,each with no extra groups.
+and remote value SDK calls to1004. Management discovery/UUID observations stay1000,each with no extra groups.
 No protocol bytes, Native lease, Host, fake reply or arbitrary command service.
 """
 from pathlib import Path
@@ -25,7 +25,10 @@ SSAP_FIELDS=('ssap_language_required','ssap_language_clients','ssap_registration
     'ssap_owned_publishers_required','ssap_owned_publishers','ssap_value_required',
     'ssap_read_uuid_required','ssap_update_local_rejection_required','ssap_values',
     'ssap_local_registrations','ssap_discovery_required','ssap_discoveries','unsupported_incoming','role_ssap_commands')
-DENIALS=['StopControllerScan','SubmitDisconnect','ReadSsapValue','WriteSsapValue',
+SSAP_PREFLIGHT=['ReadSsapValue','WriteSsapValue','ReceiveSsapUpdate',
+                'SubscribeSsapUpdates','ReadSsapUpdates','RenewSsapSubscription','CloseSsapSubscription']
+DENIALS=['StopControllerScan','SubmitDisconnect','DiscoverSsap','GetCachedSsap','ReadSsapByUuid',
+         'GetSsapInfo','SendOwnedSsapUpdate','GetOwnedSsapConfiguration',
          'AllocateReferenceSecurity','interface-less-GetInfo','unknown-method']
 
 
@@ -63,7 +66,7 @@ def read_json(path, uid, limit=131072):
 
 def _verify_probe(row):
     probe=row['role_probe'];identity=probe['credentials']
-    if (row.get('channel_role')!='sparklink-apps-only' or probe['exit'] or probe['stderr'] or
+    if (type(row.get('application_role_contract_version'))is not int or row['application_role_contract_version']!=2 or row.get('channel_role')!='sparklink-apps-only' or probe['exit'] or probe['stderr'] or
             identity['uids']!=[1004]*4 or identity['gids']!=[1004]*4 or identity['groups'] or
             set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or
             any(int(v,16)for v in identity['capabilities'].values())):
@@ -77,7 +80,9 @@ def _verify_probe(row):
     expected=['AUTH_CREDENTIALS: uid=1004 gid=1004 caps=0','AUTH_CHANNEL_KERNEL_ACCESS: denied','AUTH_DENIED: own-service']
     for destination in ('named','unique'):
         expected+=['AUTH_CHANNEL_IDENTITY: '+destination]
-        expected+=['AUTH_DENIED: '+name for name in DENIALS]
+        expected+=['AUTH_DENIED: '+name for name in DENIALS[:2]]
+        expected+=['AUTH_SSAP_PREFLIGHT: '+name for name in SSAP_PREFLIGHT]
+        expected+=['AUTH_DENIED: '+name for name in DENIALS[2:]]
     expected+=['AUTH_CHANNEL_ROLE: sparklink-apps-only']
     if lines!=expected:raise CaptureError('all original role observations and denials required')
     if not probe['start_wall_ns']<=probe['end_wall_ns']:
@@ -114,7 +119,7 @@ def request_pair(run,row):
     if result.get('ssap_gate_status')!='OWNED_SDK_VALUE_EVIDENCE_PENDING':raise CaptureError('actual root-supervised Owned SDK phase missing')
     for key in SSAP_FIELDS:
         if key not in result:raise CaptureError('missing root-supervised SDK field: '+key)
-    for key in ('applications','start_barrier_wall_ns','role_probe','channel_role','role_supervisor',*SSAP_FIELDS):
+    for key in ('applications','start_barrier_wall_ns','role_probe','channel_role','application_role_contract_version','role_supervisor',*SSAP_FIELDS):
         row[key]=result[key]
     run.save()
 
@@ -129,7 +134,7 @@ def verify_supervisor_artifacts(control,evidence):
     for phase,row in enumerate(control['application_clients']):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
         verify_probe(original)
-        for key in ('phase','owners','request','reply','tools','applications','role_probe','channel_role','role_supervisor','start_barrier_wall_ns',*SSAP_FIELDS):
+        for key in ('phase','owners','request','reply','tools','applications','role_probe','channel_role','application_role_contract_version','role_supervisor','start_barrier_wall_ns',*SSAP_FIELDS):
             if row[key]!=original[key]:raise CaptureError('root-supervised phase differs from control record')
         if original.get('pair_status')!='CHANNEL_PAIR_EVIDENCE_PENDING' or original['role_supervisor']!=finished['supervisor']:
             raise CaptureError('completed original role phase required')
@@ -139,13 +144,14 @@ def verify_supervisor_artifacts(control,evidence):
                 if path.read_text()!=app['stdout'if path.suffix=='.stdout'else'stderr']:
                     raise CaptureError('original actual role process output differs')
     if len(control['application_clients'])!=2:raise CaptureError('two original role phases required')
-    return dict(status='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED',uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,daemon=finished['daemon'],supervisor=finished['supervisor'],scope='Finite actual system-bus role and SDK one-shot gate;not full deployment/revocation/deadline or per-application authorization')
+    return dict(status='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED',contract_version=2,ssap_client_uid=1004,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,daemon=finished['daemon'],supervisor=finished['supervisor'],scope='Finite actual system-bus role and SDK one-shot gate;not full deployment/revocation/deadline or per-application authorization')
 
 
 def valid_supervision(proof):
     """Terminal shape only. Raw root files and process output are checked above."""
     try:
         return (proof['status']=='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED' and
+                type(proof['contract_version'])is int and proof['contract_version']==2 and proof['ssap_client_uid']==1004 and
                 proof['uid']==1004 and proof['gid']==1004 and proof['extra_groups']==[] and
                 proof['role_probes']==2 and proof['application_processes']==4 and
                 all(type(proof[k]['pid'])is int and proof[k]['pid']>0 and
@@ -180,7 +186,7 @@ def supervise(daemon_pid):
             time.sleep(.01)
         validate_request(row,phase)
         folder=ROOT/f'phase-{phase}';folder.mkdir(mode=0o755)
-        row.update(channel_role='sparklink-apps-only',role_supervisor=supervisor)
+        row.update(channel_role='sparklink-apps-only',application_role_contract_version=2,role_supervisor=supervisor)
         def save():
             target=folder/'progress.json';temporary=folder/'progress.tmp'
             temporary.write_text(json.dumps(row,indent=2)+'\n');temporary.chmod(0o644);temporary.replace(target)
@@ -208,7 +214,7 @@ def supervise(daemon_pid):
                 record['credentials'],record['process_status']=process_identity(process.pid,1000)
             context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
                 child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
-            ssap_phase(context,row)
+            ssap_phase(context,row,application_uid=1004)
             row.update(ssap_gate_status='OWNED_SDK_VALUE_EVIDENCE_PENDING',end_wall_ns=time.time_ns())
             if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed during pair')
         except BaseException as error:

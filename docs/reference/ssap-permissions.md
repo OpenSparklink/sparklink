@@ -23,6 +23,13 @@
 
 ## 当前源码与拒绝规则
 
+系统总线角色与属性权限位是两层约束。`sparklink-apps` 只获得原期限约束的远端
+读写、单次接收及持续接收租约调用；不获得 controller 管理、Owned 服务修改或
+安全安装权限。服务拥有者、实际链路机制／epoch 和远端属性审批仍独立检查。
+无原期限的发现／UUID／信息入口本批未扩权。确切方法见[接口参考](interfaces.md)。
+实际 system bus 中错误预检只能证明策略允许请求到达 daemon；正向业务仍须对端
+应用校验、回复及两端包证据，不能以 InvalidArgs、协议 ACK 或本地入队替代。
+
 实际生产语义由 Rust `slk_protocol::SsapOperations` 与唯一用户态Engine消费。
 旧内核 `SL_SSAP_OP_*` 和valid/allows/fits_legacy helper已退出公开头，只保留在
 有来源hash的私有C测试见证中；它不是内核SSAP服务接口。

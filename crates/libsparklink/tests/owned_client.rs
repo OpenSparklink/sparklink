@@ -4,7 +4,7 @@ mod support;
 use libsparklink::Client;
 use std::sync::{
     Arc, Mutex,
-    atomic::{AtomicU64, Ordering},
+    atomic::{AtomicU8, AtomicU64, Ordering},
 };
 use zbus::{Connection, zvariant::OwnedObjectPath};
 const BASE: &str = "/org/sparklink/slk2_g7";
@@ -16,6 +16,9 @@ struct State {
     removals: AtomicU64,
     agent_epoch: AtomicU64,
     cancellations: AtomicU64,
+    owned_mode: AtomicU8,
+    registrations: AtomicU64,
+    stamps: Mutex<Vec<slk_contract::Deadline>>,
 }
 struct Manager;
 #[zbus::interface(name = "org.sparklink.Manager")]
@@ -35,24 +38,40 @@ impl Adapter {
 struct Services(Arc<State>);
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
 impl Services {
-    fn register_owned_local_service(
+    async fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<(Vec<u8>, u32, u32, Vec<u8>)>,
         authorizer: OwnedObjectPath,
+        deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
-    ) -> (u16, u16, Vec<u16>) {
+    ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
         assert_eq!(uuid, [1, 0]);
         assert_eq!(properties, [(vec![2, 0], 5, 36, vec![0xab])]);
         assert_eq!(authorizer.as_str(), "/test/authorizer");
         *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
-        (16, 17, vec![17])
+        self.0.registrations.fetch_add(1, Ordering::SeqCst);
+        self.0.stamps.lock().unwrap().push(deadline);
+        match self.0.owned_mode.load(Ordering::SeqCst) {
+            1 => tokio::time::sleep(std::time::Duration::from_millis(100)).await,
+            2 => return Ok((16, 17, vec![999])),
+            3 => {
+                self.0.generation.store(8, Ordering::SeqCst);
+            }
+            _ => {}
+        }
+        Ok((16, 17, vec![17]))
     }
     fn read_owned_local_value(
         &self,
         handle: u16,
+        deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> Vec<u8> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
         assert_eq!(handle, 17);
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
         vec![0xab]
@@ -60,10 +79,14 @@ impl Services {
     fn unregister_owned_local_service(
         &self,
         start: u16,
+        deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
         assert_eq!(start, 16);
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.stamps.lock().unwrap().push(deadline);
         self.0.removals.fetch_add(1, Ordering::SeqCst);
     }
 }
@@ -163,11 +186,28 @@ async fn owner_loss_blocks_new_work_but_original_receipts_withdraw_only_original
             vec![1, 0],
             vec![(vec![2, 0], 5, 36, vec![0xab])],
             "/test/authorizer".try_into()?,
+            libsparklink::Deadline::after(std::time::Duration::from_secs(2))?,
         )
         .await?;
     assert_eq!(service.receipt(), &(16, 17, vec![17]));
-    assert_eq!(service.read_local(17).await?, [0xab]);
-    assert!(service.read_local(18).await.is_err());
+    assert_eq!(
+        service
+            .read_local(
+                17,
+                libsparklink::Deadline::after(std::time::Duration::from_secs(2))?
+            )
+            .await?,
+        [0xab]
+    );
+    assert!(
+        service
+            .read_local(
+                18,
+                libsparklink::Deadline::after(std::time::Duration::from_secs(2))?
+            )
+            .await
+            .is_err()
+    );
     let mut agent = view
         .register_agent("/test/agent".try_into()?, "sdk111-no-mitm")
         .await?;
@@ -190,7 +230,15 @@ async fn owner_loss_blocks_new_work_but_original_receipts_withdraw_only_original
         ..Default::default()
     });
     let _replacement = fixture(&bus, replacement_state.clone()).await;
-    assert!(service.read_local(17).await.is_err());
+    assert!(
+        service
+            .read_local(
+                17,
+                libsparklink::Deadline::after(std::time::Duration::from_secs(2))?
+            )
+            .await
+            .is_err()
+    );
     assert!(
         view.register_agent("/test/agent".try_into()?, "sdk111-no-mitm")
             .await
@@ -201,12 +249,120 @@ async fn owner_loss_blocks_new_work_but_original_receipts_withdraw_only_original
     assert!(request.cancel().await?);
     assert_eq!(state.cancellations.load(Ordering::SeqCst), 1);
     assert_eq!(replacement_state.cancellations.load(Ordering::SeqCst), 0);
-    service.unregister().await?;
+    service
+        .unregister(libsparklink::Deadline::after(
+            std::time::Duration::from_secs(2),
+        )?)
+        .await?;
     agent.unregister().await?;
-    assert!(service.read_local(17).await.is_err());
-    assert!(service.unregister().await.is_err());
+    assert!(
+        service
+            .read_local(
+                17,
+                libsparklink::Deadline::after(std::time::Duration::from_secs(2))?
+            )
+            .await
+            .is_err()
+    );
+    assert!(
+        service
+            .unregister(libsparklink::Deadline::after(
+                std::time::Duration::from_secs(2)
+            )?)
+            .await
+            .is_err()
+    );
     assert!(agent.unregister().await.is_err());
     assert_eq!(state.removals.load(Ordering::SeqCst), 2);
     assert_eq!(replacement_state.removals.load(Ordering::SeqCst), 0);
+    Ok(())
+}
+
+#[tokio::test]
+async fn owned_registration_original_wait_receipt_validation_and_cleanup_target()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let state = Arc::new(State {
+        generation: AtomicU64::new(7),
+        ..Default::default()
+    });
+    let _server = fixture(&bus, state.clone()).await;
+    let connection = zbus::connection::Builder::address(bus.address.as_str())?
+        .build()
+        .await?;
+    let client = Client::from_connection(connection).await?;
+    let view = client.controller(BASE).await?;
+    let original = libsparklink::Deadline::after(std::time::Duration::from_millis(5))?;
+    tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+    assert!(
+        view.local_services()
+            .register_service(
+                vec![1, 0],
+                vec![(vec![2, 0], 5, 36, vec![0xab])],
+                "/test/authorizer".try_into()?,
+                original
+            )
+            .await
+            .is_err()
+    );
+    assert_eq!(state.registrations.load(Ordering::SeqCst), 0);
+    state.owned_mode.store(1, Ordering::SeqCst);
+    let original = libsparklink::Deadline::after(std::time::Duration::from_millis(20))?;
+    let result = view
+        .local_services()
+        .register_service(
+            vec![1, 0],
+            vec![(vec![2, 0], 5, 36, vec![0xab])],
+            "/test/authorizer".try_into()?,
+            original,
+        )
+        .await;
+    assert!(
+        matches!(result,Err(libsparklink::ApplicationError::Io(ref e)) if e.raw_os_error()==Some(nix::libc::ETIMEDOUT))
+    );
+    assert_eq!(
+        state.stamps.lock().unwrap()[0].0,
+        original.stamp().monotonic_ns
+    );
+    assert_eq!(
+        state.removals.load(Ordering::SeqCst),
+        0,
+        "no receipt:never guess cleanup handle"
+    );
+    tokio::time::sleep(std::time::Duration::from_millis(110)).await;
+    state.owned_mode.store(2, Ordering::SeqCst);
+    assert!(
+        view.local_services()
+            .register_service(
+                vec![1, 0],
+                vec![(vec![2, 0], 5, 36, vec![0xab])],
+                "/test/authorizer".try_into()?,
+                libsparklink::Deadline::after(std::time::Duration::from_secs(2))?
+            )
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        state.removals.load(Ordering::SeqCst),
+        0,
+        "malformed receipt:never remove a foreign owned handle"
+    );
+    state.owned_mode.store(3, Ordering::SeqCst);
+    assert!(
+        view.local_services()
+            .register_service(
+                vec![1, 0],
+                vec![(vec![2, 0], 5, 36, vec![0xab])],
+                "/test/authorizer".try_into()?,
+                libsparklink::Deadline::after(std::time::Duration::from_secs(2))?
+            )
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        state.removals.load(Ordering::SeqCst),
+        1,
+        "known valid receipt:withdraw at original unique owner"
+    );
     Ok(())
 }

@@ -192,10 +192,13 @@ SDK在实际调用前后检查owner/generation，并校验结果中原请求身�
 ### 本地登记与安全回调客户端
 
 `Controller.management().local_services()`是管理staging；`Controller.local_services()`
-是应用Owned登记，分别保留原broker权限。`register_service()`返回不可Clone的
+是应用Owned登记，分别保留原broker权限。`register_service(..., Deadline)`返回不可Clone的
 `ServiceRegistration`，`receipt()`是本地登记回执，`read_local()`只查询该登记的属性，
 `unregister()`显式撤销。它不表示远端服务发布，Drop不启动脱离调用者的异步RPC。
 应用authorizer对象必须在创建Client的同一bus connection上导出；属性权限沿用既有类型。
+Owned 的 register/read_local/unregister 显式接收原 Deadline；三条 D-Bus 请求携带
+同一五字段 stamp。初次登记期限不充当服务 TTL。超时不表示已经发生的远端效果被
+回滚，原 owner 定向清理与本地对象释放分开；完整规则见[SSAP 权限](ssap-permissions.md)。
 
 `Controller.register_agent(path,method)`返回带daemon实际epoch的`AgentRegistration`。
 旧epoch不能撤销同caller/path的新登记。`ApplicationConnection.allocate_reference_security()`

@@ -20,7 +20,7 @@ def fixture():
         for i,(role,mode,uid,gid) in enumerate([('service','service-only',1005,1005),('channel','service-channel',1004,1004),('observer','service-observer',1001,1001)]):
             labels=['own-service']+(['interface-less-own-read']+SERVICE_DENIED*2 if role=='service' else ['RegisterOwnedLocalService']+DENIED*2)
             text=f'AUTH_CREDENTIALS: uid={uid} gid={gid} caps=0\nAUTH_SERVICE_KERNEL_ACCESS: denied\n'
-            if role=='service':text+='AUTH_SERVICE_OWNED: start=18 property=19 value=07 removed=true\n'
+            if role=='service':text+='AUTH_SERVICE_OWNED: start=18 property=19 value=07 removed=true\nAUTH_OWNED_DEADLINE: register/read/remove expired=true\n'
             text+=''.join('AUTH_DENIED: '+label+'\n' for label in labels)+f'AUTH_SERVICE_ROLE: {mode}\n'
             c['commands'].append(dict(role=role,args=['/bin/probe',owner['path'],mode,'16','17'],exit=0,stdout=text,stderr='',start_wall_ns=20+n*400+i*10,end_wall_ns=21+n*400+i*10))
         c['after_quit']=dict(role='ws73',args=['/bin/slctl','--adapter',owner['path'],'ssap-list'],exit=0,stdout='SsapLocalServices: []\n',stderr='',start_wall_ns=100+n*400,end_wall_ns=101+n*400)
@@ -29,6 +29,14 @@ def fixture():
 
 
 class ServicePolicy(unittest.TestCase):
+    def test_missing_duplicate_or_wrong_deadline_receipt_fails_closed(self):
+        for text in ['', 'AUTH_OWNED_DEADLINE: register/read/remove expired=false\n',
+                     'AUTH_OWNED_DEADLINE: register/read/remove expired=true\n' * 2]:
+            r,run=fixture()
+            c=r['cases'][0]['commands'][0]
+            c['stdout']=c['stdout'].replace('AUTH_OWNED_DEADLINE: register/read/remove expired=true\n',text)
+            with self.subTest(text=text),self.assertRaises(CaptureError):corroborate(r,run)
+
     def test_complete_synthetic_fixture_only_validates_verdict(self):
         p=corroborate(*fixture());self.assertEqual(len(p),2);self.assertEqual(sum(v['denials'] for v in p),68)
 

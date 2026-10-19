@@ -12,22 +12,7 @@ pub(crate) use slk_contract::ConnectionObjects as Objects;
 /// Kernel mechanism facts, never policy authorization or a future TX grant.
 use slk_contract::SecurityState;
 
-fn deadline_error(error: std::io::Error) -> zbus::fdo::Error {
-    match error.raw_os_error() {
-        Some(nix::libc::ETIMEDOUT) => {
-            zbus::fdo::Error::Timeout("SSAP value original deadline".into())
-        }
-        Some(nix::libc::EINVAL) => {
-            zbus::fdo::Error::InvalidArgs("invalid original deadline".into())
-        }
-        Some(nix::libc::EOPNOTSUPP | nix::libc::ENOENT | nix::libc::EACCES) => {
-            zbus::fdo::Error::NotSupported(format!(
-                "clock domain unavailable or mismatched: {error}"
-            ))
-        }
-        _ => zbus::fdo::Error::Failed(format!("original deadline: {error}")),
-    }
-}
+use crate::deadline_error;
 
 /// Subscribe before checking ownership or polling the receive future. Known
 /// bus-owner loss cancels the call-owned queue; it does not erase queued ACKs.

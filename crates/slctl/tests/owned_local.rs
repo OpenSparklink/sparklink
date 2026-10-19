@@ -33,8 +33,10 @@ impl Services {
         uuid: Vec<u8>,
         properties: Vec<(Vec<u8>, u32, u32, Vec<u8>)>,
         authorizer: zbus::zvariant::OwnedObjectPath,
+        deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
         assert_eq!(uuid, [1, 0]);
         assert_eq!(properties, [(vec![2, 0], 5, 36, vec![0xab])]);
         assert_eq!(authorizer.as_str(), "/org/sparklink/slctl/ssap_authorizer");
@@ -44,8 +46,10 @@ impl Services {
     fn read_owned_local_value(
         &self,
         handle: u16,
+        deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> Vec<u8> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
         let mut s = self.0.lock().unwrap();
         assert_eq!(handle, 17);
         assert_eq!(s.owner, h.sender().unwrap().as_str());
@@ -55,8 +59,10 @@ impl Services {
     fn unregister_owned_local_service(
         &self,
         start: u16,
+        deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
         let mut s = self.0.lock().unwrap();
         assert_eq!(start, 16);
         assert_eq!(s.owner, h.sender().unwrap().as_str());

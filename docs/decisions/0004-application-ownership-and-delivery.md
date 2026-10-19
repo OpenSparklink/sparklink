@@ -522,3 +522,19 @@ Client 可先关闭，派生对象保留同 caller；旧 owner、原期限与错
 真实门禁继续复用现有 runner、原 USB/随机报告/同行保持断言；该集成须单独核对与验收。
 Rust release、TTL、caller-loss 和历史资格各自保留。局部 fixture/ABI/实机资格不升级
 完整发现、管理撤销、部署权限或自然恢复范围。
+
+### Owned 准入期限与 watch 的清理收据
+
+三个 Owned RPC 复用已存在的跨进程 Deadline，不新增 Operation 或 SSAP Engine。
+原期限覆盖 owner/generation 检查、等待、监听部分初始化和数据库最终准入；
+活动服务继续由独立的 owner/lifetime 管理，不能因初次请求预算耗尽自动退休。
+管理 staging 保留原有角色及用途，本批不伪称其也已迁移期限。
+
+watch 容量由实际 future 持有，直到 abort 被执行或正常退出、引用实际释放后归还。
+直接生产函数回归复现了“请求 abort 即返还容量”的反例并保留原失败；修正只改变
+permit 所有者，没有另造验证状态机。private-bus/生产 DB 检查、VM system-bus 角色
+及真实 SSAP/通道门禁分别记录，均不升级为内核并发或形式化 refinement 证明。
+
+客户端未知效果不猜测回滚；仅有合法回执时允许一次独立、有界的原 owner 定向撤回。
+拒绝旧签名由当前 zbus 解码层完成；没有长期旧接口 fallback。原生固件、空口、credit
+及提交票据职责未改变。未完成 C/Python Owned/callback、通知、部署及恢复范围保持开放。

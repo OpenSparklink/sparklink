@@ -82,6 +82,7 @@ async fn register(owner: &Connection, access: u32) -> (u16, u16) {
                 vec![1u8, 0],
                 vec![(vec![2u8, 0], 5u32, access, vec![7u8])],
                 OwnedObjectPath::try_from("/authorizer").unwrap(),
+                owned_deadline(),
             ),
         )
         .await
@@ -365,13 +366,13 @@ async fn wrong_caller_cannot_remove_read_or_inherit_another_owner_service() {
     .unwrap();
     assert!(
         proxy
-            .call::<_, _, Vec<u8>>("ReadOwnedLocalValue", &(h,))
+            .call::<_, _, Vec<u8>>("ReadOwnedLocalValue", &(h, owned_deadline()))
             .await
             .is_err()
     );
     assert!(
         proxy
-            .call::<_, _, ()>("UnregisterOwnedLocalService", &(start,))
+            .call::<_, _, ()>("UnregisterOwnedLocalService", &(start, owned_deadline()))
             .await
             .is_err()
     );
@@ -384,12 +385,12 @@ async fn wrong_caller_cannot_remove_read_or_inherit_another_owner_service() {
     .await
     .unwrap();
     assert_eq!(
-        own.call::<_, _, Vec<u8>>("ReadOwnedLocalValue", &(h,))
+        own.call::<_, _, Vec<u8>>("ReadOwnedLocalValue", &(h, owned_deadline()))
             .await
             .unwrap(),
         [7]
     );
-    own.call::<_, _, ()>("UnregisterOwnedLocalService", &(start,))
+    own.call::<_, _, ()>("UnregisterOwnedLocalService", &(start, owned_deadline()))
         .await
         .unwrap();
     assert!(store(&state).await.lock().unwrap().local_read(h).is_err());
@@ -476,4 +477,241 @@ async fn explicit_adapter_retirement_drains_watches_with_owner_and_bus_still_ali
     }
     drop(owners);
     assert_eq!(state.lock().await.ssap_owner_slots.available_permits(), 16);
+}
+
+fn owned_deadline() -> slk_contract::Deadline {
+    slk_contract::deadline_wire(
+        slk_channel::deadline::Deadline::after(Duration::from_secs(2))
+            .unwrap()
+            .stamp(),
+    )
+}
+
+#[tokio::test]
+async fn cancelled_owner_initialization_keeps_capacity_until_task_drains() {
+    use crate::ssap_authorization::Owner;
+    use std::sync::{Arc, Mutex};
+    use std::{
+        future::Future,
+        task::{Context, Waker},
+    };
+    let bus = PrivateBus::start();
+    let server = client(&bus).await;
+    let caller = client(&bus).await;
+    let database = Arc::new(Mutex::new(crate::ssap_database::Database::default()));
+    let slots = Arc::new(tokio::sync::Semaphore::new(1));
+    let slot = slots.clone().try_acquire_owned().unwrap();
+    let mut pin = Box::pin(Owner::pin(
+        &server,
+        caller.unique_name().unwrap().to_string(),
+        OwnedObjectPath::try_from("/").unwrap(),
+        &database,
+        slot,
+        Instant::now() + Duration::from_secs(1),
+    ));
+    // The current-thread runtime cannot poll the spawned watch until we yield.
+    // Cancel the actual production initializer after spawn,before watch startup.
+    assert!(
+        pin.as_mut()
+            .poll(&mut Context::from_waker(Waker::noop()))
+            .is_pending()
+    );
+    drop(pin);
+    assert_eq!(
+        slots.available_permits(),
+        0,
+        "abort request is not a task-drain receipt"
+    );
+    tokio::time::timeout(Duration::from_secs(1), async {
+        while slots.available_permits() != 1 {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    assert!(database.lock().unwrap().list().is_empty());
+}
+
+#[tokio::test]
+async fn expired_owned_rpc_and_old_shapes_never_register_read_or_remove() {
+    let (_bus, state, _server, owner, _seen) = setup(true, Duration::ZERO).await;
+    let db = store(&state).await;
+    let proxy = zbus::Proxy::new(
+        &owner,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap();
+    let properties = vec![(vec![2u8, 0], 5u32, 0u32, vec![7u8])];
+    let authorizer = OwnedObjectPath::try_from("/").unwrap();
+    let mut expired = owned_deadline();
+    expired.0 = 1;
+    let error = proxy
+        .call::<_, _, (u16, u16, Vec<u16>)>(
+            "RegisterOwnedLocalService",
+            &(
+                vec![1u8, 0],
+                properties.clone(),
+                authorizer.clone(),
+                expired,
+            ),
+        )
+        .await
+        .unwrap_err();
+    assert!(
+        matches!(error,zbus::Error::MethodError(ref name,_,_) if name.as_str()=="org.freedesktop.DBus.Error.Timeout")
+    );
+    assert!(db.lock().unwrap().list().is_empty());
+    let error = proxy
+        .call::<_, _, (u16, u16, Vec<u16>)>(
+            "RegisterOwnedLocalService",
+            &(vec![1u8, 0], properties, authorizer),
+        )
+        .await
+        .unwrap_err();
+    assert!(
+        matches!(error,zbus::Error::MethodError(ref name,Some(ref text),_) if
+            name.as_str()=="org.freedesktop.zbus.Error" && text == "Signature mismatch: got `(aya(ayuuay)o)`, expected `(aya(ayuuay)o(ttttt))`"),
+        "{error:?}"
+    );
+    let (start, handle) = register(&owner, 0).await;
+    for method in ["ReadOwnedLocalValue", "UnregisterOwnedLocalService"] {
+        let value = if method == "ReadOwnedLocalValue" {
+            handle
+        } else {
+            start
+        };
+        let error = owner
+            .call_method(
+                Some("org.sparklink.AuthTest"),
+                "/services",
+                Some("org.sparklink.ServiceManager"),
+                method,
+                &(value, expired),
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            matches!(error,zbus::Error::MethodError(ref name,_,_) if name.as_str()=="org.freedesktop.DBus.Error.Timeout")
+        );
+        let error = owner
+            .call_method(
+                Some("org.sparklink.AuthTest"),
+                "/services",
+                Some("org.sparklink.ServiceManager"),
+                method,
+                &(value,),
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            matches!(error,zbus::Error::MethodError(ref name,Some(ref text),_) if
+                name.as_str()=="org.freedesktop.zbus.Error" && text == "Signature mismatch: got `q`, expected `(q(ttttt))`"),
+            "{error:?}"
+        );
+    }
+    assert_eq!(db.lock().unwrap().local_read(handle).unwrap(), [7]);
+}
+
+#[tokio::test]
+async fn original_owned_rpc_deadline_covers_state_lock_and_cannot_resume_late() {
+    let (_bus, state, _server, owner, _seen) = setup(true, Duration::ZERO).await;
+    let db = store(&state).await;
+    let proxy = zbus::Proxy::new(
+        &owner,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap();
+    let held = state.lock().await;
+    let deadline = slk_channel::deadline::Deadline::after(Duration::from_millis(30)).unwrap();
+    let body = (
+        vec![1u8, 0],
+        vec![(vec![2u8, 0], 5u32, 0u32, vec![7u8])],
+        OwnedObjectPath::try_from("/").unwrap(),
+        slk_contract::deadline_wire(deadline.stamp()),
+    );
+    let result = tokio::time::timeout(
+        Duration::from_secs(1),
+        proxy.call::<_, _, (u16, u16, Vec<u16>)>("RegisterOwnedLocalService", &body),
+    )
+    .await
+    .unwrap();
+    assert!(
+        matches!(result,Err(zbus::Error::MethodError(ref name,_,_)) if name.as_str()=="org.freedesktop.DBus.Error.Timeout")
+    );
+    drop(held);
+    tokio::task::yield_now().await;
+    assert!(db.lock().unwrap().list().is_empty());
+    assert_eq!(state.lock().await.ssap_owner_slots.available_permits(), 16);
+    let (start, handle) = register(&owner, 0).await;
+    let before = db.lock().unwrap().list();
+    let held = state.lock().await;
+    let deadline = slk_channel::deadline::Deadline::after(Duration::from_millis(30)).unwrap();
+    let result = tokio::time::timeout(
+        Duration::from_secs(1),
+        proxy.call::<_, _, ()>(
+            "UnregisterOwnedLocalService",
+            &(start, slk_contract::deadline_wire(deadline.stamp())),
+        ),
+    )
+    .await
+    .unwrap();
+    assert!(
+        matches!(result,Err(zbus::Error::MethodError(ref name,_,_)) if name.as_str()=="org.freedesktop.DBus.Error.Timeout")
+    );
+    drop(held);
+    tokio::task::yield_now().await;
+    assert_eq!(db.lock().unwrap().list(), before);
+    assert_eq!(db.lock().unwrap().local_read(handle).unwrap(), [7]);
+}
+
+#[tokio::test]
+async fn owner_registration_deadline_is_not_the_active_service_lifetime() {
+    use crate::ssap_authorization::Owner;
+    let bus = PrivateBus::start();
+    let server = client(&bus).await;
+    let caller = client(&bus).await;
+    let db: Store = std::sync::Arc::new(std::sync::Mutex::new(
+        crate::ssap_database::Database::default(),
+    ));
+    let slots = std::sync::Arc::new(tokio::sync::Semaphore::new(2));
+    let until = Instant::now() + Duration::from_millis(100);
+    let owner = Owner::pin(
+        &server,
+        caller.unique_name().unwrap().to_string(),
+        OwnedObjectPath::try_from("/").unwrap(),
+        &db,
+        slots.clone().try_acquire_owned().unwrap(),
+        until,
+    )
+    .await
+    .unwrap();
+    let (start, _, handles) = db
+        .lock()
+        .unwrap()
+        .register_owned(vec![1, 0], vec![(vec![2, 0], 5, 0, vec![7])], owner.clone())
+        .unwrap();
+    tokio::time::sleep_until(until).await;
+    assert!(owner.current());
+    assert!(!owner.can_register());
+    assert_eq!(db.lock().unwrap().local_read(handles[0]).unwrap(), [7]);
+    let before = db.lock().unwrap().list();
+    assert!(
+        db.lock()
+            .unwrap()
+            .register_owned(vec![3, 0], vec![(vec![4, 0], 5, 0, vec![9])], owner.clone())
+            .is_err()
+    );
+    assert_eq!(db.lock().unwrap().list(), before);
+    db.lock()
+        .unwrap()
+        .remove_owned(start, caller.unique_name().unwrap().as_str())
+        .unwrap();
+    owner.shutdown().await;
+    assert_eq!(slots.available_permits(), 2);
 }

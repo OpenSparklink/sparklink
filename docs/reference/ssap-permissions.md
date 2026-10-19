@@ -129,14 +129,29 @@ Bond及属性授权不继承。当前版本适用范围仍只由能力入口的�
 
 ## 应用拥有的本地服务与逐请求审批
 
-`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), authorizer:o)` 的 properties
+`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), authorizer:o, deadline:(ttttt))` 的 properties
 沿用上述四字段（实际 D-Bus 签名 `a(ayuuay)`），返回 `(start:q,end:q,handles:aq)`。
 登记者来自真实消息 sender 的 unique name，不能指定其他 owner。`authorizer=/`
 表示不提供审批；带授权位的登记此时返回 NotSupported。服务登记仍只表示本地配置。
-`UnregisterOwnedLocalService(start:q)` 和 `ReadOwnedLocalValue(handle:q)->ay` 只允许
+`UnregisterOwnedLocalService(start:q, deadline:(ttttt))` 和
+`ReadOwnedLocalValue(handle:q, deadline:(ttttt))->ay` 只允许
 原 owner；管理组的显式全局移除/本地读权限仍独立。`sparklink-services` 策略只允许
 这三个 Owned 方法，不授 controller 管理或普通通道权限；[cd35/0568的guest最小角色门禁](../evidence/architecture-retirement-r1-20261017.json)
 已核对实际system bus、组/凭据及设备权限，不代表service-only远端RF或完整发行版部署。
+
+三个 Owned 方法均携带现有 clock-domain 身份和绝对原期限；客户端检查、D-Bus、
+状态锁等待、owner 监听安装及数据库最终准入共用该期限。过期返回 Timeout，
+不重置相对预算。监听安装另有两秒上限，只能缩短该请求。当前 zbus 在进入方法前
+以 `org.freedesktop.zbus.Error` 拒绝旧签名（Signature mismatch）；不兼容回退。
+注册的原期限只限制初次准入，不是已注册服务的 TTL。活动服务仍由原 owner、
+显式移除和 controller 退休管理；后续本地读取、移除各带自己的原期限。
+
+数据库最终检查和插入在同一短临界区，没有 await；期限后不接受新的准入。
+已准入但回复丢失／迟到不等于回滚。SDK 仅在收到合法回执后，才可对原 unique daemon
+及原 generation 的原登记做一次独立、最多一秒的移除尝试；这不延长注册准入期限，
+也不保证清理完成。未知／畸形回执不得猜测删除目标；owner 退出的清理义务保留。
+初始化取消只请求 abort，不能称 watch 已 drain；容量由 watch future 持有，直到实际
+销毁后归还，不能在旧任务仍存在时补出第十七个监听。
 
 审批调用原 unique owner 的 `org.sparklink.SsapAuthorizer.AuthorizeValue(prompt)->b`。
 `prompt` 是 `(request_id:t, identity:(qttqtuyyy), property:q, write:b, deadline:t, value:ay)`；

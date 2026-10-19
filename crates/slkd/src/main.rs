@@ -132,6 +132,22 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+// Shared FDO mapping of the existing clock-domain-checked Deadline type.
+pub(crate) fn deadline_error(error: std::io::Error) -> zbus::fdo::Error {
+    match error.raw_os_error() {
+        Some(nix::libc::ETIMEDOUT) => zbus::fdo::Error::Timeout("original request deadline".into()),
+        Some(nix::libc::EINVAL) => {
+            zbus::fdo::Error::InvalidArgs("invalid original deadline".into())
+        }
+        Some(nix::libc::EOPNOTSUPP | nix::libc::ENOENT | nix::libc::EACCES) => {
+            zbus::fdo::Error::NotSupported(format!(
+                "clock domain unavailable or mismatched: {error}"
+            ))
+        }
+        _ => zbus::fdo::Error::Failed(format!("original deadline: {error}")),
+    }
+}
+
 #[cfg(test)]
 mod cli_tests {
     use super::*;

@@ -82,6 +82,13 @@ pub mod ssap {
         pub type PropertyRecord = (u16, Vec<u8>, u32, u32);
         pub type ServiceRecord = (u16, u16, Vec<u8>, Vec<PropertyRecord>);
         pub type Registration = (u16, u16, Vec<u16>);
+        pub type OwnedRegistrationRequest = (
+            Vec<u8>,
+            Vec<PropertyDefinition>,
+            zvariant::OwnedObjectPath,
+            crate::Deadline,
+        );
+        pub type OwnedHandleRequest = (u16, crate::Deadline);
     }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
@@ -364,4 +371,20 @@ pub fn transport_info(v: slk_protocol::SleSessionTxStatus) -> TransportInfo {
         v.dynamic_allocated,
         v.flags,
     )
+}
+
+#[cfg(test)]
+mod owned_deadline_contract {
+    use zvariant::Type;
+    #[test]
+    fn owned_requests_have_one_original_stamp_and_no_legacy_shape() {
+        assert_eq!(
+            super::ssap::local::OwnedRegistrationRequest::SIGNATURE.to_string(),
+            "(aya(ayuuay)o(ttttt))"
+        );
+        assert_eq!(
+            super::ssap::local::OwnedHandleRequest::SIGNATURE.to_string(),
+            "(q(ttttt))"
+        );
+    }
 }

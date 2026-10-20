@@ -281,6 +281,24 @@ class ClosedBenchmarkRoleFixture(unittest.TestCase):
                     else:c['config']['bytes']=61
                     with self.subTest(change=change):self.assertFalse(gate.valid_parallel_summary(p,channel,gate.configuration('window'),r))
 
+    def test_failed_control_diagnostic_reuses_closed_payloads_without_inventing_daemon_after(self):
+        with tempfile.TemporaryDirectory()as temporary:
+            root=Path(temporary);run,capture=self.fixture(root,gate.parallel_channel());run.pop('daemon_after')
+            before=copy.deepcopy(run)
+            with self.assertRaises(KeyError):gate.corroborate(run,capture,root)
+            proof=gate.diagnose_closed_payloads(run,capture,root)
+            self.assertEqual(run,before)
+            self.assertEqual(proof['round_trips'],72)
+            self.assertEqual(proof['status'],'DIAGNOSTIC_CLOSED_PAYLOAD_COMPONENT_ONLY')
+            self.assertIs(proof['overall_run_acceptance'],False)
+            self.assertEqual(proof['closed_role_facts']['application_processes'],8)
+            self.assertFalse(gate.valid_role_supervision(proof['closed_role_facts']))
+            self.assertNotIn('daemon_after',run)
+            broken=copy.deepcopy(capture);broken['acb_packets'].pop()
+            with self.assertRaises(CaptureError):gate.diagnose_closed_payloads(run,broken,root)
+            (root/'benchmark-role/finished.json').unlink()
+            with self.assertRaises(FileNotFoundError):gate.diagnose_closed_payloads(run,capture,root)
+
     def test_parallel_tcids_use_separate_local_remote_namespaces_per_direction(self):
         with tempfile.TemporaryDirectory()as temporary:
             root=Path(temporary);run,capture=self.fixture(root,gate.parallel_channel(),cross_namespace=True)
@@ -301,7 +319,7 @@ class ClosedBenchmarkRoleFixture(unittest.TestCase):
             names=['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py','ws73_dynamic_channels.py','ws73_channel_fairness.py']
             record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,socket_benchmark_requested='window',socket_benchmark_window_requested=4,socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,socket_benchmark_role_contract_version=1,socket_benchmark_apps_acceptance=True,socket_benchmark_role_supervision=role,benchmark_trace_contract_version=1,benchmark_process_resource_contract_version=1,socket_benchmark_xhci_requested='off',socket_benchmark_xhci_observation=xhci,benchmark_verifiers=[dict(path=n)for n in names],qemu_args=['ws73.socket_benchmark_apps=1 '+' '.join(gate.channel_boot(channel))],benchmark_channel_request=channel)
             self.assertEqual(run_exit_code(record),0)
-            for change in('old-role','missing-role-target','missing-fairness-source','missing-trace','missing-resource','missing-target','old-boot','mixed-boot','missing-long','missing-resource-child','wrong-total'):
+            for change in('old-role','missing-role-target','missing-fairness-source','missing-trace','missing-resource','missing-target','old-boot','mixed-boot','missing-long','missing-resource-child','wrong-total','diagnostic-component'):
                 r=copy.deepcopy(record)
                 if change=='old-role':r['socket_benchmark_role_supervision']['version']=1
                 elif change=='missing-role-target':r['socket_benchmark_role_supervision'].pop(gate.CHANNEL_FIELD)
@@ -313,6 +331,7 @@ class ClosedBenchmarkRoleFixture(unittest.TestCase):
                 elif change=='mixed-boot':r['qemu_args'][0]+=' ws73.benchmark_dynamic=1'
                 elif change=='missing-long':r['socket_benchmark_corroboration']['proofs'][0]['channels'].pop()
                 elif change=='missing-resource-child':r['socket_benchmark_corroboration']['proofs'][0]['resource_observations'].pop()
+                elif change=='diagnostic-component':r['socket_benchmark_corroboration']=gate.diagnose_closed_payloads(run,capture,root)
                 else:r['socket_benchmark_corroboration']['round_trips']=40
                 with self.subTest(change=change):self.assertEqual(run_exit_code(r),1)
 

@@ -406,3 +406,9 @@ fragment record 的完整有序匹配关联业务 phase、源方向、请求／�
 trace 逐项对应，不因它是动态信令而过滤。新记录按实际匹配的 CMTC envelope
 说明覆盖范围；旧基本通道记录保留原 scope 与源码身份。观测覆盖不证明协商成功、
 硬件 credit 真值或对端交付，这些仍由各自原门禁核对。
+
+控制面失败后，可以只读核对已闭合的应用快照及同一份 CMTC／载荷匹配结果；
+这类诊断使用独立的 `DIAGNOSTIC_CLOSED_PAYLOAD_COMPONENT_ONLY` 状态，明确
+`overall_run_acceptance=false`。它不补造缺失的 daemon-after 观察，不恢复 Ready，
+不放宽原 Down 期限，也不授完整连接生命周期、追踪或整轮资格。正常验收入口仍
+要求原控制角色完成和真实 daemon-after 身份；终态核对器拒绝将诊断状态当作成功。

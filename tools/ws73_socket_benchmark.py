@@ -516,11 +516,32 @@ def check_report_files(row, share):
 
 def corroborate(run,capture,share):
     rows=run.get('socket_benchmark')
+    if type(rows)is list and any(apps_role(row)for row in rows):
+        verify_role_artifacts(run,share)
+    proof=_match_payloads(run,capture,share)
+    return dict(status='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED',**proof)
+
+
+def diagnose_closed_payloads(run,capture,share):
+    """Closed app/USB component only;never complete controller acceptance.
+
+    No daemon-after fact is invented when the control runner fails. Reuse the
+    same closed phase and payload matchers, but issue no full role/proof status.
+    The normal corroborate entry still requires original daemon completion.
+    """
+    facts=_closed_role_facts(run,share)
+    proof=_match_payloads(run,capture,share)
+    return dict(status='DIAGNOSTIC_CLOSED_PAYLOAD_COMPONENT_ONLY',
+                control_completion='NOT_VALIDATED_BY_THIS_DIAGNOSTIC',
+                overall_run_acceptance=False,closed_role_facts=facts,**proof)
+
+
+def _match_payloads(run,capture,share):
+    rows=run.get('socket_benchmark')
     if type(rows) is not list or len(rows)!=2:raise CaptureError('both actual connection-role benchmark phases required')
     roles=[apps_role(row)for row in rows]
     if any(roles):
         if not all(roles):raise CaptureError('two matching benchmark role phases required')
-        verify_role_artifacts(run,share)
     sdus=reassemble_acb(capture);proofs=[];used=set()
     # Preserve every duplicate candidate; index only replaces repeated full scans.
     indexed={}
@@ -596,8 +617,7 @@ def corroborate(run,capture,share):
         if not all(type(row.get(RESOURCE_FIELD))is int and row[RESOURCE_FIELD]==1 for row in rows):raise CaptureError('both resource observation phases required')
     if rows[0]['config']!=rows[1]['config']:raise CaptureError('same requested workload in both physical connection roles required')
     if row_channel(rows[0])!=row_channel(rows[1]):raise CaptureError('same original channel target in both physical roles required')
-    result=dict(status='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED',
-                mode=rows[0]['config']['mode'],round_trips=sum(len(a['report']['outgoing']) for row in rows for a in row['applications']),
+    result=dict(mode=rows[0]['config']['mode'],round_trips=sum(len(a['report']['outgoing']) for row in rows for a in row['applications']),
                 proofs=proofs,performance_qualified=False,
                 remaining=['repeatstablebaseline/traceoverhead/resources','crossclockmapping/per-layer latency','fullperformance/stress/fairness/recovery qualification'])
     if RESOURCE_FIELD in rows[0]:result[RESOURCE_FIELD]=1
@@ -668,6 +688,15 @@ def valid_parallel_summary(proof,channel,config,supervision):
 
 
 def verify_role_artifacts(control,evidence):
+    """Complete original control/daemon scope,not a partial diagnostic."""
+    facts=_closed_role_facts(control,evidence)
+    if control['daemon_after']!=facts['daemon']:
+        raise CaptureError('complete benchmark unchanged daemon required')
+    return dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',**facts,
+                scope='Fixed actual system-bus/apps-only/closed-file supervision,not wire proof/full deployment/stable performance')
+
+
+def _closed_role_facts(control,evidence):
     """Original root phase bytes/roles,not a substitute for paired data proof."""
     from ws73_application_role import verify_probe
     from ws73_role_snapshot import verify,HELPER
@@ -675,7 +704,7 @@ def verify_role_artifacts(control,evidence):
     if(set(finished)!={'status','daemon','supervisor','snapshot_contract_version','socket_benchmark_role_contract_version'}or finished['status']!=ROLE_STATUS
         or type(finished['snapshot_contract_version'])is not int or finished['snapshot_contract_version']!=1
         or type(finished['socket_benchmark_role_contract_version'])is not int or finished['socket_benchmark_role_contract_version']!=1
-        or finished['daemon']!=control['daemon_before']or control['daemon_before']!=control['daemon_after']or len(control.get('socket_benchmark',[]))!=2):raise CaptureError('complete benchmark root supervisor and unchanged daemon required')
+        or finished['daemon']!=control['daemon_before']or len(control.get('socket_benchmark',[]))!=2):raise CaptureError('closed benchmark root phases and recorded daemon required')
     snapshots=[];channels=[row_channel(row)for row in control['socket_benchmark']]
     if channels[0]!=channels[1]:raise CaptureError('one original channel profile for both closed phases required')
     for phase,row in enumerate(control['socket_benchmark']):
@@ -692,7 +721,7 @@ def verify_role_artifacts(control,evidence):
                 if '..'in relative.parts or relative.suffix not in('.stdout','.stderr'):raise CaptureError('fixed benchmark stream path required')
                 if (root/f'phase-{phase}'/relative).read_text()!=app['stdout'if relative.suffix=='.stdout'else'stderr']:raise CaptureError('actual benchmark raw stream differs')
     parallel=is_parallel(channels[0]);count=8 if parallel else 4
-    result=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=2 if parallel else 1,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,daemon=finished['daemon'],supervisor=finished['supervisor'],snapshot_files=sum(len(v['files'])for v in snapshots),snapshot_bytes=sum(v['bytes']for v in snapshots),performance_qualified=False,scope='Fixed actual system-bus/apps-only/closed-file supervision,not wire proof/full deployment/stable performance')
+    result=dict(version=2 if parallel else 1,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,daemon=finished['daemon'],supervisor=finished['supervisor'],snapshot_files=sum(len(v['files'])for v in snapshots),snapshot_bytes=sum(v['bytes']for v in snapshots),performance_qualified=False)
     if parallel:result[CHANNEL_FIELD]=channels[0]
     return result
 

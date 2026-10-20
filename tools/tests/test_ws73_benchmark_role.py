@@ -112,6 +112,23 @@ class BenchmarkRole(unittest.TestCase):
             hard.unlink();p.write_text('{"a":1,"a":2}')
             with self.assertRaises(CaptureError):read_report(p)
 
+    def test_live_child_creation_mask_overrides_permissive_init_mask(self):
+        # Use the actual launch keyword with a local file-only child. Identity,
+        # Native, socket, USB and VM lifecycle are deliberately not exercised.
+        import ast,subprocess,sys
+        tree=ast.parse(Path(gate.__file__).read_text())
+        execute=next(n for n in tree.body if isinstance(n,ast.FunctionDef)and n.name=='execute_supervised')
+        launches=[n for n in ast.walk(execute)if isinstance(n,ast.Call)and isinstance(n.func,ast.Attribute)and isinstance(n.func.value,ast.Name)and n.func.value.id=='subprocess'and n.func.attr=='Popen']
+        self.assertEqual(len(launches),1)
+        mask=ast.literal_eval(next(k.value for k in launches[0].keywords if k.arg=='umask'))
+        self.assertEqual(mask,0o077)
+        code="import os,subprocess,sys;os.umask(0);kw={}if sys.argv[2]=='inherit'else dict(umask=int(sys.argv[2]));subprocess.run([sys.executable,'-c',\"import sys;open(sys.argv[1],'x').write('{}')\",sys.argv[1]],check=True,**kw)"
+        with tempfile.TemporaryDirectory()as temporary:
+            for name,setting,expected in [('old','inherit',0o666),('fixed',str(mask),0o600)]:
+                path=Path(temporary)/name
+                subprocess.run([sys.executable,'-c',code,str(path),setting],check=True)
+                self.assertEqual(path.stat().st_mode&0o777,expected)
+
     def test_terminal_shape_requires_actual_apps_reports_and_closed_phases(self):
         proof=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=1,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,report_files=4,phases=2,performance_qualified=False,daemon=dict(pid=1,start_ticks=1),supervisor=dict(pid=2,start_ticks=2),snapshot_files=18,snapshot_bytes=1024)
         self.assertTrue(gate.valid_role_supervision(proof))

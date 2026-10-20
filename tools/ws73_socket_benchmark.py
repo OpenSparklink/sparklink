@@ -202,7 +202,7 @@ def execute_supervised(run,row):
                 app=dict(mode=appmode,args=arguments(row['application_tool']['path'],entry,appmode,report,window,count=config['count'],size=config['bytes'],interval_us=config['interval_us']),report_path=str(report),stderr_path=str(err),start_wall_ns=time.time_ns())
                 row['applications'].append(app)
                 proc=subprocess.Popen(app['args'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,
-                                      stderr=files.enter_context(err.open('xb')),bufsize=0,user=1004,group=1004,extra_groups=[],env=dict(os.environ,**application_environment()))
+                                      stderr=files.enter_context(err.open('xb')),bufsize=0,user=1004,group=1004,extra_groups=[],umask=0o077,env=dict(os.environ,**application_environment()))
                 processes.append((proc,app));app['pid']=proc.pid;app['credentials'],app['process_status']=process_identity(proc.pid,1004);app['environment']=application_environment();app['output_files']=[str(run.output/f'benchmark-{row["phase"]}-{i}.stdout'),str(err)]
                 selector.register(proc.stdout,selectors.EVENT_READ,i);buffers[i]=b'';output[i]=b''
             wait_marker('armed',45)

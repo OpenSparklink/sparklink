@@ -411,9 +411,13 @@ static int subscription_mode(int argc,char **argv) {
             if (error){errno=-error;goto done;}
             printf("{\"stage\":\"ssap_subscription_renewed\",\"api\":\"c\",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"expires_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",info.token,info.security_epoch,info.expires_ns,renewal_started,renewal_deadline,now_ns());fflush(stdout);continue;
         }
-        if (!strcmp(command,"release") && !arg) {
+        if ((!strcmp(command,"release") || !strcmp(command,"release-observe")) && !arg) {
             if(next!=cached){errno=EBUSY;goto done;}
-            error=slk_ssap_subscription_release(sub,&batch,now_ns()+5000000000ULL);
+            uint64_t close_started=now_ns(),close_deadline=close_started+5000000000ULL;
+            if (!strcmp(command,"release-observe")) {
+                printf("{\"stage\":\"ssap_subscription_release_started\",\"api\":\"c\",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64"}\n",close_started,close_deadline);fflush(stdout);
+            }
+            error=slk_ssap_subscription_release(sub,&batch,close_deadline);
             if (error){errno=-error;goto done;}released=1;
             printf("{\"stage\":\"ssap_subscription_released\",\"api\":\"c\",\"flags\":%u,\"discarded\":%"PRIu64"}\n",batch.flags,batch.discarded_on_close);fflush(stdout);continue;
         }

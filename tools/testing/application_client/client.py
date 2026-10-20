@@ -339,9 +339,13 @@ def subscription_mode():
                     epoch=info.security_epoch,expires_ns=info.expires_ns,started_ns=renewal_started,
                     deadline_ns=renewal_deadline,returned_ns=time.monotonic_ns())),flush=True)
                 continue
-            if args==['release']:
+            if args in (['release'],['release-observe']):
                 if position!=len(cache):raise OSError(errno.EBUSY,'unchecked cached batch')
-                batch=sub.release(deadline_ns=time.monotonic_ns()+5_000_000_000);released=True
+                close_started=time.monotonic_ns();close_deadline=close_started+5_000_000_000
+                if args==['release-observe']:
+                    print(json.dumps(dict(stage='ssap_subscription_release_started',api='python',
+                        started_ns=close_started,deadline_ns=close_deadline)),flush=True)
+                batch=sub.release(deadline_ns=close_deadline);released=True
                 print(json.dumps(dict(stage='ssap_subscription_released',api='python',flags=batch.flags,
                                       discarded=batch.discarded_on_close)),flush=True)
                 continue

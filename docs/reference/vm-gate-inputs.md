@@ -592,6 +592,31 @@ UID1000 此次读取是测试屏障，不能替代 UID1004 应用实际校验和
 源码／工具身份和双端捕获均须保留。它不证明在途退出、lease 自然到期、
 Grant 撤销、断链、无编号回复复用、全部引用排空、多应用共享或自然恢复。
 
+## 持续订阅的在途释放门禁
+
+`--ssap-subscription-inflight-release-verify` 是独立的 protected2／numeric-approve
+订阅场景，不与续租、满队列、进程退出或其他选择器组合。新 prepared 必须声明
+inflight-release contract1、闭合快照和准确新消费者／工具；仅接受现有固定 hash
+的两秒真实 IN81 暂扣 fixture。源码接线和离线 fixture 不代表实机资格。
+
+每个连接角色各一次：真实指示已到接收端，ACK 已从接收端发出，但尚未进入
+服务端 guest 时，普通应用通过原 SDK 请求释放订阅。Host 必须在原始捕获中
+观察到 CPCD 停用请求 TX，且此时服务端 ACK RX 仍不存在，才允许显式释放
+暂扣的原 USB 数据。不能用配置查询、日志、固定睡眠或成功 USB 写入替代屏障。
+暂扣 aggregate 可能包含 NOCP，不能自动称为 ACK 或证明 credit 的 lifetime 归属。
+
+专用测试消费者的 `release-observe` 只额外输出调用起点和调用前选定的原五秒
+期限，实际调用仍复用普通 `release` 的 SDK 路径。服务端实际指示完成、接收端
+确认清理和新进程／新 token 在同一 Session／epoch 完成业务校验回复分别核对。
+关闭导致已接受更新被丢弃时，必须记录 discard1，不能计作应用交付；这不抹去
+原指示的物理义务。最终检查准确双端包、暂扣原件 hash、显式释放计数、零自动
+释放／丢包／错误，以及 Host／guest 的原始握手与封存文件。
+
+有限矩阵为10个 lease、32次更新，其中30次实际不同业务回写及两次已接受后
+关闭丢弃；两次在途释放后均须新租约继续业务，另保留普通短通道与广播扫描。
+这不包含 lease 自然到期、在途进程死亡、Grant／epoch／Down、共享 CPCD、
+全部引用排空、无编号完成复用或自然恢复；这些仍有独立未决门禁。
+
 ## SSAP 应用值长度及分片门禁
 
 未发布 runner 的 `--ssap-value-lengths-verify` 要求独立的

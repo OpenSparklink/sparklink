@@ -17,6 +17,9 @@ from ws73_daemon_hold import Invocation, management_observed
 from ws73_diagnostic_hold import HoldCoordinator, PROPERTIES, write_marker, corroborate_host_hold
 
 QEMU_SHA256 = '1622d935beca86ed20d6413e569c4e8ff676c7d262ec768b5e8d1191067cd832'
+# Shared immutable two-second actual-IN81 fixture used by typed subscription release.
+# This constant alone does not add sequence initialization support or qualification.
+SEQUENCE_QEMU_SHA256 = '53c3eac4def4e03b2c5563de2ad8347f30d4be318e63beeadf917c4243b1639b'
 METHOD = 'REAL_CMTC_PENDING_MANAGED_WITHDRAWAL'
 SELECTOR = 'test-runtime-cmtc-capability'
 RESPONSE = '0200100002000c00e20000000000fa07ff070101'

@@ -43,7 +43,9 @@ def requested(args,*,passthrough):
     if type(pressure)is not bool or pressure and(not value or renewal):raise ValueError('pressure requires dedicated subscription gate;renewal is separate')
     owner_loss=getattr(args,'ssap_subscription_owner_loss_verify',False)
     if type(owner_loss)is not bool or owner_loss and(not value or renewal or pressure):raise ValueError('owner loss requires a separate subscription gate')
-    if value and any(v for k,v in vars(args).items()if type(v)is bool and k not in {'passthrough','qmp_hotplug','connection_verify','channel_socket_verify','ssap_subscription_verify','ssap_subscription_renewal_verify','ssap_subscription_pressure_verify','ssap_subscription_owner_loss_verify'}):raise ValueError('subscription excludes other test selectors')
+    inflight=getattr(args,'ssap_subscription_inflight_release_verify',False)
+    if type(inflight)is not bool or inflight and(not value or renewal or pressure or owner_loss):raise ValueError('in-flight release requires a separate subscription gate')
+    if value and any(v for k,v in vars(args).items()if type(v)is bool and k not in {'passthrough','qmp_hotplug','connection_verify','channel_socket_verify','ssap_subscription_verify','ssap_subscription_renewal_verify','ssap_subscription_pressure_verify','ssap_subscription_owner_loss_verify','ssap_subscription_inflight_release_verify'}):raise ValueError('subscription excludes other test selectors')
     if value and (not passthrough or not getattr(args,'channel_socket_verify',False)
             or getattr(args,'security_agent',None)!='numeric-approve'
             or any(getattr(args,key,False)for key in ('ssap_update_delivery_verify','ssap_update_lifecycle_verify',
@@ -82,16 +84,35 @@ def owner_loss_required(row):
     return value
 
 
-def tool_records(root=Path('/'),*,snapshot=False):
+def inflight_required(row):
+    value=row.get('ssap_subscription_inflight_release_required',False)
+    version=row.get('ssap_subscription_inflight_release_contract_version')
+    if(type(value)is not bool or value and(type(version)is not int or version!=1)
+            or not value and version is not None or value and(renewal_required(row)or pressure_required(row)or owner_loss_required(row))):
+        raise CaptureError('explicit separate in-flight release contract1 required')
+    return value
+
+
+def lease_matrix(row,sender):
+    if owner_loss_required(row):return [(m,n)for m in(1,2)for n in(0,1)]
+    return [(1,0),(2,0),(2,1)]if inflight_required(row)and sender==0 else[(1,0),(2,0)]
+
+
+INFLIGHT_TOOLS=tuple('/usr/share/sparklink/tools/'+n for n in
+    ('ws73_ssap_sender_deadline.py','ws73_diagnostic_hold.py','ws73_channel_prefix_hold.py'))
+
+
+def tool_records(root=Path('/'),*,snapshot=False,inflight=False):
     from ws73_role_snapshot import HELPER,SUPERVISOR
     names=(*TOOLS,HELPER,SUPERVISOR)if snapshot else TOOLS
+    if inflight:names=(*names,*INFLIGHT_TOOLS)
     return {name:dict(sha256=hashlib.sha256((root/name.lstrip('/')).read_bytes()).hexdigest(),
                      bytes=(root/name.lstrip('/')).stat().st_size)for name in names}
 
 
 def validate_tools(records,root,manifest):
     from ws73_role_snapshot import HELPER
-    if records!=tool_records(root,snapshot=HELPER in records):raise CaptureError('subscription tools differ from sealed root')
+    if records!=tool_records(root,snapshot=HELPER in records,inflight=INFLIGHT_TOOLS[0]in records):raise CaptureError('subscription tools differ from sealed root')
     for name,receipt in records.items():
         actual=(root/name.lstrip('/')).resolve(strict=True)
         matches=[p for p in manifest if Path(p['path']).resolve()==actual]
@@ -103,11 +124,13 @@ def validate_request(row,phase):
     renewal=renewal_required(row)
     pressure=pressure_required(row)
     owner_loss=owner_loss_required(row)
+    inflight=inflight_required(row)
     from ws73_role_snapshot import requested as snapshot_required
     fields={'phase','owners','tools','security_requirement','message_security_required','status','start_wall_ns'}
     if renewal:fields|={'ssap_subscription_renewal_required','ssap_subscription_renewal_contract_version'}
     if pressure:fields|={'ssap_subscription_pressure_required','ssap_subscription_pressure_contract_version'}
     if owner_loss:fields|={'ssap_subscription_owner_loss_required','ssap_subscription_owner_loss_contract_version'}
+    if inflight:fields|={'ssap_subscription_inflight_release_required','ssap_subscription_inflight_release_contract_version'}
     if snapshot_required(row):fields.add('ssap_subscription_snapshot_contract_version')
     if (set(row)!=fields
             or row['status']!='RUNNING' or type(phase)is not int or phase not in (0,1)
@@ -128,7 +151,7 @@ def request(run,row):
     phase=row['phase']
     from ws73_role_snapshot import TOKEN
     snapshot=Path('/proc/cmdline').read_text().split().count(TOKEN)==1
-    value=dict(phase=phase,owners=row['owners'],tools=tool_records(snapshot=snapshot),security_requirement=row['security_requirement'],
+    value=dict(phase=phase,owners=row['owners'],tools=tool_records(snapshot=snapshot,inflight=getattr(run.args,'ssap_subscription_inflight_release_verify',False)),security_requirement=row['security_requirement'],
                message_security_required=row['message_security_required'],status='RUNNING',start_wall_ns=time.time_ns())
     if getattr(run.args,'ssap_subscription_renewal_verify',False):
         value.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
@@ -136,6 +159,8 @@ def request(run,row):
         value.update(ssap_subscription_pressure_required=True,ssap_subscription_pressure_contract_version=1)
     if getattr(run.args,'ssap_subscription_owner_loss_verify',False):
         value.update(ssap_subscription_owner_loss_required=True,ssap_subscription_owner_loss_contract_version=1)
+    if getattr(run.args,'ssap_subscription_inflight_release_verify',False):
+        value.update(ssap_subscription_inflight_release_required=True,ssap_subscription_inflight_release_contract_version=1)
     if snapshot:value['ssap_subscription_snapshot_contract_version']=1
     validate_request(value,phase)
     path=run.output/f'subscription-role-{phase}.request.json';temporary=path.with_suffix('.tmp')
@@ -159,6 +184,7 @@ def request(run,row):
     if renewal_required(value):row.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
     if pressure_required(value):row.update(ssap_subscription_pressure_required=True,ssap_subscription_pressure_contract_version=1)
     if owner_loss_required(value):row.update(ssap_subscription_owner_loss_required=True,ssap_subscription_owner_loss_contract_version=1)
+    if inflight_required(value):row.update(ssap_subscription_inflight_release_required=True,ssap_subscription_inflight_release_contract_version=1)
     if snapshot:row['ssap_subscription_snapshot_contract_version']=1
     run.save()
 
@@ -215,6 +241,40 @@ def owner_cleanup(run,row,peer,owner,item,lease,process):
     return death
 
 
+def execute_inflight_release(run,row,owner,item,lease,process):
+    from ws73_ssap_sender_deadline import selection
+    from ws73_channel_prefix_hold import PrefixBarrier
+    from ws73_diagnostic_hold import write_marker
+    sequence=(row['phase']<<24)|(2<<16)|COUNT
+    value=sequence.to_bytes(4,'little')+secrets.token_bytes(28)
+    case=dict(value=value.hex(),mode=2,start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns())
+    lease['inflight_release']=case;run.save()
+    case['replacement']=command_receipt(owner,item,'replace '+value.hex(),'SdkOwnedReplaced')
+    case['before']=value_snapshot(owner,item,value.hex(),limit=32);run.save()
+    # Existing fixture prep only;actual update/ACK/disable witnesses below
+    # decide correctness,not this quiet interval or a configuration value.
+    time.sleep(.15)
+    folder=INPUT/'sender-deadline-hold'/f'phase-{row["phase"]}';folder.parent.mkdir(exist_ok=True)
+    barrier=PrefixBarrier(case,run.save,folder,field='hold')
+    case['selection']=selection(row,dict(item,secret=value.hex()),time.time_ns())
+    write_marker(folder/'selection.json',case['selection']);run.save()
+    barrier.stage('arm_ready','armed')
+    app=lease['application']
+    def held():
+        barrier.stage('wait_held','held')
+        case.update(release_request_wall_ns=time.time_ns(),release_request_monotonic_ns=time.monotonic_ns());run.save()
+        process.stdin.write('release-observe\n');process.stdin.flush()
+        case['release_started']=wait_stage(process,app,'ssap_subscription_release_started',1,time.monotonic()+1)
+        if any(r.get('stage')=='ssap_subscription_released'for r in app_rows(process,app)):
+            raise CaptureError('cleanup completed before the controlled in-flight release point')
+        # Host refuses unhold until actual disableTX is captured with the
+        # provider's original ACK RX still absent. No guessed delay barrier.
+        barrier.release();run.save()
+    case['send']=command_receipt(owner,item,'indicate','SdkOwnedUpdate',before_receipt=held)
+    lease['release']=wait_stage(process,app,'ssap_subscription_released',1,time.monotonic()+5)
+    case.update(end_wall_ns=time.time_ns(),end_monotonic_ns=time.monotonic_ns());run.save()
+
+
 def execute_supervised(run,row):
     """Only the existing root VM role supervisor calls this finite workload."""
     from ws73_application_role import require_vm
@@ -222,12 +282,15 @@ def execute_supervised(run,row):
     renewal=renewal_required(row)
     pressure=pressure_required(row)
     owner_loss=owner_loss_required(row)
+    inflight=inflight_required(row)
     if ('ws73.ssap_subscription_renewal=1'in Path('/proc/cmdline').read_text().split())!=renewal:
         raise CaptureError('renewal boot/request mismatch')
     if ('ws73.ssap_subscription_pressure=1'in Path('/proc/cmdline').read_text().split())!=pressure:
         raise CaptureError('pressure boot/request mismatch')
     if ('ws73.ssap_subscription_owner_loss=1'in Path('/proc/cmdline').read_text().split())!=owner_loss:
         raise CaptureError('owner-loss boot/request mismatch')
+    if ('ws73.ssap_subscription_inflight_release=1'in Path('/proc/cmdline').read_text().split())!=inflight:
+        raise CaptureError('in-flight release boot/request mismatch')
     duration=INITIAL_RENEWAL_LEASE_MS if renewal else LEASE_MS
     row.update(ssap_subscription=[],ssap_subscription_required=True,ssap_subscription_contract_version=1);run.save()
     for sender in (0,1):
@@ -236,16 +299,17 @@ def execute_supervised(run,row):
         with publisher(run,row,sender,'allow',collection='ssap_subscription',label='subscription',
                        sdk_api=api,updates=True,application_uid=1005)as(owner,item):
             discover(run,peer,item);item['leases']=[];run.save()
-            matrix=[(m,n)for m in(1,2)for n in(0,1)]if owner_loss else[(1,0),(2,0)]
+            matrix=lease_matrix(row,sender)
             for mode,attempt in matrix:
                 prefix=['/bin/ws73-application-client-c']if reader=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
                 args=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),
                              peer['object']['path'],str(item['handle']),str(mode),str(duration)]
                 label=f'subscription-{row["phase"]}-{sender}-{mode}'
                 if owner_loss:label+='-dead'if attempt==0 else'-replacement'
+                if inflight:label+='-attempt-'+str(attempt)
                 out=run.output/(label+'.stdout');err=run.output/(label+'.stderr')
                 lease=dict(mode=mode,start_wall_ns=time.time_ns(),messages=[]);item['leases'].append(lease)
-                if owner_loss:lease['attempt']=attempt
+                if owner_loss or inflight:lease['attempt']=attempt
                 app=dict(api=reader,args=args,environment=application_environment(),start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
                 lease['application']=app;run.save();process=None
                 try:
@@ -254,17 +318,17 @@ def execute_supervised(run,row):
                             stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
                         app.update(pid=process.pid);app['credentials'],app['process_status']=process_identity(process.pid,1004);run.save()
                         lease['active']=wait_stage(process,app,'ssap_subscription_active',1,time.monotonic()+6)
-                        if owner_loss and attempt==1:
+                        if (owner_loss or inflight)and attempt==1:
                             old=item['leases'][-2]['active'];fresh=lease['active']
                             if fresh['token']==old['token']or fresh['epoch']!=old['epoch']:raise CaptureError('fresh lease token and original epoch required')
                         lease['enabled']=configuration(owner,item,mode,process);run.save()
                         for number in range(PRESSURE_CAPACITY+2 if pressure else COUNT):
-                            sequence=(row['phase']<<24)|(sender<<20)|(mode<<16)|((attempt<<12)if owner_loss else 0)|number
+                            sequence=(row['phase']<<24)|(sender<<20)|(mode<<16)|((attempt<<12)if owner_loss or inflight else 0)|number
                             value=sequence.to_bytes(4,'little')+secrets.token_bytes(28)
                             reply=(sequence|0x80000000).to_bytes(4,'little')+secrets.token_bytes(28)
                             case=dict(number=number,value=value.hex(),reply=reply.hex(),start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns());lease['messages'].append(case)
                             case['replacement']=command_receipt(owner,item,'replace '+value.hex(),'SdkOwnedReplaced',limit=40 if pressure else 32)
-                            case['before']=value_snapshot(owner,item,value.hex(),limit=80 if pressure else 32 if owner_loss else 16);run.save()
+                            case['before']=value_snapshot(owner,item,value.hex(),limit=80 if pressure else 32 if owner_loss or inflight else 16);run.save()
                             if pressure and number<=PRESSURE_CAPACITY:
                                 overflow=number==PRESSURE_CAPACITY
                                 case['send']=command_receipt(owner,item,'indicate-observe'if overflow and mode==2 else'indicate'if mode==2 else'notify',
@@ -283,7 +347,7 @@ def execute_supervised(run,row):
                             case['send']=command_receipt(owner,item,'indicate'if mode==2 else'notify','SdkOwnedUpdate',limit=40 if pressure else 32);run.save()
                             case['checked']=wait_stage(process,app,'ssap_subscription_checked_reply',number if pressure else number+1,time.monotonic()+6)
                             case['batch']=wait_stage(process,app,'ssap_subscription_batch',2 if pressure else number+1,time.monotonic()+1)
-                            case['after']=value_snapshot(owner,item,reply.hex(),limit=80 if pressure else 32 if owner_loss else 16);case['end_wall_ns']=time.time_ns();case['end_monotonic_ns']=time.monotonic_ns();run.save()
+                            case['after']=value_snapshot(owner,item,reply.hex(),limit=80 if pressure else 32 if owner_loss or inflight else 16);case['end_wall_ns']=time.time_ns();case['end_monotonic_ns']=time.monotonic_ns();run.save()
                             if renewal and number==0:
                                 process.stdin.write('renew '+str(LEASE_MS)+'\n');process.stdin.flush()
                                 lease['renewal']=wait_stage(process,app,'ssap_subscription_renewed',1,time.monotonic()+6);run.save()
@@ -301,8 +365,11 @@ def execute_supervised(run,row):
                         if owner_loss and attempt==0:
                             owner_cleanup(run,row,peer,owner,item,lease,process)
                         else:
-                            process.stdin.write('release\n');process.stdin.flush()
-                            lease['release']=wait_stage(process,app,'ssap_subscription_released',1,time.monotonic()+6);run.save()
+                            if inflight and sender==0 and mode==2 and attempt==0:
+                                execute_inflight_release(run,row,owner,item,lease,process)
+                            else:
+                                process.stdin.write('release\n');process.stdin.flush()
+                                lease['release']=wait_stage(process,app,'ssap_subscription_released',1,time.monotonic()+6);run.save()
                             process.stdin.write('quit\n');process.stdin.flush();process.wait(timeout=2)
                             if process.returncode:raise CaptureError('actual subscription reader failed')
                 finally:
@@ -371,13 +438,16 @@ def verify_supervisor_artifacts(control,evidence):
     if any(pressures)and not all(pressures):raise CaptureError('both real pressure phases required')
     losses=[owner_loss_required(row)for row in control['channel_socket']]
     if any(losses)and not all(losses):raise CaptureError('both real owner-loss phases required')
+    inflights=[inflight_required(row)for row in control['channel_socket']]
+    if any(inflights)and not all(inflights):raise CaptureError('both real in-flight release phases required')
     result=dict(status='ACTUAL_ROOT_SUBSCRIPTION_PHASES_AND_OUTPUTS_CHECKED',version=1,
-                phases=2,reader_UID=1004,provider_UID=1005,readers=16 if all(losses)else 8,providers=4,updates=144 if all(pressures)else 48 if all(losses)else 24,
+                phases=2,reader_UID=1004,provider_UID=1005,readers=16 if all(losses)else 10 if all(inflights)else 8,providers=4,updates=144 if all(pressures)else 48 if all(losses)else 32 if all(inflights)else 24,
                 daemon=finished['daemon'],supervisor=finished['supervisor'],
                 scope='Fixed actual role supervision only;not raw RF replay or full lifecycle/recovery qualification')
     if all(renewals):result.update(renewal_contract_version=1,renewals=8,post_original_expiry_updates=16)
     if all(pressures):result.update(pressure_contract_version=1,checked_replies=136,notification_drops=4,indication_refusals=4,resumed=8)
     if all(losses):result.update(owner_loss_contract_version=1,owner_losses=8,replacement_leases=8,cleanup_read_barriers=8)
+    if all(inflights):result.update(inflight_release_contract_version=1,inflight_releases=2,replacement_leases=2,checked_replies=30,discarded_pending=2)
     if exported:result.update(snapshot_contract_version=1,snapshot_phases=2,snapshot_files=sum(len(s['files'])for s in exported),snapshot_bytes=sum(s['bytes']for s in exported))
     return result
 
@@ -393,11 +463,14 @@ def valid_snapshot_supervision(proof):
 def valid_supervision(proof):
     try:
         loss=proof.get('owner_loss_contract_version')is not None
+        inflight=proof.get('inflight_release_contract_version')is not None
         if loss and(type(proof['owner_loss_contract_version'])is not int or proof['owner_loss_contract_version']!=1
+                or inflight or proof.get('pressure_contract_version')is not None or proof.get('renewal_contract_version')is not None):return False
+        if inflight and(type(proof['inflight_release_contract_version'])is not int or proof['inflight_release_contract_version']!=1
                 or proof.get('pressure_contract_version')is not None or proof.get('renewal_contract_version')is not None):return False
         expected=dict(status='ACTUAL_ROOT_SUBSCRIPTION_PHASES_AND_OUTPUTS_CHECKED',version=1,
-                      phases=2,reader_UID=1004,provider_UID=1005,readers=16 if loss else 8,providers=4,
-                      updates=144 if proof.get('pressure_contract_version')==1 else 48 if loss else 24)
+                      phases=2,reader_UID=1004,provider_UID=1005,readers=16 if loss else 10 if inflight else 8,providers=4,
+                      updates=144 if proof.get('pressure_contract_version')==1 else 48 if loss else 32 if inflight else 24)
         if any(proof[k]!=v or type(proof[k])is not type(v)for k,v in expected.items()):return False
         return all(type(proof[k][f])is int and proof[k][f]>0
                    for k in ('daemon','supervisor')for f in ('pid','start_ticks'))
@@ -417,6 +490,11 @@ def valid_pressure_supervision(proof):
 def valid_owner_loss_supervision(proof):
     return(valid_supervision(proof)and all(type(proof.get(k))is int and proof[k]==v
         for k,v in dict(owner_loss_contract_version=1,owner_losses=8,replacement_leases=8,cleanup_read_barriers=8).items()))
+
+
+def valid_inflight_supervision(proof):
+    return(valid_supervision(proof)and all(type(proof.get(k))is int and proof[k]==v
+        for k,v in dict(inflight_release_contract_version=1,inflight_releases=2,replacement_leases=2,checked_replies=30,discarded_pending=2).items()))
 
 
 def pressure_batch(lease,api,handle,*,resumed=False):
@@ -483,6 +561,52 @@ def verify_owner_loss(lease,peer,handle):
     return attempts[-1]
 
 
+def verify_inflight_release(row,item,lease,api,reader,exchange):
+    from ws73_ssap_sender_deadline import check_selection
+    from ws73_diagnostic_hold import PROPERTIES
+    case=lease['inflight_release'];value=bytes.fromhex(case['value']);h=item['handle']
+    sequence=(row['phase']<<24)|(2<<16)|COUNT
+    if len(value)!=32 or value[:4]!=sequence.to_bytes(4,'little')or case['mode']!=2:
+        raise CaptureError('original fresh sequence-bearing pending indication required')
+    selection=case['selection'];check_selection(selection,row['phase'])
+    owners=[dict(bus=v['owner']['bus'],device=v['owner']['device'],index=v['owner']['index'],generation=v['owner']['generation'],lifetime=v['object']['lifetime'],handle=v['object']['handle'],port=v['owner']['port'])for v in row['owners']]
+    if selection['controllers']!=owners or selection['property']!=h or selection['value']!=case['value']:
+        raise CaptureError('original pending indication and endpoint binding required')
+    started=case['release_started']
+    if(set(started)!={'stage','api','started_ns','deadline_ns'}
+            or started['stage']!='ssap_subscription_release_started'or started['api']!=reader
+            or any(type(started[k])is not int for k in ('started_ns','deadline_ns'))
+            or started['deadline_ns']-started['started_ns']!=5_000_000_000
+            or not case['release_request_monotonic_ns']<=started['started_ns']<=case['end_monotonic_ns']<started['deadline_ns']):
+        raise CaptureError('actual SDK close started once with original5s deadline required')
+    hold=case['hold'];markers=hold['markers'];acks=hold['acks'];receipts=hold['ack_receipts']
+    if any(len(v)!=3 for v in (markers,acks,receipts)):raise CaptureError('complete original hold handshake required')
+    states=[[True,False,0,0,0,0,False,0],[False,True,1,0,0,0,False,0],[False,False,1,1,0,0,False,0]]
+    for n,(marker,ack,receipt)in enumerate(zip(markers,acks,receipts,strict=True)):
+        if(marker['hold_phase']!=['arm_ready','wait_held','release_ready'][n]or ack['stage']!=['armed','held','released'][n]
+                or ack['request']!=marker or ack['state']!=dict(zip(PROPERTIES,states[n]))
+                or any(type(ack['state'][k])is not type(v)for k,v in zip(PROPERTIES,states[n]))
+                or receipt['stage']!=ack['stage']or receipt['wall_ns']<marker['wall_ns']):
+            raise CaptureError('one explicit unhold with no automaticrelease/drop/error required')
+    if not(lease['messages'][-1]['end_wall_ns']<=case['start_wall_ns']<=markers[0]['wall_ns']<receipts[0]['wall_ns']
+            <=case['send']['start_wall_ns']<=markers[1]['wall_ns']<receipts[1]['wall_ns']<=case['release_request_wall_ns']
+            <=markers[2]['wall_ns']<receipts[2]['wall_ns']<=case['send']['end_wall_ns']<=case['end_wall_ns']<=lease['application']['end_wall_ns']):
+        raise CaptureError('original update submission,held,close-start,unhold and completion order required')
+    sent=sdk_receipt(case['send'],api,h,{'stage','pdu','ack'});replaced=sdk_receipt(case['replacement'],api,h,{'value'})
+    pdu=b'\x10\x03'+h.to_bytes(2,'little')+b'\x20\0'+value
+    if sent['stage']!=2 or sent['pdu']!=pdu.hex()or sent['ack']!='110301'or replaced['value']!=case['value']or case['before']['value']!=case['value']:
+        raise CaptureError('actual original provider indication completion and value required')
+    data=exchange(1,0,pdu,case);ack=exchange(0,1,b'\x11\x03\x01',case)
+    if not(data['tx']['wall_ns']<=data['rx']['wall_ns']<=ack['tx']['wall_ns']<case['release_request_wall_ns']
+            <=markers[2]['wall_ns']<=ack['rx']['wall_ns']<=case['send']['end_wall_ns']):
+        raise CaptureError('actual paired indication/ACK source before release and late ACK RX required')
+    return value,ack
+
+
+def lease_cases(lease):
+    return lease['messages']+([lease['inflight_release']]if 'inflight_release'in lease else[])
+
+
 def corroborate(row,matched):
     if not row.get('ssap_subscription_required',False):return [],{0:0,1:0}
     from ws73_application_role import verify_probe
@@ -490,7 +614,7 @@ def corroborate(row,matched):
     if (type(row.get('ssap_subscription_contract_version'))is not int or row['ssap_subscription_contract_version']!=1 or row.get('ssap_subscription_status')!=STATUS
             or row.get('security_requirement')!=2 or row.get('message_security_required')is not True
             or len(row.get('ssap_subscription',[]))!=2):raise CaptureError('completed protected continuous subscription phase required')
-    renewal=renewal_required(row);pressure=pressure_required(row);owner_loss=owner_loss_required(row);duration=INITIAL_RENEWAL_LEASE_MS if renewal else LEASE_MS
+    renewal=renewal_required(row);pressure=pressure_required(row);owner_loss=owner_loss_required(row);inflight=inflight_required(row);duration=INITIAL_RENEWAL_LEASE_MS if renewal else LEASE_MS
     owners=row['owners'];proof=[];credit={0:0,1:0};fresh=set();reads=[]
     for sender,item in enumerate(row['ssap_subscription']):
         s,t=sender,1-sender;peer,server=owners[s],owners[t];api='c'if (row['phase']+s)%2==0 else'python';reader='python'if api=='c'else'c';h=item['handle']
@@ -498,7 +622,8 @@ def corroborate(row,matched):
                 or item['args']!=owned_arguments(api,server,item['service'],item['uuid'],item['secret'],'allow',update_connection=server['object']['path'])
                 or item['environment']!=application_environment()or type(item['exit'])is not int or item['exit']!=0 or item['stderr']):raise CaptureError('actual original service-only SDK provider required')
         role(item['credentials'],1005)
-        if not 16<=item['start']<h<=item['end']<=65535 or len(item.get('leases',[]))!=(4 if owner_loss else 2):raise CaptureError('actual property and explicit distinct lease matrix required')
+        matrix=lease_matrix(row,sender)
+        if not 16<=item['start']<h<=item['end']<=65535 or len(item.get('leases',[]))!=len(matrix):raise CaptureError('actual property and explicit distinct lease matrix required')
         lines=item['stdout'].splitlines()
         if lines[:2]!=[f'SdkOwnedAPI: api={api} client_closed=true',f'SsapOwnedService: start={item["start"]} end={item["end"]} property={h}; local registration only']or lines[-1:]!=[f'SdkOwnedRemoved: api={api} start={item["start"]}']:raise CaptureError('complete original owner stream required')
         legs=[]
@@ -506,16 +631,17 @@ def corroborate(row,matched):
             from ws73_ssap_value import pair_wire,physical_sends
             leg=pair_wire(row,matched,owners[a],owners[b],pdu,window);legs.append(leg);credit[a]+=physical_sends(leg['tx']);return leg
         discovery_wire(item,peer,exchange)
-        matrix=[(m,n)for m in(1,2)for n in(0,1)]if owner_loss else[(1,0),(2,0)]
         tokens=set()
         for position,((mode,attempt),lease)in enumerate(zip(matrix,item['leases'],strict=True)):
             killed=owner_loss and attempt==0
+            pending=inflight and sender==0 and mode==2 and attempt==0
+            if not pending and 'inflight_release'in lease:raise CaptureError('unrequested in-flight release evidence')
             app=lease['application'];role(app['credentials'],1004)
             prefix=['/bin/ws73-application-client-c']if reader=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
             if (type(lease['mode'])is not int or lease['mode']!=mode or app['api']!=reader or app['environment']!=application_environment()
                     or app['args']!=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),peer['object']['path'],str(h),str(mode),str(duration)]
                     or type(app['exit'])is not int or app['exit']!=(-9 if killed else 0)or app['stderr']or len(lease['messages'])!=(18 if pressure else COUNT)
-                    or owner_loss and(type(lease.get('attempt'))is not int or lease['attempt']!=attempt)):
+                    or (owner_loss or inflight)and(type(lease.get('attempt'))is not int or lease['attempt']!=attempt)):
                 raise CaptureError('actual continuous SDK reader process and finite workload required')
             if not killed and 'owner_loss'in lease:raise CaptureError('unrequested process death evidence')
             active=lease['active'];raw=[json.loads(v)for v in app['stdout'].splitlines()]
@@ -526,13 +652,14 @@ def corroborate(row,matched):
                     or active['deadline_ns']-active['started_ns']!=5_000_000_000
                     or not active['started_ns']<=active['returned_ns']<active['deadline_ns']
                     or not active['started_ns']+duration*1_000_000<=active['expires_ns']<=active['deadline_ns']+duration*1_000_000):raise CaptureError('original actual acquisition/expiry/epoch required')
-            if owner_loss:
+            if owner_loss or inflight:
                 if active['token']in tokens:raise CaptureError('new replacement token required')
                 tokens.add(active['token'])
                 if attempt:
                     old=item['leases'][position-1]
+                    closed=old['owner_loss']['end_wall_ns']if owner_loss else old['inflight_release']['end_wall_ns']
                     if(active['epoch']!=old['active']['epoch']or app['pid']==old['application']['pid']
-                            or not old['owner_loss']['end_wall_ns']<=old['end_wall_ns']<=app['start_wall_ns']):
+                            or not closed<=old['end_wall_ns']<=app['start_wall_ns']):
                         raise CaptureError('same original epoch after old actor convergence and new reader process required')
             if renewal:renewed=verify_renewal(lease,reader)
             elif 'renewal'in lease or'old_expiry_barrier'in lease:raise CaptureError('unrequested renewal evidence')
@@ -542,7 +669,7 @@ def corroborate(row,matched):
                 expected.append(drained)
             elif 'drained'in lease:raise CaptureError('unrequested pressure batch')
             for number,case in enumerate(lease['messages']):
-                sequence=(row['phase']<<24)|(s<<20)|(mode<<16)|((attempt<<12)if owner_loss else 0)|number;value=bytes.fromhex(case['value']);reply=bytes.fromhex(case['reply'])
+                sequence=(row['phase']<<24)|(s<<20)|(mode<<16)|((attempt<<12)if owner_loss or inflight else 0)|number;value=bytes.fromhex(case['value']);reply=bytes.fromhex(case['reply'])
                 if (type(case['number'])is not int or case['number']!=number or len(value)!=32 or len(reply)!=32 or value in fresh or reply in fresh
                         or value[:4]!=sequence.to_bytes(4,'little')or reply[:4]!=(sequence|0x80000000).to_bytes(4,'little')):raise CaptureError('fresh sequence-bearing distinct application payloads required')
                 fresh.update((value,reply));pdu=bytes([16 if mode==2 else 15,3])+h.to_bytes(2,'little')+b'\x20\0'+value
@@ -576,7 +703,11 @@ def corroborate(row,matched):
                 if overflow:continue
                 exchange(s,t,b'\x0d\x23'+h.to_bytes(2,'little')+b'\0'+reply,case)
                 exchange(t,s,b'\x0e\x03'+h.to_bytes(2,'little')+b'\0'+reply,case)
-            release={'stage':'ssap_subscription_released','api':reader,'flags':1,'discarded':0}
+            if pending:
+                value,pending_ack=verify_inflight_release(row,item,lease,api,reader,exchange)
+                if value in fresh:raise CaptureError('pending update payload must be distinct')
+                fresh.add(value);expected.append(lease['inflight_release']['release_started'])
+            release={'stage':'ssap_subscription_released','api':reader,'flags':1,'discarded':1 if pending else 0}
             if killed:
                 cleanup_read=verify_owner_loss(lease,peer,h);reads.extend(lease['owner_loss']['read_attempts'])
             else:
@@ -591,7 +722,11 @@ def corroborate(row,matched):
             read=b'\x08\x03'+h.to_bytes(2,'little')+b'\x02';enable=b'\x0d\x23'+h.to_bytes(2,'little')+bytes([2,mode,0]);disable=b'\x0d\x23'+h.to_bytes(2,'little')+b'\x02\0\0'
             for req,rsp in [(read,b'\x09\x03\0\0'),(enable,b'\x0e\x03'+h.to_bytes(2,'little')+bytes([2,mode,0])),(disable,b'\x0e\x03'+h.to_bytes(2,'little')+b'\x02\0\0')]:
                 window=lease['owner_loss']if killed and req==disable else lease
-                exchange(s,t,req,window);response=exchange(t,s,rsp,window)
+                config_request=exchange(s,t,req,window);response=exchange(t,s,rsp,window)
+            if pending:
+                if not(lease['inflight_release']['release_request_wall_ns']<=config_request['tx']['wall_ns']<pending_ack['rx']['wall_ns']
+                        <=response['tx']['wall_ns']<=response['rx']['wall_ns']<=lease['end_wall_ns']):
+                    raise CaptureError('actual disableTX while ACK in-flight and confirmed cleanup after late ACK required')
             if killed:
                 request=exchange(s,t,b'\x08\x03'+h.to_bytes(2,'little')+b'\0',cleanup_read)
                 exchange(t,s,b'\x09\x03'+bytes.fromhex(lease['messages'][-1]['reply']),cleanup_read)
@@ -609,10 +744,11 @@ def corroborate(row,matched):
         for lease in item['leases']:
             cases=lease['messages']
             snapshots.extend((str(h),v)for v in ([c['value']for c in cases[:17]]+[c['reply']for c in cases[:16]]+[cases[-1]['value'],cases[-1]['reply']]if pressure else[c[k]for c in cases for k in ('value','reply')]))
+            if 'inflight_release'in lease:snapshots.append((str(h),lease['inflight_release']['value']))
         import re
         if re.findall(r'^SsapOwnedValue: handle=(\d+) value=([0-9a-f]+)$',item['stdout'],re.M)!=snapshots:raise CaptureError('actual original owner store snapshots required')
-        for prefix,observations in [('SdkOwnedReplaced',[c['replacement']for l in item['leases']for c in l['messages']]),
-                ('SdkOwnedUpdate',[c['send']for l in item['leases']for c in l['messages']if not(pressure and l['mode']==2 and c['number']==16)]),
+        for prefix,observations in [('SdkOwnedReplaced',[c['replacement']for l in item['leases']for c in lease_cases(l)]),
+                ('SdkOwnedUpdate',[c['send']for l in item['leases']for c in lease_cases(l)if not(pressure and l['mode']==2 and c['number']==16)]),
                 ('SdkOwnedUpdateObserved',[c['send']for l in item['leases']for c in l['messages']if pressure and l['mode']==2 and c['number']==16]),
                 ('SdkOwnedConfiguration',[o for l in item['leases']for key in ('enabled','disabled')for o in l[key]])]:
             raw=[json.loads(v)for v in re.findall('^'+prefix+r': (.+)$',item['stdout'],re.M)]
@@ -621,6 +757,7 @@ def corroborate(row,matched):
         if renewal:result.update(renewal_contract_version=1,renewals=2,post_original_expiry_updates=4)
         if pressure:result.update(pressure_contract_version=1,notification_drops=1,indication_refusals=1,resumed=2)
         if owner_loss:result.update(owner_loss_contract_version=1,owner_losses=2,replacement_leases=2,cleanup_read_barriers=2)
+        if inflight:result.update(leases=3 if sender==0 else 2,updates=10 if sender==0 else 6,application_replies=9 if sender==0 else 6,decisions=6 if sender==0 else 4,inflight_release_contract_version=1,inflight_releases=1 if sender==0 else 0,replacement_leases=1 if sender==0 else 0,discarded_pending=1 if sender==0 else 0)
         proof.append(result)
     if owner_loss and row.get('role_ssap_commands')!=reads:raise CaptureError('all actual actor read attempts must be retained without extras')
     return proof,credit
@@ -637,11 +774,15 @@ def valid_summary(proof):
                 pressure=value.get('pressure_contract_version')is not None
                 if pressure and(type(value['pressure_contract_version'])is not int or value['pressure_contract_version']!=1):return False
                 loss=value.get('owner_loss_contract_version')is not None
+                inflight=value.get('inflight_release_contract_version')is not None
                 if loss and(type(value['owner_loss_contract_version'])is not int or value['owner_loss_contract_version']!=1
+                        or inflight or pressure or value.get('renewal_contract_version')is not None):return False
+                if inflight and(type(value['inflight_release_contract_version'])is not int or value['inflight_release_contract_version']!=1
                         or pressure or value.get('renewal_contract_version')is not None):return False
-                for k,v in dict(sender=sender,target=1-sender,leases=4 if loss else 2,updates=36 if pressure else 12 if loss else 6,application_replies=34 if pressure else 12 if loss else 6,decisions=8 if loss else 4).items():
+                extra=inflight and sender==0
+                for k,v in dict(sender=sender,target=1-sender,leases=4 if loss else 3 if extra else 2,updates=36 if pressure else 12 if loss else 10 if extra else 6,application_replies=34 if pressure else 12 if loss else 9 if extra else 6,decisions=8 if loss else 6 if extra else 4).items():
                     if type(value[k])is not int or value[k]!=v:return False
-                if value['publisher']!=api or value['peer']!=('python'if api=='c'else'c')or len(value['wire'])!=(144 if pressure else 80 if loss else 43):return False
+                if value['publisher']!=api or value['peer']!=('python'if api=='c'else'c')or len(value['wire'])!=(144 if pressure else 80 if loss else 63 if extra else 43):return False
                 if not all(valid_wire(leg)for leg in value['wire']):return False
         return True
     except (KeyError,TypeError,ValueError):return False
@@ -663,3 +804,10 @@ def valid_owner_loss_summary(proof):
     return(valid_summary(proof)and all(type(v.get(k))is int and v[k]==n
         for row in proof['proofs']for v in row['ssap_subscription']
         for k,n in dict(owner_loss_contract_version=1,owner_losses=2,replacement_leases=2,cleanup_read_barriers=2).items()))
+
+
+def valid_inflight_summary(proof):
+    return(valid_summary(proof)and all(type(v.get(k))is int and v[k]==n
+        for row in proof['proofs']for sender,v in enumerate(row['ssap_subscription'])
+        for k,n in dict(inflight_release_contract_version=1,inflight_releases=1 if sender==0 else 0,
+            replacement_leases=1 if sender==0 else 0,discarded_pending=1 if sender==0 else 0).items()))

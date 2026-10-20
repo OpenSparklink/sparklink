@@ -112,6 +112,7 @@ def prepare_locked(args, build_fd):
     manifest['ssap_subscription_renewal_contract_version'] = 1
     manifest['ssap_subscription_pressure_contract_version'] = 1
     manifest['ssap_subscription_owner_loss_contract_version'] = 1
+    manifest['ssap_subscription_inflight_release_contract_version'] = 1
     manifest['ssap_subscription_snapshot_contract_version'] = 1
     try:
         module_profile = native_vm.enabled(args)
@@ -129,7 +130,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -316,7 +317,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -609,6 +610,7 @@ def _run(args):
     subscription_renewal=getattr(args,'ssap_subscription_renewal_verify',False)
     subscription_pressure=getattr(args,'ssap_subscription_pressure_verify',False)
     subscription_owner_loss=getattr(args,'ssap_subscription_owner_loss_verify',False)
+    subscription_inflight=getattr(args,'ssap_subscription_inflight_release_verify',False)
     from ws73_ssap_receive_lifecycle import requested as receive_lifecycle_requested
     receive_lifecycle=receive_lifecycle_requested(args,passthrough=passthrough)
     from ws73_ssap_value import lengths_requested
@@ -856,6 +858,9 @@ def _run(args):
     m['ssap_subscription_pressure_acceptance']=False
     m['ssap_subscription_owner_loss_requested']=subscription_owner_loss
     m['ssap_subscription_owner_loss_acceptance']=False
+    m['ssap_subscription_inflight_release_requested']=subscription_inflight
+    m['ssap_subscription_inflight_release_acceptance']=False
+    if subscription_inflight:m['ssap_subscription_inflight_verifier']=file_record(HERE/'ws73_ssap_sender_deadline.py')
     if subscription:m['ssap_subscription_verifier']=file_record(HERE/'ws73_ssap_subscription.py')
     m['ssap_update_delivery_requested']=update_delivery
     m['ssap_update_delivery_acceptance']=False
@@ -1014,6 +1019,11 @@ def _run(args):
             if subscription_owner_loss:
                 if type(package.get('ssap_subscription_owner_loss_contract_version'))is not int or package['ssap_subscription_owner_loss_contract_version']!=1:raise ValueError('owner loss requires explicit new prepared contract1')
                 m['ssap_subscription_owner_loss_contract_version']=1
+            if subscription_inflight:
+                if type(package.get('ssap_subscription_inflight_release_contract_version'))is not int or package['ssap_subscription_inflight_release_contract_version']!=1:raise ValueError('in-flight release requires explicit new prepared contract1')
+                from ws73_ssap_sender_deadline import validate_qemu,validate_inputs
+                validate_qemu(package['qemu']['path']);validate_inputs(package)
+                m['ssap_subscription_inflight_release_contract_version']=1
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if application_clients:
@@ -1129,6 +1139,7 @@ def _run(args):
                      (' ws73.ssap_subscription_renewal=1' if subscription_renewal else '')+
                      (' ws73.ssap_subscription_pressure=1' if subscription_pressure else '')+
                      (' ws73.ssap_subscription_owner_loss=1' if subscription_owner_loss else '')+
+                     (' ws73.ssap_subscription_inflight_release=1' if subscription_inflight else '')+
                      (' ws73.subscription_snapshot=1' if subscription else '')+
                      (' ws73.ssap_receive_lifecycle=1' if receive_lifecycle else '')+
                      (' ws73.ssap_value_lengths=1' if value_lengths else '')+
@@ -1226,6 +1237,10 @@ def _run(args):
                 install_hold=None
                 initialization_hold=None
                 receive_capture=None
+                sender_hold=None
+                if subscription_inflight:
+                    from ws73_ssap_sender_deadline import Coordinator
+                    sender_hold=Coordinator(share,output,m.setdefault('ssap_subscription_inflight_hold',{}),package['qemu']['path'],purpose='subscription-release')
                 if receive_lifecycle:
                     from ws73_ssap_receive_lifecycle import CaptureCoordinator
                     receive_capture=CaptureCoordinator(share,output,m.setdefault('ssap_receive_capture_observations',{}))
@@ -1296,6 +1311,7 @@ def _run(args):
                                 args.ports[connected_index if connected_reply or channel_revoke_prefix else 0], process.pid, lab.inventory())
                         hold.poll(monitor)
                     if receive_capture:receive_capture.poll()
+                    if sender_hold:sender_hold.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if initialization_hold:
                         initialization_hold.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if install_hold:
@@ -1468,7 +1484,7 @@ def _run(args):
                     if text.count('WS73_TARGET_CHANNEL_GRANT_FINISHED')!=1:raise ValueError('standalone Grant finish proof missing')
                     control={}
                 packets=check_capture_stats((share/'capture-stats.txt').read_text())
-                capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
+                capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities],observe_rx=subscription_inflight)
                 if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
                 m['capture_packets']=packets;m['guest_identities']=identities
                 if parallel:
@@ -1617,8 +1633,8 @@ def _run(args):
                         m['ssap_subscription_supervision']=verify_supervisor_artifacts(control,share)
                         from ws73_ssap_subscription import renewal_required
                         if any(renewal_required(row)!=subscription_renewal for row in control['channel_socket']):raise ValueError('renewal request/evidence mismatch')
-                        from ws73_ssap_subscription import pressure_required,owner_loss_required
-                        if any(pressure_required(row)!=subscription_pressure or owner_loss_required(row)!=subscription_owner_loss for row in control['channel_socket']):raise ValueError('subscription scenario request/evidence mismatch')
+                        from ws73_ssap_subscription import pressure_required,owner_loss_required,inflight_required
+                        if any(pressure_required(row)!=subscription_pressure or owner_loss_required(row)!=subscription_owner_loss or inflight_required(row)!=subscription_inflight for row in control['channel_socket']):raise ValueError('subscription scenario request/evidence mismatch')
                     if any(bool(row.get('ssap_subscription_required',False))!=subscription for row in control['channel_socket']):raise ValueError('subscription request/evidence mismatch')
                     if any(bool(row.get('ssap_update_delivery_required',False))!=update_delivery for row in control['channel_socket']):raise ValueError('update delivery request/evidence mismatch')
                     if owned_update and file_record(HERE/'ws73_ssap_owned_update.py')!=m['ssap_owned_update_verifier']:raise ValueError('owned update verifier changed during execution')
@@ -1659,10 +1675,19 @@ def _run(args):
                         if subscription_owner_loss:
                             from ws73_ssap_subscription import valid_owner_loss_summary,valid_owner_loss_supervision
                             if not valid_owner_loss_summary(m['channel_socket_corroboration'])or not valid_owner_loss_supervision(m['ssap_subscription_supervision']):raise ValueError('actual reader death,paired cleanup/read barrier and fresh lease replies required')
+                        if subscription_inflight:
+                            from ws73_ssap_subscription import valid_inflight_summary,valid_inflight_supervision
+                            from ws73_ssap_sender_deadline import corroborate_holds,validate_prefixes
+                            if file_record(HERE/'ws73_ssap_sender_deadline.py')!=m['ssap_subscription_inflight_verifier']:raise ValueError('in-flight physical verifier changed during run')
+                            if not valid_inflight_summary(m['channel_socket_corroboration'])or not valid_inflight_supervision(m['ssap_subscription_supervision']):raise ValueError('actual in-flight release/discard and fresh-lease replies required')
+                            validate_prefixes(m['ssap_subscription_inflight_hold'],share/'ws73.pcap')
+                            cases=[row['ssap_subscription'][0]['leases'][1]['inflight_release']for row in control['channel_socket']]
+                            m['ssap_subscription_inflight_corroboration']=corroborate_holds(m['ssap_subscription_inflight_hold'],control,capture,(output/'qemu-stderr.log').read_text(),cases=cases,purpose='subscription-release')
                     m['ssap_subscription_acceptance']=subscription
                     m['ssap_subscription_renewal_acceptance']=subscription_renewal
                     m['ssap_subscription_pressure_acceptance']=subscription_pressure
                     m['ssap_subscription_owner_loss_acceptance']=subscription_owner_loss
+                    m['ssap_subscription_inflight_release_acceptance']=subscription_inflight
                     m['ssap_update_delivery_acceptance']=update_delivery
                     m['ssap_owned_update_acceptance']=owned_update
                     m['ssap_owned_acceptance']=ssap_owned
@@ -2160,6 +2185,21 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     elif(record.get('ssap_subscription_owner_loss_acceptance')or record.get('ssap_subscription_owner_loss_contract_version')is not None
             or record.get('ssap_subscription_supervision',{}).get('owner_loss_contract_version')is not None
             or any(v.get('owner_loss_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
+    inflight=record.get('ssap_subscription_inflight_release_requested',False)
+    if type(inflight)is not bool or inflight and(not subscription or renewal or pressure or owner_loss):return 1
+    inflight_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_inflight_release=1']
+    if inflight_boot!=(['ws73.ssap_subscription_inflight_release=1']if inflight else[]):return 1
+    if inflight:
+        from ws73_ssap_subscription import valid_inflight_summary,valid_inflight_supervision
+        from ws73_ssap_sender_deadline import valid_hold_summary
+        if(type(record.get('ssap_subscription_inflight_release_contract_version'))is not int or record['ssap_subscription_inflight_release_contract_version']!=1
+                or snapshot!=1 or record.get('ssap_subscription_inflight_release_acceptance')is not True
+                or not valid_inflight_summary(channel_proof)or not valid_inflight_supervision(record.get('ssap_subscription_supervision',{}))
+                or not valid_hold_summary(record.get('ssap_subscription_inflight_hold',{}),record.get('ssap_subscription_inflight_corroboration',{}),purpose='subscription-release')):return 1
+    elif(record.get('ssap_subscription_inflight_release_acceptance')or record.get('ssap_subscription_inflight_release_contract_version')is not None
+            or record.get('ssap_subscription_inflight_hold')or record.get('ssap_subscription_inflight_corroboration')
+            or record.get('ssap_subscription_supervision',{}).get('inflight_release_contract_version')is not None
+            or any(v.get('inflight_release_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
     delivery=record.get('ssap_update_delivery_requested',False)
     if type(delivery)is not bool:return 1
     delivery_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_update_delivery=1']
@@ -2497,6 +2537,7 @@ def main():
             cmd.add_argument('--ssap-subscription-renewal-verify',action='store_true',help='actual same-token long renewal and checked replies beyond original short lease expiry;requires subscription gate')
             cmd.add_argument('--ssap-subscription-pressure-verify',action='store_true',help='actual bounded subscriber queue full/refusal,ordered drain and checked resume;separate from controller credit pressure')
             cmd.add_argument('--ssap-subscription-owner-loss-verify',action='store_true',help='actual guest reader death,paired cleanup/read barrier and fresh same-Session subscription;not full lifecycle qualification')
+            cmd.add_argument('--ssap-subscription-inflight-release-verify',action='store_true',help='release while real indication ACK RX is withheld;actual disableTX barrier,discard and fresh lease business;not expiry qualification')
             cmd.add_argument('--ssap-update-delivery-verify',action='store_true',help='real typed/authenticated CPCD,notification/indication and C/Python peer business reply')
             cmd.add_argument('--ssap-update-lifecycle-verify',action='store_true',help='dedicated same-actor receiver exit,original deadline and confirmed CPCD cleanup;requires update delivery')
             cmd.add_argument('--ssap-value-lengths-verify',action='store_true',help='dedicated real complete-PDU value lengths/MTU refusal gate;not SSAP protocol fragmentation')

@@ -218,7 +218,8 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
         context=SimpleNamespace(output=folder,save=save)
         try:
             from ws73_ssap_subscription import tool_records
-            expected_tools=tool_records(snapshot=snapshot_root is not None)if subscription else{key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
+            from ws73_ssap_subscription import inflight_required
+            expected_tools=tool_records(snapshot=snapshot_root is not None,inflight=inflight_required(row))if subscription else{key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
             if row['tools']!=expected_tools:
                 raise CaptureError('exact actual SDK artifacts required')
             probe=dict(args=['/bin/bus-policy-probe',row['owners'][0]['object']['path'],'application-channel'],start_wall_ns=time.time_ns())

@@ -121,6 +121,15 @@ _Static_assert(offsetof(struct SlkSsapSubscriptionBatch,packets)==160,"packets")
         self.assertEqual(b.freed,[]);sub._pid=os.getpid();sub.close();parent.close()
         self.assertEqual(b.freed,[123])
 
+    def test_retained_flag_requires_closed_empty_confirmed_lease(self):
+        from sparklink.ssap_subscription import CLEANUP_CONFIRMED, REMOTE_RETAINED
+        self.assertEqual((CLEANUP_CONFIRMED, REMOTE_RETAINED), (1, 2))
+        raw=_Batch();raw.info=batch().info;raw.info.state=3;raw.flags=3;raw.reason=1
+        self.assertEqual(_batch(raw).flags,3)
+        for state,flags in ((3,2),(3,4),(3,7),(1,3),(2,3)):
+            raw.info.state=state;raw.flags=flags
+            with self.subTest(state=state,flags=flags),self.assertRaises(OSError):_batch(raw)
+
     def test_malformed_result_tails_lengths_and_reserved_fields_are_rejected(self):
         self.assertEqual(_batch(batch()).packets[0].security_epoch,13)
         for case in range(13):

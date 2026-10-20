@@ -67,7 +67,7 @@ pub(crate) async fn run(link: &ApplicationConnection, args: &[&str]) -> anyhow::
                 signal=tokio::signal::ctrl_c()=>{signal?;anyhow::bail!("subscription interrupted;last delivery may be uncertain");},
                 result=subscription.read(true,Deadline::after(Duration::from_secs(5))?)=>result?,
             };
-            if batch.info.state==3 && batch.flags==1 {observed_cleanup=Some(batch.clone());}
+            if batch.info.state==3 && (batch.flags & 1)==1 {observed_cleanup=Some(batch.clone());}
             for packet in &batch.packets {
                 let decoded=slk_protocol::ssap::updates::Update::decode(2048,&packet.pdu)
                     .map_err(|e|anyhow::anyhow!("incoming display codec: {e:?}"))?;
@@ -106,7 +106,11 @@ pub(crate) async fn run(link: &ApplicationConnection, args: &[&str]) -> anyhow::
             );
             Ok(())
         }
-        (Err(error), Ok(_)) => Err(error.context("remote CPCD cleanup confirmed")),
+        (Err(error), Ok(batch)) => Err(error.context(if batch.flags & 2 != 0 {
+            "subscription lease released;remote configuration retained for siblings"
+        } else {
+            "remote CPCD cleanup confirmed"
+        })),
         (Ok(_), Err(error)) => Err(anyhow::anyhow!(
             "subscription cleanup not confirmed: {error}"
         )),

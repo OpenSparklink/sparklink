@@ -141,7 +141,12 @@ pub mod ssap {
         pub const EXPIRED: u8 = 2;
         pub const OWNER_LOST: u8 = 3;
         pub const INITIALIZATION_CANCELLED: u8 = 4;
+        /// This lease's routing and configuration ownership are released.
+        /// Without REMOTE_RETAINED,the last remote configuration was verified off.
         pub const CLEANUP_CONFIRMED: u32 = 1;
+        /// At this lease's terminal observation,other same-scope leases still
+        /// owned the remote CPCD. Not a claim that it is currently enabled.
+        pub const REMOTE_RETAINED: u32 = 2;
         #[derive(
             Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
         )]

@@ -180,7 +180,11 @@ impl Broker {
             flags: if self.0.mode.load(Ordering::SeqCst) == 15 {
                 0
             } else {
-                wire::CLEANUP_CONFIRMED
+                match self.0.mode.load(Ordering::SeqCst) {
+                    21 => wire::CLEANUP_CONFIRMED | wire::REMOTE_RETAINED,
+                    22 => wire::REMOTE_RETAINED,
+                    _ => wire::CLEANUP_CONFIRMED,
+                }
             },
             reason: wire::RELEASED,
             packets: vec![],
@@ -428,4 +432,28 @@ async fn observed_daemon_scope_loss_never_revives_subscription_on_same_owner_rea
         Err(ApplicationError::Identity(_))
     ));
     assert_eq!(state.reads.load(Ordering::SeqCst), 0);
+}
+
+#[tokio::test]
+async fn retained_remote_configuration_is_an_explicit_terminal_observation_not_remote_off() {
+    let (_bus, _server, link, state) = fixture().await;
+    let mut sub = link
+        .ssap()
+        .subscribe(vec![17], 2, 1000, until())
+        .await
+        .unwrap();
+    state.mode.store(21, Ordering::SeqCst);
+    let terminal = sub.close(until()).await.unwrap();
+    assert_eq!(
+        terminal.flags,
+        wire::CLEANUP_CONFIRMED | wire::REMOTE_RETAINED
+    );
+    assert!(sub.is_closed());
+    let mut sub = link
+        .ssap()
+        .subscribe(vec![17], 2, 1000, until())
+        .await
+        .unwrap();
+    state.mode.store(22, Ordering::SeqCst);
+    assert!(sub.close(until()).await.is_err());
 }

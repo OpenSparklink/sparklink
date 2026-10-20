@@ -97,6 +97,16 @@ enum Query {
     },
 }
 type Store = std::sync::Arc<std::sync::Mutex<crate::ssap_database::Database>>;
+/// Bounded owner/token tombstones are observations,not reusable authorities.
+fn remember_subscription(
+    history: &mut VecDeque<crate::ssap_subscription::Closed>,
+    closed: crate::ssap_subscription::Closed,
+) {
+    if history.len() == 16 {
+        history.pop_front();
+    }
+    history.push_back(closed);
+}
 pub(crate) struct Engine {
     state: watch::Receiver<Status>,
     queries: mpsc::Sender<Query>,
@@ -676,7 +686,7 @@ fn retire_update_event(
 }
 pub(super) enum IncomingDelivery {
     Once(oneshot::Sender<Result<Incoming, String>>),
-    Stream(crate::ssap_subscription::Sink),
+    Stream(Vec<crate::ssap_subscription::Sink>),
 }
 impl From<oneshot::Sender<Result<Incoming, String>>> for IncomingDelivery {
     fn from(value: oneshot::Sender<Result<Incoming, String>>) -> Self {
@@ -687,9 +697,9 @@ impl IncomingDelivery {
     fn is_closed(&self) -> bool {
         match self {
             Self::Once(reply) => reply.is_closed(),
-            Self::Stream(sink) => {
+            Self::Stream(sinks) => sinks.iter().all(|sink| {
                 !*sink.alive.borrow() || sink.queue.lock().map_or(true, |q| q.is_closing())
-            }
+            }),
         }
     }
     pub(super) fn send(
@@ -731,9 +741,14 @@ fn incoming_packet(
                 .all(|item| w.handles.contains(&item.handle))
     });
     let accepted = if eligible {
-        if let IncomingDelivery::Stream(sink) = &waiter.as_ref().expect("eligible waiter").reply {
-            sink.offer((packet.indication, raw.to_vec()), receipt, Instant::now())
-                .map_err(io::Error::other)?
+        if let IncomingDelivery::Stream(sinks) = &waiter.as_ref().expect("eligible waiter").reply {
+            let mut accepted = false;
+            for sink in sinks {
+                accepted |= sink
+                    .offer((packet.indication, raw.to_vec()), receipt, Instant::now())
+                    .map_err(io::Error::other)?;
+            }
+            accepted
         } else {
             let w = waiter.take().expect("eligible waiter");
             w.reply.send(Ok((packet.indication, raw.to_vec()))).is_ok()
@@ -1517,7 +1532,7 @@ async fn exchange_loop(
     let mut configurations = crate::ssap_engine_config::ClientConfigurations::default();
     let mut update: Option<UpdateRequest> = None;
     let mut receive: Option<crate::ssap_receive_transaction::ReceiveTransaction> = None;
-    let mut last_subscription: Option<crate::ssap_subscription::Closed> = None;
+    let mut last_subscription: VecDeque<crate::ssap_subscription::Closed> = VecDeque::new();
     let mut next_subscription = 1u64;
     loop {
         retire_client_wait(&mut client, &mut pending, Instant::now());
@@ -1527,9 +1542,12 @@ async fn exchange_loop(
                 .maintain(&mut incoming_wait, Instant::now())
                 .map_err(io::Error::other)?;
             retire_client_wait(&mut client, &mut pending, Instant::now());
+            for closed in current.take_closed() {
+                remember_subscription(&mut last_subscription, closed);
+            }
             if current.finished() && client.is_none() {
-                if let Some(closed) = receive.take().expect("finished transaction").finish() {
-                    last_subscription = Some(closed);
+                for closed in receive.take().expect("finished transaction").finish() {
+                    remember_subscription(&mut last_subscription, closed);
                 }
             } else if client.is_none()
                 && let Some((handle, value, deadline)) = current.next(&mut incoming_wait)
@@ -1669,7 +1687,7 @@ async fn exchange_loop(
                 if let Query::Subscribe {owner,handles,modes,duration_ms,deadline,reply}=query {
                     if reply.is_closed(){continue;}
                     let prepared=(||{
-                        if !initial_done || receive.is_some() || client.is_some() || incoming_wait.is_some()
+                        if !initial_done || (receive.is_none()&&(client.is_some()||incoming_wait.is_some()))
                             || Instant::now()>=deadline || !owner.current()
                             || !slk_contract::ssap::subscription::valid_request(&handles,modes,duration_ms){
                             return Err("subscription busy/not-ready/expired/invalid".to_string());
@@ -1683,12 +1701,15 @@ async fn exchange_loop(
                             security_epoch:context.security_epoch,token,expires_ns,
                             handles:handles.clone(),modes,state:slk_contract::ssap::subscription::STARTING,
                             capacity:slk_contract::ssap::subscription::CAPACITY as u16};
+                        if receive.as_ref().is_some_and(|r|!r.can_join(&info)){return Err("subscription incompatible shared scope or capacity".into());}
                         Ok((info,expires))
                     })();
                     match prepared {
                         Err(error)=>{let _=reply.send(Err(error));},
-                        Ok((info,expires))=>receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new_stream(
-                            handles,modes,deadline,owner,info,expires,reply)),
+                        Ok((info,expires))=>{
+                            if let Some(current)=receive.as_mut(){current.join(owner,info,expires,deadline,reply);}
+                            else{receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new_stream(handles,modes,deadline,owner,info,expires,reply));}
+                        },
                     }
                     continue;
                 }
@@ -1701,8 +1722,8 @@ async fn exchange_loop(
                             if current.expected_epoch()!=Some(context.security_epoch){return Err("subscription original security changed".into());}
                             Ok(())
                         })();
-                        match valid { Ok(())=>current.read(wait,deadline,reply),Err(error)=>{let _=reply.send(Err(error));} }
-                    } else if let Some(last)=last_subscription.as_ref().filter(|r|r.owner==caller&&r.token==token) {
+                        match valid { Ok(())=>current.read(&caller,token,wait,deadline,reply),Err(error)=>{let _=reply.send(Err(error));} }
+                    } else if let Some(last)=last_subscription.iter().find(|r|r.owner==caller&&r.token==token) {
                         let _=reply.send(last.result.clone());
                     } else {let _=reply.send(Err("subscription owner/token unavailable".into()));}
                     continue;
@@ -1714,15 +1735,15 @@ async fn exchange_loop(
                         let current=receive.as_mut().filter(|r|r.matches(&caller,token)).ok_or("subscription owner/token unavailable")?;
                         let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
                         if current.expected_epoch()!=Some(context.security_epoch){return Err("subscription original security changed".into());}
-                        current.renew(duration_ms)
+                        current.renew(&caller,token,duration_ms)
                     })();
                     let _=reply.send(result);continue;
                 }
                 if let Query::SubscriptionClose{caller,token,deadline,reply}=query {
                     if reply.is_closed(){continue;}
                     if Instant::now()>=deadline {let _=reply.send(Err("subscription close original deadline".into()));continue;}
-                    if let Some(current)=receive.as_mut().filter(|r|r.matches(&caller,token)){current.close(reply);}
-                    else if let Some(last)=last_subscription.as_ref().filter(|r|r.owner==caller&&r.token==token){let _=reply.send(last.result.clone());}
+                    if let Some(current)=receive.as_mut().filter(|r|r.matches(&caller,token)){current.close(&caller,token,reply);}
+                    else if let Some(last)=last_subscription.iter().find(|r|r.owner==caller&&r.token==token){let _=reply.send(last.result.clone());}
                     else {let _=reply.send(Err("subscription owner/token unavailable".into()));}
                     continue;
                 }
@@ -2711,6 +2732,105 @@ mod tests {
         assert_eq!(update.unwrap().drain, Some(first + Duration::from_secs(5)));
         owner.shutdown().await;
         assert_eq!(slots.available_permits(), 1);
+    }
+    #[test]
+    fn shared_incoming_fanout_ack_is_any_acceptance_and_queues_account_independently() {
+        use crate::ssap_subscription::{Queue, Sink};
+        use slk_contract::ssap::subscription as stream;
+        let expires = Instant::now() + Duration::from_secs(10);
+        let info = stream::Info {
+            version: 1,
+            controller: 2,
+            generation: 7,
+            lifetime: 9,
+            handle: 11,
+            security_epoch: 13,
+            token: 17,
+            expires_ns: 1,
+            handles: vec![19],
+            modes: 3,
+            state: stream::ACTIVE,
+            capacity: 16,
+        };
+        let a = Queue::new(info.clone(), expires);
+        let b = Queue::new(stream::Info { token: 18, ..info }, expires);
+        let (_alive, observed) = watch::channel(true);
+        let mut w = Some(IncomingWait {
+            handles: vec![19],
+            modes: 3,
+            deadline: expires,
+            reply: IncomingDelivery::Stream(vec![
+                Sink {
+                    queue: a.clone(),
+                    alive: observed.clone(),
+                },
+                Sink {
+                    queue: b.clone(),
+                    alive: observed,
+                },
+            ]),
+        });
+        let receipt = slk_protocol::SleMessageSecurity {
+            version: 1,
+            size: 40,
+            controller: 2,
+            generation: 7,
+            lifetime: 9,
+            handle: 11,
+            local_tcid: 10,
+            remote_tcid: 10,
+            pi: 0,
+            security_epoch: 13,
+            flags: 3,
+            security: 2,
+        };
+        let indication = [16, 3, 19, 0, 2, 0, 7, 8];
+        for n in 0..18 {
+            assert_eq!(
+                incoming_packet(249, 249, &indication, Some(receipt), &mut w).unwrap(),
+                [17, 3, 1]
+            );
+            if n < 17 {
+                let drained = b.lock().unwrap().take_batch();
+                assert_eq!(drained.packets.len(), 1);
+            }
+        }
+        let slow = a.lock().unwrap().take_batch();
+        assert_eq!(slow.packets.len(), 16);
+        assert_eq!(slow.refused_indications, 2);
+        assert_eq!(slow.last_sequence, 18);
+        let fast = b.lock().unwrap().take_batch();
+        assert_eq!(fast.packets.len(), 1);
+        assert_eq!(fast.refused_indications, 0);
+        assert_eq!(fast.last_sequence, 18);
+        a.lock().unwrap().close(stream::RELEASED).unwrap();
+        assert_eq!(
+            incoming_packet(249, 249, &indication, Some(receipt), &mut w).unwrap(),
+            [17, 3, 1]
+        );
+        b.lock().unwrap().close(stream::RELEASED).unwrap();
+        assert_eq!(
+            incoming_packet(249, 249, &indication, Some(receipt), &mut w).unwrap(),
+            [17, 3, 0]
+        );
+    }
+    #[test]
+    fn subscription_tombstones_have_fixed_budget_and_keep_original_owner() {
+        let mut history = VecDeque::new();
+        for token in 1..=20 {
+            remember_subscription(
+                &mut history,
+                crate::ssap_subscription::Closed {
+                    owner: format!(":1.{token}"),
+                    token,
+                    result: Err("explicit fixture failure".into()),
+                },
+            );
+        }
+        assert_eq!(history.len(), 16);
+        assert_eq!(history.front().unwrap().token, 5);
+        assert!(history.iter().all(|v| v.result.is_err()));
+        assert!(!history.iter().any(|v| v.owner == ":1.19" && v.token == 20));
     }
 }
 

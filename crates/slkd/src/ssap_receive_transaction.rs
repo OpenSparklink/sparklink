@@ -19,8 +19,8 @@ pub(crate) enum Event {
     Cancelled,
     Wire(Result<Vec<u8>, ClientFailure>),
     Data(Result<Incoming, String>),
-    StreamOwnerLost,
-    ReadCancelled,
+    StreamOwnerLost(u64),
+    ReadCancelled(u64),
 }
 struct ReadWait {
     reply: oneshot::Sender<Result<stream::Batch, String>>,
@@ -32,7 +32,6 @@ struct Stream {
     ready: Option<oneshot::Sender<Result<stream::Info, String>>>,
     read: Option<ReadWait>,
     close: Vec<oneshot::Sender<Result<stream::Batch, String>>>,
-    installed: bool,
 }
 pub(crate) struct ReceiveTransaction {
     handles: Vec<u16>,
@@ -45,7 +44,9 @@ pub(crate) struct ReceiveTransaction {
     failure: Option<String>,
     payload: Option<Incoming>,
     reply: Option<oneshot::Sender<Result<Incoming, String>>>,
-    stream: Option<Stream>,
+    stream: Option<Vec<Stream>>,
+    installed: bool,
+    closed_streams: Vec<Closed>,
     wire: Option<oneshot::Receiver<Result<Vec<u8>, ClientFailure>>>,
     data_send: Option<oneshot::Sender<Result<Incoming, String>>>,
     data: Option<oneshot::Receiver<Result<Incoming, String>>>,
@@ -69,6 +70,8 @@ impl ReceiveTransaction {
             payload: None,
             reply: Some(reply),
             stream: None,
+            installed: false,
+            closed_streams: vec![],
             wire: None,
             data_send: Some(data_send),
             data: Some(data),
@@ -80,7 +83,7 @@ impl ReceiveTransaction {
             || self
                 .stream
                 .as_ref()
-                .is_some_and(|s| s.queue.lock().map_or(true, |q| q.is_closing()))
+                .is_some_and(|streams| streams.iter().all(Stream::closing))
     }
     pub(crate) fn new_stream(
         handles: Vec<u16>,
@@ -96,14 +99,13 @@ impl ReceiveTransaction {
         result.reply = None;
         result.data_send = None;
         result.data = None;
-        result.stream = Some(Stream {
+        result.stream = Some(vec![Stream {
             owner,
             queue: Queue::new(info, expires),
             ready: Some(ready),
             read: None,
             close: vec![],
-            installed: false,
-        });
+        }]);
         result
     }
     pub(crate) fn owns_client_sequence(&self) -> bool {
@@ -112,20 +114,109 @@ impl ReceiveTransaction {
     pub(crate) fn expected_epoch(&self) -> Option<u64> {
         self.stream
             .as_ref()
+            .and_then(|s| s.first())
             .map(|s| s.queue.lock().expect("checked queue").info.security_epoch)
     }
+    fn stream_mut(&mut self, caller: &str, token: u64) -> Option<&mut Stream> {
+        self.stream
+            .as_mut()?
+            .iter_mut()
+            .find(|s| s.matches(caller, token))
+    }
     pub(crate) fn matches(&self, caller: &str, token: u64) -> bool {
-        self.stream.as_ref().is_some_and(|s| {
-            s.owner.name == caller && s.queue.lock().is_ok_and(|q| q.info.token == token)
+        self.stream
+            .as_ref()
+            .is_some_and(|s| s.iter().any(|s| s.matches(caller, token)))
+    }
+    /// A shared attachment owns no new wire request. Incompatible filters need
+    /// the future aggregate-reconfiguration transaction,not a blind overwrite.
+    pub(crate) fn can_join(&self, info: &stream::Info) -> bool {
+        let Some(streams) = &self.stream else {
+            return false;
+        };
+        if !matches!(self.phase, Phase::Waiting)
+            || self.closing()
+            || self.wire.is_some()
+            || streams.len() >= 8
+            || info.token == 0
+            || streams.iter().any(|s| s.token() == info.token)
+        {
+            return false;
+        }
+        streams.iter().any(|s| {
+            s.owner.current()
+                && s.queue.lock().is_ok_and(|q| {
+                    let mut old = q.info.handles.clone();
+                    old.sort_unstable();
+                    let mut new = info.handles.clone();
+                    new.sort_unstable();
+                    q.info.state == stream::ACTIVE
+                        && Instant::now() < q.expires
+                        && old == new
+                        && q.info.modes == info.modes
+                        && (
+                            q.info.controller,
+                            q.info.generation,
+                            q.info.lifetime,
+                            q.info.handle,
+                            q.info.security_epoch,
+                        ) == (
+                            info.controller,
+                            info.generation,
+                            info.lifetime,
+                            info.handle,
+                            info.security_epoch,
+                        )
+                })
         })
+    }
+    pub(crate) fn join(
+        &mut self,
+        owner: CallerLease,
+        mut info: stream::Info,
+        expires: Instant,
+        original: Instant,
+        ready: oneshot::Sender<Result<stream::Info, String>>,
+    ) {
+        if !self.can_join(&info)
+            || !owner.current()
+            || Instant::now() >= original
+            || Instant::now() >= expires
+        {
+            let _ = ready.send(Err(
+                "subscription shared scope/capacity/original deadline".into()
+            ));
+            return;
+        }
+        info.state = stream::ACTIVE;
+        let queue = Queue::new(info.clone(), expires);
+        let group = self.stream.as_mut().expect("checked stream group");
+        group.push(Stream {
+            owner,
+            queue: queue.clone(),
+            ready: None,
+            read: None,
+            close: vec![],
+        });
+        if ready.send(Ok(info)).is_err() {
+            let _ = queue
+                .lock()
+                .expect("checked queue")
+                .close(stream::INITIALIZATION_CANCELLED);
+        }
+    }
+    pub(crate) fn take_closed(&mut self) -> Vec<Closed> {
+        std::mem::take(&mut self.closed_streams)
     }
     pub(crate) fn read(
         &mut self,
+        caller: &str,
+        token: u64,
         wait: bool,
         deadline: Instant,
         reply: oneshot::Sender<Result<stream::Batch, String>>,
     ) {
-        let Some(s) = self.stream.as_mut() else {
+        let Some(s) = self.stream_mut(caller, token) else {
             let _ = reply.send(Err("subscription unavailable".into()));
             return;
         };
@@ -165,8 +256,15 @@ impl ReceiveTransaction {
             q.restore(batch);
         }
     }
-    pub(crate) fn renew(&mut self, duration_ms: u32) -> Result<stream::Info, String> {
-        let s = self.stream.as_mut().ok_or("subscription unavailable")?;
+    pub(crate) fn renew(
+        &mut self,
+        caller: &str,
+        token: u64,
+        duration_ms: u32,
+    ) -> Result<stream::Info, String> {
+        let s = self
+            .stream_mut(caller, token)
+            .ok_or("subscription unavailable")?;
         if !s.owner.current() || s.ready.is_some() {
             return Err("subscription owner/not-ready".into());
         }
@@ -175,8 +273,13 @@ impl ReceiveTransaction {
             .map_err(|_| "subscription queue poisoned")?
             .renew(duration_ms, Instant::now())
     }
-    pub(crate) fn close(&mut self, reply: oneshot::Sender<Result<stream::Batch, String>>) {
-        let Some(s) = self.stream.as_mut() else {
+    pub(crate) fn close(
+        &mut self,
+        caller: &str,
+        token: u64,
+        reply: oneshot::Sender<Result<stream::Batch, String>>,
+    ) {
+        let Some(s) = self.stream_mut(caller, token) else {
             let _ = reply.send(Err("subscription unavailable".into()));
             return;
         };
@@ -201,13 +304,18 @@ impl ReceiveTransaction {
     pub(crate) fn wake_deadline(&self) -> Instant {
         self.cleanup.unwrap_or_else(|| {
             self.stream.as_ref().map_or(self.original, |s| {
-                let expiry = s.queue.lock().map_or(self.original, |q| q.expires);
-                let expiry = if s.ready.is_some() {
-                    expiry.min(self.original)
-                } else {
-                    expiry
-                };
-                s.read.as_ref().map_or(expiry, |r| expiry.min(r.deadline))
+                s.iter()
+                    .map(|s| {
+                        let expiry = s.queue.lock().map_or(self.original, |q| q.expires);
+                        let expiry = if s.ready.is_some() {
+                            expiry.min(self.original)
+                        } else {
+                            expiry
+                        };
+                        s.read.as_ref().map_or(expiry, |r| expiry.min(r.deadline))
+                    })
+                    .min()
+                    .unwrap_or(self.original)
             })
         })
     }
@@ -224,39 +332,58 @@ impl ReceiveTransaction {
             self.failure
                 .get_or_insert_with(|| "receive caller cancelled/original deadline".into());
         }
-        if let Some(s) = self.stream.as_mut() {
-            let mut q = s.queue.lock().map_err(|_| "subscription queue poisoned")?;
-            if !s.owner.current() {
-                q.close(stream::OWNER_LOST)?;
+        if let Some(streams) = self.stream.as_mut() {
+            for s in streams.iter_mut() {
+                let mut q = s.queue.lock().map_err(|_| "subscription queue poisoned")?;
+                if !s.owner.current() {
+                    q.close(stream::OWNER_LOST)?;
+                }
+                if now >= q.expires {
+                    q.close(stream::EXPIRED)?;
+                }
+                if s.ready
+                    .as_ref()
+                    .is_some_and(|r| r.is_closed() || now >= self.original)
+                {
+                    self.failure.get_or_insert_with(|| {
+                        "subscription original creation cancelled/deadline".into()
+                    });
+                    q.close(stream::INITIALIZATION_CANCELLED)?;
+                }
+                let flush = s
+                    .read
+                    .as_ref()
+                    .is_some_and(|r| r.reply.is_closed() || now >= r.deadline)
+                    || q.has_data()
+                    || q.is_closing();
+                drop(q);
+                if flush {
+                    Self::flush_read(s);
+                }
             }
-            if now >= q.expires {
-                q.close(stream::EXPIRED)?;
-            }
-            if s.ready
-                .as_ref()
-                .is_some_and(|r| r.is_closed() || now >= self.original)
+            // Partial lease teardown never changes the physical CPCD. Remove
+            // its RX route and queue first;remaining bindings retain the debt.
+            if matches!(self.phase, Phase::Waiting)
+                && self.failure.is_none()
+                && streams.iter().any(|s| !s.closing())
             {
-                self.failure.get_or_insert_with(|| {
-                    "subscription original creation cancelled/deadline".into()
-                });
-                q.close(stream::INITIALIZATION_CANCELLED)?;
-            }
-            let flush = s
-                .read
-                .as_ref()
-                .is_some_and(|r| r.reply.is_closed() || now >= r.deadline)
-                || q.has_data()
-                || q.is_closing();
-            drop(q);
-            if flush {
-                Self::flush_read(s);
+                let mut i = 0;
+                while i < streams.len() {
+                    if streams[i].closing() {
+                        self.closed_streams
+                            .push(streams.remove(i).finish(None, true));
+                    } else {
+                        i += 1;
+                    }
+                }
             }
             if let Some(w) = waiter.as_mut() {
-                w.deadline = s
-                    .queue
-                    .lock()
-                    .map_err(|_| "subscription queue poisoned")?
-                    .expires;
+                w.deadline = streams
+                    .iter()
+                    .map(|s| s.queue.lock().expect("checked queue").expires)
+                    .max()
+                    .expect("nonempty group");
+                w.reply = IncomingDelivery::Stream(streams.iter().map(Stream::sink).collect());
             }
         }
         if self.closing() {
@@ -293,19 +420,20 @@ impl ReceiveTransaction {
         match self.phase {
             Phase::Baseline(index) => Some((self.handles[index], None, self.original)),
             Phase::Enable(index) => {
-                if let Some(s) = self.stream.as_mut()
-                    && !s.installed
+                if let Some(streams) = self.stream.as_ref()
+                    && !self.installed
                 {
                     *waiter = Some(IncomingWait {
                         handles: self.handles.clone(),
                         modes: self.modes,
-                        deadline: s.queue.lock().expect("checked queue").expires,
-                        reply: IncomingDelivery::Stream(Sink {
-                            queue: s.queue.clone(),
-                            alive: s.owner.observer(),
-                        }),
+                        deadline: streams
+                            .iter()
+                            .map(|s| s.queue.lock().expect("checked queue").expires)
+                            .max()
+                            .expect("nonempty group"),
+                        reply: IncomingDelivery::Stream(streams.iter().map(Stream::sink).collect()),
                     });
-                    s.installed = true;
+                    self.installed = true;
                 }
                 if self.data_send.is_some() {
                     *waiter = Some(IncomingWait {
@@ -345,28 +473,14 @@ impl ReceiveTransaction {
     pub(crate) fn finished(&self) -> bool {
         self.closing() && self.possibly_enabled.is_empty() && self.wire.is_none()
     }
-    pub(crate) fn finish(mut self) -> Option<Closed> {
-        if let Some(mut s) = self.stream.take() {
-            let mut q = s.queue.lock().expect("checked queue");
-            let token = q.info.token;
-            let result = match self.failure {
-                Some(error) => Err(error),
-                None => Ok(q.closed(true)),
-            };
-            if let Some(ready) = s.ready.take() {
-                let _ = ready.send(Err("subscription ended before ready".into()));
-            }
-            if let Some(read) = s.read.take() {
-                let _ = read.reply.send(Err("subscription ended".into()));
-            }
-            for reply in s.close {
-                let _ = reply.send(result.clone());
-            }
-            return Some(Closed {
-                owner: s.owner.name.clone(),
-                token,
-                result,
-            });
+    pub(crate) fn finish(mut self) -> Vec<Closed> {
+        if let Some(streams) = self.stream.take() {
+            self.closed_streams.extend(
+                streams
+                    .into_iter()
+                    .map(|s| s.finish(self.failure.clone(), false)),
+            );
+            return self.closed_streams;
         }
         let result = match (self.failure, self.payload) {
             (Some(error), _) => Err(error),
@@ -374,7 +488,7 @@ impl ReceiveTransaction {
             _ => Err("receive original deadline/no payload".into()),
         };
         let _ = self.reply.expect("one-shot reply").send(result);
-        None
+        vec![]
     }
     pub(crate) fn apply(&mut self, event: Event) -> Result<(), String> {
         match event {
@@ -382,17 +496,24 @@ impl ReceiveTransaction {
                 self.failure
                     .get_or_insert_with(|| "receive caller cancelled".into());
             }
-            Event::StreamOwnerLost => {
-                self.stream
+            Event::StreamOwnerLost(token) => {
+                let s = self
+                    .stream
                     .as_mut()
-                    .expect("stream event")
-                    .queue
+                    .and_then(|s| s.iter_mut().find(|s| s.token() == token))
+                    .ok_or("stale subscription owner event")?;
+                s.queue
                     .lock()
                     .map_err(|_| "subscription queue poisoned")?
                     .close(stream::OWNER_LOST)?;
             }
-            Event::ReadCancelled => {
-                self.stream.as_mut().expect("stream event").read.take();
+            Event::ReadCancelled(token) => {
+                let s = self
+                    .stream
+                    .as_mut()
+                    .and_then(|s| s.iter_mut().find(|s| s.token() == token))
+                    .ok_or("stale subscription read event")?;
+                s.read.take();
             }
             Event::Data(result) => {
                 self.data.take();
@@ -462,21 +583,23 @@ impl ReceiveTransaction {
                     Phase::Waiting => return Err("unexpected receive transaction reply".into()),
                 }
                 if matches!(self.phase, Phase::Waiting)
-                    && let Some(s) = self.stream.as_mut()
+                    && let Some(streams) = self.stream.as_mut()
                 {
-                    let mut q = s.queue.lock().map_err(|_| "subscription queue poisoned")?;
-                    if s.owner.current()
-                        && Instant::now() < self.original
-                        && Instant::now() < q.expires
-                    {
-                        q.active();
-                        if let Some(ready) = s.ready.take()
-                            && ready.send(Ok(q.info.clone())).is_err()
+                    for s in streams {
+                        let mut q = s.queue.lock().map_err(|_| "subscription queue poisoned")?;
+                        if s.owner.current()
+                            && Instant::now() < self.original
+                            && Instant::now() < q.expires
                         {
+                            q.active();
+                            if let Some(ready) = s.ready.take()
+                                && ready.send(Ok(q.info.clone())).is_err()
+                            {
+                                q.close(stream::INITIALIZATION_CANCELLED)?;
+                            }
+                        } else {
                             q.close(stream::INITIALIZATION_CANCELLED)?;
                         }
-                    } else {
-                        q.close(stream::INITIALIZATION_CANCELLED)?;
                     }
                 }
             }
@@ -487,17 +610,15 @@ impl ReceiveTransaction {
         let cancel = !self.closing();
         let wire = self.wire.is_some();
         let data = self.data.is_some();
-        if let Some(s) = self.stream.as_mut() {
-            let mut alive = s.owner.observer();
-            let ready = s.ready.is_some() && cancel;
-            let read = s.read.is_some();
-            if !cancel && !wire && !read {
-                return std::future::pending().await;
-            }
+        if let Some(streams) = self.stream.as_mut() {
+            // Futures live across polling and register every owner's actual
+            // watch/oneshot waker. No per-owner timer or auxiliary wire task.
+            let mut events: Vec<_> = streams.iter_mut().map(|s| Box::pin(s.event())).collect();
             return tokio::select! {biased;
-                _=async{if *alive.borrow(){let _=alive.changed().await;}},if cancel=>Event::StreamOwnerLost,
-                _=async{s.ready.as_mut().expect("guarded readiness").closed().await},if ready=>Event::Cancelled,
-                _=async{s.read.as_mut().expect("guarded reader").reply.closed().await},if read=>Event::ReadCancelled,
+                event=std::future::poll_fn(|cx|{
+                    for event in &mut events {if let std::task::Poll::Ready(value)=event.as_mut().poll(cx){return std::task::Poll::Ready(value);}}
+                    std::task::Poll::Pending
+                })=>event,
                 value=async{self.wire.as_mut().expect("guarded wire reply").await},if wire=>
                     Event::Wire(value.unwrap_or_else(|_|Err("receive physical request ended/cancelled".into()))),
             };
@@ -511,6 +632,67 @@ impl ReceiveTransaction {
                 Event::Wire(value.unwrap_or_else(|_|Err("receive physical request ended/cancelled".into()))),
             value=async {self.data.as_mut().expect("guarded receive queue").await},if data=>
                 Event::Data(value.unwrap_or_else(|_|Err("receive queue closed".into()))),
+        }
+    }
+}
+
+impl Stream {
+    fn token(&self) -> u64 {
+        self.queue.lock().expect("checked queue").info.token
+    }
+    fn matches(&self, caller: &str, token: u64) -> bool {
+        self.owner.name == caller && self.queue.lock().is_ok_and(|q| q.info.token == token)
+    }
+    fn closing(&self) -> bool {
+        self.queue.lock().map_or(true, |q| q.is_closing())
+    }
+    fn sink(&self) -> Sink {
+        Sink {
+            queue: self.queue.clone(),
+            alive: self.owner.observer(),
+        }
+    }
+    fn finish(mut self, failure: Option<String>, retained: bool) -> Closed {
+        let mut q = self.queue.lock().expect("checked queue");
+        let token = q.info.token;
+        let result = match failure {
+            Some(error) => Err(error),
+            None => {
+                let mut b = q.closed(true);
+                if retained {
+                    b.flags |= stream::REMOTE_RETAINED;
+                }
+                Ok(b)
+            }
+        };
+        if let Some(ready) = self.ready.take() {
+            let _ = ready.send(Err("subscription ended before ready".into()));
+        }
+        if let Some(read) = self.read.take() {
+            let _ = read.reply.send(Err("subscription ended".into()));
+        }
+        for reply in self.close {
+            let _ = reply.send(result.clone());
+        }
+        Closed {
+            owner: self.owner.name.clone(),
+            token,
+            result,
+        }
+    }
+    async fn event(&mut self) -> Event {
+        let cancel = !self.closing();
+        let ready = self.ready.is_some() && cancel;
+        let read = self.read.is_some();
+        if !cancel && !read {
+            return std::future::pending().await;
+        }
+        let token = self.token();
+        let mut alive = self.owner.observer();
+        tokio::select! {biased;
+            _=async{if *alive.borrow(){let _=alive.changed().await;}},if cancel=>Event::StreamOwnerLost(token),
+            _=async{self.ready.as_mut().expect("guarded readiness").closed().await},if ready=>Event::Cancelled,
+            _=async{self.read.as_mut().expect("guarded reader").reply.closed().await},if read=>Event::ReadCancelled(token),
         }
     }
 }
@@ -782,27 +964,27 @@ mod tests {
         assert!(!t.matches(":1.999999", 17));
         assert!(!t.matches(&name, 18));
         let (reply, read) = oneshot::channel();
-        t.read(true, original, reply);
+        t.read(&name, 17, true, original, reply);
         drop(read);
-        assert!(matches!(t.event().await, Event::ReadCancelled));
-        t.apply(Event::ReadCancelled).unwrap();
+        assert!(matches!(t.event().await, Event::ReadCancelled(17)));
+        t.apply(Event::ReadCancelled(17)).unwrap();
         t.maintain(&mut waiter, Instant::now()).unwrap();
         assert!(!t.closing());
         assert!(waiter.is_some());
         assert_eq!(t.possibly_enabled, vec![19]);
         let (reply, closed) = oneshot::channel();
-        t.close(reply);
+        t.close(&name, 17, reply);
         let now = Instant::now();
         t.maintain(&mut waiter, now).unwrap();
         let cleanup = t.wake_deadline();
         assert_eq!(cleanup, now + Duration::from_secs(5));
         assert!(t.owns_client_sequence());
-        assert!(t.renew(60000).is_err());
+        assert!(t.renew(&name, 17, 60000).is_err());
         assert_eq!(t.wake_deadline(), cleanup);
         assert_eq!(t.next(&mut waiter), Some((19, Some([0, 0]), cleanup)));
         wire(&mut t, Ok(vec![0, 0]), 19).await;
         assert!(t.finished());
-        let tombstone = t.finish().unwrap();
+        let tombstone = t.finish().pop().unwrap();
         assert_eq!(tombstone.owner, name);
         assert_eq!(tombstone.token, 17);
         let closed = closed.await.unwrap().unwrap();
@@ -810,5 +992,249 @@ mod tests {
         assert_eq!(closed.flags, stream::CLEANUP_CONFIRMED);
         assert_eq!(closed.reason, stream::RELEASED);
         assert_eq!(tombstone.result, Ok(closed));
+    }
+    async fn shared_owner(
+        service: &zbus::Connection,
+        caller: &zbus::Connection,
+        token: u64,
+        ttl: u64,
+    ) -> (CallerLease, stream::Info, Instant) {
+        let original = Instant::now() + Duration::from_secs(3);
+        let expires = Instant::now() + Duration::from_secs(ttl);
+        let owner = CallerLease::pin(
+            service,
+            caller.unique_name().unwrap().to_string(),
+            std::sync::Arc::new(tokio::sync::Semaphore::new(1))
+                .acquire_owned()
+                .await
+                .unwrap(),
+            original,
+        )
+        .await
+        .unwrap();
+        let info = stream::Info {
+            version: 1,
+            controller: 2,
+            generation: 7,
+            lifetime: 9,
+            handle: 11,
+            security_epoch: 13,
+            token,
+            expires_ns: slk_channel::deadline::monotonic_timestamp_at(expires.into_std()).unwrap(),
+            handles: vec![19],
+            modes: 3,
+            state: stream::STARTING,
+            capacity: 16,
+        };
+        (owner, info, expires)
+    }
+    async fn shared_group(
+        service: &zbus::Connection,
+        caller: &zbus::Connection,
+    ) -> (ReceiveTransaction, Option<IncomingWait>) {
+        let (owner, info, expires) = shared_owner(service, caller, 17, 30).await;
+        let original = Instant::now() + Duration::from_secs(3);
+        let (ready, result) = oneshot::channel();
+        let mut t =
+            ReceiveTransaction::new_stream(vec![19], 3, original, owner, info, expires, ready);
+        let mut waiter = None;
+        assert_eq!(t.next(&mut waiter), Some((19, None, original)));
+        wire(&mut t, Ok(vec![0, 0]), 19).await;
+        assert_eq!(t.next(&mut waiter), Some((19, Some([3, 0]), original)));
+        wire(&mut t, Ok(vec![3, 0]), 19).await;
+        assert_eq!(result.await.unwrap().unwrap().state, stream::ACTIVE);
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        (t, waiter)
+    }
+    async fn shared_bus() -> (
+        crate::event_loop::tests::PrivateBus,
+        zbus::Connection,
+        zbus::Connection,
+        zbus::Connection,
+    ) {
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let service = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let a = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let b = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        (bus, service, a, b)
+    }
+    async fn attach(
+        t: &mut ReceiveTransaction,
+        service: &zbus::Connection,
+        caller: &zbus::Connection,
+        token: u64,
+        ttl: u64,
+    ) {
+        let (owner, info, expires) = shared_owner(service, caller, token, ttl).await;
+        let (ready, result) = oneshot::channel();
+        assert!(t.can_join(&info));
+        t.join(
+            owner,
+            info,
+            expires,
+            Instant::now() + Duration::from_secs(3),
+            ready,
+        );
+        assert_eq!(result.await.unwrap().unwrap().token, token);
+    }
+    #[tokio::test]
+    async fn shared_release_retains_sibling_and_only_last_reference_owes_disable() {
+        let (_bus, service, a, b) = shared_bus().await;
+        let an = a.unique_name().unwrap().to_string();
+        let bn = b.unique_name().unwrap().to_string();
+        let (mut t, mut waiter) = shared_group(&service, &a).await;
+        attach(&mut t, &service, &b, 18, 30).await;
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        let (reply, released) = oneshot::channel();
+        t.close(&an, 17, reply);
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        let result = released.await.unwrap().unwrap();
+        assert_eq!(result.flags, 3);
+        assert_eq!(result.reason, stream::RELEASED);
+        let tombstones = t.take_closed();
+        assert_eq!(tombstones.len(), 1);
+        assert_eq!(tombstones[0].owner, an);
+        assert!(!t.matches(&an, 17));
+        assert!(!t.matches(&an, 18));
+        assert!(t.matches(&bn, 18));
+        assert_eq!(t.possibly_enabled, vec![19]);
+        assert!(t.cleanup.is_none());
+        assert!(t.next(&mut waiter).is_none());
+        assert!(!t.owns_client_sequence());
+        assert!(t.renew(&an, 17, 30000).is_err());
+        assert!(t.renew(&bn, 18, 30000).is_ok());
+        attach(&mut t, &service, &a, 19, 30).await;
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        let (reply, closed) = oneshot::channel();
+        t.close(&an, 19, reply);
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        assert_eq!(closed.await.unwrap().unwrap().flags, 3);
+        let (reply, last) = oneshot::channel();
+        t.close(&bn, 18, reply);
+        let now = Instant::now();
+        t.maintain(&mut waiter, now).unwrap();
+        assert_eq!(t.wake_deadline(), now + Duration::from_secs(5));
+        assert!(waiter.is_none());
+        assert_eq!(
+            t.next(&mut waiter),
+            Some((19, Some([0, 0]), now + Duration::from_secs(5)))
+        );
+        assert!(!t.finished());
+        wire(&mut t, Ok(vec![0, 0]), 19).await;
+        assert!(t.finished());
+        let closed = t.finish();
+        assert_eq!(closed.len(), 2);
+        assert_eq!(last.await.unwrap().unwrap().flags, 1);
+    }
+    #[tokio::test]
+    async fn secondary_owner_watch_and_expiry_do_not_close_primary() {
+        for expiry in [false, true] {
+            let (_bus, service, a, b) = shared_bus().await;
+            let an = a.unique_name().unwrap().to_string();
+            let bn = b.unique_name().unwrap().to_string();
+            let (mut t, mut waiter) = shared_group(&service, &a).await;
+            attach(&mut t, &service, &b, 18, 10).await;
+            t.maintain(&mut waiter, Instant::now()).unwrap();
+            let now = if expiry {
+                t.stream.as_ref().unwrap()[1].queue.lock().unwrap().expires
+            } else {
+                b.close().await.unwrap();
+                let event = tokio::time::timeout(Duration::from_secs(2), t.event())
+                    .await
+                    .unwrap();
+                assert!(matches!(event, Event::StreamOwnerLost(18)));
+                t.apply(event).unwrap();
+                Instant::now()
+            };
+            t.maintain(&mut waiter, now).unwrap();
+            let closed = t.take_closed();
+            assert_eq!(closed.len(), 1);
+            let terminal = closed[0].result.as_ref().unwrap();
+            assert_eq!(terminal.flags, 3);
+            assert_eq!(
+                terminal.reason,
+                if expiry {
+                    stream::EXPIRED
+                } else {
+                    stream::OWNER_LOST
+                }
+            );
+            assert!(t.matches(&an, 17));
+            assert!(!t.matches(&bn, 18));
+            assert!(t.cleanup.is_none());
+            assert_eq!(t.possibly_enabled, vec![19]);
+        }
+    }
+    #[tokio::test]
+    async fn secondary_read_cancellation_is_woken_and_keeps_both_leases() {
+        let (_bus, service, a, b) = shared_bus().await;
+        let an = a.unique_name().unwrap().to_string();
+        let bn = b.unique_name().unwrap().to_string();
+        let (mut t, mut waiter) = shared_group(&service, &a).await;
+        attach(&mut t, &service, &b, 18, 30).await;
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        let (a_reply, a_wait) = oneshot::channel();
+        let (b_reply, b_wait) = oneshot::channel();
+        let original = Instant::now() + Duration::from_secs(3);
+        t.read(&an, 17, true, original, a_reply);
+        t.read(&bn, 18, true, original, b_reply);
+        drop(b_wait);
+        let event = tokio::time::timeout(Duration::from_secs(2), t.event())
+            .await
+            .unwrap();
+        assert!(matches!(event, Event::ReadCancelled(18)));
+        t.apply(event).unwrap();
+        assert!(t.stream_mut(&an, 17).unwrap().read.is_some());
+        assert!(t.stream_mut(&bn, 18).unwrap().read.is_none());
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        assert!(!t.closing());
+        assert!(t.take_closed().is_empty());
+        drop(a_wait);
+    }
+    #[tokio::test]
+    async fn shared_admission_checks_live_identity_filter_tokens_and_capacity() {
+        let (_bus, service, a, b) = shared_bus().await;
+        let (mut t, _waiter) = shared_group(&service, &a).await;
+        let (_, info, _) = shared_owner(&service, &b, 18, 30).await;
+        assert!(t.can_join(&info));
+        for field in 0..10 {
+            let mut bad = info.clone();
+            match field {
+                0 => bad.controller += 1,
+                1 => bad.generation += 1,
+                2 => bad.lifetime += 1,
+                3 => bad.handle += 1,
+                4 => bad.security_epoch += 1,
+                5 => bad.modes = 1,
+                6 => bad.handles = vec![20],
+                7 => bad.token = 17,
+                8 => bad.token = 0,
+                _ => bad.handles.push(20),
+            };
+            assert!(!t.can_join(&bad));
+        }
+        for token in 18..25 {
+            attach(&mut t, &service, &b, token, 30).await;
+        }
+        let (_, next, _) = shared_owner(&service, &b, 25, 30).await;
+        assert!(!t.can_join(&next));
+        assert_eq!(t.stream.as_ref().unwrap().len(), 8);
+        let (_bus, service, a, b) = shared_bus().await;
+        let (t, _) = shared_group(&service, &a).await;
+        let (_, info, _) = shared_owner(&service, &b, 18, 30).await;
+        t.stream.as_ref().unwrap()[0].queue.lock().unwrap().expires = Instant::now();
+        assert!(!t.can_join(&info));
     }
 }

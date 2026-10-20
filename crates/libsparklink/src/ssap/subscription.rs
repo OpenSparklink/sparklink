@@ -5,7 +5,7 @@ use crate::{ApplicationConnection, ApplicationError, Deadline, client::bounded};
 use slk_contract::{self as contract, ssap::subscription as wire};
 use std::time::Duration;
 
-pub use wire::{Batch, Info, Packet};
+pub use wire::{Batch, CLEANUP_CONFIRMED, Info, Packet, REMOTE_RETAINED};
 type Result<T> = std::result::Result<T, ApplicationError>;
 #[cfg(test)]
 #[path = "subscription_tests.rs"]
@@ -126,7 +126,8 @@ impl Subscription {
         if !self.same_scope(&batch.info)
             || (!cleanup && batch.info.expires_ns != self.info.expires_ns)
             || !(wire::ACTIVE..=wire::CLOSED).contains(&batch.info.state)
-            || batch.flags & !wire::CLEANUP_CONFIRMED != 0
+            || batch.flags & !(wire::CLEANUP_CONFIRMED | wire::REMOTE_RETAINED) != 0
+            || batch.flags == wire::REMOTE_RETAINED
             || batch.last_sequence < self.sequence
             || batch.dropped_notifications < self.dropped
             || batch.refused_indications < self.refused
@@ -150,7 +151,9 @@ impl Subscription {
         {
             return Err(ApplicationError::Identity("subscription close result"));
         }
-        if cleanup && (batch.info.state != wire::CLOSED || batch.flags != wire::CLEANUP_CONFIRMED) {
+        if cleanup
+            && (batch.info.state != wire::CLOSED || batch.flags & wire::CLEANUP_CONFIRMED == 0)
+        {
             return Err(ApplicationError::Identity(
                 "subscription cleanup not confirmed",
             ));
@@ -256,7 +259,9 @@ impl Subscription {
         self.info = info.clone();
         Ok(info)
     }
-    /// Stop local admission before requesting remote cleanup. Error/timeout is
+    /// Stop this lease's admission before requesting cleanup. REMOTE_RETAINED
+    /// records sibling ownership at the terminal observation,not remote off.
+    /// Error/timeout is
     /// not proof of cleanup and never starts a fresh lease. Close may report a
     /// different expiry after an uncertain renewal;it cannot reopen authority.
     pub async fn close(&mut self, original: Deadline) -> Result<Batch> {

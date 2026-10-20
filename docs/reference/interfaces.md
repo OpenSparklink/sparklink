@@ -586,27 +586,42 @@ Rust／C／Python／CLI 已复用同一客户端。系统总线策略以逐方�
 `sparklink-apps` 开放这四个原期限／原 caller 绑定的方法；实际权限与新的持续更新
 实机门禁单独记录，源码、无副作用的错误预检或私有总线 fixture 不构成实机资格。
 加入管理组的历史调用不能作为普通应用权限分离已完成的证明。
-单次 `ReceiveSsapUpdate` 的原语义保留。首版仅允许每物理 actor 一个接收租约；第二个
-请求明确 busy，不覆盖旧 CPCD，也不代表多应用共享订阅已经实现。
+单次 `ReceiveSsapUpdate` 的原语义保留。当前源码允许一个物理 actor 的同属性集合、
+同模式共享组最多8个租约；全daemon原watch预算仍16。只有已经实际启用且仍有有效
+拥有者的组可以共享，controller／generation／lifetime／安全epoch必须一致。
+不同属性集合或模式、初始化／清理中、无有效拥有者及容量已满明确拒绝；不覆盖旧
+CPCD。这是分批实现范围，不能据此宣称动态过滤／模式合并或完整多应用资格。
+同一集合的句柄顺序可以不同，各调用者保留自己的原顺序和token。
 
 | 方法 | 输入 | 结果及限制 |
 | --- | --- | --- |
 | `SubscribeSsapUpdates` | `handles:aq, modes:y, duration_ms:u, deadline:(ttttt)` | 1..32 个实际发现的唯一 property；租期 250..60000 ms，创建原期限最多 5 秒；返回原 controller／generation／lifetime／安全 epoch、token、到期及状态 |
 | `ReadSsapUpdates` | `token:t, wait:b, deadline:(ttttt)` | 一个在途 reader，原期限最多 10 秒；返回有限批次、序号及累计丢弃／拒绝计数；重新检查实际 Native 上下文及原 epoch |
 | `RenewSsapSubscription` | `token:t, duration_ms:u, deadline:(ttttt)` | 原 caller 且仍 Active 才能续租；不会续订创建、读取、在途包或首次清理期限 |
-| `CloseSsapSubscription` | `token:t, deadline:(ttttt)` | 仅关闭自己的 token；确认原配置停用后才返回清理确认，不隐式断开物理连接 |
+| `CloseSsapSubscription` | `token:t, deadline:(ttttt)` | 仅关闭自己的 token；撤回自己的路由／配置引用；REMOTE_RETAINED区分共享保留与最后远端停用，不隐式断链 |
+
+未发布接口的结构布局／大小保持，新增flags语义要求daemon和Rust／C／Python同步部署；
+旧客户端遇到未知位应拒绝，不做静默降级。接口已接线与实机／形式化通过分别按
+当前能力入口中的准确产物记录；原单租约历史资格不转授新的共享行为。
 
 租约到期是本地单调时钟观察，独立于最多5秒的 Native 发送期限。创建和续租共用
 250..60000ms 的过期计算；长租约不放宽每次实际发送、创建、读取或清理的原期限，
 也不是长期发送授权。后续变更必须分别回归长租约和超过5秒 TX 仍被拒绝的负对照。
 
-队列最多 16 个完整 PDU／32768 字节。满队列丢弃新通知并计数，指示返回拒绝；ACK1
-只表示完整包进入本地队列，不表示应用读取或处理。返回包带原 Native 安全收据及
+每个租约独立队列最多16个完整PDU／32768字节；一个队列满不阻塞其他接收者。
+各队列独立记录通知丢弃／指示未准入。线上指示ACK1只表示至少一个匹配且有效的
+队列接受了完整包，不保证每个订阅者接收，更不表示任何应用处理；全部拒绝才ACK0。
+需要业务交付时，每个目标应用必须独立校验和回复。返回包带原 Native 安全收据及
 递增序号；取消读取不释放租约，远端回复是否已被消费可能不确定，不能自动重试或
 凭 RPC 超时补造交付。取消后实际未被本地 oneshot 接受的批次才允许原样放回队列。
 
-原 D-Bus unique owner 退出或租约到期触发清理；关闭丢弃排队包并报告数量，首次清理
-最多 5 秒，未知结果失败／隔离同一 actor，不报告 Free。等待更新时让出原客户端请求
+原D-Bus unique owner退出或租约到期只清理自己的token及队列；丢弃排队包并报告数量。
+仍有有效共享者时，关闭结果为CLOSED／flags=3：bit0 CLEANUP_CONFIRMED表示该租约的
+路由／配置引用已撤回，bit1 REMOTE_RETAINED表示完成当时仍有兄弟租约保有远端CPCD。
+这不是远端停用成功事件，也不承诺该观察之后的硬件状态。最后一个租约才发送实际
+停用并等待验证回复，成功flags=1；bit1单独出现非法。首次物理清理最多5秒，
+未知结果失败／隔离同一actor，不报告Free。每租约至多8个关闭等待者；actor仅保留
+最后16个owner／token终态观察，淘汰后旧token不可用且绝不会重获权限。等待更新时让出原客户端请求
 通道供普通读写使用，配置／清理仍通过同一请求序列。它是有限 D-Bus 租约，不提供
 应用 socket 的 dup、SCM_RIGHTS 或最终 fd 释放承诺；不授 controller 管理权限。
 

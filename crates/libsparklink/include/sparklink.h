@@ -332,11 +332,18 @@ typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionPacket {
 } SlkSsapSubscriptionPacket;
 
 /**
- * One bounded destructive-read result. flags bit0 means verified remote CPCD
- * cleanup only,not complete callback/Native drain or application processing.
+ * One bounded destructive-read result. flags bit0 confirms this lease's
+ * routing/configuration ownership release. bit1 means other same-scope leases
+ * retained the remote CPCD at that terminal observation (only valid with bit0).
+ * bit0 without bit1 confirms the last remote CPCD was verified off. Neither
+ * means full callback/Native drain or application processing.
  * Cumulative counters and sequence gaps are not a lossless-delivery promise.
  * Only packets[0..count] are meaningful;all unused/reserved bytes are zero.
  */
+enum {
+    SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED = 1,
+    SLK_SSAP_SUBSCRIPTION_REMOTE_RETAINED = 2,
+};
 typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionBatch {
     struct SlkSsapSubscriptionInfo info;
     uint64_t last_sequence;
@@ -910,7 +917,8 @@ int slk_ssap_subscription_renew(const struct SlkSsapSubscription *view,
                                 uint64_t deadline_ns);
 
 /**
- * Explicit remote cleanup receipt through the same Rust lease. Original<=5s;
+ * Explicit lease-release receipt through the same Rust lease. Original<=5s;
+ * inspect REMOTE_RETAINED: another lease can retain the physical CPCD.
  * 0/-errno,output unchanged on failure. Failure/timeout is not confirmed cleanup;
  * local admission may already be closed. Does not free the view or disconnect.
  * # Safety
@@ -922,7 +930,8 @@ int slk_ssap_subscription_release(const struct SlkSsapSubscription *view,
 
 /**
  * Free local ownership only,NULL allowed. Not a cleanup receipt. Call release
- * first to observe remote disable;otherwise original owner loss/finite lease
+ * first to observe lease release (remote off only without REMOTE_RETAINED);
+ * otherwise original owner loss/finite lease
  * expiry bounds daemon cleanup. Final executor release joins bounded local work.
  * # Safety
  * view is NULL or one live owned pointer,freed once;no concurrent calls or later

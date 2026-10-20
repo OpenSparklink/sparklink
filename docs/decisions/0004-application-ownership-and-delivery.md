@@ -33,11 +33,25 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
 资源租期与各次请求、包和首次清理期限分开，续租不刷新后者。
 
 派生订阅保留原 caller，释放父 Client／Connection 观察不隐式断链或撤回其他资源。
-Rust 显式 close、C／Python 显式 release 才观察远端配置清理；本地 free、Python
+Rust显式close、C／Python显式release才观察自己租约的配置引用清理；本地free、Python
 context 退出或 Rust Drop 不构成清理收据。Drop 的尽力撤回、owner-loss 与有限租期
 也不能当作所有 callback／Native 引用已排空。opaque 租约不继承 socket 的 dup／
-SCM_RIGHTS 契约。首版单租约限制、共享 CPCD 多应用分配及同 lifetime 在途更新的
+SCM_RIGHTS契约。原单租约切片、共享CPCD多应用分配及同lifetime在途更新的
 交付边界分别验收；不能从一次停用回复推导所有旧消息都已排空或已被应用处理。
+共享接收首先支持已经启用组内的相同属性集合／模式，至多8个caller-owned租约，
+每个独立owner／token／队列／期限；不恢复按语言或应用建立另一套wire Engine。
+关闭一个租约只撤销其路由及引用，最后一个有效引用才通过原事务序列停用CPCD。
+此时共享保留的终态必须有显式REMOTE_RETAINED位，不能伪装成远端停用成功；
+flags=3与最后实际停用后的flags=1分别验收。旧终态只是完成当时的观察，不是当前
+硬件或安全授权。读取消不撤回租约；未知物理清理继续保留义务并隔离actor。
+
+RX在唯一actor解析一次后分流到独立有限队列。ACK1是至少一个有效接收队列准入，
+不表示所有订阅者收到或应用处理；一个队列满不影响另一个。动态过滤／模式集合的
+增减必须另有受控配置事务和授权，不能因共享框架存在就开放；保持原完整目标。
+参考固定NearLink Host f0872df 的按地址／handle保存appId配置与清理路径，但其appId
+不是Linux凭据、generation／lifetime或授权。源码映射、bounded model与准确VM门禁
+分别记录；不将缓存、引用数或模型通过当作真实远端配置／交付证明。
+
 普通应用总线准入、服务拥有者权限与 controller 管理权限仍分别门禁，接口出现不
 构成 apps-only 资格。逐方法迁移已有原期限的远端读写、单次接收及持续租约，不使用
 整个 Connection 接口的 broad allow。发现／UUID／信息等尚未完成原期限审计的入口

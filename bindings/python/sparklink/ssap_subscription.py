@@ -1,6 +1,7 @@
 """Thin leased views of the shared Rust client,no codec or protocol Engine.
 
-release observes remote cleanup;close frees local memory only. Destructive read
+release observes lease cleanup;REMOTE_RETAINED distinguishes sibling ownership
+from physical remote disable. close frees local memory only. Destructive read
 or renewal timeout can be uncertain. No automatic retry,reconnect or downgrade.
 """
 import ctypes
@@ -10,6 +11,10 @@ import itertools
 import os
 import threading
 from .client import ControllerId, _deadline, _integer, _result
+
+
+CLEANUP_CONFIRMED = 1
+REMOTE_RETAINED = 2
 
 
 class _Info(ctypes.Structure):
@@ -95,7 +100,10 @@ def _info(raw):
 
 def _batch(raw):
     info = _info(raw.info)
-    if raw.count > 16 or raw.flags & ~1 or raw.reason > 4 or any(raw.reserved):
+    if (raw.count > 16 or raw.flags & ~(CLEANUP_CONFIRMED | REMOTE_RETAINED)
+            or raw.flags == REMOTE_RETAINED
+            or raw.flags & REMOTE_RETAINED and (raw.info.state != 3 or raw.count != 0)
+            or raw.reason > 4 or any(raw.reserved)):
         _invalid()
     packets = []
     for p in raw.packets[:raw.count]:

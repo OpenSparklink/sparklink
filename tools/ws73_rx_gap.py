@@ -85,6 +85,7 @@ def observe(events, owner, start, end):
                 gap=distribution([r['gap_ns'] for r in rows]), rows=rows,
                 sum_gap_ns=sum(r['gap_ns'] for r in rows),
                 window_fraction_without_submitted_rx=sum(r['gap_ns'] for r in rows) / (end - start),
+                fraction_scope='Completed paired gaps only; edge-censored intervals are excluded, not assumed zero.',
                 completed_bytes=sum(r['bytes'] for r in rows),
                 peak_observed_outstanding=peak, right_censored_completions=censored,
                 urb_identity_sha256=hashlib.sha256(str(next(iter(ids))).encode()).hexdigest())
@@ -115,16 +116,79 @@ def analyze(directory):
                 pcap_sha256=hashlib.sha256(path.read_bytes()).hexdigest(), windows=windows,
                 clock='guest usbmon wall clock;1us timestamp quantization;same-device subtraction only',
                 scope=['Completion-to-resubmission gap includes callback, USB core and VM scheduling.',
-                       'Only paired Native low-load benchmark intervals;zero capture drops required.',
+                       'Only original successful paired Native benchmark intervals;zero capture drops required.',
                        'No callback CPU attribution, RF latency, saturation or multi-URB benefit proof.',
                        'No driver/order/generation/buffer/stop-drain change;original source and failure evidence retained.'])
+
+
+def diagnose_failed(directory, phase):
+    """Observe the whole captured failed load phase, not a passing benchmark.
+
+    This entry never calls or relaxes successful qualification. The separate
+    failure export validator checks the same original file/size/hash bounds.
+    A caller cannot supply a shorter, more convenient time window.
+    """
+    from ws73_role_snapshot import HELPER, verify_failed
+    from ws73_socket_benchmark import request_fields, validate_role_request, application_count
+    if type(phase)is not int or phase not in (0,1):
+        raise CaptureError('one explicit failed phase0 or1 required')
+    root=Path(directory).resolve(strict=True);share=root/'guest-output'
+    manifest_path=root/'manifest.json';control_path=share/'application/passthrough-control/run.json'
+    manifest=json.loads(manifest_path.read_text());control=json.loads(control_path.read_text())
+    if manifest['status']!='FAIL' or manifest['qemu_exit']!=0 or control['status']!='FAIL':
+        raise CaptureError('terminal original failed VM/control required; never relabel a PASS')
+    parents=[r for r in control['socket_benchmark']if r['phase']==phase]
+    if len(parents)!=1:raise CaptureError('one original failed benchmark request required')
+    parent=parents[0];path=share/'benchmark-role'/('phase-'+str(phase))
+    request_path=control_path.parent/f'benchmark-role-{phase}.request.json'
+    request=json.loads(request_path.read_text())
+    validate_role_request(request,phase,live=True)
+    exported=verify_failed(path,phase=phase,expected_helper=request['tools'][HELPER]['sha256'],kind='benchmark')
+    row=json.loads((path/'run.json').read_text())
+    stable=request_fields(request)-{'status','applications','events'}
+    if (row['status']!='FAIL' or type(row['phase'])is not int or row['phase']!=phase
+        or any({k:r[k]for k in stable}!={k:request[k]for k in stable}for r in (row,parent))):
+        raise CaptureError('failed local phase must match its original request and owners')
+    starts=[e for e in row['events']if e['kind']=='start']
+    expected=set(range(len(row['applications'])))
+    if (len(expected)!=application_count(request)or len(starts)!=len(expected)
+        or any(type(e['application'])is not int for e in starts)or {e['application']for e in starts}!=expected
+        or any(type(e['before_wall_ns'])is not int or e['before_wall_ns']<=0 for e in starts)):
+        raise CaptureError('all actual application start barriers required')
+    start=min(e['before_wall_ns']for e in starts);end=row['end_wall_ns']
+    targets={(o['owner']['bus'],o['owner']['device'])for o in row['owners']}
+    if len(targets)!=2:raise CaptureError('two distinct original USB owners required')
+    pcap=share/'ws73.pcap';stats=share/'capture-stats.txt';capture=read_capture(pcap,targets,observe_rx=True)
+    if check_capture_stats(stats.read_text())!=capture['packet_count']:raise CaptureError('capture count mismatch')
+    for bus,device in targets:
+        stamps=[e['wall_ns']for e in capture['rx_urbs']if(e['bus'],e['device'])==(bus,device)]
+        if not stamps or min(stamps)>start or max(stamps)<end:
+            raise CaptureError('both original USB owner timelines must cover the complete failed phase')
+    windows=[observe(capture['rx_urbs'],o['owner'],start,end)for o in row['owners']]
+    digest=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+    return dict(schema_version=1,status='OBSERVED_FAILED_RUN_NOT_QUALIFIED',original_result='FAIL',
+                original_phase=phase,original_error=row['error'],original_gate_qualified=False,
+                window_rule='All application starts through original failed phase end; no caller clipping.',
+                manifest_sha256=digest(manifest_path),control_sha256=digest(control_path),
+                request_sha256=digest(request_path),
+                snapshot_sha256=digest(path/'snapshot.json'),snapshot_files=len(exported['files']),
+                snapshot_success=False,pcap_sha256=digest(pcap),capture_stats_sha256=digest(stats),
+                packet_count=capture['packet_count'],windows=windows,
+                clock='same-guest usbmon wall clock;1us timestamp quantization;same-device subtraction only',
+                scope=['Read-only original failed-run diagnostics; no new VM or hardware qualification.',
+                       'Original failures, protocol deadlines and missing application/cleanup gates remain unchanged.',
+                       'Completion-to-resubmission includes callback, USB core and VM scheduling, not callback CPU alone.',
+                       'No isolated RF latency, stable performance, saturation or multi-URB benefit proof.',
+                       'No driver/order/generation/buffer/stop-drain change or claim.'])
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('run', type=Path)
+    parser.add_argument('--failed-phase',type=int,choices=[0,1],
+                        help='separate closed failed-load diagnostic; never successful benchmark qualification')
     args = parser.parse_args()
-    print(json.dumps(analyze(args.run), indent=2))
+    print(json.dumps(analyze(args.run)if args.failed_phase is None else diagnose_failed(args.run,args.failed_phase),indent=2))
 
 
 if __name__ == '__main__':

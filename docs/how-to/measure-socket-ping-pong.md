@@ -155,6 +155,18 @@ python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT
 python3 tools/ws73_rx_gap.py "$NEW_RUN_DIRECTORY" > "$NEW_RX_OBSERVATION"
 ```
 
+若原轮次已整体失败，但保留了完整失败阶段快照、原请求和零丢包捕获，使用独立
+诊断入口，并给输出选择尚不存在的新文件：
+
+```bash
+python3 tools/ws73_rx_gap.py "$NEW_RUN_DIRECTORY" --failed-phase 0 > "$NEW_RX_OBSERVATION"
+```
+
+阶段只能显式选择0或1；工具从全部实际启动屏障观测到原失败阶段结束，不允许手选
+较短的成功窗口。输出必须是`OBSERVED_FAILED_RUN_NOT_QUALIFIED`、原结果`FAIL`、
+`original_gate_qualified=false`。普通入口仍拒绝失败轮次；诊断退出成功不改变原资格。
+如果快照、请求、原文件或捕获不完整，保留错误，不转用另一条入口规避检查。
+
 该命令重放应用/USB证据后输出相同 guest 时钟的完成→重提交间隔；不操作硬件。
 时间含 callback、USB core 和 VM 调度，不能等同 callback CPU 时间或 RF 时延。
 诊断失败保留 stderr 和原文件；缺失输入、配对错误或掉包不生成完整观测。

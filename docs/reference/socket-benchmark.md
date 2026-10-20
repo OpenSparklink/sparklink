@@ -343,6 +343,18 @@ Host、guest cmdline、控制器监督器、实际 slktest argv、两端 schema2
 
 ## RX 重提交观测契约
 
+`ws73_rx_gap.py RUN`仅接受原完整成功门禁。独立的`--failed-phase 0|1`只接受
+QEMU正常退出且控制测试流程、指定阶段均为FAIL的原件；阶段快照必须明确
+`success=false`，原始请求、owner与配置匹配，文件清单／长度／hash和零丢包捕获完整。
+成功和失败快照校验入口互斥；失败诊断不能生成成功门禁回执。
+
+失败诊断覆盖所有应用实际start至原阶段end，输出原FAIL、原错误、请求／控制／快照／
+捕获hash及两个独立端点的样本。它不补造未完成应用报告、quiescent、清理或第二角色。
+`window_fraction_without_submitted_rx`只统计已配对完成的间隔；边缘未闭合样本另列，
+不能把被截取部分当作零。completion→submit含callback、USB core与VM调度，
+不等于callback CPU、完整硬件无URB区间或独立RF时延。诊断退出0只表示取得限定
+观测，不能解释为原业务通过或多URB优化收益。
+
 新准备产物的 `benchmark_trace_contract_version=1` 显式选择 ftrace `mono`，
 在开始与结束分别保存并校验时钟 readback。Root 监督器在应用 `start` 前、双方
 `Quiescent` 后写入本 boot cookie 和 phase 的固定 marker；写标记及读取配置均

@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Synthetic diagnostic negatives; never hardware evidence."""
 import copy
+import json
 from pathlib import Path
 import struct
 import sys
@@ -10,7 +11,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ws73_capture import CaptureError, read_capture
-from ws73_rx_gap import distribution, observe
+from ws73_rx_gap import distribution, observe, analyze, diagnose_failed
 from test_ws73_north_star import pcap
 
 
@@ -32,6 +33,8 @@ class RxGap(unittest.TestCase):
         result = observe(rows, dict(bus=1, device=2), 1000, 6000)
         self.assertEqual(result['right_censored_completions'], 1)
         self.assertEqual(result['gap']['samples'], 1)
+        self.assertEqual(result['sum_gap_ns'],1000)
+        self.assertEqual(result['window_fraction_without_submitted_rx'],.2)
 
     def test_invalid_pairing_order_error_overlap_and_empty_rejected(self):
         for kind in ['missing', 'identity', 'different-device', 'error', 'duplicate', 'parallel', 'order', 'size', 'empty']:
@@ -65,6 +68,32 @@ class RxGap(unittest.TestCase):
             struct.pack_into('<I', malformed, 24 + 16 + 36, 1)
             path.write_bytes(malformed)
             with self.assertRaises(CaptureError): read_capture(path, [(1, 2)], observe_rx=True)
+
+    def test_failure_export_validation_never_accepts_a_qualified_snapshot(self):
+        from ws73_role_snapshot import publish,verify,verify_failed
+        # File-export fixtures only, no Native/device/daemon success substitute.
+        with tempfile.TemporaryDirectory()as directory:
+            root=Path(directory)
+            for success in (True,False):
+                source=root/('source-'+str(success));source.mkdir();(source/'run.json').write_text('{"fixture":"closed bytes"}')
+                dest=root/('export-'+str(success));publish(source,dest,phase=0,success=success,kind='benchmark')
+                accept=verify if success else verify_failed;reject=verify_failed if success else verify
+                self.assertEqual(accept(dest,phase=0,runtime_root=source,kind='benchmark')['success'],success)
+                with self.assertRaises(CaptureError):reject(dest,phase=0,runtime_root=source,kind='benchmark')
+                (dest/'run.json').write_text('changed')
+                with self.assertRaises(CaptureError):accept(dest,phase=0,runtime_root=source,kind='benchmark')
+
+    def test_failed_entry_requires_terminal_failure_and_never_relabels_success(self):
+        with tempfile.TemporaryDirectory()as directory:
+            root=Path(directory);control=root/'guest-output/application/passthrough-control';control.mkdir(parents=True)
+            (control/'run.json').write_text(json.dumps(dict(status='FAIL')))
+            for status,qemu in [('FAIL',None),('FAIL',1),('PASSTHROUGH_SUPPORT_PASS',0)]:
+                (root/'manifest.json').write_text(json.dumps(dict(status=status,qemu_exit=qemu)))
+                with self.subTest(status=status,qemu=qemu),self.assertRaises(CaptureError):diagnose_failed(root,0)
+            (root/'manifest.json').write_text(json.dumps(dict(status='FAIL',qemu_exit=0)))
+            with self.assertRaises(CaptureError):analyze(root)
+            for phase in (True,-1,2,None):
+                with self.subTest(phase=phase),self.assertRaises(CaptureError):diagnose_failed(root,phase)
 
 
 if __name__ == '__main__': unittest.main()

@@ -112,14 +112,14 @@ def publish(source,destination,*,phase,success,kind='subscription'):
     return manifest
 
 
-def verify(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription'):
+def _verify_export(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription',success):
     bounds=profile(kind)
     destination=Path(destination);path=destination/NAME
     if path.is_symlink()or not path.is_file()or not 0<path.stat().st_size<65536:raise CaptureError('closed phase manifest missing/budget')
     proof=json.loads(path.read_text())
     if (set(proof)!={'version','status','phase','success','source_root','artifact_root','files','bytes','budget_bytes','max_files','helper_sha256'}
             or type(proof['version'])is not int or proof['version']!=VERSION
-            or type(proof['phase'])is not int or proof['phase']!=phase or proof['success']is not True
+            or type(proof['phase'])is not int or proof['phase']!=phase or proof['success']is not success
             or proof['status']!='CLOSED_PHASE_BYTES_EXPORTED'
             or proof['helper_sha256']!=(expected_helper or helper_hash())
             or proof['source_root']!=str(runtime_root or Path(bounds['root'])/('phase-'+str(phase)))
@@ -129,6 +129,18 @@ def verify(destination,*,phase,runtime_root=None,expected_helper=None,kind='subs
             or type(proof['bytes'])is not int or proof['bytes']!=sum(v['bytes']for v in proof['files'].values())):
         raise CaptureError('complete original phase snapshot required')
     return proof
+
+
+def verify(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription'):
+    """Qualified consumers still require an actual successful phase."""
+    return _verify_export(destination,phase=phase,runtime_root=runtime_root,
+                          expected_helper=expected_helper,kind=kind,success=True)
+
+
+def verify_failed(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription'):
+    """Verify only exported failure bytes; never a successful phase receipt."""
+    return _verify_export(destination,phase=phase,runtime_root=runtime_root,
+                          expected_helper=expected_helper,kind=kind,success=False)
 
 
 @contextmanager

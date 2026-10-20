@@ -22,6 +22,29 @@ def request():
 
 
 class BenchmarkRole(unittest.TestCase):
+    def test_root_tool_admission_and_actual_request_profile_include_dynamic_dependency(self):
+        import ast
+        import ws73_application_role as role
+        # Inspect the exact Root admission call, then evaluate the actual file
+        # hasher/profile with explicit files. No Native/USB/Ready stub.
+        tree=ast.parse(Path(role.__file__).read_text());function=next(n for n in tree.body if isinstance(n,ast.FunctionDef)and n.name=='_supervise')
+        assignments=[n for n in ast.walk(function)if isinstance(n,ast.Assign)and any(isinstance(t,ast.Name)and t.id=='expected_tools'for t in n.targets)]
+        self.assertTrue(any(isinstance(n.value,ast.Call)and isinstance(n.value.func,ast.Name)and n.value.func.id=='request_tools'and len(n.value.args)==1 and isinstance(n.value.args[0],ast.Name)and n.value.args[0].id=='row'for n in assignments))
+        with tempfile.TemporaryDirectory()as temporary:
+            root=Path(temporary);target=root/'usr/libexec/opensparklink/native-lab/0123456789ab/slktest';target.parent.mkdir(parents=True);target.write_bytes(b'explicit file fixture')
+            (root/'bin').mkdir();(root/'bin/slktest').symlink_to('/usr/libexec/opensparklink/native-lab/0123456789ab/slktest')
+            from ws73_role_snapshot import HELPER,SUPERVISOR
+            paths=['/bin/bus-policy-probe',HELPER,SUPERVISOR,*['/usr/share/sparklink/tools/'+n for n in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py']]]
+            for name in paths:
+                p=root/name.lstrip('/');p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'explicit file fixture')
+            basic=gate.request_tools({},root)
+            dynamic=gate.request_tools({gate.CHANNEL_FIELD:dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=0)},root)
+            key='/usr/share/sparklink/tools/ws73_dynamic_channels.py'
+            self.assertEqual(set(dynamic)-set(basic),{key})
+            self.assertEqual({k:v for k,v in dynamic.items()if k!=key},basic)
+            (root/key.lstrip('/')).write_bytes(b'changed source fixture')
+            self.assertNotEqual(gate.request_tools({gate.CHANNEL_FIELD:dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=0)},root),dynamic)
+
     def test_typed_dynamic_request_uses_real_request_validation_and_cli_without_native_stubs(self):
         for active in(0,1):
             args=SimpleNamespace(channel_benchmark='window',channel_benchmark_dynamic=True,channel_benchmark_active_endpoint=active)

@@ -110,6 +110,11 @@ def role_tools(root=Path('/'),*,dynamic=False):
     return {n:dict(sha256=hashlib.sha256(role_tool_path(root,n).read_bytes()).hexdigest(),bytes=role_tool_path(root,n).stat().st_size)for n in names}
 
 
+def request_tools(row,root=Path('/')):
+    """Same typed source profile for producer, root admission and replay."""
+    return role_tools(root,dynamic=row_channel(row)is not None)
+
+
 def validate_role_sources(package,*,dynamic=False):
     from ws73_north_star import file_record
     here=Path(__file__).resolve().parent
@@ -147,7 +152,8 @@ def execute(run,phase):
     from ws73_application_role import read_json
     row=dict(phase=len(run.data['connection_control']['phases'])-1,owners=phase['typed_objects'],config=requested_configuration(run.args),application_tool=test_program(run),start_wall_ns=time.time_ns(),status='RUNNING',applications=[],events=[],performance_qualified=False,clock=CLOCK,socket_benchmark_role_contract_version=ROLE_VERSION,benchmark_process_resource_contract_version=1,tools=role_tools())
     channel=requested_channel(run.args)
-    if channel is not None:row[CHANNEL_FIELD]=channel;row['tools']=role_tools(dynamic=True)
+    if channel is not None:row[CHANNEL_FIELD]=channel
+    row['tools']=request_tools(row)
     validate_role_request(row,row['phase'],live=True);run.data.setdefault('socket_benchmark',[]).append(row);run.save()
     path=run.output/f'benchmark-role-{row["phase"]}.request.json';temporary=path.with_suffix('.tmp')
     with temporary.open('x')as f:json.dump(row,f)
@@ -222,7 +228,7 @@ def execute_supervised(run,row):
     require_vm(ROLE_TOKEN)
     if not apps_role(row):raise CaptureError('live benchmark requires explicit apps-only contract')
     validate_role_request({k:row[k]for k in request_fields(row)},row['phase'],live=True)
-    if row['tools']!=role_tools(dynamic=row_channel(row)is not None)or row['application_tool']!=file_record(Path('/bin/slktest').resolve(strict=True)):
+    if row['tools']!=request_tools(row)or row['application_tool']!=file_record(Path('/bin/slktest').resolve(strict=True)):
         raise CaptureError('fixed prepared benchmark executables and tools required')
     mode=row['config']['mode'];window=row['config']['window'];config=validate_configuration(row['config'])
     reports=run.output/'reports';reports.mkdir(mode=0o700);os.chown(reports,1004,1004)
@@ -536,7 +542,7 @@ def valid_role_supervision(proof):
 
 def validate_role_tools(control,root,guest_files):
     for row in control['socket_benchmark']:
-        expected=role_tools(root,dynamic=row_channel(row)is not None)
+        expected=request_tools(row,root)
         if not apps_role(row)or row['tools']!=expected:raise CaptureError('exact prepared role tools required')
         for name,record in expected.items():
             actual=role_tool_path(root,name);matches=[v for v in guest_files if Path(v['path']).resolve()==actual]

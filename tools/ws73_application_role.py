@@ -224,8 +224,8 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
         context=SimpleNamespace(output=folder,save=save)
         try:
             if benchmark:
-                from ws73_socket_benchmark import role_tools
-                expected_tools=role_tools()
+                from ws73_socket_benchmark import request_tools
+                expected_tools=request_tools(row)
             elif subscription:
                 from ws73_ssap_subscription import tool_records,inflight_required,shared_required
                 expected_tools=tool_records(snapshot=snapshot_root is not None,inflight=inflight_required(row),shared=shared_required(row))

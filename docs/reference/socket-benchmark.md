@@ -355,6 +355,9 @@ QEMU正常退出且控制测试流程、指定阶段均为FAIL的原件；阶段
 不等于callback CPU、完整硬件无URB区间或独立RF时延。诊断退出0只表示取得限定
 观测，不能解释为原业务通过或多URB优化收益。
 
+结构化报告若声明`qualification.level`，摘要必须保持同一证据等级；不能只改标签把
+`offline`改成`real_device`。私有原件不可取得的元数据检查仍不是本地字节复核。
+
 新准备产物的 `benchmark_trace_contract_version=1` 显式选择 ftrace `mono`，
 在开始与结束分别保存并校验时钟 readback。Root 监督器在应用 `start` 前、双方
 `Quiescent` 后写入本 boot cookie 和 phase 的固定 marker；写标记及读取配置均

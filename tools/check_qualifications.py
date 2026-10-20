@@ -158,6 +158,14 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
             report = documents.get(binding['material'])
             if report is not None:
                 errors.extend(material_binding_errors(record, report, materials))
+                # Declared evidence class is part of the report contract,
+                # not an independently editable summary label. Legacy reports
+                # without this declaration retain their original scope.
+                qualification = report.get('qualification') if isinstance(report, dict) else None
+                if isinstance(qualification, dict) and 'level' in qualification:
+                    level = qualification['level']
+                    if not isinstance(level, str) or level not in LEVELS or level != record['level']:
+                        errors.append(f'{ident}: evidence level/report mismatch')
                 if binding['verdict_results'].get(select(report, binding['verdict_pointer'])) != record['result']:
                     errors.append(f'{ident}: report/result mismatch')
                 if select(report, binding['scope_pointer']) != record['excluded']:

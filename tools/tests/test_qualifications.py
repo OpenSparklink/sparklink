@@ -74,6 +74,21 @@ class QualificationTests(unittest.TestCase):
         self.assertEqual(result['errors'], [])
         self.assertEqual(result['verification'], 'RETAINED_BYTES_VERIFIED_NOT_REPLAYED')
 
+    def test_declared_evidence_level_cannot_be_reclassified_by_the_summary(self):
+        self.report['qualification']=dict(level='offline');self.update_report()
+        self.assertEqual(self.run_check()['errors'],[])
+        record=self.data['records'][0];record['configuration_materials']=['artifact']
+        for level in ('real_device','virtual_integration','formal_bounded','implemented'):
+            record['level']=level
+            with self.subTest(level=level):
+                self.assertIn('one: evidence level/report mismatch',self.run_check()['errors'])
+
+    def test_declared_report_level_is_typed_and_known(self):
+        for level in (None,False,[],{},'hardware_assumed'):
+            self.report['qualification']=dict(level=level);self.update_report()
+            with self.subTest(level=level):
+                self.assertIn('one: evidence level/report mismatch',self.run_check()['errors'])
+
     def typed_material_manifest(self, private=False):
         if private:
             self.data['materials']['artifact']['access'] = 'private'

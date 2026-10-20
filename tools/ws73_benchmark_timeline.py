@@ -187,6 +187,27 @@ def valid_trace_summary(proof,mode):
     except(KeyError,TypeError,IndexError):return False
 
 
+def packet_times(packet):
+    """Inspect the existing reassembly proof, not another fragment decoder."""
+    parts=packet.get('fragments')
+    if not isinstance(parts,list)or not parts:raise CaptureError('complete independently reassembled fragment proof required')
+    expected=[0]if len(parts)==1 else[1]+[2]*(len(parts)-2)+[3]
+    if (any(type(p.get('boundary',0))is not int for p in parts)
+        or [p.get('boundary',0)for p in parts]!=expected
+        or any(any(p[k]!=packet[k]for k in('bus','device','handle','direction'))for p in parts)
+        or any(type(p['wall_ns'])is not int for p in parts)
+        or [p['wall_ns']for p in parts]!=sorted(p['wall_ns']for p in parts)
+        or packet['wall_ns']!=parts[-1]['wall_ns']):raise CaptureError('ordered original fragment timestamps and identity required')
+    first,last=parts[0]['wall_ns'],parts[-1]['wall_ns']
+    complete=None
+    if packet['direction']=='out':
+        completions=[p['completion']['wall_ns']for p in parts]
+        if any(type(v)is not int or v<p['wall_ns']for p,v in zip(parts,completions)):raise CaptureError('every original OUT fragment completion required')
+        complete=max(completions)
+        if len(parts)==1 and packet['completion']['wall_ns']!=complete:raise CaptureError('original OUT completion differs from fragment')
+    return first,last,complete
+
+
 def intervals(run, proof):
     """Derive intervals only after original full application/capture corroboration.
 
@@ -200,16 +221,17 @@ def intervals(run, proof):
             for original in app['report']['outgoing']:
                 request,reply=next(legs),next(legs)
                 packets=[request['tx'],request['rx'],reply['tx'],reply['rx']]
-                if any(not p.get('fragments') for p in packets) or any(len(p['fragments'])!=1 or p.get('boundary')!=0 for p in [request['tx'],reply['tx']]):raise CaptureError('timeline requires short single-OUT PDU and complete independently reassembled RX')
-                a,b,c,d=[p['wall_ns'] for p in packets]
-                ca=request['tx']['completion']['wall_ns'];cc=reply['tx']['completion']['wall_ns']
-                first_b=request['rx']['fragments'][0]['wall_ns'];first_d=reply['rx']['fragments'][0]['wall_ns']
-                if not a<=first_b<=b<=c<=first_d<=d or ca<a or cc<c:raise CaptureError('USB causal interval/OUT completion order invalid')
+                points=[packet_times(p)for p in packets]
+                a,last_a,ca=points[0];first_b,b,_=points[1];c,last_c,cc=points[2];first_d,d,_=points[3]
+                if not a<=first_b<=b<=c<=first_d<=d or last_a>b or last_c>d:raise CaptureError('USB causal interval/OUT completion order invalid')
                 timings=dict(request_out_complete=ca-a,request_out_to_peer_in=b-a,peer_in_to_reply_out=c-b,reply_out_complete=cc-c,reply_out_to_source_in=d-c,usb_round_trip=d-a,request_out_to_peer_first_in=first_b-a,peer_rx_assembly_span=b-first_b,reply_out_to_source_first_in=first_d-c,source_rx_assembly_span=d-first_d)
                 if timings['usb_round_trip']!=sum(timings[k] for k in ['request_out_to_peer_in','peer_in_to_reply_out','reply_out_to_source_in']):raise CaptureError('USB timeline interval sum')
                 rows.append(dict(phase=phase['phase'],source=index,sequence=original['index'],frame_sha256=hashlib.sha256(bytes.fromhex(original['frame_hex'])).hexdigest(),
                     application_monotonic_ns=dict(rtt=original['validated_ns']-original['syscall_ns'],syscall_admission=original['admitted_ns']-original['syscall_ns'],planned_dispatch=original['dispatch_ns']-original['planned_ns']),usb_wall_ns=timings,
                     records=[dict(record=p['record'],bus=p['bus'],device=p['device'],handle=p['handle'],direction=p['direction'],wall_ns=p['wall_ns'],fragments=len(p['fragments']),fragment_records=[f['record'] for f in p['fragments']]) for p in packets]))
+                if len(request['tx']['fragments'])>1 or len(reply['tx']['fragments'])>1:
+                    rows[-1]['fragmented_tx_wall_ns']=dict(request_submission_span=last_a-a,reply_submission_span=last_c-c,
+                        request_last_out_to_peer_complete_in=b-last_a,reply_last_out_to_source_complete_in=d-last_c)
         if next(legs,None) is not None:raise CaptureError('unattributed business legs in timeline')
     if len(rows)!=proof['round_trips'] or not rows:raise CaptureError('one timeline for every successful actual application request')
     return rows
@@ -238,6 +260,11 @@ def analyze(directory):
                        'NOCP handle/count timeline separate,not assigned as per-message acknowledgement or delivery.',
                        'Successful original paired lowload workload only;failed runs refused,not silently included or upgraded;allattempt ledger remains required.',
                        'No Session/credit/Ticket/Grant/URB changes;no stable threshold,resourcepeak orcompleteperformance qualification.'])
+    if 'benchmark_process_resource_contract_version'in proof:
+        from ws73_benchmark_resources import valid_summary
+        if not valid_summary(proof):raise CaptureError('complete process-resource proof required')
+        result['process_resource_observations']=[dict(phase=p['phase'],applications=p['resource_observations'])for p in proof['proofs']]
+        result['scope'].append('Process CPU tick deltas bracket the armed/quiescent checkpoints;memory high-water marks include process preparation through the observed checkpoint. fd counts are checkpoint counts,not peaks;not whole VM/controller/URB/queue or resource leak qualification.')
     if trace and trace.get('trace_contract_version')==1:
         if not valid_trace_summary(trace,manifest['socket_benchmark_xhci_requested']):raise CaptureError('fresh trace summary contract required')
         result['rx_resubmit_observation']=rx_resubmits(share,run,trace)

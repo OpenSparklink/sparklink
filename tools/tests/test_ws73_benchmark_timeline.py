@@ -186,6 +186,7 @@ class TimelineEvidence(unittest.TestCase):
             for n,leg in enumerate(phase['legs']):
                 base=phase['phase']*2000+500+(n//2)*10+(n%2)*4
                 leg['tx']['wall_ns']=base;leg['tx']['completion']=dict(wall_ns=base+3)
+                leg['tx']['fragments'][0]['wall_ns']=base;leg['tx']['fragments'][0]['completion']=dict(wall_ns=base+3)
                 leg['rx']['wall_ns']=base+2;leg['rx']['fragments'][0]['wall_ns']=base+2
         return run,proof
 
@@ -226,3 +227,28 @@ class TimelineEvidence(unittest.TestCase):
                 if kind=='missing':proof['proofs'][0]['legs'].pop()
                 if kind=='extra':proof['proofs'][0]['legs'].append(copy.deepcopy(leg))
                 with self.subTest(kind=kind),self.assertRaises((CaptureError,StopIteration)):intervals(run,proof)
+
+    def test_fragmented_tx_uses_first_submit_all_completions_and_last_peer_rx(self):
+        with tempfile.TemporaryDirectory() as d:
+            run,proof=self.paired(Path(d))
+            for phase in proof['proofs']:
+                for leg in phase['legs']:
+                    tx=leg['tx'];base=tx['wall_ns'];parts=[]
+                    for n in range(3):
+                        part={k:v for k,v in tx.items()if k!='fragments'}
+                        part.update(boundary=n+1,wall_ns=base+n-2,completion=dict(wall_ns=base+n+1))
+                        parts.append(part)
+                    tx.update(boundary=3,fragments=parts)
+            rows=intervals(run,proof)
+            for row in rows:
+                self.assertEqual(row['usb_wall_ns']['usb_round_trip'],8)
+                self.assertEqual(row['usb_wall_ns']['request_out_complete'],5)
+                self.assertEqual(row['fragmented_tx_wall_ns']['request_submission_span'],2)
+                self.assertEqual([p['fragments']for p in row['records']],[3,1,3,1])
+            for kind in ('pb','completion','identity','order'):
+                bad=copy.deepcopy(proof);tx=bad['proofs'][0]['legs'][0]['tx']
+                if kind=='pb':tx['fragments'][1]['boundary']=0
+                elif kind=='completion':tx['fragments'][0]['completion']['wall_ns']=tx['fragments'][0]['wall_ns']-1
+                elif kind=='identity':tx['fragments'][1]['handle']+=1
+                else:tx['fragments'].reverse()
+                with self.subTest(kind=kind),self.assertRaises(CaptureError):intervals(run,bad)

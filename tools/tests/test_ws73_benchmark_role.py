@@ -34,19 +34,23 @@ class BenchmarkRole(unittest.TestCase):
             else:r['config']['window']=10000
             with self.subTest(kind=kind),self.assertRaises(CaptureError):gate.validate_role_request(r,0)
         with self.assertRaises(CaptureError):gate.validate_role_request(request(),True)
+        with self.assertRaises(CaptureError):gate.validate_role_request(request(),0,live=True)
+        live=request();live[gate.RESOURCE_FIELD]=1;gate.validate_role_request(live,0,live=True)
 
     def test_fresh_prepared_source_closure_rejects_marker_only_or_old_guest(self):
         from ws73_north_star import file_record
         here=Path(gate.__file__).parent
-        names=('ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh')
-        package=dict(socket_benchmark_role_contract_version=1,benchmark_trace_contract_version=1,inputs=[file_record(here/n)for n in names])
+        names=('ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh')
+        package=dict(socket_benchmark_role_contract_version=1,benchmark_trace_contract_version=1,benchmark_process_resource_contract_version=1,inputs=[file_record(here/n)for n in names])
         gate.validate_role_sources(package)
-        for kind in ('marker','bool','trace-marker','trace-bool','missing','oldhash','duplicate'):
+        for kind in ('marker','bool','trace-marker','trace-bool','resource-marker','resource-bool','missing','oldhash','duplicate'):
             bad=copy.deepcopy(package)
             if kind=='marker':bad.pop('socket_benchmark_role_contract_version')
             elif kind=='bool':bad['socket_benchmark_role_contract_version']=True
             elif kind=='trace-marker':bad.pop('benchmark_trace_contract_version')
             elif kind=='trace-bool':bad['benchmark_trace_contract_version']=True
+            elif kind=='resource-marker':bad.pop(gate.RESOURCE_FIELD)
+            elif kind=='resource-bool':bad[gate.RESOURCE_FIELD]=True
             elif kind=='missing':bad['inputs'].pop()
             elif kind=='duplicate':bad['inputs'].append(bad['inputs'][0])
             else:bad['inputs'][0]['sha256']='0'*64
@@ -73,7 +77,7 @@ class BenchmarkRole(unittest.TestCase):
                 and isinstance(entry.left,ast.Name)and entry.left.id=='HERE'
                 and isinstance(entry.right,ast.Constant)and isinstance(entry.right.value,str)):
                 paths.append(here/entry.right.value)
-        package=dict(socket_benchmark_role_contract_version=1,benchmark_trace_contract_version=1,inputs=[file_record(p)for p in paths])
+        package=dict(socket_benchmark_role_contract_version=1,benchmark_trace_contract_version=1,benchmark_process_resource_contract_version=1,inputs=[file_record(p)for p in paths])
         gate.validate_role_sources(package)
         package['inputs']=[v for v in package['inputs']if Path(v['path']).name!='ws73_role_snapshot.py']
         with self.assertRaisesRegex(ValueError,'ws73_role_snapshot.py'):gate.validate_role_sources(package)

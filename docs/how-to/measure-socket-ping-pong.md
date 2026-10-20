@@ -220,15 +220,24 @@ python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT
 
 ## 准备相同口径的 Native 对照
 
-先列出两个内核 artifact 与同一用户态 bundle/执行工具、SDK111、VM/QEMU、USB端口、
-CPU及Kconfig，保留完整 hash。现有硬件组合以U2/3为选定对象；第1口Hi3873E排除，
-不能使用旧U1/4结果充当前测。默认USB捕获保持开启，分别记录可选xHCI及Session追踪。
+先列出两个内核 artifact 与同一用户态 bundle／执行工具、明确板型对应的 SDK110
+镜像及校准、VM／QEMU、USB 拓扑、CPU 和 Kconfig，保留完整 hash。设备选择必须
+遵循本线程当前资源配置及每次接入检查，不能继承历史端口的型号或任选枚举设备。
+默认 USB 捕获保持开启，分别记录可选 xHCI 及 Session 追踪；暖态接入不证明本轮
+上传或执行了 staged 镜像。混合板型仍受现有逐设备固件来源门禁约束。
 
 Native runner 可显式设置 count/bytes/window/interval，详见[参数参考](../reference/socket-benchmark.md#native-vm-可变负载请求)。
 先用每角色128条、61字节、window1/4的有限对照验证完整配置透传、计时和双端证据；
-该配方已按[当前资格入口](../../project/current-capabilities.md)取得有限实机证据。采用预先确定的平衡顺序与重复次数，保留全部尝试。
+该配方是否已通过，须按[当前资格入口](../../project/current-capabilities.md)的准确
+artifact 和限定范围核对，旧结果不转授新产物。采用预先确定的平衡顺序与重复次数，保留全部尝试。
 复用同一个slktest二进制，不更改生产协议或消息期限。核对双方真实校验回复及两端USB，
 按物理发送端/连接角色分别汇总，同一发起进程的单调时钟计算RTT；不相减不同进程时钟。
 
 随后才按实际结果增加长包、负载扫描和观测开销对照；样本量不足时不发布P99.9，
 不预设性能阈值。端点CPU/RSS/fd与内核峰值、队列/credit、URB资源分别列出；未测量项保留缺失。
+
+要取得应用进程检查点，重新 prepare 含资源契约版本1的镜像，再执行原 benchmark
+入口。用现有时间线工具重放 run，核对 `process_resource_observations` 的四个应用结果，
+并同时核对双端应用／USB 的全部请求。缺材料、PID 身份不一致、读取失败或屏障越界
+都应保留失败；旧镜像没有该观测，不要把缺失改成零。具体单位及高水位边界见
+[指标参考](../reference/socket-benchmark.md#vm-应用进程资源检查点)。

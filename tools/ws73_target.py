@@ -107,6 +107,7 @@ def prepare_locked(args, build_fd):
     manifest['firmware_evidence_contract_version'] = 1
     manifest['socket_benchmark_role_contract_version'] = 1
     manifest['benchmark_trace_contract_version'] = 1
+    manifest['benchmark_process_resource_contract_version'] = 1
     manifest['ssap_exchange_contract_version'] = 2
     manifest['ssap_update_delivery_contract_version'] = 2
     manifest['application_role_contract_version'] = 2
@@ -137,7 +138,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -326,7 +327,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -834,11 +835,12 @@ def _run(args):
     if benchmark_mode:
         m['socket_benchmark_role_contract_version']=1
         m['benchmark_trace_contract_version']=1
+        m['benchmark_process_resource_contract_version']=1
         m['socket_benchmark_apps_acceptance']=False
         m['socket_benchmark_window_requested']=benchmark_window
         m['socket_benchmark_config_requested']=benchmark_config
         m['socket_benchmark_xhci_requested']=benchmark_xhci
-        m['benchmark_verifiers']=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py']]
+        m['benchmark_verifiers']=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py']]
     m['socket_benchmark_acceptance']=False
     m['performance_qualified']=False
     m['channel_socket_verification_requested']=channel_socket
@@ -1624,7 +1626,7 @@ def _run(args):
                     m['socket_benchmark_corroboration']=benchmark_corroborate(control,capture,share)
                     from ws73_benchmark_timeline import check_xhci
                     m['socket_benchmark_xhci_observation']=check_xhci(share,benchmark_xhci)
-                    if m['benchmark_verifiers']!=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py']]:raise ValueError('benchmark verifier changed during execution')
+                    if m['benchmark_verifiers']!=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py']]:raise ValueError('benchmark verifier changed during execution')
                     from ws73_socket_benchmark import verify_role_artifacts,validate_role_tools,valid_role_supervision
                     validate_role_tools(control,args.prepared/'root',package['guest_files'])
                     m['socket_benchmark_role_supervision']=verify_role_artifacts(control,share)
@@ -2386,12 +2388,16 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         from ws73_benchmark_timeline import valid_trace_summary
         if(type(trace_contract)is not int or trace_contract!=1 or type(benchmark_role)is not int or benchmark_role!=1 or not record.get('socket_benchmark_requested')or not valid_trace_summary(record.get('socket_benchmark_xhci_observation',{}),record.get('socket_benchmark_xhci_requested'))):return 1
     elif record.get('socket_benchmark_xhci_observation',{}).get('trace_contract_version')is not None:return 1
+    resource=record.get('benchmark_process_resource_contract_version')
+    if resource is not None and(type(resource)is not int or resource!=1 or not record.get('socket_benchmark_requested')):return 1
     benchmark_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.socket_benchmark_apps=')]
     if benchmark_role is not None:
         from ws73_socket_benchmark import valid_role_supervision
         if(type(benchmark_role)is not int or benchmark_role!=1 or not record.get('socket_benchmark_requested')or benchmark_boot!=['ws73.socket_benchmark_apps=1']or record.get('socket_benchmark_apps_acceptance')is not True or not valid_role_supervision(record.get('socket_benchmark_role_supervision',{}))):return 1
         names=[Path(v.get('path','')).name for v in record.get('benchmark_verifiers',[])]
-        if len(names)!=5 or set(names)!={'ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py'}:return 1
+        resource=record.get('benchmark_process_resource_contract_version')
+        expected_names={'ws73_benchmark_resources.py'}if resource is not None else set()
+        if len(names)!=5+len(expected_names) or set(names)!=expected_names|{'ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py'}:return 1
     elif benchmark_boot or record.get('socket_benchmark_apps_acceptance')or record.get('socket_benchmark_role_supervision'):return 1
     if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record):return 1
     if record.get('socket_benchmark_requested'):
@@ -2401,6 +2407,11 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         from ws73_socket_benchmark import record_configuration,configuration,validate_configuration
         try:config=record_configuration(record)
         except (ValueError,KeyError,TypeError):return 1
+        resource=record.get('benchmark_process_resource_contract_version')
+        from ws73_benchmark_resources import valid_summary
+        if resource is not None:
+            if type(resource)is not int or resource!=1 or not valid_summary(proof):return 1
+        elif 'benchmark_process_resource_contract_version'in proof or any('resource_observations'in p for p in proof.get('proofs',[])):return 1
         if type(proof.get('window',4)) is not int or proof.get('window',4)!=window:return 1
         try:proof_config=proof['config'] if 'config' in proof else configuration(mode,window)
         except (ValueError,KeyError,TypeError):return 1

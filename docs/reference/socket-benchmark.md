@@ -168,6 +168,9 @@ header_page有效载荷、subbuffer大小及该内核DIV_ROUND_UP/读回KiB取�
 
 `tools/ws73_benchmark_timeline.py RUN_DIRECTORY`只读重放原双端证明，输出每条请求
 的OUT提交/完成、对端首/末片RX、对端回复OUT及源端首/末片RX间隔和原record索引。
+分片 TX 使用原重组证明的首片提交作为起点，全部片的最后 USB 完成为完成点；另记
+首末提交跨度及末片提交到对端完整 RX 的区间。检查每片身份、PB 顺序、时间及自身
+完成，不把最后一片时间误作整条消息的发送起点。单片旧结果的字段含义保持原样。
 61字节应用消息也可由SDK111分成28/28/10字节RX，必须沿原DLI PB重组证明处理，
 不能假定短包单片。应用自己的单调时钟RTT/准入和guest usbmon墙钟间隔分开，
 不跨时钟相减，不用RTT/2。OUT完成允许晚于对端IN，不表示协议credit归还。
@@ -279,3 +282,25 @@ USB core 分派 callback 前，后者在 HCD 加锁和实际入队前，并仍�
 物理源方向分别报告，保留所有失败和未完成尝试；追踪开关比较仍包含 usbmon 开销，
 不能升级为零观测开销、稳定性能阈值或多 URB 优化收益。源码、准确资格与剩余条件
 仍由唯一能力入口记录。
+
+## VM 应用进程资源检查点
+
+新 Native benchmark 准备产物使用 `benchmark_process_resource_contract_version=1`。
+既有 Root 监督器在双方 armed 后、写入任一 start 前读取两只实际 `slktest` 子进程，
+在双方 quiescent 后、写入任一 finish 前再次读取。热循环内不增加采样线程或磁盘写入；
+普通 CLI 的 schema2 应用报告和业务收发不变。
+
+原始 `/proc` stat/status、fd 编号、可执行文件身份和单调时钟读取区间随既有 Root
+phase receipt 封存。校验 PID、父进程、start tick、UID/GID1004、空附加组、零能力及
+实际 executable；旧 PID 复用、计数回退、单位错误、缺失／超限或跨越业务屏障均失败。
+新 live 入口要求新 proof 及准确 helper 来源，历史捕获不能补字段升级资格。
+
+- CPU 记录 user/system tick 差和实际 `SC_CLK_TCK`，不是纳秒精度的逐消息耗时。
+- Linux status 的 `kB` 按1024字节转换。VmHWM／VmPeak 是截至读取时的进程高水位，
+  包含载荷预生成与准备，不能称为纯业务区间或进程退出时的最终峰值。
+- RSS 和 fd 数量是两个检查点的快照；fd 相同不证明没有中间峰值或引用泄漏。
+- 这些数据不覆盖 daemon、整个 VM／宿主、内核对象、worker、timer、URB、队列或 credit
+  峰值，不授予性能阈值、完整压力、公平性、资源收敛或恢复资格。
+
+时间线的 `process_resource_observations` 保留每 phase／每应用的独立结果。
+观测开销和功能正确性仍需按准确产物分别验收；未测量的其他层资源保持缺失。

@@ -19,6 +19,12 @@ Hi3873E 与 Hi3873U 的固件、校准及板级配置通用。端口号可复用
 
 检查结果：`bsle_custom.bin` 为 140 字节，`pm_config.bin` 为 4 字节；JSON manifest 应记录输入、工具和输出 hash。它们不是包含 ASCII SHA-256 头的启动镜像。字节布局通过不表示 USB、BSLE、DLI 或空口通过。
 
+新 native bundle 和显式板型的 VM 准备过程会重读原始 INI，使用当前导出器重新编码，
+核对参数、manifest 和两个实际文件。保留 INI 及整个候选目录，不能只复制两个 bin。
+导出器、INI 或参数改变时，在新目录重新导出；不要修改旧 manifest 冒充原候选。
+真实启动及每次单设备重新直通前，还会复核候选与 guest 中两处实际固件目录。
+输入一致性通过不授予板型兼容、已装载镜像或冷启动资格。
+
 失败处理：不要覆盖旧候选。缺字段、重复字段、超范围或 flash 模式须修正输入后在新目录重试；flash 校准及地址不能由 efuse 导出器还原。不要将候选直接刷到主机硬件。后续打包与驱动加载仅在隔离 VM 中进行。
 
 [原始输入依据及历史步骤](../../project/reference/environment/ws73-board-configuration.md) 保留；以 [当前资格](../../project/current-capabilities.md) 判定实机范围。

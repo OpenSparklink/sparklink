@@ -153,6 +153,84 @@ def explicit_firmware(model, directory, allocation=None):
     return dict(model=model, **expected)
 
 
+def board_configuration(directory, model=None):
+    """Host preparation only: reuse the actual exporter, never manifest code."""
+    import importlib.util
+    if model is not None and model not in ('U', 'E'):
+        raise ValueError('explicit U/E board configuration selection required')
+    path = Path(__file__).with_name('ws73-board-config.py')
+    spec = importlib.util.spec_from_file_location('ws73_board_input', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return dict(selected_model=model, **module.verify(directory))
+
+
+def check_board_configuration(package, ports, prepared, allocation=None):
+    models = selected(ports, allocation)
+    proof = package.get('board_configuration', {})
+    if (len(set(models)) != 1 or type(package.get('board_configuration_contract_version')) is not int
+            or package['board_configuration_contract_version'] != 1
+            or proof.get('selected_model') != models[0]):
+        raise ValueError('fresh board inputs bound to explicit homogeneous model required')
+    current = board_configuration(Path(proof['manifest']['path']).parent, models[0])
+    if current != proof:
+        raise ValueError('board input provenance changed after preparation')
+    for directory in ('lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73'):
+        for name, expected in proof['images'].items():
+            path = Path(prepared) / 'root' / directory / name
+            if path.is_symlink() or not path.is_file():
+                raise ValueError('regular prepared board payload required')
+            raw = path.read_bytes()
+            if dict(size=len(raw), sha256=hashlib.sha256(raw).hexdigest()) != expected:
+                raise ValueError('prepared board payload differs from provenance: ' + name)
+    return proof
+
+
+def board_configuration_exit_gate(record):
+    """Decode a sealed receipt, not a hardware or current-file qualification.
+
+    Old captures retain their original contract. All new live physical runs
+    obtain this version and proof from PhysicalBoundary before any attach.
+    """
+    allocation = record.get('physical_resource_allocation', {})
+    if not isinstance(allocation, dict):
+        return False
+    if ('board_configuration_contract_version' not in record
+            and 'board_configuration' not in allocation):
+        return True  # Historical decoder only; not a live fallback.
+    try:
+        proof = allocation['board_configuration']
+        if (type(record['board_configuration_contract_version']) is not int
+                or record['board_configuration_contract_version'] != 1
+                or type(proof['version']) is not int or proof['version'] != 1
+                or proof['scope'] != 'INPUT_PROVENANCE_ONLY_NO_HARDWARE_ACCEPTANCE'
+                or proof['profile'] != 'ws73-sdk-efuse-customization-v1'
+                or proof['selected_model'] not in ('U', 'E')
+                or proof['selected_model'] != allocation['firmware']['model']
+                or type(proof['usb_link_check']) is not int
+                or proof['usb_link_check'] not in (0, 1)
+                or set(proof['images']) != {'bsle_custom.bin', 'pm_config.bin'}):
+            return False
+        import re
+        for key in ('source', 'manifest', 'exporter'):
+            item = proof[key]
+            if not isinstance(item['path'], str) or not item['path'].startswith('/'):
+                return False
+            if key != 'exporter' and (type(item['size']) is not int or item['size'] <= 0):
+                return False
+            if not isinstance(item['sha256'], str) or not re.fullmatch('[0-9a-f]{64}', item['sha256']):
+                return False
+        for name, size in [('bsle_custom.bin', 140), ('pm_config.bin', 4)]:
+            item = proof['images'][name]
+            if (type(item['size']) is not int or item['size'] != size
+                    or not isinstance(item['sha256'], str)
+                    or not re.fullmatch('[0-9a-f]{64}', item['sha256'])):
+                return False
+        return True
+    except (KeyError, TypeError, AttributeError):
+        return False
+
+
 def check_available(row, proc=Path('/proc')):
     """Read-only occupancy check, never detach. Root fds may be unobservable.
 
@@ -336,6 +414,7 @@ class PhysicalBoundary:
         self.package, self.prepared = package, prepared
         self.models = selected(ports, self.allocation)
         self.firmware = check_firmware(package, ports, prepared, self.allocation)
+        self.board_configuration = check_board_configuration(package, ports, prepared, self.allocation)
         self.observations = []
         for port in ports:
             self.check(port)
@@ -366,6 +445,7 @@ class PhysicalBoundary:
                         raise ValueError('only individually guarded USB device passthrough permitted')
                     boundary.check(port)
                     check_firmware(boundary.package, boundary.ports, boundary.prepared, boundary.allocation)
+                    check_board_configuration(boundary.package, boundary.ports, boundary.prepared, boundary.allocation)
                 elif command == 'device_del':
                     if arguments not in [dict(id=f'ws73_{i}') for i in range(len(boundary.ports))]:
                         raise ValueError('may remove only this VM selected leaf devices')

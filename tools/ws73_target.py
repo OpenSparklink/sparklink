@@ -127,6 +127,8 @@ def prepare_locked(args, build_fd):
         board = board_files(args.runtime_config_dir)
         if getattr(args, 'board_model', None):
             manifest['explicit_firmware'] = resources.explicit_firmware(args.board_model, args.firmware_dir)
+            manifest['board_configuration'] = resources.board_configuration(args.runtime_config_dir, args.board_model)
+            manifest['board_configuration_contract_version'] = 1
             manifest['resource_contract_version'] = 1
         inputs = [args.kernel_build/'arch/x86/boot/bzImage',args.kernel_build/'.config',
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
@@ -171,6 +173,8 @@ def prepare_locked(args, build_fd):
                 manifest['inputs'].append(entry)
         manifest['inputs'] += [file_record(HERE / 'ws73_lab_resources.py'), file_record(resources.POLICY), file_record(HERE / 'build_resources.py'),
                                file_record(USERSPACE / 'project/build-resource-policy.json')]
+        if 'board_configuration' in manifest:
+            manifest['inputs'] += [file_record(Path(manifest['board_configuration'][key]['path'])) for key in ('manifest', 'source', 'exporter')]
         source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
         source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates','bindings/python/sparklink'],cwd=USERSPACE,text=True).splitlines()
         manifest['userspace_sources'] = [file_record(USERSPACE/p) for p in sorted(set(source_files))]
@@ -1123,6 +1127,8 @@ def _run(args):
                 'firmware':physical_boundary.firmware,'observations':physical_boundary.observations,
                 'firmware_scope':'STAGED_INPUT_HASHES_ONLY_NOT_A_LOADED_IMAGE_WITNESS',
                 'model_basis':'USER_PLACEMENT_UNTIL_GUEST_HCC_CHECK', 'vm_only':True}
+            m['board_configuration_contract_version']=1
+            m['physical_resource_allocation']['board_configuration']=physical_boundary.board_configuration
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
         if not support:
             native_vm.check_runtime_only(package, devices, args.ports)
@@ -2075,6 +2081,9 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if type(supervisor_pending) is not bool:
         return 1
     if not firmware_evidence.exit_gate(record, expected_firmware_mode):
+        return 1
+    from ws73_lab_resources import board_configuration_exit_gate
+    if not board_configuration_exit_gate(record):
         return 1
     if 'supervisor_exit' in record:
         if type(record['supervisor_exit']) is not int or record['supervisor_exit'] != 0:

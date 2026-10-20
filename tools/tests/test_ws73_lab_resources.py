@@ -220,16 +220,54 @@ class AllocatedResources(unittest.TestCase):
             run.assert_called_once_with(args)
 
     def test_every_monitor_attach_including_reenumeration_is_rechecked(self):
-        with patch.object(resource,'check_firmware',return_value={}),patch.object(resource.PhysicalBoundary,'check') as check:
+        # QMP dispatch fixture only, not a successful firmware/board/USB gate.
+        with patch.object(resource,'check_firmware',return_value={}),\
+             patch.object(resource,'check_board_configuration',return_value={}) as board,\
+             patch.object(resource.PhysicalBoundary,'check') as check:
             boundary=resource.PhysicalBoundary(['1-1.1.1'],{},Path('/fixture'))
             actual=Mock();monitor=boundary.monitor(actual);args=usb_properties('1-1.1.1',0)
             monitor.execute('device_add',args);monitor.execute('device_del',{'id':'ws73_0'});monitor.execute('device_add',args)
             self.assertEqual(check.call_count,3)
+            self.assertEqual(board.call_count,3)  # Constructor plus every attach.
             for bad in [usb_properties('1-1.1.3',0),dict(args,**{'host-reset':True}),
                         dict(args,driver='vfio-pci'),dict(args,hostport='1.1'),dict(args,hostaddr=16)]:
                 with self.assertRaises(ValueError):monitor.execute('device_add',bad)
             with self.assertRaises(ValueError):monitor.execute('device_del',{'id':'ws73_1'})
             self.assertEqual(actual.execute.call_count,3)
+
+    def test_board_inputs_actual_export_and_prepared_root_fail_closed(self):
+        import importlib.util
+        spec=importlib.util.spec_from_file_location('board_fixtures',Path(__file__).with_name('test_ws73_board_config.py'))
+        fixtures=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixtures)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);ini=root/'source.ini';ini.write_text(fixtures.fixture())
+            candidate=root/'candidate';fixtures.board.export(ini,candidate,'not-a-hardware-claim',0)
+            proof=resource.board_configuration(candidate,'E')
+            package=dict(board_configuration_contract_version=1,board_configuration=proof)
+            prepared=root/'prepared'
+            for directory in ['lib/firmware/sparklink/ws73','usr/lib/firmware/sparklink/ws73']:
+                destination=prepared/'root'/directory;destination.mkdir(parents=True)
+                for name in proof['images']:(destination/name).write_bytes((candidate/name).read_bytes())
+            self.assertEqual(resource.check_board_configuration(package,['1-2.1.1','1-2.1.2'],prepared),proof)
+            for ports in [['1-1.1.1'],['1-1.1.1','1-2.1.1']]:
+                with self.assertRaises(ValueError):resource.check_board_configuration(package,ports,prepared)
+            for version in [None,True,2]:
+                with self.assertRaises(ValueError):resource.check_board_configuration(dict(package,board_configuration_contract_version=version),['1-2.1.1'],prepared)
+            receipt=dict(board_configuration_contract_version=1,physical_resource_allocation=dict(firmware=dict(model='E'),board_configuration=proof))
+            self.assertTrue(resource.board_configuration_exit_gate(receipt))
+            import ws73_target as target
+            # Test the real finalizer, without inventing successful hardware evidence.
+            for bad in [dict(receipt,board_configuration_contract_version=True),
+                        dict(receipt,physical_resource_allocation=dict(firmware=dict(model='U'),board_configuration=proof))]:
+                self.assertFalse(resource.board_configuration_exit_gate(bad))
+                self.assertEqual(target.run_exit_code(bad),1)
+            payload=prepared/'root/usr/lib/firmware/sparklink/ws73/pm_config.bin'
+            payload.write_bytes(b'bad!')
+            with self.assertRaises(ValueError):resource.check_board_configuration(package,['1-2.1.1'],prepared)
+            payload.unlink();payload.symlink_to(candidate/'pm_config.bin')
+            with self.assertRaises(ValueError):resource.check_board_configuration(package,['1-2.1.1'],prepared)
+            ini.write_text(fixtures.fixture()+'\n# stale\n')
+            with self.assertRaises(ValueError):resource.board_configuration(candidate,'E')
 
     def test_real_port_lock_process_and_independent_leaf(self):
         with tempfile.TemporaryDirectory() as tmp,patch.object(resource,'workspace',return_value=Path(tmp)):

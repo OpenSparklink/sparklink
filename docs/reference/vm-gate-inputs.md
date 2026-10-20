@@ -70,6 +70,12 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 当前驱动只有一个固件目录，同一个 guest 只允许同型号；混合 E/U 及无法证明
 每设备 RAM 固件来源的 runtime-only 接管拒绝。不得修改旧 manifest 来绕过检查。
 板级 `bsle_custom.bin`／`pm_config.bin` 仍须显式提供并记录，型号匹配不证明板级资格。
+新 native bundle 要求同目录的 `ws73-board-config.json`、可取得的原始 INI 和当前
+导出器。准备入口通过生产导出器重放编码，拒绝旧工具哈希、短文件、symlink、参数或
+源文件不一致。显式板型的新 prepared/run 记录 `board_configuration_contract_version=1`，
+将输入 proof 绑定所选 U/E；实际 Root 的两个目录均须匹配，并在每次 QMP 叶子接入前
+复查。该 proof 的范围固定为输入 provenance，不是板级、镜像运行或 RF 资格。
+历史捕获按原契约解码，不能通过给旧 manifest 补字段取得新资格。
 新 guest 先记录实际 `HCC_GET_CHIP_TYPE`，与显式型号和 USB 总线不符则失败。
 这不是冷 ROM 自动选择，也不是芯片认证。历史三设备 SDK111 reference 诊断
 无法满足此分配下同型号/SDK110约束，须等待明确适配；原代码及证据保留。

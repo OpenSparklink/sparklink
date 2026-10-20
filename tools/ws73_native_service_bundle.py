@@ -71,6 +71,8 @@ def stage_locked(args, build_fd):
     firmware = Path(args.firmware_dir).resolve(strict=True)
     images = firmware_files(firmware, args.combined_sha256)
     runtime = Path(args.runtime_config_dir).resolve(strict=True)
+    from ws73_lab_resources import board_configuration
+    board_provenance = board_configuration(runtime)
     board = {}
     for name, size in [('bsle_custom.bin', 140), ('pm_config.bin', 4)]:
         blob = (runtime / name).read_bytes()
@@ -82,7 +84,7 @@ def stage_locked(args, build_fd):
     tool_inputs = {str(Path(__file__).with_name(name)): digest(Path(__file__).with_name(name))
                    for name in ('ws73_native_service_bundle.py', 'ws73_firmware.py',
                                 'ws73_native_build_check.py', 'ws73_native_root_smoke.py', 'install_layout.py',
-                                'build_resources.py')}
+                                'build_resources.py', 'ws73_lab_resources.py', 'ws73-board-config.py')}
     policy = Path(__file__).resolve().parents[1] / 'project/build-resource-policy.json'
     tool_inputs[str(policy)] = digest(policy)
     record = {'status': 'BUILDING', 'scope': 'private native service and firmware file staging only',
@@ -93,6 +95,7 @@ def stage_locked(args, build_fd):
               'board_qualification': 'NOT_ASSERTED', 'firmware_runtime_qualification': 'NOT_ASSERTED',
               'host_installation': False, 'native_acceptance': False, 'physical_acceptance': False,
               'tool_inputs': tool_inputs,
+              'board_configuration': board_provenance,
               'files': {}, 'runtime_dependencies': {}}
     manifest = output / 'manifest.json'
     save(manifest, record)
@@ -205,6 +208,8 @@ def stage_locked(args, build_fd):
         save(output / 'deployment-plan.json', plan)
         if any(digest(Path(path)) != expected for path, expected in tool_inputs.items()):
             raise ValueError('staging tool inputs changed during execution')
+        if board_configuration(runtime) != board_provenance:
+            raise ValueError('board inputs changed during staging')
         record.update(status='PRIVATE_NATIVE_SERVICE_FILES_STAGED', binary_prefix='/' + str(prefix),
                       deployment_plan_sha256=digest(output / 'deployment-plan.json'),
                       tool_sha256=digest(Path(__file__)),

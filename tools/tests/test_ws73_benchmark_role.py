@@ -34,7 +34,7 @@ class BenchmarkRole(unittest.TestCase):
             root=Path(temporary);target=root/'usr/libexec/opensparklink/native-lab/0123456789ab/slktest';target.parent.mkdir(parents=True);target.write_bytes(b'explicit file fixture')
             (root/'bin').mkdir();(root/'bin/slktest').symlink_to('/usr/libexec/opensparklink/native-lab/0123456789ab/slktest')
             from ws73_role_snapshot import HELPER,SUPERVISOR
-            paths=['/bin/bus-policy-probe',HELPER,SUPERVISOR,*['/usr/share/sparklink/tools/'+n for n in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py']]]
+            paths=['/bin/bus-policy-probe',HELPER,SUPERVISOR,*['/usr/share/sparklink/tools/'+n for n in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_channel_fairness.py']]]
             for name in paths:
                 p=root/name.lstrip('/');p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'explicit file fixture')
             basic=gate.request_tools({},root)
@@ -42,6 +42,8 @@ class BenchmarkRole(unittest.TestCase):
             key='/usr/share/sparklink/tools/ws73_dynamic_channels.py'
             self.assertEqual(set(dynamic)-set(basic),{key})
             self.assertEqual({k:v for k,v in dynamic.items()if k!=key},basic)
+            parallel=gate.request_tools({gate.CHANNEL_FIELD:gate.parallel_channel()},root)
+            self.assertEqual(set(parallel)-set(dynamic),{'/usr/share/sparklink/tools/ws73_channel_fairness.py'})
             (root/key.lstrip('/')).write_bytes(b'changed source fixture')
             self.assertNotEqual(gate.request_tools({gate.CHANNEL_FIELD:dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=0)},root),dynamic)
 
@@ -62,6 +64,39 @@ class BenchmarkRole(unittest.TestCase):
                 with self.subTest(change=change),self.assertRaises(CaptureError):gate.validate_role_request(bad,0)
         for args in [SimpleNamespace(channel_benchmark_dynamic=True),SimpleNamespace(channel_benchmark='window',channel_benchmark_active_endpoint=1),SimpleNamespace(channel_benchmark='window',channel_benchmark_dynamic=1)]:
             with self.assertRaises(CaptureError):gate.requested_channel(args)
+
+    def test_parallel_profile_closes_root_hashes_boot_and_each_actual_application_request(self):
+        for active in(0,1):
+            args=SimpleNamespace(channel_benchmark='window',channel_benchmark_parallel=True,channel_benchmark_active_endpoint=active)
+            channel=gate.requested_channel(args);r=request();r[gate.CHANNEL_FIELD]=channel
+            gate.validate_role_request(r,0)
+            self.assertEqual(gate.channel_from_boot(['console=ttyS0',*gate.channel_boot(channel)],r['config']),channel)
+            self.assertEqual(gate.application_count(r),4)
+            self.assertEqual(gate.release_order(r),[2,3,0,1])
+            self.assertEqual([gate.application_config(r,i)['bytes']for i in range(4)],[61,61,2042,2042])
+            self.assertEqual([gate.application_request(r,i)['passive']for i in range(4)], [i%2!=active for i in range(4)])
+            for index in(-1,4,True):
+                with self.assertRaises(CaptureError):gate.application_request(r,index)
+            for extra in(['ws73.benchmark_parallel=1'],['ws73.benchmark_dynamic=1'],['ws73.benchmark_active=1']):
+                with self.assertRaises(CaptureError):gate.channel_from_boot(gate.channel_boot(channel)+extra,r['config'])
+            for change in('version','name','port','role','budget','extra'):
+                bad=copy.deepcopy(channel)
+                if change=='version':bad['version']=True
+                elif change=='name':bad['channels'][1]['name']='short'
+                elif change=='port':bad['channels'][1]['route']['ports']=[24576,24577]
+                elif change=='role':bad['channels'][1]['route']['active_endpoint']=1-active
+                elif change=='budget':bad['channels'][1]['config']['bytes']=61
+                else:bad['channels'][0]['route']['extra']=True
+                with self.subTest(change=change),self.assertRaises(CaptureError):gate.channel_configuration(bad)
+        for change in(dict(channel_benchmark_dynamic=True),dict(channel_benchmark='duplex'),dict(channel_benchmark_count=16),dict(channel_benchmark_parallel=1)):
+            args=SimpleNamespace(**(dict(channel_benchmark='window',channel_benchmark_parallel=True)|change))
+            with self.subTest(change=change),self.assertRaises(CaptureError):gate.requested_channel(args)
+        from ws73_north_star import file_record
+        here=Path(gate.__file__).parent
+        names=('ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh','ws73_dynamic_channels.py')
+        package=dict(socket_benchmark_role_contract_version=1,benchmark_trace_contract_version=1,benchmark_process_resource_contract_version=1,inputs=[file_record(here/n)for n in names])
+        with self.assertRaisesRegex(ValueError,'ws73_channel_fairness.py'):gate.validate_role_sources(package,dynamic=True,parallel=True)
+        package['inputs'].append(file_record(here/'ws73_channel_fairness.py'));gate.validate_role_sources(package,dynamic=True,parallel=True)
 
     def test_fixed_request_rejects_extra_programs_identity_and_legacy_role(self):
         gate.validate_role_request(request(),0)
@@ -192,13 +227,13 @@ class BenchmarkRole(unittest.TestCase):
 
 
 class ClosedBenchmarkRoleFixture(unittest.TestCase):
-    def fixture(self,root,channel=None):
+    def fixture(self,root,channel=None,*,cross_namespace=False):
         # Synthetic schema2/wire/role metadata,not actual credentials or mount.
-        from test_ws73_socket_benchmark import fixture as legacy_fixture
+        from test_ws73_socket_benchmark import fixture as legacy_fixture,parallel_fixture
         from test_ws73_application_client import fixture as application_fixture
         from ws73_application_client import application_environment
         import hashlib,shutil
-        run,capture=legacy_fixture(root,channel=channel);old_roles,_=application_fixture();daemon=dict(pid=11,start_ticks=31);supervisor=dict(pid=12,start_ticks=41)
+        run,capture=parallel_fixture(root,channel['channels'][0]['route']['active_endpoint'],cross_namespace=cross_namespace)if gate.is_parallel(channel)else legacy_fixture(root,channel=channel);old_roles,_=application_fixture();daemon=dict(pid=11,start_ticks=31);supervisor=dict(pid=500 if gate.is_parallel(channel)else 12,start_ticks=41)
         run.update(daemon_before=daemon,daemon_after=daemon)
         for row in run['socket_benchmark']:
             phase=row['phase'];source=root/f'local-{phase}';source.mkdir();(source/'reports').mkdir();row['start_wall_ns']=max(1,row['start_wall_ns'])
@@ -209,13 +244,104 @@ class ClosedBenchmarkRoleFixture(unittest.TestCase):
             (source/'probe.stdout').write_text(role['stdout']);(source/'probe.stderr').write_text('')
             for i,app in enumerate(row['applications']):
                 before=app['report_path'];runtime=str(gate.ROLE_RUNTIME/f'phase-{phase}'/'reports'/f'benchmark-{phase}-{i}.json');app['report_path']=runtime;app['report_file'].update(path=runtime,uid=1004,gid=1004,mode=0o644,nlink=1)
-                app['args']=gate.arguments('/bin/slktest',row['owners'][i],app['mode'],runtime,channel=gate.application_request(row,i));app['stdout']=app['stdout'].replace(before,runtime);app['credentials']=copy.deepcopy(role['credentials']);app['environment']=application_environment();app['output_files']=[str(gate.ROLE_ROOT/f'phase-{phase}'/f'benchmark-{phase}-{i}.{v}')for v in('stdout','stderr')]
+                config=gate.application_config(row,i)
+                app['args']=gate.arguments('/bin/slktest',gate.application_owner(row,i),app['mode'],runtime,config['window'],count=config['count'],size=config['bytes'],interval_us=config['interval_us'],channel=gate.application_request(row,i));app['stdout']=app['stdout'].replace(before,runtime);app['credentials']=copy.deepcopy(role['credentials']);app['environment']=application_environment();app['output_files']=[str(gate.ROLE_ROOT/f'phase-{phase}'/f'benchmark-{phase}-{i}.{v}')for v in('stdout','stderr')]
+                if gate.is_parallel(channel):
+                    from test_ws73_benchmark_resources import snapshot as resource_snapshot
+                    row[gate.RESOURCE_FIELD]=1
+                    app['process_resources']=dict(before=resource_snapshot(app['pid'],phase*2000+150),after=resource_snapshot(app['pid'],phase*2000+1050,15,6))
                 (source/'reports'/f'benchmark-{phase}-{i}.json').write_text(json.dumps(app['report']));(source/f'benchmark-{phase}-{i}.stdout').write_text(app['stdout']);(source/f'benchmark-{phase}-{i}.stderr').write_text('')
             (source/'run.json').write_text(json.dumps(row))
             exported=root/'benchmark-role'/f'phase-{phase}';exported.parent.mkdir(exist_ok=True);snapshot.publish(source,exported,phase=phase,success=True,kind='benchmark')
             proof=json.loads((exported/'snapshot.json').read_text());proof['source_root']=str(gate.ROLE_RUNTIME/f'phase-{phase}');(exported/'snapshot.json').write_text(json.dumps(proof))
         (root/'benchmark-role/finished.json').write_text(json.dumps(dict(status=gate.ROLE_STATUS,daemon=daemon,supervisor=supervisor,snapshot_contract_version=1,socket_benchmark_role_contract_version=1)))
         return run,capture
+
+    def test_parallel_target_uses_same_closed_supervisor_per_channel_cmtc_and_shared_progress_oracle(self):
+        for active in(0,1):
+            with tempfile.TemporaryDirectory()as temporary:
+                root=Path(temporary);channel=gate.parallel_channel(active);run,capture=self.fixture(root,channel)
+                proof=gate.corroborate(run,capture,root);role=gate.verify_role_artifacts(run,root)
+                self.assertEqual((proof['round_trips'],role['application_processes'],role['report_files']),(72,8,8))
+                self.assertTrue(gate.valid_parallel_summary(proof,channel,gate.configuration('window'),role))
+                self.assertEqual([len(c['legs'])for c in proof['proofs'][0]['channels']],[40,32])
+                self.assertEqual([c['name']for c in proof['proofs'][0]['channels']],['short','long'])
+                self.assertTrue(all(len(c['dynamic_negotiation'])==2 for c in proof['proofs'][0]['channels']))
+                self.assertEqual(len(proof['proofs'][0]['concurrent_progress']),2)
+                self.assertIs(proof['full_fairness_acceptance'],False)
+                for change in ('missing-target','single-role','missing-second-channel','missing-long-leg','wrong-request','wrong-progress','flattened-legs','wrong-group'):
+                    p=copy.deepcopy(proof);r=copy.deepcopy(role);c=p['proofs'][0]['channels'][1]
+                    if change=='missing-target':p.pop(gate.CHANNEL_FIELD)
+                    elif change=='single-role':r['version']=1;r['application_processes']=r['report_files']=4
+                    elif change=='missing-second-channel':p['proofs'][0]['channels'].pop()
+                    elif change=='missing-long-leg':c['legs'].pop()
+                    elif change=='wrong-request':c['application']['channel_requests'][0]['destination_port']-=2
+                    elif change=='wrong-progress':p['proofs'][0]['concurrent_progress'][0]['short_pdus_between']=0
+                    elif change=='flattened-legs':p['proofs'][0]['legs'].pop()
+                    else:c['config']['bytes']=61
+                    with self.subTest(change=change):self.assertFalse(gate.valid_parallel_summary(p,channel,gate.configuration('window'),r))
+
+    def test_parallel_tcids_use_separate_local_remote_namespaces_per_direction(self):
+        with tempfile.TemporaryDirectory()as temporary:
+            root=Path(temporary);run,capture=self.fixture(root,gate.parallel_channel(),cross_namespace=True)
+            proof=gate.corroborate(run,capture,root)
+            self.assertEqual(proof['round_trips'],72)
+            a,b=run['socket_benchmark'][0]['applications'][0::2]
+            self.assertEqual(a['report']['channel_identity']['remote_tcid'],b['report']['channel_identity']['local_tcid'])
+            self.assertNotEqual(a['report']['channel_identity']['local_tcid'],b['report']['channel_identity']['local_tcid'])
+
+    def test_parallel_finalizer_requires_exact_role_cardinality_profile_resources_trace_and_both_channels(self):
+        from test_ws73_benchmark_timeline import modern_trace
+        from ws73_benchmark_timeline import check_xhci
+        from ws73_target import run_exit_code
+        with tempfile.TemporaryDirectory()as temporary:
+            root=Path(temporary);channel=gate.parallel_channel(1);run,capture=self.fixture(root,channel)
+            proof=gate.corroborate(run,capture,root);role=gate.verify_role_artifacts(run,root)
+            trace=root/'trace';trace.mkdir();modern_trace(trace,'off');xhci=check_xhci(trace,'off')
+            names=['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py','ws73_dynamic_channels.py','ws73_channel_fairness.py']
+            record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,socket_benchmark_requested='window',socket_benchmark_window_requested=4,socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,socket_benchmark_role_contract_version=1,socket_benchmark_apps_acceptance=True,socket_benchmark_role_supervision=role,benchmark_trace_contract_version=1,benchmark_process_resource_contract_version=1,socket_benchmark_xhci_requested='off',socket_benchmark_xhci_observation=xhci,benchmark_verifiers=[dict(path=n)for n in names],qemu_args=['ws73.socket_benchmark_apps=1 '+' '.join(gate.channel_boot(channel))],benchmark_channel_request=channel)
+            self.assertEqual(run_exit_code(record),0)
+            for change in('old-role','missing-role-target','missing-fairness-source','missing-trace','missing-resource','missing-target','old-boot','mixed-boot','missing-long','missing-resource-child','wrong-total'):
+                r=copy.deepcopy(record)
+                if change=='old-role':r['socket_benchmark_role_supervision']['version']=1
+                elif change=='missing-role-target':r['socket_benchmark_role_supervision'].pop(gate.CHANNEL_FIELD)
+                elif change=='missing-fairness-source':r['benchmark_verifiers'].pop()
+                elif change=='missing-trace':r.pop('benchmark_trace_contract_version')
+                elif change=='missing-resource':r.pop(gate.RESOURCE_FIELD)
+                elif change=='missing-target':r.pop(gate.CHANNEL_FIELD)
+                elif change=='old-boot':r['qemu_args']=['ws73.socket_benchmark_apps=1 ws73.benchmark_dynamic=1 ws73.benchmark_active=1']
+                elif change=='mixed-boot':r['qemu_args'][0]+=' ws73.benchmark_dynamic=1'
+                elif change=='missing-long':r['socket_benchmark_corroboration']['proofs'][0]['channels'].pop()
+                elif change=='missing-resource-child':r['socket_benchmark_corroboration']['proofs'][0]['resource_observations'].pop()
+                else:r['socket_benchmark_corroboration']['round_trips']=40
+                with self.subTest(change=change):self.assertEqual(run_exit_code(r),1)
+
+    def test_parallel_actual_checker_rejects_wrong_group_tcids_barriers_signals_and_fragment_streams(self):
+        for change in ('duplicate-pid','same-tcid','missing-fourth-arm','early-start','missing-fourth-quiescent','early-finish','missing-long-CMTC','cross-channel-data','missing-long-rx','interleaved-PB','no-overlap'):
+            with tempfile.TemporaryDirectory()as temporary:
+                root=Path(temporary);run,capture=self.fixture(root,gate.parallel_channel());row=run['socket_benchmark'][0]
+                if change=='duplicate-pid':row['applications'][2]['pid']=row['applications'][0]['pid']
+                elif change=='same-tcid':row['applications'][2]['report']['channel_identity']['local_tcid']=row['applications'][0]['report']['channel_identity']['local_tcid']
+                elif change=='missing-fourth-arm':row['events']=[e for e in row['events']if not(e['application']==3 and e['kind']=='armed')]
+                elif change=='early-start':next(e for e in row['events']if e['kind']=='start')['before_wall_ns']=105
+                elif change=='missing-fourth-quiescent':row['events']=[e for e in row['events']if not(e['application']==3 and e['kind']=='quiescent')]
+                elif change=='early-finish':next(e for e in row['events']if e['kind']=='finish')['before_wall_ns']=1005
+                elif change=='missing-long-CMTC':
+                    p=next(p for p in capture['acb_packets']if p['wall_ns']<100 and bytes.fromhex(p['data'])[4]==16 and bytes.fromhex(p['data'])[8]==0x83);capture['acb_packets'].remove(p)
+                elif change=='cross-channel-data':
+                    p=next(p for p in capture['acb_packets']if p['boundary']==1);p['data']='82'+p['data'][2:]
+                elif change=='missing-long-rx':
+                    p=next(p for p in capture['acb_packets']if p['boundary']==3 and p['direction']=='in');capture['acb_packets'].remove(p)
+                elif change=='interleaved-PB':
+                    first=next(p for p in capture['acb_packets']if p['boundary']==1)
+                    p=dict(first,record=first['record']+.1,boundary=0,data='81000000');capture['acb_packets'].append(p)
+                else:
+                    for p in capture['acb_packets']:
+                        if p['boundary']!=0 and p['wall_ns']<2000:p['wall_ns']+=600
+                if change in ('duplicate-pid','same-tcid','missing-fourth-arm','early-start','missing-fourth-quiescent','early-finish'):
+                    with self.subTest(transition=change),self.assertRaises(CaptureError):gate.check_supervision(row)
+                with self.subTest(change=change),self.assertRaises((CaptureError,KeyError,FileNotFoundError)):
+                    gate.corroborate(run,capture,root)
 
     def test_dynamic_target_binds_closed_role_reports_actual_cmtc_tcids_and_business(self):
         for active in(0,1):

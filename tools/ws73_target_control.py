@@ -184,6 +184,7 @@ def main():
     parser.add_argument('--channel-benchmark-bytes',type=int,default=61)
     parser.add_argument('--channel-benchmark-interval-us',type=int)
     parser.add_argument('--channel-benchmark-dynamic',action='store_true')
+    parser.add_argument('--channel-benchmark-parallel',action='store_true')
     parser.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1])
     parser.add_argument('--native-return-verify',action='store_true')
     parser.add_argument('--native-controller-return', choices=['initiator','acceptor'])

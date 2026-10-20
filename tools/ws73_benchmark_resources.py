@@ -125,8 +125,9 @@ def observations(row):
         if any('process_resources' in app for app in row['applications']):
             raise CaptureError('resource observations require explicit version')
         return None  # Historical decoder only, never new live acceptance.
-    if type(version) is not int or version != VERSION or len(row['applications']) != 2:
-        raise CaptureError('two process checkpoint pairs required')
+    from ws73_socket_benchmark import application_count
+    if type(version) is not int or version != VERSION or len(row['applications']) != application_count(row):
+        raise CaptureError('all originally requested process checkpoint pairs required')
     events = row['events']; result = []
     for app in row['applications']:
         pair = app.get('process_resources', {})
@@ -153,13 +154,15 @@ def observations(row):
 def valid_summary(proof):
     """Shape/arithmetic of a receipt; raw /proc identity is replayed separately."""
     try:
+        from ws73_socket_benchmark import application_count
+        count=application_count(proof)
         if (type(proof['benchmark_process_resource_contract_version']) is not int
                 or proof['benchmark_process_resource_contract_version'] != VERSION
                 or len(proof['proofs']) != 2):
             return False
         for phase, row in enumerate(proof['proofs']):
             samples = row['resource_observations']
-            if row['phase'] != phase or len(samples) != 2 or len({s['pid'] for s in samples}) != 2:
+            if row['phase'] != phase or len(samples) != count or len({s['pid'] for s in samples}) != count:
                 return False
             for item in samples:
                 if (set(item) != {'pid', 'start_ticks', 'user_ticks_delta', 'system_ticks_delta',

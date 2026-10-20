@@ -92,6 +92,25 @@ class ProcessResources(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises(CaptureError):resources.observations(changed)
         self.assertIsNone(resources.observations(dict(applications=[{},{}])))
 
+    def test_four_process_budget_requires_explicit_parallel_target_and_all_checkpoints(self):
+        from ws73_socket_benchmark import CHANNEL_FIELD,parallel_channel
+        r=row();r[CHANNEL_FIELD]=parallel_channel()
+        r['applications'] += [dict(pid=p,process_resources=dict(before=snapshot(p),after=snapshot(p,1200,15,6)))for p in (125,126)]
+        for kind,stamp in [('armed',100),('start',600),('quiescent',1000),('finish',1600)]:
+            for index in(2,3):r['events'].append(dict(kind=kind,application=index,monotonic_ns=stamp+index,before_monotonic_ns=stamp+index-1))
+        samples=resources.observations(r);self.assertEqual(len(samples),4)
+        proof=dict(benchmark_process_resource_contract_version=1,benchmark_channel_request=parallel_channel(),proofs=[dict(phase=p,resource_observations=copy.deepcopy(samples))for p in(0,1)])
+        self.assertTrue(resources.valid_summary(proof))
+        for change in('missing-target','missing-fourth','duplicate-pid','stale-target'):
+            p=copy.deepcopy(proof)
+            if change=='missing-target':p.pop(CHANNEL_FIELD)
+            elif change=='missing-fourth':p['proofs'][0]['resource_observations'].pop()
+            elif change=='duplicate-pid':p['proofs'][0]['resource_observations'][3]['pid']=123
+            else:p[CHANNEL_FIELD]['channels'][1]['route']['ports']=[24576,24577]
+            with self.subTest(change=change):self.assertFalse(resources.valid_summary(p))
+        r.pop(CHANNEL_FIELD)
+        with self.assertRaises(CaptureError):resources.observations(r)
+
     def test_live_collection_stops_before_proc_access_outside_vm(self):
         with patch('ws73_application_role.require_vm',side_effect=CaptureError('outside VM')):
             with self.assertRaises(CaptureError):resources.collect(123,'/must-not-open')

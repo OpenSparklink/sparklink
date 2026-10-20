@@ -255,3 +255,25 @@ python3 tools/ws73_session_service.py analyze-benchmark "$RUN_DIRECTORY" > sessi
 入队到出队、首次接受与分片跨度。缺数据、丢失追踪或重放失败时保留失败，减少下一次
 明确负载或检查捕获预算，不能屏蔽断言或覆盖原件。分析结果不是性能资格，具体时钟、
 USB 关联与 credit 含义见[指标参考](../reference/socket-benchmark.md#session-入队与提交时间)。
+
+## 收集四应用、双通道负载
+
+在前面的来源、SDK110 板型及端口检查完成后，用包含当前监督器的全新 prepared
+镜像执行独立门禁。该模式不与旧动态正确性或其它应用矩阵混跑：
+
+```sh
+python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT_B" \
+  --firmware-evidence runtime-observation \
+  --qmp-hotplug --connection-verify --connection-advertising negotiable-t \
+  --channel-benchmark window --channel-benchmark-parallel \
+  --channel-benchmark-active-endpoint 0 --timeout 900 --output "$NEW_RUN_DIRECTORY"
+```
+
+查看目标版本2中的 short／long 配置与原八份报告，确认每连接角色都有四端启动和
+结束屏障、两条独立 CMTC／TCID 归属、长消息 PB 分片及两个方向的短包进展。
+随后用同一时间线工具重放双端证据。缺一端、任一失败或未实际交叠时保留整轮
+失败，先定位原件，不能只取另一条通道的成功计数。需要对照时另用新运行目录执行
+原单通道门禁；不能将其通过替代双通道验收。
+
+这只覆盖[参考中的有限负载](../reference/socket-benchmark.md#四应用双动态通道的有限负载)。
+准确实机范围仍以当前资格为准；不授予完整公平性、四设备或稳定性能资格。

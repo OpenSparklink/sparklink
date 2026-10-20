@@ -439,7 +439,7 @@ def verify_passthrough():
             object_corroborate(run,capture,connections)
     benchmark_modes=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_mode=')]
     if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
-    dynamic_boot=[w for w in Path('/proc/cmdline').read_text().split()if w.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_active='))]
+    dynamic_boot=[w for w in Path('/proc/cmdline').read_text().split()if w.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active='))]
     if dynamic_boot and not benchmark_modes:raise ValueError('dynamic benchmark boot target without benchmark')
     benchmark_role=[v for v in Path('/proc/cmdline').read_text().split()if v.startswith('ws73.socket_benchmark_apps=')]
     if benchmark_role and(benchmark_role!=['ws73.socket_benchmark_apps=1']or not benchmark_modes):raise ValueError('benchmark apps-only boot scope mismatch')
@@ -455,13 +455,8 @@ def verify_passthrough():
             fields[field]=int(values[0])
         config=configuration(benchmark_modes[0],fields['window'],count=fields['count'],size=fields['bytes'],interval_us=fields['interval_us'])
         if any(row['config']!=config for row in run['socket_benchmark']):raise ValueError('requested exact workload differs')
-        from ws73_socket_benchmark import requested_channel,row_channel
-        from types import SimpleNamespace
-        dynamic=[w.split('=',1)[1]for w in words if w.startswith('ws73.benchmark_dynamic=')]
-        active=[w.split('=',1)[1]for w in words if w.startswith('ws73.benchmark_active=')]
-        if dynamic or active:
-            if dynamic!=['1']or len(active)!=1 or active[0]not in('0','1'):raise ValueError('one exact dynamic benchmark boot target required')
-        channel=requested_channel(SimpleNamespace(channel_benchmark=benchmark_modes[0],channel_benchmark_dynamic=bool(dynamic),channel_benchmark_active_endpoint=int(active[0])if active else None))
+        from ws73_socket_benchmark import channel_from_boot,row_channel
+        channel=channel_from_boot(words,config)
         if any(row_channel(row)!=channel for row in run['socket_benchmark']):raise ValueError('requested channel target differs from actual benchmark')
         proofs.append({'socket_benchmark':benchmark_corroborate(run,capture,EVIDENCE)})
     if 'daemon_removal' in run:

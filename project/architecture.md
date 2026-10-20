@@ -26,6 +26,9 @@ Owned 服务权限保持分离。非法参数预检、协议确认和对端应�
 采用 [ADR0006](../docs/decisions/0006-event-driven-session-and-performance-evidence.md)：
 唯一 Session 的事件就绪与原期限定时分离，Runtime 通知只触发重查；身份、引用、
 锁序、撤销/drain、有限预算、公平性和每次实际 Ticket 提交维持现有所有权。
+Runtime RX 的数据就绪仅由完整 PDU 成功入有限队列触发；PB 中间状态和丢弃不新增
+提示，也不清除已有提示。真实 NOCP、安全、撤权与连接变化保留独立通知，不以提示
+次数或 worker 执行次数推导硬件 credit、业务交付或性能资格。
 实际reserve池满等待与其他EAGAIN重试分开；空闲无待办不排维护轮次，通知不能
 推迟更早原期限。已开始PDU保持顺序，未提交工作仍按各自原期限终结。
 先取得普通 socket 的可信基线，再优化调度及有界连续 TX；TX 预分配/多在途/聚合

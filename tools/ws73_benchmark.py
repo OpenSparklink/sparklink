@@ -10,6 +10,8 @@ import argparse
 import hashlib
 import json
 import math
+import os
+import stat
 from pathlib import Path
 
 from ws73_capture import CaptureError
@@ -251,9 +253,17 @@ def verify_vm_build(vm, build):
                            'Native/realWS73/performance qualification'])
 
 
-def read_report(path):
-    with Path(path).open('rb') as stream:
-        raw=stream.read(MAX_REPORT_BYTES+1)
+def read_report(path,*,expected_uid=None):
+    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+    try:
+        info=os.fstat(fd)
+        require(stat.S_ISREG(info.st_mode)and info.st_nlink==1 and 0<info.st_size<=MAX_REPORT_BYTES,'regular bounded unique report')
+        if expected_uid is not None:
+            require(type(expected_uid)is int and info.st_uid==expected_uid and info.st_gid==expected_uid and not info.st_mode&0o022,'actual application-owned report')
+        with os.fdopen(os.dup(fd),'rb')as stream:raw=stream.read(MAX_REPORT_BYTES+1)
+        after=os.fstat(fd)
+        require((info.st_dev,info.st_ino,info.st_size,info.st_mtime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns),'closed report changed while reading')
+    finally:os.close(fd)
     require(len(raw) <= MAX_REPORT_BYTES,'report byte budget')
     def pairs(items):
         result={}
@@ -261,7 +271,9 @@ def read_report(path):
             require(k not in result,'duplicate JSON field');result[k]=v
         return result
     value=json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _: (_ for _ in ()).throw(CaptureError('nonfinite JSON number')))
-    return value,dict(path=str(path),sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))
+    record=dict(path=str(path),sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))
+    if expected_uid is not None:record.update(uid=info.st_uid,gid=info.st_gid,mode=info.st_mode&0o777,nlink=info.st_nlink)
+    return value,record
 
 
 def main():

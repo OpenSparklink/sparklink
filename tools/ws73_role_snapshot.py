@@ -25,6 +25,12 @@ HELPER='/usr/share/sparklink/tools/ws73_role_snapshot.py'
 SUPERVISOR='/usr/share/sparklink/tools/ws73_application_role.py'
 
 
+def profile(kind):
+    if kind=='subscription':return dict(root='/run/ws73-subscription-role',artifact='/evidence/subscription-role',token=TOKEN,vm_token='ws73.ssap_subscription=1',limit=LIMIT,file_limit=4*1024*1024,mount='32M')
+    if kind=='benchmark':return dict(root='/run/ws73-benchmark-role',artifact='/evidence/benchmark-role',token='ws73.socket_benchmark_apps=1',vm_token='ws73.socket_benchmark_apps=1',limit=512*1024*1024,file_limit=256*1024*1024,mount='768M')
+    raise CaptureError('fixed role snapshot profile required')
+
+
 def helper_hash():
     return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
@@ -53,7 +59,8 @@ def remap_outputs(value,source,destination):
             else:remap_outputs(item,source,destination)
 
 
-def inventory(root):
+def inventory(root,*,kind='subscription'):
+    bounds=profile(kind)
     root=Path(root)
     if root.is_symlink()or not root.is_dir():raise CaptureError('regular snapshot root required')
     result={};total=0;entries=0
@@ -66,7 +73,7 @@ def inventory(root):
             raise CaptureError('regular unique snapshot files only')
         if path.name==NAME and path.parent==root:continue
         total+=info.st_size
-        if len(result)>=FILES or info.st_size>4*1024*1024 or total>LIMIT:raise CaptureError('finite closed snapshot budget exceeded')
+        if len(result)>=FILES or info.st_size>bounds['file_limit'] or total>bounds['limit']:raise CaptureError('finite closed snapshot budget exceeded')
         before=(info.st_dev,info.st_ino,info.st_size,info.st_mtime_ns)
         with path.open('rb')as stream:sha=hashlib.file_digest(stream,'sha256').hexdigest()
         after=path.stat()
@@ -76,28 +83,30 @@ def inventory(root):
     return result
 
 
-def publish(source,destination,*,phase,success):
+def publish(source,destination,*,phase,success,kind='subscription'):
     """Caller has joined fixed children/closed files. No replacement/retry."""
+    bounds=profile(kind)
     source=Path(source);destination=Path(destination)
     if type(phase)is not int or phase not in(0,1)or type(success)is not bool:raise CaptureError('fixed completed phase required')
     if destination.exists()or destination.is_symlink():raise CaptureError('never replace original evidence')
-    files=inventory(source)
+    files=inventory(source,kind=kind)
     if NAME in [p.name for p in source.iterdir()]:raise CaptureError('producer cannot predeclare snapshot')
     staging=destination.with_name('.'+destination.name+'.staging')
     # An interrupted staging directory is diagnostic data,never a completed
     # phase;do not remove it or reuse its old success state.
     shutil.copytree(source,staging,symlinks=True)
-    if inventory(source)!=files or inventory(staging)!=files:raise CaptureError('closed source/copy mismatch')
+    if inventory(source,kind=kind)!=files or inventory(staging,kind=kind)!=files:raise CaptureError('closed source/copy mismatch')
     manifest=dict(version=VERSION,status='CLOSED_PHASE_BYTES_EXPORTED',phase=phase,success=success,helper_sha256=helper_hash(),
-        source_root=str(source),artifact_root='/evidence/subscription-role/phase-'+str(phase),
-        files=files,bytes=sum(v['bytes']for v in files.values()),budget_bytes=LIMIT,max_files=FILES)
+        source_root=str(source),artifact_root=bounds['artifact']+'/phase-'+str(phase),
+        files=files,bytes=sum(v['bytes']for v in files.values()),budget_bytes=bounds['limit'],max_files=FILES)
     (staging/NAME).write_text(json.dumps(manifest,indent=2)+'\n')
-    if inventory(staging)!=files:raise CaptureError('export changed before commit')
+    if inventory(staging,kind=kind)!=files:raise CaptureError('export changed before commit')
     staging.rename(destination)
     return manifest
 
 
-def verify(destination,*,phase,runtime_root=None,expected_helper=None):
+def verify(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription'):
+    bounds=profile(kind)
     destination=Path(destination);path=destination/NAME
     if path.is_symlink()or not path.is_file()or not 0<path.stat().st_size<65536:raise CaptureError('closed phase manifest missing/budget')
     proof=json.loads(path.read_text())
@@ -106,24 +115,25 @@ def verify(destination,*,phase,runtime_root=None,expected_helper=None):
             or type(proof['phase'])is not int or proof['phase']!=phase or proof['success']is not True
             or proof['status']!='CLOSED_PHASE_BYTES_EXPORTED'
             or proof['helper_sha256']!=(expected_helper or helper_hash())
-            or proof['source_root']!=str(runtime_root or Path('/run/ws73-subscription-role')/('phase-'+str(phase)))
-            or proof['artifact_root']!='/evidence/subscription-role/phase-'+str(phase)
-            or proof['budget_bytes']!=LIMIT or proof['max_files']!=FILES
-            or proof['files']!=inventory(destination)
+            or proof['source_root']!=str(runtime_root or Path(bounds['root'])/('phase-'+str(phase)))
+            or proof['artifact_root']!=bounds['artifact']+'/phase-'+str(phase)
+            or proof['budget_bytes']!=bounds['limit'] or proof['max_files']!=FILES
+            or proof['files']!=inventory(destination,kind=kind)
             or type(proof['bytes'])is not int or proof['bytes']!=sum(v['bytes']for v in proof['files'].values())):
         raise CaptureError('complete original phase snapshot required')
     return proof
 
 
 @contextmanager
-def local_root():
+def local_root(*,kind='subscription'):
+    bounds=profile(kind)
     from ws73_application_role import require_vm
-    require_vm('ws73.ssap_subscription=1')
-    if Path('/proc/cmdline').read_text().split().count(TOKEN)!=1:raise CaptureError('explicit VM snapshot boot required')
-    root=Path('/run/ws73-subscription-role');root.mkdir(mode=0o755)
+    require_vm(bounds['vm_token'])
+    if Path('/proc/cmdline').read_text().split().count(bounds['token'])!=1:raise CaptureError('explicit VM snapshot boot required')
+    root=Path(bounds['root']);root.mkdir(mode=0o755)
     mounted=False
     try:
-        subprocess.run(['/bin/busybox','mount','-t','tmpfs','-o','size=32M,mode=0755,nosuid,nodev,noexec','slk-role-evidence',str(root)],check=True)
+        subprocess.run(['/bin/busybox','mount','-t','tmpfs','-o','size='+bounds['mount']+',mode=0755,nosuid,nodev,noexec','slk-role-evidence',str(root)],check=True)
         mounted=True
         if not any(row.split()[4]==str(root)and' - tmpfs 'in row for row in Path('/proc/self/mountinfo').read_text().splitlines()):
             raise CaptureError('actual local tmpfs required;no fallback')

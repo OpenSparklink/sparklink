@@ -439,8 +439,11 @@ def verify_passthrough():
             object_corroborate(run,capture,connections)
     benchmark_modes=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_mode=')]
     if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
+    benchmark_role=[v for v in Path('/proc/cmdline').read_text().split()if v.startswith('ws73.socket_benchmark_apps=')]
+    if benchmark_role and(benchmark_role!=['ws73.socket_benchmark_apps=1']or not benchmark_modes):raise ValueError('benchmark apps-only boot scope mismatch')
     if benchmark_modes:
-        from ws73_socket_benchmark import corroborate as benchmark_corroborate
+        from ws73_socket_benchmark import corroborate as benchmark_corroborate,apps_role
+        if bool(benchmark_role)!=all(apps_role(row)for row in run['socket_benchmark']):raise ValueError('benchmark role/boot/evidence mismatch')
         from ws73_socket_benchmark import configuration
         fields={}
         words=Path('/proc/cmdline').read_text().split()

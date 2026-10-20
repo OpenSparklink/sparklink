@@ -105,6 +105,7 @@ def prepare_locked(args, build_fd):
                 'physical_acceptance':False, 'status':'PREPARING', 'inputs':[],
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['firmware_evidence_contract_version'] = 1
+    manifest['socket_benchmark_role_contract_version'] = 1
     manifest['ssap_exchange_contract_version'] = 2
     manifest['ssap_update_delivery_contract_version'] = 2
     manifest['application_role_contract_version'] = 2
@@ -129,7 +130,7 @@ def prepare_locked(args, build_fd):
         inputs = [args.kernel_build/'arch/x86/boot/bzImage',args.kernel_build/'.config',
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
-                  HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_application_discovery.py',
+                  HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_role_snapshot.py',HERE/'ws73_application_discovery.py',
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
@@ -826,10 +827,12 @@ def _run(args):
     m['dynamic_channel_acceptance']=False
     m['socket_benchmark_requested']=benchmark_mode
     if benchmark_mode:
+        m['socket_benchmark_role_contract_version']=1
+        m['socket_benchmark_apps_acceptance']=False
         m['socket_benchmark_window_requested']=benchmark_window
         m['socket_benchmark_config_requested']=benchmark_config
         m['socket_benchmark_xhci_requested']=benchmark_xhci
-        m['benchmark_verifiers']=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py']]
+        m['benchmark_verifiers']=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py']]
     m['socket_benchmark_acceptance']=False
     m['performance_qualified']=False
     m['channel_socket_verification_requested']=channel_socket
@@ -1049,6 +1052,9 @@ def _run(args):
                 if subscription_inflight_case=='expiry':
                     if type(package.get('ssap_subscription_inflight_expiry_contract_version'))is not int or package['ssap_subscription_inflight_expiry_contract_version']!=1:raise ValueError('fresh explicit in-flight expiry prepared contract1 required')
                     m['ssap_subscription_inflight_expiry_contract_version']=1
+        if benchmark_mode:
+            from ws73_socket_benchmark import validate_role_sources
+            validate_role_sources(package)
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if application_clients:
@@ -1133,7 +1139,7 @@ def _run(args):
         if any(c in str(share) for c in [',','\n']):raise ValueError('QEMU evidence share path must not contain option delimiters')
         with tempfile.TemporaryDirectory(prefix='ws73-target-') as tmp:
             serial=Path(tmp)/'serial.sock';qmp=Path(tmp)/'qmp.sock'
-            command=[package['qemu']['path'],'-machine','q35,accel=kvm','-cpu','host','-m','1024M','-smp',('1' if queued_gate else '2'),
+            command=[package['qemu']['path'],'-machine','q35,accel=kvm','-cpu','host','-m',('2048M'if benchmark_mode else'1024M'),'-smp',('1' if queued_gate else '2'),
                      '-display','none','-monitor','none','-no-reboot','-nic','none',
                      '-chardev',f'socket,id=console,path={serial},server=on,wait=off','-serial','chardev:console',
                      '-qmp',f'unix:{qmp},server=on,wait=off','-kernel',str(args.prepared.resolve()/'bzImage'),
@@ -1185,6 +1191,7 @@ def _run(args):
                      (' ws73.ssap_service_policy=1' if service_policy else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
                      (' ws73.channel_fairness=1' if fairness else '')+
+                     (' ws73.socket_benchmark_apps=1'if benchmark_mode else '')+
                      (f' ws73.benchmark_mode={benchmark_mode} ws73.benchmark_window={benchmark_window} ws73.benchmark_xhci={benchmark_xhci} ws73.benchmark_count={benchmark_config["count"]} ws73.benchmark_bytes={benchmark_config["bytes"]} ws73.benchmark_interval_us={benchmark_config["interval_us"]}' if benchmark_mode else '')+
                      (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
@@ -1609,7 +1616,12 @@ def _run(args):
                     m['socket_benchmark_corroboration']=benchmark_corroborate(control,capture,share)
                     from ws73_benchmark_timeline import check_xhci
                     m['socket_benchmark_xhci_observation']=check_xhci(share,benchmark_xhci)
-                    if m['benchmark_verifiers']!=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py']]:raise ValueError('benchmark verifier changed during execution')
+                    if m['benchmark_verifiers']!=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py']]:raise ValueError('benchmark verifier changed during execution')
+                    from ws73_socket_benchmark import verify_role_artifacts,validate_role_tools,valid_role_supervision
+                    validate_role_tools(control,args.prepared/'root',package['guest_files'])
+                    m['socket_benchmark_role_supervision']=verify_role_artifacts(control,share)
+                    if not valid_role_supervision(m['socket_benchmark_role_supervision']):raise ValueError('actual benchmark apps-only supervisor required')
+                    m['socket_benchmark_apps_acceptance']=True
                     m['socket_benchmark_acceptance']=True
                 if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
                 if application_discovery != ('application_discovery' in control):raise ValueError('explicit application discovery request/evidence mismatch')
@@ -2357,6 +2369,14 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if (record.get('session_service_acceptance') is not True or record.get('qemu_exit')!=0
                 or proof.get('status')!='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED'
                 or any(type(proof.get(k)) is not int or proof[k]<=0 for k in ['services','attempts','accepted_usb_packets','operations'])):return 1
+    benchmark_role=record.get('socket_benchmark_role_contract_version')
+    benchmark_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.socket_benchmark_apps=')]
+    if benchmark_role is not None:
+        from ws73_socket_benchmark import valid_role_supervision
+        if(type(benchmark_role)is not int or benchmark_role!=1 or not record.get('socket_benchmark_requested')or benchmark_boot!=['ws73.socket_benchmark_apps=1']or record.get('socket_benchmark_apps_acceptance')is not True or not valid_role_supervision(record.get('socket_benchmark_role_supervision',{}))):return 1
+        names=[Path(v.get('path','')).name for v in record.get('benchmark_verifiers',[])]
+        if len(names)!=5 or set(names)!={'ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py'}:return 1
+    elif benchmark_boot or record.get('socket_benchmark_apps_acceptance')or record.get('socket_benchmark_role_supervision'):return 1
     if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record):return 1
     if record.get('socket_benchmark_requested'):
         proof=record.get('socket_benchmark_corroboration',{})

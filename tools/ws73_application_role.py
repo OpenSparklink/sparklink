@@ -161,7 +161,7 @@ def valid_supervision(proof):
 
 
 def require_vm(token='ws73.application_clients=1'):
-    if (token not in ('ws73.application_clients=1', 'ws73.application_discovery=1', 'ws73.ssap_subscription=1') or
+    if (token not in ('ws73.application_clients=1', 'ws73.application_discovery=1', 'ws73.ssap_subscription=1', 'ws73.socket_benchmark_apps=1') or
             os.geteuid()!=0 or token not in Path('/proc/cmdline').read_text().split()or
             Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU'or not Path('/scratch-root-uuid').is_file()):
         raise CaptureError('explicit disposable QEMU SDK role gate required')
@@ -170,15 +170,17 @@ def require_vm(token='ws73.application_clients=1'):
 def supervise(daemon_pid,*,mode='values'):
     """New subscription artifacts keep all hot files off the9p export."""
     from ws73_role_snapshot import TOKEN,local_root
-    if mode=='subscription'and TOKEN in Path('/proc/cmdline').read_text().split():
-        require_vm('ws73.ssap_subscription=1')
+    if mode=='benchmark'or mode=='subscription'and TOKEN in Path('/proc/cmdline').read_text().split():
+        benchmark=mode=='benchmark';kind='benchmark'if benchmark else'subscription'
+        require_vm('ws73.socket_benchmark_apps=1'if benchmark else'ws73.ssap_subscription=1')
         def interrupted(*_):raise InterruptedError('role supervisor stopped')
         signal.signal(signal.SIGTERM,interrupted)
-        with local_root()as local:
+        with local_root(kind=kind)as local:
             finished=_supervise(daemon_pid,mode=mode,snapshot_root=local)
-        # A failed export/unmount or abnormal exit must not leave a completed
-        # root marker. The parent init also requires this process's actual exit.
-        from ws73_ssap_subscription import ROOT as root
+        if benchmark:
+            from ws73_socket_benchmark import ROLE_ROOT as root
+        else:
+            from ws73_ssap_subscription import ROOT as root
         (root/'finished.json').write_text(json.dumps(finished)+'\n')
         (root/'finished.json').chmod(0o644)
         return
@@ -186,19 +188,23 @@ def supervise(daemon_pid,*,mode='values'):
 
 
 def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
-    if mode not in ('values','subscription'):raise CaptureError('fixed role supervision mode required')
-    subscription=mode=='subscription'
-    require_vm('ws73.ssap_subscription=1'if subscription else'ws73.application_clients=1')
-    from ws73_ssap_subscription import ROOT as subscription_root,validate_request as subscription_request,execute_supervised
-    root=subscription_root if subscription else ROOT
+    if mode not in ('values','subscription','benchmark'):raise CaptureError('fixed role supervision mode required')
+    subscription=mode=='subscription';benchmark=mode=='benchmark'
+    require_vm('ws73.socket_benchmark_apps=1'if benchmark else'ws73.ssap_subscription=1'if subscription else'ws73.application_clients=1')
+    if benchmark:
+        from ws73_socket_benchmark import ROLE_ROOT as root,validate_role_request as request_check,execute_supervised as execute_phase
+        if snapshot_root is None:raise CaptureError('benchmark requires actual local closed snapshots')
+    elif subscription:
+        from ws73_ssap_subscription import ROOT as root,validate_request as request_check,execute_supervised as execute_phase
+    else:root=ROOT;request_check=validate_request
     from ws73_application_client import channel_pair,process_identity
     root.mkdir(exist_ok=False);root.chmod(0o755)
     supervisor=daemon_identity(os.getpid());daemon=daemon_identity(daemon_pid)
     def interrupted(*_):raise InterruptedError('role supervisor stopped')
     signal.signal(signal.SIGTERM,interrupted)
-    end=time.monotonic()+(180 if subscription else 120)
+    end=time.monotonic()+(1600 if benchmark else 180 if subscription else 120)
     for phase in (0,1):
-        request=INPUT/(f'subscription-role-{phase}.request.json'if subscription else f'app-channel-role-{phase}.request.json')
+        request=INPUT/(f'benchmark-role-{phase}.request.json'if benchmark else f'subscription-role-{phase}.request.json'if subscription else f'app-channel-role-{phase}.request.json')
         while True:
             if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed')
             if request.is_file():
@@ -206,7 +212,7 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
                 except json.JSONDecodeError:pass # Writer has not finished original bounded JSON.
             if time.monotonic()>=end:raise CaptureError('finite role request deadline')
             time.sleep(.01)
-        (subscription_request if subscription else validate_request)(row,phase)
+        request_check(row,phase)
         if subscription:
             from ws73_role_snapshot import requested as snapshot_requested
             if snapshot_requested(row)!=(snapshot_root is not None):raise CaptureError('snapshot boot/request mismatch')
@@ -217,9 +223,13 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
             temporary.write_text(json.dumps(row,indent=2)+'\n');temporary.chmod(0o644);temporary.replace(target)
         context=SimpleNamespace(output=folder,save=save)
         try:
-            from ws73_ssap_subscription import tool_records
-            from ws73_ssap_subscription import inflight_required,shared_required
-            expected_tools=tool_records(snapshot=snapshot_root is not None,inflight=inflight_required(row),shared=shared_required(row))if subscription else{key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
+            if benchmark:
+                from ws73_socket_benchmark import role_tools
+                expected_tools=role_tools()
+            elif subscription:
+                from ws73_ssap_subscription import tool_records,inflight_required,shared_required
+                expected_tools=tool_records(snapshot=snapshot_root is not None,inflight=inflight_required(row),shared=shared_required(row))
+            else:expected_tools={key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
             if row['tools']!=expected_tools:
                 raise CaptureError('exact actual SDK artifacts required')
             probe=dict(args=['/bin/bus-policy-probe',row['owners'][0]['object']['path'],'application-channel'],start_wall_ns=time.time_ns())
@@ -234,18 +244,21 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
                     process.wait()
                     probe.update(exit=process.returncode,stdout=out.read_text(),stderr=err.read_text(),end_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
             verify_probe(row)
-            if not subscription:channel_pair(context,row)
-            from ws73_north_star import Run
-            from ws73_application_client import ssap_phase
             context.args=SimpleNamespace(slctl=Path('/bin/slctl'));context.data={}
-            row['role_ssap_commands']=context.data.setdefault('ssap_values',[])
-            def observed(process,record):
-                record['credentials'],record['process_status']=process_identity(process.pid,1000)
-            context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
-                child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
-            if subscription:execute_supervised(context,row)
-            else:ssap_phase(context,row,application_uid=1004)
-            row.update(ssap_gate_status='OWNED_SDK_VALUE_EVIDENCE_PENDING'if not subscription else'CONTINUOUS_SUBSCRIPTION_PENDING_USB',end_wall_ns=time.time_ns())
+            if benchmark:execute_phase(context,row)
+            else:
+                if not subscription:channel_pair(context,row)
+                from ws73_north_star import Run
+                from ws73_application_client import ssap_phase
+                row['role_ssap_commands']=context.data.setdefault('ssap_values',[])
+                def observed(process,record):
+                    record['credentials'],record['process_status']=process_identity(process.pid,1000)
+                context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
+                    child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
+                if subscription:execute_phase(context,row)
+                else:ssap_phase(context,row,application_uid=1004)
+                row['ssap_gate_status']='OWNED_SDK_VALUE_EVIDENCE_PENDING'if not subscription else'CONTINUOUS_SUBSCRIPTION_PENDING_USB'
+            row['end_wall_ns']=time.time_ns()
             if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed during pair')
         except BaseException as error:
             row.update(pair_status='FAIL',error=str(error),error_traceback=traceback.format_exc());raise
@@ -254,9 +267,10 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
                 from ws73_role_snapshot import remap_outputs,publish
                 remap_outputs(row,folder,root/f'phase-{phase}')
             save();(folder/'progress.json').replace(folder/'run.json')
-            if snapshot_root:publish(folder,root/f'phase-{phase}',phase=phase,success='error'not in row)
+            if snapshot_root:publish(folder,root/f'phase-{phase}',phase=phase,success='error'not in row,kind='benchmark'if benchmark else'subscription')
     finished=root/'finished.json'
-    value=dict(status='TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'if subscription else'TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor)
+    value=dict(status='TWO_FINITE_BENCHMARK_PHASES_COMPLETED'if benchmark else'TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'if subscription else'TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor)
+    if benchmark:value['socket_benchmark_role_contract_version']=1
     if snapshot_root:
         value['snapshot_contract_version']=1
         return value
@@ -265,5 +279,5 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
 
 if __name__=='__main__':
     import sys
-    if len(sys.argv)not in (2,3)or len(sys.argv)==3 and sys.argv[2]!='subscription':raise SystemExit('usage: ws73_application_role.py ACTUAL_DAEMON_PID [subscription]')
-    supervise(int(sys.argv[1]),mode='subscription'if len(sys.argv)==3 else'values')
+    if len(sys.argv)not in (2,3)or len(sys.argv)==3 and sys.argv[2]not in ('subscription','benchmark'):raise SystemExit('usage: ws73_application_role.py ACTUAL_DAEMON_PID [subscription|benchmark]')
+    supervise(int(sys.argv[1]),mode=sys.argv[2]if len(sys.argv)==3 else'values')

@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import selectors
 import subprocess
+import stat
 import time
 
 from ws73_capture import CaptureError, reassemble_acb
@@ -19,6 +20,90 @@ from ws73_benchmark import load_application_reports, read_report
 COUNT, SIZE, WINDOW = 20, 61, 4
 CONFIG_FIELDS={'mode','count','bytes','window','interval_us'}
 PENDING = 'SOCKET_LOAD_APPLICATION_EVIDENCE_PENDING'
+
+
+from ws73_role_snapshot import profile as snapshot_profile
+_ROLE_PROFILE=snapshot_profile('benchmark')
+ROLE_TOKEN=_ROLE_PROFILE['token']
+ROLE_ROOT=Path(_ROLE_PROFILE['artifact'])
+ROLE_RUNTIME=Path(_ROLE_PROFILE['root'])
+ROLE_INPUT=Path('/evidence/application/passthrough-control')
+ROLE_VERSION=1
+ROLE_STATUS='TWO_FINITE_BENCHMARK_PHASES_COMPLETED'
+CLOCK='guest wall_ns for observed IO/capture;guest monotonic_ns for supervisory budgets;no cross-application timestamp subtraction'
+ROLE_REQUEST_FIELDS={'phase','owners','config','application_tool','start_wall_ns','status','applications','events','performance_qualified','clock','socket_benchmark_role_contract_version','tools'}
+
+
+def apps_role(row):
+    version=row.get('socket_benchmark_role_contract_version')
+    if version is not None and(type(version)is not int or version!=ROLE_VERSION):raise CaptureError('explicit benchmark apps-only role contract1 required')
+    return version is not None
+
+
+def role_tool_path(root,name):
+    """Resolve only the fixed native-lab executable alias inside the guest root."""
+    import re
+    root=Path(root).resolve(strict=True);path=root/name.lstrip('/')
+    if name=='/bin/slktest':
+        if not path.is_symlink():raise CaptureError('fixed native-lab slktest alias required')
+        target=path.readlink()
+        if not re.fullmatch(r'/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}/slktest',str(target)):raise CaptureError('unexpected slktest alias target')
+        path=root/str(target).lstrip('/')
+    elif path.is_symlink():raise CaptureError('fixed regular role tool required')
+    resolved=path.resolve(strict=True)
+    if not resolved.is_relative_to(root)or not resolved.is_file():raise CaptureError('role tool outside sealed guest root')
+    return resolved
+
+
+def role_tools(root=Path('/')):
+    import hashlib
+    from ws73_role_snapshot import HELPER,SUPERVISOR
+    names=('/bin/slktest','/bin/bus-policy-probe',HELPER,SUPERVISOR,'/usr/share/sparklink/tools/ws73_socket_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark.py')
+    return {n:dict(sha256=hashlib.sha256(role_tool_path(root,n).read_bytes()).hexdigest(),bytes=role_tool_path(root,n).stat().st_size)for n in names}
+
+
+def validate_role_sources(package):
+    from ws73_north_star import file_record
+    here=Path(__file__).resolve().parent
+    if type(package.get('socket_benchmark_role_contract_version'))is not int or package['socket_benchmark_role_contract_version']!=1:raise ValueError('fresh apps-only benchmark prepared contract1 required')
+    for name in ('ws73_socket_benchmark.py','ws73_benchmark.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh'):
+        matches=[v for v in package['inputs']if Path(v['path']).name==name]
+        if len(matches)!=1 or matches[0]['sha256']!=file_record(here/name)['sha256']:raise ValueError('prepared benchmark role/source closure mismatch: '+name)
+
+
+def validate_role_request(row,phase):
+    if(type(phase)is not int or phase not in(0,1)or type(row.get('phase'))is not int or row['phase']!=phase or not apps_role(row)
+        or set(row)!=ROLE_REQUEST_FIELDS
+        or row['applications']!=[]or row['events']!=[]or row['status']!='RUNNING'or row['performance_qualified']is not False):raise CaptureError('fixed empty apps-only benchmark request required')
+    validate_configuration(row['config']);validate_application_binary(row['application_tool'])
+    if row['clock']!=CLOCK or type(row['start_wall_ns'])is not int or row['start_wall_ns']<=0:raise CaptureError('original benchmark clock/start required')
+    import re
+    if len(row['owners'])!=2:raise CaptureError('two benchmark owners required')
+    for entry in row['owners']:
+        owner,obj=entry['owner'],entry['object']
+        if(type(owner['index'])is not int or not 0<=owner['index']<16 or type(owner['generation'])is not int or not 0<owner['generation']<2**64 or owner['path']!=f"/org/sparklink/slk{owner['index']}_g{owner['generation']}"or obj['generation']!=owner['generation']
+            or type(obj['lifetime'])is not int or not 0<obj['lifetime']<2**64 or type(obj['handle'])is not int or not 0<=obj['handle']<=4095
+            or not re.fullmatch(r'/org/sparklink/slk'+str(owner['index'])+r'_g'+str(owner['generation'])+r'/peer_t[0-9a-f]{2}_[0-9a-f]{12}/link_'+f"{obj['lifetime']:016x}",obj['path'])):raise CaptureError('canonical original benchmark connection required')
+    if len({v['owner']['index']for v in row['owners']})!=2:raise CaptureError('distinct original controllers required')
+
+
+def execute(run,phase):
+    """Control role requests one fixed root-supervised ordinary application pair."""
+    from ws73_application_role import read_json
+    row=dict(phase=len(run.data['connection_control']['phases'])-1,owners=phase['typed_objects'],config=requested_configuration(run.args),application_tool=test_program(run),start_wall_ns=time.time_ns(),status='RUNNING',applications=[],events=[],performance_qualified=False,clock=CLOCK,socket_benchmark_role_contract_version=ROLE_VERSION,tools=role_tools())
+    validate_role_request(row,row['phase']);run.data.setdefault('socket_benchmark',[]).append(row);run.save()
+    path=run.output/f'benchmark-role-{row["phase"]}.request.json';temporary=path.with_suffix('.tmp')
+    with temporary.open('x')as f:json.dump(row,f)
+    temporary.chmod(0o600);os.link(temporary,path);temporary.unlink()
+    original={k:row[k]for k in row if k not in ('applications','events','status')}
+    response=ROLE_ROOT/f'phase-{row["phase"]}'/'run.json';deadline=time.monotonic()+750
+    while not response.is_file():
+        if time.monotonic()>=deadline:raise CaptureError('original finite benchmark root-supervisor deadline')
+        time.sleep(.01)
+    result=read_json(response,0,limit=256*1024*1024)
+    if any(result[k]!=v for k,v in original.items())or result.get('status')!=PENDING:raise CaptureError('original apps-only benchmark request failed: '+str(result.get('error')))
+    from ws73_application_role import verify_probe
+    verify_probe(result);check_supervision(result);row.clear();row.update(result);run.save()
 
 
 def configuration(mode, window=WINDOW, *, count=COUNT, size=SIZE, interval_us=None):
@@ -69,15 +154,17 @@ def arguments(binary, entry, mode, report, window=WINDOW, *, count=COUNT, size=S
     return args
 
 
-def execute(run, phase):
-    mode=run.args.channel_benchmark
-    window=getattr(run.args,'channel_benchmark_window',WINDOW)
-    config=requested_configuration(run.args)
-    row=dict(phase=len(run.data['connection_control']['phases'])-1,owners=phase['typed_objects'],
-             config=config,application_tool=test_program(run),start_wall_ns=time.time_ns(),
-             status='RUNNING',applications=[],events=[],performance_qualified=False,
-             clock='guest wall_ns for observed IO/capture;guest monotonic_ns for supervisory budgets;no cross-application timestamp subtraction')
-    run.data.setdefault('socket_benchmark',[]).append(row);run.save()
+def execute_supervised(run,row):
+    """Only normative live workload:fixed disposable-VM apps-only children."""
+    from ws73_application_role import require_vm
+    from ws73_application_client import process_identity,application_environment
+    from ws73_north_star import file_record
+    require_vm(ROLE_TOKEN)
+    if not apps_role(row):raise CaptureError('live benchmark requires explicit apps-only contract')
+    if row['tools']!=role_tools()or row['application_tool']!=file_record(Path('/bin/slktest').resolve(strict=True)):
+        raise CaptureError('fixed prepared benchmark executables and tools required')
+    mode=row['config']['mode'];window=row['config']['window'];config=validate_configuration(row['config'])
+    reports=run.output/'reports';reports.mkdir(mode=0o700);os.chown(reports,1004,1004)
     processes=[];buffers={};output={};duplicates=set();selector=selectors.DefaultSelector()
     def event(kind,index,**values):
         row['events'].append(dict(kind=kind,application=index,wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns(),**values))
@@ -110,13 +197,13 @@ def execute(run, phase):
         with ExitStack() as files:
             for i,entry in enumerate(row['owners']):
                 appmode=mode if i==0 or mode=='duplex' else 'peer'
-                report=run.output/f'benchmark-{row["phase"]}-{i}.json'
+                report=reports/f'benchmark-{row["phase"]}-{i}.json'
                 err=run.output/f'benchmark-{row["phase"]}-{i}.stderr'
                 app=dict(mode=appmode,args=arguments(row['application_tool']['path'],entry,appmode,report,window,count=config['count'],size=config['bytes'],interval_us=config['interval_us']),report_path=str(report),stderr_path=str(err),start_wall_ns=time.time_ns())
                 row['applications'].append(app)
                 proc=subprocess.Popen(app['args'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,
-                                      stderr=files.enter_context(err.open('xb')),bufsize=0)
-                processes.append((proc,app));app['pid']=proc.pid;app['credentials']=credentials(proc.pid)
+                                      stderr=files.enter_context(err.open('xb')),bufsize=0,user=1004,group=1004,extra_groups=[],env=dict(os.environ,**application_environment()))
+                processes.append((proc,app));app['pid']=proc.pid;app['credentials'],app['process_status']=process_identity(proc.pid,1004);app['environment']=application_environment();app['output_files']=[str(run.output/f'benchmark-{row["phase"]}-{i}.stdout'),str(err)]
                 selector.register(proc.stdout,selectors.EVENT_READ,i);buffers[i]=b'';output[i]=b''
             wait_marker('armed',45)
             # No disk writes between start and both quiescent; bounded IO receipts
@@ -131,7 +218,7 @@ def execute(run, phase):
                 if len(output[i])>65536:raise CaptureError('benchmark output byte budget')
                 app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=output[i].decode(),stderr=Path(app['stderr_path']).read_text())
                 if proc.returncode:raise CaptureError('actual slktest failed:'+app['stderr'])
-                report,record=read_report(app['report_path']);app['report']=report;app['report_file']=record
+                report,record=read_report(app['report_path'],expected_uid=1004);app['report']=report;app['report_file']=record
             row['end_wall_ns']=time.time_ns()
             check_supervision(row)
             row['application_check']=load_application_reports(*(a['report'] for a in row['applications']))
@@ -171,7 +258,12 @@ def check_supervision(row):
         expected=row['config']['mode'] if i==0 or row['config']['mode']=='duplex' else 'peer'
         if app['mode']!=expected or app['args']!=arguments(row['application_tool']['path'],row['owners'][i],expected,app['report_path'],window,count=config['count'],size=config['bytes'],interval_us=config['interval_us']):raise CaptureError('actual slktest argv/mode mismatch')
         cred=app['credentials']
-        if app['exit'] or cred['uids']!=[1000]*4 or any(int(v,16) for v in cred['capabilities'].values()):raise CaptureError('ordinary actual benchmark process required')
+        if apps_role(row):
+            from ws73_application_client import application_environment
+            if(app['exit']or cred['uids']!=[1004]*4 or cred['gids']!=[1004]*4 or cred['groups']or set(cred['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'}or any(int(v,16)for v in cred['capabilities'].values())or app['environment']!=application_environment()):raise CaptureError('actual apps-only benchmark credentials required')
+            file=app['report_file']
+            if(set(file)!={'path','sha256','bytes','uid','gid','mode','nlink'}or any(type(file[k])is not int for k in ('bytes','uid','gid','mode','nlink'))or file['uid']!=1004 or file['gid']!=1004 or file['nlink']!=1 or not 0<file['bytes']<=256*1024*1024 or file['mode']&0o022):raise CaptureError('actual closed app-owned report required')
+        elif app['exit']or cred['uids']!=[1000]*4 or any(int(v,16)for v in cred['capabilities'].values()):raise CaptureError('historical control-role benchmark process required')
         lines=app['stdout'].splitlines()
         expected_lines=['NativeChannelDup: original_closed=1 duplicate_live=1',f"SocketBenchmarkArmed: mode={expected.capitalize()} count={config['count']} bytes={config['bytes']} window={window}",
                         f'SocketBenchmarkQuiescent: mode={expected.capitalize()} correctness=true',
@@ -196,20 +288,26 @@ def check_supervision(row):
 def check_report_files(row, share):
     share=Path(share).resolve(strict=True)
     for i,app in enumerate(row['applications']):
-        expected=f"/evidence/application/passthrough-control/benchmark-{row['phase']}-{i}.json"
+        expected=str(ROLE_RUNTIME/f'phase-{row["phase"]}'/'reports'/f'benchmark-{row["phase"]}-{i}.json')if apps_role(row)else f"/evidence/application/passthrough-control/benchmark-{row['phase']}-{i}.json"
         if app['report_path']!=expected or app['report_file']['path']!=expected:raise CaptureError('original benchmark report location')
-        path=(share/Path(expected).relative_to('/evidence')).resolve(strict=True)
+        exported=ROLE_ROOT/f'phase-{row["phase"]}'/'reports'/Path(expected).name if apps_role(row)else Path(expected)
+        path=(share/exported.relative_to('/evidence')).resolve(strict=True)
         path.relative_to(share)
         report,record=read_report(path)
         if any(record[k]!=app['report_file'][k] for k in ['sha256','bytes']) or json.dumps(report,sort_keys=True)!=json.dumps(app['report'],sort_keys=True):raise CaptureError('report bytes/hash differ from observed process output')
         for suffix,key in [('stdout','stdout'),('stderr','stderr')]:
-            text=path.with_suffix('.'+suffix).read_text()
+            output=(share/'benchmark-role'/f'phase-{row["phase"]}'/f'benchmark-{row["phase"]}-{i}.{suffix}')if apps_role(row)else path.with_suffix('.'+suffix)
+            text=output.read_text()
             if text!=app[key]:raise CaptureError('original benchmark process log differs')
 
 
 def corroborate(run,capture,share):
     rows=run.get('socket_benchmark')
     if type(rows) is not list or len(rows)!=2:raise CaptureError('both actual connection-role benchmark phases required')
+    roles=[apps_role(row)for row in rows]
+    if any(roles):
+        if not all(roles):raise CaptureError('two matching benchmark role phases required')
+        verify_role_artifacts(run,share)
     sdus=reassemble_acb(capture);proofs=[];used=set()
     # Preserve every duplicate candidate; index only replaces repeated full scans.
     indexed={}
@@ -254,3 +352,48 @@ def corroborate(run,capture,share):
     if rows[0]['config']['window']!=WINDOW:result['window']=rows[0]['config']['window']
     if any(rows[0]['config'][k]!=v for k,v in [('count',COUNT),('bytes',SIZE),('interval_us',100000 if rows[0]['config']['mode']=='rate' else 0)]):result['config']=rows[0]['config']
     return result
+
+
+def verify_role_artifacts(control,evidence):
+    """Original root phase bytes/roles,not a substitute for paired data proof."""
+    from ws73_application_role import verify_probe
+    from ws73_role_snapshot import verify,HELPER
+    evidence=Path(evidence);root=evidence/'benchmark-role';finished=json.loads((root/'finished.json').read_text())
+    if(set(finished)!={'status','daemon','supervisor','snapshot_contract_version','socket_benchmark_role_contract_version'}or finished['status']!=ROLE_STATUS
+        or type(finished['snapshot_contract_version'])is not int or finished['snapshot_contract_version']!=1
+        or type(finished['socket_benchmark_role_contract_version'])is not int or finished['socket_benchmark_role_contract_version']!=1
+        or finished['daemon']!=control['daemon_before']or control['daemon_before']!=control['daemon_after']or len(control.get('socket_benchmark',[]))!=2):raise CaptureError('complete benchmark root supervisor and unchanged daemon required')
+    snapshots=[]
+    for phase,row in enumerate(control['socket_benchmark']):
+        original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
+        if original!=row or not apps_role(row)or row['role_supervisor']!=finished['supervisor']or row['status']!=PENDING:raise CaptureError('original root benchmark phase differs from parent')
+        request={k:row[k]for k in ROLE_REQUEST_FIELDS};request.update(status='RUNNING',applications=[],events=[])
+        validate_role_request(request,phase)
+        verify_probe(row);check_supervision(row);check_report_files(row,evidence)
+        snapshots.append(verify(root/f'phase-{phase}',phase=phase,expected_helper=row['tools'][HELPER]['sha256'],kind='benchmark'))
+        for app in [row['role_probe'],*row['applications']]:
+            if len(app['output_files'])!=2:raise CaptureError('complete original benchmark stdout/stderr paths required')
+            for name in app['output_files']:
+                relative=Path(name).relative_to('/evidence/benchmark-role/phase-'+str(phase))
+                if '..'in relative.parts or relative.suffix not in('.stdout','.stderr'):raise CaptureError('fixed benchmark stream path required')
+                if (root/f'phase-{phase}'/relative).read_text()!=app['stdout'if relative.suffix=='.stdout'else'stderr']:raise CaptureError('actual benchmark raw stream differs')
+    return dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=1,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,report_files=4,phases=2,daemon=finished['daemon'],supervisor=finished['supervisor'],snapshot_files=sum(len(v['files'])for v in snapshots),snapshot_bytes=sum(v['bytes']for v in snapshots),performance_qualified=False,scope='Fixed actual system-bus/apps-only/closed-file supervision,not wire proof/full deployment/stable performance')
+
+
+def valid_role_supervision(proof):
+    try:
+        expected=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=1,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,report_files=4,phases=2,performance_qualified=False)
+        return(all(type(proof[k])is type(v)and proof[k]==v for k,v in expected.items())
+            and all(type(proof[k][f])is int and proof[k][f]>0 for k in('daemon','supervisor')for f in('pid','start_ticks'))
+            and type(proof['snapshot_files'])is int and 18<=proof['snapshot_files']<=128
+            and type(proof['snapshot_bytes'])is int and 0<proof['snapshot_bytes']<=1024*1024*1024)
+    except(KeyError,TypeError):return False
+
+
+def validate_role_tools(control,root,guest_files):
+    expected=role_tools(root)
+    for row in control['socket_benchmark']:
+        if not apps_role(row)or row['tools']!=expected:raise CaptureError('exact prepared role tools required')
+        for name,record in expected.items():
+            actual=role_tool_path(root,name);matches=[v for v in guest_files if Path(v['path']).resolve()==actual]
+            if len(matches)!=1 or matches[0]['sha256']!=record['sha256']:raise CaptureError('benchmark actual tool missing from prepared manifest')

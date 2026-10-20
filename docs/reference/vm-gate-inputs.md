@@ -742,3 +742,25 @@ callback/reference drain, recovery or performance qualification. New gate source
 and offline checks alone do not qualify a compiled artifact; use the canonical
 capability record for the exact run. Existing release evidence keeps its original
 case and identity.
+
+Native `--channel-benchmark rate|window|duplex` now requires a fresh apps-only
+benchmark prepared contract. The existing fixed VM role supervisor starts the
+actual `slktest` children as UID/GID 1004 with no extra groups or capabilities;
+the controller manager stays UID 1000. No alternate live control-role benchmark
+loop is retained. Historical control-role reports keep their original identity
+and are decoded as such.
+
+Both endpoints still arm before `start`, become quiescent before `finish`, and
+keep the existing original protocol/application deadlines. Reports are written
+by the applications in a bounded guest-local directory, then exported with full
+raw streams after the children close. The benchmark snapshot profile bounds a
+phase to 512 MiB, each file to 256 MiB and tmpfs to 768 MiB; its VM uses 2 GiB RAM.
+The SSAP snapshot profile remains separate at its existing limits. Budget errors
+fail the gate and never truncate reports. Unchanged schema2 metrics and the real
+ordinary socket path are reused; no per-message D-Bus/data Engine is added.
+
+The first qualification gate uses 20 messages, 61 bytes and window 4 across both
+connection roles. It tests application permissions, paired report/capture
+closure and measurement correctness. It does not qualify all load combinations,
+a stable latency/throughput baseline, full stress or an optimization benefit.
+Use the canonical capability record for exact compiled and executed identities.

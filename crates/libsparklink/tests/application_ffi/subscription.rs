@@ -251,5 +251,85 @@ pub(super) async fn exercise(
     }
     assert_eq!(metadata.reads.load(Ordering::SeqCst), 4);
     assert_eq!(metadata.closes.load(Ordering::SeqCst), 2);
+    // Only metadata/bytes cross this private fixture. It supplies no successful
+    // Native,verified-write,wire ACK or real cleanup implementation. The real
+    // full16/drain/writeback/resume gate is a separate VM qualification.
+    for language in ["c", "python"] {
+        for (case, operation) in [
+            ("empty-cache", "check-cached ab cd"),
+            ("pending-read", "poll"),
+            ("wrong-payload", "check-cached cd ef"),
+            ("pending-release", "release"),
+            ("pending-quit", "quit"),
+        ] {
+            // Explicit fixture teardown only,not a production release/drain.
+            *metadata.current.lock().unwrap() = None;
+            let mut command = Command::new("timeout");
+            command.arg("10s");
+            if language == "c" {
+                command.arg(executable);
+            } else {
+                command
+                    .arg("python3")
+                    .arg(root.join("tools/testing/application_client/client.py"));
+            }
+            let mut child = command
+                .args(["subscription", "2", "7", PATH, "17", "2", "1000"])
+                .env("DBUS_SYSTEM_BUS_ADDRESS", address)
+                .env("LIBSPARKLINK_PATH", library)
+                .env("LD_LIBRARY_PATH", directory)
+                .env("PYTHONPATH", root.join("bindings/python"))
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()?;
+            let mut reader = std::io::BufReader::new(child.stdout.take().unwrap());
+            let mut transcript = String::new();
+            let mut line = String::new();
+            anyhow::ensure!(reader.read_line(&mut line)? != 0, "missing active fixture");
+            assert_eq!(
+                serde_json::from_str::<serde_json::Value>(&line)?["stage"],
+                "ssap_subscription_active"
+            );
+            transcript += &line;
+            if case != "empty-cache" {
+                child.stdin.as_mut().unwrap().write_all(b"drain\n")?;
+                line.clear();
+                anyhow::ensure!(
+                    reader.read_line(&mut line)? != 0,
+                    "missing actual SDK batch"
+                );
+                let batch: serde_json::Value = serde_json::from_str(&line)?;
+                assert_eq!(batch["stage"], "ssap_subscription_batch");
+                assert_eq!(batch["packets"].as_array().unwrap().len(), 1);
+                assert_eq!(batch["packets"][0]["pdu"], "100311000100ab");
+                transcript += &line;
+            }
+            child
+                .stdin
+                .as_mut()
+                .unwrap()
+                .write_all(format!("{operation}\n").as_bytes())?;
+            child.stdin.take();
+            let mut rest = String::new();
+            reader.read_to_string(&mut rest)?;
+            assert!(rest.is_empty(), "no fake check/cleanup: {rest}");
+            let result = child.wait_with_output()?;
+            anyhow::ensure!(
+                !result.status.success() && !result.stderr.is_empty(),
+                "{language} {case} must fail: {result:?}"
+            );
+            std::fs::write(
+                directory.join(format!("{language}-subscription-{case}.stdout")),
+                transcript,
+            )?;
+            std::fs::write(
+                directory.join(format!("{language}-subscription-{case}.stderr")),
+                result.stderr,
+            )?;
+        }
+    }
+    assert_eq!(metadata.reads.load(Ordering::SeqCst), 12);
+    assert_eq!(metadata.closes.load(Ordering::SeqCst), 2);
     Ok(())
 }

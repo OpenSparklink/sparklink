@@ -110,6 +110,7 @@ def prepare_locked(args, build_fd):
     manifest['application_role_contract_version'] = 2
     manifest['ssap_subscription_contract_version'] = 1
     manifest['ssap_subscription_renewal_contract_version'] = 1
+    manifest['ssap_subscription_pressure_contract_version'] = 1
     try:
         module_profile = native_vm.enabled(args)
         config_required(args.kernel_build / '.config', module_profile)
@@ -604,6 +605,7 @@ def _run(args):
     from ws73_ssap_subscription import requested as subscription_requested
     subscription=subscription_requested(args,passthrough=passthrough)
     subscription_renewal=getattr(args,'ssap_subscription_renewal_verify',False)
+    subscription_pressure=getattr(args,'ssap_subscription_pressure_verify',False)
     from ws73_ssap_receive_lifecycle import requested as receive_lifecycle_requested
     receive_lifecycle=receive_lifecycle_requested(args,passthrough=passthrough)
     from ws73_ssap_value import lengths_requested
@@ -847,6 +849,8 @@ def _run(args):
     m['ssap_subscription_acceptance']=False
     m['ssap_subscription_renewal_requested']=subscription_renewal
     m['ssap_subscription_renewal_acceptance']=False
+    m['ssap_subscription_pressure_requested']=subscription_pressure
+    m['ssap_subscription_pressure_acceptance']=False
     if subscription:m['ssap_subscription_verifier']=file_record(HERE/'ws73_ssap_subscription.py')
     m['ssap_update_delivery_requested']=update_delivery
     m['ssap_update_delivery_acceptance']=False
@@ -997,6 +1001,9 @@ def _run(args):
             if subscription_renewal:
                 if type(package.get('ssap_subscription_renewal_contract_version'))is not int or package['ssap_subscription_renewal_contract_version']!=1:raise ValueError('renewal requires explicit new prepared renewal contract1')
                 m['ssap_subscription_renewal_contract_version']=1
+            if subscription_pressure:
+                if type(package.get('ssap_subscription_pressure_contract_version'))is not int or package['ssap_subscription_pressure_contract_version']!=1:raise ValueError('pressure requires explicit new prepared pressure contract1')
+                m['ssap_subscription_pressure_contract_version']=1
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if application_clients:
@@ -1110,6 +1117,7 @@ def _run(args):
                      (' ws73.ssap_update_delivery=1' if update_delivery else '')+
                      (' ws73.ssap_subscription=1' if subscription else '')+
                      (' ws73.ssap_subscription_renewal=1' if subscription_renewal else '')+
+                     (' ws73.ssap_subscription_pressure=1' if subscription_pressure else '')+
                      (' ws73.ssap_receive_lifecycle=1' if receive_lifecycle else '')+
                      (' ws73.ssap_value_lengths=1' if value_lengths else '')+
                      (' ws73.application_clients=1' if application_clients else '')+
@@ -1629,8 +1637,12 @@ def _run(args):
                         if subscription_renewal:
                             from ws73_ssap_subscription import valid_renewal_summary,valid_renewal_supervision
                             if not valid_renewal_summary(m['channel_socket_corroboration'])or not valid_renewal_supervision(m['ssap_subscription_supervision']):raise ValueError('actual renewal and post-original-expiry closure required')
+                        if subscription_pressure:
+                            from ws73_ssap_subscription import valid_pressure_summary,valid_pressure_supervision
+                            if not valid_pressure_summary(m['channel_socket_corroboration'])or not valid_pressure_supervision(m['ssap_subscription_supervision']):raise ValueError('actual full queue/drain/checked resume closure required')
                     m['ssap_subscription_acceptance']=subscription
                     m['ssap_subscription_renewal_acceptance']=subscription_renewal
+                    m['ssap_subscription_pressure_acceptance']=subscription_pressure
                     m['ssap_update_delivery_acceptance']=update_delivery
                     m['ssap_owned_update_acceptance']=owned_update
                     m['ssap_owned_acceptance']=ssap_owned
@@ -2097,6 +2109,18 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     elif(record.get('ssap_subscription_renewal_acceptance')or record.get('ssap_subscription_renewal_contract_version')is not None
             or record.get('ssap_subscription_supervision',{}).get('renewal_contract_version')is not None
             or any(v.get('renewal_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
+    pressure=record.get('ssap_subscription_pressure_requested',False)
+    if type(pressure)is not bool or pressure and(not subscription or renewal):return 1
+    pressure_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_pressure=1']
+    if pressure_boot!=(['ws73.ssap_subscription_pressure=1']if pressure else[]):return 1
+    if pressure:
+        from ws73_ssap_subscription import valid_pressure_summary,valid_pressure_supervision
+        if(type(record.get('ssap_subscription_pressure_contract_version'))is not int or record['ssap_subscription_pressure_contract_version']!=1
+                or record.get('ssap_subscription_pressure_acceptance')is not True
+                or not valid_pressure_summary(channel_proof)or not valid_pressure_supervision(record.get('ssap_subscription_supervision',{}))):return 1
+    elif(record.get('ssap_subscription_pressure_acceptance')or record.get('ssap_subscription_pressure_contract_version')is not None
+            or record.get('ssap_subscription_supervision',{}).get('pressure_contract_version')is not None
+            or any(v.get('pressure_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
     delivery=record.get('ssap_update_delivery_requested',False)
     if type(delivery)is not bool:return 1
     delivery_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_update_delivery=1']
@@ -2432,6 +2456,7 @@ def main():
             cmd.add_argument('--ssap-owned-update-verify',action='store_true')
             cmd.add_argument('--ssap-subscription-verify',action='store_true',help='real protected continuous caller-owned lease,multiple random updates and actual apps-only distinct replies')
             cmd.add_argument('--ssap-subscription-renewal-verify',action='store_true',help='actual same-token long renewal and checked replies beyond original short lease expiry;requires subscription gate')
+            cmd.add_argument('--ssap-subscription-pressure-verify',action='store_true',help='actual bounded subscriber queue full/refusal,ordered drain and checked resume;separate from controller credit pressure')
             cmd.add_argument('--ssap-update-delivery-verify',action='store_true',help='real typed/authenticated CPCD,notification/indication and C/Python peer business reply')
             cmd.add_argument('--ssap-update-lifecycle-verify',action='store_true',help='dedicated same-actor receiver exit,original deadline and confirmed CPCD cleanup;requires update delivery')
             cmd.add_argument('--ssap-value-lengths-verify',action='store_true',help='dedicated real complete-PDU value lengths/MTU refusal gate;not SSAP protocol fragmentation')

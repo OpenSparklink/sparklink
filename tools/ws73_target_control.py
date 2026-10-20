@@ -190,6 +190,7 @@ def main():
     parser.add_argument('--ssap-owned-update-verify',action='store_true')
     parser.add_argument('--ssap-subscription-verify',action='store_true')
     parser.add_argument('--ssap-subscription-renewal-verify',action='store_true')
+    parser.add_argument('--ssap-subscription-pressure-verify',action='store_true')
     parser.add_argument('--ssap-update-delivery-verify',action='store_true')
     parser.add_argument('--ssap-update-lifecycle-verify',action='store_true')
     parser.add_argument('--ssap-value-lengths-verify',action='store_true')

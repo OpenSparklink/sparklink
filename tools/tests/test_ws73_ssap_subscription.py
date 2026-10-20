@@ -84,7 +84,91 @@ def fixture(phase=0,*,renewal=False):
     return row
 
 
+def pressure_fixture(phase=0):
+    """Finite report-shape fixture only;not a successful Native/wire backend."""
+    row=fixture(phase);row.update(ssap_subscription_pressure_required=True,ssap_subscription_pressure_contract_version=1)
+    for s,item in enumerate(row['ssap_subscription']):
+        api=item['publisher_api'];reader='python'if api=='c'else'c';old_lines=item['stdout'].splitlines()
+        lines=old_lines[:2]
+        decisions=[v for v in old_lines if v.startswith('SdkAuthorizationDecision: ')]
+        item['end_wall_ns']=100000
+        for mode,lease in zip((1,2),item['leases'],strict=True):
+            template=copy.deepcopy(lease['messages'][0]);lease['messages']=[]
+            begin=mode*20000;lease['start_wall_ns']=begin;lease['end_wall_ns']=begin+19000
+            app=lease['application'];app.update(start_wall_ns=begin+1,end_wall_ns=begin+18000)
+            for obs in lease['enabled']:obs.update(start_wall_ns=begin+5,end_wall_ns=begin+6)
+            for obs in lease['disabled']:obs.update(start_wall_ns=begin+18010,end_wall_ns=begin+18011)
+            for line in decisions[(mode-1)*2:mode*2]:
+                v=json.loads(line.split(': ',1)[1]);v['decision_wall_ns']=begin+4;lines.append('SdkAuthorizationDecision: '+json.dumps(v))
+            lines.append('SdkOwnedConfiguration: '+json.dumps(lease['enabled'][0]['receipt']))
+            raw=[lease['active']]
+            for n in range(18):
+                c=copy.deepcopy(template);seq=(phase<<24)|(s<<20)|(mode<<16)|n
+                c.update(number=n,value=(seq.to_bytes(4,'little')+bytes([n+1])*28).hex(),
+                    reply=((seq|0x80000000).to_bytes(4,'little')+bytes([n+41])*28).hex(),start_wall_ns=begin+100+n*100,end_wall_ns=begin+10000+n*100)
+                c['replacement']['receipt']['value']=c['value'];c['replacement'].update(start_wall_ns=c['start_wall_ns'],end_wall_ns=c['start_wall_ns']+1)
+                c['before']['value']=c['value'];c['send'].update(start_wall_ns=c['start_wall_ns']+2,end_wall_ns=c['start_wall_ns']+3)
+                pdu=bytes([16 if mode==2 else 15,3,17,0,32,0])+bytes.fromhex(c['value'])
+                c['send']['receipt'].update(pdu=pdu.hex(),stage=2 if mode==2 else 1,ack='110301'if mode==2 else'')
+                if n==16:
+                    for k in ('after','batch','checked'):c.pop(k)
+                    if mode==2:
+                        for k in ('stage','pdu','ack'):c['send']['receipt'].pop(k)
+                        c['send']['receipt']['result']=-5
+                else:
+                    c['after']['value']=c['reply'];c['checked'].update(sequence=n+1,value=c['value'],reply=c['reply'])
+                    c.pop('batch')
+                lease['messages'].append(c)
+            lease['drained']=gate.pressure_batch(lease,reader,17)
+            lease['messages'][-1]['batch']=gate.pressure_batch(lease,reader,17,resumed=True)
+            raw += [lease['drained']]+[c['checked']for c in lease['messages']if c['number']!=16]+[lease['messages'][-1]['batch'],lease['release']]
+            app['stdout']='\n'.join(json.dumps(v)for v in raw)+'\n'
+            for c in lease['messages'][:17]:
+                lines+=['SdkOwnedReplaced: '+json.dumps(c['replacement']['receipt']),f'SsapOwnedValue: handle=17 value={c["value"]}',
+                    ('SdkOwnedUpdateObserved: 'if mode==2 and c['number']==16 else'SdkOwnedUpdate: ')+json.dumps(c['send']['receipt'])]
+            lines += [f'SsapOwnedValue: handle=17 value={c["reply"]}'for c in lease['messages'][:16]]
+            c=lease['messages'][-1];lines+=['SdkOwnedReplaced: '+json.dumps(c['replacement']['receipt']),f'SsapOwnedValue: handle=17 value={c["value"]}',
+                'SdkOwnedUpdate: '+json.dumps(c['send']['receipt']),f'SsapOwnedValue: handle=17 value={c["reply"]}',
+                'SdkOwnedConfiguration: '+json.dumps(lease['disabled'][0]['receipt'])]
+        lines.append(f'SdkOwnedRemoved: api={api} start=16');item['stdout']='\n'.join(lines)+'\n'
+    return row
+
+
 class SubscriptionGate(unittest.TestCase):
+    def test_pressure_shape_counts_and_distinct_old_qualifications(self):
+        rows=[]
+        for phase in (0,1):
+            proof,credit=gate.corroborate(pressure_fixture(phase),matched)
+            self.assertEqual(credit,{0:144,1:144})
+            self.assertEqual([len(v['wire'])for v in proof],[144,144])
+            rows.append(dict(phase=phase,ssap_subscription=proof))
+        value=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=rows)
+        self.assertTrue(gate.valid_summary(value));self.assertTrue(gate.valid_pressure_summary(value))
+        self.assertFalse(gate.valid_pressure_summary(dict(status=value['status'],proofs=[dict(phase=p,ssap_subscription=gate.corroborate(fixture(p),matched)[0])for p in(0,1)])))
+        for k,v in [('notification_drops',0),('indication_refusals',True),('resumed',1),('pressure_contract_version',True)]:
+            bad=copy.deepcopy(value);bad['proofs'][0]['ssap_subscription'][0][k]=v;self.assertFalse(gate.valid_pressure_summary(bad),k)
+
+    def test_pressure_original_batch_refusal_and_delivery_negatives(self):
+        for kind in ('unrequested','version','count','eviction','reorder','epoch','missing-drop','missing-refusal','success','timeout','fake-ACK','overflow-app','resume','raw','store'):
+            row=pressure_fixture();item=row['ssap_subscription'][0];lease=item['leases'][0];ind=item['leases'][1]
+            if kind=='unrequested':row.pop('ssap_subscription_pressure_required')
+            elif kind=='version':row['ssap_subscription_pressure_contract_version']=True
+            elif kind=='count':lease['messages'].pop()
+            elif kind=='eviction':lease['drained']['packets'][0]=copy.deepcopy(lease['drained']['packets'][1])
+            elif kind=='reorder':lease['drained']['packets'].reverse()
+            elif kind=='epoch':lease['drained']['packets'][0]['epoch']+=1
+            elif kind=='missing-drop':lease['drained']['dropped']=0
+            elif kind=='missing-refusal':ind['drained']['refused']=0
+            elif kind=='success':ind['messages'][16]['send']['receipt']['result']=0
+            elif kind=='timeout':ind['messages'][16]['send']['receipt']['result']=-110
+            elif kind=='fake-ACK':ind['messages'][0]['send']['receipt']['ack']='110300'
+            elif kind=='overflow-app':lease['messages'][16]['checked']={}
+            elif kind=='resume':lease['messages'][-1]['batch']['packets'][0]['sequence']=17
+            elif kind=='raw':lease['application']['stdout']=''
+            else:lease['messages'][0]['after']['value']='00'
+            with self.subTest(kind=kind),self.assertRaises((CaptureError,KeyError,ValueError)):
+                gate.corroborate(row,matched)
+
     def test_real_renewal_verifier_fixture_is_distinct_from_continuous(self):
         rows=[]
         for phase in (0,1):
@@ -175,6 +259,9 @@ class SubscriptionGate(unittest.TestCase):
         args=dict(ssap_subscription_verify=True,channel_socket_verify=True,security_agent='numeric-approve')
         self.assertTrue(gate.requested(SimpleNamespace(**args),passthrough=True))
         self.assertTrue(gate.requested(SimpleNamespace(**args,ssap_subscription_renewal_verify=True),passthrough=True))
+        self.assertTrue(gate.requested(SimpleNamespace(**args,ssap_subscription_pressure_verify=True),passthrough=True))
+        for invalid in (dict(ssap_subscription_pressure_verify=True),dict(**args,ssap_subscription_pressure_verify=True,ssap_subscription_renewal_verify=True)):
+            with self.assertRaises(ValueError):gate.requested(SimpleNamespace(**invalid),passthrough=True)
         with self.assertRaises(ValueError):gate.requested(SimpleNamespace(ssap_subscription_renewal_verify=True),passthrough=True)
         for key in ('ssap_update_delivery_verify','application_client_verify','observer_policy','fault_recovery'):
             with self.subTest(key=key),self.assertRaises(ValueError):gate.requested(SimpleNamespace(**args,**{key:True}),passthrough=True)
@@ -205,6 +292,18 @@ class SubscriptionGate(unittest.TestCase):
             security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',
                 phases=[dict(mode='numeric-approve',ssap_security_requirement=2)for _ in (0,1)],business_round_trips=8))
         self.assertEqual(run_exit_code(record),0)
+        pressure=copy.deepcopy(record)
+        pressure.update(ssap_subscription_pressure_requested=True,ssap_subscription_pressure_contract_version=1,
+            ssap_subscription_pressure_acceptance=True,qemu_args=['ws73.ssap_subscription=1 ws73.ssap_subscription_pressure=1'])
+        for phase,row in enumerate(pressure['channel_socket_corroboration']['proofs']):
+            row['ssap_subscription']=gate.corroborate(pressure_fixture(phase),matched)[0]
+        pressure['ssap_subscription_supervision'].update(pressure_contract_version=1,updates=144,checked_replies=136,notification_drops=4,indication_refusals=4,resumed=8)
+        self.assertEqual(run_exit_code(pressure),0)
+        for change in [dict(ssap_subscription_pressure_requested=False),dict(ssap_subscription_pressure_contract_version=True),
+                dict(ssap_subscription_pressure_acceptance=False),dict(qemu_args=['ws73.ssap_subscription=1']),
+                dict(ssap_subscription_supervision=record['ssap_subscription_supervision']),
+                dict(channel_socket_corroboration=record['channel_socket_corroboration']),dict(ssap_subscription_renewal_requested=True)]:
+            with self.subTest(change=change):self.assertEqual(run_exit_code(pressure|change),1)
         renewed=copy.deepcopy(record)
         renewed.update(ssap_subscription_renewal_requested=True,ssap_subscription_renewal_contract_version=1,ssap_subscription_renewal_acceptance=True,
             qemu_args=['ws73.ssap_subscription=1 ws73.ssap_subscription_renewal=1'])

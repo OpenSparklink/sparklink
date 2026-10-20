@@ -206,9 +206,9 @@ def owned_mode():
                     modes=link.ssap().owned_configuration(handle,deadline_ns=deadline)
                     print('SdkOwnedConfiguration: '+json.dumps(dict(api='python',handle=handle,modes=modes,
                         started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
-                elif updates and line in (b'notify\n',b'indicate\n',b'indicate-deadline\n'):
-                    observe=line==b'indicate-deadline\n'
-                    started=time.monotonic_ns();deadline=started+(1_000_000_000 if observe else 5_000_000_000)
+                elif updates and line in (b'notify\n',b'indicate\n',b'indicate-deadline\n',b'indicate-observe\n'):
+                    short_deadline=line==b'indicate-deadline\n';observe=short_deadline or line==b'indicate-observe\n'
+                    started=time.monotonic_ns();deadline=started+(1_000_000_000 if short_deadline else 5_000_000_000)
                     try:
                         result=link.ssap().send_owned_update(handle,deadline_ns=deadline,indication=line!=b'notify\n')
                     except OSError as error:
@@ -218,7 +218,7 @@ def owned_mode():
                     if observe:
                         # A result observation,not a success verdict. Wrong
                         # errors and unexpected success remain gate failures.
-                        print('SdkOwnedUpdateDeadline: '+json.dumps(dict(api='python',handle=handle,result=observed,
+                        print(('SdkOwnedUpdateDeadline: 'if short_deadline else'SdkOwnedUpdateObserved: ')+json.dumps(dict(api='python',handle=handle,result=observed,
                             started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
                         line.clear();continue
                     print('SdkOwnedUpdate: '+json.dumps(dict(api='python',handle=handle,stage=result.stage,
@@ -314,16 +314,20 @@ def subscription_mode():
     started=time.monotonic_ns();creation_deadline=started+5_000_000_000
     with link,link.ssap().subscribe([handle],modes=modes,duration_ms=duration_ms,
             deadline_ns=creation_deadline) as sub:
-        info=sub.info();released=False
+        info=sub.info();released=False;cache=();position=0
         print(json.dumps(dict(stage='ssap_subscription_active',api='python',token=info.token,
                               epoch=info.security_epoch,expires_ns=info.expires_ns,started_ns=started,
                               deadline_ns=creation_deadline,returned_ns=time.monotonic_ns(),client_closed=True)),flush=True)
         while True:
             line=sys.stdin.readline(16384)
-            if not line:break
+            if not line:
+                if position!=len(cache):raise OSError(errno.EBUSY,'unchecked cached batch')
+                break
             if len(line)>16383 or not line.endswith('\n'):raise ValueError('bounded complete input line required')
             args=line.split()
-            if args==['quit']:break
+            if args==['quit']:
+                if position!=len(cache):raise OSError(errno.EBUSY,'unchecked cached batch')
+                break
             if args==['parent-close']:
                 link.close()
                 print(json.dumps(dict(stage='ssap_subscription_parent_closed',api='python')),flush=True)
@@ -336,24 +340,35 @@ def subscription_mode():
                     deadline_ns=renewal_deadline,returned_ns=time.monotonic_ns())),flush=True)
                 continue
             if args==['release']:
+                if position!=len(cache):raise OSError(errno.EBUSY,'unchecked cached batch')
                 batch=sub.release(deadline_ns=time.monotonic_ns()+5_000_000_000);released=True
                 print(json.dumps(dict(stage='ssap_subscription_released',api='python',flags=batch.flags,
                                       discarded=batch.discarded_on_close)),flush=True)
                 continue
-            check=len(args)==3 and args[0]=='check'
-            if not check and args not in (['read'],['poll']):raise ValueError('unknown subscription operation')
+            from_cache=len(args)==3 and args[0]=='check-cached';check=from_cache or len(args)==3 and args[0]=='check'
+            if not check and args not in (['read'],['poll'],['drain']):raise ValueError('unknown subscription operation')
             if check:
                 expected,reply=map(bytes.fromhex,args[1:])
                 if not 1<=len(expected)<=2042 or not 1<=len(reply)<=2042 or expected==reply:
                     raise ValueError('independent bounded update/reply required')
                 link._live()
-            batch=sub.read(wait=args!=['poll'],deadline_ns=time.monotonic_ns()+5_000_000_000)
+            if from_cache:
+                if position>=len(cache):raise OSError(errno.ENODATA,'no cached update')
+            else:
+                if position!=len(cache):raise OSError(errno.EBUSY,'unchecked cached batch')
+                batch=sub.read(wait=args!=['poll'],deadline_ns=time.monotonic_ns()+5_000_000_000)
+                if args==['drain']:
+                    if not 1<=len(batch.packets)<=16:raise ValueError('bounded nonempty batch required')
+                    cache=batch.packets;position=0
             if check:
-                if len(batch.packets)!=1:raise ValueError('exact single complete update required')
-                packet=batch.packets[0]
+                if not from_cache and len(batch.packets)!=1:raise ValueError('exact single complete update required')
+                packet=cache[position]if from_cache else batch.packets[0]
                 checked_update_write(link,handle,2 if packet.indication else 1,packet.pdu,expected,reply)
                 print(json.dumps(dict(stage='ssap_subscription_checked_reply',api='python',
                     sequence=packet.sequence,value=expected.hex(),reply=reply.hex())),flush=True)
+                if from_cache:
+                    position+=1
+                    continue
             if batch.info.state==3 and batch.flags==1:released=True
             print(json.dumps(dict(stage='ssap_subscription_batch',api='python',last=batch.last_sequence,
                 dropped=batch.dropped_notifications,refused=batch.refused_indications,state=batch.info.state,

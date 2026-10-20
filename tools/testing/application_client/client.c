@@ -284,14 +284,14 @@ static int owned_mode(int argc,char **argv) {
             error=slk_connection_ssap_owned_configuration(link,receipt.handles[0],&modes,deadline);
             if (error || modes>3) {errno=error?-error:EPROTO;goto done;}
             printf("SdkOwnedConfiguration: {\"api\":\"c\",\"handle\":%u,\"modes\":%u,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",receipt.handles[0],modes,started,deadline,now_ns());fflush(stdout);
-        } else if (updates && (!strcmp(line,"notify\n") || !strcmp(line,"indicate\n") || !strcmp(line,"indicate-deadline\n"))) {
-            int observe=!strcmp(line,"indicate-deadline\n"),indication=strcmp(line,"notify\n")!=0;struct SlkSsapUpdate result={0};
-            uint64_t started=now_ns(),deadline=started+(observe?1000000000ULL:5000000000ULL);
+        } else if (updates && (!strcmp(line,"notify\n") || !strcmp(line,"indicate\n") || !strcmp(line,"indicate-deadline\n") || !strcmp(line,"indicate-observe\n"))) {
+            int short_deadline=!strcmp(line,"indicate-deadline\n"),observe=short_deadline || !strcmp(line,"indicate-observe\n"),indication=strcmp(line,"notify\n")!=0;struct SlkSsapUpdate result={0};
+            uint64_t started=now_ns(),deadline=started+(short_deadline?1000000000ULL:5000000000ULL);
             error=slk_connection_ssap_send_owned(link,receipt.handles[0],(uint32_t)indication,&result,deadline);
             if (observe) {
                 /* Observed API result only. The supervisor must reject a wrong
                  * errno or an unexpected success; neither is a PASS here. */
-                printf("SdkOwnedUpdateDeadline: {\"api\":\"c\",\"handle\":%u,\"result\":%d,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",receipt.handles[0],error,started,deadline,now_ns());fflush(stdout);
+                printf("%s: {\"api\":\"c\",\"handle\":%u,\"result\":%d,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",short_deadline?"SdkOwnedUpdateDeadline":"SdkOwnedUpdateObserved",receipt.handles[0],error,started,deadline,now_ns());fflush(stdout);
                 continue;
             }
             if (error || result.stage!=(indication?2U:1U) || result.pdu_length>2048 || result.acknowledgement_length>3) {errno=error?-error:EPROTO;goto done;}
@@ -384,7 +384,7 @@ static int subscription_mode(int argc,char **argv) {
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkConnection *link=NULL;struct SlkSsapSubscription *sub=NULL;
     int status=1,error,released=0;uint16_t target=(uint16_t)handle;
-    struct SlkSsapSubscriptionInfo info={0};struct SlkSsapSubscriptionBatch batch={0};
+    struct SlkSsapSubscriptionInfo info={0};struct SlkSsapSubscriptionBatch batch={0},cache={0};unsigned cached=0,next=0;
     error=slk_client_open_system(now_ns()+5000000000ULL,&client);if (error){errno=-error;goto done;}
     error=slk_client_connection(client,&id,(const uint8_t *)argv[4],strlen(argv[4]),now_ns()+5000000000ULL,&link);
     if (error){errno=-error;goto done;}
@@ -399,7 +399,7 @@ static int subscription_mode(int argc,char **argv) {
         if (!strchr(line,'\n')) {errno=EMSGSIZE;goto done;}
         char *command=strtok(line," \n"),*arg=strtok(NULL," \n"),*other=strtok(NULL," \n");
         if (!command) {errno=EINVAL;goto done;}
-        if (!strcmp(command,"quit") && !arg) break;
+        if (!strcmp(command,"quit") && !arg) {if(next!=cached){errno=EBUSY;goto done;}break;}
         if (!strcmp(command,"parent-close") && !arg) {
             slk_connection_close(link);link=NULL;
             printf("{\"stage\":\"ssap_subscription_parent_closed\",\"api\":\"c\"}\n");fflush(stdout);continue;
@@ -412,25 +412,37 @@ static int subscription_mode(int argc,char **argv) {
             printf("{\"stage\":\"ssap_subscription_renewed\",\"api\":\"c\",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"expires_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",info.token,info.security_epoch,info.expires_ns,renewal_started,renewal_deadline,now_ns());fflush(stdout);continue;
         }
         if (!strcmp(command,"release") && !arg) {
+            if(next!=cached){errno=EBUSY;goto done;}
             error=slk_ssap_subscription_release(sub,&batch,now_ns()+5000000000ULL);
             if (error){errno=-error;goto done;}released=1;
             printf("{\"stage\":\"ssap_subscription_released\",\"api\":\"c\",\"flags\":%u,\"discarded\":%"PRIu64"}\n",batch.flags,batch.discarded_on_close);fflush(stdout);continue;
         }
-        int check=!strcmp(command,"check");
-        if ((!check && strcmp(command,"read") && strcmp(command,"poll")) || (check?(!arg || !other || strtok(NULL," \n")):(arg!=NULL))) {errno=EINVAL;goto done;}
+        int from_cache=!strcmp(command,"check-cached"),check=from_cache || !strcmp(command,"check"),drain=!strcmp(command,"drain");
+        if ((!check && !drain && strcmp(command,"read") && strcmp(command,"poll")) || (check?(!arg || !other || strtok(NULL," \n")):(arg!=NULL))) {errno=EINVAL;goto done;}
         uint8_t expected[2042],reply[2042];size_t n=0,r=0;
         if (check) {
             n=bytes(arg,expected);r=bytes(other,reply);
             if (!link || (n==r && !memcmp(expected,reply,n))) {errno=EINVAL;goto done;}
         }
-        error=slk_ssap_subscription_read(sub,strcmp(command,"poll")!=0,&batch,now_ns()+5000000000ULL);
-        if (error){errno=-error;goto done;}
+        if (from_cache) {
+            if(next>=cached){errno=ENODATA;goto done;}
+        } else {
+            if(next!=cached){errno=EBUSY;goto done;}
+            error=slk_ssap_subscription_read(sub,strcmp(command,"poll")!=0,&batch,now_ns()+5000000000ULL);
+            if (error){errno=-error;goto done;}
+            if (drain) {
+                if(!batch.count || batch.count>16){errno=EBADMSG;goto done;}
+                cache=batch;cached=batch.count;next=0;
+            }
+        }
         if (check) {
-            if (batch.count!=1) {errno=EBADMSG;goto done;}
-            if (checked_update_write(link,(uint16_t)handle,batch.packets[0].indication?2:1,
-                batch.packets[0].pdu,batch.packets[0].pdu_length,expected,n,reply,r)) goto done;
-            printf("{\"stage\":\"ssap_subscription_checked_reply\",\"api\":\"c\",\"sequence\":%"PRIu64",\"value\":\"",batch.packets[0].sequence);
+            if (!from_cache && batch.count!=1) {errno=EBADMSG;goto done;}
+            const struct SlkSsapSubscriptionPacket *packet=from_cache?&cache.packets[next]:&batch.packets[0];
+            if (checked_update_write(link,(uint16_t)handle,packet->indication?2:1,
+                packet->pdu,packet->pdu_length,expected,n,reply,r)) goto done;
+            printf("{\"stage\":\"ssap_subscription_checked_reply\",\"api\":\"c\",\"sequence\":%"PRIu64",\"value\":\"",packet->sequence);
             hex_print(expected,n);printf("\",\"reply\":\"");hex_print(reply,r);printf("\"}\n");
+            if(from_cache){next++;fflush(stdout);continue;}
         }
         if (batch.info.state==3 && batch.flags==1) released=1;
         printf("{\"stage\":\"ssap_subscription_batch\",\"api\":\"c\",\"last\":%"PRIu64",\"dropped\":%"PRIu64",\"refused\":%"PRIu64",\"state\":%u,\"flags\":%u,\"reason\":%u,\"discarded\":%"PRIu64",\"packets\":[",batch.last_sequence,batch.dropped_notifications,batch.refused_indications,batch.info.state,batch.flags,batch.reason,batch.discarded_on_close);
@@ -442,6 +454,7 @@ static int subscription_mode(int argc,char **argv) {
         printf("]}\n");fflush(stdout);
     }
     if (ferror(stdin)) goto done;
+    if(next!=cached){errno=EBUSY;goto done;}
     if (!released) {
         error=slk_ssap_subscription_release(sub,&batch,now_ns()+5000000000ULL);
         if (error){errno=-error;goto done;}

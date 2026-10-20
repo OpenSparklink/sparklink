@@ -18,7 +18,7 @@ from ws73_channel_socket import credentials
 
 
 def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16):
-    if not 1<=max_count<=64 or not 1<=min_count<=max_count:raise CaptureError('bounded output observation count required')
+    if not 1<=max_count<=80 or not 1<=min_count<=max_count:raise CaptureError('bounded output observation count required')
     while True:
         text=Path(path).read_text()
         matches=re.findall(pattern,text,re.M)
@@ -71,11 +71,11 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
         item['end_wall_ns']=time.time_ns();run.save()
 
 
-def value_snapshot(process,item,expected):
+def value_snapshot(process,item,expected,*,limit=16):
     path=Path(item['output_files'][0]);pattern=r'^SsapOwnedValue: handle=(\d+) value=([0-9a-f]*)$'
     count=len(re.findall(pattern,path.read_text(),re.M));observation=dict(start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns())
     process.stdin.write('value\n');process.stdin.flush()
-    values,_=wait_text(process,path,pattern,time.monotonic()+2,min_count=count+1)
+    values,_=wait_text(process,path,pattern,time.monotonic()+2,min_count=count+1,max_count=limit)
     if len(values)!=count+1 or values[-1]!=(str(item['handle']),expected):raise CaptureError('original owner application value snapshot differs')
     observation.update(end_wall_ns=time.time_ns(),end_monotonic_ns=time.monotonic_ns(),handle=item['handle'],value=expected,ordinal=count+1)
     item.setdefault('value_snapshots',[]).append(observation);return observation

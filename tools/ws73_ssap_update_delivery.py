@@ -59,12 +59,12 @@ def validate_tools(records,root,manifest):
         if len(matches)!=1 or matches[0]['sha256']!=receipt['sha256']:
             raise CaptureError('update app/SDK missing from build manifest')
 
-def command_receipt(process,item,command,prefix):
+def command_receipt(process,item,command,prefix,*,limit=32):
     path=Path(item['output_files'][0]);pattern='^'+re.escape(prefix)+r': (.+)$'
     count=len(re.findall(pattern,path.read_text(),re.M))
     start=time.monotonic_ns();wall=time.time_ns()
     process.stdin.write(command+'\n');process.stdin.flush()
-    rows,_=wait_text(process,path,pattern,time.monotonic()+5,min_count=count+1,max_count=32)
+    rows,_=wait_text(process,path,pattern,time.monotonic()+5,min_count=count+1,max_count=limit)
     if len(rows)!=count+1:raise CaptureError('one actual SDK receipt per command required')
     return dict(start_wall_ns=wall,end_wall_ns=time.time_ns(),start_monotonic_ns=start,
         end_monotonic_ns=time.monotonic_ns(),receipt=json.loads(rows[-1]))

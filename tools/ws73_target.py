@@ -2099,6 +2099,37 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         return 1
     if type(record.get('qemu_exit')) is not int or record['qemu_exit'] != 0:
         return 1
+    # These summaries are reconstructed from raw evidence during _run. Saved
+    # reports must retain them as well; a PASS label is not their replacement.
+    connection=record.get('connection_verify_requested',False)
+    channel=record.get('channel_socket_verification_requested',False)
+    prefix=record.get('channel_socket_close_prefix_requested',False)
+    if any(type(v) is not bool for v in [connection,channel,prefix]):return 1
+    if connection:
+        for key in ['connection_corroboration','connection_object_corroboration']:
+            proof=record.get(key)
+            if not isinstance(proof,list) or len(proof)!=2 or any(not isinstance(p,dict) or not p for p in proof):return 1
+    if channel:
+        proof=record.get('channel_socket_corroboration',{})
+        rounds=record.get('channel_socket_rounds_requested',4)
+        if (not isinstance(proof,dict) or proof.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
+                or type(rounds) is not int or rounds<=0
+                or type(proof.get('round_trips')) is not int or proof['round_trips']!=(0 if prefix else rounds*2)):
+            return 1
+    if prefix:
+        proof=record.get('channel_socket_corroboration',{})
+        phases=proof.get('proofs',[]) if isinstance(proof,dict) else []
+        if (not channel or record.get('channel_socket_rounds_requested')!=1 or record.get('channel_socket_bytes_requested')!=2042
+                or record.get('ordinary_prefix_close_acceptance') is not True
+                or record.get('ordinary_channel_socket_acceptance') is not False
+                or proof.get('physical_prefix_delivery_acceptance') is not True
+                or type(proof.get('prefix_close_phases')) is not int or proof['prefix_close_phases']!=2
+                or not isinstance(phases,list) or len(phases)!=2):return 1
+        for n,phase in enumerate(phases):
+            if (not isinstance(phase,dict) or phase.get('phase')!=n
+                    or not isinstance(phase.get('prefix_close'),dict)
+                    or phase['prefix_close'].get('other_channel_after_close') is not True
+                    or not isinstance(phase.get('ssap_values'),list) or not phase['ssap_values']):return 1
     from ws73_application_discovery import valid_summary as valid_discovery, boot_case, case as discovery_case, supervision_summary
     discovery=record.get('application_discovery_requested',False)
     if type(discovery) is not bool:return 1

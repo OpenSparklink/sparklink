@@ -722,6 +722,12 @@ def _run(args):
     session_idle=bool(getattr(args,'managed_channel_idle_observe',False))
     if session_idle and (not channel_revoke_prefix or channel_deadline or channel_link_down or connected_case!='release' or connected_reply or bool(getattr(args,'managed_channel_directions',False)) or channel_scm_rights):raise ValueError('separate release/prefix normal2s real Session idle observation required')
     session_service=bool(getattr(args,'session_service_observe',False))
+    queued_discard=bool(getattr(args,'managed_channel_queued_discard',False))
+    if queued_discard and (not session_service or not channel_revoke_prefix or not channel_grant
+            or connected_case not in ('release','close','dup') or connected_reply or session_idle
+            or channel_scm_rights or bool(getattr(args,'managed_channel_directions',False))
+            or getattr(args,'managed_channel_security',0) or getattr(args,'managed_security_capabilities',False)):
+        raise ValueError('queued discard requires standalone basic Managed prefix/Session trace lifecycle gate')
     if session_service and (args.command!='run' or support or parallel or dynamic_channels or agent_mode or channel_close or session_idle or connected_reply or getattr(args,'managed_security_capabilities',False) or not (channel_socket or channel_grant or benchmark_mode)):
         raise ValueError('Session service trace requires separate real fixed-channel data or Managed Grant gate')
     protected=getattr(args,'managed_channel_security',0)
@@ -976,6 +982,7 @@ def _run(args):
     if protected:m.update(live_channel_security_required=protected,protected_security_verifiers=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']])
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
+    if queued_discard:m['queued_discard_contract_version']=1
     m['session_service_observation_requested']=session_service
     m['session_service_acceptance']=False
     if session_service:m['session_service_verifiers']=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]
@@ -1246,6 +1253,7 @@ def _run(args):
                      (' ws73.channel_grant=1' if channel_grant else '')+
                      (f' ws73.channel_security={protected}' if protected else '')+
                      (' ws73.channel_revoke_prefix=1' if channel_revoke_prefix else '')+
+                     (' ws73.channel_queued_discard=1' if queued_discard else '')+
                      (' ws73.channel_link_down=1' if channel_link_down else '')+
                      (' ws73.channel_deadline=1' if channel_deadline else '')+
                      (' ws73.session_idle=1' if session_idle else '')+
@@ -1845,6 +1853,7 @@ def _run(args):
                     if bool(probe.get('channel_grant'))!=channel_grant:raise ValueError('requested real channel Grant gate mismatch')
                     if probe.get('channel_security_requirement',0)!=protected:raise ValueError('requested protected Grant cannot downgrade')
                     if bool(probe.get('channel_grant',{}).get('revoke_prefix'))!=channel_revoke_prefix:raise ValueError('requested actual revoke-prefix gate mismatch')
+                    if probe.get('channel_grant',{}).get('queued_discard_contract_version')!=(1 if queued_discard else None):raise ValueError('requested queued-discard profile mismatch')
                     if channel_link_down and not probe.get('prefix_hold',{}).get('primed',False):raise ValueError('requested primed-debt physicalDown barrier missing')
                     if bool(probe.get('data_link_down'))!=channel_link_down:raise ValueError('requested direct physical Down gate mismatch')
                     if bool(probe.get('prefix_hold'))!=(channel_revoke_prefix and not channel_deadline):raise ValueError('requested causal incomplete-PDU barrier missing or unexpected')
@@ -2431,6 +2440,18 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if (record.get('session_service_acceptance') is not True or record.get('qemu_exit')!=0
                 or proof.get('status')!='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED'
                 or any(type(proof.get(k)) is not int or proof[k]<=0 for k in ['services','attempts','accepted_usb_packets','operations'])):return 1
+    from ws73_session_service import valid_queued_summary
+    queued_version=record.get('queued_discard_contract_version')
+    queued_proof=record.get('session_service_observation',{}).get('queued_discard_lifecycle')
+    queued_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.channel_queued_discard=')]
+    if queued_version is not None:
+        queued_mode='deadline' if record.get('live_channel_deadline_requested') else 'down' if record.get('live_channel_link_down_requested') else record.get('live_connected_file_case')
+        if (type(queued_version)is not int or queued_version!=1 or queued_boot!=['ws73.channel_queued_discard=1']
+                or not requested or not record.get('live_channel_grant_gate')or not record.get('live_channel_revoke_prefix_gate')
+                or not valid_queued_summary(queued_proof)
+                or queued_proof['mode']!=queued_mode or queued_proof['controller']!=record.get('live_connected_file_index')
+                or record.get('session_service_observation',{}).get('queued_discarded_operations')!=2):return 1
+    elif queued_proof is not None or queued_boot:return 1
     benchmark_role=record.get('socket_benchmark_role_contract_version')
     import ws73_benchmark_ssap as benchmark_ssap
     try:
@@ -2685,6 +2706,7 @@ def main():
             cmd.add_argument('--managed-channel-deadline',action='store_true',help='original5s begun-PDU deadline with separate bounded8s real IN81 hold, not recovery')
             cmd.add_argument('--managed-channel-link-down',action='store_true',help='direct physical Disconnect after actual begun PDU while both Managed leases remain held; separate from revoke/deadline/recovery')
             cmd.add_argument('--session-service-observe',action='store_true',help='dedicated default-off real Session service/queue/atomic USB trace;not performance or peer delivery proof')
+            cmd.add_argument('--managed-channel-queued-discard',action='store_true',help='explicit two queued2042B admissions behind held begunPDU;requires Managed prefix and Session trace,not business/recovery proof')
             cmd.add_argument('--managed-channel-idle-observe',action='store_true',help='dedicated VM ftrace of drained Session idle between real business and controlled prefix;not performance qualification')
             cmd.add_argument('--managed-channel-revoke-prefix',action='store_true',help='actual partial2042-byte USB PDU across per-controller Managed withdrawal, never natural recovery')
             cmd.add_argument('--managed-connected-index',type=int,choices=[0,1],default=0,help='actual Create caller in established-link File gate')

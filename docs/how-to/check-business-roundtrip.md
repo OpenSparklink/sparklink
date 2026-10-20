@@ -198,3 +198,23 @@ USB故障、物理拔插或自然恢复。普通用户与管理者的权限、�
 随后仍运行原独立 USB/CMTC/NOCP 核对，要求真实提交与完成账目和对端应用回复。
 快照不代替这一核对，也不证明 callback 排空或完成事件准确性。不要通过固定睡眠、
 延伸抓包窗口或重跑覆盖失败取得 PASS；历史 v3 的末尾债务失败保留原边界和结果。
+
+## 核对撤权或断链时未开始的排队 PDU
+
+此项面向集成测试维护者，要求新准备的专用 VM、两个明确授权且板型／镜像匹配的
+设备、原 File／Grant 测试支持，以及匹配的真实 IN81 有界 hold fixture。仅在这些
+前置条件核对后，向原 Managed prefix 门禁增加 `--managed-channel-queued-discard`
+和 `--session-service-observe`；release／close／dup、Down 与原期限分别运行并保存
+独立目录，不能把其中一项成功当作全矩阵成功。此操作说明不是新产物的实机资格。
+
+先确认原 2042 字节 PDU 已开始且池满，再核对普通 socket 实际准入的两份随机
+排队 PDU。`channel_grant.armed` 必须保存两个 syscall 的载荷、原期限、身份和
+时间窗；同一次 `pre_block_tx_status` 必须有 queued=2、queue_limit=8、busy=1。
+原前缀、dup 首次关闭后业务、最终撤权、阻塞 RX、旧 fd 拒绝、同行 Ready／lease／
+扫描、双端 USB 与内核日志检查继续执行，不能因新增排队观察而省略。
+
+最后检查 `session_service_observation.queued_discard_lifecycle`：两个独立序号各有
+一次 stage3，均无实际 USB 前缀，原已开始 PDU另有真实提交记录，其他 controller
+没有排队丢弃。缺记录、追踪覆盖、身份或期限不符均保留 FAIL／未证明；不要补造
+事件或裁剪窗口。它只证明本地排队退休，不证明全部物理义务、引用排空、NOCP
+真实性、自然恢复或四设备独立业务隔离；已有业务资格仍按准确产物单独核对。

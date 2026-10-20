@@ -531,7 +531,88 @@ def corroborate(record, capture, share):
     parsed = parse(text, row)
     if summary(parsed) != row['observed']:
         raise ValueError('captured trace summary mismatch')
-    return join(parsed, identities(record), capture)
+    proof = join(parsed, identities(record), capture)
+    if record.get('channel_grant', {}).get('queued_discard_contract_version') is not None:
+        if record['channel_grant'].get('queue_boot_id') != row.get('boot_id'):
+            raise ValueError('queued syscall and trace must belong to the same actual boot')
+        proof['queued_discard_lifecycle'] = queued_lifecycle(record, parsed, capture)
+    return proof
+
+
+def queued_lifecycle(record, parsed, capture):
+    """Join actual syscall windows to production queue retirement and USB.
+
+    The original File/Grant/held-prefix oracle must pass independently. This
+    observes local queued retirement, never credit refunds or reference drain.
+    """
+    from ws73_channel_grant import queued_admissions, verify_intents
+    row = record['channel_grant']
+    queued = queued_admissions(row)
+    if len(queued) != 2:
+        raise ValueError('explicit two-admission queued lifecycle required')
+    verify_intents(row, record)
+    proof = join(parsed, identities(record), capture)
+    if proof.get('queued_discarded_operations') != 2:
+        raise ValueError('exactly two local queued retirements and no sibling discard required')
+    timings = _operation_timings(parsed, identities(record), capture, proof)
+    i = record['index']; owner = row['owners'][i]; quantum = parsed['quantum_ns']
+    operations = timings['operations']
+    owned = [v for v in operations if (v['controller'], v['generation'], v['lifetime'])
+             == (i, owner['generation'], owner['lifetime'])]
+    admissions = []
+    for entry in queued:
+        found = [v for v in owned if entry['before_monotonic_ns']-quantum
+                 <= v['admission_ns'] <= entry['after_monotonic_ns']+quantum]
+        if len(found) != 1:
+            raise ValueError('unique actual queue admission in original syscall window required')
+        v = found[0]
+        if (v.get('retirement_kind') != 'queued_discard_no_physical_prefix'
+                or v['dtap_bytes'] != 2047 or v['epoch'] != owner['lease']
+                or v['accepted_fragments'] or v['accepted_usb_records']
+                or v['retirement_ns'] < v['admission_ns']-quantum):
+            raise ValueError('queued original identity must retire without physical prefix')
+        admissions.append(dict(sequence=v['admission_sequence'], payload_sha256=hashlib.sha256(bytes.fromhex(entry['payload'])).hexdigest(),
+                               admission_ns=v['admission_ns'], retirement_ns=v['retirement_ns']))
+    if len({v['sequence'] for v in admissions}) != 2:
+        raise ValueError('each queued application admission retires once')
+    armed = row['armed']
+    begun = [v for v in owned if armed['admission_before_monotonic_ns']-quantum
+             <= v['admission_ns'] <= armed['admission_after_monotonic_ns']+quantum]
+    if (len(begun) != 1 or begun[0].get('retirement_kind') is not None
+            or begun[0]['dtap_bytes'] != 2047 or begun[0]['epoch'] != owner['lease']
+            or not begun[0]['accepted_fragments'] or not begun[0]['accepted_usb_records']
+            or not 0 < sum(v['length'] for v in begun[0]['calls'] if v['acceptance_ns'] is not None) < 2047):
+        raise ValueError('original begun Session PDU must remain a separate observed operation')
+    mode = 'deadline' if 'data_deadline' in record else 'down' if 'data_link_down' in record else record['case']
+    return dict(status='REAL_QUEUED_DISCARD_LIFECYCLE_CORROBORATED', mode=mode,
+                controller=i, generation=owner['generation'], lifetime=owner['lifetime'], epoch=owner['lease'],
+                queued_discarded_operations=2, queued_accepted_usb_packets=0, sibling_discarded_operations=0,
+                admissions=admissions, begun_sequence=begun[0]['admission_sequence'],
+                begun_accepted_usb_records=begun[0]['accepted_usb_records'],
+                scope='Two ordinary constrained queue admissions and local retirement;original begun-PDU/File/Grant/USB oracle separately required. Not new business delivery,credit refund,NOCP truth,reuse,callback/reference drain or recovery.')
+
+
+def valid_queued_summary(proof):
+    if not isinstance(proof, dict):
+        return False
+    rows = proof.get('admissions', [])
+    return (proof.get('status') == 'REAL_QUEUED_DISCARD_LIFECYCLE_CORROBORATED'
+            and proof.get('mode') in ('release', 'close', 'dup', 'down', 'deadline')
+            and type(proof.get('controller')) is int and proof['controller'] in (0, 1)
+            and all(type(proof.get(k)) is int and proof[k] > 0 for k in ('generation', 'lifetime', 'epoch', 'begun_sequence'))
+            and type(proof.get('queued_discarded_operations')) is int and proof['queued_discarded_operations'] == 2
+            and type(proof.get('queued_accepted_usb_packets')) is int and proof['queued_accepted_usb_packets'] == 0
+            and type(proof.get('sibling_discarded_operations')) is int and proof['sibling_discarded_operations'] == 0
+            and isinstance(rows, list) and len(rows) == 2
+            and all(isinstance(v, dict) and type(v.get('sequence')) is int and v['sequence'] > 0
+                    and isinstance(v.get('payload_sha256'), str) and re.fullmatch('[0-9a-f]{64}', v['payload_sha256'])
+                    and type(v.get('admission_ns')) is int and v['admission_ns'] > 0
+                    and type(v.get('retirement_ns')) is int and v['retirement_ns'] >= v['admission_ns'] for v in rows)
+            and len({v['sequence'] for v in rows}) == 2
+            and len({v['payload_sha256'] for v in rows}) == 2
+            and proof['begun_sequence'] not in {v['sequence'] for v in rows}
+            and isinstance(proof.get('begun_accepted_usb_records'), list) and bool(proof['begun_accepted_usb_records'])
+            and all(type(n) is int and n > 0 for n in proof['begun_accepted_usb_records']))
 
 
 def operation_timings(parsed, owners, capture):

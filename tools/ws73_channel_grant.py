@@ -213,6 +213,20 @@ def worker(data, control, minimum=0):
                     admission=dict(admission_before_wall_ns=time.time_ns(),admission_before_monotonic_ns=time.monotonic_ns())
                     admission['tx_intent']=transmit(prefix)
                     admission.update(admission_after_wall_ns=time.time_ns(),admission_after_monotonic_ns=time.monotonic_ns())
+                if 'queued' in command:
+                    queued=command['queued']
+                    if (prefix is None or len(queued)!=2 or len(set(queued))!=2
+                            or any(len(bytes.fromhex(v))!=2042 or not bytes.fromhex(v).startswith(b'SLKQUE01') for v in queued)):
+                        raise ValueError('exact two distinct bounded queued lifecycle PDUs required')
+                    admission['queued']=[]
+                    for value in queued:
+                        item=dict(payload=value,before_wall_ns=time.time_ns(),before_monotonic_ns=time.monotonic_ns())
+                        item['tx_intent']=transmit(bytes.fromhex(value))
+                        item.update(after_wall_ns=time.time_ns(),after_monotonic_ns=time.monotonic_ns())
+                        admission['queued'].append(item)
+                    # The later denial exercises the original begun-PDU intent;
+                    # queued submissions must not silently replace that retry.
+                    last_constraint=SleSendConstraint.from_buffer_copy(bytes.fromhex(admission['tx_intent']['constraint']))
                 if command.get('sample_before_block'):
                     if prefix is None:raise ValueError('TX observation requires bounded original PDU')
                     from sparklink.channel import channel_tx_status
@@ -346,6 +360,12 @@ class Gate:
         if 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split():
             payload=b'SLKREV01'+secrets.token_bytes(2034)
             request['prefix']=payload.hex();self.row['revoke_prefix']=dict(payload=payload.hex(),admission_before_wall_ns=time.time_ns())
+        if 'ws73.channel_queued_discard=1' in Path('/proc/cmdline').read_text().split():
+            if 'prefix' not in request or not sample_before_block:
+                raise ValueError('queued lifecycle requires original prefix and actual full-pool snapshot')
+            request['queued']=[(b'SLKQUE01'+secrets.token_bytes(2034)).hex() for _ in range(2)]
+            self.row['queued_discard_contract_version']=1
+            self.row['queue_boot_id']=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         send(self.parents[self.index],request);value=receive(self.parents[self.index])
         if 'revoke_prefix' in self.row:
             if value.get('prefix')!=request['prefix']:raise ValueError('original worker prefix admission required')
@@ -483,6 +503,12 @@ def verify_intents(row, outer):
         if c.minimum!=floor or not armed['admission_before_monotonic_ns']<=prefix['before_monotonic_ns']<=prefix['after_monotonic_ns']<=armed['admission_after_monotonic_ns']:raise ValueError('prefix cannot refresh original admission deadline')
         original=prefix['constraint']
     else:original=None
+    queued=queued_admissions(row)
+    for entry in queued:
+        c=intent(entry['tx_intent'],row['owners'][outer['index']])
+        if (c.minimum!=floor or not entry['before_monotonic_ns']<=entry['tx_intent']['before_monotonic_ns']
+                <=entry['tx_intent']['after_monotonic_ns']<=entry['after_monotonic_ns']):
+            raise ValueError('queued PDU retains its own original constrained admission')
     if 'data_deadline' in outer:receipts=[outer['data_deadline'][k] for k in ['old_fd_before_release','old_fd_after_release']]
     elif 'data_link_down' in outer:receipts=[outer['data_link_down']['old_fd']]
     else:receipts=[row[k] for k in ['after_withdrawal','after_successor'] if k in row]
@@ -503,6 +529,35 @@ def verify_intents(row, outer):
         if original is not None and d['constraint']!=original:raise ValueError('withdrawal retry must use the original admitted intent unchanged')
     return dict(status='ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED',business_sends=count,prefix_admission=bool(prefix),late_refusals=len(receipts)*2,expired_intent_refusals=len(receipts) if 'data_deadline' in outer else 0,
                 scope='Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof')
+
+
+def queued_admissions(row):
+    """Validate the explicit test profile; never infer a wire or drain result."""
+    version=row.get('queued_discard_contract_version')
+    queued=row.get('armed',{}).get('queued')
+    if version is None and queued is None:
+        return []
+    if type(version) is not int or version!=1 or not isinstance(queued,list) or len(queued)!=2:
+        raise ValueError('explicit queued-discard profile with two admissions required')
+    import re
+    if not isinstance(row.get('queue_boot_id'),str) or not re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',row['queue_boot_id']):
+        raise ValueError('original queued worker boot identity required')
+    from sparklink.structs import SleChannelTxStatus
+    from ws73_management_setup import decode
+    armed=row['armed'];previous_mono=armed['admission_after_monotonic_ns'];previous_wall=armed['admission_after_wall_ns']
+    payloads=[]
+    for entry in queued:
+        raw=bytes.fromhex(entry['payload']);payloads.append(raw)
+        if (len(raw)!=2042 or raw[:8]!=b'SLKQUE01'
+                or any(type(entry[k]) is not int for k in ['before_monotonic_ns','after_monotonic_ns','before_wall_ns','after_wall_ns'])
+                or not previous_mono<=entry['before_monotonic_ns']<=entry['after_monotonic_ns']<armed['monotonic_ns']
+                or not previous_wall<=entry['before_wall_ns']<=entry['after_wall_ns']<armed['wall_ns']):
+            raise ValueError('distinct queued admissions before actual blocked worker required')
+        previous_mono=entry['after_monotonic_ns'];previous_wall=entry['after_wall_ns']
+    tx=decode(SleChannelTxStatus,armed['pre_block_tx_status'])
+    if len(set(payloads))!=2 or tx.queued!=2 or tx.queue_limit!=8 or tx.busy!=1:
+        raise ValueError('actual two queued PDUs behind the original begun PDU required')
+    return queued
 
 
 def business_evidence(row, outer, capture):

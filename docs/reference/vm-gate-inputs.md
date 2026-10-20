@@ -821,3 +821,35 @@ connection roles. It tests application permissions, paired report/capture
 closure and measurement correctness. It does not qualify all load combinations,
 a stable latency/throughput baseline, full stress or an optimization benefit.
 Use the canonical capability record for exact compiled and executed identities.
+
+### Queued PDU retirement during the File/Grant lifecycle gate
+
+`--managed-channel-queued-discard` is an explicit test profile, requiring
+`--managed-channel-grant`, `--managed-channel-revoke-prefix`,
+`--session-service-observe` and an explicit connected File case. It reuses the
+same ordinary constrained socket worker, physical Session, original five-second
+TX intents and pinned real-IN81 barrier. Protected, directional, fd-transfer
+and unrelated benchmark modes are not part of this profile.
+
+The worker admits the original random 2042-byte begun PDU and two additional,
+distinct random 2042-byte PDUs. Its actual TX status must show exactly two
+queued objects, queue limit eight and the original busy PDU. Each queued send
+has its own unchanged absolute intent. Later denial retries still use the
+original begun-PDU intent, not the last queued send's newer intent.
+
+The existing release, final File close, dup first/final close, physical Down
+and original-deadline oracles remain mandatory. An additional Session trace
+join matches each queued syscall's monotonic interval to exactly one original
+generation/lifetime/epoch admission and one stage-3 terminal, with no accepted
+USB prefix or sibling discard. The begun PDU has a separate admission and
+partial physical prefix; it is not counted as a queued discard. The legacy
+`partial_retired_operations` counter includes all not-fully-submitted objects,
+including unsubmitted queued discards; `queued_discarded_operations` distinguishes
+them explicitly.
+
+Missing identities, queue status, terminals, accepted-packet accounting or trace
+loss rejects the whole profile. Local retirement does not prove credit refunds,
+controller completion, callback/reference drain or natural recovery. The test
+adds no business round trips: existing peer-checked business remains separate.
+This source contract alone does not qualify an artifact; consult the canonical
+capability record for exact executed gates and remaining conditions.

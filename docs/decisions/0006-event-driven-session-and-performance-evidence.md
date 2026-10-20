@@ -368,3 +368,15 @@ Ticket或Runtime的debt，也不增加controller完成。所有清除调用者�
 ETIMEDOUT；binding 已退休后，生产准入先拒绝为 ENOTCONN。测试以单独的实际
 fd 调用和 USB 拒绝标识检查两个阶段，不将两者合成可任选 errno。setup 等待发生
 在原 PDU 准入前，不改变原期限；历史断言和失败保持原身份。
+
+
+### 原期限提示与 timer 生命周期
+
+正期限唤醒使用高分辨率timer，立即事件保留原worker；不把timer wheel分桶等待
+解释为应用、USB或无线的全部时延。绝对期限计算、Grant、credit和Ticket不变。
+Runtime表／action父引用保持到stop返回；timer借用该引用，callback只在原锁保护下
+提示worker。stop关闭准入后锁外join timer再join work，不能在Session锁内等待可能
+需要同一锁的callback。未发布对象不启动timer，WORK_QUEUED同时反映timer提示，
+并不证明队列引用或drain。实际生产wake函数的有界依赖验证与有限两Session模型
+必须记录LinuxAPI／锁／公平性假设及跳过timer join的反例；不升级为实现refinement、
+任意fd引用安全或硬件恢复证明。准确实机期限与业务门禁仍单独验收。

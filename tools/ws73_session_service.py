@@ -403,6 +403,7 @@ def join(parsed, owners, capture):
     # Every accepted packet, including fixed CMTC, must have the corresponding
     # real USB submit, in the serialized physical order and within clock bounds.
     usb_total = 0
+    dynamic_control = False
     for ident, owner in owners.items():
         calls = sorted(accepted[ident], key=lambda item:item[0]['mono_ns'])
         if not calls:
@@ -435,9 +436,14 @@ def join(parsed, owners, capture):
             raise ValueError('trace/USB accepted packet counts disagree')
         low, high = parsed['offset_ns']
         for packet, (_, a, commit, b) in zip(packets, all_intervals):
-            if (packet['boundary'] != a['pb'] or len(bytes.fromhex(packet['data'])) != a['len']
+            wire = bytes.fromhex(packet['data'])
+            if (packet['boundary'] != a['pb'] or len(wire) != a['len']
                     or not a['mono_ns']+low-2*q <= packet['wall_ns'] <= commit['mono_ns']+high+2*q):
                 raise ValueError('actual USB submit/Native interval mismatch')
+            # Scope annotation only, after exact count/order/consent matching.
+            # CMTC protocol correctness remains the existing application gate.
+            if packet['boundary'] == 0 and len(wire) >= 5 and wire[:2] == b'\x02\0' and wire[4] in (16, 17):
+                dynamic_control = True
             usb_total += 1
     return dict(status='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED',
                 **summary(parsed), services=len(works), attempts=len(attempts),
@@ -445,7 +451,8 @@ def join(parsed, owners, capture):
                 complete_transport_operations=complete, partial_retired_operations=partial,
                 credit_waits=sum(v[1]['result']==-11 and v[1]['wait']==1 for v in attempts.values()),
                 uncertain_acceptances=sum(2 in v and v[2]['result']==0 and v[1]['result']!=0 for v in attempts.values()),
-                scope='Default-off C4 Session observations plus original USB submits;no credit truth,callback drain,peer delivery,RF,performance or concurrency proof;dynamic CMTC consent excluded')
+                scope=('Default-off Session observations include dynamic CMTC envelopes in the exact accepted USB/trace join on recorded identities;not CMTC negotiation success,credit truth,callback drain,peer delivery,RF,performance or concurrency proof' if dynamic_control else
+                       'Default-off C4 Session observations plus original USB submits;no credit truth,callback drain,peer delivery,RF,performance or concurrency proof;dynamic CMTC consent excluded'))
 
 
 def corroborate(record, capture, share):

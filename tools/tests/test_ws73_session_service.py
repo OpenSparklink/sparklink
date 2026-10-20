@@ -1,9 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Parser/association fixtures only;no actual kernel tracing or hardware."""
 import copy
+from pathlib import Path
+import sys
 import unittest
 from unittest.mock import patch
 
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from ws73_session_service import EVENTS, STATUS, parse, join, vm_guard, cleanup, operation_timings, bind_business
 from ws73_trace_layout import buffer_kib
 
@@ -45,6 +48,30 @@ def fixture():
 
 
 class ServiceTrace(unittest.TestCase):
+    def test_dynamic_scope_annotation_keeps_exact_control_consent_and_usb_join(self):
+        from ws73_dynamic_channels import cmtc,request
+        text,row,owners,capture=fixture();p=parse(text,row)
+        legacy=join(p,owners,capture)
+        self.assertTrue(legacy['scope'].endswith('dynamic CMTC consent excluded'))
+        wire=cmtc(request(7,0x80,[24576,24577],29441,249,254))
+        p['rows']=[v for v in p['rows']if not(v['ctl']==0 and v['event']=='queue')]
+        for v in p['rows']:
+            if v['ctl']!=0:continue
+            if v['event']=='tx':v.update(slot=-1,len=len(wire))
+            elif v['event']=='work'and v['stage']==1:v.update(attempts=0,bytes=0)
+        capture['acb_packets'][0]['data']=wire.hex()
+        result=join(p,owners,capture)
+        self.assertEqual(result['accepted_usb_packets'],2)
+        self.assertEqual(result['operations'],1)
+        self.assertIn('include dynamic CMTC envelopes',result['scope'])
+        self.assertIn('not CMTC negotiation success',result['scope'])
+        for bad in('missing-usb','missing-consent','wrong-length'):
+            altered=copy.deepcopy(capture);trace=copy.deepcopy(p)
+            if bad=='missing-usb':altered['acb_packets'].pop(0)
+            elif bad=='missing-consent':trace['rows']=[v for v in trace['rows']if not(v['event']=='tx'and v['ctl']==0 and v['stage']==2)]
+            else:altered['acb_packets'][0]['data']='00'
+            with self.subTest(bad=bad),self.assertRaises(ValueError):join(trace,owners,altered)
+
     def test_operation_timings_keep_admission_call_and_acceptance_separate(self):
         text,row,owners,capture=fixture()
         result=operation_timings(parse(text,row),owners,capture)

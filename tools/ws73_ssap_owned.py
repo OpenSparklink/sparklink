@@ -17,8 +17,8 @@ from ws73_capture import CaptureError
 from ws73_channel_socket import credentials
 
 
-def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16):
-    if not 1<=max_count<=80 or not 1<=min_count<=max_count:raise CaptureError('bounded output observation count required')
+def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16, count_budget=80):
+    if type(count_budget)is not int or count_budget not in (80,128)or not 1<=max_count<=count_budget or not 1<=min_count<=max_count:raise CaptureError('bounded output observation count required')
     while True:
         text=Path(path).read_text()
         matches=re.findall(pattern,text,re.M)
@@ -72,10 +72,16 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
 
 
 def value_snapshot(process,item,expected,*,limit=16):
+    version=item.get('ssap_shared_pressure_contract_version')
+    if version is not None and(type(version)is not int or version!=1):raise CaptureError('explicit shared-pressure value observation contract required')
+    budget=128 if version is not None else 80
+    # Reject a caller/profile mismatch before sending the actual command.
+    if type(limit)is not int or not 1<=limit<=budget:raise CaptureError('bounded value observation count required')
     path=Path(item['output_files'][0]);pattern=r'^SsapOwnedValue: handle=(\d+) value=([0-9a-f]*)$'
     count=len(re.findall(pattern,path.read_text(),re.M));observation=dict(start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns())
+    if count>=limit:raise CaptureError('value observation count exhausted before command')
     process.stdin.write('value\n');process.stdin.flush()
-    values,_=wait_text(process,path,pattern,time.monotonic()+2,min_count=count+1,max_count=limit)
+    values,_=wait_text(process,path,pattern,time.monotonic()+2,min_count=count+1,max_count=limit,count_budget=budget)
     if len(values)!=count+1 or values[-1]!=(str(item['handle']),expected):raise CaptureError('original owner application value snapshot differs')
     observation.update(end_wall_ns=time.time_ns(),end_monotonic_ns=time.monotonic_ns(),handle=item['handle'],value=expected,ordinal=count+1)
     item.setdefault('value_snapshots',[]).append(observation);return observation

@@ -71,6 +71,29 @@ class SharedGate(unittest.TestCase):
             path.write_text('{}\n'*65)
             with self.assertRaises(CaptureError):base.app_rows(None,app|dict(ssap_shared_pressure_contract_version=1))
 
+    def test_value_observer_budget_fails_before_command_and_is_profile_scoped(self):
+        from ws73_ssap_owned import value_snapshot,wait_text
+        # Filesystem/command-observer fixture only,no protocol or Native stub.
+        with tempfile.TemporaryDirectory()as tmp:
+            path=Path(tmp)/'provider.stdout';path.write_text('SsapOwnedValue: handle=19 value=ab\n'*80)
+            commands=[]
+            class Input:
+                def write(self,value):
+                    commands.append(value)
+                    with path.open('a')as f:f.write('SsapOwnedValue: handle=19 value=cd\n')
+                def flush(self):pass
+            process=SimpleNamespace(stdin=Input(),poll=lambda:None)
+            item=dict(output_files=[str(path)],handle=19)
+            with self.assertRaises(CaptureError):value_snapshot(process,item,'cd',limit=128)
+            with self.assertRaises(CaptureError):value_snapshot(process,item,'cd',limit=80)
+            with self.assertRaises(CaptureError):value_snapshot(process,item|dict(ssap_shared_pressure_contract_version=True),'cd',limit=128)
+            self.assertEqual(commands,[])
+            observed=value_snapshot(process,item|dict(ssap_shared_pressure_contract_version=1),'cd',limit=128)
+            self.assertEqual(observed['ordinal'],81);self.assertEqual(commands,['value\n'])
+            with self.assertRaises(CaptureError):wait_text(process,path,'.',0,max_count=81)
+            with self.assertRaises(CaptureError):wait_text(process,path,'.',0,max_count=129,count_budget=128)
+            with self.assertRaises(CaptureError):wait_text(process,path,'.',0,count_budget=True)
+
     def test_shared_pressure_summary_never_upgrades_other_cases(self):
         # Synthetic summary/packet-shape fixture only;no successful Native stub.
         leg=dict(tx=dict(data='0a00010001'),rx=dict(data='0a00010001'))
@@ -167,7 +190,9 @@ class SharedGate(unittest.TestCase):
         package=dict(inputs=[file_record(HERE/n)for n in names],application_client_tools=dict(sources=[file_record(HERE/n)for n in('testing/application_client/client.c','testing/application_client/client.py')]))
         validate_inputs(package,subscription=True)
         with self.assertRaises(ValueError):validate_inputs(package,subscription=True,shared=True)
-        package['inputs'].append(file_record(HERE/'ws73_ssap_shared.py'));validate_inputs(package,subscription=True,shared=True)
+        package['inputs'].append(file_record(HERE/'ws73_ssap_shared.py'))
+        with self.assertRaises(ValueError):validate_inputs(package,subscription=True,shared=True)
+        package['inputs'].append(file_record(HERE/'ws73_ssap_owned.py'));validate_inputs(package,subscription=True,shared=True)
         package['inputs'][-1]['sha256']='0'*64
         with self.assertRaises(ValueError):validate_inputs(package,subscription=True,shared=True)
 

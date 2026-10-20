@@ -790,8 +790,13 @@ eight resumptions. B has no losses; the slow queues report four notification
 drops and four local indication refusals in total. Wire indication ACK1 remains
 required because B accepted the update; it is not evidence that A received the
 overflow or that either application processed it. Root transcript and snapshot
-budgets are explicitly bounded for this larger profile; old profiles retain
-their original limits. The ordinary 4×61-byte socket baseline remains separate.
+budgets are explicitly bounded for this larger profile: at most 64 reader JSON
+lines and 128 provider value observations (126 are required), with a 4 MiB
+closed phase JSON limit. The provider marker and exact helper source are part
+of the sealed closure; a missing marker or exhausted budget fails before
+issuing another value command. Old profiles retain 24 reader lines, 80 maximum
+provider observations and their original closed JSON limits. The ordinary
+4×61-byte socket baseline remains separate.
 Source/offline checks do not qualify a new artifact, full load/fairness,
 controller credit, Grant withdrawal, drain, recovery, or performance.
 

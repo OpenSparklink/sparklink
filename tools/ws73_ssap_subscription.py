@@ -180,7 +180,7 @@ def tool_records(root=Path('/'),*,snapshot=False,inflight=False,shared=False):
     from ws73_role_snapshot import HELPER,SUPERVISOR
     names=(*TOOLS,HELPER,SUPERVISOR)if snapshot else TOOLS
     if inflight:names=(*names,*INFLIGHT_TOOLS)
-    if shared:names=(*names,"/usr/share/sparklink/tools/ws73_ssap_shared.py")
+    if shared:names=(*names,"/usr/share/sparklink/tools/ws73_ssap_shared.py","/usr/share/sparklink/tools/ws73_ssap_owned.py")
     return {name:dict(sha256=hashlib.sha256((root/name.lstrip('/')).read_bytes()).hexdigest(),
                      bytes=(root/name.lstrip('/')).stat().st_size)for name in names}
 

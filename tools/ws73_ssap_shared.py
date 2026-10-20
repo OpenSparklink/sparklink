@@ -98,6 +98,7 @@ def execute(run,row):
     for sender in(0,1):
         peer,server=row['owners'][sender],row['owners'][1-sender];api='c'if(row['phase']+sender)%2==0 else'python';other='python'if api=='c'else'c'
         with publisher(run,row,sender,'allow',collection='ssap_subscription',label='shared-subscription',sdk_api=api,updates=True,application_uid=1005)as(owner,item):
+            if pressure:item['ssap_shared_pressure_contract_version']=1
             discover(run,peer,item);item.update(leases=[],groups=[]);run.save()
             for mode in(1,2):
                 group=dict(mode=mode,start_wall_ns=time.time_ns(),messages=[],lease_indexes=[]);item['groups'].append(group)
@@ -114,10 +115,10 @@ def execute(run,row):
                         if cached:received['number']=number
                         records.append(received);run.save()
                         if cached:
-                            checked_cached_reply(process,lease['application'],owner,item,case['value'],reply,counts[member],limit=160,record=received,save=run.save)
+                            checked_cached_reply(process,lease['application'],owner,item,case['value'],reply,counts[member],limit=128,record=received,save=run.save)
                         else:
                             result=checked_update_reply(process,lease['application'],owner,item,case['value'],reply,counts[member],
-                                2 if pressure and member=='a0'else counts[member],limit=160 if pressure else 48,before_wait=callback,record=received,save=run.save)
+                                2 if pressure and member=='a0'else counts[member],limit=128 if pressure else 48,before_wait=callback,record=received,save=run.save)
                             if 'send'in result:case['send']=result.pop('send')
                         received['end_wall_ns']=time.time_ns();return received
                     for number in range(total):
@@ -145,7 +146,7 @@ def execute(run,row):
                         peers=[(member,*members[member])for member in recipients(kind,number)]
                         sequence=(row['phase']<<24)|(sender<<20)|(mode<<16)|number;value=(sequence.to_bytes(4,'little')+secrets.token_bytes(28)).hex()
                         case=dict(number=number,value=value,start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns(),recipients=[]);group['messages'].append(case)
-                        case['replacement']=command_receipt(owner,item,'replace '+value,'SdkOwnedReplaced',limit=64 if pressure else 32);case['before']=value_snapshot(owner,item,value,limit=160 if pressure else 48);run.save()
+                        case['replacement']=command_receipt(owner,item,'replace '+value,'SdkOwnedReplaced',limit=64 if pressure else 32);case['before']=value_snapshot(owner,item,value,limit=128 if pressure else 48);run.save()
                         for position,(member,process,lease)in enumerate(peers):
                             callback=(lambda:command_receipt(owner,item,'indicate'if mode==2 else'notify','SdkOwnedUpdate',limit=64 if pressure else 32))if position==0 else None
                             receive(case,member,process,lease,case['recipients'],callback=callback);run.save()
@@ -211,6 +212,7 @@ def corroborate(row,matched):
     for sender,item in enumerate(row['ssap_subscription']):
         s,t=sender,1-sender;peer,server=owners[s],owners[t];api='c'if(row['phase']+s)%2==0 else'python';other='python'if api=='c'else'c';h=item['handle'];legs=[];snapshots=[];tokens=set();pidset=set();commands={'SdkOwnedReplaced':[],'SdkOwnedUpdate':[],'SdkOwnedConfiguration':[]}
         if(item['sender']!=s or item['target']!=t or item['publisher_api']!=api or item['policy']!='allow'
+            or (type(item.get('ssap_shared_pressure_contract_version'))is not int or item['ssap_shared_pressure_contract_version']!=1 if pressure else item.get('ssap_shared_pressure_contract_version')is not None)
             or item['args']!=owned_arguments(api,server,item['service'],item['uuid'],item['secret'],'allow',update_connection=server['object']['path'])
             or item['environment']!=application_environment()or type(item['exit'])is not int or item['exit']!=0 or item['stderr']
             or not 16<=item['start']<h<=item['end']<=65535 or len(item['leases'])!=6 or len(item['groups'])!=2):raise CaptureError('original service-only shared provider required')

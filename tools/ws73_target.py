@@ -113,6 +113,7 @@ def prepare_locked(args, build_fd):
     manifest['ssap_subscription_pressure_contract_version'] = 1
     manifest['ssap_subscription_owner_loss_contract_version'] = 1
     manifest['ssap_subscription_inflight_release_contract_version'] = 1
+    manifest['ssap_subscription_inflight_expiry_contract_version'] = 1
     manifest['ssap_subscription_snapshot_contract_version'] = 1
     try:
         module_profile = native_vm.enabled(args)
@@ -611,6 +612,8 @@ def _run(args):
     subscription_pressure=getattr(args,'ssap_subscription_pressure_verify',False)
     subscription_owner_loss=getattr(args,'ssap_subscription_owner_loss_verify',False)
     subscription_inflight=getattr(args,'ssap_subscription_inflight_release_verify',False)
+    from ws73_ssap_subscription import requested_inflight_case
+    subscription_inflight_case=requested_inflight_case(args)
     from ws73_ssap_receive_lifecycle import requested as receive_lifecycle_requested
     receive_lifecycle=receive_lifecycle_requested(args,passthrough=passthrough)
     from ws73_ssap_value import lengths_requested
@@ -860,6 +863,9 @@ def _run(args):
     m['ssap_subscription_owner_loss_acceptance']=False
     m['ssap_subscription_inflight_release_requested']=subscription_inflight
     m['ssap_subscription_inflight_release_acceptance']=False
+    if subscription_inflight_case=='expiry':
+        m['ssap_subscription_inflight_case']='expiry'
+        m['ssap_subscription_inflight_expiry_acceptance']=False
     if subscription_inflight:m['ssap_subscription_inflight_verifier']=file_record(HERE/'ws73_ssap_sender_deadline.py')
     if subscription:m['ssap_subscription_verifier']=file_record(HERE/'ws73_ssap_subscription.py')
     m['ssap_update_delivery_requested']=update_delivery
@@ -1022,8 +1028,11 @@ def _run(args):
             if subscription_inflight:
                 if type(package.get('ssap_subscription_inflight_release_contract_version'))is not int or package['ssap_subscription_inflight_release_contract_version']!=1:raise ValueError('in-flight release requires explicit new prepared contract1')
                 from ws73_ssap_sender_deadline import validate_qemu,validate_inputs
-                validate_qemu(package['qemu']['path']);validate_inputs(package)
+                validate_qemu(package['qemu']['path']);validate_inputs(package,subscription=True)
                 m['ssap_subscription_inflight_release_contract_version']=1
+                if subscription_inflight_case=='expiry':
+                    if type(package.get('ssap_subscription_inflight_expiry_contract_version'))is not int or package['ssap_subscription_inflight_expiry_contract_version']!=1:raise ValueError('fresh explicit in-flight expiry prepared contract1 required')
+                    m['ssap_subscription_inflight_expiry_contract_version']=1
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if application_clients:
@@ -1140,6 +1149,7 @@ def _run(args):
                      (' ws73.ssap_subscription_pressure=1' if subscription_pressure else '')+
                      (' ws73.ssap_subscription_owner_loss=1' if subscription_owner_loss else '')+
                      (' ws73.ssap_subscription_inflight_release=1' if subscription_inflight else '')+
+                     (' ws73.subscription_inflight_case=expiry' if subscription_inflight_case=='expiry' else '')+
                      (' ws73.subscription_snapshot=1' if subscription else '')+
                      (' ws73.ssap_receive_lifecycle=1' if receive_lifecycle else '')+
                      (' ws73.ssap_value_lengths=1' if value_lengths else '')+
@@ -1240,7 +1250,7 @@ def _run(args):
                 sender_hold=None
                 if subscription_inflight:
                     from ws73_ssap_sender_deadline import Coordinator
-                    sender_hold=Coordinator(share,output,m.setdefault('ssap_subscription_inflight_hold',{}),package['qemu']['path'],purpose='subscription-release')
+                    sender_hold=Coordinator(share,output,m.setdefault('ssap_subscription_inflight_hold',{}),package['qemu']['path'],purpose='subscription-'+subscription_inflight_case)
                 if receive_lifecycle:
                     from ws73_ssap_receive_lifecycle import CaptureCoordinator
                     receive_capture=CaptureCoordinator(share,output,m.setdefault('ssap_receive_capture_observations',{}))
@@ -1633,8 +1643,8 @@ def _run(args):
                         m['ssap_subscription_supervision']=verify_supervisor_artifacts(control,share)
                         from ws73_ssap_subscription import renewal_required
                         if any(renewal_required(row)!=subscription_renewal for row in control['channel_socket']):raise ValueError('renewal request/evidence mismatch')
-                        from ws73_ssap_subscription import pressure_required,owner_loss_required,inflight_required
-                        if any(pressure_required(row)!=subscription_pressure or owner_loss_required(row)!=subscription_owner_loss or inflight_required(row)!=subscription_inflight for row in control['channel_socket']):raise ValueError('subscription scenario request/evidence mismatch')
+                        from ws73_ssap_subscription import pressure_required,owner_loss_required,inflight_required,inflight_case
+                        if any(pressure_required(row)!=subscription_pressure or owner_loss_required(row)!=subscription_owner_loss or inflight_required(row)!=subscription_inflight or inflight_case(row)!=subscription_inflight_case for row in control['channel_socket']):raise ValueError('subscription scenario request/evidence mismatch')
                     if any(bool(row.get('ssap_subscription_required',False))!=subscription for row in control['channel_socket']):raise ValueError('subscription request/evidence mismatch')
                     if any(bool(row.get('ssap_update_delivery_required',False))!=update_delivery for row in control['channel_socket']):raise ValueError('update delivery request/evidence mismatch')
                     if owned_update and file_record(HERE/'ws73_ssap_owned_update.py')!=m['ssap_owned_update_verifier']:raise ValueError('owned update verifier changed during execution')
@@ -1679,15 +1689,16 @@ def _run(args):
                             from ws73_ssap_subscription import valid_inflight_summary,valid_inflight_supervision
                             from ws73_ssap_sender_deadline import corroborate_holds,validate_prefixes
                             if file_record(HERE/'ws73_ssap_sender_deadline.py')!=m['ssap_subscription_inflight_verifier']:raise ValueError('in-flight physical verifier changed during run')
-                            if not valid_inflight_summary(m['channel_socket_corroboration'])or not valid_inflight_supervision(m['ssap_subscription_supervision']):raise ValueError('actual in-flight release/discard and fresh-lease replies required')
+                            if not valid_inflight_summary(m['channel_socket_corroboration'],case=subscription_inflight_case)or not valid_inflight_supervision(m['ssap_subscription_supervision'],case=subscription_inflight_case):raise ValueError('actual in-flight release/discard and fresh-lease replies required')
                             validate_prefixes(m['ssap_subscription_inflight_hold'],share/'ws73.pcap')
                             cases=[row['ssap_subscription'][0]['leases'][1]['inflight_release']for row in control['channel_socket']]
-                            m['ssap_subscription_inflight_corroboration']=corroborate_holds(m['ssap_subscription_inflight_hold'],control,capture,(output/'qemu-stderr.log').read_text(),cases=cases,purpose='subscription-release')
+                            m['ssap_subscription_inflight_corroboration']=corroborate_holds(m['ssap_subscription_inflight_hold'],control,capture,(output/'qemu-stderr.log').read_text(),cases=cases,purpose='subscription-'+subscription_inflight_case)
                     m['ssap_subscription_acceptance']=subscription
                     m['ssap_subscription_renewal_acceptance']=subscription_renewal
                     m['ssap_subscription_pressure_acceptance']=subscription_pressure
                     m['ssap_subscription_owner_loss_acceptance']=subscription_owner_loss
-                    m['ssap_subscription_inflight_release_acceptance']=subscription_inflight
+                    m['ssap_subscription_inflight_release_acceptance']=subscription_inflight and subscription_inflight_case=='release'
+                    if subscription_inflight_case=='expiry':m['ssap_subscription_inflight_expiry_acceptance']=True
                     m['ssap_update_delivery_acceptance']=update_delivery
                     m['ssap_owned_update_acceptance']=owned_update
                     m['ssap_owned_acceptance']=ssap_owned
@@ -2189,13 +2200,19 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if type(inflight)is not bool or inflight and(not subscription or renewal or pressure or owner_loss):return 1
     inflight_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_inflight_release=1']
     if inflight_boot!=(['ws73.ssap_subscription_inflight_release=1']if inflight else[]):return 1
+    from ws73_ssap_subscription import boot_inflight_case,inflight_case as check_inflight_case
+    try:
+        case=check_inflight_case(dict(ssap_subscription_inflight_release_required=inflight,ssap_subscription_inflight_release_contract_version=record.get('ssap_subscription_inflight_release_contract_version'),**{k:record[k]for k in ('ssap_subscription_inflight_case','ssap_subscription_inflight_expiry_contract_version')if k in record}))
+        if boot_inflight_case([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()],inflight)!=case:return 1
+    except (CaptureError,ValueError,KeyError):return 1
+    if not inflight and record.get('ssap_subscription_inflight_expiry_acceptance')is not None:return 1
     if inflight:
         from ws73_ssap_subscription import valid_inflight_summary,valid_inflight_supervision
         from ws73_ssap_sender_deadline import valid_hold_summary
         if(type(record.get('ssap_subscription_inflight_release_contract_version'))is not int or record['ssap_subscription_inflight_release_contract_version']!=1
-                or snapshot!=1 or record.get('ssap_subscription_inflight_release_acceptance')is not True
-                or not valid_inflight_summary(channel_proof)or not valid_inflight_supervision(record.get('ssap_subscription_supervision',{}))
-                or not valid_hold_summary(record.get('ssap_subscription_inflight_hold',{}),record.get('ssap_subscription_inflight_corroboration',{}),purpose='subscription-release')):return 1
+                or snapshot!=1 or (record.get('ssap_subscription_inflight_expiry_acceptance')is not True or record.get('ssap_subscription_inflight_release_acceptance')is not False if case=='expiry'else record.get('ssap_subscription_inflight_release_acceptance')is not True or record.get('ssap_subscription_inflight_expiry_acceptance')is not None)
+                or not valid_inflight_summary(channel_proof,case=case)or not valid_inflight_supervision(record.get('ssap_subscription_supervision',{}),case=case)
+                or not valid_hold_summary(record.get('ssap_subscription_inflight_hold',{}),record.get('ssap_subscription_inflight_corroboration',{}),purpose='subscription-'+case)):return 1
     elif(record.get('ssap_subscription_inflight_release_acceptance')or record.get('ssap_subscription_inflight_release_contract_version')is not None
             or record.get('ssap_subscription_inflight_hold')or record.get('ssap_subscription_inflight_corroboration')
             or record.get('ssap_subscription_supervision',{}).get('inflight_release_contract_version')is not None
@@ -2538,6 +2555,7 @@ def main():
             cmd.add_argument('--ssap-subscription-pressure-verify',action='store_true',help='actual bounded subscriber queue full/refusal,ordered drain and checked resume;separate from controller credit pressure')
             cmd.add_argument('--ssap-subscription-owner-loss-verify',action='store_true',help='actual guest reader death,paired cleanup/read barrier and fresh same-Session subscription;not full lifecycle qualification')
             cmd.add_argument('--ssap-subscription-inflight-release-verify',action='store_true',help='release while real indication ACK RX is withheld;actual disableTX barrier,discard and fresh lease business;not expiry qualification')
+            cmd.add_argument('--ssap-subscription-inflight-case',choices=['release','expiry'],default='release',help='explicit original lease expiry or application release,through same bounded in-flight gate')
             cmd.add_argument('--ssap-update-delivery-verify',action='store_true',help='real typed/authenticated CPCD,notification/indication and C/Python peer business reply')
             cmd.add_argument('--ssap-update-lifecycle-verify',action='store_true',help='dedicated same-actor receiver exit,original deadline and confirmed CPCD cleanup;requires update delivery')
             cmd.add_argument('--ssap-value-lengths-verify',action='store_true',help='dedicated real complete-PDU value lengths/MTU refusal gate;not SSAP protocol fragmentation')

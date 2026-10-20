@@ -82,7 +82,8 @@ def requested_down_failure_observation(args, *, passthrough=None):
     if inflight:
         # Reuse the existing exact workload validator,not a looser second
         # selector. This only permits quiet capture after the original FAIL.
-        from ws73_ssap_subscription import requested
+        from ws73_ssap_subscription import requested,requested_inflight_case
+        if requested_inflight_case(args)!='release':raise ValueError('passive Down observation remains a separate release-only gate')
         if (type(real) is not bool or real is not True
                 or any(type(getattr(args,k,None)) is not bool or getattr(args,k) is not True
                        for k in ('connection_verify','channel_socket_verify','ssap_subscription_verify'))

@@ -26,6 +26,12 @@ from ws73_application_client import application_environment, owned_arguments, au
 STATUS = 'REAL_AUTHOR_DEADLINE_LATE_ACK_PENDING_PAIRED_CAPTURE'
 METHOD = 'BOUNDED2S_REAL_IN81_ORIGINAL1S_AUTHOR_DEADLINE'
 RELEASE_METHOD = 'BOUNDED2S_REAL_IN81_SUBSCRIPTION_RELEASE'
+EXPIRY_METHOD = 'BOUNDED2S_REAL_IN81_SUBSCRIPTION_ORIGINAL_EXPIRY'
+HOLD_METHODS={'deadline':METHOD,'subscription-release':RELEASE_METHOD,'subscription-expiry':EXPIRY_METHOD}
+
+
+def hold_status(purpose):
+    return 'TWO_ORIGINAL_SUBSCRIPTION_EXPIRY_HOLDS_CORROBORATED'if purpose=='subscription-expiry'else'TWO_ORIGINAL_SUBSCRIPTION_RELEASE_HOLDS_CORROBORATED'if purpose=='subscription-release'else'TWO_ORIGINAL_AUTHOR_DEADLINE_LATE_ACK_HOLDS_CORROBORATED'
 FIELD = 'ssap_sender_deadline'
 CASES = ('deadline', 'owner-after-deadline')
 
@@ -45,11 +51,13 @@ def boot_case(tokens, enabled):
     return values[0]
 
 
-def validate_inputs(package):
+def validate_inputs(package,*,subscription=False):
     """Do not execute an old prepared guest under a new lifecycle selector."""
     here=Path(__file__).resolve().parent
-    for name in ['ws73_ssap_sender_deadline.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh',
-                 'testing/application_client/client.c','testing/application_client/client.py']:
+    names=['ws73_ssap_sender_deadline.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh',
+           'testing/application_client/client.c','testing/application_client/client.py']
+    if subscription:names+=['ws73_ssap_subscription.py','ws73_application_role.py']
+    for name in names:
         path=here/name
         records=package.get('application_client_tools',{}).get('sources',[])if name.startswith('testing/')else package.get('inputs',[])
         matches=[v for v in records if Path(v['path']).resolve()==path.resolve()]
@@ -157,9 +165,9 @@ def selection_bytes(path,share):
 
 class Coordinator:
     def __init__(self, share, output, record, qemu,*,purpose='deadline'):
-        if purpose not in ('deadline','subscription-release'):raise CaptureError('fixed hold purpose required')
+        if purpose not in HOLD_METHODS:raise CaptureError('fixed hold purpose required')
         validate_qemu(qemu)
-        self.method=RELEASE_METHOD if purpose=='subscription-release'else METHOD
+        self.method=HOLD_METHODS[purpose]
         self.share=Path(share);self.root=self.share/'application/passthrough-control/sender-deadline-hold'
         self.output=Path(output);self.record=record;self.child=None;self.used=[]
         record.update(method=self.method,qemu_sha256=SEQUENCE_QEMU_SHA256,phases=[],complete=False,
@@ -185,7 +193,7 @@ class Coordinator:
             witness=live_witness(self.output,self.share/'ws73.pcap',child.record['selection'],child.record['live_observations'])
             if witness is None:return
             child.record['live_witness']=witness
-        if(self.method==RELEASE_METHOD and child.phase=='release_ready'
+        if(self.method in (RELEASE_METHOD,EXPIRY_METHOD) and child.phase=='release_ready'
                 and (folder/'hold-release_ready.json').exists()):
             witness=release_witness(self.output,self.share/'ws73.pcap',child.record['selection'],
                 child.record.setdefault('release_observations',[]))
@@ -460,8 +468,8 @@ def valid_summary(proof):
 
 
 def corroborate_holds(record,control,capture,stderr,*,cases=None,purpose='deadline'):
-    if purpose not in ('deadline','subscription-release'):raise CaptureError('fixed hold proof purpose required')
-    method=RELEASE_METHOD if purpose=='subscription-release'else METHOD
+    if purpose not in HOLD_METHODS:raise CaptureError('fixed hold proof purpose required')
+    method=HOLD_METHODS[purpose]
     if (record.get('method')!=method or record.get('complete')is not True
             or record.get('qemu_sha256')!=SEQUENCE_QEMU_SHA256 or len(record.get('phases',[]))!=2):
         raise CaptureError('two original bounded hold phases required')
@@ -476,11 +484,12 @@ def corroborate_holds(record,control,capture,stderr,*,cases=None,purpose='deadli
             originals=[p for p in sdus if (p['record'],p.get('hcc_offset'),p.get('direction'))==
                 (observed['record'],observed.get('hcc_offset'),observed.get('direction'))]
             if originals!=[observed]:raise CaptureError('live sender witness differs from original sealed capture')
-        if purpose=='subscription-release':
+        if purpose in ('subscription-release','subscription-expiry'):
             observed=host['release_witness']['disable_tx']
             originals=[p for p in sdus if(p['record'],p.get('hcc_offset'),p.get('direction'))==
                 (observed['record'],observed.get('hcc_offset'),observed.get('direction'))]
-            if originals!=[observed]or not case['release_request_wall_ns']<=observed['wall_ns']<=hold['ack_receipts'][2]['wall_ns']:
+            trigger=case['expiry']['start_wall_ns']if purpose=='subscription-expiry'else case['release_request_wall_ns']
+            if originals!=[observed]or not trigger<=observed['wall_ns']<=hold['ack_receipts'][2]['wall_ns']:
                 raise CaptureError('original in-flight disable TX before unhold confirmation required')
         # The held transfer is independently identified. A NOCP inside it is
         # an observation,not a proved old/new lifetime completion attribution.
@@ -508,7 +517,7 @@ def corroborate_holds(record,control,capture,stderr,*,cases=None,purpose='deadli
         if not hold['markers'][2]['wall_ns']<=p['wall_ns']<=case['end_wall_ns']:raise CaptureError('original withheld aggregate delivered after explicit release required')
         rows.append(dict(phase=phase,slot=slot,host_hold=proof,held_kind='NOCP'if p.get('event')==9 else'ACB',
             scope='Controlled delay only;held aggregate may differ from ACK. Not NOCP lifetime truth,natural recovery,partial admission or full callback/refdrain proof.'))
-    return dict(status='TWO_ORIGINAL_SUBSCRIPTION_RELEASE_HOLDS_CORROBORATED'if purpose=='subscription-release'else'TWO_ORIGINAL_AUTHOR_DEADLINE_LATE_ACK_HOLDS_CORROBORATED',phases=rows)
+    return dict(status=hold_status(purpose),phases=rows)
 
 
 def validate_prefixes(record,path):
@@ -538,13 +547,13 @@ def validate_prefixes(record,path):
 def valid_hold_summary(record,proof,*,purpose='deadline'):
     """Terminal schema checks,not a substitute for original-byte corroboration."""
     try:
-        if purpose not in ('deadline','subscription-release'):return False
-        method=RELEASE_METHOD if purpose=='subscription-release'else METHOD
+        if purpose not in HOLD_METHODS:return False
+        method=HOLD_METHODS[purpose]
         if (record['method']!=method or record['qemu_sha256']!=SEQUENCE_QEMU_SHA256
                 or record['complete']is not True or record['physical_acceptance']is not False
                 or record['automatic_fault_recovery_acceptance']is not False
                 or len(record['phases'])!=2 or len(proof['phases'])!=2
-                or proof['status']!=('TWO_ORIGINAL_SUBSCRIPTION_RELEASE_HOLDS_CORROBORATED'if purpose=='subscription-release'else'TWO_ORIGINAL_AUTHOR_DEADLINE_LATE_ACK_HOLDS_CORROBORATED')):return False
+                or proof['status']!=hold_status(purpose)):return False
         slots=set()
         for phase,(r,p)in enumerate(zip(record['phases'],proof['phases'],strict=True)):
             slot=check_selection(r['selection'],phase);slots.add(slot)
@@ -565,7 +574,7 @@ def valid_hold_summary(record,proof,*,purpose='deadline'):
                         or not re.fullmatch('[0-9a-f]{64}',v['sha256'])):return False
             for key in ['indication_tx','indication_rx','ack_tx']:
                 if not isinstance(r['live_witness'][key],dict)or not r['live_witness'][key]:return False
-            if purpose=='subscription-release':
+            if purpose in ('subscription-release','subscription-expiry'):
                 observations=r.get('release_observations',[])
                 if not r.get('release_witness',{}).get('disable_tx')or not 1<=len(observations)<=64 or 'partial'in observations[-1]or r['release_witness']['observations']!=observations:return False
                 for v in observations:

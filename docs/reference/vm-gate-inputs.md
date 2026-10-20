@@ -666,3 +666,30 @@ SSAP分片仍不超过2042字节物理MTU。起始/结束片各有独立双端US
 用于格式2；新入口在USB接管前明确NotSupported，等待替换selector和新原期限／撤权
 实机证据。原冻结selector、断言及失败/通过记录保留，CMTC专项和数据门禁继续并行；
 不把该工具迁移冒充生命周期验收完成，也不以退回旧协议offer绕过。
+
+
+### 在途订阅的自然租约到期
+
+`--ssap-subscription-inflight-release-verify` 仍选择现有的有限在途清理夹具；
+默认 `--ssap-subscription-inflight-case release` 保留原应用主动释放语义。
+显式 `--ssap-subscription-inflight-case expiry` 使用独立的 expiry contract 1、
+boot 身份与终态判据，不能将旧 release 报告改名为到期资格。必须重新准备完整
+Host／guest 工具和镜像；`expiry` 不与额外 Down 被动观察窗口合并。
+
+到期用例仅将每个角色第一只接收者的第一次 indication 租约设为原始 1000 ms。
+真实 indication TX、对端 RX 和 ACK TX 均须在到期前发生；保持原 ACK RX 的
+有界 USB 延迟期间，不向接收应用发送 release、renew 或 read。现有 Session actor
+必须按原租约自主发出 CPCD disable。Host 捕获真实 disable TX 且原 ACK RX 尚未
+到达，才允许交还原 USB 字节。之后原发送须完成、清理须获真实回复，接收应用
+才能读取 EXPIRED 终态；在途已接受的一包记 discarded，不计业务交付。
+
+终态已确认时不再发送 release；仍在 Closing 时，实际 release 仅等待原到期清理，
+不能重启清理期限。两种结果都要求 reason=EXPIRED、discarded=1、空应用批次，
+以及相同 Session／安全 epoch 下的新 token 和后续真实校验回写。完成到期及
+清理仍受原 expires 加 5 秒上限约束。生产 SDK、Host、credit 和 Engine 不增加旁路。
+
+捕获与应用均在同一 guest，使用有界 realtime／monotonic 采样区间核对 ACK TX
+早于原 expires、disable TX 不早于 expires；不跨主机时钟计算单向时延。该检查
+依赖记录的 guest 时钟映射，模型／parser fixture 通过不等于实际定时或实机通过。
+这是明确的单租约在途到期门禁，仍不覆盖多应用共享 CPCD、Grant／epoch 撤销、
+完整 fd／引用排空、NOCP 正确性或自然恢复。历史失败和原断链门禁保持。

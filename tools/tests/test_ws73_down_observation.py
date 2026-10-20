@@ -119,6 +119,9 @@ class Observation(unittest.TestCase):
             connection_verify=True,channel_socket_verify=True,ssap_subscription_verify=True,
             ssap_subscription_inflight_release_verify=True,security_agent='numeric-approve')
         self.assertEqual(requested_down_failure_observation(run.args),12)
+        run.args.ssap_subscription_inflight_case='expiry'
+        with self.assertRaises(ValueError):requested_down_failure_observation(run.args)
+        run.args.ssap_subscription_inflight_case='release'
         a={'path':'/a','address':'AA:AA:AA:AA:AA:AA','generation':1};b={'path':'/b','address':'BB:BB:BB:BB:BB:BB','generation':2}
         with patch('ws73_connection_control.time',SimpleNamespace(monotonic=clock.monotonic,time_ns=clock.time_ns,sleep=clock.sleep)):
             with self.assertRaisesRegex(CaptureError,'shared budget'):await_down_properties(run,phase,a,b)

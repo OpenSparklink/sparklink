@@ -412,6 +412,9 @@ def verify_passthrough():
     inflight_requested='ws73.ssap_subscription_inflight_release=1'in Path('/proc/cmdline').read_text().split()
     from ws73_ssap_subscription import inflight_required
     if inflight_requested and not subscription_requested or any(inflight_required(row)!=inflight_requested for row in run.get('channel_socket',[])):raise ValueError('in-flight release boot/request/evidence mismatch')
+    from ws73_ssap_subscription import boot_inflight_case,inflight_case
+    requested_case=boot_inflight_case(Path('/proc/cmdline').read_text().split(),inflight_requested)
+    if any(inflight_case(row)!=requested_case for row in run.get('channel_socket',[])):raise ValueError('in-flight original case boot/evidence mismatch')
     from ws73_role_snapshot import TOKEN,requested as snapshot_requested
     snapshot_boot=Path('/proc/cmdline').read_text().split().count(TOKEN)
     if snapshot_boot>1 or snapshot_boot and not subscription_requested or any(snapshot_requested(row)!=bool(snapshot_boot)for row in run.get('channel_socket',[])):raise ValueError('snapshot boot/request/evidence mismatch')

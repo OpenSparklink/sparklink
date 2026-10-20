@@ -1287,6 +1287,10 @@ impl ConnectionIface {
             },
         )
         .await
+        .inspect_err(|error| {
+            tracing::warn!(%error, generation=self.generation,
+                lifetime=self.reference.lifetime, "SSAP subscription acquisition refused");
+        })
     }
     async fn read_ssap_updates(
         &self,

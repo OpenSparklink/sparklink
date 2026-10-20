@@ -298,3 +298,20 @@ python3 tools/build_resources.py -- cargo kani -Z unstable-options --manifest-pa
 unsupported/timeout/未展开均未证明。源码hash、工具版本、原始导出及实际回归另行记录。
 旧 `formal/ssap_value/check.py` 的“两项codec摘要”判据不适用于现有全部harness，不能
 用它升级新预算或其他codec资格；安装检查不等于这段实现已证明。
+
+### SSAP共享租约：有限所有权／物理义务模型
+
+`run_formal.py --ssap-shared-only` 复用既有TLC执行与fail-closed结果判定。模型是一个
+已完成Native身份／安全绑定的同过滤／模式组，三个不同token、两个同时租约和两个
+抽象清理时钟步；生产上限8由实际Rust容量回归另验，模型不声称覆盖全部上限。
+Start／Enable映射`ReceiveTransaction.next/submitted/apply`，Join映射`can_join/join`，
+Close映射独立owner/expiry/close及路由移除，最后Disable映射原物理清理及未知结果隔离。
+已释放token不可重新准入；部分关闭保留兄弟拥有者；未知物理效果保留debt。
+终态flags是完成当时的观察，不能反推当前远端配置。弱close-any控制必须产生
+`NoSiblingClear`反例；它是故意削弱多拥有者规则，不是旧单租约实现的实机缺陷。
+
+七项安全性质及在弱公平worker／timer调度下最终成功或失败的终态性质分开记录。
+没有假定固件一定回复；未知结果和到期均可进入Retired且不抹去物理义务。
+这不是Rust refinement、实际5秒墙钟证明、队列／锁／引用排空、Native权限／credit／
+Ticket、USB／NOCP、generation复用或安全／硬件证明。实际生产分流、私有总线、SDK
+及VM双端捕获／应用回写是独立门禁；timeout、unsupported或缺少完整性质均未证明。

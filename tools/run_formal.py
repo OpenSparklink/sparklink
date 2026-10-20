@@ -37,6 +37,20 @@ def ssap_client_configuration(raw, *, weak=None):
     return dict(constants=expected, invariants=sorted(invariants), temporal=temporal)
 
 
+def ssap_shared_configuration(raw,*,weak=False):
+    invariants={'TypeOK','NoSiblingClear','DebtPreserved','NoOldResurrection','SingleTerminal','CapacityBound','NoFalseRemoteOff'}
+    rows=re.findall(r'^INVARIANTS\s+([^\n]+)$',raw,re.M)
+    expected=dict(Tokens='3',Capacity='2',CleanupBudget='2',WeakClose='TRUE'if weak else'FALSE')
+    values=re.findall(r'^(\w+)\s*=\s*(\S+)\s*$',raw,re.M)
+    temporal=re.findall(r'^PROPERTY\s+([^\n]+)$',raw,re.M)
+    if (type(weak)is not bool or len(rows)!=1 or set(rows[0].split())!=invariants or len(rows[0].split())!=len(invariants)
+            or len(values)!=len(expected)or dict(values)!=expected or temporal!=([]if weak else['EventuallyTerminal'])
+            or re.findall(r'^SPECIFICATION\s+(\S+)\s*$',raw,re.M)!=['Spec']
+            or re.findall(r'^CHECK_DEADLOCK\s+(\S+)\s*$',raw,re.M)!=['FALSE']):
+        raise ValueError('complete exact bounded shared-owner properties and negative control required')
+    return dict(constants=expected,invariants=sorted(invariants),temporal=temporal)
+
+
 def classify(kind, code, output, timed_out=False):
     if timed_out:
         return "NOT_PROVEN_TIMEOUT"
@@ -63,12 +77,15 @@ def classify(kind, code, output, timed_out=False):
         found = dict(re.findall(r"Observation (\w+) (Never|Sometimes|Always)\b", output))
         if code == 0 and found == expected:
             return "PROVED_SCOPED_WITH_WEAK_CONTROL"
-    elif kind == "tlc-ssap-client" and code == 0:
+    elif kind in ("tlc-ssap-client","tlc-ssap-shared") and code == 0:
         states = re.search(r"(\d+) distinct states found", output)
         if ("Model checking completed. No error has been found." in output
                 and "Finished checking temporal properties" in output
-                and states and int(states[1]) > 0):
+                and states and int(states[1]) > 0 and not re.search(r"^Error:",output,re.M)):
             return "MODEL_CHECKED_SCOPED_NOT_IMPLEMENTATION_REFINEMENT"
+    elif kind == "counterexample-ssap-shared":
+        if code == 12 and "Invariant NoSiblingClear is violated." in output and len(re.findall(r"^State \d+:",output,re.M))>=2:
+            return "EXPECTED_COUNTEREXAMPLE_WEAK_GUARD"
     elif kind in ("counterexample-ssap-parts", "counterexample-ssap-drain"):
         invariant = "NoPrematureSuccess" if kind.endswith("parts") else "DrainNotRenewed"
         if code == 12 and f"Invariant {invariant} is violated." in output:
@@ -133,7 +150,9 @@ def kani_export_verdict(data, harness, required=(), negative_marker=None, *, all
         return 'NOT_PROVEN_INVALID_EXPORT'
 
 
-def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False, ingress_only=False, usb_registry_only=False, backend_install_only=False, ssap_client_only=False):
+def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=False, binding_only=False, session_only=False, grant_only=False, rx_only=False, fd_grant_only=False, backend_only=False, ingress_only=False, usb_registry_only=False, backend_install_only=False, ssap_client_only=False, ssap_shared_only=False):
+    if ssap_shared_only and any((credit_all,ticket_only,credit_rollback_only,binding_only,session_only,grant_only,rx_only,fd_grant_only,backend_only,ingress_only,usb_registry_only,backend_install_only,ssap_client_only)):
+        raise ValueError("shared-owner proof requires its dedicated declared matrix")
     repo = Path(__file__).resolve().parents[1]
     kernel = Path(os.environ.get("SPARKLINK_KERNEL_SOURCE", repo.parent / "linux")).resolve()
     # Independent worktrees and CI pins need the explicitly selected kernel,
@@ -158,6 +177,9 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
     sources += [kernel / "tools/memory-model" / name for name in
                 ("linux-kernel.cfg", "linux-kernel.cat", "linux-kernel.bell", "linux-kernel.def")]
     sources += [repo / "formal/README.md", repo / "formal/credit/Cargo.toml", repo / "formal/grant/Cargo.toml", Path(__file__).resolve()]
+    if ssap_shared_only:
+        sources += [repo/"crates/slkd/src"/name for name in ("ssap_engine.rs","ssap_receive_transaction.rs","ssap_subscription.rs")]
+        sources += [repo/"crates/slk-contract/src/lib.rs",repo/"crates/libsparklink/src/ssap/subscription.rs"]
     if ssap_client_only:
         sources += [repo / "crates/slkd/src/ssap_engine.rs", repo / "crates/slk-protocol/src/ssap/fragments.rs",
                     repo / "crates/slk-channel/src/security.rs"]
@@ -308,6 +330,12 @@ def run(output, credit_all, budget, ticket_only=False, credit_rollback_only=Fals
             "implementation refinement and hardware are outside this model. Two weak guards must have exact"
             "counterexamples;no assumption that firmware sends a response. No full actual kernel/actor proof.")
     record["ssap_client_only_requested"] = ssap_client_only
+    if ssap_shared_only:
+        record['ssap_shared_configurations']={name:ssap_shared_configuration((repo/'formal/lifecycle'/name).read_text(),weak=weak)for name,weak in [('SSAPSharedOwnership.cfg',False),('SSAPSharedOwnershipWeak.cfg',True)]}
+        checks=[(name,kind,repo/'formal/lifecycle',['tlc','-workers','1','-metadir',str(output/name),'-config',config,'SSAPSharedOwnership.tla'])for name,kind,config in [('ssap-shared-ownership','tlc-ssap-shared','SSAPSharedOwnership.cfg'),('ssap-shared-weak-close','counterexample-ssap-shared','SSAPSharedOwnershipWeak.cfg')]]
+        record['ssap_shared_scope']='Bounded abstract one alreadyidentity/security-bound exactfilter/mode physicalgroup;3distincttokens,capacity2 (actualRustcapacity8testedseparately),onepossibleEnable/Disableeffect,optionalvalidatedreply orunknownfailure/retirement;no firmwarepositivereply fairness. Seven safety properties and terminalclose underweaklyfairworker/timer only,notboundedwalltime/implementationrefinement. Flagsretained/off are historicalterminalobservations. Independentqueues,Nativeidentity/Grant/credit/Ticket/RXauthentication,USB/callback/refdrain,NOCP,reuse/newgeneration,hardware notproved. Weakenedmulti-owner close-any guard is deliberatecounterexample,not an observed bug in old single-lease production.'
+        record['ssap_shared_mapping']={'Start/Enable/EnableUnknown':'ReceiveTransaction.next/submitted/apply:markpossibly_enabled beforemaybesubmit,checkactualcorrelatedresult;unknownphysicaleffectnevererased','Join':'can_join/join:Active/live/currentidentity/filter/mode/token/capacity,originaldeadline;noextraNativewire','Close':'maintain Stream.close/expiry/OwnerLost,detachownSink andfinish(retained=true);closing usesallbindings','DisableVerified/DisableUnknown/Expire':'lastbinding closing,next Disable,originalfirstcleanup,verifiedresponse orretirewithunknown;notcallbackdrain','regression':'productionshared_release_retains_sibling_and_only_last_reference_owes_disable;secondaryowner/expiry/readcancel/capacity andfanout tests','WeakClose':'replaceallbindingclosing withany-owner close afterenablingmultipleowners;counterexample maps toshared-release regression'}
+    record['ssap_shared_only_requested']=ssap_shared_only
     manifest = output / "manifest.json"
     for name, kind, cwd, command in checks:
         log = output / (name + ".log")
@@ -347,6 +375,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--credit-all", action="store_true")
+    parser.add_argument("--ssap-shared-only",action="store_true",help="bounded abstract shared subscription ownership/debt with weak close-any counterexample")
     parser.add_argument("--ssap-client-only", action="store_true", help="bounded abstract partial client admission/cancellation/drain TLC and two weak controls")
     parser.add_argument("--backend-install-only", action="store_true", help="bounded abstract Backend reservation/publication TLC and weak generation control")
     parser.add_argument("--usb-registry-only", action="store_true", help="actual generated production pending allocator Kani only")
@@ -363,4 +392,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not 1 <= args.budget_seconds <= 3600:
         parser.error("budget must be 1..3600 seconds per check")
-    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only, args.ingress_only, args.usb_registry_only, args.backend_install_only, args.ssap_client_only))
+    raise SystemExit(run(args.output, args.credit_all, args.budget_seconds, args.ticket_only, args.credit_rollback_only, args.binding_only, args.session_only, args.grant_only, args.rx_only, args.fd_grant_only, args.backend_only, args.ingress_only, args.usb_registry_only, args.backend_install_only, args.ssap_client_only, args.ssap_shared_only))

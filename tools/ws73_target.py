@@ -592,8 +592,10 @@ def _run(args):
     benchmark_mode=getattr(args,'channel_benchmark',None)
     benchmark_window=getattr(args,'channel_benchmark_window',4)
     benchmark_xhci=getattr(args,'channel_benchmark_xhci','on')
-    from ws73_socket_benchmark import requested_configuration
+    from ws73_socket_benchmark import requested_configuration,requested_channel
     benchmark_config=requested_configuration(args)
+    benchmark_channel=requested_channel(args)
+    benchmark_verifier_names=['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py']+(['ws73_dynamic_channels.py']if benchmark_channel is not None else[])
     if benchmark_xhci not in ('on','off') or (not benchmark_mode and benchmark_xhci!='on'):raise ValueError('explicit benchmark required for xHCI comparison')
     if benchmark_mode and (benchmark_mode not in ['rate','window','duplex'] or not passthrough or not connection_verify or support or parallel or acb_probe or agent_mode or dynamic_channels or getattr(args,'daemon_link_resync',False) or getattr(args,'channel_socket_verify',False)):
         raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
@@ -839,8 +841,9 @@ def _run(args):
         m['socket_benchmark_apps_acceptance']=False
         m['socket_benchmark_window_requested']=benchmark_window
         m['socket_benchmark_config_requested']=benchmark_config
+        if benchmark_channel is not None:m['benchmark_channel_request']=benchmark_channel
         m['socket_benchmark_xhci_requested']=benchmark_xhci
-        m['benchmark_verifiers']=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py']]
+        m['benchmark_verifiers']=[file_record(HERE/name) for name in benchmark_verifier_names]
     m['socket_benchmark_acceptance']=False
     m['performance_qualified']=False
     m['channel_socket_verification_requested']=channel_socket
@@ -1062,7 +1065,7 @@ def _run(args):
                     m['ssap_subscription_inflight_expiry_contract_version']=1
         if benchmark_mode:
             from ws73_socket_benchmark import validate_role_sources
-            validate_role_sources(package)
+            validate_role_sources(package,dynamic=benchmark_channel is not None)
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if application_clients:
@@ -1203,6 +1206,7 @@ def _run(args):
                      (' ws73.channel_fairness=1' if fairness else '')+
                      (' ws73.socket_benchmark_apps=1'if benchmark_mode else '')+
                      (f' ws73.benchmark_mode={benchmark_mode} ws73.benchmark_window={benchmark_window} ws73.benchmark_xhci={benchmark_xhci} ws73.benchmark_count={benchmark_config["count"]} ws73.benchmark_bytes={benchmark_config["bytes"]} ws73.benchmark_interval_us={benchmark_config["interval_us"]}' if benchmark_mode else '')+
+                     (f' ws73.benchmark_dynamic=1 ws73.benchmark_active={benchmark_channel["active_endpoint"]}'if benchmark_channel is not None else'')+
                      (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
@@ -1619,14 +1623,15 @@ def _run(args):
                     m['expected_external_selftest_taint']=4096
                 if bool(benchmark_mode) != ('socket_benchmark' in control):raise ValueError('benchmark explicit request/evidence mismatch')
                 if benchmark_mode:
-                    from ws73_socket_benchmark import corroborate as benchmark_corroborate
+                    from ws73_socket_benchmark import corroborate as benchmark_corroborate,row_channel
                     from ws73_channel_socket import validate_application_tools
                     validate_application_tools(control,args.prepared/'root',package['guest_files'])
                     if any(r['config']!=benchmark_config for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from exact requested workload')
+                    if any(row_channel(r)!=benchmark_channel for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from original channel target')
                     m['socket_benchmark_corroboration']=benchmark_corroborate(control,capture,share)
                     from ws73_benchmark_timeline import check_xhci
                     m['socket_benchmark_xhci_observation']=check_xhci(share,benchmark_xhci)
-                    if m['benchmark_verifiers']!=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py']]:raise ValueError('benchmark verifier changed during execution')
+                    if m['benchmark_verifiers']!=[file_record(HERE/name) for name in benchmark_verifier_names]:raise ValueError('benchmark verifier changed during execution')
                     from ws73_socket_benchmark import verify_role_artifacts,validate_role_tools,valid_role_supervision
                     validate_role_tools(control,args.prepared/'root',package['guest_files'])
                     m['socket_benchmark_role_supervision']=verify_role_artifacts(control,share)
@@ -2397,16 +2402,27 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         names=[Path(v.get('path','')).name for v in record.get('benchmark_verifiers',[])]
         resource=record.get('benchmark_process_resource_contract_version')
         expected_names={'ws73_benchmark_resources.py'}if resource is not None else set()
+        if 'benchmark_channel_request'in record:expected_names.add('ws73_dynamic_channels.py')
         if len(names)!=5+len(expected_names) or set(names)!=expected_names|{'ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py'}:return 1
     elif benchmark_boot or record.get('socket_benchmark_apps_acceptance')or record.get('socket_benchmark_role_supervision'):return 1
-    if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record):return 1
+    extra_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_active='))]
+    if not record.get('socket_benchmark_requested')and extra_boot:return 1
+    if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record or 'benchmark_channel_request'in record):return 1
     if record.get('socket_benchmark_requested'):
         proof=record.get('socket_benchmark_corroboration',{})
         mode=record['socket_benchmark_requested']
         window=record.get('socket_benchmark_window_requested',4)
-        from ws73_socket_benchmark import record_configuration,configuration,validate_configuration
+        from ws73_socket_benchmark import record_configuration,configuration,validate_configuration,row_channel
         try:config=record_configuration(record)
         except (ValueError,KeyError,TypeError):return 1
+        try:channel=row_channel(record);proof_channel=row_channel(proof)
+        except (ValueError,KeyError,TypeError):return 1
+        dynamic_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_active='))]
+        if channel!=proof_channel:return 1
+        if channel is None:
+            if dynamic_boot or any('dynamic_negotiation'in p or 'channel_requests'in p.get('application',{})for p in proof.get('proofs',[])):return 1
+        elif (not benchmark_role or trace_contract!=1 or resource!=1 or channel['ports']!=[24576,24577]or channel['aid']!=29441
+              or dynamic_boot!=['ws73.benchmark_dynamic=1',f'ws73.benchmark_active={channel["active_endpoint"]}']):return 1
         resource=record.get('benchmark_process_resource_contract_version')
         from ws73_benchmark_resources import valid_summary
         if resource is not None:
@@ -2425,6 +2441,12 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if (mode not in ['rate','window','duplex'] or record.get('socket_benchmark_acceptance') is not True or record.get('performance_qualified') is not False or record.get('qemu_exit')!=0 or proof.get('status')!='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED' or proof.get('mode')!=mode or proof.get('performance_qualified') is not False or proof.get('round_trips')!=count*(4 if mode=='duplex' else 2) or len(proof.get('proofs',[]))!=2):return 1
         phases=proof['proofs']
         if not isinstance(phases,list) or any(not isinstance(p,dict) or p.get('phase')!=n or not isinstance(p.get('legs'),list) or len(p['legs'])!=count*(4 if mode=='duplex' else 2) or p.get('application',{}).get('status')!='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED' or p['application'].get('performance_qualified') is not False or p['application'].get('fixture') is not False or p['application'].get('messages')!=([count,count] if mode=='duplex' else [count,0]) for n,p in enumerate(phases)):return 1
+        if channel is not None:
+            from ws73_socket_benchmark import application_request
+            for phase in phases:
+                expected=[application_request(dict(config=config,benchmark_channel_request=channel),i)for i in (0,1)]
+                if phase['application'].get('channel_requests')!=expected or set(phase.get('dynamic_negotiation',{}))!={'request','response'}:return 1
+                if any(set(phase['dynamic_negotiation'][key])!={'tx','rx'}for key in ('request','response')):return 1
     burst=record.get('dynamic_channel_burst_requested',False)
     if type(burst) is not bool or (burst and (record.get('dynamic_channel_verification_requested') is not True or record.get('dynamic_channel_long_bytes_requested')!=2042)):return 1
     if 'dynamic_channel_verification_requested' in record and type(record['dynamic_channel_verification_requested']) is not bool:return 1
@@ -2636,6 +2658,8 @@ def main():
             cmd.add_argument('--channel-benchmark-interval-us',type=int,help='rate-only absolute interval10..1000000us,default100000;totalplan<=600s')
             cmd.add_argument('--channel-benchmark-xhci',choices=['on','off'],default='on',help='VM-only xHCI trace comparison;usbmon remains enabled')
             cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate bounded real application benchmark in both connection roles;not performance qualification')
+            cmd.add_argument('--channel-benchmark-dynamic',action='store_true',help='explicit basic dynamic endpoint target;requires real CMTC and paired business evidence')
+            cmd.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1],help='dynamic negotiation role independent of business direction;default0 when dynamic')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
             cmd.add_argument('--native-return-verify',action='store_true',help='VM-only actual Native bind-return/physical Down/parent cleanup,then ordinary data preservation')
             cmd.add_argument('--native-controller-return',choices=['initiator','acceptor'],help='actual User bind return across existing one-leaf QMP removal; original socket gate runs after re-add')

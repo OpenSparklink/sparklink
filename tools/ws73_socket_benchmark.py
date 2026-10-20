@@ -30,9 +30,55 @@ ROLE_RUNTIME=Path(_ROLE_PROFILE['root'])
 ROLE_INPUT=Path('/evidence/application/passthrough-control')
 ROLE_VERSION=1
 RESOURCE_FIELD='benchmark_process_resource_contract_version'
+CHANNEL_FIELD='benchmark_channel_request'
 ROLE_STATUS='TWO_FINITE_BENCHMARK_PHASES_COMPLETED'
 CLOCK='guest wall_ns for observed IO/capture;guest monotonic_ns for supervisory budgets;no cross-application timestamp subtraction'
 ROLE_REQUEST_FIELDS={'phase','owners','config','application_tool','start_wall_ns','status','applications','events','performance_qualified','clock','socket_benchmark_role_contract_version','tools'}
+
+
+def channel_configuration(value):
+    """Explicit protocol endpoints, not TCIDs, identity or observed capabilities."""
+    if (type(value)is not dict or set(value)!={'version','kind','ports','aid','active_endpoint'}
+        or type(value['version'])is not int or value['version']!=1 or value['kind']!='dynamic_basic'
+        or type(value['ports'])is not list or len(value['ports'])!=2
+        or any(type(v)is not int or not 1<=v<=65535 for v in value['ports'])
+        or type(value['aid'])is not int or not 1<=value['aid']<=65535
+        or type(value['active_endpoint'])is not int or value['active_endpoint']not in(0,1)):
+        raise CaptureError('explicit version1 basic dynamic route required')
+    return value
+
+
+def requested_channel(args):
+    dynamic=getattr(args,'channel_benchmark_dynamic',False)
+    active=getattr(args,'channel_benchmark_active_endpoint',None)
+    if type(dynamic)is not bool or (active is not None and(type(active)is not int or active not in(0,1))):
+        raise CaptureError('explicit dynamic benchmark selector/role required')
+    if not dynamic:
+        if active is not None:raise CaptureError('channel role requires dynamic benchmark')
+        return None
+    if not getattr(args,'channel_benchmark',None):raise CaptureError('dynamic target requires benchmark mode')
+    return channel_configuration(dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=0 if active is None else active))
+
+
+def row_channel(row):
+    return channel_configuration(row[CHANNEL_FIELD])if CHANNEL_FIELD in row else None
+
+
+def request_fields(row):
+    return ROLE_REQUEST_FIELDS|({RESOURCE_FIELD}if RESOURCE_FIELD in row else set())|({CHANNEL_FIELD}if CHANNEL_FIELD in row else set())
+
+
+def application_request(row,index):
+    channel=row_channel(row)
+    if channel is None:return None
+    mtu=max(249,row['config']['bytes'])
+    return dict(version=1,kind='dynamic_basic',source_port=channel['ports'][index],destination_port=channel['ports'][1-index],
+                aid=channel['aid'],mtu=mtu,mps=mtu+5,slqi=1,passive=index!=channel['active_endpoint'])
+
+
+def staged_text(row,index):
+    r=application_request(row,index)
+    return f"SocketBenchmarkStaged: source={r['source_port']} destination={r['destination_port']} aid={r['aid']} passive={str(r['passive']).lower()}"
 
 
 def apps_role(row):
@@ -56,27 +102,31 @@ def role_tool_path(root,name):
     return resolved
 
 
-def role_tools(root=Path('/')):
+def role_tools(root=Path('/'),*,dynamic=False):
     import hashlib
     from ws73_role_snapshot import HELPER,SUPERVISOR
     names=('/bin/slktest','/bin/bus-policy-probe',HELPER,SUPERVISOR,'/usr/share/sparklink/tools/ws73_socket_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark_timeline.py','/usr/share/sparklink/tools/ws73_benchmark_resources.py')
+    if dynamic:names+=('/usr/share/sparklink/tools/ws73_dynamic_channels.py',)
     return {n:dict(sha256=hashlib.sha256(role_tool_path(root,n).read_bytes()).hexdigest(),bytes=role_tool_path(root,n).stat().st_size)for n in names}
 
 
-def validate_role_sources(package):
+def validate_role_sources(package,*,dynamic=False):
     from ws73_north_star import file_record
     here=Path(__file__).resolve().parent
     if type(package.get('socket_benchmark_role_contract_version'))is not int or package['socket_benchmark_role_contract_version']!=1:raise ValueError('fresh apps-only benchmark prepared contract1 required')
     if type(package.get('benchmark_trace_contract_version'))is not int or package['benchmark_trace_contract_version']!=1:raise ValueError('fresh explicit monotonic benchmark trace contract1 required')
     if type(package.get(RESOURCE_FIELD)) is not int or package[RESOURCE_FIELD]!=1:raise ValueError('fresh process-resource benchmark contract1 required')
-    for name in ('ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh'):
+    names=('ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh')
+    if dynamic:names+=('ws73_dynamic_channels.py',)
+    for name in names:
         matches=[v for v in package['inputs']if Path(v['path']).name==name]
         if len(matches)!=1 or matches[0]['sha256']!=file_record(here/name)['sha256']:raise ValueError('prepared benchmark role/source closure mismatch: '+name)
 
 
 def validate_role_request(row,phase,*,live=False):
     extra={RESOURCE_FIELD}if RESOURCE_FIELD in row else set()
-    if (live or extra)and(type(row.get(RESOURCE_FIELD))is not int or row[RESOURCE_FIELD]!=1):raise CaptureError('new live resource checkpoint contract required')
+    if row_channel(row)is not None:extra.add(CHANNEL_FIELD)
+    if (live or RESOURCE_FIELD in row)and(type(row.get(RESOURCE_FIELD))is not int or row[RESOURCE_FIELD]!=1):raise CaptureError('new live resource checkpoint contract required')
     if(type(phase)is not int or phase not in(0,1)or type(row.get('phase'))is not int or row['phase']!=phase or not apps_role(row)
         or set(row)!=ROLE_REQUEST_FIELDS|extra
         or row['applications']!=[]or row['events']!=[]or row['status']!='RUNNING'or row['performance_qualified']is not False):raise CaptureError('fixed empty apps-only benchmark request required')
@@ -96,6 +146,8 @@ def execute(run,phase):
     """Control role requests one fixed root-supervised ordinary application pair."""
     from ws73_application_role import read_json
     row=dict(phase=len(run.data['connection_control']['phases'])-1,owners=phase['typed_objects'],config=requested_configuration(run.args),application_tool=test_program(run),start_wall_ns=time.time_ns(),status='RUNNING',applications=[],events=[],performance_qualified=False,clock=CLOCK,socket_benchmark_role_contract_version=ROLE_VERSION,benchmark_process_resource_contract_version=1,tools=role_tools())
+    channel=requested_channel(run.args)
+    if channel is not None:row[CHANNEL_FIELD]=channel;row['tools']=role_tools(dynamic=True)
     validate_role_request(row,row['phase'],live=True);run.data.setdefault('socket_benchmark',[]).append(row);run.save()
     path=run.output/f'benchmark-role-{row["phase"]}.request.json';temporary=path.with_suffix('.tmp')
     with temporary.open('x')as f:json.dump(row,f)
@@ -150,12 +202,15 @@ def record_configuration(record):
     return valid
 
 
-def arguments(binary, entry, mode, report, window=WINDOW, *, count=COUNT, size=SIZE, interval_us=None):
+def arguments(binary, entry, mode, report, window=WINDOW, *, count=COUNT, size=SIZE, interval_us=None, channel=None):
     c=configuration(mode if mode!='peer' else 'window',window,count=count,size=size,interval_us=0 if mode=='peer' else interval_us)
     args=[str(binary),'--adapter',entry['owner']['path'],'channel',mode,entry['object']['path'],
           '--count',str(c['count']),'--bytes',str(c['bytes']),'--window',str(window),'--report',str(report)]
     if mode=='peer':args+=['--load']
     if mode=='rate':args+=['--interval-us',str(c['interval_us'])]
+    if channel is not None:
+        args+=['--source-port',str(channel['source_port']),'--destination-port',str(channel['destination_port']),
+               '--aid',str(channel['aid']),'--channel-role','passive'if channel['passive']else'active']
     return args
 
 
@@ -166,17 +221,19 @@ def execute_supervised(run,row):
     from ws73_north_star import file_record
     require_vm(ROLE_TOKEN)
     if not apps_role(row):raise CaptureError('live benchmark requires explicit apps-only contract')
-    validate_role_request({k:row[k]for k in ROLE_REQUEST_FIELDS|{RESOURCE_FIELD}},row['phase'],live=True)
-    if row['tools']!=role_tools()or row['application_tool']!=file_record(Path('/bin/slktest').resolve(strict=True)):
+    validate_role_request({k:row[k]for k in request_fields(row)},row['phase'],live=True)
+    if row['tools']!=role_tools(dynamic=row_channel(row)is not None)or row['application_tool']!=file_record(Path('/bin/slktest').resolve(strict=True)):
         raise CaptureError('fixed prepared benchmark executables and tools required')
     mode=row['config']['mode'];window=row['config']['window'];config=validate_configuration(row['config'])
     reports=run.output/'reports';reports.mkdir(mode=0o700);os.chown(reports,1004,1004)
-    processes=[];buffers={};output={};duplicates=set();selector=selectors.DefaultSelector()
+    processes=[None,None];row['applications']=[None,None]
+    buffers={};output={};duplicates=set();selector=selectors.DefaultSelector()
+    channel=row_channel(row);observed={kind:set()for kind in ('staged','armed','quiescent')}
     def event(kind,index,**values):
         row['events'].append(dict(kind=kind,application=index,wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns(),**values))
-    def wait_marker(kind,seconds):
-        deadline=time.monotonic()+seconds;seen=set()
-        while len(seen)!=2:
+    def wait_marker(kind,seconds,indices=(0,1)):
+        deadline=time.monotonic()+seconds
+        while not set(indices)<=observed[kind]:
             if time.monotonic()>=deadline:raise CaptureError('original benchmark supervisor '+kind+' deadline')
             for key,_ in selector.select(min(.1,max(0,deadline-time.monotonic()))):
                 index=key.data;data=os.read(key.fileobj.fileno(),8192)
@@ -186,14 +243,21 @@ def execute_supervised(run,row):
                 while b'\n' in buffers[index]:
                     raw,buffers[index]=buffers[index].split(b'\n',1)
                     text=raw.decode('utf-8',errors='strict')
-                    if kind=='armed' and text=='NativeChannelDup: original_closed=1 duplicate_live=1' and index not in duplicates:
+                    if text=='NativeChannelDup: original_closed=1 duplicate_live=1' and index not in duplicates:
                         duplicates.add(index);row['applications'][index]['dup_observed_wall_ns']=time.time_ns();continue
-                    if kind=='armed' and index not in duplicates:raise CaptureError('actual existing duplicate-fd setup receipt required')
+                    if index not in duplicates:raise CaptureError('actual existing duplicate-fd setup receipt required')
                     expected_mode=row['applications'][index]['mode'].capitalize()
-                    if kind=='armed':expected=f"SocketBenchmarkArmed: mode={expected_mode} count={config['count']} bytes={config['bytes']} window={window}"
-                    else:expected=f'SocketBenchmarkQuiescent: mode={expected_mode} correctness=true'
-                    if text!=expected or index in seen:raise CaptureError('unexpected/duplicate benchmark phase output:'+text)
-                    event(kind,index,text=text);seen.add(index)
+                    markers={'armed':f"SocketBenchmarkArmed: mode={expected_mode} count={config['count']} bytes={config['bytes']} window={window}",
+                             'quiescent':f'SocketBenchmarkQuiescent: mode={expected_mode} correctness=true'}
+                    if channel is not None:markers['staged']=staged_text(row,index)
+                    matches=[name for name,line in markers.items()if line==text]
+                    if len(matches)!=1:raise CaptureError('unexpected benchmark phase output:'+text)
+                    actual=matches[0]
+                    if(index in observed[actual]or actual=='armed'and channel is not None and index not in observed['staged']
+                       or actual=='staged'and index in observed['armed']
+                       or actual=='quiescent'and not any(e['kind']=='start'and e['application']==index for e in row['events'])):
+                        raise CaptureError('duplicate/out-of-order benchmark phase output:'+text)
+                    event(actual,index,text=text);observed[actual].add(index)
     def release(kind):
         for i,(proc,_) in enumerate(processes):
             before_wall=time.time_ns();before_mono=time.monotonic_ns()
@@ -201,16 +265,19 @@ def execute_supervised(run,row):
             event(kind,i,before_wall_ns=before_wall,before_monotonic_ns=before_mono)
     try:
         with ExitStack() as files:
-            for i,entry in enumerate(row['owners']):
+            order=(1-channel['active_endpoint'],channel['active_endpoint'])if channel is not None else(0,1)
+            for i in order:
+                entry=row['owners'][i]
                 appmode=mode if i==0 or mode=='duplex' else 'peer'
                 report=reports/f'benchmark-{row["phase"]}-{i}.json'
                 err=run.output/f'benchmark-{row["phase"]}-{i}.stderr'
-                app=dict(mode=appmode,args=arguments(row['application_tool']['path'],entry,appmode,report,window,count=config['count'],size=config['bytes'],interval_us=config['interval_us']),report_path=str(report),stderr_path=str(err),start_wall_ns=time.time_ns())
-                row['applications'].append(app)
+                app=dict(mode=appmode,args=arguments(row['application_tool']['path'],entry,appmode,report,window,count=config['count'],size=config['bytes'],interval_us=config['interval_us'],channel=application_request(row,i)),report_path=str(report),stderr_path=str(err),start_wall_ns=time.time_ns())
+                row['applications'][i]=app
                 proc=subprocess.Popen(app['args'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,
                                       stderr=files.enter_context(err.open('xb')),bufsize=0,user=1004,group=1004,extra_groups=[],umask=0o077,env=dict(os.environ,**application_environment()))
-                processes.append((proc,app));app['pid']=proc.pid;app['credentials'],app['process_status']=process_identity(proc.pid,1004);app['environment']=application_environment();app['output_files']=[str(run.output/f'benchmark-{row["phase"]}-{i}.stdout'),str(err)]
+                processes[i]=(proc,app);app['pid']=proc.pid;app['credentials'],app['process_status']=process_identity(proc.pid,1004);app['environment']=application_environment();app['output_files']=[str(run.output/f'benchmark-{row["phase"]}-{i}.stdout'),str(err)]
                 selector.register(proc.stdout,selectors.EVENT_READ,i);buffers[i]=b'';output[i]=b''
+                if channel is not None:wait_marker('staged',10,(i,))
             wait_marker('armed',45)
             from ws73_benchmark_resources import collect
             for proc,app in processes:app['process_resources']={'before':collect(proc.pid,row['application_tool']['path'])}
@@ -241,7 +308,9 @@ def execute_supervised(run,row):
     except BaseException as error:
         row.update(status='FAIL',error=str(error),error_type=type(error).__name__);raise
     finally:
-        for i,(proc,app) in enumerate(processes):
+        for i,pair in enumerate(processes):
+            if pair is None:continue
+            proc,app=pair
             if proc.poll() is None:
                 if not proc.stdin.closed:proc.stdin.close()
                 try:proc.wait(timeout=5)
@@ -263,17 +332,28 @@ def check_supervision(row):
     from ws73_benchmark_resources import observations
     if RESOURCE_FIELD in row and not apps_role(row):raise CaptureError('resource checkpoint requires apps-only role')
     observations(row)
-    events=row['events']
+    channel=row_channel(row)
+    if channel is not None and not apps_role(row):raise CaptureError('dynamic measurement requires apps-only role')
+    all_events=row['events'];events=[e for e in all_events if e['kind']!='staged']
+    if channel is None and events!=all_events:raise CaptureError('basic CUTC has no dynamic staging')
+    stages=[e for e in all_events if e['kind']=='staged']
+    if channel is not None:
+        if len(stages)!=2 or {e['application']for e in stages}!={0,1}:raise CaptureError('both exact dynamic staged receipts required')
+        passive=1-channel['active_endpoint'];staged=next(e for e in stages if e['application']==passive)
+        if staged['wall_ns']>row['applications'][channel['active_endpoint']]['start_wall_ns']:raise CaptureError('passive staged before active process creation required')
     if len(events)!=8:raise CaptureError('complete paired arm/start/quiescent/finish receipts required')
     for clock in ['wall_ns','monotonic_ns']:
-        stamps=[e[clock] for e in events]
+        stamps=[e[clock] for e in all_events]
         if any(type(v) is not int for v in stamps) or stamps!=sorted(stamps):raise CaptureError('same guest supervisor clock order')
     for offset,kind in enumerate(['armed','start','quiescent','finish']):
         chunk=events[offset*2:offset*2+2]
         if {e['application'] for e in chunk}!={0,1} or any(e['kind']!=kind for e in chunk):raise CaptureError('paired barrier order before either release')
     for i,app in enumerate(row['applications']):
         expected=row['config']['mode'] if i==0 or row['config']['mode']=='duplex' else 'peer'
-        if app['mode']!=expected or app['args']!=arguments(row['application_tool']['path'],row['owners'][i],expected,app['report_path'],window,count=config['count'],size=config['bytes'],interval_us=config['interval_us']):raise CaptureError('actual slktest argv/mode mismatch')
+        requested=application_request(row,i)
+        if app['mode']!=expected or app['args']!=arguments(row['application_tool']['path'],row['owners'][i],expected,app['report_path'],window,count=config['count'],size=config['bytes'],interval_us=config['interval_us'],channel=requested):raise CaptureError('actual slktest argv/mode mismatch')
+        if ('channel_request'in app['report'])!=(requested is not None)or requested is not None and app['report']['channel_request']!=requested:
+            raise CaptureError('actual report channel request differs from original target')
         cred=app['credentials']
         if apps_role(row):
             from ws73_application_client import application_environment
@@ -285,11 +365,18 @@ def check_supervision(row):
         expected_lines=['NativeChannelDup: original_closed=1 duplicate_live=1',f"SocketBenchmarkArmed: mode={expected.capitalize()} count={config['count']} bytes={config['bytes']} window={window}",
                         f'SocketBenchmarkQuiescent: mode={expected.capitalize()} correctness=true',
                         f'SocketBenchmarkLoadObserved: report={app["report_path"]} qualified=false']
+        marker_lines=dict(armed=expected_lines[1],quiescent=expected_lines[2])
+        if channel is not None:
+            marker_lines['staged']=staged_text(row,i);expected_lines.insert(1,marker_lines['staged'])
         if lines!=expected_lines:raise CaptureError('exact complete successful stdout receipts')
         armed=next(e for e in events if e['application']==i and e['kind']=='armed')
         if not app['start_wall_ns']<=app.get('dup_observed_wall_ns',0)<=armed['wall_ns']:raise CaptureError('original duplicate receipt before arm')
-        for kind,line in [('armed',expected_lines[1]),('quiescent',expected_lines[2])]:
-            if next(e for e in events if e['application']==i and e['kind']==kind).get('text')!=line:raise CaptureError('IO marker differs from actual stdout')
+        if channel is not None:
+            staged=next(e for e in stages if e['application']==i)
+            if not app['dup_observed_wall_ns']<=staged['wall_ns']<=armed['wall_ns']or staged['monotonic_ns']>armed['monotonic_ns']:
+                raise CaptureError('staged fd preparation must precede its actual Ready')
+        for kind,line in marker_lines.items():
+            if next(e for e in all_events if e['application']==i and e['kind']==kind).get('text')!=line:raise CaptureError('IO marker differs from actual stdout')
         for kind,limit,previous in [('start',30,'armed'),('finish',30,'quiescent')]:
             e=next(e for e in events if e['application']==i and e['kind']==kind)
             own=next(e for e in events if e['application']==i and e['kind']==previous)
@@ -341,26 +428,57 @@ def corroborate(run,capture,share):
         legs=[]
         start=next(e['before_wall_ns'] for e in row['events'] if e['kind']=='start')
         end=max(e['wall_ns'] for e in row['events'] if e['kind']=='quiescent')
-        def matched(index,direction,frame):
+        def matched(index,direction,frame,*,lower=start,upper=end):
             entry=row['owners'][index];owner=entry['owner'];obj=entry['object']
-            found=[p for p in indexed.get((owner['bus'],owner['device'],obj['handle'],direction,frame.hex()),[]) if start<=p['wall_ns']<=end]
+            found=[p for p in indexed.get((owner['bus'],owner['device'],obj['handle'],direction,frame.hex()),[]) if lower<=p['wall_ns']<=upper]
             if len(found)!=1:raise CaptureError('one exact opposite USB TX/RX for each benchmark business frame')
             packet=found[0];key=(packet['record'],packet.get('hcc_offset',0),direction,owner['bus'],owner['device'])
             if key in used:raise CaptureError('benchmark evidence reused')
             used.add(key);return packet
+        channel=row_channel(row);negotiation=None
+        if channel is not None:
+            from ws73_dynamic_channels import cmtc,request
+            active=channel['active_endpoint'];passive=1-active
+            a=row['applications'][active]['report']['channel_identity'];b=row['applications'][passive]['report']['channel_identity']
+            owner=row['owners'][active]['owner'];obj=row['owners'][active]['object'];requested=application_request(row,active)
+            candidates=[p for p in sdus if (p['bus'],p['device'],p['handle'],p['direction'])==(owner['bus'],owner['device'],obj['handle'],'out')
+                        and row['start_wall_ns']<=p['wall_ns']<start and len(bytes.fromhex(p['data']))==26
+                        and bytes.fromhex(p['data'])[4]==16 and bytes.fromhex(p['data'])[8]==a['local_tcid']]
+            if len(candidates)!=1:raise CaptureError('one actual dynamic request before business required')
+            identifier=bytes.fromhex(candidates[0]['data'])[5]
+            req=cmtc(request(identifier,a['local_tcid'],[requested['source_port'],requested['destination_port']],requested['aid'],requested['mtu'],requested['mps']))
+            resp=cmtc(bytes([17,identifier,4,0,a['local_tcid'],b['local_tcid'],0,0]))
+            def signal(sender,receiver,raw):return dict(tx=matched(sender,'out',raw,lower=row['start_wall_ns'],upper=start),rx=matched(receiver,'in',raw,lower=row['start_wall_ns'],upper=start))
+            negotiation=dict(request=signal(active,passive,req),response=signal(passive,active,resp))
+            stamps=[negotiation[k][v]['wall_ns']for k,v in [('request','tx'),('request','rx'),('response','tx'),('response','rx')]]
+            if stamps!=sorted(stamps):raise CaptureError('actual dynamic request/response order')
+            for key,index in [('tx',passive),('rx',active)]:
+                armed=next(e['wall_ns']for e in row['events']if e['kind']=='armed'and e['application']==index)
+                if negotiation['response'][key]['wall_ns']>armed:raise CaptureError('actual CMTC response must precede corresponding Ready')
+            for p in sdus:
+                raw=bytes.fromhex(p['data'])
+                if not(row['start_wall_ns']<=p['wall_ns']<=start and raw[:2]==b'\x02\0'and len(raw)>=5 and raw[4]in(16,17)):continue
+                for entry in row['owners']:
+                    o=entry['owner'];identity=entry['object']
+                    if (p['bus'],p['device'],p['handle'])==(o['bus'],o['device'],identity['handle']):
+                        if (p['record'],p.get('hcc_offset',0),p['direction'],o['bus'],o['device'])not in used:
+                            raise CaptureError('unattributed dynamic negotiation before business')
         expected=set()
         for index,app in enumerate(row['applications']):
             for original in app['report']['outgoing']:
                 request=bytes.fromhex(original['frame_hex']);reply=request[:28]+b'\1'+request[29:]
                 for sender,body in [(index,request),(1-index,reply)]:
-                    frame=b'\x1f\0'+(len(body)+1).to_bytes(2,'little')+b'\xf1'+body
+                    tcid=row['applications'][sender]['report']['channel_identity']['remote_tcid']
+                    frame=bytes([tcid,0])+(len(body)+1).to_bytes(2,'little')+b'\xf1'+body
                     legs.append(dict(tx=matched(sender,'out',frame),rx=matched(1-sender,'in',frame)))
                     expected.add(frame.hex())
         for entry in row['owners']:
             o=entry['owner'];obj=entry['object']
-            actual=[p for p in sdus if (p['bus'],p['device'],p['handle'])==(o['bus'],o['device'],obj['handle']) and start<=p['wall_ns']<=end and p['data'].startswith('1f00')]
+            ids={31}if channel is None else {app['report']['channel_identity'][k]for app in row['applications']for k in ('local_tcid','remote_tcid')}
+            actual=[p for p in sdus if (p['bus'],p['device'],p['handle'])==(o['bus'],o['device'],obj['handle']) and start<=p['wall_ns']<=end and bytes.fromhex(p['data'])[:1]in[bytes([v])for v in ids]]
             if len(actual)!=len(expected) or any(p['data'] not in expected for p in actual):raise CaptureError('all CUTC31 business packets must be attributed once')
         phase_proof=dict(phase=n,owners=row['owners'],application=check,legs=legs,events=row['events'])
+        if negotiation is not None:phase_proof['dynamic_negotiation']=negotiation
         from ws73_benchmark_resources import observations
         resource=observations(row)
         if resource is not None:phase_proof['resource_observations']=resource
@@ -368,11 +486,13 @@ def corroborate(run,capture,share):
     if any(RESOURCE_FIELD in row for row in rows):
         if not all(type(row.get(RESOURCE_FIELD))is int and row[RESOURCE_FIELD]==1 for row in rows):raise CaptureError('both resource observation phases required')
     if rows[0]['config']!=rows[1]['config']:raise CaptureError('same requested workload in both physical connection roles required')
+    if row_channel(rows[0])!=row_channel(rows[1]):raise CaptureError('same original channel target in both physical roles required')
     result=dict(status='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED',
                 mode=rows[0]['config']['mode'],round_trips=sum(len(a['report']['outgoing']) for row in rows for a in row['applications']),
                 proofs=proofs,performance_qualified=False,
                 remaining=['repeatstablebaseline/traceoverhead/resources','crossclockmapping/per-layer latency','fullperformance/stress/fairness/recovery qualification'])
     if RESOURCE_FIELD in rows[0]:result[RESOURCE_FIELD]=1
+    if row_channel(rows[0])is not None:result[CHANNEL_FIELD]=row_channel(rows[0])
     if rows[0]['config']['window']!=WINDOW:result['window']=rows[0]['config']['window']
     if any(rows[0]['config'][k]!=v for k,v in [('count',COUNT),('bytes',SIZE),('interval_us',100000 if rows[0]['config']['mode']=='rate' else 0)]):result['config']=rows[0]['config']
     return result
@@ -391,7 +511,7 @@ def verify_role_artifacts(control,evidence):
     for phase,row in enumerate(control['socket_benchmark']):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
         if original!=row or not apps_role(row)or row['role_supervisor']!=finished['supervisor']or row['status']!=PENDING:raise CaptureError('original root benchmark phase differs from parent')
-        request={k:row[k]for k in ROLE_REQUEST_FIELDS|({RESOURCE_FIELD}if RESOURCE_FIELD in row else set())};request.update(status='RUNNING',applications=[],events=[])
+        request={k:row[k]for k in request_fields(row)};request.update(status='RUNNING',applications=[],events=[])
         validate_role_request(request,phase)
         verify_probe(row);check_supervision(row);check_report_files(row,evidence)
         snapshots.append(verify(root/f'phase-{phase}',phase=phase,expected_helper=row['tools'][HELPER]['sha256'],kind='benchmark'))
@@ -415,8 +535,8 @@ def valid_role_supervision(proof):
 
 
 def validate_role_tools(control,root,guest_files):
-    expected=role_tools(root)
     for row in control['socket_benchmark']:
+        expected=role_tools(root,dynamic=row_channel(row)is not None)
         if not apps_role(row)or row['tools']!=expected:raise CaptureError('exact prepared role tools required')
         for name,record in expected.items():
             actual=role_tool_path(root,name);matches=[v for v in guest_files if Path(v['path']).resolve()==actual]

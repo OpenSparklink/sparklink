@@ -475,6 +475,13 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                 case "$field" in interval_us) option=interval-us ;; *) option=$field ;; esac
                 connection_arg="$connection_arg --channel-benchmark-$option $value"
             done
+            benchmark_dynamic=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_dynamic=/){sub(/^ws73.benchmark_dynamic=/,"",$i);print $i}}' /proc/cmdline)
+            benchmark_active=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_active=/){sub(/^ws73.benchmark_active=/,"",$i);print $i}}' /proc/cmdline)
+            if [ -n "$benchmark_dynamic$benchmark_active" ]; then
+                [ "$benchmark_dynamic" = 1 ] || fail 'explicit dynamic benchmark contract'
+                case "$benchmark_active" in 0|1) ;; *) fail 'explicit dynamic benchmark role' ;; esac
+                connection_arg="$connection_arg --channel-benchmark-dynamic --channel-benchmark-active-endpoint $benchmark_active"
+            fi
         fi
         for word in $(cat /proc/cmdline); do
             case "$word" in

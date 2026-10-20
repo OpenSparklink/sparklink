@@ -183,6 +183,8 @@ def main():
     parser.add_argument('--channel-benchmark-count',type=int,default=20)
     parser.add_argument('--channel-benchmark-bytes',type=int,default=61)
     parser.add_argument('--channel-benchmark-interval-us',type=int)
+    parser.add_argument('--channel-benchmark-dynamic',action='store_true')
+    parser.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1])
     parser.add_argument('--native-return-verify',action='store_true')
     parser.add_argument('--native-controller-return', choices=['initiator','acceptor'])
     parser.add_argument('--ssap-initialization-verify',action='store_true',help='actual selected negotiation-stage lease revoke, fd convergence and ordinary new lifetime preservation')
@@ -243,8 +245,8 @@ def main():
     if args.ssap_owner_publisher!='cli' and not args.ssap_owner_lifecycle_verify:parser.error('SDK publisher requires owner lifecycle')
     if args.ssap_owner_lifecycle_verify and (not args.channel_socket_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owner lifecycle requires separate ordinary basic socket baseline')
     if args.ssap_owned_verify and (not args.channel_socket_verify or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owned SSAP requires separate ordinary socket baseline')
-    from ws73_socket_benchmark import requested_configuration
-    try:requested_configuration(args)
+    from ws73_socket_benchmark import requested_configuration,requested_channel
+    try:requested_configuration(args);requested_channel(args)
     except ValueError as error:parser.error(str(error))
     if args.channel_benchmark and (not args.connection_verify or args.channel_socket_verify or args.acb_transport_probe or args.security_agent or args.daemon_link_resync):parser.error('benchmark requires separate real connection without other application gates')
     if args.channel_fairness_verify and (not args.channel_socket_verify or args.dynamic_channel_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries):parser.error('concurrent channel gate requires separate ordinary baseline')

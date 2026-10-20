@@ -15,7 +15,7 @@ from ws73_capture import CaptureError
 from ws73_target import run_exit_code
 
 
-def fixture(share,mode='window',window=4,count=20):
+def fixture(share,mode='window',window=4,count=20,channel=None):
     rows=[];packets=[];record=1
     for phase in range(2):
         reports=reports_fixture(mode,count=count)
@@ -23,6 +23,7 @@ def fixture(share,mode='window',window=4,count=20):
         if phase:owners=owners[::-1];reports=reports[::-1] if mode=='duplex' else reports
         # Deliberately map identities to actual fixture ownership for role swap.
         row=dict(phase=phase,owners=owners,config=gate.configuration(mode,window,count=count),application_tool=dict(path='/bin/slktest',sha256='a'*64),start_wall_ns=phase*2000,status=gate.PENDING,applications=[],events=[],end_wall_ns=phase*2000+1500)
+        if channel is not None:row[gate.CHANNEL_FIELD]=copy.deepcopy(channel)
         base=phase*2000
         for kind,offset in [('armed',100),('start',200),('quiescent',1000),('finish',1100)]:
             for i in range(2):
@@ -36,20 +37,39 @@ def fixture(share,mode='window',window=4,count=20):
                 # are covered independently and by actual production report replay.
                 raise ValueError('use window/duplex fixture')
             r['channel_identity'].update(controller=o['owner']['index'],generation=o['owner']['generation'],lifetime=o['object']['lifetime'])
+            if channel is not None:
+                r['channel_request']=gate.application_request(row,i)
+                r['channel_identity'].update(local_tcid=0x81+i,remote_tcid=0x82-i,mtu=249,mps=254)
             path=f'/evidence/application/passthrough-control/benchmark-{phase}-{i}.json'
             stdout=f'NativeChannelDup: original_closed=1 duplicate_live=1\nSocketBenchmarkArmed: mode={m.capitalize()} count={count} bytes=61 window={window}\nSocketBenchmarkQuiescent: mode={m.capitalize()} correctness=true\nSocketBenchmarkLoadObserved: report={path} qualified=false\n'
             for e in row['events']:
                 if e['application']==i and e['kind'] in ('armed','quiescent'):e['text']=stdout.splitlines()[1 if e['kind']=='armed' else 2]
             app=dict(mode=m,args=gate.arguments('/bin/slktest',o,m,path,window,count=count),report_path=path,credentials=dict(uids=[1000]*4,capabilities=dict(CapEff='0',CapPrm='0',CapAmb='0')),exit=0,stdout=stdout,stderr='',report=r,dup_observed_wall_ns=base+50,start_wall_ns=base+10,end_wall_ns=base+1400)
+            if channel is not None:
+                active=i==channel['active_endpoint'];stamp=base+(60 if active else 30)
+                row['events'].append(dict(kind='staged',application=i,wall_ns=stamp,monotonic_ns=stamp,text=gate.staged_text(row,i)))
+                app['start_wall_ns']=base+(40 if active else 10);app['dup_observed_wall_ns']=base+(50 if active else 20)
+                app['stdout']=app['stdout'].replace('\nSocketBenchmarkArmed:', '\n'+gate.staged_text(row,i)+'\nSocketBenchmarkArmed:')
+                app['args']=gate.arguments('/bin/slktest',o,m,path,window,count=count,channel=r['channel_request']);stdout=app['stdout']
             p=share/Path(path).relative_to('/evidence');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(r));p.with_suffix('.stdout').write_text(stdout);p.with_suffix('.stderr').write_text('')
             app['report_file']=dict(path=path,sha256=hashlib.sha256(p.read_bytes()).hexdigest(),bytes=p.stat().st_size);row['applications'].append(app)
+        row['events'].sort(key=lambda v:v['monotonic_ns'])
         rows.append(row)
+        if channel is not None:
+            from ws73_dynamic_channels import cmtc,request
+            active=channel['active_endpoint'];passive=1-active;req=gate.application_request(row,active)
+            a=row['applications'][active]['report']['channel_identity'];b=row['applications'][passive]['report']['channel_identity']
+            raw_request=cmtc(request(7,a['local_tcid'],[req['source_port'],req['destination_port']],req['aid'],249,254))
+            raw_response=cmtc(bytes([17,7,4,0,a['local_tcid'],b['local_tcid'],0,0]))
+            for index,direction,raw,stamp in [(active,'out',raw_request,70),(passive,'in',raw_request,75),(passive,'out',raw_response,80),(active,'in',raw_response,85)]:
+                owner=owners[index]['owner'];packets.append(dict(record=record,bus=owner['bus'],device=owner['device'],handle=0,direction=direction,boundary=0,data=raw.hex(),wall_ns=base+stamp));record+=1
         for i,app in enumerate(row['applications']):
             for original in app['report']['outgoing']:
                 raw=bytes.fromhex(original['frame_hex'])
                 # phase-specific raw evidence offsets, without claiming new nonce provenance.
                 for sender,payload in [(i,raw),(1-i,raw[:28]+b'\1'+raw[29:])]:
-                    body=b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload
+                    tcid=row['applications'][sender]['report']['channel_identity']['remote_tcid']
+                    body=bytes([tcid,0])+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload
                     for owner,direction in [(owners[sender]['owner'],'out'),(owners[1-sender]['owner'],'in')]:
                         packets.append(dict(record=record,bus=owner['bus'],device=owner['device'],handle=0,direction=direction,boundary=0,data=body.hex(),wall_ns=base+500));record+=1
     phases=[];commands=[]

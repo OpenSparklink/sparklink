@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Actual metadata/file/profile functions;no Native/USB/privileged-success stub."""
-import copy,json,os,tempfile,unittest
+import copy,json,os,sys,tempfile,unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ws73_socket_benchmark as gate
 import ws73_role_snapshot as snapshot
 from ws73_benchmark import read_report
@@ -20,6 +22,24 @@ def request():
 
 
 class BenchmarkRole(unittest.TestCase):
+    def test_typed_dynamic_request_uses_real_request_validation_and_cli_without_native_stubs(self):
+        for active in(0,1):
+            args=SimpleNamespace(channel_benchmark='window',channel_benchmark_dynamic=True,channel_benchmark_active_endpoint=active)
+            target=gate.requested_channel(args);r=request();r[gate.CHANNEL_FIELD]=target
+            gate.validate_role_request(r,0)
+            for i in(0,1):
+                app=gate.application_request(r,i)
+                argv=gate.arguments('/bin/slktest',r['owners'][i],'window','/new/report',channel=app)
+                self.assertEqual(argv[-1],'active'if i==active else'passive')
+                self.assertEqual(app['source_port'],target['ports'][i])
+                self.assertEqual(app['destination_port'],target['ports'][1-i])
+                self.assertEqual(app['mtu']+5,app['mps'])
+            for change in [dict(version=True),dict(kind='reliable'),dict(ports=[0,1]),dict(ports=[True,2]),dict(aid=0),dict(active_endpoint=True),dict(active_endpoint=2),dict(unknown=1)]:
+                bad=copy.deepcopy(r);bad[gate.CHANNEL_FIELD].update(change)
+                with self.subTest(change=change),self.assertRaises(CaptureError):gate.validate_role_request(bad,0)
+        for args in [SimpleNamespace(channel_benchmark_dynamic=True),SimpleNamespace(channel_benchmark='window',channel_benchmark_active_endpoint=1),SimpleNamespace(channel_benchmark='window',channel_benchmark_dynamic=1)]:
+            with self.assertRaises(CaptureError):gate.requested_channel(args)
+
     def test_fixed_request_rejects_extra_programs_identity_and_legacy_role(self):
         gate.validate_role_request(request(),0)
         for kind in ('legacy','boolean-version','extra','work','controller','lifetime','clock','budget'):
@@ -43,6 +63,11 @@ class BenchmarkRole(unittest.TestCase):
         names=('ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh')
         package=dict(socket_benchmark_role_contract_version=1,benchmark_trace_contract_version=1,benchmark_process_resource_contract_version=1,inputs=[file_record(here/n)for n in names])
         gate.validate_role_sources(package)
+        with self.assertRaisesRegex(ValueError,'ws73_dynamic_channels.py'):gate.validate_role_sources(package,dynamic=True)
+        dynamic=copy.deepcopy(package);dynamic['inputs'].append(file_record(here/'ws73_dynamic_channels.py'))
+        gate.validate_role_sources(dynamic,dynamic=True)
+        dynamic['inputs'][-1]['sha256']='0'*64
+        with self.assertRaisesRegex(ValueError,'ws73_dynamic_channels.py'):gate.validate_role_sources(dynamic,dynamic=True)
         for kind in ('marker','bool','trace-marker','trace-bool','resource-marker','resource-bool','missing','oldhash','duplicate'):
             bad=copy.deepcopy(package)
             if kind=='marker':bad.pop('socket_benchmark_role_contract_version')
@@ -144,13 +169,13 @@ class BenchmarkRole(unittest.TestCase):
 
 
 class ClosedBenchmarkRoleFixture(unittest.TestCase):
-    def fixture(self,root):
+    def fixture(self,root,channel=None):
         # Synthetic schema2/wire/role metadata,not actual credentials or mount.
         from test_ws73_socket_benchmark import fixture as legacy_fixture
         from test_ws73_application_client import fixture as application_fixture
         from ws73_application_client import application_environment
         import hashlib,shutil
-        run,capture=legacy_fixture(root);old_roles,_=application_fixture();daemon=dict(pid=11,start_ticks=31);supervisor=dict(pid=12,start_ticks=41)
+        run,capture=legacy_fixture(root,channel=channel);old_roles,_=application_fixture();daemon=dict(pid=11,start_ticks=31);supervisor=dict(pid=12,start_ticks=41)
         run.update(daemon_before=daemon,daemon_after=daemon)
         for row in run['socket_benchmark']:
             phase=row['phase'];source=root/f'local-{phase}';source.mkdir();(source/'reports').mkdir();row['start_wall_ns']=max(1,row['start_wall_ns'])
@@ -161,13 +186,51 @@ class ClosedBenchmarkRoleFixture(unittest.TestCase):
             (source/'probe.stdout').write_text(role['stdout']);(source/'probe.stderr').write_text('')
             for i,app in enumerate(row['applications']):
                 before=app['report_path'];runtime=str(gate.ROLE_RUNTIME/f'phase-{phase}'/'reports'/f'benchmark-{phase}-{i}.json');app['report_path']=runtime;app['report_file'].update(path=runtime,uid=1004,gid=1004,mode=0o644,nlink=1)
-                app['args']=gate.arguments('/bin/slktest',row['owners'][i],app['mode'],runtime);app['stdout']=app['stdout'].replace(before,runtime);app['credentials']=copy.deepcopy(role['credentials']);app['environment']=application_environment();app['output_files']=[str(gate.ROLE_ROOT/f'phase-{phase}'/f'benchmark-{phase}-{i}.{v}')for v in('stdout','stderr')]
+                app['args']=gate.arguments('/bin/slktest',row['owners'][i],app['mode'],runtime,channel=gate.application_request(row,i));app['stdout']=app['stdout'].replace(before,runtime);app['credentials']=copy.deepcopy(role['credentials']);app['environment']=application_environment();app['output_files']=[str(gate.ROLE_ROOT/f'phase-{phase}'/f'benchmark-{phase}-{i}.{v}')for v in('stdout','stderr')]
                 (source/'reports'/f'benchmark-{phase}-{i}.json').write_text(json.dumps(app['report']));(source/f'benchmark-{phase}-{i}.stdout').write_text(app['stdout']);(source/f'benchmark-{phase}-{i}.stderr').write_text('')
             (source/'run.json').write_text(json.dumps(row))
             exported=root/'benchmark-role'/f'phase-{phase}';exported.parent.mkdir(exist_ok=True);snapshot.publish(source,exported,phase=phase,success=True,kind='benchmark')
             proof=json.loads((exported/'snapshot.json').read_text());proof['source_root']=str(gate.ROLE_RUNTIME/f'phase-{phase}');(exported/'snapshot.json').write_text(json.dumps(proof))
         (root/'benchmark-role/finished.json').write_text(json.dumps(dict(status=gate.ROLE_STATUS,daemon=daemon,supervisor=supervisor,snapshot_contract_version=1,socket_benchmark_role_contract_version=1)))
         return run,capture
+
+    def test_dynamic_target_binds_closed_role_reports_actual_cmtc_tcids_and_business(self):
+        for active in(0,1):
+            with tempfile.TemporaryDirectory()as temporary:
+                root=Path(temporary);channel=dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=active)
+                run,capture=self.fixture(root,channel)
+                proof=gate.corroborate(run,capture,root)
+                self.assertEqual(proof[gate.CHANNEL_FIELD],channel)
+                self.assertEqual(proof['round_trips'],40)
+                self.assertTrue(all(set(p['dynamic_negotiation'])=={'request','response'}for p in proof['proofs']))
+                self.assertIs(proof['performance_qualified'],False)
+
+    def test_dynamic_closed_evidence_refuses_downgrade_missing_signal_wrong_route_and_early_ready(self):
+        cases=['missing-target','wrong-role','same-endpoint-ports','missing-stage','active-too-early','changed-report-request','missing-CMTC','changed-CMTC-AID','duplicate-CMTC','early-Ready','wrong-data-TCID','missing-peer-data']
+        for kind in cases:
+            with tempfile.TemporaryDirectory()as temporary:
+                root=Path(temporary);channel=dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=0)
+                run,capture=self.fixture(root,channel);row=run['socket_benchmark'][0]
+                if kind=='missing-target':row.pop(gate.CHANNEL_FIELD)
+                elif kind=='wrong-role':row[gate.CHANNEL_FIELD]['active_endpoint']=1
+                elif kind=='same-endpoint-ports':row[gate.CHANNEL_FIELD]['ports'][1]=24576
+                elif kind=='missing-stage':row['events']=[e for e in row['events']if not(e['kind']=='staged'and e['application']==1)]
+                elif kind=='active-too-early':row['applications'][0]['start_wall_ns']=5
+                elif kind=='changed-report-request':row['applications'][0]['report']['channel_request']['aid']+=1
+                else:
+                    candidates=[p for p in capture['acb_packets']if bytes.fromhex(p['data'])[:2]==b'\x02\0']
+                    if kind=='missing-CMTC':capture['acb_packets'].remove(candidates[0])
+                    elif kind=='changed-CMTC-AID':candidates[0]['data']=candidates[0]['data'][:-2]+'ff'
+                    elif kind=='duplicate-CMTC':capture['acb_packets'].append(dict(candidates[0],record=99999))
+                    elif kind=='early-Ready':candidates[3]['wall_ns']=115
+                    elif kind=='wrong-data-TCID':
+                        data=next(p for p in capture['acb_packets']if bytes.fromhex(p['data'])[:2]!=b'\x02\0');data['data']='1f'+data['data'][2:]
+                    elif kind=='missing-peer-data':
+                        data=next(p for p in capture['acb_packets']if p['direction']=='in'and bytes.fromhex(p['data'])[:2]!=b'\x02\0');capture['acb_packets'].remove(data)
+                # Keep the original exported bytes untouched: changing metadata
+                # cannot create a new qualified closed snapshot.
+                with self.subTest(kind=kind),self.assertRaises((CaptureError,KeyError,FileNotFoundError)):
+                    gate.corroborate(run,capture,root)
 
     def test_actual_checker_accepts_closed_fixture_and_rejects_role_file_scope_corruptions(self):
         for kind in(None,'credentials','report-owner','missing-snapshot','truncated-stream','old-root-request','wrong-source-root','wrong-daemon','missing-finish'):

@@ -136,9 +136,17 @@ local／remote TCID 交叉一致；不能删除 tag 将动态结果降为普通 
 创建 fd 后、等待协商 Ready 前输出 `SocketBenchmarkStaged`。监督器需要先启动
 被动端并收到该标记，再启动主动端；双端仍须实际 Armed 后统一 start、Quiescent
 后统一 finish。Staged 只表示完成本地 fd 准备，不授予 Ready、credit 或对端存在。
-尚无新入口的真实设备资格；当前 Native benchmark runner 仍只准入原基本 CUTC。
-下一门禁需接通现有监督器、捕获 CMTC 请求／回复验证实际端口和能力，再核对
-动态 TCID 上的双端 USB 与应用回复。本地 AF_UNIX 报告只能检验循环／序列化和
+新入口的真实设备资格单独登记，不能继承原基本 CUTC。Native benchmark runner
+以 `--channel-benchmark-dynamic` 选择版本1目标：协议端口24576／24577、AID29441；
+可用 `--channel-benchmark-active-endpoint 0|1` 指定独立的协商主动端，动态模式默认0。
+未选动态时不接受主动端参数，原基本 CUTC 默认行为不变。目标跟随原连接拥有者
+顺序，物理连接交换角色时不按 USB 枚举顺序重新选择设备。复用原普通应用监督器，
+逐端记录实际 Staged、双端 Armed／start／Quiescent／finish，以及准确工具来源。
+host 请求、guest cmdline、控制角色、Root 请求和终态证据必须一致，不允许删 tag 降级。
+独立捕获门禁核对 CMTC 请求／回复、实际端口和能力，再核对
+动态 TCID 上的双端 USB 与应用回复；新运行同时要求原追踪与进程检查点契约。
+缺任一必要信令／对端数据、过早 Ready、错角色／路由或重复证据都失败。
+本地 AF_UNIX 报告只能检验循环／序列化和
 拒绝行为，不能替代这项实机门禁或完整多通道公平性／性能资格。
 
 代码迁移不改 schema1/2、wire、socket/Grant/credit/Ticket 或原期限。历史证据中的
@@ -165,6 +173,9 @@ CLI预算为30秒，显式本地fixture为1秒。旧schema2报告保持原身份
 请求与校验回复的USB TX/对端RX，并拒绝缺失、重复或无法归属的CUTC业务包。
 真实运行状态及准确资格由唯一能力入口记录；建立入口/合成fixture通过不代表实机通过。
 20条样本不是稳定性能阈值，完整追踪的干扰、分段时钟映射、资源峰值及长期压测仍需另验。
+
+这里的“动态通道门禁分开”指原 `--dynamic-channel-verify` 正确性矩阵；动态测量使用
+上述独立目标参数，不能同时打开旧矩阵或把旧正确性资格视为新测量结果。
 
 ## 单 bulk RX URB 空窗诊断
 

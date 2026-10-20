@@ -417,7 +417,10 @@ def corroborate(row,matched):
                 if (replacement['value']!=case['value']or case['before']['value']!=case['value']or(not overflow and case['after']['value']!=case['reply'])
                         or not lease['start_wall_ns']<=app['start_wall_ns']<=case['start_wall_ns']<=case['send']['start_wall_ns']<=case['end_wall_ns']<=app['end_wall_ns']<=lease['end_wall_ns']<=item['end_wall_ns']):raise CaptureError('original send/owner-store/application intervals required')
                 exchange(t,s,pdu,case)
-                if mode==2:exchange(s,t,b'\x11\x03'+bytes([0 if overflow else 1]),case)
+                # Buffered application checks intentionally overlap earlier
+                # sends. Identical ACK bytes belong to the original SDK send
+                # interval,not the longer fill-to-application-write interval.
+                if mode==2:exchange(s,t,b'\x11\x03'+bytes([0 if overflow else 1]),case['send']if pressure else case)
                 if overflow:continue
                 exchange(s,t,b'\x0d\x23'+h.to_bytes(2,'little')+b'\0'+reply,case)
                 exchange(t,s,b'\x0e\x03'+h.to_bytes(2,'little')+b'\0'+reply,case)

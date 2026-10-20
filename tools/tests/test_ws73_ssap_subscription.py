@@ -169,6 +169,16 @@ class SubscriptionGate(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises((CaptureError,KeyError,ValueError)):
                 gate.corroborate(row,matched)
 
+    def test_buffered_indication_ack_uses_original_send_window(self):
+        row=pressure_fixture();windows=[c['send']for item in row['ssap_subscription']for lease in item['leases']if lease['mode']==2 for c in lease['messages']]
+        observed=[]
+        def scoped(owner,direction,frame,window):
+            if frame.endswith((b'\x11\x03\x01',b'\x11\x03\0')):
+                self.assertIn(window,windows);observed.append(window)
+            return matched(owner,direction,frame,window)
+        gate.corroborate(row,scoped)
+        self.assertEqual(len(observed),72)
+
     def test_real_renewal_verifier_fixture_is_distinct_from_continuous(self):
         rows=[]
         for phase in (0,1):

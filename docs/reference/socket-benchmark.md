@@ -481,3 +481,20 @@ Owner 本地值检查、真实收据、源文件关闭与退出仍必须完整�
 SMTC10必须不同，长PDU按完整分片末尾判定时序。缺真实交叠则失败，不增加负载或
 插入延时直到通过。该门禁不覆盖通知／指示并发、完整公平性、credit真值、引用排空、
 安全撤销、四设备、冷启动或自然恢复；准确实机范围仍只由资格入口记录。
+
+
+## 失败 Session 追踪的独立诊断契约
+
+`ws73_session_service.py analyze-failed-benchmark RUN --failed-phase 0|1` 只接受已终结的
+失败 VM／control 与对应失败快照；成功目录、运行中数据、缺失 phase 和不一致身份
+均拒绝。它共用原文件、时钟、事件格式、计数和 USB 关联检查，不改写原追踪状态。
+所有入队操作均在输出中，不按有利区间截取：
+
+- `unclosed_software_operations`：未观察到本地退休的原始身份、阶段和前缀字节数。
+- `operations[].retirement_ns`／`admission_to_retirement`：缺少事件时为 `null`，不能填零。
+- `original_gate_qualified=false`、`original_result=FAIL`：诊断成功执行不改变整轮结果。
+
+观测到的软件等待、实际提交、USB 完成、NOCP 和对端应用交付继续分开。实际提交
+缺失或矛盾、错误时钟、捕获／追踪丢失、错误 PB、旧身份及改变的原期限都拒绝；
+只有未观察到的退休端点可明确列作未知。该输出不构成完整追踪、引用排空、安全复用、
+性能或恢复资格。原 `analyze-benchmark` 及生产验收仍要求所有操作闭合。

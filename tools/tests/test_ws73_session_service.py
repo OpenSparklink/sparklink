@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_session_service import EVENTS, STATUS, parse, join, vm_guard, cleanup, operation_timings, bind_business
+from ws73_session_service import EVENTS, STATUS, parse, parse_aborted, _read_trace, _check_kernel_strings, join, vm_guard, cleanup, operation_timings, failed_operation_timings, bind_business
 from ws73_trace_layout import buffer_kib
 
 
@@ -48,6 +48,118 @@ def fixture():
 
 
 class ServiceTrace(unittest.TestCase):
+    def test_aborted_and_completed_entries_are_mutually_exclusive(self):
+        text, row, owners, capture = fixture()
+        with self.assertRaises(ValueError):
+            parse_aborted(text, row)
+        aborted = row | dict(status='ABORTED_NOT_QUALIFIED')
+        with self.assertRaises(ValueError):
+            parse(text, aborted)
+        self.assertEqual(parse_aborted(text, aborted), parse(text, row))
+        # Structural parsing does not erase incomplete physical obligations.
+        parsed = parse_aborted(text, aborted)
+        parsed['rows'] = [v for v in parsed['rows']
+                          if not (v['event'] == 'queue' and v['stage'] == 2)]
+        with self.assertRaises(ValueError):
+            operation_timings(parsed, owners, capture)
+        for change in (dict(clock='local'), dict(instance_removed=False),
+                       dict(status='RUNNING_NOT_QUALIFIED'), dict(requested_buffer_kb=4096)):
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                parse_aborted(text, aborted | change)
+
+    def test_original_trace_files_are_checked_in_both_modes(self):
+        import hashlib
+        import json
+        import tempfile
+        text, row, _, _ = fixture()
+        for state in (STATUS, 'ABORTED_NOT_QUALIFIED'):
+            with self.subTest(state=state), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                current = copy.deepcopy(row) | dict(status=state)
+                current['formats'] = {}
+                for name in EVENTS:
+                    raw = 'fixture format ' + name
+                    (root/(name+'.format')).write_text(raw)
+                    current['formats'][name] = hashlib.sha256(raw.encode()).hexdigest()
+                (root/'trace.txt').write_text(text)
+                current['trace_sha256'] = hashlib.sha256(text.encode()).hexdigest()
+                (root/'header_page.txt').write_text(current['header_page'])
+                for cpu, raw in current['stats'].items():
+                    (root/(cpu+'-stats.txt')).write_text(raw)
+                (root/'run.json').write_text(json.dumps(current))
+                self.assertEqual(_read_trace(root), (text, current))
+                for name in ('trace.txt', 'header_page.txt', 'cpu0-stats.txt',
+                             'sparklink_session_queue.format'):
+                    path = root/name
+                    original = path.read_text()
+                    path.write_text(original+'changed')
+                    with self.subTest(file=name), self.assertRaises(ValueError):
+                        _read_trace(root)
+                    path.write_text(original)
+
+    def test_failed_analysis_requires_separate_explicit_cli_scope(self):
+        import subprocess
+        program = Path(__file__).resolve().parents[1]/'ws73_session_service.py'
+        for args in (['analyze-failed-benchmark', '/absent'],
+                     ['analyze-benchmark', '/absent', '--failed-phase', '0'],
+                     ['start', '--failed-phase', '0'],
+                     ['analyze-failed-benchmark', '/absent', '--failed-phase', '2']):
+            with self.subTest(args=args):
+                result = subprocess.run([sys.executable, str(program), *args],
+                                        text=True, capture_output=True, timeout=5)
+                self.assertEqual(result.returncode, 2)
+                self.assertNotIn('Traceback', result.stderr)
+
+    def test_uname_version_and_proc_version_are_distinct_checked_formats(self):
+        trace = dict(kernel_release='7.0.0-lab+', kernel_version='#139 SMP build-date')
+        control = dict(kernel_release='7.0.0-lab+',
+                       kernel_version='Linux version 7.0.0-lab+ (builder@host) (clang (release)) #139 SMP build-date\n')
+        _check_kernel_strings(trace, control)
+        for change in (dict(kernel_release='old-release'),
+                       dict(kernel_version=trace['kernel_version']),
+                       dict(kernel_version=control['kernel_version'].replace('#139', '#138')),
+                       dict(kernel_version=control['kernel_version'].replace('7.0.0-lab+', 'old')),
+                       dict(kernel_version=control['kernel_version']+'extra'),
+                       dict(kernel_version=control['kernel_version'].replace('builder@host', 'builder\n@host'))):
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                _check_kernel_strings(trace, control | change)
+
+    def test_failed_diagnostic_keeps_unobserved_retirement_and_never_qualifies(self):
+        text, row, owners, capture = fixture()
+        parsed = parse_aborted(text, row | dict(status='ABORTED_NOT_QUALIFIED'))
+        parsed['rows'] = [v for v in parsed['rows'] if not
+                          (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 2)]
+        observed = failed_operation_timings(parsed, owners, capture)
+        self.assertEqual(len(observed['operations']), 2)
+        self.assertEqual(observed['unclosed_software_operations'][0]['observed_stages'], [0, 1])
+        self.assertIsNone(observed['operations'][0]['retirement_ns'])
+        self.assertIsNone(observed['operations'][0]['admission_to_retirement'])
+        self.assertEqual(observed['operations'][0]['accepted_usb_records'], [1])
+        with self.assertRaises(ValueError):
+            operation_timings(parsed, owners, capture)
+        with self.assertRaises(ValueError):
+            join(parsed, owners, capture)
+
+    def test_failed_diagnostic_does_not_skip_missing_admission_commit_or_usb(self):
+        for missing in ('admission', 'dequeue-with-actual-submit', 'commit', 'usb',
+                        'old-generation', 'changed-deadline'):
+            text, row, owners, capture = fixture()
+            parsed = parse_aborted(text, row | dict(status='ABORTED_NOT_QUALIFIED'))
+            if missing == 'admission':
+                parsed['rows'] = [v for v in parsed['rows'] if not (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 0)]
+            elif missing == 'dequeue-with-actual-submit':
+                parsed['rows'] = [v for v in parsed['rows'] if not (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] in (1, 2))]
+            elif missing == 'commit':
+                parsed['rows'] = [v for v in parsed['rows'] if not (v['ctl'] == 0 and v['event'] == 'tx' and v['stage'] == 2)]
+            elif missing == 'usb':
+                capture['acb_packets'].pop()
+            elif missing == 'old-generation':
+                parsed['rows'][0]['gen'] += 4
+            else:
+                next(v for v in parsed['rows'] if v['event'] == 'queue' and v['stage'] == 2)['deadline'] += 1
+            with self.subTest(missing=missing), self.assertRaises(ValueError):
+                failed_operation_timings(parsed, owners, capture)
+
     def test_dynamic_scope_annotation_keeps_exact_control_consent_and_usb_join(self):
         from ws73_dynamic_channels import cmtc,request
         text,row,owners,capture=fixture();p=parse(text,row)

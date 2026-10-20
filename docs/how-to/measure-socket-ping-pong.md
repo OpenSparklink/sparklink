@@ -327,3 +327,20 @@ Root在何时读取stdout不能代替真实USB业务窗口，旧的顺序执行�
 保持；每角色的12对SDK步骤还必须在`ssap.proofs[].duplex`中具备实际USB请求交叠，
 并完成全部随机值校验与Owned撤回。若只有进程交叠或一个方向完成，保留失败。
 这个版本2场景不能代替版本1顺序门禁或抹去其历史30秒期限失败。
+
+
+## 定位失败负载中的 Session 等待
+
+若整轮应用门禁失败，使用独立诊断入口；不要把失败目录交给成功分析器，亦不要
+修改 manifest 或快照来伪造成功：
+
+```bash
+python3 tools/ws73_session_service.py analyze-failed-benchmark "$RUN" --failed-phase 0
+```
+
+该入口要求原 FAIL、失败 phase 的完整关闭快照、原请求／身份、零丢失捕获和
+`ABORTED_NOT_QUALIFIED` 追踪。它读取整个原始区间，核对全部观测到的提交与 USB；
+入队后没有退休事件的操作仍保留，`retirement_ns` 和对应间隔为 `null`。
+这可能来自追踪结束或没有事件的队列清除，不能据此宣称泄漏、Free 或物理 drain。
+结果固定为 `FAILED_GATE_TRANSPORT_TIMINGS_NOT_QUALIFIED`，不赋予业务、性能或
+完整生命周期资格。成功入口继续要求全部操作闭合，原整轮 FAIL 和缺失门禁保持。

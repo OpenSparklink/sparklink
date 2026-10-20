@@ -168,7 +168,23 @@ def timestamp(seconds, fraction):
 
 
 def parse(text, row):
-    if (len(text) > LIMIT or row['status'] != STATUS or row['clock'] != 'mono'
+    """Successful observation entry; aborted traces remain ineligible."""
+    return _parse(text, row, STATUS)
+
+
+def parse_aborted(text, row):
+    """Same structural checks, solely for an explicitly aborted diagnostic.
+
+    This does not manufacture a completed application/transport observation.
+    The separate failed-run consumer must still associate every original trace
+    and USB submission. Unobserved retirement stays unknown; the qualified
+    join still rejects it. No rows are clipped out to make a successful gate.
+    """
+    return _parse(text, row, 'ABORTED_NOT_QUALIFIED')
+
+
+def _parse(text, row, expected_status):
+    if (len(text) > LIMIT or row['status'] != expected_status or row['clock'] != 'mono'
             or not re.fullmatch('[0-9a-f]{32}', row['cookie'])
             or re.findall(r'^# tracer: (.*)$', text, re.M) != ['nop']
             or 'LOST' in text.upper() or row['instance_removed'] is not True):
@@ -275,7 +291,13 @@ def identities(record):
     return owners
 
 
-def join(parsed, owners, capture):
+def _associate(parsed, owners, capture):
+    """Validate all observed rows/USB; expose unclosed software observations.
+
+    The qualified join below still rejects every unclosed operation. The
+    failed-run diagnostic retains them, with unknown retirement, rather than
+    deleting their rows or inferring that a purge/drain was observed.
+    """
     works, queues, attempts = {}, {}, {}
     q = parsed['quantum_ns']
     for key, owner in owners.items():
@@ -365,15 +387,17 @@ def join(parsed, owners, capture):
         if stages[1]['attempts'] != len(steps) or stages[1]['bytes'] != sum(v['len'] for v in steps):
             raise ValueError('service attempted packet/byte accounting mismatch')
     complete = partial = 0
+    unclosed = []
     for key, stages in queues.items():
-        if set(stages) != {0, 1, 2}:
+        if set(stages) not in ({0}, {0, 1}, {0, 1, 2}):
             raise ValueError('unaccounted software admission/dequeue/operation retirement')
-        a, dequeues, c = stages[0], stages[1], stages[2]
-        b = dequeues[0]
-        snapshots = [a, *dequeues, c]
+        a, dequeues, c = stages[0], stages.get(1, []), stages.get(2)
+        b = dequeues[0] if dequeues else None
+        snapshots = [a, *dequeues, *([c] if c else [])]
         if (any(len({v[field] for v in snapshots}) != 1 for field in ['epoch','bytes','deadline'])
-                or a['epoch'] != epochs.get(key[:3]) or a['mono_ns'] > b['mono_ns']+q
-                or b['mono_ns'] > c['mono_ns']+q):
+                or a['epoch'] != epochs.get(key[:3])
+                or b and a['mono_ns'] > b['mono_ns']+q
+                or c and b['mono_ns'] > c['mono_ns']+q):
             raise ValueError('operation identity/original deadline changed')
         op_attempts = [steps for kt, steps in attempts.items()
                        if kt[:3] == key[:3] and kt[4:6] == (key[4], key[3])]
@@ -386,7 +410,8 @@ def join(parsed, owners, capture):
                     or 2 in tries[0] and tries[0][2]['result'] == 0
                     or tries[0][1]['mono_ns'] > current['mono_ns']+q):
                 raise ValueError('repeated dequeue without definite unstarted EAGAIN')
-        if any(not b['mono_ns']-q <= steps[0]['mono_ns'] <= c['mono_ns']+q for steps in op_attempts):
+        end = c['mono_ns'] if c else parsed['interval_ns'][1]
+        if op_attempts and (b is None or any(not b['mono_ns']-q <= steps[0]['mono_ns'] <= end+q for steps in op_attempts)):
             raise ValueError('attempt outside dequeued operation lifetime')
         successful = [steps[1] for kt, steps in attempts.items()
                       if kt[:3] == key[:3] and kt[4:6] == (key[4], key[3]) and steps[1]['result'] == 0]
@@ -395,11 +420,17 @@ def join(parsed, owners, capture):
         for v in successful:
             expected_pb = (1 if v['len'] < a['bytes'] else 0) if offset == 0 else (3 if offset+v['len'] == a['bytes'] else 2)
             if (v['offset'] != offset or v['pb'] != expected_pb or offset+v['len'] > a['bytes']
-                    or not b['mono_ns']-q <= v['mono_ns'] <= c['mono_ns']+q):
+                    or b is None or not b['mono_ns']-q <= v['mono_ns'] <= end+q):
                 raise ValueError('PB/offset/retirement continuity mismatch')
             offset += v['len']
         complete += offset == a['bytes']
         partial += offset != a['bytes']
+        if c is None:
+            unclosed.append(dict(controller=key[0], generation=key[1], lifetime=key[2],
+                                 slot=key[4], admission_sequence=key[3],
+                                 observed_stages=sorted(stages), dtap_bytes=a['bytes'],
+                                 accepted_prefix_bytes=offset,
+                                 reason='Retirement not observed; capture boundary or untraced purge, not proof of live allocation or drain.'))
     # Every accepted packet, including fixed CMTC, must have the corresponding
     # real USB submit, in the serialized physical order and within clock bounds.
     usb_total = 0
@@ -445,7 +476,7 @@ def join(parsed, owners, capture):
             if packet['boundary'] == 0 and len(wire) >= 5 and wire[:2] == b'\x02\0' and wire[4] in (16, 17):
                 dynamic_control = True
             usb_total += 1
-    return dict(status='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED',
+    proof = dict(status='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED',
                 **summary(parsed), services=len(works), attempts=len(attempts),
                 accepted_usb_packets=usb_total, operations=len(queues),
                 complete_transport_operations=complete, partial_retired_operations=partial,
@@ -453,10 +484,19 @@ def join(parsed, owners, capture):
                 uncertain_acceptances=sum(2 in v and v[2]['result']==0 and v[1]['result']!=0 for v in attempts.values()),
                 scope=('Default-off Session observations include dynamic CMTC envelopes in the exact accepted USB/trace join on recorded identities;not CMTC negotiation success,credit truth,callback drain,peer delivery,RF,performance or concurrency proof' if dynamic_control else
                        'Default-off C4 Session observations plus original USB submits;no credit truth,callback drain,peer delivery,RF,performance or concurrency proof;dynamic CMTC consent excluded'))
+    return proof, unclosed
 
 
-def corroborate(record, capture, share):
-    folder = Path(share) / 'session-service'
+def join(parsed, owners, capture):
+    proof, unclosed = _associate(parsed, owners, capture)
+    if unclosed:
+        raise ValueError('unaccounted software admission/dequeue/operation retirement')
+    return proof
+
+
+def _read_trace(folder):
+    """Shared original-file validation, without choosing a qualification mode."""
+    folder = Path(folder)
     row = json.loads((folder/'run.json').read_text())
     if (folder/'header_page.txt').read_text() != row['header_page']:
         raise ValueError('original kernel trace page layout changed')
@@ -468,7 +508,12 @@ def corroborate(record, capture, share):
     for cpu, raw in row['stats'].items():
         if (folder/(cpu+'-stats.txt')).read_text() != raw:
             raise ValueError('original CPU statistics changed')
-    parsed = parse((folder/'trace.txt').read_text(), row)
+    return (folder/'trace.txt').read_text(), row
+
+
+def corroborate(record, capture, share):
+    text, row = _read_trace(Path(share) / 'session-service')
+    parsed = parse(text, row)
     if summary(parsed) != row['observed']:
         raise ValueError('captured trace summary mismatch')
     return join(parsed, identities(record), capture)
@@ -482,6 +527,21 @@ def operation_timings(parsed, owners, capture):
     not establish when the controller freed a buffer. No timestamps cross clocks.
     """
     proof = join(parsed, owners, capture)
+    return _operation_timings(parsed, owners, capture, proof)
+
+
+def failed_operation_timings(parsed, owners, capture):
+    """All observed transport rows must agree; unknown ends stay explicit.
+
+    This cannot replace the strict join or a successful application gate.
+    Every software admission remains in the output, including censored ones.
+    """
+    proof, unclosed = _associate(parsed, owners, capture)
+    return dict(unclosed_software_operations=unclosed,
+                **_operation_timings(parsed, owners, capture, proof))
+
+
+def _operation_timings(parsed, owners, capture, proof):
     quantum = parsed['quantum_ns']
 
     def interval(first, last):
@@ -521,7 +581,7 @@ def operation_timings(parsed, owners, capture):
     rows = []
     for key, stages in sorted(queues.items()):
         admitted = next(v for v in stages if v['stage'] == 0)
-        retired = next(v for v in stages if v['stage'] == 2)
+        retired = next((v for v in stages if v['stage'] == 2), None)
         dequeues = sorted((v['mono_ns'] for v in stages if v['stage'] == 1))
         tries = sorted(attempts[key].values(), key=lambda s: s[0]['mono_ns'])
         accepted = [s for s in tries if 2 in s and s[2]['result'] == 0]
@@ -538,12 +598,12 @@ def operation_timings(parsed, owners, capture):
                    epoch=admitted['epoch'], slot=key[3], admission_sequence=key[4],
                    dtap_bytes=admitted['bytes'], deadline_jiffies=admitted['deadline'],
                    admission_ns=admitted['mono_ns'], dequeue_ns=dequeues,
-                   retirement_ns=retired['mono_ns'], attempts=len(tries),
+                   retirement_ns=retired['mono_ns'] if retired else None, attempts=len(tries),
                    accepted_fragments=len(accepted), reported_credit_waits=len(waits),
                    accepted_usb_records=records[key],
                    uncertain_acceptances=sum(s[1]['result'] != 0 for s in accepted),
-                   admission_to_dequeue=interval(admitted['mono_ns'], dequeues[0]),
-                   admission_to_retirement=interval(admitted['mono_ns'], retired['mono_ns']),
+                   admission_to_dequeue=interval(admitted['mono_ns'], dequeues[0]) if dequeues else None,
+                   admission_to_retirement=interval(admitted['mono_ns'], retired['mono_ns']) if retired else None,
                    admission_to_first_attempt=None, admission_to_first_acceptance=None,
                    accepted_fragment_span=None, inter_attempt_gaps=gaps,
                    calls=[dict(service=s[0]['service'], offset=s[0]['offset'],
@@ -627,15 +687,67 @@ def analyze_benchmark(directory):
                 **timings)
 
 
+def _check_kernel_strings(trace, control):
+    # The collector records uname.version; the control receipt records the
+    # whole /proc/version line. Compare the actual formats, not unlike strings.
+    # These observations do not attest the executing image; artifact identity
+    # remains the separately hashed kernel/preparation/source mapping.
+    if (trace['kernel_release'] != control['kernel_release']
+            or not re.fullmatch(re.escape('Linux version '+trace['kernel_release'])
+                                + r' \([^\n]+\) '+re.escape(trace['kernel_version'])+r'\n?',
+                                control['kernel_version'])):
+        raise ValueError('original trace/control kernel identity differs')
+
+
+def analyze_failed_benchmark(directory, phase):
+    """Censored transport observations from an unchanged failed application gate.
+
+    Reuse the strict failed-phase/export/capture validator. No success receipt
+    is synthesized, no window is shortened, and the original failure remains
+    required. All observed trace/USB submissions must agree; unknown software
+    retirement is explicitly retained and cannot qualify a full trace join.
+    """
+    from ws73_rx_gap import diagnose_failed
+    from ws73_benchmark_timeline import material
+    from ws73_capture import read_capture
+    root = Path(directory).resolve(strict=True)
+    failure = diagnose_failed(root, phase)
+    manifest = json.loads((root/'manifest.json').read_text())
+    if (manifest.get('session_service_observation_requested') is not True
+            or manifest.get('session_service_acceptance') is not False):
+        raise ValueError('failed original Session observation required')
+    share = root/'guest-output'
+    record = json.loads((share/'application/passthrough-control/run.json').read_text())
+    text, row = _read_trace(share/'session-service')
+    _check_kernel_strings(row, record)
+    parsed = parse_aborted(text, row)
+    owners = identities(record)
+    capture = read_capture(share/'ws73.pcap', {(v['bus'], v['device']) for v in owners.values()})
+    timings = failed_operation_timings(parsed, owners, capture)
+    return dict(status='FAILED_GATE_TRANSPORT_TIMINGS_NOT_QUALIFIED',
+                original_gate_qualified=False, original_result='FAIL',
+                failure={k: v for k, v in failure.items() if k != 'windows'},
+                source_manifest=material(root/'manifest.json'),
+                trace=material(share/'session-service/trace.txt'),
+                trace_receipt=material(share/'session-service/run.json'),
+                trace_observation=summary(parsed),
+                **timings)
+
+
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('action', choices=['start', 'finish', 'abort', 'analyze-benchmark'])
+    p.add_argument('action', choices=['start', 'finish', 'abort', 'analyze-benchmark', 'analyze-failed-benchmark'])
     p.add_argument('directory', nargs='?', type=Path)
+    p.add_argument('--failed-phase', type=int, choices=[0, 1])
     args = p.parse_args()
-    if (args.action == 'analyze-benchmark') != (args.directory is not None):
-        p.error('only analyze-benchmark requires a captured VM run directory')
+    if args.action.startswith('analyze-') != (args.directory is not None):
+        p.error('only analysis actions require a captured VM run directory')
+    if (args.action == 'analyze-failed-benchmark') != (args.failed_phase is not None):
+        p.error('only analyze-failed-benchmark requires an explicit failed phase')
     if args.action == 'analyze-benchmark':
         print(json.dumps(analyze_benchmark(args.directory), indent=2))
+    elif args.action == 'analyze-failed-benchmark':
+        print(json.dumps(analyze_failed_benchmark(args.directory, args.failed_phase), indent=2))
     elif args.action == 'start':
         configure()
     else:

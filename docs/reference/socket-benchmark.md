@@ -253,3 +253,29 @@ Host、guest cmdline、控制器监督器、实际 slktest argv、两端 schema2
 测试旧epoch、旧lifetime及过期期限的真实拒绝及对应载荷无USB。正常响应使用一次
 确定的原期限；不增加收发循环或协议Engine。此检查不是属性级授权、完整密码证明
 或性能资格。
+
+## RX 重提交观测契约
+
+新准备产物的 `benchmark_trace_contract_version=1` 显式选择 ftrace `mono`，
+在开始与结束分别保存并校验时钟 readback。Root 监督器在应用 `start` 前、双方
+`Quiescent` 后写入本 boot cookie 和 phase 的固定 marker；写标记及读取配置均
+在应用计时热循环之外。两个连接角色各有一对 marker，不能跨 boot 或 phase 配对。
+旧捕获缺少这些材料时仍可按原契约重放，但不能获得此 RX 间隔资格。
+
+`tools/ws73_benchmark_timeline.py RUN` 复用双端 schema2／USB 校验，再对开启追踪
+的业务区间输出 `rx_resubmit_observation`。当前固定驱动的 bulk IN 请求容量为
+20480 字节；每个端点、每个 phase 只接受一个观察到的 URB 身份。重复提交、重复
+完成、区间内取消、指针混用、时间倒序或缺失端点会拒绝该间隔结果。首个完成可能
+对应区间开始前的提交；末尾提交／完成可能尚未配对，分别计为 censored，不补造样本。
+空完成单列；每个样本保留原时间及文本时间戳分辨率，不把量化后的零解释为零开销。
+
+该数值是 **xHCI giveback 事件到下一次 enqueue 入口事件** 的观测间隔。前者在
+USB core 分派 callback 前，后者在 HCD 加锁和实际入队前，并仍可能提交失败。
+它包含 USB core 分派、callback 处理及部分重新提交准备，不能描述为精确 callback
+耗时、完整的硬件无 URB 空窗或 RF 时延。generation／lifetime 来自已经独立校验的
+本轮连接身份，trace 本身没有这些标签，也不证明引用排空或全部并发交错。
+
+追踪关闭时输出 `NOT_OBSERVED_TRACE_OFF`，没有 RX 间隔样本。重复试验按 run 和
+物理源方向分别报告，保留所有失败和未完成尝试；追踪开关比较仍包含 usbmon 开销，
+不能升级为零观测开销、稳定性能阈值或多 URB 优化收益。源码、准确资格与剩余条件
+仍由唯一能力入口记录。

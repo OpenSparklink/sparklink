@@ -23,6 +23,53 @@ def material(path):
     return dict(path=str(path),sha256=hashlib.sha256(data).hexdigest(),bytes=len(data))
 
 
+def selected_clock(text):
+    if not text or len(text)>4096 or any(not re.fullmatch(r'(?:\[[a-zA-Z0-9_-]+\]|[a-zA-Z0-9_-]+)',v)for v in text.split()):raise CaptureError('bounded trace clock readback required')
+    selected=re.findall(r'\[([a-zA-Z0-9_-]+)\]',text)
+    if selected!=['mono']:raise CaptureError('explicit globally comparable mono trace clock required')
+    return 'mono'
+
+
+def phase_marker(phase,boundary):
+    """Fixed root observer, outside the application's measured hot loop."""
+    from ws73_application_role import require_vm
+    from ws73_role_snapshot import profile
+    require_vm(profile('benchmark')['token'])
+    if type(phase)is not int or phase not in(0,1)or boundary not in('BEGIN','END'):raise CaptureError('fixed benchmark phase marker required')
+    evidence=Path('/evidence');tracing=Path('/sys/kernel/tracing')
+    selected_clock((evidence/'benchmark-xhci-clock-start.txt').read_text());selected_clock((tracing/'trace_clock').read_text())
+    cfg=json.loads((evidence/'benchmark-xhci-start.json').read_text());cookie=cfg['cookie']
+    if not re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',cookie)or cfg['enabled']not in('0','1')or cfg['tracing_on']!=cfg['enabled']:raise CaptureError('actual fixed trace phase configuration required')
+    enabled=cfg['enabled']=='1'
+    if (tracing/'tracing_on').read_text().strip()!=cfg['enabled']or(tracing/'events/xhci-hcd/enable').read_text().strip()!=cfg['enabled']:raise CaptureError('trace phase enable changed')
+    marker=f'SLK_BENCH_PHASE_{boundary}:{cookie}:{phase}'if enabled else None
+    if marker:(tracing/'trace_marker').write_text(marker+'\n')
+    return dict(version=1,mode='on'if enabled else'off',clock='mono',cookie=cookie,marker=marker)
+
+
+def trace_rows(text):
+    rows=[]
+    for line in text.splitlines():
+        if not line.strip()or line.startswith('#'):continue
+        match=re.search(r'(\d+)\.(\d{6,9}):\s*(.*)$',line)
+        if not match:raise CaptureError('bounded nanosecond trace timestamp required')
+        rows.append(dict(ns=int(match[1])*1_000_000_000+int(match[2].ljust(9,'0')),event=match[3],quantum_ns=10**(9-len(match[2]))))
+    return rows
+
+
+def phase_intervals(rows,cookie):
+    markers=[(n,v)for n,v in enumerate(rows)if v['event'].startswith('tracing_mark_write: SLK_BENCH_PHASE_')]
+    expected=[f'tracing_mark_write: SLK_BENCH_PHASE_{boundary}:{cookie}:{phase}'for phase in(0,1)for boundary in('BEGIN','END')]
+    if [v['event']for _,v in markers]!=expected:raise CaptureError('two ordered original business phase marker pairs required')
+    result=[]
+    for phase in(0,1):
+        (first,a),(last,b)=markers[phase*2:phase*2+2]
+        if a['ns']>=b['ns']or not any(v['event'].startswith('xhci_')for v in rows[first+1:last]):raise CaptureError('positive observed work inside each business phase required')
+        result.append(dict(phase=phase,begin_ns=a['ns'],end_ns=b['ns']))
+    if result[0]['end_ns']>=result[1]['begin_ns']:raise CaptureError('nonoverlapping mono business phases required')
+    return result
+
+
 def check_xhci(share, mode):
     share=Path(share)
     if mode not in ('on','off'):raise CaptureError('explicit xHCI comparison mode')
@@ -59,9 +106,85 @@ def check_xhci(share, mode):
         begin='tracing_mark_write: SLK_BENCH_BEGIN:'+cookie;end='tracing_mark_write: SLK_BENCH_END:'+cookie
         if events.count(begin)!=1 or events.count(end)!=1 or events.index(begin)>=events.index(end):raise CaptureError('original ordered trace interval markers required')
         if not any(v.startswith('xhci_') for v in events[events.index(begin)+1:events.index(end)]):raise CaptureError('actual xHCI positive work required')
-        if any(not v.startswith('xhci_') and v not in (begin,end) for v in events):raise CaptureError('unexpected event outside requested xHCI observation')
-    return dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode=mode,entries=len(events),cookie=cookie,
+        modern=any((share/f'benchmark-xhci-clock-{name}.txt').exists()for name in('start','end'))
+        if any(not v.startswith('xhci_') and v not in(begin,end)and not(modern and v.startswith('tracing_mark_write: SLK_BENCH_PHASE_'))for v in events):raise CaptureError('unexpected event outside requested xHCI observation')
+    result=dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode=mode,entries=len(events),cookie=cookie,
                 trace=material(path),requested_buffer_kb=1024,actual_buffer_kb=actual_kb,subbuffer_payload_bytes=payload,scope='Start/end readback and complete finite VM trace;usbmon remains enabled;not all observer overhead or kernel concurrency proof')
+    clocks=[share/f'benchmark-xhci-clock-{name}.txt'for name in('start','end')]
+    if any(p.exists()for p in clocks):
+        if not all(p.is_file()and not p.is_symlink()for p in clocks):raise CaptureError('both actual trace clock readbacks required')
+        for p in clocks:selected_clock(p.read_text())
+        parsed=trace_rows(text);phases=phase_intervals(parsed,cookie)if mode=='on'else[]
+        if mode=='on':
+            begin=next(v['ns']for v in parsed if v['event']=='tracing_mark_write: SLK_BENCH_BEGIN:'+cookie)
+            end=next(v['ns']for v in parsed if v['event']=='tracing_mark_write: SLK_BENCH_END:'+cookie)
+            if not begin<phases[0]['begin_ns']<phases[-1]['end_ns']<end:raise CaptureError('business phases belong to original boot trace interval')
+        result.update(trace_contract_version=1,clock='mono',phase_intervals=phases,clock_readbacks=[material(p)for p in clocks])
+    return result
+
+
+def rx_resubmits(share,run,trace):
+    """Observe HCD endpoints, not a callback timer or hardware-ready timestamp.
+
+    xHCI giveback precedes USB-core callback dispatch; enqueue is before the
+    HCD lock/queue and can still fail. Neither event embeds Runtime generation.
+    Connection identity is an annotation from the independently checked gate.
+    """
+    if trace.get('trace_contract_version')!=1 or trace.get('clock')!='mono':raise CaptureError('RX interval requires explicit trace clock/phase contract')
+    if trace['mode']=='off':
+        for row in run['socket_benchmark']:
+            if row.get('trace_observation')!=dict(version=1,mode='off',clock='mono',cookie=trace['cookie'],marker=None,end_marker=None):raise CaptureError('actual root trace-off witness required')
+        return dict(status='NOT_OBSERVED_TRACE_OFF',endpoints=[])
+    raw=(Path(share)/'xhci-trace.log').read_bytes()
+    if len(raw)!=trace['trace']['bytes']or hashlib.sha256(raw).hexdigest()!=trace['trace']['sha256']:raise CaptureError('RX trace changed after verification')
+    rows=trace_rows(raw.decode());results=[]
+    pattern=re.compile(r'xhci_urb_(enqueue|giveback|dequeue): (\d+-\d+(?:\.\d+)*) ep(\d+)in-bulk: urb ([0-9a-f]{16}) pipe (\d+) slot (\d+) length (\d+)/(\d+) sgs \d+/\d+ stream \d+ flags [0-9a-f]{8}')
+    for phase,bounds in zip(run['socket_benchmark'],trace['phase_intervals'],strict=True):
+        witness=phase.get('trace_observation',{});n=phase['phase']
+        if (bounds['phase']!=n or witness!=dict(version=1,mode='on',clock='mono',cookie=trace['cookie'],marker=f'SLK_BENCH_PHASE_BEGIN:{trace["cookie"]}:{n}',end_marker=f'SLK_BENCH_PHASE_END:{trace["cookie"]}:{n}')):raise CaptureError('actual root business trace witness required')
+        for entry in phase['owners']:
+            owner,obj=entry['owner'],entry['object'];port=owner['port'];events=[]
+            for row in rows:
+                if not bounds['begin_ns']<row['ns']<bounds['end_ns']:continue
+                if row['event'].startswith(('xhci_urb_enqueue: '+port+' ','xhci_urb_giveback: '+port+' ','xhci_urb_dequeue: '+port+' '))and'in-bulk:'in row['event']:
+                    match=pattern.fullmatch(row['event'])
+                    if not match:raise CaptureError('exact recorded xHCI bulk IN format required')
+                    operation,_,ep,urb,pipe,slot,actual,length=match.groups();actual,length=int(actual),int(length)
+                    if length!=20480 or not 0<=actual<=length or(operation=='enqueue'and actual!=0):raise CaptureError('current native single RX buffer observation required')
+                    events.append(row|dict(operation=operation,ep=ep,urb=urb,pipe=pipe,slot=slot,actual=actual))
+            if not events or len({tuple(v[k]for k in('ep','urb','pipe','slot'))for v in events})!=1:raise CaptureError('one observed Runtime RX URB per endpoint and phase required')
+            times=[v['ns']for v in events]
+            if times!=sorted(times):raise CaptureError('RX event order disagrees with mono clock')
+            inflight=False;last=None;left=0;left_enqueue=0;givebacks=0;submissions=0;empty=0;samples=[]
+            for i,event in enumerate(events):
+                if event['operation']=='dequeue':raise CaptureError('RX cancellation inside measured phase; interval not qualified')
+                if event['operation']=='giveback':
+                    if not inflight:
+                        if i!=0:raise CaptureError('RX completion without observed submission')
+                        left+=1
+                    if last is not None:raise CaptureError('duplicate RX completion before resubmit')
+                    givebacks+=1;empty+=event['actual']==0;last=event;inflight=False
+                else:
+                    if inflight:raise CaptureError('overlapping RX submissions; single-URB observation invalid')
+                    submissions+=1
+                    if i==0:left_enqueue+=1
+                    if last is not None:
+                        samples.append(dict(giveback_ns=last['ns'],resubmit_entry_ns=event['ns'],interval_ns=event['ns']-last['ns'],actual_bytes=last['actual'],timestamp_quantum_ns=max(event['quantum_ns'],last['quantum_ns'])))
+                        last=None
+                    inflight=True
+            if not samples:raise CaptureError('RX giveback/resubmit samples missing')
+            if submissions!=len(samples)+left_enqueue or givebacks!=len(samples)+int(last is not None):raise CaptureError('every observed RX event must be accounted or censored')
+            results.append(dict(phase=n,identity=dict(port=port,controller=owner['index'],generation=owner['generation'],lifetime=obj['lifetime'],handle=obj['handle']),urb=events[0]['urb'],endpoint=int(events[0]['ep']),enqueue_entries=submissions,givebacks=givebacks,empty_givebacks=empty,left_censored_enqueue_entries=left_enqueue,left_censored_completions=left,right_censored_submission=int(inflight),right_censored_completion=int(last is not None),samples=samples,distribution=distribution([v['interval_ns']for v in samples])))
+    if len(results)!=4:raise CaptureError('both endpoints in both business phases required')
+    return dict(status='HCD_RX_GIVEBACK_TO_RESUBMIT_ENTRY_OBSERVED',clock='mono',endpoints=results,scope='Only same-boot established-business phases, single observed RX URB/endpoint; boundary censoring explicit. Includes USB-core dispatch/callback and submit preparation before HCD queue. Not callback-only cost, full no-URB hardware window, generation/ref/drain proof, RF delay or bottleneck/optimization evidence.')
+
+
+def valid_trace_summary(proof,mode):
+    try:
+        if(mode not in('on','off')or proof['mode']!=mode or proof['status']!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED'or type(proof['trace_contract_version'])is not int or proof['trace_contract_version']!=1 or proof['clock']!='mono'):return False
+        phases=proof['phase_intervals']
+        return phases==[]if mode=='off'else(len(phases)==2 and all(type(p[k])is int for p in phases for k in('phase','begin_ns','end_ns'))and[ph['phase']for ph in phases]==[0,1]and 0<phases[0]['begin_ns']<phases[0]['end_ns']<phases[1]['begin_ns']<phases[1]['end_ns'])
+    except(KeyError,TypeError,IndexError):return False
 
 
 def intervals(run, proof):
@@ -104,7 +227,7 @@ def analyze(directory):
     if 'socket_benchmark_xhci_requested' in manifest:
         trace=check_xhci(share,manifest['socket_benchmark_xhci_requested'])
         if trace!=manifest['socket_benchmark_xhci_observation']:raise CaptureError('original trace observation mismatch')
-    return dict(schema_version=1,status='INTERVALS_OBSERVED_NOT_PERFORMANCE_QUALIFIED',round_trips=len(rows),mode=proof['mode'],window=run['socket_benchmark'][0]['config']['window'],xhci=trace,
+    result=dict(schema_version=1,status='INTERVALS_OBSERVED_NOT_PERFORMANCE_QUALIFIED',round_trips=len(rows),mode=proof['mode'],window=run['socket_benchmark'][0]['config']['window'],xhci=trace,
                 source_manifest=material(root/'manifest.json'),capture=material(share/'ws73.pcap'),rows=rows,
                 usb_wall_distributions={k:distribution([r['usb_wall_ns'][k] for r in rows]) for k in rows[0]['usb_wall_ns']},
                 application_monotonic_distributions={k:distribution([r['application_monotonic_ns'][k] for r in rows]) for k in rows[0]['application_monotonic_ns']},
@@ -115,6 +238,10 @@ def analyze(directory):
                        'NOCP handle/count timeline separate,not assigned as per-message acknowledgement or delivery.',
                        'Successful original paired lowload workload only;failed runs refused,not silently included or upgraded;allattempt ledger remains required.',
                        'No Session/credit/Ticket/Grant/URB changes;no stable threshold,resourcepeak orcompleteperformance qualification.'])
+    if trace and trace.get('trace_contract_version')==1:
+        if not valid_trace_summary(trace,manifest['socket_benchmark_xhci_requested']):raise CaptureError('fresh trace summary contract required')
+        result['rx_resubmit_observation']=rx_resubmits(share,run,trace)
+    return result
 
 
 def main():

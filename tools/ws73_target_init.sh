@@ -83,6 +83,9 @@ if [ -f /scratch-root-uuid ]; then
     ensure_mount /sys/kernel/tracing tracefs
     [ -f /sys/kernel/tracing/events/xhci-hcd/enable ] || fail 'native xHCI trace events unavailable'
     echo 1024 > /sys/kernel/tracing/buffer_size_kb || fail 'native xHCI trace buffer'
+    if grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
+        echo mono > /sys/kernel/tracing/trace_clock || fail 'benchmark monotonic trace clock'
+    fi
     xhci_mode=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_xhci=/){sub(/^ws73.benchmark_xhci=/,"",$i);print $i}}' /proc/cmdline)
     case "$xhci_mode" in
         ''|on) xhci_enabled=1 ;;
@@ -102,7 +105,9 @@ if grep -qw ws73.session_service=1 /proc/cmdline; then
 fi
 if [ -f /scratch-root-uuid ] && grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
     cat /sys/kernel/tracing/events/header_page > /evidence/benchmark-xhci-header-start.txt || fail 'trace header start'
+    cat /sys/kernel/tracing/trace_clock > /evidence/benchmark-xhci-clock-start.txt || fail 'trace clock start'
     printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"requested_buffer_kb":1024,"subbuffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$(cat /sys/kernel/tracing/buffer_subbuf_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-start.json || fail 'trace start readback'
+    chmod 0444 /evidence/benchmark-xhci-start.json /evidence/benchmark-xhci-clock-start.txt /evidence/benchmark-xhci-header-start.txt || fail 'trace start evidence permissions'
     if [ "$xhci_enabled" = 1 ]; then echo "SLK_BENCH_BEGIN:$xhci_cookie" > /sys/kernel/tracing/trace_marker || fail 'trace begin marker'; fi
 fi
 for n in $(seq 1 100); do [ -c /dev/usbmon1 ] && [ -c /dev/sparklink ] && break; sleep 0.1; done
@@ -545,7 +550,9 @@ if [ -f /scratch-root-uuid ]; then
     if grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
         if [ "$xhci_enabled" = 1 ]; then echo "SLK_BENCH_END:$xhci_cookie" > /sys/kernel/tracing/trace_marker || fail 'trace end marker'; fi
         cat /sys/kernel/tracing/events/header_page > /evidence/benchmark-xhci-header-end.txt || fail 'trace header end'
+        cat /sys/kernel/tracing/trace_clock > /evidence/benchmark-xhci-clock-end.txt || fail 'trace clock end'
         printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"requested_buffer_kb":1024,"subbuffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$(cat /sys/kernel/tracing/buffer_subbuf_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-end.json || fail 'trace end readback'
+        chmod 0444 /evidence/benchmark-xhci-end.json /evidence/benchmark-xhci-clock-end.txt /evidence/benchmark-xhci-header-end.txt || fail 'trace end evidence permissions'
     fi
     echo 0 > /sys/kernel/tracing/tracing_on
     cat /sys/kernel/tracing/trace > /evidence/xhci-trace.log || fail 'native xHCI trace seal'

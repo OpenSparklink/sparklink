@@ -7,11 +7,41 @@ import sys
 import tempfile
 import unittest
 sys.path[:0]=[str(Path(__file__).resolve().parents[1]),str(Path(__file__).resolve().parent)]
-from ws73_benchmark_timeline import check_xhci,intervals
+from ws73_benchmark_timeline import check_xhci,intervals,rx_resubmits,selected_clock,valid_trace_summary
 from ws73_capture import CaptureError
 from ws73_socket_benchmark import corroborate
 from test_ws73_socket_benchmark import fixture
 COOKIE='01234567-89ab-cdef-0123-456789abcdef'
+
+
+def modern_trace(root,mode='on'):
+    """Synthetic observation records, no actual callback/USB/Native fixture."""
+    trace_fixture(root,mode);run=dict(socket_benchmark=[]);lines=[]
+    def append(t,event):lines.append(f'  fixture-1 [000] ..... 0.{t:06d}: '+event)
+    if mode=='on':append(1,'tracing_mark_write: SLK_BENCH_BEGIN:'+COOKIE)
+    for phase,base in enumerate((10,40)):
+        row=dict(phase=phase,owners=[],trace_observation=dict(version=1,mode=mode,clock='mono',cookie=COOKIE,marker=f'SLK_BENCH_PHASE_BEGIN:{COOKIE}:{phase}'if mode=='on'else None,end_marker=f'SLK_BENCH_PHASE_END:{COOKIE}:{phase}'if mode=='on'else None));run['socket_benchmark'].append(row)
+        if mode=='on':append(base,f'tracing_mark_write: SLK_BENCH_PHASE_BEGIN:{COOKIE}:{phase}')
+        events=[]
+        for index in(0,1):
+            row['owners'].append(dict(owner=dict(port=f'1-{index+1}',index=index,generation=index+5),object=dict(lifetime=phase+10,handle=0)))
+            for offset,operation,actual in[(2,'giveback',156),(4,'enqueue',0),(6,'giveback',0),(8,'enqueue',0)]:
+                events.append((base+offset+index,f'xhci_urb_{operation}: 1-{index+1} ep1in-bulk: urb {index+1:016x} pipe 3225453184 slot {index+1} length {actual}/20480 sgs 0/0 stream 0 flags 00010200'))
+        if mode=='on':
+            for t,event in sorted(events):append(t,event)
+            append(base+20,f'tracing_mark_write: SLK_BENCH_PHASE_END:{COOKIE}:{phase}')
+    if mode=='on':append(70,'tracing_mark_write: SLK_BENCH_END:'+COOKIE)
+    (root/'xhci-trace.log').write_text('# tracer: nop\n# entries-in-buffer/entries-written: '+str(len(lines))+'/'+str(len(lines))+'\n'+'\n'.join(lines)+'\n')
+    (root/'xhci-trace-stats.txt').write_text(''.join(f'entries: {n}\noverrun: 0\ncommit overrun: 0\ndropped events: 0\n'for n in(len(lines),0)))
+    for end in('start','end'):(root/f'benchmark-xhci-clock-{end}.txt').write_text('local global counter uptime perf [mono] mono_raw boot tai x86-tsc\n')
+    return run
+
+
+def reseal_trace_fixture(root,text):
+    rows=[v for v in text.splitlines()if v.strip()and not v.startswith('#')]
+    (root/'xhci-trace.log').write_text('# tracer: nop\n# entries-in-buffer/entries-written: '+str(len(rows))+'/'+str(len(rows))+'\n'+'\n'.join(rows)+'\n')
+    (root/'xhci-trace-stats.txt').write_text(''.join(f'entries: {n}\noverrun: 0\ncommit overrun: 0\ndropped events: 0\n'for n in(len(rows),0)))
+    return check_xhci(root,'on')
 
 
 def trace_fixture(root,mode='on'):
@@ -25,6 +55,87 @@ def trace_fixture(root,mode='on'):
 
 
 class TimelineEvidence(unittest.TestCase):
+    def test_linux_arch_clock_enumeration_does_not_change_required_selection(self):
+        clocks='local global counter uptime perf [mono] mono_raw boot tai x86-tsc\n'
+        self.assertEqual(selected_clock(clocks),'mono')
+        with self.assertRaises(CaptureError):selected_clock(clocks.replace('[mono]','mono').replace('x86-tsc','[x86-tsc]'))
+
+    def test_explicit_clock_phase_and_single_rx_intervals_keep_boundary_censoring(self):
+        with tempfile.TemporaryDirectory()as d:
+            root=Path(d);run=modern_trace(root);trace=check_xhci(root,'on');self.assertTrue(valid_trace_summary(trace,'on'))
+            proof=rx_resubmits(root,run,trace);self.assertEqual(len(proof['endpoints']),4)
+            for ep in proof['endpoints']:
+                self.assertEqual(ep['left_censored_completions'],1);self.assertEqual(ep['right_censored_submission'],1);self.assertEqual(ep['right_censored_completion'],0)
+                self.assertEqual(ep['givebacks'],2);self.assertEqual(ep['empty_givebacks'],1)
+                self.assertEqual([s['interval_ns']for s in ep['samples']],[2000,2000]);self.assertEqual(ep['distribution']['p999_ns'],None)
+            run=modern_trace(root,'off');trace=check_xhci(root,'off');self.assertTrue(valid_trace_summary(trace,'off'))
+            self.assertEqual(rx_resubmits(root,run,trace),dict(status='NOT_OBSERVED_TRACE_OFF',endpoints=[]))
+
+    def test_trace_clock_missing_wrong_and_unbounded_are_not_measurements(self):
+        for value in('','[local] mono','[mono] [mono_raw]','[mono] local]','[mono]'+'a'*4096):
+            with self.subTest(value=value[:30]),self.assertRaises(CaptureError):selected_clock(value)
+        for name in('missing-start','missing-end','wrong-end','duplicate-phase','old-cookie','reversed-time','missing-work','missing-marker'):
+            with tempfile.TemporaryDirectory()as d:
+                root=Path(d);modern_trace(root);p=root/'xhci-trace.log';text=p.read_text()
+                if name.startswith('missing-')and name.split('-',1)[1]in('start','end'):(root/f'benchmark-xhci-clock-{name.split("-",1)[1]}.txt').unlink()
+                elif name=='wrong-end':(root/'benchmark-xhci-clock-end.txt').write_text('[local] mono')
+                elif name=='duplicate-phase':text=text.replace('SLK_BENCH_PHASE_BEGIN:'+COOKIE+':1','SLK_BENCH_PHASE_BEGIN:'+COOKIE+':0')
+                elif name=='old-cookie':text=text.replace('SLK_BENCH_PHASE_END:'+COOKIE+':1','SLK_BENCH_PHASE_END:'+'f'*36+':1')
+                elif name=='reversed-time':text=text.replace('0.000030:','0.000009:')
+                elif name=='missing-work':text=text.replace('xhci_urb_','tracing_mark_write: bad_')
+                elif name=='missing-marker':text=text.replace('SLK_BENCH_PHASE_BEGIN:','UNRECOGNIZED:')
+                p.write_text(text)
+                with self.subTest(name=name),self.assertRaises((CaptureError,FileNotFoundError)):check_xhci(root,'on')
+
+    def test_initial_enqueue_is_explicitly_censored_and_all_events_accounted(self):
+        with tempfile.TemporaryDirectory()as d:
+            root=Path(d);run=modern_trace(root);trace=check_xhci(root,'on');p=root/'xhci-trace.log'
+            # Prefix was before the observation interval; do not invent its
+            # completion timestamp or turn an enqueue into a measured gap.
+            text=p.read_text();line=next(v for v in text.splitlines()if '0.000012: xhci_urb_giveback: 1-1'in v)
+            first=line.replace('0.000012:','0.000011:').replace('xhci_urb_giveback:','xhci_urb_enqueue:').replace('length 156/20480','length 0/20480')
+            trace=reseal_trace_fixture(root,text.replace(line,first+'\n'+line))
+            ep=rx_resubmits(root,run,trace)['endpoints'][0]
+            self.assertEqual(ep['left_censored_enqueue_entries'],1);self.assertEqual(ep['left_censored_completions'],0)
+            self.assertEqual(ep['enqueue_entries'],len(ep['samples'])+1)
+            self.assertEqual(ep['givebacks'],len(ep['samples'])+ep['right_censored_completion'])
+
+    def test_single_rx_parser_rejects_overlap_cancel_pointer_and_clock_races(self):
+        for name in('overlap','cancel','pointer','length','out-of-order','duplicate-completion','missing-endpoint','wrong-root-marker'):
+            with tempfile.TemporaryDirectory()as d:
+                root=Path(d);run=modern_trace(root);trace=check_xhci(root,'on');p=root/'xhci-trace.log';text=p.read_text()
+                if name=='overlap':text=text.replace('0.000016: xhci_urb_giveback:','0.000016: xhci_urb_enqueue:')
+                elif name=='cancel':text=text.replace('0.000016: xhci_urb_giveback:','0.000016: xhci_urb_dequeue:')
+                elif name=='pointer':text=text.replace('0.000016: xhci_urb_giveback: 1-1 ep1in-bulk: urb 0000000000000001','0.000016: xhci_urb_giveback: 1-1 ep1in-bulk: urb 0000000000000009')
+                elif name=='length':text=text.replace('/20480','/20479')
+                elif name=='out-of-order':text=text.replace('0.000016:','0.000013:')
+                elif name=='duplicate-completion':text=text.replace('0.000014: xhci_urb_enqueue:','0.000014: xhci_urb_giveback:')
+                elif name=='missing-endpoint':text='\n'.join(line for line in text.splitlines()if '1-2 ep1in-bulk'not in line)+'\n'
+                else:run['socket_benchmark'][0]['trace_observation']['cookie']='f'*36
+                trace=reseal_trace_fixture(root,text)
+                with self.subTest(name=name),self.assertRaises(CaptureError):rx_resubmits(root,run,trace)
+
+    def test_rx_trace_bytes_cannot_change_after_original_verification(self):
+        with tempfile.TemporaryDirectory()as d:
+            root=Path(d);run=modern_trace(root);trace=check_xhci(root,'on');p=root/'xhci-trace.log';p.write_text(p.read_text().replace('length 156/20480','length 157/20480',1))
+            with self.assertRaisesRegex(CaptureError,'changed after verification'):rx_resubmits(root,run,trace)
+
+    def test_new_trace_terminal_guard_rejects_missing_or_old_clock(self):
+        with tempfile.TemporaryDirectory()as d:
+            root=Path(d);modern_trace(root);trace=check_xhci(root,'on')
+            for update in [dict(clock='local'),dict(trace_contract_version=True),dict(phase_intervals=[]),dict(mode='off')]:
+                self.assertFalse(valid_trace_summary(trace|update,'on'))
+
+    def test_modern_trace_cannot_be_relabelled_as_legacy_terminal_evidence(self):
+        from ws73_target import run_exit_code
+        with tempfile.TemporaryDirectory()as d:
+            root=Path(d);run,capture=fixture(root);proof=corroborate(run,capture,root)
+            record=dict(supervisor_exit=0,status='PASSTHROUGH_SUPPORT_PASS',socket_benchmark_requested='window',socket_benchmark_acceptance=True,socket_benchmark_corroboration=proof,performance_qualified=False,qemu_exit=0)
+            self.assertEqual(run_exit_code(record),0) # Historical metadata fixture only.
+            modern_trace(root);record['socket_benchmark_xhci_observation']=check_xhci(root,'on');record['socket_benchmark_xhci_requested']='on'
+            self.assertEqual(run_exit_code(record),1) # Missing contract must not fall back.
+            record['benchmark_trace_contract_version']=1
+            self.assertEqual(run_exit_code(record),1) # New contract cannot use legacy role.
     def test_on_off_actual_readback_and_trace_integrity(self):
         for mode in ['on','off']:
             with tempfile.TemporaryDirectory() as d:

@@ -58,7 +58,7 @@ def role_tool_path(root,name):
 def role_tools(root=Path('/')):
     import hashlib
     from ws73_role_snapshot import HELPER,SUPERVISOR
-    names=('/bin/slktest','/bin/bus-policy-probe',HELPER,SUPERVISOR,'/usr/share/sparklink/tools/ws73_socket_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark.py')
+    names=('/bin/slktest','/bin/bus-policy-probe',HELPER,SUPERVISOR,'/usr/share/sparklink/tools/ws73_socket_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark_timeline.py')
     return {n:dict(sha256=hashlib.sha256(role_tool_path(root,n).read_bytes()).hexdigest(),bytes=role_tool_path(root,n).stat().st_size)for n in names}
 
 
@@ -66,7 +66,8 @@ def validate_role_sources(package):
     from ws73_north_star import file_record
     here=Path(__file__).resolve().parent
     if type(package.get('socket_benchmark_role_contract_version'))is not int or package['socket_benchmark_role_contract_version']!=1:raise ValueError('fresh apps-only benchmark prepared contract1 required')
-    for name in ('ws73_socket_benchmark.py','ws73_benchmark.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh'):
+    if type(package.get('benchmark_trace_contract_version'))is not int or package['benchmark_trace_contract_version']!=1:raise ValueError('fresh explicit monotonic benchmark trace contract1 required')
+    for name in ('ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh'):
         matches=[v for v in package['inputs']if Path(v['path']).name==name]
         if len(matches)!=1 or matches[0]['sha256']!=file_record(here/name)['sha256']:raise ValueError('prepared benchmark role/source closure mismatch: '+name)
 
@@ -208,8 +209,13 @@ def execute_supervised(run,row):
             wait_marker('armed',45)
             # No disk writes between start and both quiescent; bounded IO receipts
             # stay in memory. These are sparse supervision events, not per-packet logs.
+            from ws73_benchmark_timeline import phase_marker
+            row['trace_observation']=phase_marker(row['phase'],'BEGIN')
             release('start')
             wait_marker('quiescent',620)
+            end=phase_marker(row['phase'],'END')
+            if {k:v for k,v in end.items()if k!='marker'}!={k:v for k,v in row['trace_observation'].items()if k!='marker'}:raise CaptureError('trace configuration changed during business phase')
+            row['trace_observation']['end_marker']=end['marker']
             release('finish')
             deadline=time.monotonic()+15
             for i,(proc,app) in enumerate(processes):

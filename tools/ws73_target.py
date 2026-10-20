@@ -106,6 +106,7 @@ def prepare_locked(args, build_fd):
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['firmware_evidence_contract_version'] = 1
     manifest['socket_benchmark_role_contract_version'] = 1
+    manifest['benchmark_trace_contract_version'] = 1
     manifest['ssap_exchange_contract_version'] = 2
     manifest['ssap_update_delivery_contract_version'] = 2
     manifest['application_role_contract_version'] = 2
@@ -828,6 +829,7 @@ def _run(args):
     m['socket_benchmark_requested']=benchmark_mode
     if benchmark_mode:
         m['socket_benchmark_role_contract_version']=1
+        m['benchmark_trace_contract_version']=1
         m['socket_benchmark_apps_acceptance']=False
         m['socket_benchmark_window_requested']=benchmark_window
         m['socket_benchmark_config_requested']=benchmark_config
@@ -2370,6 +2372,11 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or proof.get('status')!='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED'
                 or any(type(proof.get(k)) is not int or proof[k]<=0 for k in ['services','attempts','accepted_usb_packets','operations'])):return 1
     benchmark_role=record.get('socket_benchmark_role_contract_version')
+    trace_contract=record.get('benchmark_trace_contract_version')
+    if trace_contract is not None:
+        from ws73_benchmark_timeline import valid_trace_summary
+        if(type(trace_contract)is not int or trace_contract!=1 or type(benchmark_role)is not int or benchmark_role!=1 or not record.get('socket_benchmark_requested')or not valid_trace_summary(record.get('socket_benchmark_xhci_observation',{}),record.get('socket_benchmark_xhci_requested'))):return 1
+    elif record.get('socket_benchmark_xhci_observation',{}).get('trace_contract_version')is not None:return 1
     benchmark_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.socket_benchmark_apps=')]
     if benchmark_role is not None:
         from ws73_socket_benchmark import valid_role_supervision

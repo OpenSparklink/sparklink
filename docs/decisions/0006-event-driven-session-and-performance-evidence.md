@@ -228,3 +228,13 @@ bfaa与14d9的相同Kconfig、U42字节相同二进制、同执行工具/QEMU/SD
 预算按测试配置记录，超限失败并保留原件；有限角色／测量闭包通过不升级为稳定
 性能、完整压力、部署或权限生命周期资格。当前资格仍只由唯一能力入口中的准确
 源码及 artifact 记录表达。
+
+### 单 RX URB 的优化依据
+
+先复用现有 xHCI observer，以明确的 mono 时钟和连接业务阶段边界测量 giveback
+到重新进入 enqueue 的间隔，再决定是否缩短 callback 热路径或引入有界多 URB。
+该间隔跨越 USB core 分派及提交准备，不能等同于 callback 本身或硬件接收空窗。
+URB 指针只在单 boot、单连接阶段内关联，连接身份来自已有双端门禁；阶段边界的
+未完成配对保留为 censored。开启／关闭追踪需要同 artifact 的有限重复对照。
+这些观测不改变接收顺序、Runtime generation、buffer 所有权或 stop/drain 契约，
+也不把尚未测得的瓶颈当作已确认的根因；多 URB 与异步 TX 仍是单独的后续决策。

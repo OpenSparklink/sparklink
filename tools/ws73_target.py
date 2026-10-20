@@ -106,7 +106,7 @@ def prepare_locked(args, build_fd):
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['firmware_evidence_contract_version'] = 1
     manifest['socket_benchmark_role_contract_version'] = 1
-    manifest['benchmark_ssap_contract_version'] = 1
+    manifest['benchmark_ssap_contract_version'] = 2
     manifest['benchmark_trace_contract_version'] = 1
     manifest['benchmark_process_resource_contract_version'] = 1
     manifest['ssap_exchange_contract_version'] = 2
@@ -2728,6 +2728,7 @@ def main():
             cmd.add_argument('--channel-benchmark-parallel',action='store_true',help='finite four-app short/long load on two dynamic channels;requires default window workload')
             cmd.add_argument('--channel-benchmark-close-short',action='store_true')
             cmd.add_argument('--channel-benchmark-ssap-owned',action='store_true',help='fixed128x2042/window8 dynamic correctness load with actual ordinary Owned SSAP callers;not performance')
+            cmd.add_argument('--channel-benchmark-ssap-duplex',action='store_true',help='pair actual opposite-controller SDK steps with USB pending overlap;requires --channel-benchmark-ssap-owned;not a sequential-gate replacement')
             cmd.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1],help='dynamic negotiation role independent of business direction;default0 when dynamic')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
             cmd.add_argument('--native-return-verify',action='store_true',help='VM-only actual Native bind-return/physical Down/parent cleanup,then ordinary data preservation')

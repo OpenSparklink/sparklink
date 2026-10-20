@@ -450,9 +450,9 @@ trace 逐项对应，不因它是动态信令而过滤。新记录按实际匹�
 
 显式 `--channel-benchmark-ssap-owned` 要求 `window`、`--channel-benchmark-dynamic`、
 128条／2042字节／窗口8，以及原动态端点角色0或1。它与 parallel、close、rate、
-duplex 和安全 Agent 场景分开，当前要求预先冻结的 SSAP `channel_security=0`；
+普通通道的`duplex`负载和安全 Agent 场景分开，当前要求预先冻结的 SSAP `channel_security=0`；
 本地 Owned 审批不能描述为认证、加密或 Bond。新 prepared 必须声明
-`benchmark_ssap_contract_version=1`，boot、原请求、helper、C／Python消费者及
+`benchmark_ssap_contract_version=2`，boot、原请求、helper、C／Python消费者及
 SDK库均按准确输入绑定。旧 benchmark 不因新标识取得服务并发资格。
 
 每连接角色仍由两个 UID1004／空附加组／零能力的实际 slktest 进程完成128条长消息
@@ -460,6 +460,17 @@ SDK库均按准确输入绑定。旧 benchmark 不因新标识取得服务并发
 UID1004执行四轮、两个方向的读／写／读。管理 UID1000 只承担原有发现／UUID观察。
 两个连接角色共256次通道往返、48次 SDK 读写调用、16个值周期及80个实际审批；
 Owner 本地值检查、真实收据、源文件关闭与退出仍必须完整。
+
+可额外显式指定`--channel-benchmark-ssap-duplex`，选择版本2的Owned SDK请求编排；
+不指定时仍是原版本1顺序入口。每轮的读前／写／读后分别将两端实际C／Python进程
+同时置于原启动屏障后释放，12对请求／角色、24对／两角色。每对必须以两端USB
+证明两个完整请求已提交、首个完整回复尚未接收的交叠区间；仅进程同时运行不够。
+单次与成对调用复用一个有限监督器，成对等待只有一个原始7秒监督期限，子进程
+原5秒期限、Owner原30秒、消息／结束屏障期限均不重置。服务发现仍在原普通负载
+期间，UUID、审批、值检查、撤回和总调用数不减少。
+
+该双向场景是新增能力切片，不是原顺序场景、30秒失败、性能或恢复验收的替代。
+新名称、boot标识或元数据不能把版本1原件重新分类为版本2；二者分别记录准确来源。
 
 原全端 Armed→start／Quiescent→finish 屏障和原始期限不变。监督器在业务期间执行
 真实 SDK／审批和证据写入，因此它是正确性负载，不能作为低扰动性能基线。

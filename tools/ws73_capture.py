@@ -17,6 +17,15 @@ class CaptureError(ValueError):
     pass
 
 
+def packet_interval(packet):
+    """Complete original USB fragment interval, in its recorded clock only."""
+    if type(packet)is not dict:raise CaptureError('actual decoded USB packet required')
+    fragments=packet.get('fragments',[packet])
+    stamps=[p['wall_ns']for p in fragments]
+    if not stamps or any(type(v)is not int or v<=0 for v in stamps):raise CaptureError('original USB fragment timestamps required')
+    return min(stamps),max(stamps)
+
+
 def read_live_prefix(output, capture, targets, observations):
     """Bounded snapshot of the private capture,without opening USB or editing it.
 

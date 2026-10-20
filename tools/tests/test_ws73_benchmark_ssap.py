@@ -1,12 +1,42 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Finite selector/time/source fixtures,not Native or radio qualification."""
 import copy
+import json
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 from ws73_capture import CaptureError
 import ws73_benchmark_ssap as service
 import ws73_socket_benchmark as benchmark
+
+
+def duplex_fixture():
+    """SDK-receipt/USB-time input fixtures only,not a Native or peer substitute."""
+    from ws73_application_client import application_environment
+    owners=[dict(owner=dict(index=s,generation=s+1),object=dict(path=f'/fixture/controller{s}/connection'))for s in(0,1)]
+    apps=[];batches=[];values=[]
+    for sequence in range(4):
+        pair=[dict(sequence=sequence,sender=s,wire=[None]*6,receipts={})for s in(0,1)]
+        for step_index,step in enumerate(('read_before','write','read_after')):
+            n=sequence*3+step_index;base=1_000_000_000+n*100_000_000
+            batch=dict(version=1,index=n,sequence=sequence,step=step,applications=[2*n,2*n+1],start_wall_ns=base,
+                       released_wall_ns=base+4_000_000,end_wall_ns=base+20_000_000,wait_deadline_monotonic_ns=base+3_000_000+7_000_000_000,
+                       completed_monotonic_ns=base+20_000_000,status='SDK_CALLS_COMPLETE',supervisor_seconds=7)
+            batches.append(batch)
+            for s in(0,1):
+                api='c'if s==0 else'python';value=bytes([sequence+s+1])*32;path=owners[s]['object']['path'];op='ssap-write'if step=='write'else'ssap-read'
+                prefix=['/bin/ws73-application-client-c']if api=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+                app=dict(api=api,position=s,environment=application_environment(),exit=0,stderr='',credentials=dict(uids=[1004]*4,gids=[1004]*4,groups=[],capabilities={k:'0'for k in ('CapEff','CapPrm','CapAmb','CapInh')}),
+                    ssap_operation=op,ssap_path=path,ssap_handle=17,ssap_expected=value.hex(),args=prefix+['ssap',str(s),str(s+1),path,op,'17',value.hex()]+([value.hex()]if step=='write'else[]),
+                    stdout=json.dumps(dict(stage='ssap_start_barrier',api=api,client_closed=True))+'\n'+f'SsapPeerValue: operation={op} path={path} handle=17 value={value.hex()}\n',
+                    start_wall_ns=base+s*1_000_000,start_barrier_wall_ns=base+2_000_000+s*1000,ssap_release_before_wall_ns=base+3_000_000+s*100,
+                    ssap_released_wall_ns=base+3_000_050+s*100,ssap_release_monotonic_ns=base+3_000_000+s*100,end_wall_ns=base+12_000_000+s*1_000_000,ssap_batch_index=n)
+                apps.append(app);pair[s]['receipts'][step]=app
+                def packet(t):return dict(wall_ns=t,data='0a00010008')
+                request=base+5_000_000+s*500_000;response=base+8_000_000+s*500_000
+                pair[s]['wire'][2*step_index:2*step_index+2]=[dict(tx=packet(request),rx=packet(request+100)),dict(tx=packet(response-100),rx=packet(response))]
+        values.extend(pair)
+    return apps,values,batches,owners,0
 
 
 def timeline():
@@ -38,6 +68,34 @@ class ConcurrentOwned(unittest.TestCase):
         for tokens in ([service.TOKEN],base+[service.TOKEN]*2,base+['ws73.benchmark_ssap=other'],['ws73.benchmark_mode=rate',base[0],service.TOKEN]):
             with self.subTest(tokens=tokens),self.assertRaises(CaptureError):service.from_boot(tokens)
 
+    def test_duplex_is_explicit_and_preserves_the_sequential_entry(self):
+        args=self.args(channel_benchmark_ssap_duplex=True)
+        self.assertEqual(service.requested(args),service.profile(True));self.assertEqual(service.requested(self.args()),service.profile())
+        self.assertEqual(service.from_boot(['ws73.socket_benchmark_apps=1','ws73.benchmark_mode=window',service.TOKEN_DUPLEX]),service.profile(True))
+        self.assertEqual(service.boot(service.profile()),[service.TOKEN]);self.assertEqual(service.boot(service.profile(True)),[service.TOKEN_DUPLEX])
+        for change in (dict(channel_benchmark_ssap_owned=False),dict(channel_benchmark_ssap_duplex=1)):
+            with self.subTest(change=change),self.assertRaises(CaptureError):service.requested(self.args(**(dict(channel_benchmark_ssap_duplex=True)|change)))
+
+    def test_paired_call_proof_requires_real_pending_overlap_and_original_budget(self):
+        from ws73_application_client import duplex_evidence
+        self.assertEqual(len(duplex_evidence(*duplex_fixture())['proofs']),12)
+        for kind in ('serialized-wire','late-request-fragment','wrong-TCID','late-release','new-wait-budget','wrong-batch','root-child','missing-batch'):
+            a,v,b,o,p=duplex_fixture()
+            if kind=='serialized-wire':v[1]['wire'][0]['tx']['wall_ns']=v[0]['wire'][1]['rx']['wall_ns']+1
+            elif kind=='late-request-fragment':v[1]['wire'][0]['tx']['fragments']=[dict(wall_ns=1_005_000_000),dict(wall_ns=1_009_000_000)]
+            elif kind=='wrong-TCID':v[0]['wire'][0]['tx']['data']='8000010008'
+            elif kind=='late-release':a[1]['ssap_released_wall_ns']=a[0]['end_wall_ns']+1
+            elif kind=='new-wait-budget':b[0]['wait_deadline_monotonic_ns']+=100
+            elif kind=='wrong-batch':a[0]['ssap_batch_index']=1
+            elif kind=='root-child':a[0]['credentials']['uids']=[0]*4
+            else:b.pop()
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):duplex_evidence(a,v,b,o,p)
+
+    def test_pair_cannot_launch_any_child_outside_the_explicit_VM(self):
+        from ws73_application_client import ssap_commands
+        with patch('subprocess.Popen',side_effect=AssertionError('must not launch')):
+            with self.assertRaises(CaptureError):ssap_commands(SimpleNamespace(),{},[(None,None,None)]*2,application_uid=1004,batch=(0,'write'))
+
     def test_real_wire_window_requires_complete_roundtrips_before_during_after(self):
         channel,ssap=timeline();result=service.progress(channel,ssap)
         self.assertTrue(result['before']and result['during']and result['after'])
@@ -66,7 +124,7 @@ class ConcurrentOwned(unittest.TestCase):
         names=['ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py',
                'ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh','ws73_dynamic_channels.py',*service.VERIFIERS]
         package=dict(socket_benchmark_role_contract_version=1,benchmark_trace_contract_version=1,benchmark_process_resource_contract_version=1,
-            benchmark_ssap_contract_version=1,inputs=[file_record(HERE/n)for n in dict.fromkeys(names)],
+            benchmark_ssap_contract_version=2,inputs=[file_record(HERE/n)for n in dict.fromkeys(names)],
             application_client_tools=dict(sources=[file_record(HERE/n)for n in('testing/application_client/client.c','testing/application_client/client.py')]))
         benchmark.validate_role_sources(package,dynamic=True,ssap=True)
         for kind in ('marker','helper','C-source'):

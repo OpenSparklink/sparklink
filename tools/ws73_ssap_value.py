@@ -177,10 +177,14 @@ def uuid_result(receipt,source,handle,uuid,expected):
     return request,response
 
 
-def execute(run,row,*,value_command=None,services=None,local_value_command=None):
+def execute(run,row,*,value_command=None,services=None,local_value_command=None,value_commands=None):
     row['ssap_value_required']=True;row['ssap_read_uuid_required']=True;row['ssap_update_local_rejection_required']=True;row['ssap_values']=[]
     owners=row['owners'];local=[]
     lengths=bool(getattr(run.args,'ssap_value_lengths_verify',False))
+    if value_commands is not None:
+        if (not callable(value_commands)or value_command is None or services is None or local_value_command is None
+            or lengths or row.get('ssap_sdk_duplex_required')is not True):raise CaptureError('explicit actual SDK duplex callbacks required')
+    elif row.get('ssap_sdk_duplex_required'):raise CaptureError('duplex cannot fall back to sequential callers')
     if lengths:
         if any(v is not None for v in (value_command,services,local_value_command)):raise CaptureError('dedicated real CLI length gate,not an unqualified SDK fixture')
         row['ssap_value_lengths_required']=True;row['ssap_value_lengths_version']=4;row['ssap_length_mtu']=length_mtu(row);row['ssap_length_rejections']=[]
@@ -233,28 +237,41 @@ def execute(run,row,*,value_command=None,services=None,local_value_command=None)
                     item['unchanged']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],prop['value'])
                     item['end_wall_ns']=time.time_ns();run.save()
         for sequence,size in enumerate(FRAGMENT_LENGTHS if lengths else (32,)*4):
-            for sender,target in [(0,1),(1,0)]:
-                source=owners[sender];destination=owners[target];prop=local[target]
-                payload=(sequence.to_bytes(4,'little')+secrets.token_bytes(size-4)) if size>=4 else secrets.token_bytes(size)
-                item=dict(sequence=sequence,sender=sender,target=target,handle=prop['discovered_handle'],before=prop['value'].hex(),value=payload.hex(),start_wall_ns=time.time_ns())
-                item['property_uuid']=prop['property_uuid']
-                item['uuid_read_before']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
-                uuid_result(item['uuid_read_before'],source,prop['handle'],bytes.fromhex(prop['property_uuid']),prop['value'])
-                item['read_before']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],prop['value'])
-                item['write']=command(source,['ssap-write',source['object']['path'],str(prop['handle']),payload.hex()],payload)
-                item['local_check']=command(destination,['ssap-local-read',str(prop['handle'])],payload)
-                item['read_after']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],payload)
-                item['uuid_read_after']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
-                uuid_result(item['uuid_read_after'],source,prop['handle'],bytes.fromhex(prop['property_uuid']),payload)
-                item['end_wall_ns']=time.time_ns();row['ssap_values'].append(item);run.save()
-                def peer_value(record,operation,value):
-                    expected=f"SsapPeerValue: operation={operation} path={source['object']['path']} handle={prop['handle']} value={value}"
-                    return expected in record['stdout'].splitlines()
-                if not peer_value(item['read_before'],'ssap-read',prop['value'].hex()) or not peer_value(item['write'],'ssap-write',payload.hex()) or not peer_value(item['read_after'],'ssap-read',payload.hex()):raise CaptureError('peer SSAP application did not validate random original/updated value')
-                if local_value_command is not None:
-                    if item['local_check'].get('value')!=payload.hex():raise CaptureError('actual owner SDK value observation required')
-                elif f"SsapLocalValue: handle={prop['handle']} value={payload.hex()}" not in item['local_check']['stdout'].splitlines():raise CaptureError('opposite application local database validation failed')
-                prop['value']=payload
+            for senders in ((0,1),)if value_commands is not None else((0,),(1,)):
+                work=[]
+                for sender in senders:
+                    target=1-sender;source=owners[sender];destination=owners[target];prop=local[target]
+                    payload=(sequence.to_bytes(4,'little')+secrets.token_bytes(size-4))if size>=4 else secrets.token_bytes(size)
+                    item=dict(sequence=sequence,sender=sender,target=target,handle=prop['discovered_handle'],before=prop['value'].hex(),value=payload.hex(),start_wall_ns=time.time_ns(),property_uuid=prop['property_uuid'])
+                    item['uuid_read_before']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
+                    uuid_result(item['uuid_read_before'],source,prop['handle'],bytes.fromhex(prop['property_uuid']),prop['value'])
+                    work.append((source,destination,prop,payload,item))
+                def values(step,writing=False):
+                    calls=[]
+                    for source,destination,prop,payload,item in work:
+                        expected=prop['value']if step=='read_before'else payload
+                        words=['ssap-write'if writing else'ssap-read',source['object']['path'],str(prop['handle'])]
+                        if writing:words.append(payload.hex())
+                        calls.append((source,words,expected))
+                    receipts=(value_commands(calls,sequence,step)if value_commands is not None
+                              else[command(owner,words,expected)for owner,words,expected in calls])
+                    if len(receipts)!=len(work)or any(r['exit']for r in receipts):raise CaptureError('every actual SDK value result required')
+                    for transaction,receipt in zip(work,receipts,strict=True):transaction[-1][step]=receipt
+                values('read_before');values('write',True)
+                for source,destination,prop,payload,item in work:item['local_check']=command(destination,['ssap-local-read',str(prop['handle'])],payload)
+                values('read_after')
+                for source,destination,prop,payload,item in work:
+                    item['uuid_read_after']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
+                    uuid_result(item['uuid_read_after'],source,prop['handle'],bytes.fromhex(prop['property_uuid']),payload)
+                    item['end_wall_ns']=time.time_ns();row['ssap_values'].append(item);run.save()
+                    def peer_value(record,operation,value):
+                        expected=f"SsapPeerValue: operation={operation} path={source['object']['path']} handle={prop['handle']} value={value}"
+                        return expected in record['stdout'].splitlines()
+                    if not peer_value(item['read_before'],'ssap-read',prop['value'].hex()) or not peer_value(item['write'],'ssap-write',payload.hex()) or not peer_value(item['read_after'],'ssap-read',payload.hex()):raise CaptureError('peer SSAP application did not validate random original/updated value')
+                    if local_value_command is not None:
+                        if item['local_check'].get('value')!=payload.hex():raise CaptureError('actual owner SDK value observation required')
+                    elif f"SsapLocalValue: handle={prop['handle']} value={payload.hex()}" not in item['local_check']['stdout'].splitlines():raise CaptureError('opposite application local database validation failed')
+                    prop['value']=payload
 
 
 

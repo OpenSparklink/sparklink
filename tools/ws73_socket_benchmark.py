@@ -233,7 +233,7 @@ def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False):
     if dynamic:names+=('ws73_dynamic_channels.py',)
     if parallel:names+=('ws73_channel_fairness.py',)
     if ssap:
-        if type(package.get('benchmark_ssap_contract_version'))is not int or package['benchmark_ssap_contract_version']!=1:raise ValueError('fresh concurrent SSAP prepared contract1 required')
+        if type(package.get('benchmark_ssap_contract_version'))is not int or package['benchmark_ssap_contract_version']!=2:raise ValueError('fresh concurrent SSAP prepared contract2 required')
         from ws73_application_client import validate_consumer_sources
         validate_consumer_sources(package)
         names+=ssap_gate.VERIFIERS
@@ -701,7 +701,7 @@ def _match_payloads(run,capture,share):
                 remaining=['repeatstablebaseline/traceoverhead/resources','crossclockmapping/per-layer latency','fullperformance/stress/fairness/recovery qualification'])
     if RESOURCE_FIELD in rows[0]:result[RESOURCE_FIELD]=1
     if row_channel(rows[0])is not None:result[CHANNEL_FIELD]=row_channel(rows[0])
-    if service is not None:result.update({ssap_gate.FIELD:ssap_gate.profile(),'ssap':service})
+    if service is not None:result.update({ssap_gate.FIELD:ssap_gate.selected(rows[0]),'ssap':service})
     if is_parallel(row_channel(rows[0])):result['full_fairness_acceptance']=False
     if closes_short(row_channel(rows[0])):result['channel_close_isolation_acceptance']=True
     if rows[0]['config']['window']!=WINDOW:result['window']=rows[0]['config']['window']

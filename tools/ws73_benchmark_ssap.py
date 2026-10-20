@@ -6,29 +6,30 @@ reused. This module only selects the finite workload and checks interleaving.
 """
 from pathlib import Path
 import time
-from ws73_capture import CaptureError
+from ws73_capture import CaptureError,packet_interval as packet_times
 
 FIELD='benchmark_ssap_request'
 SOURCE='benchmark_ssap_source'
 TOKEN='ws73.benchmark_ssap=owned'
-VERIFIERS=('ws73_benchmark_ssap.py','ws73_application_client.py','ws73_ssap_value.py',
+TOKEN_DUPLEX='ws73.benchmark_ssap=owned-duplex'
+VERIFIERS=('ws73_benchmark_ssap.py','ws73_application_client.py','ws73_ssap_value.py','ws73_capture.py',
            'ws73_ssap_discovery.py','ws73_ssap_owned.py')
 RUNTIME=('/bin/ws73-application-client-c','/usr/share/sparklink/tools/ws73-application-client.py',
          '/usr/lib/libsparklink.so.0',*('/usr/share/sparklink/python/sparklink/'+n+'.py'for n in
          ('client','ssap','local_services','service_authorization','_library','_validation')))
 
 
-def profile():
-    return dict(version=1,kind='owned-sdk-read-write',rounds=4,value_bytes=32)
+def profile(duplex=False):
+    return dict(version=2 if duplex else 1,kind='owned-sdk-read-write-duplex'if duplex else'owned-sdk-read-write',rounds=4,value_bytes=32)
 
 
 def selected(row):
     if type(row)is not dict:raise CaptureError('typed concurrent SSAP record required')
     if FIELD not in row:return None
     value=row[FIELD]
-    if (type(value)is not dict or value!=profile()or type(value.get('version'))is not int
+    if (type(value)is not dict or value not in(profile(),profile(True))or type(value.get('version'))is not int
         or any(type(value.get(k))is not int for k in ('rounds','value_bytes'))):
-        raise CaptureError('exact explicit concurrent Owned SSAP profile1 required')
+        raise CaptureError('exact explicit sequential1 or duplex2 Owned SSAP profile required')
     return value
 
 
@@ -42,23 +43,25 @@ def workload(config,channel):
 
 def requested(args):
     enabled=getattr(args,'channel_benchmark_ssap_owned',False)
-    if type(enabled)is not bool:raise CaptureError('typed concurrent SSAP selector required')
+    duplex=getattr(args,'channel_benchmark_ssap_duplex',False)
+    if type(enabled)is not bool or type(duplex)is not bool or duplex and not enabled:raise CaptureError('typed explicit owned/duplex SSAP selectors required')
     if not enabled:return None
     from ws73_socket_benchmark import requested_configuration,requested_channel
     workload(requested_configuration(args),requested_channel(args))
-    return profile()
+    return profile(duplex)
 
 
 def boot(value):
-    return [TOKEN]if value is not None else[]
+    if value is None:return[]
+    selected({FIELD:value});return[TOKEN_DUPLEX if value==profile(True)else TOKEN]
 
 
 def from_boot(words):
     values=[w for w in words if w.startswith('ws73.benchmark_ssap=')]
     if not values:return None
-    if (values!=[TOKEN]or words.count('ws73.socket_benchmark_apps=1')!=1
+    if (values not in([TOKEN],[TOKEN_DUPLEX])or words.count('ws73.socket_benchmark_apps=1')!=1
         or words.count('ws73.benchmark_mode=window')!=1):raise CaptureError('one exact enabled concurrent SSAP boot profile required')
-    return profile()
+    return profile(values==[TOKEN_DUPLEX])
 
 
 def execute(run,row):
@@ -71,7 +74,7 @@ def execute(run,row):
     workload(row['config'],row['benchmark_channel_request'])
     source=dict(phase=row['phase'],owners=row['owners'],start_wall_ns=time.time_ns(),status='RUNNING')
     row[SOURCE]=source;run.save();prepare_ssap_commands(run,source)
-    ssap_phase(run,source,application_uid=1004,vm_token='ws73.socket_benchmark_apps=1')
+    ssap_phase(run,source,application_uid=1004,vm_token='ws73.socket_benchmark_apps=1',duplex=selected(row)==profile(True))
     source.update(end_wall_ns=time.time_ns(),status='OWNED_SDK_CONCURRENT_EVIDENCE_PENDING');run.save()
 
 
@@ -86,17 +89,12 @@ def streams(row):
         or len(source.get('ssap_language_clients',[]))!=24):
         raise CaptureError('complete original same-lifetime concurrent SSAP source required')
     from ws73_application_client import verify_owned_publishers,ssap_receipt
+    if selected(row)==profile(True):
+        if source.get('ssap_sdk_duplex_required')is not True or len(source.get('ssap_sdk_batches',[]))!=12:raise CaptureError('complete explicit paired SDK source required')
+    elif 'ssap_sdk_duplex_required'in source or source.get('ssap_sdk_batches'):raise CaptureError('unrequested duplex source')
     owners=verify_owned_publishers(source)
     for app in source['ssap_language_clients']:ssap_receipt(app,source['owners'][app['position']],expected_uid=1004)
     return [*owners,*source['ssap_language_clients']]
-
-
-def packet_times(packet):
-    if type(packet)is not dict:raise CaptureError('actual decoded USB packet required')
-    fragments=packet.get('fragments',[packet])
-    stamps=[p['wall_ns']for p in fragments]
-    if not stamps or any(type(v)is not int or v<=0 for v in stamps):raise CaptureError('original USB fragment timestamps required')
-    return min(stamps),max(stamps)
 
 
 def progress(channel,service):
@@ -125,7 +123,7 @@ def progress(channel,service):
 
 def corroborate(rows,capture,phases):
     from ws73_application_client import corroborate_ssap
-    if len(rows)!=2 or len(phases)!=2 or any(selected(r)!=profile()for r in rows):raise CaptureError('two original concurrent SSAP phases required')
+    if len(rows)!=2 or len(phases)!=2 or selected(rows[0])is None or selected(rows[0])!=selected(rows[1]):raise CaptureError('two original same-profile concurrent SSAP phases required')
     for row in rows:streams(row)
     service=corroborate_ssap([r[SOURCE]for r in rows],capture)
     for phase,ssap in zip(phases,service['proofs'],strict=True):phase['ssap_concurrent_progress']=progress(phase,ssap)
@@ -134,7 +132,8 @@ def corroborate(rows,capture,phases):
 
 def valid_summary(proof):
     try:
-        if selected(proof)!=profile():return False
+        selected_profile=selected(proof)
+        if selected_profile is None:return False
         service=proof['ssap'];phases=proof['proofs']
         if (service['status']!='C_PYTHON_SSAP_VALUE_USB_CORROBORATED'or len(service['proofs'])!=2 or len(phases)!=2
             or any(type(service[k])is not int or service[k]!=v for k,v in dict(operations=16,api_calls=48,authorization_requests=80).items())):return False
@@ -146,5 +145,9 @@ def valid_summary(proof):
                 return False
             for app in ssap['applications']:ssap_receipt(app,phase['owners'][app['position']],expected_uid=1004)
             if any(not valid_wire(leg)for value in ssap['values']for leg in value['wire']):return False
+            if selected_profile==profile(True):
+                from ws73_application_client import duplex_evidence
+                if ssap['duplex']!=duplex_evidence(ssap['applications'],ssap['values'],ssap['duplex']['source_batches'],phase['owners'],phase['phase']):return False
+            elif 'duplex'in ssap:return False
         return True
     except(KeyError,ValueError,TypeError,IndexError,AttributeError):return False

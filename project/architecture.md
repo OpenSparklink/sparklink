@@ -18,6 +18,9 @@ Canonical：本文件定义目标所有权与分层；[ADR0001](../docs/decision
 各语言复用唯一客户端与 Engine，配置／清理复用原事务序列，等待数据让出普通读写。
 租期、请求期限、在途义务与首次清理期限各自保留；协议确认、本地释放及远端清理
 不能互相代替。所有权与交付边界见 ADR0004，实际开放范围仍只按资格入口读取。
+应用总线准入按具体方法、原期限和资源所有者迁移；controller 管理、远端客户端与
+Owned 服务权限保持分离。非法参数预检、协议确认和对端应用处理分别验收，不从
+整个接口的可调用性推导权限或交付；同一 Engine 与既有通道继续承担业务。
 [拆分前的历史原文](https://github.com/OpenSparklink/sparklink/blob/670674736ac90ec0f89ca0330849e22b1bc8f81b/docs/ARCHITECTURE.md)保留原始源码身份及全部限定范围。目标职责及以下架构决策保持不变。
 
 采用 [ADR0006](../docs/decisions/0006-event-driven-session-and-performance-evidence.md)：

@@ -39,7 +39,14 @@ context 退出或 Rust Drop 不构成清理收据。Drop 的尽力撤回、owner
 SCM_RIGHTS 契约。首版单租约限制、共享 CPCD 多应用分配及同 lifetime 在途更新的
 交付边界分别验收；不能从一次停用回复推导所有旧消息都已排空或已被应用处理。
 普通应用总线准入、服务拥有者权限与 controller 管理权限仍分别门禁，接口出现不
-改变原权限策略，也不能以管理组调用代替 apps-only 资格。
+构成 apps-only 资格。逐方法迁移已有原期限的远端读写、单次接收及持续租约，不使用
+整个 Connection 接口的 broad allow。发现／UUID／信息等尚未完成原期限审计的入口
+继续留在原角色范围，后续整改不成为先验收受约束业务的全控制面前置。
+
+权限探针必须区分总线准入与协议成功：非法参数到达真实 daemon 预检而被拒绝，只
+说明策略路径；正向数据仍需真实 SDK 应用、原凭据及对端处理证据。新版本门禁固定
+应用组身份、无额外管理组和零 capabilities，不能继承旧管理组记录。服务拥有者的
+本地审批／数据库观察与远端应用分别记录，协议 ACK 也不充当独立业务回复。
 
 派生C/Python Connection引用与Client引用共享原caller／执行器；关闭Client不关闭仍
 被Connection引用的caller，最后本地引用才join。Connection固定现有Rust视图的

@@ -398,6 +398,8 @@ def verify_passthrough():
         proofs.append({'ssap_initialization':corroborate_guest(run,capture)})
     requester_requested='ws73.ssap_requester_lifecycle=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_requester_lifecycle_required',False))!=requester_requested for row in run.get('channel_socket',[])) or(requester_requested and not run.get('channel_socket')):raise ValueError('requester lifecycle request/evidence mismatch')
+    subscription_requested='ws73.ssap_subscription=1' in Path('/proc/cmdline').read_text().split()
+    if any(bool(row.get('ssap_subscription_required',False))!=subscription_requested for row in run.get('channel_socket',[]))or subscription_requested and not run.get('channel_socket'):raise ValueError('subscription request/evidence mismatch')
     delivery_requested='ws73.ssap_update_delivery=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_update_delivery_required',False))!=delivery_requested for row in run.get('channel_socket',[])) or (delivery_requested and not run.get('channel_socket')):raise ValueError('update delivery request/evidence mismatch')
     lifecycle_requested='ws73.ssap_owner_lifecycle=1' in Path('/proc/cmdline').read_text().split()

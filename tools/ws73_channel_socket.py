@@ -158,6 +158,9 @@ def execute(run, phase):
         if getattr(run.args,'ssap_owned_update_verify',False):
             from ws73_ssap_owned_update import execute as update_execute
             update_execute(run,row)
+        if getattr(run.args,'ssap_subscription_verify',False):
+            from ws73_ssap_subscription import request as subscription_request
+            subscription_request(run,row)
         if getattr(run.args,'ssap_update_delivery_verify',False):
             from ws73_ssap_update_delivery import execute as delivery_execute
             delivery_execute(run,row)
@@ -525,7 +528,8 @@ def reject_unattributed_ssap(row, sdus):
                else (1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False)
                else (8,9,13,14))
     current = (row.get('ssap_value_lengths_version') == 4
-               or row.get('ssap_update_delivery_version') == 2)
+               or row.get('ssap_update_delivery_version') == 2
+               or row.get('ssap_subscription_required',False))
     if current:
         tracked += (15,16,17)
     for packet in sdus:
@@ -602,6 +606,11 @@ def corroborate(run,capture):
                 for key in ssap_credit:ssap_credit[key]+=receive_credit[key]
             ssap_owned_updates=[]
             ssap_update_delivery=[]
+            ssap_subscription=[]
+            if row.get('ssap_subscription_required',False):
+                from ws73_ssap_subscription import corroborate as subscription_corroborate
+                ssap_subscription,subscription_credit=subscription_corroborate(row,value_matched)
+                for key in ssap_credit:ssap_credit[key]+=subscription_credit[key]
             if row.get('ssap_update_delivery_required',False):
                 from ws73_ssap_update_delivery import corroborate as delivery_corroborate
                 ssap_update_delivery,delivery_credit=delivery_corroborate(row,value_matched)
@@ -698,6 +707,7 @@ def corroborate(run,capture):
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
         if row.get('ssap_owned_update_required',False):entry['ssap_owned_updates']=ssap_owned_updates
+        if row.get('ssap_subscription_required',False):entry['ssap_subscription']=ssap_subscription
         if row.get('ssap_update_delivery_required',False):entry['ssap_update_delivery']=ssap_update_delivery
         if row.get('ssap_receive_lifecycle_required',False):entry['ssap_receive_lifecycle']=ssap_receive_lifecycle
         if row.get('ssap_owner_lifecycle_required',False):entry['ssap_owner_lifecycle']=ssap_owner_lifecycle

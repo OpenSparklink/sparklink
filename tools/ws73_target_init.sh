@@ -366,6 +366,9 @@ fi
 if grep -qw ws73.application_discovery=1 /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_application_discovery.py "$daemon" > /evidence/discovery-role-supervisor.log 2>&1 & application_role_supervisor=$!
 fi
+if grep -qw ws73.ssap_subscription=1 /proc/cmdline; then
+    /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" subscription > /evidence/subscription-role-supervisor.log 2>&1 & application_role_supervisor=$!
+fi
 if grep -qw ws73.application_clients=1 /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" > /evidence/application-role-supervisor.log 2>&1 & application_role_supervisor=$!
 fi
@@ -422,6 +425,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             if grep -qw ws73.ssap_owner_sdk=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owner-publisher sdk"; fi
             if grep -qw ws73.ssap_requester_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-requester-lifecycle-verify"; fi
             if grep -qw ws73.ssap_owned_update=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owned-update-verify"; fi
+            if grep -qw ws73.ssap_subscription=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-subscription-verify"; fi
             if grep -qw ws73.ssap_update_delivery=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-update-delivery-verify"; fi
             if grep -qw ws73.ssap_receive_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-update-lifecycle-verify"; fi
             if grep -qw ws73.ssap_value_lengths=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-value-lengths-verify"; fi

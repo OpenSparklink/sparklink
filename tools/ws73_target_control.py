@@ -188,6 +188,7 @@ def main():
     parser.add_argument('--ssap-initialization-verify',action='store_true',help='actual selected negotiation-stage lease revoke, fd convergence and ordinary new lifetime preservation')
     parser.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
     parser.add_argument('--ssap-owned-update-verify',action='store_true')
+    parser.add_argument('--ssap-subscription-verify',action='store_true')
     parser.add_argument('--ssap-update-delivery-verify',action='store_true')
     parser.add_argument('--ssap-update-lifecycle-verify',action='store_true')
     parser.add_argument('--ssap-value-lengths-verify',action='store_true')
@@ -219,6 +220,9 @@ def main():
     try:requested(args)
     except ValueError as error:parser.error(str(error))
     if args.ssap_requester_lifecycle_verify and (not args.channel_socket_verify or not args.passthrough or args.ssap_owner_lifecycle_verify or args.ssap_owned_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('requester lifecycle requires separate ordinary basic socket baseline')
+    from ws73_ssap_subscription import requested as subscription_requested
+    try:subscription_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
     from ws73_ssap_update_delivery import requested as delivery_requested
     try:delivery_requested(args,passthrough=args.passthrough)
     except ValueError as error:parser.error(str(error))

@@ -389,10 +389,11 @@ static int subscription_mode(int argc,char **argv) {
     error=slk_client_connection(client,&id,(const uint8_t *)argv[4],strlen(argv[4]),now_ns()+5000000000ULL,&link);
     if (error){errno=-error;goto done;}
     slk_client_close(client);client=NULL;
-    error=slk_connection_ssap_subscribe(link,&target,1,(uint32_t)modes,(uint32_t)lease,now_ns()+5000000000ULL,&sub);
+    uint64_t started=now_ns(),creation_deadline=started+5000000000ULL;
+    error=slk_connection_ssap_subscribe(link,&target,1,(uint32_t)modes,(uint32_t)lease,creation_deadline,&sub);
     if (error){errno=-error;goto done;}
     error=slk_ssap_subscription_info(sub,&info);if (error){errno=-error;goto done;}
-    printf("{\"stage\":\"ssap_subscription_active\",\"api\":\"c\",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"client_closed\":true}\n",info.token,info.security_epoch);fflush(stdout);
+    printf("{\"stage\":\"ssap_subscription_active\",\"api\":\"c\",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"expires_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"client_closed\":true}\n",info.token,info.security_epoch,info.expires_ns,started,creation_deadline,now_ns());fflush(stdout);
     char line[16384];
     while (fgets(line,sizeof line,stdin)) {
         if (!strchr(line,'\n')) {errno=EMSGSIZE;goto done;}
@@ -434,7 +435,7 @@ static int subscription_mode(int argc,char **argv) {
         printf("{\"stage\":\"ssap_subscription_batch\",\"api\":\"c\",\"last\":%"PRIu64",\"dropped\":%"PRIu64",\"refused\":%"PRIu64",\"state\":%u,\"flags\":%u,\"reason\":%u,\"discarded\":%"PRIu64",\"packets\":[",batch.last_sequence,batch.dropped_notifications,batch.refused_indications,batch.info.state,batch.flags,batch.reason,batch.discarded_on_close);
         for (unsigned i=0;i<batch.count;i++) {
             if (i) {printf(",");}
-            printf("{\"sequence\":%"PRIu64",\"epoch\":%"PRIu64",\"indication\":%s,\"pdu\":\"",batch.packets[i].sequence,batch.packets[i].security_epoch,batch.packets[i].indication?"true":"false");
+            printf("{\"sequence\":%"PRIu64",\"epoch\":%"PRIu64",\"level\":%u,\"indication\":%s,\"pdu\":\"",batch.packets[i].sequence,batch.packets[i].security_epoch,batch.packets[i].security_level,batch.packets[i].indication?"true":"false");
             hex_print(batch.packets[i].pdu,batch.packets[i].pdu_length);printf("\"}");
         }
         printf("]}\n");fflush(stdout);

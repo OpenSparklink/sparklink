@@ -161,22 +161,26 @@ def valid_supervision(proof):
 
 
 def require_vm(token='ws73.application_clients=1'):
-    if (token not in ('ws73.application_clients=1', 'ws73.application_discovery=1') or
+    if (token not in ('ws73.application_clients=1', 'ws73.application_discovery=1', 'ws73.ssap_subscription=1') or
             os.geteuid()!=0 or token not in Path('/proc/cmdline').read_text().split()or
             Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU'or not Path('/scratch-root-uuid').is_file()):
         raise CaptureError('explicit disposable QEMU SDK role gate required')
 
 
-def supervise(daemon_pid):
-    require_vm()
+def supervise(daemon_pid,*,mode='values'):
+    if mode not in ('values','subscription'):raise CaptureError('fixed role supervision mode required')
+    subscription=mode=='subscription'
+    require_vm('ws73.ssap_subscription=1'if subscription else'ws73.application_clients=1')
+    from ws73_ssap_subscription import ROOT as subscription_root,validate_request as subscription_request,execute_supervised
+    root=subscription_root if subscription else ROOT
     from ws73_application_client import channel_pair,process_identity
-    ROOT.mkdir(exist_ok=False);ROOT.chmod(0o755)
+    root.mkdir(exist_ok=False);root.chmod(0o755)
     supervisor=daemon_identity(os.getpid());daemon=daemon_identity(daemon_pid)
     def interrupted(*_):raise InterruptedError('role supervisor stopped')
     signal.signal(signal.SIGTERM,interrupted)
-    end=time.monotonic()+120
+    end=time.monotonic()+(180 if subscription else 120)
     for phase in (0,1):
-        request=INPUT/f'app-channel-role-{phase}.request.json'
+        request=INPUT/(f'subscription-role-{phase}.request.json'if subscription else f'app-channel-role-{phase}.request.json')
         while True:
             if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed')
             if request.is_file():
@@ -184,15 +188,17 @@ def supervise(daemon_pid):
                 except json.JSONDecodeError:pass # Writer has not finished original bounded JSON.
             if time.monotonic()>=end:raise CaptureError('finite role request deadline')
             time.sleep(.01)
-        validate_request(row,phase)
-        folder=ROOT/f'phase-{phase}';folder.mkdir(mode=0o755)
+        (subscription_request if subscription else validate_request)(row,phase)
+        folder=root/f'phase-{phase}';folder.mkdir(mode=0o755)
         row.update(channel_role='sparklink-apps-only',application_role_contract_version=2,role_supervisor=supervisor)
         def save():
             target=folder/'progress.json';temporary=folder/'progress.tmp'
             temporary.write_text(json.dumps(row,indent=2)+'\n');temporary.chmod(0o644);temporary.replace(target)
         context=SimpleNamespace(output=folder,save=save)
         try:
-            if row['tools']!={key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}:
+            from ws73_ssap_subscription import tool_records
+            expected_tools=tool_records()if subscription else{key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
+            if row['tools']!=expected_tools:
                 raise CaptureError('exact actual SDK artifacts required')
             probe=dict(args=['/bin/bus-policy-probe',row['owners'][0]['object']['path'],'application-channel'],start_wall_ns=time.time_ns())
             row['role_probe']=probe;save();out=folder/'probe.stdout';err=folder/'probe.stderr'
@@ -205,7 +211,8 @@ def supervise(daemon_pid):
                     if process.poll()is None:process.kill()
                     process.wait()
                     probe.update(exit=process.returncode,stdout=out.read_text(),stderr=err.read_text(),end_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
-            verify_probe(row);channel_pair(context,row)
+            verify_probe(row)
+            if not subscription:channel_pair(context,row)
             from ws73_north_star import Run
             from ws73_application_client import ssap_phase
             context.args=SimpleNamespace(slctl=Path('/bin/slctl'));context.data={}
@@ -214,18 +221,19 @@ def supervise(daemon_pid):
                 record['credentials'],record['process_status']=process_identity(process.pid,1000)
             context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
                 child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
-            ssap_phase(context,row,application_uid=1004)
-            row.update(ssap_gate_status='OWNED_SDK_VALUE_EVIDENCE_PENDING',end_wall_ns=time.time_ns())
+            if subscription:execute_supervised(context,row)
+            else:ssap_phase(context,row,application_uid=1004)
+            row.update(ssap_gate_status='OWNED_SDK_VALUE_EVIDENCE_PENDING'if not subscription else'CONTINUOUS_SUBSCRIPTION_PENDING_USB',end_wall_ns=time.time_ns())
             if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed during pair')
         except BaseException as error:
             row.update(pair_status='FAIL',error=str(error),error_traceback=traceback.format_exc());raise
         finally:
             save();(folder/'progress.json').replace(folder/'run.json')
-    finished=ROOT/'finished.json'
-    finished.write_text(json.dumps(dict(status='TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor))+'\n');finished.chmod(0o644)
+    finished=root/'finished.json'
+    finished.write_text(json.dumps(dict(status='TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'if subscription else'TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor))+'\n');finished.chmod(0o644)
 
 
 if __name__=='__main__':
     import sys
-    if len(sys.argv)!=2:raise SystemExit('usage: ws73_application_role.py ACTUAL_DAEMON_PID')
-    supervise(int(sys.argv[1]))
+    if len(sys.argv)not in (2,3)or len(sys.argv)==3 and sys.argv[2]!='subscription':raise SystemExit('usage: ws73_application_role.py ACTUAL_DAEMON_PID [subscription]')
+    supervise(int(sys.argv[1]),mode='subscription'if len(sys.argv)==3 else'values')

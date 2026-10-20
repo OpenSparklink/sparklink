@@ -182,6 +182,12 @@ pub(super) async fn exercise(
         assert_eq!(active["token"], 17);
         assert_eq!(active["epoch"], 13);
         assert_eq!(active["client_closed"], true);
+        let started = active["started_ns"].as_u64().unwrap();
+        let deadline = active["deadline_ns"].as_u64().unwrap();
+        let returned = active["returned_ns"].as_u64().unwrap();
+        assert_eq!(deadline - started, 5_000_000_000);
+        assert!(started <= returned && returned < deadline);
+        assert!(active["expires_ns"].as_u64().unwrap() > started);
         for (operation, stage) in [
             ("parent-close", "ssap_subscription_parent_closed"),
             ("poll", "ssap_subscription_batch"),
@@ -208,6 +214,7 @@ pub(super) async fn exercise(
                 assert_eq!(packets.len(), 1);
                 assert_eq!(packets[0]["pdu"], "100311000100ab");
                 assert_eq!(packets[0]["epoch"], 13);
+                assert_eq!(packets[0]["level"], 2);
                 assert_eq!(packets[0]["sequence"], value["last"]);
                 assert_eq!(packets[0]["indication"], true);
             } else if stage == "ssap_subscription_renewed" {

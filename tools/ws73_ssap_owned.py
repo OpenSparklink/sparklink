@@ -29,7 +29,12 @@ def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16):
 
 
 @contextmanager
-def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False):
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000):
+    if application_uid not in (1000,1005):raise CaptureError('fixed publisher test role required')
+    if application_uid==1005:
+        from ws73_application_role import require_vm
+        require_vm('ws73.ssap_subscription=1')
+        if sdk_api not in ('c','python'):raise CaptureError('service-only publisher requires existing SDK consumer')
     source,target=row['owners'][sender],row['owners'][1-sender]
     secret=secrets.token_hex(32);value=secrets.token_hex(32);uuid=secrets.token_hex(16);service=secrets.token_hex(16)
     prefix=run.output/f'ssap-owned-{row["phase"]}-{sender}-{label or policy}'
@@ -46,8 +51,12 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
     row.setdefault(collection,[]).append(item);run.save();process=None
     try:
         with ExitStack() as files:
-            process=subprocess.Popen(args,env=dict(os.environ,**environment) if environment else None,stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
-            item.update(pid=process.pid,credentials=credentials(process.pid));run.save()
+            process=subprocess.Popen(args,env=dict(os.environ,**environment) if environment else None,stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True,**({'user':1005,'group':1005,'extra_groups':[]}if application_uid==1005 else {}))
+            if application_uid==1005:
+                from ws73_application_client import process_identity
+                item['credentials'],item['process_status']=process_identity(process.pid,1005)
+            else:item['credentials']=credentials(process.pid)
+            item.update(pid=process.pid);run.save()
             matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
             if len(matches)!=1:raise CaptureError('one actual owned registration required')
             if sdk_api is not None and out.read_text().splitlines()[0]!=f'SdkOwnedAPI: api={sdk_api} client_closed=true':

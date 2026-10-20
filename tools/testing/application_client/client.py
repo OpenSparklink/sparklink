@@ -311,11 +311,13 @@ def subscription_mode():
     handle,modes,duration_ms=map(int,sys.argv[5:8])
     with Client(deadline_ns=time.monotonic_ns()+5_000_000_000) as client:
         link=client.connection(ControllerId(index,generation),path,deadline_ns=time.monotonic_ns()+5_000_000_000)
+    started=time.monotonic_ns();creation_deadline=started+5_000_000_000
     with link,link.ssap().subscribe([handle],modes=modes,duration_ms=duration_ms,
-            deadline_ns=time.monotonic_ns()+5_000_000_000) as sub:
+            deadline_ns=creation_deadline) as sub:
         info=sub.info();released=False
         print(json.dumps(dict(stage='ssap_subscription_active',api='python',token=info.token,
-                              epoch=info.security_epoch,client_closed=True)),flush=True)
+                              epoch=info.security_epoch,expires_ns=info.expires_ns,started_ns=started,
+                              deadline_ns=creation_deadline,returned_ns=time.monotonic_ns(),client_closed=True)),flush=True)
         while True:
             line=sys.stdin.readline(16384)
             if not line:break
@@ -353,7 +355,7 @@ def subscription_mode():
             print(json.dumps(dict(stage='ssap_subscription_batch',api='python',last=batch.last_sequence,
                 dropped=batch.dropped_notifications,refused=batch.refused_indications,state=batch.info.state,
                 flags=batch.flags,reason=batch.reason,discarded=batch.discarded_on_close,
-                packets=[dict(sequence=p.sequence,epoch=p.security_epoch,indication=p.indication,
+                packets=[dict(sequence=p.sequence,epoch=p.security_epoch,level=p.security_level,indication=p.indication,
                               pdu=p.pdu.hex()) for p in batch.packets])),flush=True)
         if not released:
             batch=sub.release(deadline_ns=time.monotonic_ns()+5_000_000_000)

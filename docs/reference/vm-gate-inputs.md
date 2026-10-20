@@ -478,6 +478,29 @@ Root collector同时等待Rust、C、Python的实际初始输出屏障，三者�
 该门禁不证明持续订阅、全部片数、其他MTU、完整生命周期、安全/Bond或自然恢复。
 准确artifact及未决条件只见[当前资格](../../project/current-capabilities.md)。
 
+## SSAP 持续订阅与应用回复门禁
+
+`run --ssap-subscription-verify`是独立的有限场景，要求新 prepared 中的
+`ssap_subscription_contract_version=1`、显式 protected2 SSAP 配置、
+`--channel-socket-verify --security-agent numeric-approve`，不与其他专项场景组合。
+它复用唯一 Session、现有订阅 SDK／Engine、原 C／Python 消费者及 VM role
+监督器；选项存在及离线 fixture 通过均不授实机资格。
+
+固定矩阵是两个发送方向、交换连接角色、通知和指示各一个30秒租约，
+每租约连续3条随机32字节更新，共24条。读取者 UID/GID1004、服务拥有者
+UID/GID1005 均无附加组或 capability；发现观察仍由管理测试角色执行。
+应用逐条检查完整载荷后经原 verified-write 回写不同载荷，拥有者再实际检查
+存储值。协议 ACK 仅表示接收队列准入，不替代该应用检查和回复。
+
+每个租约要求原5秒创建／读取／清理期限、连续序号、安全 epoch／等级、
+零丢弃、一次启用与确认停用、真实进程原始输出和双端 USB／HCC 配对。
+缺少原始流、角色、对端捕获、业务回复或清理不得通过。根监督器仅接受固定
+身份和路径的有限请求，不提供任意命令服务，也不授普通应用管理或抓包权限。
+
+该门禁不证明续租、满队列、多应用共享 CPCD、撤权／断链／epoch 变化、
+完整引用排空、自然恢复或长期性能；准确 artifact 的结果仍只读取
+[当前资格](../../project/current-capabilities.md)。
+
 ## SSAP 接收者退出与确认清理门禁
 
 未发布 runner 的 `--ssap-update-lifecycle-verify` 只能与

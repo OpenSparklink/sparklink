@@ -439,7 +439,7 @@ def verify_passthrough():
             object_corroborate(run,capture,connections)
     benchmark_modes=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_mode=')]
     if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
-    dynamic_boot=[w for w in Path('/proc/cmdline').read_text().split()if w.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active='))]
+    dynamic_boot=[w for w in Path('/proc/cmdline').read_text().split()if w.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close='))]
     if dynamic_boot and not benchmark_modes:raise ValueError('dynamic benchmark boot target without benchmark')
     benchmark_role=[v for v in Path('/proc/cmdline').read_text().split()if v.startswith('ws73.socket_benchmark_apps=')]
     if benchmark_role and(benchmark_role!=['ws73.socket_benchmark_apps=1']or not benchmark_modes):raise ValueError('benchmark apps-only boot scope mismatch')

@@ -233,7 +233,7 @@ class ClosedBenchmarkRoleFixture(unittest.TestCase):
         from test_ws73_application_client import fixture as application_fixture
         from ws73_application_client import application_environment
         import hashlib,shutil
-        run,capture=parallel_fixture(root,channel['channels'][0]['route']['active_endpoint'],cross_namespace=cross_namespace)if gate.is_parallel(channel)else legacy_fixture(root,channel=channel);old_roles,_=application_fixture();daemon=dict(pid=11,start_ticks=31);supervisor=dict(pid=500 if gate.is_parallel(channel)else 12,start_ticks=41)
+        run,capture=parallel_fixture(root,channel['channels'][0]['route']['active_endpoint'],cross_namespace=cross_namespace,close_short=gate.closes_short(channel))if gate.is_parallel(channel)else legacy_fixture(root,channel=channel);old_roles,_=application_fixture();daemon=dict(pid=11,start_ticks=31);supervisor=dict(pid=500 if gate.is_parallel(channel)else 12,start_ticks=41)
         run.update(daemon_before=daemon,daemon_after=daemon)
         for row in run['socket_benchmark']:
             phase=row['phase'];source=root/f'local-{phase}';source.mkdir();(source/'reports').mkdir();row['start_wall_ns']=max(1,row['start_wall_ns'])
@@ -249,7 +249,8 @@ class ClosedBenchmarkRoleFixture(unittest.TestCase):
                 if gate.is_parallel(channel):
                     from test_ws73_benchmark_resources import snapshot as resource_snapshot
                     row[gate.RESOURCE_FIELD]=1
-                    app['process_resources']=dict(before=resource_snapshot(app['pid'],phase*2000+150),after=resource_snapshot(app['pid'],phase*2000+1050,15,6))
+                    base=phase*(20000 if gate.closes_short(channel)else 2000)
+                    app['process_resources']=dict(before=resource_snapshot(app['pid'],base+150),after=resource_snapshot(app['pid'],base+(8050 if gate.closes_short(channel)and i>=2 else 1050),15,6))
                 (source/'reports'/f'benchmark-{phase}-{i}.json').write_text(json.dumps(app['report']));(source/f'benchmark-{phase}-{i}.stdout').write_text(app['stdout']);(source/f'benchmark-{phase}-{i}.stderr').write_text('')
             (source/'run.json').write_text(json.dumps(row))
             exported=root/'benchmark-role'/f'phase-{phase}';exported.parent.mkdir(exist_ok=True);snapshot.publish(source,exported,phase=phase,success=True,kind='benchmark')

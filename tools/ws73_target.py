@@ -2441,19 +2441,19 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
             except(ValueError,KeyError,TypeError):return 1
         if len(names)!=5+len(expected_names) or set(names)!=expected_names|{'ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py'}:return 1
     elif benchmark_boot or record.get('socket_benchmark_apps_acceptance')or record.get('socket_benchmark_role_supervision'):return 1
-    extra_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active='))]
+    extra_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close='))]
     if not record.get('socket_benchmark_requested')and extra_boot:return 1
     if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record or 'benchmark_channel_request'in record):return 1
     if record.get('socket_benchmark_requested'):
         proof=record.get('socket_benchmark_corroboration',{})
         mode=record['socket_benchmark_requested']
         window=record.get('socket_benchmark_window_requested',4)
-        from ws73_socket_benchmark import record_configuration,configuration,validate_configuration,row_channel,is_parallel,channel_boot,valid_parallel_summary
+        from ws73_socket_benchmark import record_configuration,configuration,validate_configuration,row_channel,is_parallel,channel_boot,valid_parallel_summary,parallel_replies
         try:config=record_configuration(record)
         except (ValueError,KeyError,TypeError):return 1
         try:channel=row_channel(record);proof_channel=row_channel(proof)
         except (ValueError,KeyError,TypeError):return 1
-        dynamic_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active='))]
+        dynamic_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close='))]
         if channel!=proof_channel:return 1
         if channel is None:
             if dynamic_boot or any('dynamic_negotiation'in p or 'channel_requests'in p.get('application',{})for p in proof.get('proofs',[])):return 1
@@ -2477,7 +2477,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if 'socket_benchmark_xhci_requested' in record:
             x=record.get('socket_benchmark_xhci_observation',{})
             if x.get('status')!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED' or x.get('mode')!=record['socket_benchmark_xhci_requested']:return 1
-        if (mode not in ['rate','window','duplex'] or record.get('socket_benchmark_acceptance') is not True or record.get('performance_qualified') is not False or record.get('qemu_exit')!=0 or proof.get('status')!='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED' or proof.get('mode')!=mode or proof.get('performance_qualified') is not False or proof.get('round_trips')!=(72 if is_parallel(channel)else count*(4 if mode=='duplex' else 2)) or len(proof.get('proofs',[]))!=2):return 1
+        if (mode not in ['rate','window','duplex'] or record.get('socket_benchmark_acceptance') is not True or record.get('performance_qualified') is not False or record.get('qemu_exit')!=0 or proof.get('status')!='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED' or proof.get('mode')!=mode or proof.get('performance_qualified') is not False or proof.get('round_trips')!=(parallel_replies(channel)if is_parallel(channel)else count*(4 if mode=='duplex' else 2)) or len(proof.get('proofs',[]))!=2):return 1
         phases=proof['proofs']
         if not is_parallel(channel)and(not isinstance(phases,list) or any(not isinstance(p,dict) or p.get('phase')!=n or not isinstance(p.get('legs'),list) or len(p['legs'])!=count*(4 if mode=='duplex' else 2) or p.get('application',{}).get('status')!='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED' or p['application'].get('performance_qualified') is not False or p['application'].get('fixture') is not False or p['application'].get('messages')!=([count,count] if mode=='duplex' else [count,0]) for n,p in enumerate(phases))):return 1
         if channel is not None and not is_parallel(channel):
@@ -2699,6 +2699,7 @@ def main():
             cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate bounded real application benchmark in both connection roles;not performance qualification')
             cmd.add_argument('--channel-benchmark-dynamic',action='store_true',help='explicit basic dynamic endpoint target;requires real CMTC and paired business evidence')
             cmd.add_argument('--channel-benchmark-parallel',action='store_true',help='finite four-app short/long load on two dynamic channels;requires default window workload')
+            cmd.add_argument('--channel-benchmark-close-short',action='store_true')
             cmd.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1],help='dynamic negotiation role independent of business direction;default0 when dynamic')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
             cmd.add_argument('--native-return-verify',action='store_true',help='VM-only actual Native bind-return/physical Down/parent cleanup,then ordinary data preservation')

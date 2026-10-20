@@ -38,8 +38,9 @@ ROLE_REQUEST_FIELDS={'phase','owners','config','application_tool','start_wall_ns
 
 def channel_configuration(value):
     """Explicit protocol endpoints, not TCIDs, identity or observed capabilities."""
-    if type(value)is dict and type(value.get('version'))is int and value['version']==2:
-        if (set(value)!={'version','kind','channels'}or value['kind']!='dynamic_basic_parallel'
+    if type(value)is dict and type(value.get('version'))is int and value['version']in(2,3):
+        close=value['version']==3
+        if (set(value)!={'version','kind','channels'}or value['kind']!=('dynamic_basic_parallel_close'if close else'dynamic_basic_parallel')
             or type(value['channels'])is not list or len(value['channels'])!=2):
             raise CaptureError('explicit version2 two-channel profile required')
         for group in value['channels']:
@@ -48,7 +49,7 @@ def channel_configuration(value):
                 raise CaptureError('explicit named channel/config/route required')
             channel_configuration(group['route']);validate_configuration(group['config'])
         active=value['channels'][0]['route']['active_endpoint']
-        if value!=parallel_channel(active):raise CaptureError('canonical finite short/long profile required')
+        if value!=parallel_channel(active,close_short=close):raise CaptureError('canonical finite short/long profile required')
         return value
     if (type(value)is not dict or set(value)!={'version','kind','ports','aid','active_endpoint'}
         or type(value['version'])is not int or value['version']!=1 or value['kind']!='dynamic_basic'
@@ -60,29 +61,45 @@ def channel_configuration(value):
     return value
 
 
-def parallel_channel(active=0):
+def parallel_channel(active=0,*,close_short=False):
     if type(active)is not int or active not in(0,1):raise CaptureError('explicit parallel negotiation role required')
+    if type(close_short)is not bool:raise CaptureError('explicit short-close profile required')
     groups=[]
-    for name,ports,count,size,window in [('short',[24576,24577],20,61,4),('long',[24578,24579],16,2042,8)]:
+    for name,ports,count,size,window in [('short',[24576,24577],20,61,4),('long',[24578,24579],64 if close_short else 16,2042,8)]:
         route=dict(version=1,kind='dynamic_basic',ports=ports,aid=29441,active_endpoint=active)
         groups.append(dict(name=name,route=route,config=configuration('window',window,count=count,size=size)))
-    return dict(version=2,kind='dynamic_basic_parallel',channels=groups)
+    return dict(version=3 if close_short else 2,kind='dynamic_basic_parallel_close'if close_short else'dynamic_basic_parallel',channels=groups)
 
 
 def is_parallel(channel):
-    return channel is not None and channel.get('version')==2
+    return channel is not None and channel.get('version')in(2,3)
+
+
+def closes_short(channel):
+    return channel is not None and channel.get('version')==3
+
+
+def supervision_version(channel):
+    return 3 if closes_short(channel)else 2 if is_parallel(channel)else 1
+
+
+def parallel_replies(channel):
+    channel_configuration(channel)
+    if not is_parallel(channel):raise CaptureError('parallel profile required')
+    return 2*sum(g['config']['count']for g in channel['channels'])
 
 
 def requested_channel(args):
     dynamic=getattr(args,'channel_benchmark_dynamic',False)
     parallel=getattr(args,'channel_benchmark_parallel',False)
+    close=getattr(args,'channel_benchmark_close_short',False)
     active=getattr(args,'channel_benchmark_active_endpoint',None)
-    if type(dynamic)is not bool or type(parallel)is not bool or (active is not None and(type(active)is not int or active not in(0,1))):
+    if type(dynamic)is not bool or type(parallel)is not bool or type(close)is not bool or close and not parallel or (active is not None and(type(active)is not int or active not in(0,1))):
         raise CaptureError('explicit dynamic benchmark selector/role required')
     if parallel:
         if dynamic or requested_configuration(args)!=configuration('window'):
             raise CaptureError('parallel target requires separate default short window workload')
-        return channel_configuration(parallel_channel(0 if active is None else active))
+        return channel_configuration(parallel_channel(0 if active is None else active,close_short=close))
     if not dynamic:
         if active is not None:raise CaptureError('channel role requires dynamic benchmark')
         return None
@@ -99,18 +116,18 @@ def channel_boot(channel):
     channel_configuration(channel)
     parallel=is_parallel(channel)
     active=channel['channels'][0]['route']['active_endpoint']if parallel else channel['active_endpoint']
-    return ['ws73.benchmark_parallel=1'if parallel else'ws73.benchmark_dynamic=1',f'ws73.benchmark_active={active}']
+    return ['ws73.benchmark_parallel=1'if parallel else'ws73.benchmark_dynamic=1',f'ws73.benchmark_active={active}']+(['ws73.benchmark_close=short']if closes_short(channel)else[])
 
 
 def channel_from_boot(words,config):
-    prefixes=('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=')
+    prefixes=('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close=')
     selected=[w for w in words if w.startswith(prefixes)]
     if not selected:return None
-    for parallel in(False,True):
+    for profile in(1,2,3):
         for active in(0,1):
-            candidate=parallel_channel(active)if parallel else dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=active)
+            candidate=parallel_channel(active,close_short=profile==3)if profile>1 else dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=active)
             if selected==channel_boot(candidate):
-                if parallel and config!=configuration('window'):raise CaptureError('parallel boot requires exact short workload')
+                if profile>1 and config!=configuration('window'):raise CaptureError('parallel boot requires exact short workload')
                 return candidate
     raise CaptureError('one exact original channel boot profile required')
 
@@ -328,8 +345,9 @@ def execute_supervised(run,row):
     channel=row_channel(row);observed={kind:set()for kind in ('staged','armed','quiescent')}
     def event(kind,index,**values):
         row['events'].append(dict(kind=kind,application=index,wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns(),**values))
-    def wait_marker(kind,seconds,selected=indices):
+    def wait_marker(kind,seconds,selected=indices,*,original_deadline=None):
         deadline=time.monotonic()+seconds
+        if original_deadline is not None:deadline=min(deadline,original_deadline)
         while not set(selected)<=observed[kind]:
             if time.monotonic()>=deadline:raise CaptureError('original benchmark supervisor '+kind+' deadline')
             for key,_ in selector.select(min(.1,max(0,deadline-time.monotonic()))):
@@ -356,12 +374,23 @@ def execute_supervised(run,row):
                        or actual=='quiescent'and not any(e['kind']=='start'and e['application']==index for e in row['events'])):
                         raise CaptureError('duplicate/out-of-order benchmark phase output:'+text)
                     event(actual,index,text=text);observed[actual].add(index)
-    def release(kind):
+    def release(kind,selected=indices):
         for i in release_order(row):
+            if i not in selected:continue
             proc,_=processes[i]
             before_wall=time.time_ns();before_mono=time.monotonic_ns()
             proc.stdin.write((kind+'\n').encode());proc.stdin.flush()
             event(kind,i,before_wall_ns=before_wall,before_monotonic_ns=before_mono)
+    def collect_ends(selected,deadline):
+        for i in selected:
+            proc,app=processes[i]
+            proc.stdin.close();proc.wait(timeout=max(.001,deadline-time.monotonic()))
+            selector.unregister(proc.stdout)
+            tail=proc.stdout.read(65537-len(output[i]));output[i]+=tail
+            if len(output[i])>65536:raise CaptureError('benchmark output byte budget')
+            app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=output[i].decode(),stderr=Path(app['stderr_path']).read_text())
+            if proc.returncode:raise CaptureError('actual slktest failed:'+app['stderr'])
+            report,record=read_report(app['report_path'],expected_uid=1004);app['report']=report;app['report_file']=record
     try:
         with ExitStack() as files:
             order=[i for passive in(True,False)for i in indices if application_request(row,i)['passive']==passive]if channel is not None else list(indices)
@@ -385,20 +414,25 @@ def execute_supervised(run,row):
             from ws73_benchmark_timeline import phase_marker
             row['trace_observation']=phase_marker(row['phase'],'BEGIN')
             release('start')
-            wait_marker('quiescent',620)
+            business_deadline=time.monotonic()+620
+            if closes_short(channel):
+                wait_marker('quiescent',620,(0,1),original_deadline=business_deadline)
+                if observed['quiescent']&{2,3}:raise CaptureError('long applications already quiescent before short close')
+                for i in(0,1):
+                    proc,app=processes[i];app['process_resources']['after']=collect(proc.pid,row['application_tool']['path'])
+                release('finish',(0,1))
+                collect_ends((0,1),time.monotonic()+15)
+                row['closed_short']=[dict(application=i,pid=row['applications'][i]['pid'],exit=row['applications'][i]['exit'],reaped_wall_ns=row['applications'][i]['end_wall_ns'])for i in(0,1)]
+            wait_marker('quiescent',620,original_deadline=business_deadline)
             end=phase_marker(row['phase'],'END')
             if {k:v for k,v in end.items()if k!='marker'}!={k:v for k,v in row['trace_observation'].items()if k!='marker'}:raise CaptureError('trace configuration changed during business phase')
             row['trace_observation']['end_marker']=end['marker']
-            for proc,app in processes:app['process_resources']['after']=collect(proc.pid,row['application_tool']['path'])
-            release('finish')
+            remaining=(2,3)if closes_short(channel)else indices
+            for i in remaining:
+                proc,app=processes[i];app['process_resources']['after']=collect(proc.pid,row['application_tool']['path'])
+            release('finish',remaining)
             deadline=time.monotonic()+15
-            for i,(proc,app) in enumerate(processes):
-                proc.stdin.close();proc.wait(timeout=max(.001,deadline-time.monotonic()))
-                tail=proc.stdout.read(65537-len(output[i]));output[i]+=tail
-                if len(output[i])>65536:raise CaptureError('benchmark output byte budget')
-                app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=output[i].decode(),stderr=Path(app['stderr_path']).read_text())
-                if proc.returncode:raise CaptureError('actual slktest failed:'+app['stderr'])
-                report,record=read_report(app['report_path'],expected_uid=1004);app['report']=report;app['report_file']=record
+            collect_ends(remaining,deadline)
             row['end_wall_ns']=time.time_ns()
             check_supervision(row)
             row['application_check']=application_checks(row)
@@ -452,9 +486,26 @@ def check_supervision(row):
     for clock in ['wall_ns','monotonic_ns']:
         stamps=[e[clock] for e in all_events]
         if any(type(v) is not int for v in stamps) or stamps!=sorted(stamps):raise CaptureError('same guest supervisor clock order')
-    for offset,kind in enumerate(['armed','start','quiescent','finish']):
+    close=closes_short(channel)
+    for offset,kind in enumerate(['armed','start']if close else['armed','start','quiescent','finish']):
         chunk=events[offset*count:offset*count+count]
         if {e['application'] for e in chunk}!=indices or any(e['kind']!=kind for e in chunk):raise CaptureError('global barrier order before any release')
+    if close:
+        for i in indices:
+            if [e['kind']for e in events if e['application']==i]!=['armed','start','quiescent','finish']:
+                raise CaptureError('each endpoint must quiesce before its own final release')
+        closed=row.get('closed_short')
+        if (type(closed)is not list or len(closed)!=2
+            or any(type(v)is not dict or set(v)!={'application','pid','exit','reaped_wall_ns'}for v in closed)):
+            raise CaptureError('both actual short processes must be reaped')
+        for i,item in enumerate(closed):
+            app=row['applications'][i]
+            finished=next(e for e in events if e['application']==i and e['kind']=='finish')
+            if (any(type(item[k])is not int for k in item)or item['application']!=i or item['pid']!=app['pid']or item['exit']!=0
+                or item['reaped_wall_ns']!=app['end_wall_ns']or not finished['wall_ns']<=item['reaped_wall_ns']
+                <min(e['wall_ns']for e in events if e['application']in(2,3)and e['kind']=='quiescent')):
+                raise CaptureError('short final release must precede continuing long application completion')
+    elif 'closed_short'in row:raise CaptureError('early close cannot change the original global finish contract')
     for i,app in enumerate(row['applications']):
         config=application_config(row,i);window=config['window'];expected=application_mode(row,i)
         requested=application_request(row,i)
@@ -487,7 +538,8 @@ def check_supervision(row):
         for kind,limit,previous in [('start',30,'armed'),('finish',30,'quiescent')]:
             e=next(e for e in events if e['application']==i and e['kind']==kind)
             own=next(e for e in events if e['application']==i and e['kind']==previous)
-            preceding=events[(['armed','start','quiescent','finish'].index(kind)-1)*count+count-1]
+            preceding=(max((v for v in events if v['kind']=='quiescent'and v['application']//2==i//2),key=lambda v:v['wall_ns'])
+                       if close and kind=='finish'else events[(['armed','start','quiescent','finish'].index(kind)-1)*count+count-1])
             if not preceding['wall_ns']<=e['before_wall_ns']<=e['wall_ns']:raise CaptureError('all endpoints observed before control write')
             if not max(own['monotonic_ns'],preceding['monotonic_ns'])<=e['before_monotonic_ns']<=e['monotonic_ns']<own['monotonic_ns']+limit*1_000_000_000:raise CaptureError('bounded original supervisory input')
         identity=app['report']['channel_identity'];entry=application_owner(row,i);owner=entry['owner'];obj=entry['object']
@@ -591,6 +643,7 @@ def _match_payloads(run,capture,share):
             if is_parallel(channel)and group['name']=='long'and any(len(leg[k]['fragments'])<2 for leg in legs for k in('tx','rx')):
                 raise CaptureError('actual PB-fragmented long messages required on both USB legs')
             if negotiation is not None:result['dynamic_negotiation']=negotiation
+            if closes_short(channel)and group['name']=='short':result['close']=match_channel_close(row,apps,base,sdus,matched)
             groups.append(result)
         if channel is not None:
             # All channels must be matched before rejecting unowned signaling.
@@ -606,6 +659,9 @@ def _match_payloads(run,capture,share):
         phase_proof=dict(phase=n,owners=row['owners'],legs=[leg for group in groups for leg in group['legs']],events=row['events'])
         if is_parallel(channel):
             phase_proof.update(channels=groups,concurrent_progress=load_progress(groups))
+            if closes_short(channel):
+                phase_proof['closed_short']=row['closed_short']
+                phase_proof['close_continuity']=close_continuity(groups,row['closed_short'])
         else:
             phase_proof['application']=groups[0]['application']
             if 'dynamic_negotiation'in groups[0]:phase_proof['dynamic_negotiation']=groups[0]['dynamic_negotiation']
@@ -623,6 +679,7 @@ def _match_payloads(run,capture,share):
     if RESOURCE_FIELD in rows[0]:result[RESOURCE_FIELD]=1
     if row_channel(rows[0])is not None:result[CHANNEL_FIELD]=row_channel(rows[0])
     if is_parallel(row_channel(rows[0])):result['full_fairness_acceptance']=False
+    if closes_short(row_channel(rows[0])):result['channel_close_isolation_acceptance']=True
     if rows[0]['config']['window']!=WINDOW:result['window']=rows[0]['config']['window']
     if any(rows[0]['config'][k]!=v for k,v in [('count',COUNT),('bytes',SIZE),('interval_us',100000 if rows[0]['config']['mode']=='rate' else 0)]):result['config']=rows[0]['config']
     return result
@@ -657,7 +714,58 @@ def load_progress(groups):
     streams=[]
     for group in groups:
         streams.append([dict(leg,role='initiator'if i%2==0 else'peer',sequence=i//2)for i,leg in enumerate(group['legs'])])
-    return concurrent_progress(*streams)
+    return concurrent_progress(*streams,short_count=groups[0]['config']['count'],long_count=groups[1]['config']['count'])
+
+
+def match_channel_close(row,apps,base,sdus,matched):
+    """Actual CMTC exchange for the final app release, same capture ownership."""
+    from ws73_dynamic_channels import cmtc
+    closes=[]
+    for endpoint,app in enumerate(apps):
+        o=row['owners'][endpoint]['owner'];obj=row['owners'][endpoint]['object'];identity=app['report']['channel_identity']
+        local,remote=identity['local_tcid'],identity['remote_tcid']
+        first=next(e['before_wall_ns']for e in row['events']if e['application']==base+endpoint and e['kind']=='finish')
+        reqs=[p for p in sdus if(p['bus'],p['device'],p['handle'],p['direction'])==(o['bus'],o['device'],obj['handle'],'out')
+              and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns']and len(bytes.fromhex(p['data']))==10
+              and bytes.fromhex(p['data'])[:2]==b'\x02\0'and bytes.fromhex(p['data'])[4]==18 and bytes.fromhex(p['data'])[8:]==bytes([local,remote])]
+        if len(reqs)>1:raise CaptureError('duplicate close outside this bounded profile')
+        for packet in reqs:
+            raw=bytes.fromhex(packet['data']);identifier=raw[5]
+            if packet['wall_ns']<first:raise CaptureError('channel close precedes its actual final release')
+            def signal(sender,receiver,value):
+                return dict(tx=matched(sender,'out',value,lower=first,upper=row['end_wall_ns']),rx=matched(receiver,'in',value,lower=first,upper=row['end_wall_ns']))
+            result=dict(request=signal(endpoint,1-endpoint,raw),response=signal(1-endpoint,endpoint,cmtc(bytes([19,identifier,3,0,local,remote,0]))))
+            stamps=[result[k][v]['wall_ns']for k,v in [('request','tx'),('request','rx'),('response','tx'),('response','rx')]]
+            if stamps!=sorted(stamps):raise CaptureError('actual close request/response order required')
+            closes.append(result)
+    if not closes:raise CaptureError('actual final channel close exchange missing')
+    return closes
+
+
+def close_continuity(groups,closed):
+    """Peer-validated new request/reply after wire close AND short process exit.
+
+    This is a finite capture/closed-report observation, not a callback drain,
+    NOCP truth, safe reuse, reliable mode or latency proof.
+    """
+    if len(groups)!=2 or type(closed)is not list or len(closed)!=2:raise CaptureError('two channels and closed short processes required')
+    if any(type(v)is not dict or set(v)!={'application','pid','exit','reaped_wall_ns'}for v in closed):raise CaptureError('original short close receipt shape required')
+    for i,v in enumerate(closed):
+        if any(type(n)is not int for n in v.values())or v['application']!=i or v['pid']<=0 or v['exit']!=0 or v['reaped_wall_ns']<=0:raise CaptureError('original successful short exits required')
+    short,long=groups;closes=short['close']
+    if type(closes)is not list or not 1<=len(closes)<=2:raise CaptureError('bounded short close exchange required')
+    first=min(c['request']['tx']['wall_ns']for c in closes)
+    last=max(c['response']['rx']['wall_ns']for c in closes)
+    barrier=max(last,max(v['reaped_wall_ns']for v in closed))
+    before=[];after=[]
+    if len(long['legs'])%2:raise CaptureError('complete long request/reply pairs required')
+    for i in range(0,len(long['legs']),2):
+        pair=long['legs'][i:i+2]
+        if all(leg[k]['wall_ns']<first for leg in pair for k in('tx','rx')):before.append(i//2)
+        if all(leg[k]['fragments'][0]['wall_ns']>barrier for leg in pair for k in('tx','rx')):after.append(i//2)
+    if not before or not after:raise CaptureError('actual long peer replies required before and after short wire close and final process exit')
+    return dict(status='SHORT_CHANNEL_CLOSED_LONG_PEER_REPLIES_CONTINUE',wire_close_ns=[first,last],after_barrier_wall_ns=barrier,
+                before_reply_sequences=before,after_reply_sequences=after,callback_drain_proved=False,nocp_accuracy_proved=False,safe_reuse=False)
 
 
 def valid_parallel_summary(proof,channel,config,supervision):
@@ -665,7 +773,9 @@ def valid_parallel_summary(proof,channel,config,supervision):
     try:
         if not is_parallel(channel)or channel_configuration(channel)!=row_channel(proof)or config!=configuration('window'):return False
         if not valid_role_supervision(supervision)or row_channel(supervision)!=channel:return False
-        if proof.get('full_fairness_acceptance')is not False or type(proof.get('round_trips'))is not int or proof['round_trips']!=72:return False
+        if proof.get('full_fairness_acceptance')is not False or type(proof.get('round_trips'))is not int or proof['round_trips']!=parallel_replies(channel):return False
+        close=closes_short(channel)
+        if proof.get('channel_close_isolation_acceptance',False)is not close:return False
         phases=proof['proofs']
         if type(phases)is not list or len(phases)!=2:return False
         for n,phase in enumerate(phases):
@@ -682,6 +792,9 @@ def valid_parallel_summary(proof,channel,config,supervision):
                 if app.get('channel_requests')!=expected or set(signal)!={'request','response'}or any(set(signal[k])!={'tx','rx'}for k in signal):return False
             if phase['legs']!=[leg for group in groups for leg in group['legs']]:return False
             if phase['concurrent_progress']!=load_progress(groups):return False
+            if close:
+                if phase['close_continuity']!=close_continuity(groups,phase['closed_short']):return False
+            elif 'close_continuity'in phase or 'closed_short'in phase:return False
         return True
     except(KeyError,TypeError,ValueError,AttributeError):return False
 
@@ -721,7 +834,7 @@ def _closed_role_facts(control,evidence):
                 if '..'in relative.parts or relative.suffix not in('.stdout','.stderr'):raise CaptureError('fixed benchmark stream path required')
                 if (root/f'phase-{phase}'/relative).read_text()!=app['stdout'if relative.suffix=='.stdout'else'stderr']:raise CaptureError('actual benchmark raw stream differs')
     parallel=is_parallel(channels[0]);count=8 if parallel else 4
-    result=dict(version=2 if parallel else 1,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,daemon=finished['daemon'],supervisor=finished['supervisor'],snapshot_files=sum(len(v['files'])for v in snapshots),snapshot_bytes=sum(v['bytes']for v in snapshots),performance_qualified=False)
+    result=dict(version=supervision_version(channels[0]),uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,daemon=finished['daemon'],supervisor=finished['supervisor'],snapshot_files=sum(len(v['files'])for v in snapshots),snapshot_bytes=sum(v['bytes']for v in snapshots),performance_qualified=False)
     if parallel:result[CHANNEL_FIELD]=channels[0]
     return result
 
@@ -730,7 +843,7 @@ def valid_role_supervision(proof):
     try:
         channel=row_channel(proof);parallel=is_parallel(channel);count=8 if parallel else 4
         if channel is not None and not parallel:return False
-        expected=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=2 if parallel else 1,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,performance_qualified=False)
+        expected=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=supervision_version(channel),uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,performance_qualified=False)
         return(all(type(proof[k])is type(v)and proof[k]==v for k,v in expected.items())
             and all(type(proof[k][f])is int and proof[k][f]>0 for k in('daemon','supervisor')for f in('pid','start_ticks'))
             and type(proof['snapshot_files'])is int and (30 if parallel else 18)<=proof['snapshot_files']<=128

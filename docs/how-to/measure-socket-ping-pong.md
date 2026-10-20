@@ -277,3 +277,11 @@ python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT
 
 这只覆盖[参考中的有限负载](../reference/socket-benchmark.md#四应用双动态通道的有限负载)。
 准确实机范围仍以当前资格为准；不授予完整公平性、四设备或稳定性能资格。
+
+若任务是验证关闭隔离，保留上面的显式来源与两端端口，在新运行目录中追加
+`--channel-benchmark-close-short`。预期目标／监督摘要为版本3；检查短通道两端先完成
+并退出、真实CMTC关闭完成，以及长通道在此后仍有新的实际校验回复。失败时保留
+原目录及全部报告，不通过删掉关闭证明或只统计另一方向取得成功。
+该场景包含退出和报告写出开销，参数及限定范围见
+[关闭隔离负载](../reference/socket-benchmark.md#版本3短通道关闭期间长通道继续业务)；
+入口接通不表示当前artifact已经取得实机资格。

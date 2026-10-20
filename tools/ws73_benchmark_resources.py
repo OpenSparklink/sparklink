@@ -129,17 +129,20 @@ def observations(row):
     if type(version) is not int or version != VERSION or len(row['applications']) != application_count(row):
         raise CaptureError('all originally requested process checkpoint pairs required')
     events = row['events']; result = []
-    for app in row['applications']:
+    from ws73_socket_benchmark import closes_short,row_channel
+    pair_finish=closes_short(row_channel(row))
+    for i,app in enumerate(row['applications']):
         pair = app.get('process_resources', {})
         if set(pair) != {'before', 'after'}: raise CaptureError('complete process checkpoint pair required')
         before, after = parse(pair['before']), parse(pair['after'])
+        closing=[e for e in events if not pair_finish or e['application']//2==i//2]
         if (any(before[k] != after[k] for k in ('pid', 'ppid', 'start_ticks', 'clock_ticks', 'page_bytes', 'image'))
                 or before['pid'] != app['pid']
                 or before['ppid'] != row['role_supervisor']['pid']
                 or not max(e['monotonic_ns'] for e in events if e['kind']=='armed') <= before['begin_mono_ns']
                 or not before['end_mono_ns'] <= min(e['before_monotonic_ns'] for e in events if e['kind']=='start')
-                or not max(e['monotonic_ns'] for e in events if e['kind']=='quiescent') <= after['begin_mono_ns']
-                or not after['end_mono_ns'] <= min(e['before_monotonic_ns'] for e in events if e['kind']=='finish')
+                or not max(e['monotonic_ns'] for e in closing if e['kind']=='quiescent') <= after['begin_mono_ns']
+                or not after['end_mono_ns'] <= min(e['before_monotonic_ns'] for e in closing if e['kind']=='finish')
                 or any(after[k] < before[k] for k in ('user_ticks', 'system_ticks'))
                 or any(after['memory_bytes'][k] < before['memory_bytes'][k] for k in ('VmHWM', 'VmPeak'))):
             raise CaptureError('same original child and resource checkpoints outside business required')

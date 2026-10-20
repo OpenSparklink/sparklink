@@ -83,13 +83,13 @@ def fixture(share,mode='window',window=4,count=20,channel=None,size=61,tcid_offs
     return dict(socket_benchmark=rows,connection_control=dict(phases=phases),commands=commands),dict(acb_packets=packets,native_events=[])
 
 
-def parallel_fixture(share,active=0,*,cross_namespace=False):
+def parallel_fixture(share,active=0,*,cross_namespace=False,close_short=False):
     """Two explicit fixture pairs merged into one four-app observation.
 
     This tests production metadata/capture checks, not a successful kernel,
     socket, USB or firmware dependency.
     """
-    channel=gate.parallel_channel(active);runs=[];captures=[]
+    channel=gate.parallel_channel(active,close_short=close_short);runs=[];captures=[]
     for g,target in enumerate(channel['channels']):
         directory=share/target['name'];directory.mkdir(parents=True)
         c=target['config'];run,capture=fixture(directory,window=c['window'],count=c['count'],size=c['bytes'],channel=target['route'],tcid_offset=2*g,local_tcids=((0x81,0x83)if g==0 else(0x83,0x81))if cross_namespace else None)
@@ -112,6 +112,32 @@ def parallel_fixture(share,active=0,*,cross_namespace=False):
     packets=[p for c in captures for p in c['acb_packets']]
     packets.sort(key=lambda p:p['wall_ns'])
     for record,p in enumerate(packets,1):p['record']=record
+    if close_short:
+        from ws73_dynamic_channels import cmtc
+        for phase,row in enumerate(run['socket_benchmark']):
+            oldbase=phase*2000;base=phase*20000;delta=base-oldbase
+            for packet in packets:
+                if oldbase<=packet['wall_ns']<oldbase+2000:packet['wall_ns']+=delta
+            row['start_wall_ns']+=delta;row['end_wall_ns']=base+9000
+            for app in row['applications']:
+                app['start_wall_ns']+=delta;app['dup_observed_wall_ns']+=delta
+            for event in row['events']:
+                for key in ['wall_ns','monotonic_ns','before_wall_ns','before_monotonic_ns']:
+                    if key in event:event[key]+=delta
+                if event['application']>=2 and event['kind']in('quiescent','finish'):
+                    for key in ['wall_ns','monotonic_ns','before_wall_ns','before_monotonic_ns']:
+                        if key in event:event[key]+=7000
+            row['events'].sort(key=lambda e:(e['wall_ns'],e['application']))
+            for i,app in enumerate(row['applications']):app['end_wall_ns']=base+(1400+i*10 if i<2 else 8500+i*10)
+            row['closed_short']=[dict(application=i,pid=row['applications'][i]['pid'],exit=0,reaped_wall_ns=row['applications'][i]['end_wall_ns'])for i in(0,1)]
+            for g in range(2):
+                a,b=row['applications'][2*g:2*g+2];identity=a['report']['channel_identity'];local,remote=identity['local_tcid'],identity['remote_tcid'];ident=11+g
+                request=cmtc(bytes([18,ident,2,0,local,remote]));response=cmtc(bytes([19,ident,3,0,local,remote,0]))
+                for endpoint,direction,raw,offset in [(0,'out',request,0),(1,'in',request,1),(1,'out',response,9),(0,'in',response,9)]:
+                    owner=row['owners'][endpoint]['owner'];packets.append(dict(record=0,bus=owner['bus'],device=owner['device'],handle=0,direction=direction,boundary=0,data=raw.hex(),wall_ns=base+(1210 if g==0 else 8200)+offset))
+            run['commands'][2*phase]['end_wall_ns']=base-1;run['commands'][2*phase+1]['start_wall_ns']=base+9500
+        packets.sort(key=lambda p:p['wall_ns'])
+        for record,packet in enumerate(packets,1):packet['record']=record
     return run,dict(acb_packets=packets,native_events=[])
 
 

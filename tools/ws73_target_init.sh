@@ -478,7 +478,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             benchmark_dynamic=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_dynamic=/){sub(/^ws73.benchmark_dynamic=/,"",$i);print $i}}' /proc/cmdline)
             benchmark_parallel=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_parallel=/){sub(/^ws73.benchmark_parallel=/,"",$i);print $i}}' /proc/cmdline)
             benchmark_active=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_active=/){sub(/^ws73.benchmark_active=/,"",$i);print $i}}' /proc/cmdline)
-            if [ -n "$benchmark_dynamic$benchmark_parallel$benchmark_active" ]; then
+            benchmark_close=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_close=/){sub(/^ws73.benchmark_close=/,"",$i);print $i}}' /proc/cmdline)
+            if [ -n "$benchmark_dynamic$benchmark_parallel$benchmark_active$benchmark_close" ]; then
                 case "$benchmark_dynamic:$benchmark_parallel" in
                     1:) benchmark_selector=--channel-benchmark-dynamic ;;
                     :1) benchmark_selector=--channel-benchmark-parallel ;;
@@ -486,6 +487,10 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                 esac
                 case "$benchmark_active" in 0|1) ;; *) fail 'explicit dynamic benchmark role' ;; esac
                 connection_arg="$connection_arg $benchmark_selector --channel-benchmark-active-endpoint $benchmark_active"
+                if [ -n "$benchmark_close" ]; then
+                    [ "$benchmark_parallel:$benchmark_close" = 1:short ] || fail 'explicit parallel short-close profile'
+                    connection_arg="$connection_arg --channel-benchmark-close-short"
+                fi
             fi
         fi
         for word in $(cat /proc/cmdline); do

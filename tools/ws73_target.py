@@ -114,6 +114,7 @@ def prepare_locked(args, build_fd):
     manifest['ssap_subscription_contract_version'] = 1
     manifest['ssap_subscription_shared_contract_version'] = 1
     manifest['ssap_subscription_shared_lifetime_contract_version'] = 1
+    manifest['ssap_subscription_shared_pressure_contract_version'] = 1
     manifest['ssap_subscription_renewal_contract_version'] = 1
     manifest['ssap_subscription_pressure_contract_version'] = 1
     manifest['ssap_subscription_owner_loss_contract_version'] = 1
@@ -877,7 +878,7 @@ def _run(args):
     m['ssap_subscription_shared_requested']=subscription_shared
     m['ssap_subscription_shared_acceptance']=False
     m['ssap_subscription_shared_case']=subscription_shared_case
-    if subscription_shared_case!='release':m['ssap_subscription_shared_lifetime_contract_version']=1
+    if subscription_shared_case!='release':m['ssap_subscription_shared_pressure_contract_version'if subscription_shared_case=='pressure'else'ssap_subscription_shared_lifetime_contract_version']=1
     m['ssap_subscription_renewal_requested']=subscription_renewal
     m['ssap_subscription_renewal_acceptance']=False
     m['ssap_subscription_pressure_requested']=subscription_pressure
@@ -1041,7 +1042,9 @@ def _run(args):
                 if type(package.get('ssap_subscription_shared_contract_version'))is not int or package['ssap_subscription_shared_contract_version']!=1:raise ValueError('fresh shared-owner prepared contract1 required')
                 from ws73_ssap_sender_deadline import validate_inputs
                 validate_inputs(package,subscription=True,shared=True)
-                if subscription_shared_case!='release'and(type(package.get('ssap_subscription_shared_lifetime_contract_version'))is not int or package['ssap_subscription_shared_lifetime_contract_version']!=1):raise ValueError('fresh prepared shared lifetime contract1 required')
+                if subscription_shared_case!='release':
+                    field='ssap_subscription_shared_pressure_contract_version'if subscription_shared_case=='pressure'else'ssap_subscription_shared_lifetime_contract_version'
+                    if type(package.get(field))is not int or package[field]!=1:raise ValueError('fresh prepared shared case contract1 required')
                 m['ssap_subscription_shared_contract_version']=1
                 m['ssap_subscription_shared_verifier']=file_record(HERE/'ws73_ssap_shared.py')
             if type(package.get('ssap_subscription_snapshot_contract_version'))is not int or package['ssap_subscription_snapshot_contract_version']!=1:raise ValueError('subscription requires new closed local phase snapshots')
@@ -2240,10 +2243,9 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     elif record.get('ssap_subscription_acceptance')or record.get('ssap_subscription_supervision')or any(p.get('ssap_subscription')for p in record.get('channel_socket_corroboration',{}).get('proofs',[])):return 1
     shared=record.get('ssap_subscription_shared_requested',False)
     if type(shared)is not bool or shared and not subscription:return 1
-    from ws73_ssap_subscription import shared_boot,boot_shared_case
-    shared_case=record.get('ssap_subscription_shared_case','release');shared_lifetime=record.get('ssap_subscription_shared_lifetime_contract_version')
-    if(type(shared_case)is not str or shared_case not in ('release','expiry','owner-exit')or shared_case!='release'and(not shared or type(shared_lifetime)is not int or shared_lifetime!=1)or shared_case=='release'and shared_lifetime is not None):return 1
+    from ws73_ssap_subscription import shared_boot,boot_shared_case,shared_case as validate_shared_case
     try:
+        shared_case=validate_shared_case(dict(record,ssap_subscription_shared_required=shared))
         if boot_shared_case([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()],shared)!=shared_case:return 1
         if shared_boot([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()])!=shared:return 1
     except CaptureError:return 1
@@ -2710,7 +2712,7 @@ def main():
             cmd.add_argument('--ssap-owned-update-verify',action='store_true')
             cmd.add_argument('--ssap-subscription-verify',action='store_true',help='real protected continuous caller-owned lease,multiple random updates and actual apps-only distinct replies')
             cmd.add_argument('--ssap-subscription-shared-verify',action='store_true',help='two actual SDK subscribers,partial retained release and last physical cleanup;dedicated gate')
-            cmd.add_argument('--ssap-subscription-shared-case',choices=('release','expiry','owner-exit'),default='release',help='separate original-expiry or actual known-reader exit;not kernel Grant revocation')
+            cmd.add_argument('--ssap-subscription-shared-case',choices=('release','expiry','owner-exit','pressure'),default='release',help='separate release,original expiry,reader exit or bounded slow-reader isolation;not kernel Grant revocation')
             cmd.add_argument('--ssap-subscription-renewal-verify',action='store_true',help='actual same-token long renewal and checked replies beyond original short lease expiry;requires subscription gate')
             cmd.add_argument('--ssap-subscription-pressure-verify',action='store_true',help='actual bounded subscriber queue full/refusal,ordered drain and checked resume;separate from controller credit pressure')
             cmd.add_argument('--ssap-subscription-owner-loss-verify',action='store_true',help='actual guest reader death,paired cleanup/read barrier and fresh same-Session subscription;not full lifecycle qualification')

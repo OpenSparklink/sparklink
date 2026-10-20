@@ -772,6 +772,29 @@ and offline checks alone do not qualify a compiled artifact; use the canonical
 capability record for the exact run. Existing release evidence keeps its original
 case and identity.
 
+The separate `--ssap-subscription-shared-case pressure` requires a fresh
+`ssap_subscription_shared_pressure_contract_version=1` prepared bundle, the
+same protected numeric-approve shared gate, and its exact boot/request/source
+closure. It cannot relabel the single-reader pressure or lifetime cases.
+Each group publishes 17 random 32-byte values while reader A does not read;
+reader B must check and write back every value. A then drains exactly the first
+16 packets, observes one notification drop or one locally refused indication,
+and checks each cached value before sending a distinct writeback. The next
+publication must reach both readers, with A's sequence gap and cumulative loss
+preserved. A releases only its token; B continues, a fresh A joins, and only
+the final B release disables the remote configuration.
+
+The finite matrix requires 22 publications and 41 actual checked writebacks per
+group: eight groups, 176 publications, 328 writebacks, eight ordered drains and
+eight resumptions. B has no losses; the slow queues report four notification
+drops and four local indication refusals in total. Wire indication ACK1 remains
+required because B accepted the update; it is not evidence that A received the
+overflow or that either application processed it. Root transcript and snapshot
+budgets are explicitly bounded for this larger profile; old profiles retain
+their original limits. The ordinary 4×61-byte socket baseline remains separate.
+Source/offline checks do not qualify a new artifact, full load/fairness,
+controller credit, Grant withdrawal, drain, recovery, or performance.
+
 Native `--channel-benchmark rate|window|duplex` now requires a fresh apps-only
 benchmark prepared contract. The existing fixed VM role supervisor starts the
 actual `slktest` children as UID/GID 1004 with no extra groups or capabilities;

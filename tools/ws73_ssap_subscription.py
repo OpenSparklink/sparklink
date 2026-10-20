@@ -135,16 +135,20 @@ def shared_required(row):
 
 def requested_shared_case(args):
     case=getattr(args,'ssap_subscription_shared_case','release')
-    if type(case)is not str or case not in ('release','expiry','owner-exit')or case!='release'and getattr(args,'ssap_subscription_shared_verify',False)is not True:
+    if type(case)is not str or case not in ('release','expiry','owner-exit','pressure')or case!='release'and getattr(args,'ssap_subscription_shared_verify',False)is not True:
         raise ValueError('lifetime case requires its dedicated shared-owner gate')
     return case
 
 
 def shared_case(row):
     case=row.get('ssap_subscription_shared_case','release');version=row.get('ssap_subscription_shared_lifetime_contract_version')
-    if(type(case)is not str or case not in ('release','expiry','owner-exit')
-        or case!='release'and(not shared_required(row)or type(version)is not int or version!=1)
-        or case=='release'and version is not None):
+    pressure=row.get('ssap_subscription_shared_pressure_contract_version')
+    if(type(case)is not str or case not in ('release','expiry','owner-exit','pressure')
+        or case!='release'and not shared_required(row)
+        or case in ('expiry','owner-exit')and(type(version)is not int or version!=1)
+        or case not in ('expiry','owner-exit')and version is not None
+        or case=='pressure'and(type(pressure)is not int or pressure!=1)
+        or case!='pressure'and pressure is not None):
         raise CaptureError('explicit shared lifetime case/contract1 required;old releases are not lifetime evidence')
     return case
 
@@ -152,7 +156,7 @@ def shared_case(row):
 def boot_shared_case(tokens,enabled):
     values=[v.split('=',1)[1]for v in tokens if v.startswith('ws73.subscription_shared_case=')]
     if not values:return 'release'
-    if len(values)!=1 or not enabled or values[0]not in ('expiry','owner-exit'):
+    if len(values)!=1 or not enabled or values[0]not in ('expiry','owner-exit','pressure'):
         raise CaptureError('one enabled shared lifetime boot case required')
     return values[0]
 
@@ -205,7 +209,8 @@ def validate_request(row,phase):
     if inflight:fields|={'ssap_subscription_inflight_release_required','ssap_subscription_inflight_release_contract_version'}
     if expiry:fields|={'ssap_subscription_inflight_case','ssap_subscription_inflight_expiry_contract_version'}
     if shared_required(row):fields|={'ssap_subscription_shared_required','ssap_subscription_shared_contract_version'}
-    if shared_case(row)!='release':fields|={'ssap_subscription_shared_case','ssap_subscription_shared_lifetime_contract_version'}
+    case=shared_case(row)
+    if case!='release':fields|={'ssap_subscription_shared_case','ssap_subscription_shared_pressure_contract_version'if case=='pressure'else'ssap_subscription_shared_lifetime_contract_version'}
     if snapshot_required(row):fields.add('ssap_subscription_snapshot_contract_version')
     if (set(row)!=fields
             or row['status']!='RUNNING' or type(phase)is not int or phase not in (0,1)
@@ -239,7 +244,7 @@ def request(run,row):
     if requested_inflight_case(run.args)=='expiry':value.update(ssap_subscription_inflight_case='expiry',ssap_subscription_inflight_expiry_contract_version=1)
     if getattr(run.args,'ssap_subscription_shared_verify',False):value.update(ssap_subscription_shared_required=True,ssap_subscription_shared_contract_version=1)
     case=requested_shared_case(run.args)
-    if case!='release':value.update(ssap_subscription_shared_case=case,ssap_subscription_shared_lifetime_contract_version=1)
+    if case!='release':value.update(ssap_subscription_shared_case=case,**{'ssap_subscription_shared_pressure_contract_version'if case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
     if snapshot:value['ssap_subscription_snapshot_contract_version']=1
     validate_request(value,phase)
     path=run.output/f'subscription-role-{phase}.request.json';temporary=path.with_suffix('.tmp')
@@ -250,7 +255,7 @@ def request(run,row):
         if time.monotonic()>=deadline:raise CaptureError('subscription role supervisor deadline')
         time.sleep(.01)
     from ws73_application_role import read_json,verify_probe
-    result=read_json(response,0,limit=(1024 if pressure_required(value)or shared_required(value)else 512)*1024)
+    result=read_json(response,0,limit=(4096 if case=='pressure'else 1024 if pressure_required(value)or shared_required(value)else 512)*1024)
     for key in value:
         if result.get(key)!=value[key]:raise CaptureError('root subscription supervisor changed original request')
     verify_probe(result)
@@ -266,7 +271,7 @@ def request(run,row):
     if inflight_required(value):row.update(ssap_subscription_inflight_release_required=True,ssap_subscription_inflight_release_contract_version=1)
     if inflight_case(value)=='expiry':row.update(ssap_subscription_inflight_case='expiry',ssap_subscription_inflight_expiry_contract_version=1)
     if shared_required(value):row.update(ssap_subscription_shared_required=True,ssap_subscription_shared_contract_version=1)
-    if shared_case(value)!='release':row.update(ssap_subscription_shared_case=shared_case(value),ssap_subscription_shared_lifetime_contract_version=1)
+    if case!='release':row.update(ssap_subscription_shared_case=case,**{'ssap_subscription_shared_pressure_contract_version'if case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
     if snapshot:row['ssap_subscription_snapshot_contract_version']=1
     run.save()
 
@@ -276,7 +281,9 @@ def app_rows(process,app):
     # A live regular file can end in the middle of one stdio write. Only the
     # current incomplete tail is pending;terminal raw output is checked exactly.
     raw=[line for line in text.splitlines(keepends=True)if line.endswith('\n')]
-    if len(raw)>24:raise CaptureError('bounded subscription application transcript required')
+    version=app.get('ssap_shared_pressure_contract_version')
+    if version is not None and(type(version)is not int or version!=1):raise CaptureError('explicit shared-pressure transcript contract required')
+    if len(raw)>(64 if version is not None else 24):raise CaptureError('bounded subscription application transcript required')
     try:return [json.loads(line)for line in raw]
     except json.JSONDecodeError as error:raise CaptureError('complete actual SDK JSON output required')from error
 
@@ -339,6 +346,13 @@ def checked_update_reply(process,app,owner,item,value,reply,checked_count,batch_
     result['batch']=wait_stage(process,app,'ssap_subscription_batch',batch_count,time.monotonic()+1);checkpoint()
     result['after']=value_snapshot(owner,item,reply,limit=limit);checkpoint()
     return result
+
+
+def checked_cached_reply(process,app,owner,item,value,reply,checked_count,*,limit,record,save):
+    """Same real SDK cached read/check/writeback for single/shared pressure."""
+    process.stdin.write('check-cached '+value+' '+reply+'\n');process.stdin.flush()
+    record['checked']=wait_stage(process,app,'ssap_subscription_checked_reply',checked_count,time.monotonic()+6)
+    record['after']=value_snapshot(owner,item,reply,limit=limit);save()
 
 
 def execute_inflight_cleanup(run,row,owner,item,lease,process):
@@ -466,9 +480,7 @@ def execute_supervised(run,row):
                                 process.stdin.write('drain\n');process.stdin.flush()
                                 lease['drained']=wait_stage(process,app,'ssap_subscription_batch',1,time.monotonic()+6);run.save()
                                 for position,filled in enumerate(lease['messages'][:PRESSURE_CAPACITY]):
-                                    process.stdin.write('check-cached '+filled['value']+' '+filled['reply']+'\n');process.stdin.flush()
-                                    filled['checked']=wait_stage(process,app,'ssap_subscription_checked_reply',position+1,time.monotonic()+6)
-                                    filled['after']=value_snapshot(owner,item,filled['reply'],limit=80)
+                                    checked_cached_reply(process,app,owner,item,filled['value'],filled['reply'],position+1,limit=80,record=filled,save=run.save)
                                     filled['end_wall_ns']=time.time_ns();filled['end_monotonic_ns']=time.monotonic_ns();run.save()
                                 case['end_wall_ns']=time.time_ns();case['end_monotonic_ns']=time.monotonic_ns();run.save();continue
                             case.update(checked_update_reply(process,app,owner,item,value.hex(),reply.hex(),number if pressure else number+1,2 if pressure else number+1,
@@ -570,8 +582,10 @@ def verify_supervisor_artifacts(control,evidence):
     if any(inflights)and not all(inflights):raise CaptureError('both real in-flight release phases required')
     shared=[shared_required(row)for row in control['channel_socket']]
     if any(shared)and not all(shared):raise CaptureError('both shared phases required')
+    shared_cases=[shared_case(row)for row in control['channel_socket']]
+    shared_pressure=all(shared)and shared_cases==['pressure','pressure']
     result=dict(status='ACTUAL_ROOT_SUBSCRIPTION_PHASES_AND_OUTPUTS_CHECKED',version=1,
-                phases=2,reader_UID=1004,provider_UID=1005,readers=24 if all(shared)else 16 if all(losses)else 10 if all(inflights)else 8,providers=4,updates=56 if all(shared)else 144 if all(pressures)else 48 if all(losses)else 32 if all(inflights)else 24,
+                phases=2,reader_UID=1004,provider_UID=1005,readers=24 if all(shared)else 16 if all(losses)else 10 if all(inflights)else 8,providers=4,updates=176 if shared_pressure else 56 if all(shared)else 144 if all(pressures)else 48 if all(losses)else 32 if all(inflights)else 24,
                 daemon=finished['daemon'],supervisor=finished['supervisor'],
                 scope='Fixed actual role supervision only;not raw RF replay or full lifecycle/recovery qualification')
     if all(renewals):result.update(renewal_contract_version=1,renewals=8,post_original_expiry_updates=16)
@@ -586,8 +600,9 @@ def verify_supervisor_artifacts(control,evidence):
     if all(shared):
         cases=[shared_case(row)for row in control['channel_socket']]
         if len(set(cases))!=1:raise CaptureError('same shared lifetime case in both phases required')
-        result.update(shared_contract_version=1,shared_groups=8,shared_joins=16,checked_replies=96,retained_releases=8 if cases[0]=='owner-exit'else 16,last_disables=8)
-        if cases[0]!='release':result.update(shared_case=cases[0],shared_lifetime_contract_version=1,**({'partial_expirations':8,'expired_discarded':8}if cases[0]=='expiry'else{'partial_owner_exits':8,'unconsumed_published':8}))
+        result.update(shared_contract_version=1,shared_groups=8,shared_joins=16,checked_replies=328 if shared_pressure else 96,retained_releases=8 if cases[0]=='owner-exit'else 16,last_disables=8)
+        if shared_pressure:result.update(shared_case='pressure',shared_pressure_contract_version=1,slow_notification_drops=4,slow_indication_refusals=4,healthy_losses=0,ordered_drains=8,resumed=8,healthy_replies=176)
+        elif cases[0]!='release':result.update(shared_case=cases[0],shared_lifetime_contract_version=1,**({'partial_expirations':8,'expired_discarded':8}if cases[0]=='expiry'else{'partial_owner_exits':8,'unconsumed_published':8}))
     if exported:result.update(snapshot_contract_version=1,snapshot_phases=2,snapshot_files=sum(len(s['files'])for s in exported),snapshot_bytes=sum(s['bytes']for s in exported))
     return result
 
@@ -610,9 +625,11 @@ def valid_supervision(proof):
                 or inflight or proof.get('pressure_contract_version')is not None or proof.get('renewal_contract_version')is not None):return False
         if inflight and(type(proof['inflight_release_contract_version'])is not int or proof['inflight_release_contract_version']!=1
                 or proof.get('pressure_contract_version')is not None or proof.get('renewal_contract_version')is not None):return False
+        shared_pressure=proof.get('shared_pressure_contract_version')is not None
+        if shared_pressure and(not shared or type(proof['shared_pressure_contract_version'])is not int or proof['shared_pressure_contract_version']!=1 or proof.get('shared_case')!='pressure'):return False
         expected=dict(status='ACTUAL_ROOT_SUBSCRIPTION_PHASES_AND_OUTPUTS_CHECKED',version=1,
                       phases=2,reader_UID=1004,provider_UID=1005,readers=24 if shared else 16 if loss else 10 if inflight else 8,providers=4,
-                      updates=56 if shared else 144 if proof.get('pressure_contract_version')==1 else 48 if loss else 32 if inflight else 24)
+                      updates=176 if shared_pressure else 56 if shared else 144 if proof.get('pressure_contract_version')==1 else 48 if loss else 32 if inflight else 24)
         if any(proof[k]!=v or type(proof[k])is not type(v)for k,v in expected.items()):return False
         return all(type(proof[k][f])is int and proof[k][f]>0
                    for k in ('daemon','supervisor')for f in ('pid','start_ticks'))
@@ -644,11 +661,13 @@ def valid_inflight_supervision(proof,*,case='release'):
 
 
 def valid_shared_supervision(proof,*,case='release'):
-    if case not in ('release','expiry','owner-exit')or proof.get('shared_case','release')!=case:return False
-    if case=='release':
+    if case not in ('release','expiry','owner-exit','pressure')or proof.get('shared_case','release')!=case:return False
+    if case in ('release','pressure'):
         if any(proof.get(k)is not None for k in ('shared_lifetime_contract_version','partial_expirations','expired_discarded','partial_owner_exits','unconsumed_published')):return False
     elif type(proof.get('shared_lifetime_contract_version'))is not int or proof['shared_lifetime_contract_version']!=1:return False
-    wanted=dict(shared_contract_version=1,shared_groups=8,shared_joins=16,checked_replies=96,retained_releases=8 if case=='owner-exit'else 16,last_disables=8)
+    wanted=dict(shared_contract_version=1,shared_groups=8,shared_joins=16,checked_replies=328 if case=='pressure'else 96,retained_releases=8 if case=='owner-exit'else 16,last_disables=8)
+    if case=='pressure':wanted.update(shared_pressure_contract_version=1,slow_notification_drops=4,slow_indication_refusals=4,healthy_losses=0,ordered_drains=8,resumed=8,healthy_replies=176)
+    elif any(proof.get(k)is not None for k in ('shared_pressure_contract_version','slow_notification_drops','slow_indication_refusals','healthy_losses','ordered_drains','resumed','healthy_replies')):return False
     if case=='expiry':
         if any(proof.get(k)is not None for k in ('partial_owner_exits','unconsumed_published')):return False
         wanted.update(partial_expirations=8,expired_discarded=8)
@@ -1028,4 +1047,4 @@ def valid_inflight_summary(proof,*,case='release'):
 
 
 def valid_shared_summary(proof,*,case='release'):
-    return(case in ('release','expiry','owner-exit')and valid_summary(proof)and proof.get('round_trips')==8 and all(type(v.get('shared_contract_version'))is int and v['shared_contract_version']==1 and v.get('shared_case','release')==case for row in proof['proofs']for v in row['ssap_subscription']))
+    return(case in ('release','expiry','owner-exit','pressure')and valid_summary(proof)and proof.get('round_trips')==8 and all(type(v.get('shared_contract_version'))is int and v['shared_contract_version']==1 and v.get('shared_case','release')==case for row in proof['proofs']for v in row['ssap_subscription']))

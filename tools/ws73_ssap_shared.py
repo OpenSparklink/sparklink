@@ -11,9 +11,31 @@ from ws73_capture import CaptureError
 from ws73_application_client import application_environment,process_identity,owned_arguments,authorization_context
 from ws73_ssap_owned import publisher,value_snapshot,await_removed
 from ws73_ssap_update_delivery import configuration,command_receipt,discover,discovery_wire,sdk_receipt
-from ws73_ssap_subscription import checked_update_reply,wait_stage,role,shared_case,stop_reader_process
+from ws73_ssap_subscription import checked_update_reply,checked_cached_reply,wait_stage,role,shared_case,stop_reader_process
 
 TOOL='/usr/share/sparklink/tools/ws73_ssap_shared.py'
+
+
+def workload(kind):
+    """Finite orchestration only;packet parsing and SDK I/O stay shared."""
+    if kind not in ('release','expiry','owner-exit','pressure'):raise CaptureError('explicit shared workload required')
+    return (22,18,20)if kind=='pressure'else(7,3 if kind=='release'else 4,5)
+
+
+def recipients(kind,number):
+    total,withdraw,fresh=workload(kind)
+    if type(number)is not int or not 0<=number<total:raise CaptureError('finite original update number required')
+    if kind=='pressure'and number<17:return ['b']
+    return ['a0','b']if number<(withdraw if kind=='pressure'else 3)else['b']if number<fresh else['a1','b']
+
+
+def pressure_batch(group,lease,handle):
+    """Independent expected queue contents,not a simulated subscription."""
+    mode=group['mode']
+    packets=[dict(sequence=c['number']+1,epoch=lease['active']['epoch'],level=2,indication=mode==2,
+        pdu=(bytes([16 if mode==2 else 15,3])+handle.to_bytes(2,'little')+b'\x20\0'+bytes.fromhex(c['value'])).hex())for c in group['messages'][:16]]
+    return dict(stage='ssap_subscription_batch',api=lease['application']['api'],last=17,dropped=int(mode==1),refused=int(mode==2),
+        state=1,flags=0,reason=0,discarded=0,packets=packets)
 
 @contextmanager
 def reader(run,row,peer,item,api,mode,member):
@@ -23,6 +45,7 @@ def reader(run,row,peer,item,api,mode,member):
     label=f'shared-{row["phase"]}-{item["sender"]}-{mode}-{member}';out=run.output/(label+'.stdout');err=run.output/(label+'.stderr')
     begin=time.time_ns()
     app=dict(api=api,args=args,environment=application_environment(),start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
+    if shared_case(row)=='pressure':app['ssap_shared_pressure_contract_version']=1
     lease=dict(mode=mode,member=member,application=app,start_wall_ns=begin);item['leases'].append(lease);run.save();process=None
     try:
         with out.open('x')as stdout,err.open('x')as stderr:
@@ -70,7 +93,7 @@ def expire_reader(run,process,lease):
 
 def execute(run,row):
     from ws73_ssap_subscription import STATUS
-    kind=shared_case(row)
+    kind=shared_case(row);pressure=kind=='pressure';total,withdraw,fresh_at=workload(kind)
     row.update(ssap_subscription=[],ssap_subscription_required=True,ssap_subscription_contract_version=1);run.save()
     for sender in(0,1):
         peer,server=row['owners'][sender],row['owners'][1-sender];api='c'if(row['phase']+sender)%2==0 else'python';other='python'if api=='c'else'c'
@@ -84,29 +107,48 @@ def execute(run,row):
                     b,lb=resources.enter_context(reader(run,row,peer,item,api,mode,'b'));group['lease_indexes'].append(len(item['leases'])-1)
                     if la['active']['token']==lb['active']['token']or la['active']['epoch']!=lb['active']['epoch']:raise CaptureError('independent token at original epoch required')
                     counts={'a0':0,'b':0,'a1':0}
-                    for number in range(7):
-                        if number==3 and kind=='release':
+                    def receive(case,member,process,lease,records,*,callback=None,cached=False):
+                        number=case['number'];sequence=(row['phase']<<24)|(sender<<20)|(mode<<16)|number
+                        reply=((sequence|0x80000000|((1 if member=='b'else 2 if member=='a1'else 0)<<12)).to_bytes(4,'little')+secrets.token_bytes(28)).hex()
+                        received=dict(member=member,reply=reply,start_wall_ns=time.time_ns());counts[member]+=1
+                        if cached:received['number']=number
+                        records.append(received);run.save()
+                        if cached:
+                            checked_cached_reply(process,lease['application'],owner,item,case['value'],reply,counts[member],limit=160,record=received,save=run.save)
+                        else:
+                            result=checked_update_reply(process,lease['application'],owner,item,case['value'],reply,counts[member],
+                                2 if pressure and member=='a0'else counts[member],limit=160 if pressure else 48,before_wait=callback,record=received,save=run.save)
+                            if 'send'in result:case['send']=result.pop('send')
+                        received['end_wall_ns']=time.time_ns();return received
+                    for number in range(total):
+                        if number==withdraw and kind in ('release','pressure'):
                             release(run,a,la,3);group['retained_observation']=configuration(owner,item,mode,b);run.save()
-                        if number==4 and kind!='release':
+                        if number==withdraw and kind in ('expiry','owner-exit'):
                             if time.monotonic_ns()>=la['active']['expires_ns']:raise CaptureError('unread publication must finish before original expiry')
                             if kind=='expiry':expire_reader(run,a,la)
                             else:
                                 stop_reader_process(run,la,a);la['withdrawn_wall_ns']=time.time_ns();run.save()
                             group['retained_observation']=configuration(owner,item,mode,b);run.save()
-                        if number==5:
+                        if number==fresh_at:
                             fresh,lf=resources.enter_context(reader(run,row,peer,item,other,mode,'a1'));group['lease_indexes'].append(len(item['leases'])-1)
                             if lf['active']['token']in(la['active']['token'],lb['active']['token'])or lf['active']['epoch']!=lb['active']['epoch']:raise CaptureError('fresh replacement token and unchanged epoch required')
-                        peers=[('a0',a,la),('b',b,lb)]if number<3 else[('b',b,lb)]if number<5 else[('a1',fresh,lf),('b',b,lb)]
+                        if pressure and number==17:
+                            drain=dict(start_wall_ns=time.time_ns(),recipients=[]);group['drain']=drain;run.save()
+                            a.stdin.write('drain\n');a.stdin.flush()
+                            drain['batch']=wait_stage(a,la['application'],'ssap_subscription_batch',1,time.monotonic()+6)
+                            if drain['batch']!=pressure_batch(group,la,item['handle']):raise CaptureError('slow queue ordered first16/overflow counters required')
+                            for filled in group['messages'][:16]:
+                                receive(filled,'a0',a,la,drain['recipients'],cached=True);run.save()
+                            drain['end_wall_ns']=time.time_ns();run.save()
+                        members=dict(a0=(a,la),b=(b,lb))
+                        if number>=fresh_at:members['a1']=(fresh,lf)
+                        peers=[(member,*members[member])for member in recipients(kind,number)]
                         sequence=(row['phase']<<24)|(sender<<20)|(mode<<16)|number;value=(sequence.to_bytes(4,'little')+secrets.token_bytes(28)).hex()
                         case=dict(number=number,value=value,start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns(),recipients=[]);group['messages'].append(case)
-                        case['replacement']=command_receipt(owner,item,'replace '+value,'SdkOwnedReplaced');case['before']=value_snapshot(owner,item,value,limit=48);run.save()
+                        case['replacement']=command_receipt(owner,item,'replace '+value,'SdkOwnedReplaced',limit=64 if pressure else 32);case['before']=value_snapshot(owner,item,value,limit=160 if pressure else 48);run.save()
                         for position,(member,process,lease)in enumerate(peers):
-                            reply=((sequence|0x80000000|((1 if member=='b'else 2 if member=='a1'else 0)<<12)).to_bytes(4,'little')+secrets.token_bytes(28)).hex()
-                            received=dict(member=member,reply=reply,start_wall_ns=time.time_ns());case['recipients'].append(received);counts[member]+=1;run.save()
-                            callback=(lambda:command_receipt(owner,item,'indicate'if mode==2 else'notify','SdkOwnedUpdate'))if position==0 else None
-                            result=checked_update_reply(process,lease['application'],owner,item,value,reply,counts[member],counts[member],limit=48,before_wait=callback,record=received,save=run.save)
-                            if 'send'in result:case['send']=result.pop('send')
-                            received.update(result,end_wall_ns=time.time_ns());run.save()
+                            callback=(lambda:command_receipt(owner,item,'indicate'if mode==2 else'notify','SdkOwnedUpdate',limit=64 if pressure else 32))if position==0 else None
+                            receive(case,member,process,lease,case['recipients'],callback=callback);run.save()
                         case.update(end_wall_ns=time.time_ns(),end_monotonic_ns=time.monotonic_ns());run.save()
                     release(run,fresh,lf,3);release(run,b,lb,1)
                 group['disabled']=configuration(owner,item,0);group['end_wall_ns']=time.time_ns();run.save()
@@ -120,17 +162,24 @@ def part_valid(value,phase,sender):
     from ws73_ssap_value import valid_wire
     try:
         api='c'if(phase+sender)%2==0 else'python'
-        kind=value.get('shared_case','release');version=value.get('shared_lifetime_contract_version')
-        if type(kind)is not str or kind not in ('release','expiry','owner-exit')or(kind=='release'and version is not None)or(kind!='release'and(type(version)is not int or version!=1)):return False
+        kind=value.get('shared_case','release');version=value.get('shared_lifetime_contract_version');pressure=value.get('shared_pressure_contract_version')
+        if (type(kind)is not str or kind not in ('release','expiry','owner-exit','pressure')
+            or kind in ('release','pressure')and version is not None
+            or kind in ('expiry','owner-exit')and(type(version)is not int or version!=1)
+            or kind=='pressure'and(type(pressure)is not int or pressure!=1)
+            or kind!='pressure'and pressure is not None):return False
         if kind=='release'and any(value.get(k)is not None for k in ('partial_expirations','expired_discarded','partial_owner_exits','unconsumed_published')):return False
         if kind=='expiry'and any(value.get(k)is not None for k in ('partial_owner_exits','unconsumed_published')):return False
         if kind=='owner-exit'and any(value.get(k)is not None for k in ('partial_expirations','expired_discarded')):return False
-        wanted=dict(sender=sender,target=1-sender,leases=6,updates=14,application_replies=24,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=2 if kind=='owner-exit'else 4,last_disables=2)
+        wanted=dict(sender=sender,target=1-sender,leases=6,updates=44 if kind=='pressure'else 14,application_replies=82 if kind=='pressure'else 24,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=2 if kind=='owner-exit'else 4,last_disables=2)
         if kind=='expiry':wanted.update(partial_expirations=2,expired_discarded=2)
         if kind=='owner-exit':wanted.update(partial_owner_exits=2,unconsumed_published=2)
+        if kind=='pressure':wanted.update(slow_notification_drops=1,slow_indication_refusals=1,healthy_losses=0,ordered_drains=2,resumed=2,healthy_replies=44)
+        if kind=='pressure'and any(value.get(k)is not None for k in ('partial_expirations','expired_discarded','partial_owner_exits','unconsumed_published')):return False
+        if kind!='pressure'and any(value.get(k)is not None for k in ('slow_notification_drops','slow_indication_refusals','healthy_losses','ordered_drains','resumed','healthy_replies')):return False
         return(all(type(value[k])is type(v)and value[k]==v for k,v in wanted.items())
             and value['publisher']==api and value['peer']==('python'if api=='c'else'c')
-            and len(value['wire'])==91 and all(valid_wire(v)for v in value['wire'])
+            and len(value['wire'])==(252 if kind=='pressure'else 91)and all(valid_wire(v)for v in value['wire'])
             and all(value.get(k)is None for k in ('renewal_contract_version','pressure_contract_version','owner_loss_contract_version','inflight_release_contract_version')))
     except (KeyError,TypeError,ValueError):return False
 
@@ -157,6 +206,7 @@ def native_security_epochs(row):
 
 def corroborate(row,matched):
     owners=row['owners'];proof=[];credit={0:0,1:0};unique=set();epochs=native_security_epochs(row);kind=shared_case(row)
+    pressure=kind=='pressure';total,withdraw,fresh_at=workload(kind)
     if len(row.get('ssap_subscription',[]))!=2:raise CaptureError('two original shared providers required')
     for sender,item in enumerate(row['ssap_subscription']):
         s,t=sender,1-sender;peer,server=owners[s],owners[t];api='c'if(row['phase']+s)%2==0 else'python';other='python'if api=='c'else'c';h=item['handle'];legs=[];snapshots=[];tokens=set();pidset=set();commands={'SdkOwnedReplaced':[],'SdkOwnedUpdate':[],'SdkOwnedConfiguration':[]}
@@ -173,13 +223,15 @@ def corroborate(row,matched):
         discovery_wire(item,peer,exchange)
         for mode,group in zip((1,2),item['groups'],strict=True):
             indexes=list(range((mode-1)*3,mode*3));leases=item['leases'][indexes[0]:indexes[-1]+1];by_member=dict(zip(('a0','b','a1'),leases,strict=True));expected={k:[]for k in by_member};counts={k:0 for k in by_member}
-            if type(group['mode'])is not int or group['mode']!=mode or group['lease_indexes']!=indexes or len(group['messages'])!=7:raise CaptureError('complete finite shared group matrix required')
+            if (type(group['mode'])is not int or group['mode']!=mode or group['lease_indexes']!=indexes or len(group['messages'])!=total
+                or pressure and 'drain'not in group or not pressure and 'drain'in group):raise CaptureError('complete finite shared group matrix required')
             for member,lease in by_member.items():
                 app=lease['application'];reader_api=api if member=='b'else other;role(app['credentials'],1004)
                 prefix=['/bin/ws73-application-client-c']if reader_api=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
                 duration=2000 if kind=='expiry'and member=='a0'else 30000
                 expected_exit=-9 if kind=='owner-exit'and member=='a0'else 0
                 if (lease['member']!=member or type(lease['mode'])is not int or lease['mode']!=mode or app['api']!=reader_api or app['environment']!=application_environment()
+                    or (type(app.get('ssap_shared_pressure_contract_version'))is not int or app['ssap_shared_pressure_contract_version']!=1 if pressure else app.get('ssap_shared_pressure_contract_version')is not None)
                     or app['args']!=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),peer['object']['path'],str(h),str(mode),str(duration)]
                     or type(app['exit'])is not int or app['exit']!=expected_exit or app['stderr']or type(app['pid'])is not int or app['pid']<=0 or app['pid']in pidset
                     or not group['start_wall_ns']<=lease['start_wall_ns']<=app['start_wall_ns']<=app['end_wall_ns']<=lease['end_wall_ns']<=group['end_wall_ns']<=item['end_wall_ns']):raise CaptureError('actual separate ordinary SDK reader process required')
@@ -192,13 +244,37 @@ def corroborate(row,matched):
                     or not active['started_ns']+duration*1_000_000<=active['expires_ns']<=active['deadline_ns']+duration*1_000_000):raise CaptureError('distinct original shared token/lease/deadline required')
                 tokens.add(active['token'])
             if len({v['active']['epoch']for v in leases})!=1:raise CaptureError('same original security epoch required')
-            withdrawn=by_member['a0']['released_wall_ns']if kind=='release'else by_member['a0']['withdrawn_wall_ns']
-            first_after=3 if kind=='release'else 4
-            if not(withdrawn<=group['messages'][first_after]['start_wall_ns']<=group['messages'][4]['end_wall_ns']<=by_member['a1']['application']['start_wall_ns']):raise CaptureError('partial withdrawal,continued sibling business then fresh replacement required')
+            withdrawn=by_member['a0']['released_wall_ns']if kind in ('release','pressure')else by_member['a0']['withdrawn_wall_ns']
+            first_after=withdraw
+            if not(withdrawn<=group['messages'][first_after]['start_wall_ns']<=group['messages'][fresh_at-1]['end_wall_ns']<=by_member['a1']['application']['start_wall_ns']):raise CaptureError('partial withdrawal,continued sibling business then fresh replacement required')
             if not(by_member['a0']['ready_wall_ns']<=by_member['b']['application']['start_wall_ns']<=by_member['b']['ready_wall_ns']<=group['messages'][0]['start_wall_ns']
-                and by_member['a1']['ready_wall_ns']<=group['messages'][5]['start_wall_ns']):raise CaptureError('both actual acquisitions before publication and fresh acquisition before replacement data required')
+                and by_member['a1']['ready_wall_ns']<=group['messages'][fresh_at]['start_wall_ns']):raise CaptureError('both actual acquisitions before publication and fresh acquisition before replacement data required')
+            def verify_reply(received,case,window,*,cached=False):
+                member=received['member'];lease=by_member[member];counts[member]+=1;reader_api=lease['application']['api'];reply=bytes.fromhex(received['reply'])
+                number=case['number'];sequence=(row['phase']<<24)|(s<<20)|(mode<<16)|number;prefix=sequence|0x80000000|((1 if member=='b'else 2 if member=='a1'else 0)<<12)
+                if len(reply)!=32 or reply in unique or reply[:4]!=prefix.to_bytes(4,'little'):raise CaptureError('independent recipient sequence/random business reply required')
+                unique.add(reply);n=number+1 if pressure and member=='a0'else counts[member]
+                pdu=bytes([16 if mode==2 else 15,3])+h.to_bytes(2,'little')+b'\x20\0'+bytes.fromhex(case['value'])
+                checked=dict(stage='ssap_subscription_checked_reply',api=reader_api,sequence=n,value=case['value'],reply=received['reply'])
+                if received['checked']!=checked or received['after']['value']!=received['reply']:raise CaptureError('actual independent application comparison/writeback required')
+                expected[member].append(checked)
+                if cached:
+                    if member!='a0'or type(received['number'])is not int or received['number']!=number or 'batch'in received:raise CaptureError('actual ordered cached check,not a second read required')
+                else:
+                    batch=dict(stage='ssap_subscription_batch',api=reader_api,last=n,dropped=int(pressure and member=='a0'and mode==1),refused=int(pressure and member=='a0'and mode==2),state=1,flags=0,reason=0,discarded=0,packets=[dict(sequence=n,epoch=lease['active']['epoch'],level=2,indication=mode==2,pdu=pdu.hex())])
+                    if received['batch']!=batch:raise CaptureError('actual independent receive batch/loss counters required')
+                    expected[member].append(batch)
+                snapshots.append((str(h),received['reply']))
+                request=exchange(s,t,b'\x0d\x23'+h.to_bytes(2,'little')+b'\0'+reply,received);response=exchange(t,s,b'\x0e\x03'+h.to_bytes(2,'little')+b'\0'+reply,received)
+                if not(window['start_wall_ns']<=received['start_wall_ns']<=request['tx']['wall_ns']<=response['rx']['wall_ns']<=received['end_wall_ns']<=window['end_wall_ns']):raise CaptureError('original per-recipient writeback window required')
             for number,case in enumerate(group['messages']):
-                wanted=['a0','b']if number<3 else['b']if number<5 else['a1','b'];sequence=(row['phase']<<24)|(s<<20)|(mode<<16)|number;value=bytes.fromhex(case['value'])
+                if pressure and number==17:
+                    drain=group['drain'];slow=by_member['a0']
+                    if (drain['batch']!=pressure_batch(group,slow,h)or len(drain['recipients'])!=16
+                        or not group['messages'][16]['end_wall_ns']<=drain['start_wall_ns']<=drain['end_wall_ns']<=case['start_wall_ns']):raise CaptureError('actual bounded full slow queue then ordered drain before resume required')
+                    expected['a0'].append(drain['batch'])
+                    for filled,received in zip(group['messages'][:16],drain['recipients'],strict=True):verify_reply(received,filled,drain,cached=True)
+                wanted=recipients(kind,number);sequence=(row['phase']<<24)|(s<<20)|(mode<<16)|number;value=bytes.fromhex(case['value'])
                 if type(case['number'])is not int or case['number']!=number or [r['member']for r in case['recipients']]!=wanted or len(value)!=32 or value in unique or value[:4]!=sequence.to_bytes(4,'little'):raise CaptureError('finite original random update and recipient order required')
                 unique.add(value);pdu=bytes([16 if mode==2 else 15,3])+h.to_bytes(2,'little')+b'\x20\0'+value
                 sent=sdk_receipt(case['send'],api,h,{'stage','pdu','ack'});replacement=sdk_receipt(case['replacement'],api,h,{'value'})
@@ -206,20 +282,11 @@ def corroborate(row,matched):
                 commands['SdkOwnedReplaced'].append(case['replacement']['receipt']);commands['SdkOwnedUpdate'].append(case['send']['receipt']);snapshots.append((str(h),case['value']))
                 data=exchange(t,s,pdu,case)
                 if mode==2:exchange(s,t,b'\x11\x03\x01',case['send'])
-                for received in case['recipients']:
-                    member=received['member'];lease=by_member[member];counts[member]+=1;reader_api=lease['application']['api'];reply=bytes.fromhex(received['reply']);prefix=sequence|0x80000000|((1 if member=='b'else 2 if member=='a1'else 0)<<12)
-                    if len(reply)!=32 or reply in unique or reply[:4]!=prefix.to_bytes(4,'little'):raise CaptureError('independent recipient sequence/random business reply required')
-                    unique.add(reply);n=counts[member]
-                    checked=dict(stage='ssap_subscription_checked_reply',api=reader_api,sequence=n,value=case['value'],reply=received['reply'])
-                    batch=dict(stage='ssap_subscription_batch',api=reader_api,last=n,dropped=0,refused=0,state=1,flags=0,reason=0,discarded=0,packets=[dict(sequence=n,epoch=lease['active']['epoch'],level=2,indication=mode==2,pdu=pdu.hex())])
-                    if received['checked']!=checked or received['batch']!=batch or received['after']['value']!=received['reply']:raise CaptureError('actual independent application comparison/batch/writeback required')
-                    expected[member].extend((checked,batch));snapshots.append((str(h),received['reply']))
-                    request=exchange(s,t,b'\x0d\x23'+h.to_bytes(2,'little')+b'\0'+reply,received);response=exchange(t,s,b'\x0e\x03'+h.to_bytes(2,'little')+b'\0'+reply,received)
-                    if not(case['start_wall_ns']<=received['start_wall_ns']<=request['tx']['wall_ns']<=response['rx']['wall_ns']<=received['end_wall_ns']<=case['end_wall_ns']):raise CaptureError('original per-recipient writeback window required')
+                for received in case['recipients']:verify_reply(received,case,case)
                 if not(group['start_wall_ns']<=case['start_wall_ns']<=case['send']['start_wall_ns']<=case['send']['end_wall_ns']<=case['end_wall_ns']<=group['end_wall_ns']):raise CaptureError('original shared update window required')
             for member,lease in by_member.items():
                 reader_api=lease['application']['api']
-                if member=='a0'and kind!='release':
+                if member=='a0'and kind not in ('release','pressure'):
                     if any(k in lease for k in ('release','release_started','release_request_ns','release_request_wall_ns','released_wall_ns')):raise CaptureError('manual release cannot substitute shared lifetime withdrawal')
                     case=group['messages'][3]
                     if kind=='expiry':
@@ -267,8 +334,9 @@ def corroborate(row,matched):
         for decision,value in zip(decisions,wanted,strict=True):
             authorization_context({k:v for k,v in decision.items()if k not in {'allow','decision_ns','decision_wall_ns'}},api,level=2,data_type=2)
             if (decision['index'],decision['generation'],decision['lifetime'],decision['handle'],decision['property'])!=(server['owner']['index'],server['owner']['generation'],server['object']['lifetime'],server['object']['handle'],h) or decision['value']!=value or decision['allow']is not True or decision['epoch']!=epochs[t]or decision['decision_ns']>=decision['deadline_ns']or not item['start_wall_ns']<=decision['decision_wall_ns']<=item['end_wall_ns']:raise CaptureError('actual bound shared configuration approval required')
-        part=dict(sender=s,target=t,publisher=api,peer=other,leases=6,updates=14,application_replies=24,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=2 if kind=='owner-exit'else 4,last_disables=2,wire=legs)
-        if kind!='release':part.update(shared_case=kind,shared_lifetime_contract_version=1,**({'partial_expirations':2,'expired_discarded':2}if kind=='expiry'else{'partial_owner_exits':2,'unconsumed_published':2}))
+        part=dict(sender=s,target=t,publisher=api,peer=other,leases=6,updates=44 if pressure else 14,application_replies=82 if pressure else 24,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=2 if kind=='owner-exit'else 4,last_disables=2,wire=legs)
+        if pressure:part.update(shared_case=kind,shared_pressure_contract_version=1,slow_notification_drops=1,slow_indication_refusals=1,healthy_losses=0,ordered_drains=2,resumed=2,healthy_replies=44)
+        elif kind!='release':part.update(shared_case=kind,shared_lifetime_contract_version=1,**({'partial_expirations':2,'expired_discarded':2}if kind=='expiry'else{'partial_owner_exits':2,'unconsumed_published':2}))
         if not part_valid(part,row['phase'],s):raise CaptureError('exact complete shared paired-wire matrix required')
         proof.append(part)
     return proof,credit

@@ -439,6 +439,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                 case "$token" in
                     ws73.subscription_shared_case=expiry) connection_arg="$connection_arg --ssap-subscription-shared-case expiry" ;;
                     ws73.subscription_shared_case=owner-exit) connection_arg="$connection_arg --ssap-subscription-shared-case owner-exit" ;;
+                    ws73.subscription_shared_case=pressure) connection_arg="$connection_arg --ssap-subscription-shared-case pressure" ;;
                     ws73.subscription_shared_case=*) echo 'invalid shared lifetime boot selector'; poweroff -f ;;
                 esac
             done

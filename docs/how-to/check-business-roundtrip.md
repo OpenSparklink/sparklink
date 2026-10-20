@@ -48,6 +48,27 @@ manifest。记录内核、编译服务、测试工具的完整提交；三者可
 [理解证据边界](../explanation/qualification-boundaries.md)、
 [VM 输入准备](../reference/vm-gate-inputs.md)、[历史数据面规划](../../history/connections/data-socket-vertical-plan-20261012.md)。
 
+## 核对共享 SSAP 慢消费者隔离
+
+先在 manifest、boot 参数和两阶段原请求中确认显式 shared `pressure` 场景及
+pressure contract 1。不能把单订阅者队列压力或旧的共享释放记录换标签。
+
+1. 检查两个独立 C／Python 读取进程的 UID1004、不同 token、各自 Native 安全
+   epoch，以及 UID1005 服务拥有者；同一端点必须保持原 controller／generation／lifetime。
+2. 核对每组前17次发布时，健康端 B 每次都有实际校验和不同载荷回写。慢端 A
+   的 drain 应只含前16包、last=17，以及一次通知丢弃或本地指示拒绝；不得为溢出包
+   补造 A 的应用交付。逐条 cached 校验／回写也须有对端值观察及两端 USB。
+3. 检查第18次发布双端恢复，A 的序号为18且累计丢失没有归零。随后 A 的释放
+   不能停用 B；新 A 必须得到新 token，只有最后 B 释放才产生线上 CPCD disable。
+4. 使用该提交原有 `ws73_ssap_subscription.corroborate`、
+   `verify_supervisor_artifacts` 和 `ws73_ssap_shared.configuration_wire` 重算，
+   再运行该提交 runner 的保存报告终判。整个矩阵应有八组、176次发布、328次实际
+   SSAP 校验回写；普通短通道回复单独计数。缺包、捕获丢失、退出失败或身份不符均失败。
+
+指示 ACK1 只表明至少一个有效队列接受。A 已满而 B 接收时，线上 ACK1 与 A 的
+本地拒绝计数可以同时存在，不能把它写成所有应用已经处理。此核对不授完整公平性、
+控制器 credit 耗尽、撤权、引用排空、性能或自然恢复资格。
+
 
 ## 核对begun PDU最后fd关闭的隔离证据
 

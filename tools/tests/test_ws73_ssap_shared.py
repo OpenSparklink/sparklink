@@ -28,6 +28,61 @@ def wire_fixture(extra=None):
 
 
 class SharedGate(unittest.TestCase):
+    def test_slow_reader_workload_preserves_old_unread_lifetime_step(self):
+        for kind in ('release','expiry','owner-exit'):
+            self.assertEqual([shared.recipients(kind,n)for n in range(7)],[['a0','b']]*3+[['b']]*2+[['a1','b']]*2)
+        self.assertEqual(shared.workload('pressure'),(22,18,20))
+        members=[shared.recipients('pressure',n)for n in range(22)]
+        self.assertEqual(members,[['b']]*17+[['a0','b']]+[['b']]*2+[['a1','b']]*2)
+        # 25 live checks plus16 cached checks;the overflow is never delivered.
+        self.assertEqual(sum(map(len,members))+16,41)
+        for number in (-1,22,True):
+            with self.assertRaises(CaptureError):shared.recipients('pressure',number)
+
+    def test_shared_pressure_selector_is_distinct_from_single_and_lifetime(self):
+        args=SimpleNamespace(ssap_subscription_verify=True,ssap_subscription_shared_verify=True,channel_socket_verify=True,security_agent='numeric-approve',ssap_subscription_shared_case='pressure')
+        self.assertTrue(base.requested(args,passthrough=True))
+        row=dict(ssap_subscription_shared_required=True,ssap_subscription_shared_contract_version=1,ssap_subscription_shared_case='pressure',ssap_subscription_shared_pressure_contract_version=1)
+        self.assertEqual(base.shared_case(row),'pressure')
+        self.assertEqual(base.boot_shared_case(['ws73.subscription_shared_case=pressure'],True),'pressure')
+        for update in [dict(ssap_subscription_shared_pressure_contract_version=None),dict(ssap_subscription_shared_pressure_contract_version=True),dict(ssap_subscription_shared_lifetime_contract_version=1),dict(ssap_subscription_shared_required=False),dict(ssap_subscription_shared_case='release')]:
+            with self.subTest(update=update),self.assertRaises(CaptureError):base.shared_case(row|update)
+        with self.assertRaises(CaptureError):base.boot_shared_case(['ws73.subscription_shared_case=pressure'],False)
+        with self.assertRaises(CaptureError):base.boot_shared_case(['ws73.subscription_shared_case=pressure']*2,True)
+
+    def test_slow_queue_oracle_keeps_first16_hole_and_per_owner_counters(self):
+        lease=dict(active=dict(epoch=13),application=dict(api='c'))
+        group=dict(mode=2,messages=[dict(number=n,value=n.to_bytes(4,'little').hex()+'ab'*28)for n in range(17)])
+        batch=shared.pressure_batch(group,lease,19)
+        self.assertEqual((batch['last'],batch['dropped'],batch['refused']),(17,0,1))
+        self.assertEqual([p['sequence']for p in batch['packets']],list(range(1,17)))
+        self.assertEqual(bytes.fromhex(batch['packets'][-1]['pdu']),b'\x10\x03\x13\0\x20\0'+(15).to_bytes(4,'little')+b'\xab'*28)
+        self.assertTrue(all(p['epoch']==13 and p['level']==2 and p['indication']is True for p in batch['packets']))
+        notify=shared.pressure_batch(group|dict(mode=1),lease,19)
+        self.assertEqual((notify['last'],notify['dropped'],notify['refused']),(17,1,0))
+
+    def test_explicit_pressure_transcript_budget_does_not_widen_old_profiles(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            path=Path(tmp)/'reader.stdout';path.write_text('{}\n'*47)
+            app=dict(output_files=[str(path)])
+            with self.assertRaises(CaptureError):base.app_rows(None,app)
+            self.assertEqual(len(base.app_rows(None,app|dict(ssap_shared_pressure_contract_version=1))),47)
+            with self.assertRaises(CaptureError):base.app_rows(None,app|dict(ssap_shared_pressure_contract_version=True))
+            path.write_text('{}\n'*65)
+            with self.assertRaises(CaptureError):base.app_rows(None,app|dict(ssap_shared_pressure_contract_version=1))
+
+    def test_shared_pressure_summary_never_upgrades_other_cases(self):
+        # Synthetic summary/packet-shape fixture only;no successful Native stub.
+        leg=dict(tx=dict(data='0a00010001'),rx=dict(data='0a00010001'))
+        part=dict(sender=0,target=1,publisher='c',peer='python',leases=6,updates=44,application_replies=82,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=4,last_disables=2,wire=[copy.deepcopy(leg)for _ in range(252)],shared_case='pressure',shared_pressure_contract_version=1,slow_notification_drops=1,slow_indication_refusals=1,healthy_losses=0,ordered_drains=2,resumed=2,healthy_replies=44)
+        self.assertTrue(shared.part_valid(part,0,0))
+        for update in [dict(updates=14),dict(application_replies=24),dict(healthy_losses=1),dict(slow_indication_refusals=0),dict(shared_pressure_contract_version=True),dict(shared_lifetime_contract_version=1),dict(partial_expirations=2),dict(wire=part['wire'][:-1]),dict(shared_case='release')]:
+            with self.subTest(update=update):self.assertFalse(shared.part_valid(part|update,0,0))
+        proof=dict(status='ACTUAL_ROOT_SUBSCRIPTION_PHASES_AND_OUTPUTS_CHECKED',version=1,phases=2,reader_UID=1004,provider_UID=1005,readers=24,providers=4,updates=176,daemon=dict(pid=1,start_ticks=1),supervisor=dict(pid=2,start_ticks=2),shared_contract_version=1,shared_groups=8,shared_joins=16,checked_replies=328,retained_releases=16,last_disables=8,shared_case='pressure',shared_pressure_contract_version=1,slow_notification_drops=4,slow_indication_refusals=4,healthy_losses=0,ordered_drains=8,resumed=8,healthy_replies=176)
+        self.assertTrue(base.valid_shared_supervision(proof,case='pressure'));self.assertFalse(base.valid_shared_supervision(proof))
+        for update in [dict(updates=56),dict(checked_replies=96),dict(healthy_losses=1),dict(healthy_replies=175),dict(shared_pressure_contract_version=None),dict(shared_pressure_contract_version=True),dict(shared_lifetime_contract_version=1),dict(pressure_contract_version=1),dict(shared_case='release')]:
+            with self.subTest(update=update):self.assertFalse(base.valid_shared_supervision(proof|update,case='pressure'))
+
     def test_actual_native_receipts_keep_endpoint_epochs_independent(self):
         # Fixture exercises the production receipt parser;no Native ioctl stub.
         owners=[dict(owner=dict(index=n,generation=n+1),object=dict(lifetime=9,handle=0))for n in(0,1)]

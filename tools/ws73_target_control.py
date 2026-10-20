@@ -194,7 +194,7 @@ def main():
     parser.add_argument('--ssap-owned-update-verify',action='store_true')
     parser.add_argument('--ssap-subscription-verify',action='store_true')
     parser.add_argument('--ssap-subscription-shared-verify',action='store_true',help='two actual SDK subscribers,partial retained release and last physical cleanup;dedicated gate')
-    parser.add_argument('--ssap-subscription-shared-case',choices=('release','expiry','owner-exit'),default='release',help='separate original-expiry or actual known-reader exit;not kernel Grant revocation')
+    parser.add_argument('--ssap-subscription-shared-case',choices=('release','expiry','owner-exit','pressure'),default='release',help='separate release,original expiry,reader exit or bounded slow-reader isolation;not kernel Grant revocation')
     parser.add_argument('--ssap-subscription-renewal-verify',action='store_true')
     parser.add_argument('--ssap-subscription-pressure-verify',action='store_true')
     parser.add_argument('--ssap-subscription-owner-loss-verify',action='store_true')

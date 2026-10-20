@@ -61,17 +61,18 @@ impl Client {
         if !(29..=2042).contains(&bytes) || !(1..=20).contains(&rounds) {
             anyhow::bail!("dynamic exercise requires1..20 rounds and29..2042 bytes");
         }
-        let connection = self
-            .application()
-            .await?
-            .connection(&self.selected, path)
+        let fd = self
+            .open_application_channel(
+                path,
+                Some(crate::channel::DynamicRoute {
+                    source_port: route.0,
+                    destination_port: route.1,
+                    aid: route.2,
+                    passive: responder,
+                }),
+                bytes,
+            )
             .await?;
-        let mtu = u16::try_from(bytes.max(249))?;
-        let request = (route.0, route.1, route.2, mtu, mtu + 5, 1u8, responder);
-        let fd = connection
-            .prepare_dynamic_channel(request)
-            .await?
-            .into_owned_fd();
         // An explicit test/coordinated-service hold keeps the final VFS
         // reference alive until both applications have validated their data.
         let retained = if hold {
@@ -110,15 +111,24 @@ impl Client {
     pub(crate) async fn open_application_channel(
         &self,
         path: &str,
+        route: Option<crate::channel::DynamicRoute>,
+        bytes: usize,
     ) -> anyhow::Result<std::os::fd::OwnedFd> {
-        Ok(self
+        let request = route.map(|r| r.request(bytes)).transpose()?;
+        anyhow::ensure!(
+            request.is_none() || self.security == 0,
+            "dynamic protected modes are not supported"
+        );
+        let connection = self
             .application()
             .await?
             .connection(&self.selected, path)
-            .await?
-            .open_channel(3, self.security)
-            .await?
-            .into_owned_fd())
+            .await?;
+        Ok(match request {
+            Some(request) => connection.prepare_dynamic_channel(request).await?,
+            None => connection.open_channel(3, self.security).await?,
+        }
+        .into_owned_fd())
     }
     pub(crate) async fn cmd_channel(
         &self,
@@ -128,7 +138,7 @@ impl Client {
         bytes: usize,
         mode: crate::channel::Mode,
     ) -> anyhow::Result<()> {
-        let fd = self.open_application_channel(path).await?;
+        let fd = self.open_application_channel(path, None, bytes).await?;
         let connection = self
             .application()
             .await?

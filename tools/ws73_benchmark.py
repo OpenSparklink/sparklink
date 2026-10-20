@@ -87,6 +87,36 @@ def resource_check(value):
         require(name in value and value[name] is None, 'unmeasured kernel resource '+name)
 
 
+def channel_requests(reports, configs):
+    """Requested routing only; actual negotiated ports still need CMTC capture.
+
+    Legacy basic CUTC reports have no request tag. Never infer dynamic routing
+    from TCIDs or let a missing/one-sided tag downgrade a dynamic report.
+    """
+    present = ['channel_request' in report for report in reports]
+    require(present in ([False, False], [True, True]), 'paired channel request tags')
+    if not any(present):
+        return None
+    requests = [report['channel_request'] for report in reports]
+    fields = {'version','kind','source_port','destination_port','aid','mtu','mps','slqi','passive'}
+    for request, config in zip(requests, configs):
+        require(type(request) is dict and set(request) == fields, 'exact channel request')
+        require(type(request['version']) is int and request['version'] == 1
+                and request['kind'] == 'dynamic_basic', 'supported channel request kind/version')
+        require(all(integer(request[k],1,65535) for k in ('source_port','destination_port','aid')),
+                'nonzero dynamic routing fields')
+        mtu = max(249, config['bytes'])
+        require(type(request['mtu']) is int and request['mtu'] == mtu
+                and type(request['mps']) is int and request['mps'] == mtu+5
+                and type(request['slqi']) is int and request['slqi'] == 1
+                and type(request['passive']) is bool, 'original dynamic request budgets/role')
+    a,b = requests
+    require(a['source_port'] == b['destination_port'] and a['destination_port'] == b['source_port']
+            and a['aid'] == b['aid'] and a['passive'] != b['passive'],
+            'complementary dynamic routing/negotiation roles')
+    return requests
+
+
 def load_application_reports(left, right, *, fixture=False):
     """Recompute successful schema2 application closure; not artifact/capture closure.
 
@@ -110,6 +140,7 @@ def load_application_reports(left, right, *, fixture=False):
     require(all(a[k] == b[k] for k in ('count','bytes','window')), 'matching offered workload')
     modes = (a['mode'], b['mode'])
     require(modes in (('rate','peer'),('window','peer'),('peer','rate'),('peer','window'),('duplex','duplex')), 'complementary endpoint roles')
+    requests = channel_requests(reports, configs)
     endpoints=[]
     for report, c in zip(reports, configs):
         require(type(report.get('schema_version')) is int and report['schema_version'] == 2, 'schema version')
@@ -140,8 +171,16 @@ def load_application_reports(left, right, *, fixture=False):
         require(type(identity) is dict and set(identity) == {'controller','generation','lifetime','handle','local_tcid','remote_tcid','pi','mtu','mps','mode','directions'}, 'exact identity')
         for k,lo,hi in [('controller',0,65535),('generation',1,(1<<64)-1),('lifetime',1,(1<<64)-1),('handle',0,4095),('mtu',size,2042),('mps',size+5,2047)]:
             require(integer(identity.get(k),lo,hi), 'identity/capability '+k)
-        require(all(type(identity[k]) is int and identity[k] == v for k,v in [('local_tcid',31),('remote_tcid',31),('pi',241),('mode',0),('directions',3)])
-                and identity['mtu']+5 <= identity['mps'], 'basic CUTC capability')
+        require(all(type(identity[k]) is int and identity[k] == v for k,v in [('pi',241),('mode',0),('directions',3)])
+                and identity['mtu']+5 <= identity['mps'], 'basic data capability')
+        if requests is None:
+            require(all(type(identity[k]) is int and identity[k] == 31 for k in ('local_tcid','remote_tcid')),
+                    'untagged report requires basic CUTC')
+        else:
+            request = requests[len(endpoints)]
+            require(all(integer(identity[k],0x80,0xdf) for k in ('local_tcid','remote_tcid'))
+                    and identity['mtu'] <= request['mtu'] and identity['mps'] <= request['mps'],
+                    'actual dynamic TCIDs/capabilities within requested budgets')
         rows=[];latencies=[]
         for lane,expected in [('outgoing',0 if mode=='peer' else count),('incoming',count if mode in ('peer','duplex') else 0)]:
             values=report.get(lane)
@@ -201,15 +240,23 @@ def load_application_reports(left, right, *, fixture=False):
     require(endpoints[0]['identity']['controller'] != endpoints[1]['identity']['controller'], 'distinct simultaneous controllers')
     for index,e in enumerate(endpoints):
         other=endpoints[1-index]
+        if requests is not None:
+            require(e['identity']['local_tcid'] == other['identity']['remote_tcid']
+                    and e['identity']['remote_tcid'] == other['identity']['local_tcid'],
+                    'cross-end negotiated TCID ownership')
         require(e['outgoing'] == other['incoming'], 'actual peer validated/replied every offered message in order')
     if modes == ('duplex','duplex'):
         require(not set(endpoints[0]['outgoing']) & set(endpoints[1]['outgoing']), 'independent duplex source payloads')
-    return dict(status='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED',performance_qualified=False,
+    result = dict(status='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED',performance_qualified=False,
                 modes=list(modes),messages=[len(e['outgoing']) for e in endpoints],
                 source_rtt=[e['rtt'] for e in endpoints],fixture=fixture,
                 remaining=['actual credential/Grant/owner topology','compiled source/artifact/tool/config/firmware closure',
                            'independent two-end USB/HCC capture coverage/drop checks and supervisor evidence',
                            'stable baseline/resources/trace overhead and performance qualification'])
+    if requests is not None:
+        result['channel_requests'] = requests
+        result['remaining'].append('wire CMTC routing/capability negotiation for requested ports/AID')
+    return result
 
 
 def verify_vm_build(vm, build):

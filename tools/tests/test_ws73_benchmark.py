@@ -40,6 +40,50 @@ def fixture(mode='rate', count=3):
 
 
 class Schema2Reports(unittest.TestCase):
+    def dynamic_pair(self, mode='window'):
+        pair = fixture(mode)
+        for i,report in enumerate(pair):
+            report['channel_request'] = dict(version=1,kind='dynamic_basic',source_port=24576+i,
+                destination_port=24577-i,aid=29441,mtu=249,mps=254,slqi=1,passive=bool(i))
+            report['channel_identity'].update(local_tcid=0x81+i,remote_tcid=0x82-i,mtu=249,mps=254)
+        return pair
+
+    def test_dynamic_requests_are_separate_from_actual_cross_end_tcids(self):
+        for mode in ['rate','window','duplex']:
+            pair = self.dynamic_pair(mode)
+            for reports in [pair,pair[::-1]]:
+                out = gate.load_application_reports(*reports)
+                self.assertEqual(out['channel_requests'],[r['channel_request'] for r in reports])
+                self.assertIn('wire CMTC routing',out['remaining'][-1])
+                self.assertIs(out['performance_qualified'],False)
+
+    def test_dynamic_metadata_cannot_downgrade_or_grant_actual_negotiation(self):
+        changes = {
+            'missing-left-tag':lambda a,b:a.pop('channel_request'),
+            'missing-both-tags':lambda a,b:(a.pop('channel_request'),b.pop('channel_request')),
+            'unknown-kind':lambda a,b:a['channel_request'].update(kind='reliable'),
+            'boolean-version':lambda a,b:a['channel_request'].update(version=True),
+            'zero-port':lambda a,b:a['channel_request'].update(source_port=0),
+            'port-is-tcid':lambda a,b:a['channel_request'].update(destination_port=0x82),
+            'aid-mismatch':lambda a,b:b['channel_request'].update(aid=29442),
+            'same-negotiation-role':lambda a,b:b['channel_request'].update(passive=False),
+            'numeric-role':lambda a,b:b['channel_request'].update(passive=1),
+            'changed-budget':lambda a,b:a['channel_request'].update(mps=255),
+            'changed-slqi':lambda a,b:a['channel_request'].update(slqi=0),
+            'extra-field':lambda a,b:a['channel_request'].update(ready=True),
+            'fixed-under-dynamic':lambda a,b:a['channel_identity'].update(local_tcid=31),
+            'outside-tcid':lambda a,b:b['channel_identity'].update(remote_tcid=0xe0),
+            'cross-tcid-mismatch':lambda a,b:b['channel_identity'].update(remote_tcid=0x84),
+            'budget-escalation':lambda a,b:a['channel_identity'].update(mtu=250,mps=255),
+        }
+        for name,change in changes.items():
+            a,b = self.dynamic_pair(); change(a,b)
+            with self.subTest(name=name),self.assertRaises(CaptureError):
+                gate.load_application_reports(a,b)
+        a,b = fixture()
+        a['channel_request'] = None; b['channel_request'] = None
+        with self.assertRaises(CaptureError): gate.load_application_reports(a,b)
+
     def test_complementary_roles_and_direction_swap(self):
         for mode in ['rate','window','duplex']:
             for pair in [fixture(mode),fixture(mode)[::-1]]:

@@ -69,7 +69,7 @@ SDK111 结果转授新固件或混合型号。记录
 | slktest channel peer --load | CONNECTION --count N --bytes B --window W --report FILE | schema2，应答rate/window |
 
 
-count 1..10000，bytes 29..2042 且匹配实际基本 CUTC MTU/MPS。window 1..min(count,256)，
+count 1..10000，bytes 29..2042 且匹配实际通道 MTU/MPS。window 1..min(count,256)，
 interval 10..1000000 µs，总计划不超过600秒；其它模式 interval 为0。schema2 等待
 原30秒 `start\n` 屏障，消息原10秒期限，1秒尾部观察，测量循环上限612秒。
 循环结束输出Quiescent，双方到达后监督器各发 `finish\n`，结束等待另有原30秒预算；
@@ -104,13 +104,42 @@ schema1 双端核对含迟到拒绝；schema2 已有独立应用报告核对（�
 实现；`slctl` 不再接受旧测试命令，负责管理、连接、授权和日常交互。--adapter
 必须给出当前完整对象路径，与 CONNECTION 的 generation/lifetime 一起核对。
 `ping/peer --check` 保留原正确性门禁和 stdout receipts；测量不加 --check 且须 --report。
---exercise boundaries/prefix-close/burst 保留原约束；动态只在 --check 下提供完整的
---source-port/--destination-port/--aid，--hold 仍等显式close，不承诺动态 benchmark。
+--exercise boundaries/prefix-close/burst 保留原约束；动态 --check 提供完整的
+--source-port/--destination-port/--aid，--hold 仍等显式close。
 动态正确性可选 `--start-barrier`：真实协商和能力/授权核对后输出
 `NativeDynamicArmed: count=N bytes=B`，复用已有输入解析器等待精确 `start\n`，
 原期限30秒，部分输入不续期、EOF撤回；等待期间不开始业务循环。该应用启动等待
 不延长内核协商、队列或已准入PDU的原期限，不授予credit/Ready。固定CUTC和测量
 入口拒绝此参数；默认行为不变，随机载荷与收发仍用同一正确性实现。
+
+### 动态 basic 负载：实现入口与未验收边界
+
+`rate`、`window`、`duplex` 与 `peer --load` 可同时指定三个非零 u16 路由参数
+`--source-port`、`--destination-port`、`--aid`，并必须显式给出
+`--channel-role active|passive`。两端源／目的端口互换、AID 相同，协商角色一主动
+一被动；业务发起／应答、duplex 方向和物理连接角色与这个协商角色独立。
+未指定路由仍使用基本 CUTC；缺字段、零值、单独角色、动态 schema1 ping 或
+protected 动态测量都明确拒绝。旧 `--check` 继续从 ping／peer 推导协商角色，
+拒绝该新增角色参数，原 stdout 契约不变。
+
+复用现有应用 SDK `PrepareDynamicChannel` 和同一负载循环。请求 MTU 为
+`max(bytes,249)`、MPS 为 MTU+5、SLQI 为1；这些是请求预算，不是已生效能力。
+实际 fd 必须报告 basic／双向、PI241、两个动态 TCID（0x80..0xdf）、当前身份和
+足够的 MTU/MPS，且不能超过请求预算。端口／AID 不是 TCID、身份或认证。
+
+动态 schema2 新增可选 `channel_request`，仅记录原请求：version1、
+kind=`dynamic_basic`、source_port、destination_port、aid、mtu、mps、slqi、passive。
+`channel_identity` 仍取实际 fd。核对器要求两份请求同时出现、路由互补及实际
+local／remote TCID 交叉一致；不能删除 tag 将动态结果降为普通 CUTC。基本 CUTC
+报告不增加该字段，历史报告身份不变。业务记录、计时、失败记账和 schema 版本不变。
+
+创建 fd 后、等待协商 Ready 前输出 `SocketBenchmarkStaged`。监督器需要先启动
+被动端并收到该标记，再启动主动端；双端仍须实际 Armed 后统一 start、Quiescent
+后统一 finish。Staged 只表示完成本地 fd 准备，不授予 Ready、credit 或对端存在。
+尚无新入口的真实设备资格；当前 Native benchmark runner 仍只准入原基本 CUTC。
+下一门禁需接通现有监督器、捕获 CMTC 请求／回复验证实际端口和能力，再核对
+动态 TCID 上的双端 USB 与应用回复。本地 AF_UNIX 报告只能检验循环／序列化和
+拒绝行为，不能替代这项实机门禁或完整多通道公平性／性能资格。
 
 代码迁移不改 schema1/2、wire、socket/Grant/credit/Ticket 或原期限。历史证据中的
 slctl 命令和 artifact/hash 保持不动，由原提交工具复核；当前 verifier 的旧 argv 分支

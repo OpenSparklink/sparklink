@@ -85,7 +85,8 @@ def configure():
     row = dict(status='RUNNING_NOT_QUALIFIED', cookie=secrets.token_hex(16),
                boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
                kernel_release=os.uname().release, kernel_version=os.uname().version,
-               clock='mono', requested_buffer_kb=BUFFER_KIB, anchors=[], created=False)
+               clock='mono', requested_buffer_kb=BUFFER_KIB, anchors=[], created=False,
+               queue_retirement_contract_version=2)
     save(row)
     try:
         if not (ROOT / 'available_tracers').is_file():
@@ -184,6 +185,9 @@ def parse_aborted(text, row):
 
 
 def _parse(text, row, expected_status):
+    version = row.get('queue_retirement_contract_version', 1)
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError('explicit supported queue retirement observation contract required')
     if (len(text) > LIMIT or row['status'] != expected_status or row['clock'] != 'mono'
             or not re.fullmatch('[0-9a-f]{32}', row['cookie'])
             or re.findall(r'^# tracer: (.*)$', text, re.M) != ['nop']
@@ -237,7 +241,9 @@ def _parse(text, row, expected_status):
             raise ValueError('exact typed trace schema required')
         v = {k: int(value) for k, value in pairs}
         if (not 0 <= v['ctl'] <= 65535 or not 0 < v['gen'] < 2**64
-                or not 0 < v['life'] < 2**64 or v['stage'] not in (0, 1, 2)):
+                or not 0 < v['life'] < 2**64
+                or v['stage'] not in (0, 1, 2, 3)
+                or v['stage'] == 3 and (version != 2 or m[3] != 'sparklink_session_queue')):
             raise ValueError('invalid trace identity/stage')
         if any(value < 0 or value >= 2**64 for k, value in v.items()
                if k not in ('slot', 'result', 'error')):
@@ -386,18 +392,19 @@ def _associate(parsed, owners, capture):
         steps = data_steps[key]
         if stages[1]['attempts'] != len(steps) or stages[1]['bytes'] != sum(v['len'] for v in steps):
             raise ValueError('service attempted packet/byte accounting mismatch')
-    complete = partial = 0
+    complete = partial = discarded = 0
     unclosed = []
     for key, stages in queues.items():
-        if set(stages) not in ({0}, {0, 1}, {0, 1, 2}):
+        if set(stages) not in ({0}, {0, 1}, {0, 1, 2}, {0, 3}, {0, 1, 3}):
             raise ValueError('unaccounted software admission/dequeue/operation retirement')
-        a, dequeues, c = stages[0], stages.get(1, []), stages.get(2)
+        a, dequeues, c = stages[0], stages.get(1, []), stages.get(2, stages.get(3))
         b = dequeues[0] if dequeues else None
         snapshots = [a, *dequeues, *([c] if c else [])]
         if (any(len({v[field] for v in snapshots}) != 1 for field in ['epoch','bytes','deadline'])
                 or a['epoch'] != epochs.get(key[:3])
                 or b and a['mono_ns'] > b['mono_ns']+q
-                or c and b['mono_ns'] > c['mono_ns']+q):
+                or c and a['mono_ns'] > c['mono_ns']+q
+                or c and b and b['mono_ns'] > c['mono_ns']+q):
             raise ValueError('operation identity/original deadline changed')
         op_attempts = [steps for kt, steps in attempts.items()
                        if kt[:3] == key[:3] and kt[4:6] == (key[4], key[3])]
@@ -413,6 +420,12 @@ def _associate(parsed, owners, capture):
         end = c['mono_ns'] if c else parsed['interval_ns'][1]
         if op_attempts and (b is None or any(not b['mono_ns']-q <= steps[0]['mono_ns'] <= end+q for steps in op_attempts)):
             raise ValueError('attempt outside dequeued operation lifetime')
+        if 3 in stages:
+            if (len(op_attempts) != len(dequeues)
+                    or any(v[0]['offset'] != 0 or v[1]['result'] != -11
+                           or 2 in v and v[2]['result'] == 0 for v in op_attempts)):
+                raise ValueError('queued discard must have no accepted prefix and only definite unstarted EAGAIN')
+            discarded += 1
         successful = [steps[1] for kt, steps in attempts.items()
                       if kt[:3] == key[:3] and kt[4:6] == (key[4], key[3]) and steps[1]['result'] == 0]
         successful.sort(key=lambda v:v['offset'])
@@ -484,6 +497,8 @@ def _associate(parsed, owners, capture):
                 uncertain_acceptances=sum(2 in v and v[2]['result']==0 and v[1]['result']!=0 for v in attempts.values()),
                 scope=('Default-off Session observations include dynamic CMTC envelopes in the exact accepted USB/trace join on recorded identities;not CMTC negotiation success,credit truth,callback drain,peer delivery,RF,performance or concurrency proof' if dynamic_control else
                        'Default-off C4 Session observations plus original USB submits;no credit truth,callback drain,peer delivery,RF,performance or concurrency proof;dynamic CMTC consent excluded'))
+    if discarded:
+        proof['queued_discarded_operations'] = discarded
     return proof, unclosed
 
 
@@ -581,7 +596,7 @@ def _operation_timings(parsed, owners, capture, proof):
     rows = []
     for key, stages in sorted(queues.items()):
         admitted = next(v for v in stages if v['stage'] == 0)
-        retired = next((v for v in stages if v['stage'] == 2), None)
+        retired = next((v for v in stages if v['stage'] in (2, 3)), None)
         dequeues = sorted((v['mono_ns'] for v in stages if v['stage'] == 1))
         tries = sorted(attempts[key].values(), key=lambda s: s[0]['mono_ns'])
         accepted = [s for s in tries if 2 in s and s[2]['result'] == 0]
@@ -624,6 +639,8 @@ def _operation_timings(parsed, owners, capture, proof):
         if accepted:
             row['admission_to_first_acceptance'] = interval(admitted['mono_ns'], accepted[0][2]['mono_ns'])
             row['accepted_fragment_span'] = interval(accepted[0][2]['mono_ns'], accepted[-1][2]['mono_ns'])
+        if retired and retired['stage'] == 3:
+            row['retirement_kind'] = 'queued_discard_no_physical_prefix'
         rows.append(row)
     control_waits = sum(v['event'] == 'tx' and v['slot'] == -1 and v['stage'] == 1
                         and v['result'] == -11 and v['wait'] == 1 for v in parsed['rows'])

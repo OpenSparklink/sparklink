@@ -344,3 +344,9 @@ python3 tools/ws73_session_service.py analyze-failed-benchmark "$RUN" --failed-p
 这可能来自追踪结束或没有事件的队列清除，不能据此宣称泄漏、Free 或物理 drain。
 结果固定为 `FAILED_GATE_TRANSPORT_TIMINGS_NOT_QUALIFIED`，不赋予业务、性能或
 完整生命周期资格。成功入口继续要求全部操作闭合，原整轮 FAIL 和缺失门禁保持。
+
+
+若捕获声明queue退休契约版本2，分析还会核对显式的排队清除stage3：未曾出队的
+工作可直接从入队到本地清除，已出队重排的工作须有确定未提交的EAGAIN。观察到的
+清除标记为 `retirement_kind=queued_discard_no_physical_prefix`；没有该原始事件的
+旧捕获仍保留null。两者均不能说明controller credit或物理引用已经排空。

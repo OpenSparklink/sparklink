@@ -48,6 +48,86 @@ def fixture():
 
 
 class ServiceTrace(unittest.TestCase):
+    def test_queue_discard_stage_requires_explicit_v2_and_queue_event(self):
+        text, row, owners, capture = fixture()
+        changed = text.replace('deadline=5042 stage=2', 'deadline=5042 stage=3')
+        parsed = parse(changed, row | dict(queue_retirement_contract_version=2))
+        with self.assertRaisesRegex(ValueError, 'no accepted prefix'):
+            join(parsed, owners, capture)
+        for value in (1, True, 2.0, 3):
+            with self.subTest(version=value), self.assertRaises(ValueError):
+                parse(changed, row | dict(queue_retirement_contract_version=value))
+        with self.assertRaises(ValueError):
+            parse(changed, row)
+        for name in ('sparklink_session_work', 'sparklink_session_tx'):
+            bad = text.splitlines()
+            line = next(n for n, v in enumerate(bad) if name+':' in v and 'stage=1' in v)
+            bad[line] = bad[line].replace('stage=1', 'stage=3')
+            with self.subTest(event=name), self.assertRaises(ValueError):
+                parse('\n'.join(bad), row | dict(queue_retirement_contract_version=2))
+
+    def test_never_dequeued_discard_has_a_terminal_without_USB_or_credit(self):
+        text, row, owners, capture = fixture()
+        parsed = parse(text, row)
+        parsed['rows'] = [v for v in parsed['rows'] if not
+                          (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 1)]
+        for v in parsed['rows']:
+            if v['ctl'] != 0:
+                continue
+            if v['event'] == 'queue' and v['stage'] == 2:
+                v['stage'] = 3
+            elif v['event'] == 'tx':
+                v.update(slot=-1, sequence=99)  # Unrelated control submission.
+            elif v['event'] == 'work' and v['stage'] == 1:
+                v.update(attempts=0, bytes=0)
+        proof = join(parsed, owners, capture)
+        self.assertEqual(proof['queued_discarded_operations'], 1)
+        op = operation_timings(parsed, owners, capture)['operations'][0]
+        self.assertEqual(op['retirement_kind'], 'queued_discard_no_physical_prefix')
+        self.assertEqual(op['retirement_ns'], BASE+150_000)
+        self.assertEqual(op['accepted_usb_records'], [])
+        self.assertIsNone(op['admission_to_first_acceptance'])
+        for kind in ('duplicate', 'changed-deadline', 'missing-admission'):
+            bad = copy.deepcopy(parsed)
+            terminal = next(v for v in bad['rows'] if v['event'] == 'queue' and v['stage'] == 3)
+            if kind == 'duplicate':
+                bad['rows'].append(copy.deepcopy(terminal))
+            elif kind == 'changed-deadline':
+                terminal['deadline'] += 1
+            else:
+                bad['rows'] = [v for v in bad['rows'] if not (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 0)]
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                join(bad, owners, capture)
+
+    def test_requeued_discard_requires_definite_unstarted_refusal(self):
+        text, row, owners, capture = fixture()
+        parsed = parse(text, row)
+        original = [copy.deepcopy(v) for v in parsed['rows'] if v['ctl'] == 0 and v['event'] == 'tx']
+        parsed['rows'] = [v for v in parsed['rows'] if not (v['ctl'] == 0 and v['event'] == 'tx' and v['stage'] == 2)]
+        for v in parsed['rows']:
+            if v['ctl'] == 0 and v['event'] == 'tx' and v['stage'] == 1:
+                v.update(result=-11, wait=1)
+            elif v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 2:
+                v.update(stage=3, mono_ns=BASE+155_000)
+        for v in original:
+            v.update(slot=-1, sequence=99, mono_ns=BASE+{0:145_000, 2:146_000, 1:148_000}[v['stage']])
+            parsed['rows'].append(v)
+        capture['acb_packets'][0]['wall_ns'] = WALL+BASE+145_500
+        self.assertEqual(join(parsed, owners, capture)['queued_discarded_operations'], 1)
+        for result in (0, -5, -125):
+            bad = copy.deepcopy(parsed)
+            next(v for v in bad['rows'] if v['event'] == 'tx' and v['ctl'] == 0 and v['slot'] == 0 and v['stage'] == 1)['result'] = result
+            with self.subTest(result=result), self.assertRaises(ValueError):
+                join(bad, owners, capture)
+
+    def test_failure_trace_seals_after_owned_process_cleanup_attempt(self):
+        source = (Path(__file__).resolve().parents[1]/'ws73_target_init.sh').read_text()
+        failure = source[source.index('fail() {'):source.index('mkdir -p /evidence/device-failure')]
+        abort = failure.index('ws73_session_service.py abort')
+        self.assertGreater(abort, failure.index('wait "$application_role_supervisor"'))
+        self.assertGreater(abort, failure.index('kill -TERM "$daemon"'))
+        self.assertLess(abort, failure.index('kill -INT "$capture"'))
+
     def test_aborted_and_completed_entries_are_mutually_exclusive(self):
         text, row, owners, capture = fixture()
         with self.assertRaises(ValueError):

@@ -11,9 +11,6 @@ export PYTHONHOME=/usr
 export LIBSLK_NATIVE_PATH=/usr/lib/libslk_native.so.0
 fail() {
     echo "WS73_TARGET_FAILURE: $*"
-    if [ -f /evidence/session-service/run.json ]; then
-        /bin/python3 /usr/share/sparklink/tools/ws73_session_service.py abort > /evidence/session-service-abort.log 2>&1 || true
-    fi
     if [ -n "${application_role_supervisor:-}" ]; then
         kill -TERM "$application_role_supervisor" 2>/dev/null
         wait "$application_role_supervisor"
@@ -29,6 +26,12 @@ fail() {
     if [ -n "${daemon:-}" ]; then
         kill -TERM "$daemon" 2>/dev/null
         for n in $(seq 1 100); do kill -0 "$daemon" 2>/dev/null || break; sleep 0.1; done
+    fi
+    # Retain queue retirement during our bounded process cleanup attempt.
+    # This remains ABORTED even if a process failed to stop; no drain or Free
+    # is inferred from the wait or from successfully sealing the trace.
+    if [ -f /evidence/session-service/run.json ]; then
+        /bin/python3 /usr/share/sparklink/tools/ws73_session_service.py abort > /evidence/session-service-abort.log 2>&1 || true
     fi
     if [ -n "${capture:-}" ]; then
         kill -INT "$capture" 2>/dev/null

@@ -1677,10 +1677,10 @@ async fn exchange_loop(
                         let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native subscription context required")?;
                         let token=next_subscription;
                         next_subscription=next_subscription.checked_add(1).ok_or("subscription namespace exhausted")?;
-                        let expires=Instant::now()+Duration::from_millis(u64::from(duration_ms));
+                        let (expires,expires_ns)=crate::ssap_subscription::lease_expiration(Instant::now(),duration_ms)?;
                         let info=slk_contract::ssap::subscription::Info{version:1,controller:capabilities.controller,
                             generation:capabilities.generation,lifetime:capabilities.lifetime,handle:capabilities.handle,
-                            security_epoch:context.security_epoch,token,expires_ns:monotonic_deadline(expires).map_err(|e|e.to_string())?,
+                            security_epoch:context.security_epoch,token,expires_ns,
                             handles:handles.clone(),modes,state:slk_contract::ssap::subscription::STARTING,
                             capacity:slk_contract::ssap::subscription::CAPACITY as u16};
                         Ok((info,expires))

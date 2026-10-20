@@ -80,6 +80,18 @@ pub(crate) struct Queue {
     reason: u8,
 }
 pub(crate) type SharedQueue = Arc<Mutex<Queue>>;
+
+/// Lease expiry is an observation,not a five-second Native TX authorization.
+/// Creation,read,renewal and cleanup retain their separate original deadlines.
+pub(crate) fn lease_expiration(now: Instant, duration_ms: u32) -> Result<(Instant, u64), String> {
+    if !(250..=60000).contains(&duration_ms) {
+        return Err("subscription lease250..60000ms".into());
+    }
+    let expires = now + std::time::Duration::from_millis(u64::from(duration_ms));
+    let stamp = slk_channel::deadline::monotonic_timestamp_at(expires.into_std())
+        .map_err(|e| e.to_string())?;
+    Ok((expires, stamp))
+}
 impl Queue {
     pub fn new(info: wire::Info, expires: Instant) -> SharedQueue {
         Arc::new(Mutex::new(Self {
@@ -123,9 +135,7 @@ impl Queue {
         {
             return Err("subscription not active/expired/invalid renewal".into());
         }
-        let expires = now + std::time::Duration::from_millis(u64::from(duration_ms));
-        let expires_ns =
-            slk_channel::security::deadline_at(expires.into_std()).map_err(|e| e.to_string())?;
+        let (expires, expires_ns) = lease_expiration(now, duration_ms)?;
         self.expires = expires;
         self.info.expires_ns = expires_ns;
         Ok(self.info.clone())
@@ -290,6 +300,51 @@ mod tests {
             alive,
             receipt,
         )
+    }
+
+    #[test]
+    fn long_lease_renewal_does_not_use_the_five_second_tx_budget() {
+        for duration in [250, 1000, 30000, 60000] {
+            let now = Instant::now();
+            let (sink, _alive, _) = queue(now);
+            let mut q = sink.queue.lock().unwrap();
+            q.active();
+            let info = q.renew(duration, now).unwrap();
+            assert_eq!(q.expires, now + Duration::from_millis(u64::from(duration)));
+            assert!(info.expires_ns > 0);
+        }
+    }
+
+    #[test]
+    fn acquisition_and_renewal_share_bounded_expiration_without_widening_tx() {
+        for duration in [250, 1000, 30000, 60000] {
+            let now = Instant::now();
+            let (expires, stamp) = lease_expiration(now, duration).unwrap();
+            assert_eq!(expires, now + Duration::from_millis(u64::from(duration)));
+            assert!(stamp > 0);
+            if duration > 5000 {
+                assert_eq!(
+                    slk_channel::security::deadline_at(expires.into_std())
+                        .unwrap_err()
+                        .raw_os_error(),
+                    Some(nix::libc::EINVAL)
+                );
+            }
+        }
+        for duration in [0, 249, 60001, u32::MAX] {
+            assert!(lease_expiration(Instant::now(), duration).is_err());
+        }
+        let now = Instant::now();
+        let (sink, _alive, _) = queue(now);
+        let mut q = sink.queue.lock().unwrap();
+        q.active();
+        let original = q.info.clone();
+        for duration in [0, 249, 60001, u32::MAX] {
+            assert!(q.renew(duration, now).is_err());
+            assert_eq!(q.info, original);
+        }
+        q.close(wire::RELEASED).unwrap();
+        assert!(q.renew(30000, now).is_err());
     }
 
     #[test]

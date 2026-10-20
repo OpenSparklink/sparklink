@@ -88,7 +88,7 @@ class OriginalIntentLifecycle(unittest.TestCase):
         live=SleSendConstraint.from_buffer_copy(bytes(c));live.deadline_monotonic_ns=100_000_100
         fresh=SleSendConstraint.from_buffer_copy(bytes(c));fresh.deadline_monotonic_ns=5_100_000_200
         info=SleChannelInfo(version=1,size=40,controller=c.controller,handle=c.handle,
-            generation=c.generation,lifetime=c.lifetime,mtu=2047,mps=254,local_tcid=31,remote_tcid=31,pi=241,directions=3)
+            generation=c.generation,lifetime=c.lifetime,mtu=2042,mps=2047,local_tcid=31,remote_tcid=31,pi=241,directions=3)
         r['expired_live_intent']=dict(stage='expired_live_intent',errno=errno.ETIMEDOUT,
             pid=r['workers'][0]['pid'],fd=r['workers'][0]['fd'],marker=(b'INTENTEX'+b'x'*32).hex(),
             info_before=bytes(info).hex(),info_after=bytes(info).hex(),constraint=bytes(live).hex(),fresh_constraint=bytes(fresh).hex(),
@@ -106,7 +106,7 @@ class OriginalIntentLifecycle(unittest.TestCase):
         from ws73_channel_grant import business_evidence
         r,o=self.phase2();p=verify_intents(r,o)
         self.assertEqual((p['intent_phase_contract_version'],p['expired_intent_refusals'],p['retired_binding_refusals']),(2,1,2))
-        for kind in ['missing','version','early','renewed','success','wrong-live-errno','wrong-retired-errno','identity','changed-info','fresh-epoch','late-probe','boot','worker','bad-marker','USB']:
+        for kind in ['missing','version','early','renewed','success','wrong-live-errno','wrong-retired-errno','identity','changed-info','mps-below-header','oversized-mtu','oversized-mps','fresh-epoch','late-probe','boot','worker','bad-marker','USB']:
             rr,oo=copy.deepcopy((r,o));v=rr['expired_live_intent']
             if kind=='missing':rr.pop('expired_live_intent')
             elif kind=='version':rr['intent_phase_contract_version']=True
@@ -118,6 +118,12 @@ class OriginalIntentLifecycle(unittest.TestCase):
             elif kind=='identity':
                 c=SleSendConstraint.from_buffer_copy(bytes.fromhex(v['constraint']));c.lifetime+=1;v['constraint']=bytes(c).hex()
             elif kind=='changed-info':v['info_after']='00'*40
+            elif kind in ['mps-below-header','oversized-mtu','oversized-mps']:
+                info=SleChannelInfo.from_buffer_copy(bytes.fromhex(v['info_before']))
+                if kind=='mps-below-header':info.mps=info.mtu+4
+                elif kind=='oversized-mtu':info.mtu=2043
+                else:info.mps=2048
+                v['info_before']=v['info_after']=bytes(info).hex()
             elif kind=='fresh-epoch':
                 c=SleSendConstraint.from_buffer_copy(bytes.fromhex(v['fresh_constraint']));c.security_epoch+=1;v['fresh_constraint']=bytes(c).hex()
             elif kind=='late-probe':v['fresh_after_monotonic_ns']=1_000_000_000

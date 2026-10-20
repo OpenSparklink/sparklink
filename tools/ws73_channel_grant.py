@@ -595,7 +595,8 @@ def verify_expired_live_intent(row,outer):
     if c.security_epoch!=fresh.security_epoch:raise ValueError('unchanged security epoch required across expired live intent')
     info=decode(SleChannelInfo,value['info_before']);marker=bytes.fromhex(value['marker'])
     if (value['info_before']!=value['info_after']or (info.version,info.size,info.reserved)!=(1,40,0)
-            or scope(info)!=expected or info.directions!=3 or info.mode!=0 or not 0<info.mps<=info.mtu
+            or scope(info)!=expected or info.directions!=3 or info.mode!=0
+            or not 40<=info.mtu<=2042 or not info.mtu+5<=info.mps<=2047
             or len(marker)!=40 or marker[:8]!=b'INTENTEX'):
         raise ValueError('same actual live channel before/after expired intent required')
     if row.get('queue_boot_id',value['boot_id'])!=value['boot_id']:raise ValueError('one original guest boot required')

@@ -111,6 +111,7 @@ def prepare_locked(args, build_fd):
     manifest['ssap_subscription_contract_version'] = 1
     manifest['ssap_subscription_renewal_contract_version'] = 1
     manifest['ssap_subscription_pressure_contract_version'] = 1
+    manifest['ssap_subscription_snapshot_contract_version'] = 1
     try:
         module_profile = native_vm.enabled(args)
         config_required(args.kernel_build / '.config', module_profile)
@@ -314,7 +315,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -998,6 +999,8 @@ def _run(args):
         if subscription:
             if type(package.get('ssap_subscription_contract_version'))is not int or package['ssap_subscription_contract_version']!=1 or 'native_vm'not in package:raise ValueError('subscription requires newly prepared native contract1')
             m['ssap_subscription_contract_version']=1
+            if type(package.get('ssap_subscription_snapshot_contract_version'))is not int or package['ssap_subscription_snapshot_contract_version']!=1:raise ValueError('subscription requires new closed local phase snapshots')
+            m['ssap_subscription_snapshot_contract_version']=1
             if subscription_renewal:
                 if type(package.get('ssap_subscription_renewal_contract_version'))is not int or package['ssap_subscription_renewal_contract_version']!=1:raise ValueError('renewal requires explicit new prepared renewal contract1')
                 m['ssap_subscription_renewal_contract_version']=1
@@ -1118,6 +1121,7 @@ def _run(args):
                      (' ws73.ssap_subscription=1' if subscription else '')+
                      (' ws73.ssap_subscription_renewal=1' if subscription_renewal else '')+
                      (' ws73.ssap_subscription_pressure=1' if subscription_pressure else '')+
+                     (' ws73.subscription_snapshot=1' if subscription else '')+
                      (' ws73.ssap_receive_lifecycle=1' if receive_lifecycle else '')+
                      (' ws73.ssap_value_lengths=1' if value_lengths else '')+
                      (' ws73.application_clients=1' if application_clients else '')+
@@ -1634,6 +1638,8 @@ def _run(args):
                     if subscription:
                         from ws73_ssap_subscription import valid_summary as valid_subscription
                         if not valid_subscription(m['channel_socket_corroboration']):raise ValueError('complete continuous subscription proof required')
+                        from ws73_ssap_subscription import valid_snapshot_supervision
+                        if not valid_snapshot_supervision(m['ssap_subscription_supervision']):raise ValueError('complete closed local snapshot proof required')
                         if subscription_renewal:
                             from ws73_ssap_subscription import valid_renewal_summary,valid_renewal_supervision
                             if not valid_renewal_summary(m['channel_socket_corroboration'])or not valid_renewal_supervision(m['ssap_subscription_supervision']):raise ValueError('actual renewal and post-original-expiry closure required')
@@ -2098,6 +2104,13 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or not subscription_supervision(record.get('ssap_subscription_supervision',{}))):return 1
     elif record.get('ssap_subscription_acceptance')or record.get('ssap_subscription_supervision')or any(p.get('ssap_subscription')for p in record.get('channel_socket_corroboration',{}).get('proofs',[])):return 1
     renewal=record.get('ssap_subscription_renewal_requested',False)
+    snapshot=record.get('ssap_subscription_snapshot_contract_version')
+    snapshot_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.subscription_snapshot=1']
+    if snapshot is not None:
+        from ws73_ssap_subscription import valid_snapshot_supervision
+        if(type(snapshot)is not int or snapshot!=1 or not subscription or snapshot_boot!=['ws73.subscription_snapshot=1']
+                or not valid_snapshot_supervision(record.get('ssap_subscription_supervision',{}))):return 1
+    elif snapshot_boot or record.get('ssap_subscription_supervision',{}).get('snapshot_contract_version')is not None:return 1
     if type(renewal)is not bool or renewal and not subscription:return 1
     renewal_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_renewal=1']
     if renewal_boot!=(['ws73.ssap_subscription_renewal=1']if renewal else[]):return 1

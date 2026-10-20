@@ -406,6 +406,9 @@ def verify_passthrough():
     pressure_requested='ws73.ssap_subscription_pressure=1'in Path('/proc/cmdline').read_text().split()
     from ws73_ssap_subscription import pressure_required
     if pressure_requested and not subscription_requested or any(pressure_required(row)!=pressure_requested for row in run.get('channel_socket',[])):raise ValueError('pressure boot/request/evidence mismatch')
+    from ws73_role_snapshot import TOKEN,requested as snapshot_requested
+    snapshot_boot=Path('/proc/cmdline').read_text().split().count(TOKEN)
+    if snapshot_boot>1 or snapshot_boot and not subscription_requested or any(snapshot_requested(row)!=bool(snapshot_boot)for row in run.get('channel_socket',[])):raise ValueError('snapshot boot/request/evidence mismatch')
     delivery_requested='ws73.ssap_update_delivery=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_update_delivery_required',False))!=delivery_requested for row in run.get('channel_socket',[])) or (delivery_requested and not run.get('channel_socket')):raise ValueError('update delivery request/evidence mismatch')
     lifecycle_requested='ws73.ssap_owner_lifecycle=1' in Path('/proc/cmdline').read_text().split()

@@ -309,6 +309,22 @@ class SubscriptionGate(unittest.TestCase):
             row['ssap_subscription']=gate.corroborate(pressure_fixture(phase),matched)[0]
         pressure['ssap_subscription_supervision'].update(pressure_contract_version=1,updates=144,checked_replies=136,notification_drops=4,indication_refusals=4,resumed=8)
         self.assertEqual(run_exit_code(pressure),0)
+        snapshot=copy.deepcopy(pressure)
+        snapshot['ssap_subscription_snapshot_contract_version']=1
+        snapshot['qemu_args'][0]+=' ws73.subscription_snapshot=1'
+        snapshot['ssap_subscription_supervision'].update(snapshot_contract_version=1,snapshot_phases=2,snapshot_files=30,snapshot_bytes=2048)
+        self.assertEqual(run_exit_code(snapshot),0)
+        for kind in ('version','boot','missing-version','missing-proof','single-phase','truncated-files','excess-bytes','abnormal-exit'):
+            bad=copy.deepcopy(snapshot)
+            if kind=='version':bad['ssap_subscription_snapshot_contract_version']=True
+            elif kind=='boot':bad['qemu_args']=pressure['qemu_args']
+            elif kind=='missing-version':bad.pop('ssap_subscription_snapshot_contract_version')
+            elif kind=='missing-proof':bad['ssap_subscription_supervision']=pressure['ssap_subscription_supervision']
+            elif kind=='single-phase':bad['ssap_subscription_supervision']['snapshot_phases']=1
+            elif kind=='truncated-files':bad['ssap_subscription_supervision']['snapshot_files']=0
+            elif kind=='excess-bytes':bad['ssap_subscription_supervision']['snapshot_bytes']=2**63
+            else:bad['supervisor_exit']=23
+            with self.subTest(kind=kind):self.assertEqual(run_exit_code(bad),1)
         for change in [dict(ssap_subscription_pressure_requested=False),dict(ssap_subscription_pressure_contract_version=True),
                 dict(ssap_subscription_pressure_acceptance=False),dict(qemu_args=['ws73.ssap_subscription=1']),
                 dict(ssap_subscription_supervision=record['ssap_subscription_supervision']),

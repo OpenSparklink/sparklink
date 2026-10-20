@@ -168,6 +168,24 @@ def require_vm(token='ws73.application_clients=1'):
 
 
 def supervise(daemon_pid,*,mode='values'):
+    """New subscription artifacts keep all hot files off the9p export."""
+    from ws73_role_snapshot import TOKEN,local_root
+    if mode=='subscription'and TOKEN in Path('/proc/cmdline').read_text().split():
+        require_vm('ws73.ssap_subscription=1')
+        def interrupted(*_):raise InterruptedError('role supervisor stopped')
+        signal.signal(signal.SIGTERM,interrupted)
+        with local_root()as local:
+            finished=_supervise(daemon_pid,mode=mode,snapshot_root=local)
+        # A failed export/unmount or abnormal exit must not leave a completed
+        # root marker. The parent init also requires this process's actual exit.
+        from ws73_ssap_subscription import ROOT as root
+        (root/'finished.json').write_text(json.dumps(finished)+'\n')
+        (root/'finished.json').chmod(0o644)
+        return
+    return _supervise(daemon_pid,mode=mode)
+
+
+def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
     if mode not in ('values','subscription'):raise CaptureError('fixed role supervision mode required')
     subscription=mode=='subscription'
     require_vm('ws73.ssap_subscription=1'if subscription else'ws73.application_clients=1')
@@ -189,7 +207,10 @@ def supervise(daemon_pid,*,mode='values'):
             if time.monotonic()>=end:raise CaptureError('finite role request deadline')
             time.sleep(.01)
         (subscription_request if subscription else validate_request)(row,phase)
-        folder=root/f'phase-{phase}';folder.mkdir(mode=0o755)
+        if subscription:
+            from ws73_role_snapshot import requested as snapshot_requested
+            if snapshot_requested(row)!=(snapshot_root is not None):raise CaptureError('snapshot boot/request mismatch')
+        folder=(snapshot_root or root)/f'phase-{phase}';folder.mkdir(mode=0o755)
         row.update(channel_role='sparklink-apps-only',application_role_contract_version=2,role_supervisor=supervisor)
         def save():
             target=folder/'progress.json';temporary=folder/'progress.tmp'
@@ -197,7 +218,7 @@ def supervise(daemon_pid,*,mode='values'):
         context=SimpleNamespace(output=folder,save=save)
         try:
             from ws73_ssap_subscription import tool_records
-            expected_tools=tool_records()if subscription else{key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
+            expected_tools=tool_records(snapshot=snapshot_root is not None)if subscription else{key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
             if row['tools']!=expected_tools:
                 raise CaptureError('exact actual SDK artifacts required')
             probe=dict(args=['/bin/bus-policy-probe',row['owners'][0]['object']['path'],'application-channel'],start_wall_ns=time.time_ns())
@@ -228,9 +249,17 @@ def supervise(daemon_pid,*,mode='values'):
         except BaseException as error:
             row.update(pair_status='FAIL',error=str(error),error_traceback=traceback.format_exc());raise
         finally:
+            if snapshot_root:
+                from ws73_role_snapshot import remap_outputs,publish
+                remap_outputs(row,folder,root/f'phase-{phase}')
             save();(folder/'progress.json').replace(folder/'run.json')
+            if snapshot_root:publish(folder,root/f'phase-{phase}',phase=phase,success='error'not in row)
     finished=root/'finished.json'
-    finished.write_text(json.dumps(dict(status='TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'if subscription else'TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor))+'\n');finished.chmod(0o644)
+    value=dict(status='TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'if subscription else'TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor)
+    if snapshot_root:
+        value['snapshot_contract_version']=1
+        return value
+    finished.write_text(json.dumps(value)+'\n');finished.chmod(0o644)
 
 
 if __name__=='__main__':

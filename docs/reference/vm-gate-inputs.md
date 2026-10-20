@@ -486,6 +486,18 @@ Root collector同时等待Rust、C、Python的实际初始输出屏障，三者�
 它复用唯一 Session、现有订阅 SDK／Engine、原 C／Python 消费者及 VM role
 监督器；选项存在及离线 fixture 通过均不授实机资格。
 
+新 prepared 还必须声明 `ssap_subscription_snapshot_contract_version=1`，对应实际
+boot token `ws73.subscription_snapshot=1`。监督器在32 MiB guest本地tmpfs中写入
+热日志及进度；阶段内固定子进程结束、文件关闭后，只将结构化输出路径迁到
+证据位置，原始进程字节不改写。每阶段最多64个文件／16 MiB、单文件4 MiB，
+核对完整清单及hash后原子发布目录。根完成标记在本地存储成功卸载后才产生。
+共享9p出口不再承载这条门禁的实时追加读取；不吞掉I/O错误或自动重试。
+
+阶段 `snapshot.json`、实际生产工具hash、两阶段完成标记及真实监督器exit均
+是必要条件；缺失、篡改、超限、异常退出或仅留下staging目录不能通过。
+旧记录缺少该声明时仍绑定原身份，新执行不能用旧prepared或旧证明代替。
+这里的封存契约不宣称断电持久化、全系统文件引用证明或自然硬件恢复。
+
 固定矩阵是两个发送方向、交换连接角色、通知和指示各一个30秒租约，
 每租约连续3条随机32字节更新，共24条。读取者 UID/GID1004、服务拥有者
 UID/GID1005 均无附加组或 capability；发现观察仍由管理测试角色执行。

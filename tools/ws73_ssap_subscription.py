@@ -71,13 +71,16 @@ def pressure_required(row):
     return value
 
 
-def tool_records(root=Path('/')):
+def tool_records(root=Path('/'),*,snapshot=False):
+    from ws73_role_snapshot import HELPER,SUPERVISOR
+    names=(*TOOLS,HELPER,SUPERVISOR)if snapshot else TOOLS
     return {name:dict(sha256=hashlib.sha256((root/name.lstrip('/')).read_bytes()).hexdigest(),
-                     bytes=(root/name.lstrip('/')).stat().st_size)for name in TOOLS}
+                     bytes=(root/name.lstrip('/')).stat().st_size)for name in names}
 
 
 def validate_tools(records,root,manifest):
-    if records!=tool_records(root):raise CaptureError('subscription tools differ from sealed root')
+    from ws73_role_snapshot import HELPER
+    if records!=tool_records(root,snapshot=HELPER in records):raise CaptureError('subscription tools differ from sealed root')
     for name,receipt in records.items():
         actual=(root/name.lstrip('/')).resolve(strict=True)
         matches=[p for p in manifest if Path(p['path']).resolve()==actual]
@@ -88,9 +91,11 @@ def validate_tools(records,root,manifest):
 def validate_request(row,phase):
     renewal=renewal_required(row)
     pressure=pressure_required(row)
+    from ws73_role_snapshot import requested as snapshot_required
     fields={'phase','owners','tools','security_requirement','message_security_required','status','start_wall_ns'}
     if renewal:fields|={'ssap_subscription_renewal_required','ssap_subscription_renewal_contract_version'}
     if pressure:fields|={'ssap_subscription_pressure_required','ssap_subscription_pressure_contract_version'}
+    if snapshot_required(row):fields.add('ssap_subscription_snapshot_contract_version')
     if (set(row)!=fields
             or row['status']!='RUNNING' or type(phase)is not int or phase not in (0,1)
             or type(row['phase'])is not int or row['phase']!=phase
@@ -108,12 +113,15 @@ def validate_request(row,phase):
 
 def request(run,row):
     phase=row['phase']
-    value=dict(phase=phase,owners=row['owners'],tools=tool_records(),security_requirement=row['security_requirement'],
+    from ws73_role_snapshot import TOKEN
+    snapshot=Path('/proc/cmdline').read_text().split().count(TOKEN)==1
+    value=dict(phase=phase,owners=row['owners'],tools=tool_records(snapshot=snapshot),security_requirement=row['security_requirement'],
                message_security_required=row['message_security_required'],status='RUNNING',start_wall_ns=time.time_ns())
     if getattr(run.args,'ssap_subscription_renewal_verify',False):
         value.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
     if getattr(run.args,'ssap_subscription_pressure_verify',False):
         value.update(ssap_subscription_pressure_required=True,ssap_subscription_pressure_contract_version=1)
+    if snapshot:value['ssap_subscription_snapshot_contract_version']=1
     validate_request(value,phase)
     path=run.output/f'subscription-role-{phase}.request.json';temporary=path.with_suffix('.tmp')
     with temporary.open('x')as stream:json.dump(value,stream)
@@ -134,6 +142,7 @@ def request(run,row):
                ssap_subscription_tools=value['tools'],ssap_subscription_request=value)
     if renewal_required(value):row.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
     if pressure_required(value):row.update(ssap_subscription_pressure_required=True,ssap_subscription_pressure_contract_version=1)
+    if snapshot:row['ssap_subscription_snapshot_contract_version']=1
     run.save()
 
 
@@ -262,6 +271,13 @@ def verify_supervisor_artifacts(control,evidence):
     if (finished['status']!='TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'
             or finished['daemon']!=control['daemon_before']or control['daemon_before']!=control['daemon_after']
             or len(control['channel_socket'])!=2):raise CaptureError('two actual root subscription phases and unchanged daemon required')
+    from ws73_role_snapshot import requested as snapshot_required,verify as verify_snapshot,HELPER
+    snapshots=[snapshot_required(row)for row in control['channel_socket']]
+    if any(snapshots)and not all(snapshots):raise CaptureError('two matching snapshot phases required')
+    if all(snapshots):
+        if type(finished.get('snapshot_contract_version'))is not int or finished['snapshot_contract_version']!=1:raise CaptureError('completed snapshot supervisor required')
+    elif finished.get('snapshot_contract_version')is not None:raise CaptureError('unrequested snapshot receipt')
+    exported=[]
     for phase,row in enumerate(control['channel_socket']):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
         verify_probe(original)
@@ -271,6 +287,9 @@ def verify_supervisor_artifacts(control,evidence):
             if row[key]!=original[key]:raise CaptureError('root subscription record differs from control')
         if (original['ssap_subscription_status']!=STATUS or original['ssap_subscription_contract_version']!=1
                 or original['role_supervisor']!=finished['supervisor']):raise CaptureError('completed original root subscription phase required')
+        if snapshot_required(row):
+            if snapshot_required(original)is not True or HELPER not in row['ssap_subscription_tools']:raise CaptureError('actual snapshot helper identity required')
+            exported.append(verify_snapshot(root/f'phase-{phase}',phase=phase,expected_helper=row['ssap_subscription_tools'][HELPER]['sha256']))
         apps=[original['role_probe']]
         for item in original['ssap_subscription']:
             apps.append(item);apps.extend(l['application']for l in item['leases'])
@@ -291,7 +310,16 @@ def verify_supervisor_artifacts(control,evidence):
                 scope='Fixed actual role supervision only;not raw RF replay or full lifecycle/recovery qualification')
     if all(renewals):result.update(renewal_contract_version=1,renewals=8,post_original_expiry_updates=16)
     if all(pressures):result.update(pressure_contract_version=1,checked_replies=136,notification_drops=4,indication_refusals=4,resumed=8)
+    if exported:result.update(snapshot_contract_version=1,snapshot_phases=2,snapshot_files=sum(len(s['files'])for s in exported),snapshot_bytes=sum(s['bytes']for s in exported))
     return result
+
+
+def valid_snapshot_supervision(proof):
+    from ws73_role_snapshot import FILES,LIMIT
+    return(valid_supervision(proof)and type(proof.get('snapshot_contract_version'))is int and proof['snapshot_contract_version']==1
+        and type(proof.get('snapshot_phases'))is int and proof['snapshot_phases']==2
+        and type(proof.get('snapshot_files'))is int and 28<=proof['snapshot_files']<=2*FILES
+        and type(proof.get('snapshot_bytes'))is int and 0<proof['snapshot_bytes']<=2*LIMIT)
 
 
 def valid_supervision(proof):

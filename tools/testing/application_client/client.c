@@ -406,9 +406,10 @@ static int subscription_mode(int argc,char **argv) {
         }
         if (!strcmp(command,"renew") && arg && !other) {
             uint64_t duration=number(arg);if (duration<250 || duration>60000) {errno=EINVAL;goto done;}
-            error=slk_ssap_subscription_renew(sub,(uint32_t)duration,&info,now_ns()+5000000000ULL);
+            uint64_t renewal_started=now_ns(),renewal_deadline=renewal_started+5000000000ULL;
+            error=slk_ssap_subscription_renew(sub,(uint32_t)duration,&info,renewal_deadline);
             if (error){errno=-error;goto done;}
-            printf("{\"stage\":\"ssap_subscription_renewed\",\"api\":\"c\",\"expires_ns\":%"PRIu64"}\n",info.expires_ns);fflush(stdout);continue;
+            printf("{\"stage\":\"ssap_subscription_renewed\",\"api\":\"c\",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"expires_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",info.token,info.security_epoch,info.expires_ns,renewal_started,renewal_deadline,now_ns());fflush(stdout);continue;
         }
         if (!strcmp(command,"release") && !arg) {
             error=slk_ssap_subscription_release(sub,&batch,now_ns()+5000000000ULL);

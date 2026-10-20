@@ -22,7 +22,7 @@ def credential(uid):
                 capabilities={k:'0'for k in ('CapEff','CapPrm','CapAmb','CapInh')})
 
 
-def fixture(phase=0):
+def fixture(phase=0,*,renewal=False):
     row=old_fixture(phase)
     old=row.pop('ssap_update_delivery');row.pop('ssap_update_delivery_required');row.pop('ssap_update_delivery_status')
     observed=role_fixture()[0]['application_clients'][phase]
@@ -30,6 +30,7 @@ def fixture(phase=0):
                ssap_subscription_status=gate.STATUS,ssap_subscription=[],
                role_probe=copy.deepcopy(observed['role_probe']),channel_role='sparklink-apps-only',application_role_contract_version=2)
     row['role_probe']['args'][1]=row['owners'][0]['object']['path']
+    if renewal:row.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
     def observation(api,wall,**data):
         return dict(start_wall_ns=wall,end_wall_ns=wall+1,start_monotonic_ns=1000,end_monotonic_ns=1010,
                     receipt=dict(api=api,handle=17,started_ns=1001,returned_ns=1002,deadline_ns=5000001001,**data))
@@ -67,6 +68,16 @@ def fixture(phase=0):
                 lines+=['SdkOwnedReplaced: '+json.dumps(case['replacement']['receipt']),f'SsapOwnedValue: handle=17 value={value.hex()}',
                         'SdkOwnedUpdate: '+json.dumps(case['send']['receipt']),f'SsapOwnedValue: handle=17 value={reply.hex()}']
             release=dict(stage='ssap_subscription_released',api=other,flags=1,discarded=0);lease['release']=release;raw.append(release)
+            if renewal:
+                active['expires_ns']=active['started_ns']+1_000_000_000;app['args'][-1]='1000'
+                renewed=dict(stage='ssap_subscription_renewed',api=other,token=active['token'],epoch=active['epoch'],
+                    expires_ns=30_000_002_000,started_ns=2000,deadline_ns=5_000_002_000,returned_ns=2001)
+                lease['renewal']=renewed;raw.insert(3,renewed)
+                upper=active['returned_ns']+1_000_000_000
+                lease['old_expiry_barrier']=dict(original_expiry_upper_ns=upper,threshold_ns=upper+50_000_000,start_ns=2002,end_ns=upper+50_000_001)
+                for n,message in enumerate(lease['messages']):
+                    message['start_monotonic_ns']=1100 if n==0 else upper+50_000_010+n
+                    message['end_monotonic_ns']=1500 if n==0 else upper+50_000_020+n
             app['stdout']='\n'.join(json.dumps(v)for v in raw)+'\n'
             lines.append('SdkOwnedConfiguration: '+json.dumps(lease['disabled'][0]['receipt']))
         lines.append(f'SdkOwnedRemoved: api={api} start=16');item['stdout']='\n'.join(lines)+'\n'
@@ -74,6 +85,37 @@ def fixture(phase=0):
 
 
 class SubscriptionGate(unittest.TestCase):
+    def test_real_renewal_verifier_fixture_is_distinct_from_continuous(self):
+        rows=[]
+        for phase in (0,1):
+            proof,credit=gate.corroborate(fixture(phase,renewal=True),matched)
+            self.assertEqual(credit,{0:43,1:43})
+            self.assertEqual([v['renewals']for v in proof],[2,2])
+            rows.append(dict(phase=phase,ssap_subscription=proof))
+        value=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=rows)
+        self.assertTrue(gate.valid_summary(value));self.assertTrue(gate.valid_renewal_summary(value))
+        del rows[0]['ssap_subscription'][0]['renewal_contract_version']
+        self.assertFalse(gate.valid_renewal_summary(value))
+
+    def test_renewal_scope_original_expiry_and_transcript_negatives(self):
+        for kind in ('unrequested','version','token','epoch','late','deadline','short-renewal','old-upper','early-barrier','early-update','first-update-order','raw','missing-renewal'):
+            row=fixture(renewal=True);lease=row['ssap_subscription'][0]['leases'][0];r=lease['renewal'];b=lease['old_expiry_barrier']
+            if kind=='unrequested':row.pop('ssap_subscription_renewal_required')
+            elif kind=='version':row['ssap_subscription_renewal_contract_version']=True
+            elif kind=='token':r['token']+=1
+            elif kind=='epoch':r['epoch']+=1
+            elif kind=='late':r['returned_ns']=lease['active']['expires_ns']
+            elif kind=='deadline':r['deadline_ns']+=1
+            elif kind=='short-renewal':r['expires_ns']=lease['active']['expires_ns']
+            elif kind=='old-upper':b['original_expiry_upper_ns']-=1
+            elif kind=='early-barrier':b['end_ns']=b['threshold_ns']-1
+            elif kind=='early-update':lease['messages'][1]['start_monotonic_ns']=b['end_ns']-1
+            elif kind=='first-update-order':lease['messages'][0]['end_monotonic_ns']=r['started_ns']+1
+            elif kind=='raw':lease['application']['stdout']=''
+            else:lease.pop('renewal')
+            with self.subTest(kind=kind),self.assertRaises((CaptureError,KeyError,ValueError)):
+                gate.corroborate(row,matched)
+
     def test_fixed_fixture_continuous_multiple_messages_and_both_roles(self):
         rows=[]
         for phase in (0,1):
@@ -132,6 +174,8 @@ class SubscriptionGate(unittest.TestCase):
             with self.subTest(k=k),self.assertRaises(CaptureError):gate.validate_request(bad,0)
         args=dict(ssap_subscription_verify=True,channel_socket_verify=True,security_agent='numeric-approve')
         self.assertTrue(gate.requested(SimpleNamespace(**args),passthrough=True))
+        self.assertTrue(gate.requested(SimpleNamespace(**args,ssap_subscription_renewal_verify=True),passthrough=True))
+        with self.assertRaises(ValueError):gate.requested(SimpleNamespace(ssap_subscription_renewal_verify=True),passthrough=True)
         for key in ('ssap_update_delivery_verify','application_client_verify','observer_policy','fault_recovery'):
             with self.subTest(key=key),self.assertRaises(ValueError):gate.requested(SimpleNamespace(**args,**{key:True}),passthrough=True)
 
@@ -161,6 +205,18 @@ class SubscriptionGate(unittest.TestCase):
             security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',
                 phases=[dict(mode='numeric-approve',ssap_security_requirement=2)for _ in (0,1)],business_round_trips=8))
         self.assertEqual(run_exit_code(record),0)
+        renewed=copy.deepcopy(record)
+        renewed.update(ssap_subscription_renewal_requested=True,ssap_subscription_renewal_contract_version=1,ssap_subscription_renewal_acceptance=True,
+            qemu_args=['ws73.ssap_subscription=1 ws73.ssap_subscription_renewal=1'])
+        for phase,row in enumerate(renewed['channel_socket_corroboration']['proofs']):
+            row['ssap_subscription']=gate.corroborate(fixture(phase,renewal=True),matched)[0]
+        renewed['ssap_subscription_supervision'].update(renewal_contract_version=1,renewals=8,post_original_expiry_updates=16)
+        self.assertEqual(run_exit_code(renewed),0)
+        for change in [dict(ssap_subscription_renewal_requested=False),dict(ssap_subscription_renewal_contract_version=True),
+                dict(ssap_subscription_renewal_acceptance=False),dict(qemu_args=['ws73.ssap_subscription=1']),
+                dict(ssap_subscription_supervision=record['ssap_subscription_supervision']),
+                dict(channel_socket_corroboration=record['channel_socket_corroboration'])]:
+            with self.subTest(change=change):self.assertEqual(run_exit_code(renewed|change),1)
         for changes in [dict(status='PASSTHROUGH_SUPPORT_PASS'),dict(status='FAIL'),dict(qemu_exit=1),
                 dict(supervisor_exit=1),dict(live_ssap_security_requirement=1),dict(live_security_agent_requested='approve'),
                 dict(ssap_subscription_acceptance=False),dict(ssap_subscription_contract_version=True),

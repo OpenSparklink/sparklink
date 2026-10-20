@@ -219,6 +219,13 @@ pub(super) async fn exercise(
                 assert_eq!(packets[0]["indication"], true);
             } else if stage == "ssap_subscription_renewed" {
                 assert!(value["expires_ns"].as_u64().unwrap() > 0);
+                assert_eq!(value["token"], active["token"]);
+                assert_eq!(value["epoch"], active["epoch"]);
+                let start = value["started_ns"].as_u64().unwrap();
+                let deadline = value["deadline_ns"].as_u64().unwrap();
+                let returned = value["returned_ns"].as_u64().unwrap();
+                assert_eq!(deadline - start, 5_000_000_000);
+                assert!(start <= returned && returned < deadline);
             } else if stage == "ssap_subscription_released" {
                 assert_eq!(value["flags"], 1);
                 assert_eq!(value["discarded"], 0);

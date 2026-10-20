@@ -25,6 +25,7 @@ INPUT=Path('/evidence/application/passthrough-control')
 STATUS='CONTINUOUS_SUBSCRIPTION_APPLICATION_REPLIES_PENDING_PAIRED_USB'
 COUNT=3
 LEASE_MS=30000
+INITIAL_RENEWAL_LEASE_MS=1000
 TOOLS=('/bin/ws73-application-client-c','/usr/share/sparklink/tools/ws73-application-client.py',
        '/usr/lib/libsparklink.so.0','/usr/share/sparklink/python/sparklink/client.py',
        '/usr/share/sparklink/python/sparklink/ssap_subscription.py',
@@ -35,7 +36,9 @@ TOOLS=('/bin/ws73-application-client-c','/usr/share/sparklink/tools/ws73-applica
 def requested(args,*,passthrough):
     value=getattr(args,'ssap_subscription_verify',False)
     if type(value)is not bool:raise ValueError('explicit subscription selector required')
-    if value and any(v for k,v in vars(args).items()if type(v)is bool and k not in {'passthrough','qmp_hotplug','connection_verify','channel_socket_verify','ssap_subscription_verify'}):raise ValueError('subscription excludes other test selectors')
+    renewal=getattr(args,'ssap_subscription_renewal_verify',False)
+    if type(renewal)is not bool or renewal and not value:raise ValueError('renewal requires the explicit subscription gate')
+    if value and any(v for k,v in vars(args).items()if type(v)is bool and k not in {'passthrough','qmp_hotplug','connection_verify','channel_socket_verify','ssap_subscription_verify','ssap_subscription_renewal_verify'}):raise ValueError('subscription excludes other test selectors')
     if value and (not passthrough or not getattr(args,'channel_socket_verify',False)
             or getattr(args,'security_agent',None)!='numeric-approve'
             or any(getattr(args,key,False)for key in ('ssap_update_delivery_verify','ssap_update_lifecycle_verify',
@@ -44,6 +47,15 @@ def requested(args,*,passthrough):
                 'application_client_verify','channel_socket_close_prefix','channel_socket_burst',
                 'channel_socket_boundaries','dynamic_channel_verify','channel_fairness_verify'))):
         raise ValueError('subscription requires dedicated protected numeric-approve socket gate')
+    return value
+
+
+def renewal_required(row):
+    value=row.get('ssap_subscription_renewal_required',False)
+    if type(value)is not bool:raise CaptureError('typed renewal selector required')
+    version=row.get('ssap_subscription_renewal_contract_version')
+    if value and(type(version)is not int or version!=1)or not value and version is not None:
+        raise CaptureError('explicit renewal contract1 required;no relabelled continuous evidence')
     return value
 
 
@@ -62,7 +74,10 @@ def validate_tools(records,root,manifest):
 
 
 def validate_request(row,phase):
-    if (set(row)!={'phase','owners','tools','security_requirement','message_security_required','status','start_wall_ns'}
+    renewal=renewal_required(row)
+    fields={'phase','owners','tools','security_requirement','message_security_required','status','start_wall_ns'}
+    if renewal:fields|={'ssap_subscription_renewal_required','ssap_subscription_renewal_contract_version'}
+    if (set(row)!=fields
             or row['status']!='RUNNING' or type(phase)is not int or phase not in (0,1)
             or type(row['phase'])is not int or row['phase']!=phase
             or type(row['security_requirement'])is not int or row['security_requirement']!=2
@@ -81,6 +96,8 @@ def request(run,row):
     phase=row['phase']
     value=dict(phase=phase,owners=row['owners'],tools=tool_records(),security_requirement=row['security_requirement'],
                message_security_required=row['message_security_required'],status='RUNNING',start_wall_ns=time.time_ns())
+    if getattr(run.args,'ssap_subscription_renewal_verify',False):
+        value.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
     validate_request(value,phase)
     path=run.output/f'subscription-role-{phase}.request.json';temporary=path.with_suffix('.tmp')
     with temporary.open('x')as stream:json.dump(value,stream)
@@ -99,6 +116,7 @@ def request(run,row):
         row[key]=result[key]
     row.update(ssap_subscription_required=True,ssap_subscription_contract_version=1,
                ssap_subscription_tools=value['tools'],ssap_subscription_request=value)
+    if renewal_required(value):row.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
     run.save()
 
 
@@ -125,6 +143,10 @@ def execute_supervised(run,row):
     """Only the existing root VM role supervisor calls this finite workload."""
     from ws73_application_role import require_vm
     require_vm('ws73.ssap_subscription=1')
+    renewal=renewal_required(row)
+    if ('ws73.ssap_subscription_renewal=1'in Path('/proc/cmdline').read_text().split())!=renewal:
+        raise CaptureError('renewal boot/request mismatch')
+    duration=INITIAL_RENEWAL_LEASE_MS if renewal else LEASE_MS
     row.update(ssap_subscription=[],ssap_subscription_required=True,ssap_subscription_contract_version=1);run.save()
     for sender in (0,1):
         peer,server=row['owners'][sender],row['owners'][1-sender]
@@ -135,7 +157,7 @@ def execute_supervised(run,row):
             for mode in (1,2):
                 prefix=['/bin/ws73-application-client-c']if reader=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
                 args=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),
-                             peer['object']['path'],str(item['handle']),str(mode),str(LEASE_MS)]
+                             peer['object']['path'],str(item['handle']),str(mode),str(duration)]
                 label=f'subscription-{row["phase"]}-{sender}-{mode}'
                 out=run.output/(label+'.stdout');err=run.output/(label+'.stderr')
                 lease=dict(mode=mode,start_wall_ns=time.time_ns(),messages=[]);item['leases'].append(lease)
@@ -152,14 +174,28 @@ def execute_supervised(run,row):
                             sequence=(row['phase']<<24)|(sender<<20)|(mode<<16)|number
                             value=sequence.to_bytes(4,'little')+secrets.token_bytes(28)
                             reply=(sequence|0x80000000).to_bytes(4,'little')+secrets.token_bytes(28)
-                            case=dict(number=number,value=value.hex(),reply=reply.hex(),start_wall_ns=time.time_ns());lease['messages'].append(case)
+                            case=dict(number=number,value=value.hex(),reply=reply.hex(),start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns());lease['messages'].append(case)
                             case['replacement']=command_receipt(owner,item,'replace '+value.hex(),'SdkOwnedReplaced')
                             case['before']=value_snapshot(owner,item,value.hex());run.save()
                             process.stdin.write('check '+value.hex()+' '+reply.hex()+'\n');process.stdin.flush()
                             case['send']=command_receipt(owner,item,'indicate'if mode==2 else'notify','SdkOwnedUpdate');run.save()
                             case['checked']=wait_stage(process,app,'ssap_subscription_checked_reply',number+1,time.monotonic()+6)
                             case['batch']=wait_stage(process,app,'ssap_subscription_batch',number+1,time.monotonic()+1)
-                            case['after']=value_snapshot(owner,item,reply.hex());case['end_wall_ns']=time.time_ns();run.save()
+                            case['after']=value_snapshot(owner,item,reply.hex());case['end_wall_ns']=time.time_ns();case['end_monotonic_ns']=time.monotonic_ns();run.save()
+                            if renewal and number==0:
+                                process.stdin.write('renew '+str(LEASE_MS)+'\n');process.stdin.flush()
+                                lease['renewal']=wait_stage(process,app,'ssap_subscription_renewed',1,time.monotonic()+6);run.save()
+                                # Ready returned after the original daemon expiry was
+                                # computed. Returned+initial TTL is an upper bound;
+                                # do not rely on a conservatively rounded timestamp.
+                                upper=lease['active']['returned_ns']+duration*1_000_000
+                                threshold=upper+50_000_000
+                                barrier=dict(original_expiry_upper_ns=upper,threshold_ns=threshold,start_ns=time.monotonic_ns())
+                                if threshold>barrier['start_ns']+2_000_000_000:raise CaptureError('bounded old-expiry barrier required')
+                                while time.monotonic_ns()<threshold:
+                                    if process.poll()is not None:raise CaptureError('reader exited before old-expiry barrier')
+                                    time.sleep(min(.05,max(0,(threshold-time.monotonic_ns())/1e9)))
+                                barrier['end_ns']=time.monotonic_ns();lease['old_expiry_barrier']=barrier;run.save()
                         process.stdin.write('release\n');process.stdin.flush()
                         lease['release']=wait_stage(process,app,'ssap_subscription_released',1,time.monotonic()+6);run.save()
                         process.stdin.write('quit\n');process.stdin.flush();process.wait(timeout=2)
@@ -211,10 +247,14 @@ def verify_supervisor_artifacts(control,evidence):
                     raise CaptureError('fixed phase output paths required')
                 if (evidence/relative).read_text()!=app['stdout'if filename.endswith('.stdout')else'stderr']:
                     raise CaptureError('raw process stream differs from original subscription record')
-    return dict(status='ACTUAL_ROOT_SUBSCRIPTION_PHASES_AND_OUTPUTS_CHECKED',version=1,
+    renewals=[renewal_required(row)for row in control['channel_socket']]
+    if any(renewals)and not all(renewals):raise CaptureError('both real renewal phases required')
+    result=dict(status='ACTUAL_ROOT_SUBSCRIPTION_PHASES_AND_OUTPUTS_CHECKED',version=1,
                 phases=2,reader_UID=1004,provider_UID=1005,readers=8,providers=4,updates=24,
                 daemon=finished['daemon'],supervisor=finished['supervisor'],
                 scope='Fixed actual role supervision only;not raw RF replay or full lifecycle/recovery qualification')
+    if all(renewals):result.update(renewal_contract_version=1,renewals=8,post_original_expiry_updates=16)
+    return result
 
 
 def valid_supervision(proof):
@@ -227,6 +267,33 @@ def valid_supervision(proof):
     except (KeyError,TypeError):return False
 
 
+def valid_renewal_supervision(proof):
+    return (valid_supervision(proof)and all(type(proof.get(k))is int and proof[k]==v
+        for k,v in dict(renewal_contract_version=1,renewals=8,post_original_expiry_updates=16).items()))
+
+
+def verify_renewal(lease,api):
+    active=lease['active'];r=lease['renewal'];b=lease['old_expiry_barrier']
+    fields={'stage','api','token','epoch','expires_ns','started_ns','deadline_ns','returned_ns'}
+    if (set(r)!=fields or r['stage']!='ssap_subscription_renewed'or r['api']!=api
+            or any(type(r[k])is not int or r[k]<=0 for k in fields-{'stage','api'})
+            or r['token']!=active['token']or r['epoch']!=active['epoch']
+            or r['deadline_ns']-r['started_ns']!=5_000_000_000
+            or not lease['messages'][0]['end_monotonic_ns']<=r['started_ns']<=r['returned_ns']<r['deadline_ns']
+            or r['returned_ns']>=active['expires_ns']or r['expires_ns']<=active['expires_ns']
+            or r['expires_ns']>r['deadline_ns']+LEASE_MS*1_000_000):
+        raise CaptureError('actual same-token/epoch long renewal and original operation deadline required')
+    if (set(b)!={'original_expiry_upper_ns','threshold_ns','start_ns','end_ns'}
+            or any(type(v)is not int or v<=0 for v in b.values())
+            or b['original_expiry_upper_ns']!=active['returned_ns']+INITIAL_RENEWAL_LEASE_MS*1_000_000
+            or b['threshold_ns']!=b['original_expiry_upper_ns']+50_000_000
+            or not r['returned_ns']<=b['start_ns']<=b['end_ns']
+            or not b['threshold_ns']<=b['end_ns']<r['expires_ns']
+            or any(c['start_monotonic_ns']<b['end_ns']for c in lease['messages'][1:])):
+        raise CaptureError('two real updates after conservative original-expiry upper bound required')
+    return r
+
+
 def corroborate(row,matched):
     if not row.get('ssap_subscription_required',False):return [],{0:0,1:0}
     from ws73_application_role import verify_probe
@@ -234,6 +301,7 @@ def corroborate(row,matched):
     if (type(row.get('ssap_subscription_contract_version'))is not int or row['ssap_subscription_contract_version']!=1 or row.get('ssap_subscription_status')!=STATUS
             or row.get('security_requirement')!=2 or row.get('message_security_required')is not True
             or len(row.get('ssap_subscription',[]))!=2):raise CaptureError('completed protected continuous subscription phase required')
+    renewal=renewal_required(row);duration=INITIAL_RENEWAL_LEASE_MS if renewal else LEASE_MS
     owners=row['owners'];proof=[];credit={0:0,1:0};fresh=set()
     for sender,item in enumerate(row['ssap_subscription']):
         s,t=sender,1-sender;peer,server=owners[s],owners[t];api='c'if (row['phase']+s)%2==0 else'python';reader='python'if api=='c'else'c';h=item['handle']
@@ -253,7 +321,7 @@ def corroborate(row,matched):
             app=lease['application'];role(app['credentials'],1004)
             prefix=['/bin/ws73-application-client-c']if reader=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
             if (type(lease['mode'])is not int or lease['mode']!=mode or app['api']!=reader or app['environment']!=application_environment()
-                    or app['args']!=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),peer['object']['path'],str(h),str(mode),str(LEASE_MS)]
+                    or app['args']!=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),peer['object']['path'],str(h),str(mode),str(duration)]
                     or type(app['exit'])is not int or app['exit']!=0 or app['stderr']or len(lease['messages'])!=COUNT):raise CaptureError('actual continuous SDK reader process and finite workload required')
             active=lease['active'];raw=[json.loads(v)for v in app['stdout'].splitlines()]
             expected=[active]
@@ -262,7 +330,9 @@ def corroborate(row,matched):
                     or any(type(active[k])is not int or active[k]<=0 for k in ('token','epoch','expires_ns','started_ns','deadline_ns','returned_ns'))
                     or active['deadline_ns']-active['started_ns']!=5_000_000_000
                     or not active['started_ns']<=active['returned_ns']<active['deadline_ns']
-                    or not active['started_ns']+LEASE_MS*1_000_000<=active['expires_ns']<=active['deadline_ns']+LEASE_MS*1_000_000):raise CaptureError('original actual acquisition/expiry/epoch required')
+                    or not active['started_ns']+duration*1_000_000<=active['expires_ns']<=active['deadline_ns']+duration*1_000_000):raise CaptureError('original actual acquisition/expiry/epoch required')
+            if renewal:renewed=verify_renewal(lease,reader)
+            elif 'renewal'in lease or'old_expiry_barrier'in lease:raise CaptureError('unrequested renewal evidence')
             for number,case in enumerate(lease['messages']):
                 sequence=(row['phase']<<24)|(s<<20)|(mode<<16)|number;value=bytes.fromhex(case['value']);reply=bytes.fromhex(case['reply'])
                 if (type(case['number'])is not int or case['number']!=number or len(value)!=32 or len(reply)!=32 or value in fresh or reply in fresh
@@ -273,6 +343,7 @@ def corroborate(row,matched):
                        'packets':[dict(sequence=number+1,epoch=active['epoch'],level=2,indication=mode==2,pdu=pdu.hex())]}
                 if case['checked']!=checked or case['batch']!=batch:raise CaptureError('actual application comparison/writeback and complete original batch required')
                 expected.extend((checked,batch))
+                if renewal and number==0:expected.append(renewed)
                 sent=sdk_receipt(case['send'],api,h,{'stage','pdu','ack'});replacement=sdk_receipt(case['replacement'],api,h,{'value'})
                 if (sent['pdu']!=pdu.hex()or sent['stage']!=(2 if mode==2 else 1)or sent['ack']!=('110301'if mode==2 else'')
                         or replacement['value']!=case['value']or case['before']['value']!=case['value']or case['after']['value']!=case['reply']
@@ -308,7 +379,9 @@ def corroborate(row,matched):
                 ('SdkOwnedConfiguration',[o for l in item['leases']for key in ('enabled','disabled')for o in l[key]])]:
             raw=[json.loads(v)for v in re.findall('^'+prefix+r': (.+)$',item['stdout'],re.M)]
             if raw!=[o['receipt']for o in observations]:raise CaptureError('actual provider SDK output differs from original receipts')
-        proof.append(dict(sender=s,target=t,publisher=api,peer=reader,leases=2,updates=6,application_replies=6,decisions=4,wire=legs))
+        result=dict(sender=s,target=t,publisher=api,peer=reader,leases=2,updates=6,application_replies=6,decisions=4,wire=legs)
+        if renewal:result.update(renewal_contract_version=1,renewals=2,post_original_expiry_updates=4)
+        proof.append(result)
     return proof,credit
 
 
@@ -326,3 +399,9 @@ def valid_summary(proof):
                 if not all(valid_wire(leg)for leg in value['wire']):return False
         return True
     except (KeyError,TypeError,ValueError):return False
+
+
+def valid_renewal_summary(proof):
+    return(valid_summary(proof)and all(type(v.get(k))is int and v[k]==n
+        for row in proof['proofs']for v in row['ssap_subscription']
+        for k,n in dict(renewal_contract_version=1,renewals=2,post_original_expiry_updates=4).items()))

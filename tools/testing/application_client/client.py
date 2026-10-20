@@ -329,8 +329,11 @@ def subscription_mode():
                 print(json.dumps(dict(stage='ssap_subscription_parent_closed',api='python')),flush=True)
                 continue
             if len(args)==2 and args[0]=='renew':
-                info=sub.renew(int(args[1]),deadline_ns=time.monotonic_ns()+5_000_000_000)
-                print(json.dumps(dict(stage='ssap_subscription_renewed',api='python',expires_ns=info.expires_ns)),flush=True)
+                renewal_started=time.monotonic_ns();renewal_deadline=renewal_started+5_000_000_000
+                info=sub.renew(int(args[1]),deadline_ns=renewal_deadline)
+                print(json.dumps(dict(stage='ssap_subscription_renewed',api='python',token=info.token,
+                    epoch=info.security_epoch,expires_ns=info.expires_ns,started_ns=renewal_started,
+                    deadline_ns=renewal_deadline,returned_ns=time.monotonic_ns())),flush=True)
                 continue
             if args==['release']:
                 batch=sub.release(deadline_ns=time.monotonic_ns()+5_000_000_000);released=True

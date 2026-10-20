@@ -501,6 +501,18 @@ UID/GID1005 均无附加组或 capability；发现观察仍由管理测试角色
 完整引用排空、自然恢复或长期性能；准确 artifact 的结果仍只读取
 [当前资格](../../project/current-capabilities.md)。
 
+附加 `--ssap-subscription-renewal-verify` 要求新 prepared 显式声明
+`ssap_subscription_renewal_contract_version=1`，并保留上述基础门禁。每租约先使用
+1000ms 有限租期，第一条更新实际校验／回写后，通过同一 SDK、token 和安全 epoch
+续为30000ms；两个后续更新必须发生在旧到期上界之后。上界取原获取实际返回时刻
+加原租期，避免保守时间戳的采样误差被当成过期证据。等待屏障只用于有限测试调度，
+不延长任一创建／读取／续租／发送／清理的原期限。
+
+新门禁要求8次真实续租、16次旧到期上界后的校验回写、原24次业务、确认停用、
+原始进程流及双端USB闭包；续租不应额外重写CPCD。旧连续订阅的contract1证据不能
+升级为续租通过，缺失声明、boot／请求／记录不符或旧token／epoch均失败。
+这仍不覆盖满队列、续租与到期／关闭竞争、多应用、全部生命周期或自然恢复。
+
 ## SSAP 接收者退出与确认清理门禁
 
 未发布 runner 的 `--ssap-update-lifecycle-verify` 只能与

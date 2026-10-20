@@ -350,3 +350,20 @@ python3 tools/ws73_session_service.py analyze-failed-benchmark "$RUN" --failed-p
 工作可直接从入队到本地清除，已出队重排的工作须有确定未提交的EAGAIN。观察到的
 清除标记为 `retirement_kind=queued_discard_no_physical_prefix`；没有该原始事件的
 旧捕获仍保留null。两者均不能说明controller credit或物理引用已经排空。
+
+### 在专用 VM 中观察满负载 Session
+
+先保留一次完整原业务命令、准确 artifact、追踪丢失计数及失败结果，再根据捕获
+估算容量。需要新预算时，在现有专用 VM runner 的原命令后显式增加：
+
+```text
+--session-service-observe --session-service-profile full-load-v2
+```
+
+这两个选项属于 `tools/ws73_target.py run`，不能传给 `slktest`，也不能在宿主执行
+追踪配置。保留原业务参数、消息／Owner 期限、普通用户凭据和端口白名单。运行后
+核对 `session-service/run.json` 的 `collector_profile`、实际 buffer readback、两端
+原始捕获与整轮业务结果；判定与预算见[参考契约](../reference/socket-benchmark.md#有界满负载-session-观测配置)。
+
+任何非零丢失、超预算、缺 marker 或未闭合操作都保留为失败。不要修改旧收据的
+buffer／计数，或只截取有利区间；需要下一次实验时使用新目录和准确工具身份。

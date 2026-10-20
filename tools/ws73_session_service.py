@@ -28,6 +28,35 @@ FOLDER = Path('/evidence/session-service')
 LIMIT = 8 * 1024 * 1024
 STATUS = 'OBSERVED_NOT_PERFORMANCE_QUALIFIED'
 BUFFER_KIB = 2048 # Measured 1MiB per-CPU overrun retained; bounded diagnostic only.
+FULL_LOAD_PROFILE = dict(name='full-load-v2', requested_buffer_kb=8192,
+                         text_limit_bytes=32*1024*1024, event_limit=100000, cpu_count=2)
+PROFILE_TOKEN = 'ws73.session_service_profile='
+
+
+def collector_limits(row):
+    version=row.get('collector_contract_version');profile=row.get('collector_profile')
+    if version is None and profile is None:
+        return dict(name='legacy-v1', requested_buffer_kb=BUFFER_KIB,
+                    text_limit_bytes=LIMIT, event_limit=None, cpu_count=2)
+    if type(version)is not int or version!=2 or profile!=FULL_LOAD_PROFILE:
+        raise ValueError('exact explicit bounded Session collector profile required')
+    return dict(FULL_LOAD_PROFILE)
+
+
+def collector_boot(tokens):
+    values=[v for v in tokens if v.startswith(PROFILE_TOKEN)]
+    if not values:return None
+    if values!=[PROFILE_TOKEN+FULL_LOAD_PROFILE['name']]:
+        raise ValueError('one supported explicit Session collector boot profile required')
+    return dict(FULL_LOAD_PROFILE)
+
+
+def trace_bytes(path,row):
+    """One bounded acquisition, before decoding or hashing untrusted trace text."""
+    limit=collector_limits(row)['text_limit_bytes']
+    with Path(path).open('rb')as stream:raw=stream.read(limit+1)
+    if len(raw)>limit:raise ValueError('Session trace text byte budget exceeded')
+    return raw
 
 
 def digest(path):
@@ -81,12 +110,16 @@ def marker(row, kind):
 
 def configure():
     vm_guard()
+    profile=collector_boot(Path('/proc/cmdline').read_text().split())
     FOLDER.mkdir(mode=0o700)
     row = dict(status='RUNNING_NOT_QUALIFIED', cookie=secrets.token_hex(16),
                boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
                kernel_release=os.uname().release, kernel_version=os.uname().version,
                clock='mono', requested_buffer_kb=BUFFER_KIB, anchors=[], created=False,
                queue_retirement_contract_version=2)
+    if profile is not None:
+        row.update(collector_contract_version=2,collector_profile=profile,
+                   requested_buffer_kb=profile['requested_buffer_kb'])
     save(row)
     try:
         if not (ROOT / 'available_tracers').is_file():
@@ -96,7 +129,7 @@ def configure():
         write('tracing_on', '0')
         write('current_tracer', 'nop')
         write('trace_clock', 'mono')
-        write('buffer_size_kb', str(BUFFER_KIB))
+        write('buffer_size_kb', str(row['requested_buffer_kb']))
         write('trace', '')
         row['formats'] = {}
         for name in EVENTS:
@@ -135,14 +168,18 @@ def finish(aborted=False):
     try:
         marker(row, 'end')
         write('tracing_on', '0')
-        text = (INSTANCE / 'trace').read_text()
-        (FOLDER / 'trace.txt').write_text(text)
-        row['trace_sha256'] = digest(FOLDER / 'trace.txt')
         row['stats'] = {}
         for p in sorted((INSTANCE / 'per_cpu').glob('cpu*/stats')):
             raw = p.read_text()
             (FOLDER / (p.parent.name + '-stats.txt')).write_text(raw)
             row['stats'][p.parent.name] = raw
+        try:raw=trace_bytes(INSTANCE/'trace',row)
+        except ValueError:
+            row['trace_budget_exceeded']=True
+            raise
+        text=raw.decode('utf-8')
+        (FOLDER/'trace.txt').write_bytes(raw)
+        row['trace_sha256']=hashlib.sha256(raw).hexdigest()
         for name in EVENTS:
             (INSTANCE / 'events/sparklink' / name / 'enable').write_text('0\n')
         row['disabled'] = {name: (INSTANCE / 'events/sparklink' / name / 'enable').read_text().strip()
@@ -185,10 +222,13 @@ def parse_aborted(text, row):
 
 
 def _parse(text, row, expected_status):
+    limits=collector_limits(row)
     version = row.get('queue_retirement_contract_version', 1)
     if type(version) is not int or version not in (1, 2):
         raise ValueError('explicit supported queue retirement observation contract required')
-    if (len(text) > LIMIT or row['status'] != expected_status or row['clock'] != 'mono'
+    if (len(text.encode('utf-8')) > limits['text_limit_bytes']
+            or type(row.get('trace_budget_exceeded',False))is not bool or row.get('trace_budget_exceeded',False)
+            or row['status'] != expected_status or row['clock'] != 'mono'
             or not re.fullmatch('[0-9a-f]{32}', row['cookie'])
             or re.findall(r'^# tracer: (.*)$', text, re.M) != ['nop']
             or 'LOST' in text.upper() or row['instance_removed'] is not True):
@@ -198,7 +238,7 @@ def _parse(text, row, expected_status):
         raise ValueError('original trace configuration required')
     expected_kib, _ = buffer_kib(row['header_page'], row['requested_buffer_kb'],
                                int(read['buffer_subbuf_size_kb']))
-    if (type(row['requested_buffer_kb']) is not int or row['requested_buffer_kb'] != BUFFER_KIB
+    if (type(row['requested_buffer_kb']) is not int or row['requested_buffer_kb'] != limits['requested_buffer_kb']
             or str(expected_kib) != read['buffer_size_kb']):
         raise ValueError('bounded configured trace buffer required')
     if row['enabled'] != dict.fromkeys(EVENTS, '1') or row['disabled'] != dict.fromkeys(EVENTS, '0'):
@@ -216,6 +256,8 @@ def _parse(text, row, expected_status):
         if 'entries' not in fields:
             raise ValueError('original per-CPU entry counts required')
         entries += int(fields['entries'])
+    if limits['event_limit']is not None and entries>limits['event_limit']+2:
+        raise ValueError('bounded Session event budget exceeded')
     header = re.findall(r'#\s*entries-in-buffer/entries-written:\s*(\d+)/(\d+)', text)
     if len(header) != 1 or header[0][0] != header[0][1] or int(header[0][0]) != entries:
         raise ValueError('complete trace entry accounting required')
@@ -250,6 +292,8 @@ def _parse(text, row, expected_status):
             raise ValueError('invalid unsigned trace field')
         v.update(event=m[3].removeprefix('sparklink_session_'), mono_ns=t)
         rows.append(v)
+        if limits['event_limit']is not None and len(rows)>limits['event_limit']:
+            raise ValueError('bounded Session event budget exceeded')
     expected = [('SLK_SERVICE_BEGIN:' + row['cookie']), ('SLK_SERVICE_END:' + row['cookie'])]
     if ([v[0] for v in markers] != expected or len(rows) < 2
             or int(header[0][0]) != len(rows) + 2 or markers[0][1] >= markers[1][1]):
@@ -268,13 +312,17 @@ def _parse(text, row, expected_status):
     high = min(a['wall_ns']-a['mono_before'] for a in anchors)
     if low > high:
         raise ValueError('no common realtime/monotonic offset;cannot join USB clocks')
-    return dict(rows=rows, quantum_ns=quantum, offset_ns=[low, high],
+    result=dict(rows=rows, quantum_ns=quantum, offset_ns=[low, high],
                 interval_ns=[markers[0][1], markers[1][1]])
+    if row.get('collector_contract_version')==2:result['collector_profile']=dict(limits)
+    return result
 
 
 def summary(parsed):
-    return dict(events=len(parsed['rows']), quantum_ns=parsed['quantum_ns'],
+    result=dict(events=len(parsed['rows']), quantum_ns=parsed['quantum_ns'],
                 offset_ns=parsed['offset_ns'], interval_ns=parsed['interval_ns'])
+    if 'collector_profile'in parsed:result.update(collector_contract_version=2,collector_profile=parsed['collector_profile'])
+    return result
 
 
 def identities(record):
@@ -515,7 +563,8 @@ def _read_trace(folder):
     row = json.loads((folder/'run.json').read_text())
     if (folder/'header_page.txt').read_text() != row['header_page']:
         raise ValueError('original kernel trace page layout changed')
-    if row['trace_sha256'] != digest(folder/'trace.txt'):
+    raw_trace=trace_bytes(folder/'trace.txt',row)
+    if row['trace_sha256'] != hashlib.sha256(raw_trace).hexdigest():
         raise ValueError('trace bytes changed')
     for name in EVENTS:
         if row['formats'][name] != digest(folder/(name+'.format')):
@@ -523,7 +572,7 @@ def _read_trace(folder):
     for cpu, raw in row['stats'].items():
         if (folder/(cpu+'-stats.txt')).read_text() != raw:
             raise ValueError('original CPU statistics changed')
-    return (folder/'trace.txt').read_text(), row
+    return raw_trace.decode('utf-8'), row
 
 
 def corroborate(record, capture, share):
@@ -532,6 +581,7 @@ def corroborate(record, capture, share):
     if summary(parsed) != row['observed']:
         raise ValueError('captured trace summary mismatch')
     proof = join(parsed, identities(record), capture)
+    if 'collector_profile'in parsed:proof.update(collector_contract_version=2,collector_profile=parsed['collector_profile'])
     if record.get('channel_grant', {}).get('queued_discard_contract_version') is not None:
         if record['channel_grant'].get('queue_boot_id') != row.get('boot_id'):
             raise ValueError('queued syscall and trace must belong to the same actual boot')

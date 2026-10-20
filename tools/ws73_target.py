@@ -722,6 +722,9 @@ def _run(args):
     session_idle=bool(getattr(args,'managed_channel_idle_observe',False))
     if session_idle and (not channel_revoke_prefix or channel_deadline or channel_link_down or connected_case!='release' or connected_reply or bool(getattr(args,'managed_channel_directions',False)) or channel_scm_rights):raise ValueError('separate release/prefix normal2s real Session idle observation required')
     session_service=bool(getattr(args,'session_service_observe',False))
+    service_profile=getattr(args,'session_service_profile',None)
+    if service_profile is not None and (service_profile!='full-load-v2' or not session_service):
+        raise ValueError('explicit Session service profile requires separate service observation')
     queued_discard=bool(getattr(args,'managed_channel_queued_discard',False))
     if queued_discard and (not session_service or not channel_revoke_prefix or not channel_grant
             or connected_case not in ('release','close','dup') or connected_reply or session_idle
@@ -985,6 +988,9 @@ def _run(args):
     if queued_discard:m['queued_discard_contract_version']=1
     m['session_service_observation_requested']=session_service
     m['session_service_acceptance']=False
+    if service_profile is not None:
+        from ws73_session_service import FULL_LOAD_PROFILE
+        m.update(session_service_collector_contract_version=2,session_service_collector_profile=dict(FULL_LOAD_PROFILE))
     if session_service:m['session_service_verifiers']=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]
     m['session_idle_observation_requested']=session_idle
     if session_idle:m['session_idle_verifier']=file_record(HERE/'ws73_session_idle.py')
@@ -1260,6 +1266,7 @@ def _run(args):
                      (' ws73.channel_deadline=1 ws73.intent_phase=2' if channel_deadline else '')+
                      (' ws73.session_idle=1' if session_idle else '')+
                      (' ws73.session_service=1' if session_service else '')+
+                     (' ws73.session_service_profile=full-load-v2' if service_profile is not None else '')+
                      (' ws73.security_capabilities=1' if security_capabilities else '')+
                      (' ws73.security_cancel_pending=1' if cancel_pending else '')+
                      (' ws73.security_original_deadline=1' if original_deadline else '')+
@@ -1978,6 +1985,8 @@ def _run(args):
             from ws73_session_service import corroborate as service_corroborate
             control_path=share/('connected-file/run.json' if channel_grant else 'application/passthrough-control/run.json')
             m['session_service_observation']=service_corroborate(json.loads(control_path.read_text()),capture,share)
+            if m.get('session_service_collector_profile')!=m['session_service_observation'].get('collector_profile'):
+                raise ValueError('actual Session collector profile must match original request')
             if m['session_service_verifiers']!=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]:
                 raise ValueError('Session observation verifier changed during execution')
             m['session_service_acceptance']=True
@@ -2443,6 +2452,17 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if (record.get('session_service_acceptance') is not True or record.get('qemu_exit')!=0
                 or proof.get('status')!='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED'
                 or any(type(proof.get(k)) is not int or proof[k]<=0 for k in ['services','attempts','accepted_usb_packets','operations'])):return 1
+    from ws73_session_service import FULL_LOAD_PROFILE,PROFILE_TOKEN
+    collector_version=record.get('session_service_collector_contract_version')
+    collector=record.get('session_service_collector_profile')
+    collector_proof=record.get('session_service_observation',{})
+    collector_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(PROFILE_TOKEN)]
+    if collector_version is not None:
+        if (type(collector_version)is not int or collector_version!=2 or requested is not True
+                or collector!=FULL_LOAD_PROFILE or collector_boot!=[PROFILE_TOKEN+'full-load-v2']
+                or type(collector_proof.get('collector_contract_version'))is not int
+                or collector_proof['collector_contract_version']!=2 or collector_proof.get('collector_profile')!=collector):return 1
+    elif collector is not None or collector_boot or 'collector_profile'in collector_proof or 'collector_contract_version'in collector_proof:return 1
     from ws73_session_service import valid_queued_summary
     queued_version=record.get('queued_discard_contract_version')
     queued_proof=record.get('session_service_observation',{}).get('queued_discard_lifecycle')
@@ -2719,6 +2739,7 @@ def main():
             cmd.add_argument('--managed-channel-deadline',action='store_true',help='original5s begun-PDU deadline with separate bounded8s real IN81 hold, not recovery')
             cmd.add_argument('--managed-channel-link-down',action='store_true',help='direct physical Disconnect after actual begun PDU while both Managed leases remain held; separate from revoke/deadline/recovery')
             cmd.add_argument('--session-service-observe',action='store_true',help='dedicated default-off real Session service/queue/atomic USB trace;not performance or peer delivery proof')
+            cmd.add_argument('--session-service-profile',choices=['full-load-v2'],help='explicit bounded8MiB/CPU32MiBtext100k-event collector;requires service observation,not performance qualification')
             cmd.add_argument('--managed-channel-queued-discard',action='store_true',help='explicit two queued2042B admissions behind held begunPDU;requires Managed prefix and Session trace,not business/recovery proof')
             cmd.add_argument('--managed-channel-idle-observe',action='store_true',help='dedicated VM ftrace of drained Session idle between real business and controlled prefix;not performance qualification')
             cmd.add_argument('--managed-channel-revoke-prefix',action='store_true',help='actual partial2042-byte USB PDU across per-controller Managed withdrawal, never natural recovery')

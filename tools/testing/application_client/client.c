@@ -448,7 +448,7 @@ static int subscription_mode(int argc,char **argv) {
             hex_print(expected,n);printf("\",\"reply\":\"");hex_print(reply,r);printf("\"}\n");
             if(from_cache){next++;fflush(stdout);continue;}
         }
-        if (batch.info.state==3 && batch.flags==1) released=1;
+        if (batch.info.state==3 && (batch.flags & 1)==1) released=1;
         printf("{\"stage\":\"ssap_subscription_batch\",\"api\":\"c\",\"last\":%"PRIu64",\"dropped\":%"PRIu64",\"refused\":%"PRIu64",\"state\":%u,\"flags\":%u,\"reason\":%u,\"discarded\":%"PRIu64",\"packets\":[",batch.last_sequence,batch.dropped_notifications,batch.refused_indications,batch.info.state,batch.flags,batch.reason,batch.discarded_on_close);
         for (unsigned i=0;i<batch.count;i++) {
             if (i) {printf(",");}

@@ -693,3 +693,31 @@ Host／guest 工具和镜像；`expiry` 不与额外 Down 被动观察窗口合�
 依赖记录的 guest 时钟映射，模型／parser fixture 通过不等于实际定时或实机通过。
 这是明确的单租约在途到期门禁，仍不覆盖多应用共享 CPCD、Grant／epoch 撤销、
 完整 fd／引用排空、NOCP 正确性或自然恢复。历史失败和原断链门禁保持。
+
+### 两个应用共享同一 SSAP 配置
+
+`--ssap-subscription-verify --ssap-subscription-shared-verify` 是独立的保护等级2、
+`numeric-approve` 门禁，与续租、队列压力、owner-loss及在途夹具分开，保留普通
+4×61字节通道回归。必须重新准备 contract 1 和相同Host／guest工具；不能通过旧
+单租约记录改名获得共享资格。
+
+同一物理actor上两个实际普通应用进程分别取得相同属性／模式的不同token和队列。
+先让两者各自校验更新并写回不同随机值；第一应用实际release须得到flags=3，
+另一应用随后继续完成业务；重新加入的进程须得到新token和原epoch。最后一个
+引用释放须有实际双端CPCD停用及flags=1。通知／指示、两个方向和连接角色分别执行。
+
+夹具复用原SDK的read/check/writeback和有限监督器，不增加协议发送捷径。每组7个
+发布、12个实际独立业务回复、3个应用租约；完整矩阵8组、56发布、96回复，16次
+共享保留释放和8次最终停用。原始USB中每组只允许一次启用和最后一次停用，不能
+仅靠本地configuration观察、协议ACK或终态日志作证。每次release保留SDK实际原
+5秒起止；子进程和热文件全部关闭后按原快照契约发布。
+
+ACK1在共享组中只代表至少一个有效队列接受，不能证明所有应用收到。此门禁针对
+相同过滤／模式、无队列溢出的实际交付；不同集合／模式动态合并、共享压力、
+所有在途退出／Grant／epoch／引用排空、四设备和自然恢复仍各有独立门禁。
+
+Shared-gate security epochs are local to each controller/connection. Each reader
+lease is matched to its own endpoint’s actual Native SCM security receipt;
+provider authorization is matched to the server endpoint’s receipt. Equal epochs
+across peers are not required. Missing, stale or changed endpoint context fails
+the gate; a verifier fix does not rewrite an earlier failed run.

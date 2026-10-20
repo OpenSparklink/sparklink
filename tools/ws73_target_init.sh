@@ -426,6 +426,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             if grep -qw ws73.ssap_requester_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-requester-lifecycle-verify"; fi
             if grep -qw ws73.ssap_owned_update=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owned-update-verify"; fi
             if grep -qw ws73.ssap_subscription=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-subscription-verify"; fi
+            if grep -qw ws73.ssap_subscription_shared=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-subscription-shared-verify"; fi
             if grep -qw ws73.ssap_subscription_renewal=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-subscription-renewal-verify"; fi
             if grep -qw ws73.ssap_subscription_pressure=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-subscription-pressure-verify"; fi
             if grep -qw ws73.ssap_subscription_owner_loss=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-subscription-owner-loss-verify"; fi

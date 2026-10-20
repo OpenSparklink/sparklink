@@ -51,12 +51,13 @@ def boot_case(tokens, enabled):
     return values[0]
 
 
-def validate_inputs(package,*,subscription=False):
+def validate_inputs(package,*,subscription=False,shared=False):
     """Do not execute an old prepared guest under a new lifecycle selector."""
     here=Path(__file__).resolve().parent
     names=['ws73_ssap_sender_deadline.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh',
            'testing/application_client/client.c','testing/application_client/client.py']
-    if subscription:names+=['ws73_ssap_subscription.py','ws73_application_role.py']
+    if subscription or shared:names+=['ws73_ssap_subscription.py','ws73_application_role.py']
+    if shared:names+=['ws73_ssap_shared.py']
     for name in names:
         path=here/name
         records=package.get('application_client_tools',{}).get('sources',[])if name.startswith('testing/')else package.get('inputs',[])

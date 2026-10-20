@@ -373,7 +373,7 @@ def subscription_mode():
                 if from_cache:
                     position+=1
                     continue
-            if batch.info.state==3 and batch.flags==1:released=True
+            if batch.info.state==3 and (batch.flags & 1)==1:released=True
             print(json.dumps(dict(stage='ssap_subscription_batch',api='python',last=batch.last_sequence,
                 dropped=batch.dropped_notifications,refused=batch.refused_indications,state=batch.info.state,
                 flags=batch.flags,reason=batch.reason,discarded=batch.discarded_on_close,

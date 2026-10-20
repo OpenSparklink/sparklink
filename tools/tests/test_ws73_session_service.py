@@ -4,7 +4,7 @@ import copy
 import unittest
 from unittest.mock import patch
 
-from ws73_session_service import EVENTS, STATUS, parse, join, vm_guard, cleanup
+from ws73_session_service import EVENTS, STATUS, parse, join, vm_guard, cleanup, operation_timings, bind_business
 from ws73_trace_layout import buffer_kib
 
 
@@ -34,7 +34,7 @@ def fixture():
         for stage,delta,result in [(0,120_000,-115),(2,130_000,0),(1,140_000,0)]:event('tx',delta,stage=stage,result=result,**tx)
         event('work',160_000,**(w|dict(stage=1,attempts=1,bytes=8,elapsed_ns=60_000)))
         owners[ctl,ctl+1,1]=dict(bus=1,device=ctl+2,handle=0,epoch=4)
-        capture['acb_packets'].append(dict(bus=1,device=ctl+2,handle=0,direction='out',boundary=0,data='00'*8,wall_ns=WALL+BASE+125_000))
+        capture['acb_packets'].append(dict(record=ctl+1,bus=1,device=ctl+2,handle=0,direction='out',boundary=0,data='00'*8,wall_ns=WALL+BASE+125_000))
     def line(t,cpu,name,body):return f' worker-123 [{cpu:03d}] .... {t//10**9}.{t%10**9//1000:06d}: {name}: {body}'
     rows=[line(BASE,0,'tracing_mark_write','SLK_SERVICE_BEGIN:'+row['cookie'])]
     rows.extend(line(t,cpu,name,body) for t,cpu,name,body in sorted(records))
@@ -45,6 +45,58 @@ def fixture():
 
 
 class ServiceTrace(unittest.TestCase):
+    def test_operation_timings_keep_admission_call_and_acceptance_separate(self):
+        text,row,owners,capture=fixture()
+        result=operation_timings(parse(text,row),owners,capture)
+        self.assertEqual(result['clock'],'mono');self.assertEqual(result['quantum_ns'],1000)
+        for op in result['operations']:
+            self.assertEqual(op['admission_to_dequeue']['observed_ns'],60_000)
+            self.assertEqual(op['admission_to_first_attempt']['observed_ns'],70_000)
+            self.assertEqual(op['admission_to_first_acceptance'],dict(observed_ns=80_000,lower_ns=79_000,upper_ns=81_000))
+            self.assertEqual(op['admission_to_retirement']['observed_ns'],100_000)
+            self.assertEqual(op['accepted_fragment_span']['observed_ns'],0)
+            self.assertEqual(op['calls'][0]['duration']['observed_ns'],20_000)
+            self.assertEqual(op['accepted_usb_records'],[op['controller']+1])
+            self.assertEqual(op['deadline_jiffies'],5042)
+            self.assertNotIn('delivered',op)
+
+    def test_operation_timings_cannot_bypass_original_join(self):
+        text,row,owners,capture=fixture();p=parse(text,row)
+        for event,stage in [('queue',0),('queue',2),('work',1),('tx',2)]:
+            bad=copy.deepcopy(p)
+            bad['rows'].remove(next(v for v in bad['rows']if v['event']==event and v['stage']==stage))
+            with self.subTest(event=event,stage=stage),self.assertRaises(ValueError):operation_timings(bad,owners,capture)
+        bad=copy.deepcopy(capture);bad['acb_packets'][0]['wall_ns']+=10**9
+        with self.assertRaises(ValueError):operation_timings(p,owners,bad)
+
+    def test_uncertain_acceptance_retains_obligation_without_claiming_success(self):
+        text,row,owners,capture=fixture();p=parse(text,row)
+        next(v for v in p['rows']if v['event']=='tx'and v['ctl']==0 and v['stage']==1)['result']=-5
+        op=operation_timings(p,owners,capture)['operations'][0]
+        self.assertEqual(op['uncertain_acceptances'],1)
+        self.assertEqual(op['accepted_fragments'],1)
+        self.assertEqual(op['calls'][0]['result'],-5)
+        self.assertEqual(op['accepted_usb_records'],[1])
+
+    def test_business_ids_require_exact_complete_usb_fragment_records(self):
+        def fixture_rows():
+            timings=dict(operations=[dict(accepted_usb_records=[11,12]),dict(accepted_usb_records=[21]),dict(accepted_usb_records=[31])])
+            rows=[dict(phase=1,source=0,sequence=83,frame_sha256='a'*64,
+                       records=[dict(fragment_records=[11,12]),{},dict(fragment_records=[21]),{}])]
+            return timings,rows
+        timings,rows=fixture_rows();bind_business(timings,rows)
+        self.assertEqual(timings['operations'][0]['business']['sequence'],83)
+        self.assertEqual(timings['operations'][1]['business']['direction'],'reply')
+        self.assertIsNone(timings['operations'][2]['business'])
+        for kind in ['missing-first','missing-tail','reversed','duplicate-business','duplicate-operation']:
+            timings,rows=fixture_rows()
+            if kind=='missing-first':rows[0]['records'][0]['fragment_records']=[99,12]
+            elif kind=='missing-tail':rows[0]['records'][0]['fragment_records']=[11]
+            elif kind=='reversed':rows[0]['records'][0]['fragment_records']=[12,11]
+            elif kind=='duplicate-business':rows.append(copy.deepcopy(rows[0]))
+            else:timings['operations'].append(copy.deepcopy(timings['operations'][0]))
+            with self.subTest(kind=kind),self.assertRaises(ValueError):bind_business(timings,rows)
+
     def test_software_and_usb_acceptance_are_not_peer_completion(self):
         text,row,owners,capture=fixture();p=parse(text,row);out=join(p,owners,capture)
         self.assertEqual(out['services'],2);self.assertEqual(out['accepted_usb_packets'],2)
@@ -135,6 +187,14 @@ class ServiceTrace(unittest.TestCase):
         self.assertEqual(out['credit_waits'],1)
         self.assertEqual(out['accepted_usb_packets'],2)
         self.assertEqual(out['complete_transport_operations'],2)
+        op=operation_timings(p,owners,capture)['operations'][0]
+        self.assertEqual(op['reported_credit_waits'],1)
+        self.assertEqual(op['attempts'],2)
+        self.assertEqual(op['accepted_fragments'],1)
+        self.assertEqual(op['accepted_usb_records'],[1])
+        self.assertEqual(op['inter_attempt_gaps'][0]['duration']['observed_ns'],20_000)
+        self.assertEqual(op['admission_to_first_attempt']['observed_ns'],30_000)
+        self.assertEqual(op['admission_to_first_acceptance']['observed_ns'],80_000)
         next(v for v in p['rows'] if v['event']=='tx' and v['service']==2 and v['stage']==1)['result']=-5
         with self.assertRaisesRegex(ValueError,'repeated dequeue'):join(p,owners,capture)
 

@@ -467,11 +467,169 @@ def corroborate(record, capture, share):
     return join(parsed, identities(record), capture)
 
 
+def operation_timings(parsed, owners, capture):
+    """Read-only timings after the existing full trace/USB join, not new credit truth.
+
+    Admission IDs are debug observations, not application message sequence IDs.
+    Inter-attempt gaps include scheduling/other work; a reported credit wait does
+    not establish when the controller freed a buffer. No timestamps cross clocks.
+    """
+    proof = join(parsed, owners, capture)
+    quantum = parsed['quantum_ns']
+
+    def interval(first, last):
+        delta = last - first
+        if delta < -quantum:
+            raise ValueError('operation timing reversed beyond trace resolution')
+        return dict(observed_ns=delta, lower_ns=max(0, delta-quantum),
+                    upper_ns=delta+quantum)
+
+    queues, attempts, services = defaultdict(list), defaultdict(dict), {}
+    all_attempts = defaultdict(dict)
+    for v in parsed['rows']:
+        ident = (v['ctl'], v['gen'], v['life'])
+        if v['event'] == 'queue':
+            queues[(*ident, v['slot'], v['sequence'])].append(v)
+        elif v['event'] == 'tx' and v['slot'] >= 0:
+            attempts[(*ident, v['slot'], v['sequence'])].setdefault(
+                (v['service'], v['offset']), {})[v['stage']] = v
+        elif v['event'] == 'work' and v['stage'] == 1:
+            services[(*ident, v['service'])] = v
+        if v['event'] == 'tx':
+            all_attempts[(*ident, v['slot'], v['sequence'], v['service'], v['offset'])][v['stage']] = v
+    # Reuse the exact order already validated by join(), including control
+    # packets and handle reuse across lifetimes. No payload decoder is added.
+    physical = defaultdict(list)
+    for key, stages in all_attempts.items():
+        if 2 in stages and stages[2]['result'] == 0:
+            owner = owners[key[:3]]
+            physical[owner['bus'], owner['device'], owner['handle']].append((key[:5], stages))
+    records = defaultdict(list)
+    for physical_key, values in physical.items():
+        values.sort(key=lambda v: v[1][0]['mono_ns'])
+        packets = [v for v in capture['acb_packets'] if v['direction'] == 'out'
+                   and (v['bus'], v['device'], v['handle']) == physical_key]
+        for (key, _), packet in zip(values, packets):
+            records[key].append(packet['record'])
+    rows = []
+    for key, stages in sorted(queues.items()):
+        admitted = next(v for v in stages if v['stage'] == 0)
+        retired = next(v for v in stages if v['stage'] == 2)
+        dequeues = sorted((v['mono_ns'] for v in stages if v['stage'] == 1))
+        tries = sorted(attempts[key].values(), key=lambda s: s[0]['mono_ns'])
+        accepted = [s for s in tries if 2 in s and s[2]['result'] == 0]
+        waits = [s for s in tries if s[1]['result'] == -11 and s[1]['wait'] == 1]
+        service_ids = sorted({s[0]['service'] for s in tries})
+        gaps = []
+        for previous, current in zip(tries, tries[1:]):
+            gaps.append(dict(after_service=previous[0]['service'],
+                             before_service=current[0]['service'],
+                             previous_result=previous[1]['result'],
+                             previous_wait=previous[1]['wait'],
+                             duration=interval(previous[1]['mono_ns'], current[0]['mono_ns'])))
+        row = dict(controller=key[0], generation=key[1], lifetime=key[2],
+                   epoch=admitted['epoch'], slot=key[3], admission_sequence=key[4],
+                   dtap_bytes=admitted['bytes'], deadline_jiffies=admitted['deadline'],
+                   admission_ns=admitted['mono_ns'], dequeue_ns=dequeues,
+                   retirement_ns=retired['mono_ns'], attempts=len(tries),
+                   accepted_fragments=len(accepted), reported_credit_waits=len(waits),
+                   accepted_usb_records=records[key],
+                   uncertain_acceptances=sum(s[1]['result'] != 0 for s in accepted),
+                   admission_to_dequeue=interval(admitted['mono_ns'], dequeues[0]),
+                   admission_to_retirement=interval(admitted['mono_ns'], retired['mono_ns']),
+                   admission_to_first_attempt=None, admission_to_first_acceptance=None,
+                   accepted_fragment_span=None, inter_attempt_gaps=gaps,
+                   calls=[dict(service=s[0]['service'], offset=s[0]['offset'],
+                               length=s[0]['len'], pb=s[0]['pb'], result=s[1]['result'],
+                               wait=s[1]['wait'], begin_ns=s[0]['mono_ns'],
+                               return_ns=s[1]['mono_ns'],
+                               acceptance_ns=s[2]['mono_ns'] if s in accepted else None,
+                               duration=interval(s[0]['mono_ns'], s[1]['mono_ns']))
+                          for s in tries],
+                   services=[dict(sequence=n, stop=services[(*key[:3], n)]['stop'],
+                                  attempts=services[(*key[:3], n)]['attempts'],
+                                  bytes=services[(*key[:3], n)]['bytes'],
+                                  elapsed_ns=services[(*key[:3], n)]['elapsed_ns'],
+                                  planned_delay_jiffies=services[(*key[:3], n)]['planned_delay'])
+                             for n in service_ids])
+        if tries:
+            row['admission_to_first_attempt'] = interval(admitted['mono_ns'], tries[0][0]['mono_ns'])
+        if accepted:
+            row['admission_to_first_acceptance'] = interval(admitted['mono_ns'], accepted[0][2]['mono_ns'])
+            row['accepted_fragment_span'] = interval(accepted[0][2]['mono_ns'], accepted[-1][2]['mono_ns'])
+        rows.append(row)
+    control_waits = sum(v['event'] == 'tx' and v['slot'] == -1 and v['stage'] == 1
+                        and v['result'] == -11 and v['wait'] == 1 for v in parsed['rows'])
+    if (len(rows) != proof['operations']
+            or sum(v['reported_credit_waits'] for v in rows) + control_waits != proof['credit_waits']):
+        raise ValueError('operation observation accounting mismatch')
+    return dict(version=1, clock='mono', quantum_ns=quantum, operations=rows,
+                control_reported_credit_waits=control_waits,
+                scope='Trace admission IDs,not application IDs;DTAP bytes include its header. '
+                      'Retirement is local operation retirement,not delivery. Atomic acceptance '
+                      'is not controller completion. Reported credit waits and gaps do not '
+                      'prove credit correctness or isolate credit,USB,firmware,radio or scheduling delay.')
+
+
+def bind_business(timings, rows):
+    """Associate already verified business legs through exact original USB records."""
+    by_first_record = {}
+    for operation in timings['operations']:
+        operation['business'] = None
+        records = operation['accepted_usb_records']
+        if records:
+            if records[0] in by_first_record:
+                raise ValueError('ambiguous operation USB record')
+            by_first_record[records[0]] = operation
+    for row in rows:
+        for direction, packet in [('request', row['records'][0]), ('reply', row['records'][2])]:
+            operation = by_first_record.get(packet['fragment_records'][0])
+            if (operation is None or operation['business'] is not None
+                    or operation['accepted_usb_records'] != packet['fragment_records']):
+                raise ValueError('business leg and Session operation fragments differ')
+            operation['business'] = dict(phase=row['phase'], source=row['source'],
+                                         sequence=row['sequence'], direction=direction,
+                                         request_frame_sha256=row['frame_sha256'])
+
+
+def analyze_benchmark(directory):
+    """Replay the original paired application oracle before retrospective timings."""
+    from ws73_benchmark_timeline import analyze, material
+    from ws73_capture import read_capture
+    root = Path(directory).resolve(strict=True)
+    timeline = analyze(root)  # Full original app/USB/capture/role/source oracle.
+    manifest = json.loads((root/'manifest.json').read_text())
+    if (manifest.get('session_service_observation_requested') is not True
+            or manifest.get('session_service_acceptance') is not True):
+        raise ValueError('original successful Session observation required')
+    share = root/'guest-output'
+    record = json.loads((share/'application/passthrough-control/run.json').read_text())
+    owners = identities(record)
+    capture = read_capture(share/'ws73.pcap', {(v['bus'], v['device']) for v in owners.values()})
+    proof = corroborate(record, capture, share)
+    if proof != manifest['session_service_observation']:
+        raise ValueError('original Session observation replay mismatch')
+    folder = share/'session-service'
+    parsed = parse((folder/'trace.txt').read_text(), json.loads((folder/'run.json').read_text()))
+    timings = operation_timings(parsed, owners, capture)
+    bind_business(timings, timeline['rows'])
+    return dict(status='SESSION_TIMINGS_OBSERVED_NOT_PERFORMANCE_QUALIFIED',
+                source_manifest=material(root/'manifest.json'),
+                trace=material(folder/'trace.txt'), trace_receipt=material(folder/'run.json'),
+                original_round_trips=timeline['round_trips'], service_observation=proof,
+                **timings)
+
+
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('action', choices=['start', 'finish', 'abort'])
+    p.add_argument('action', choices=['start', 'finish', 'abort', 'analyze-benchmark'])
+    p.add_argument('directory', nargs='?', type=Path)
     args = p.parse_args()
-    if args.action == 'start':
+    if (args.action == 'analyze-benchmark') != (args.directory is not None):
+        p.error('only analyze-benchmark requires a captured VM run directory')
+    if args.action == 'analyze-benchmark':
+        print(json.dumps(analyze_benchmark(args.directory), indent=2))
+    elif args.action == 'start':
         configure()
     else:
         finish(args.action == 'abort')

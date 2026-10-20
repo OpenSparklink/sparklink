@@ -23,7 +23,9 @@ Native 双端证据闭包已接通，完整性能门禁仍缺。准确构建与�
 ## 报告字段与单位
 
 schema 版本、run id、源角色及 controller/generation/lifetime/channel 身份；
-编译源码/dirty 指纹、artifact、执行工具、报告提交分开。记录 SDK111 固件 hash、
+编译源码/dirty 指纹、artifact、执行工具、报告提交分开。记录实际 SDK 版本及主固件、
+两份校准的 hash；本线程按资源策略使用 SDK110 和明确的 E／US 板型，不能将历史
+SDK111 结果转授新固件或混合型号。记录
 两端连接角色/参数/PHY/MTU/MPS/PDU/分片、VM/QEMU/CPU/USB 拓扑、捕获和队列配置。
 请求参数与实际生效参数分开；不能取得的值标 unknown 和剩余条件。
 
@@ -304,3 +306,32 @@ phase receipt 封存。校验 PID、父进程、start tick、UID/GID1004、空�
 
 时间线的 `process_resource_observations` 保留每 phase／每应用的独立结果。
 观测开销和功能正确性仍需按准确产物分别验收；未测量的其他层资源保持缺失。
+
+## Session 入队与提交时间
+
+对已有 `--session-service-observe` 的成功 Native benchmark 捕获，可只读执行：
+
+```sh
+python3 tools/ws73_session_service.py analyze-benchmark RUN_DIRECTORY
+```
+
+该入口先重放原双端应用、角色、屏障、捕获及 USB 门禁，再重放原 Session 追踪校验。
+原门禁失败、trace 丢失、缺少阶段、身份不符、USB 顺序或时间不符均拒绝输出完整结果。
+分析不操作设备，不改原 manifest，不为旧 artifact 添加新功能资格；分析器与执行工具的
+源码身份须分别记录。默认生产路径不启用该追踪。
+
+每个操作保留 controller／generation／lifetime／epoch、slot、入队观察序号、DTAP
+字节数、原 jiffies 期限及各阶段的单调时间。观察序号不是应用序号；仅通过原 USB
+fragment record 的完整有序匹配关联业务 phase、源方向、请求／回复和应用序号。
+建链后的其他受控通道数据保留为未关联业务，不能冒充 benchmark 请求。
+
+- 入队到出队、首次尝试、首次原子接受分别记录；本地退休不是对端交付。
+- 每次同步调用返回及实际接受分开；不确定失败仍保留已经接受的 USB 义务。
+- 分片接受跨度、重试间隔和 worker 预算分开。`wait=credit` 是 Native 返回的原因，
+  不是独立验证的控制器 credit 真值；其后到下一次尝试的间隔也含调度及其他工作。
+- 时间差给出原观测值与按 trace 分辨率计算的上下界。量化后的零不能称为零耗时。
+  jiffies 期限不当作纳秒，未取得首次接受时保持 null，不补零。
+
+这些观测不能隔离固件、RF 或 USB 延迟，不证明 NOCP 准确性、完整 credit 守恒、
+引用排空、公平性或性能阈值。需要优化时，应先定位等待段，再用准确新 artifact
+重新验收原业务及相关生命周期门禁。

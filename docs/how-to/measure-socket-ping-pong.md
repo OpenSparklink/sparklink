@@ -241,3 +241,17 @@ artifact 和限定范围核对，旧结果不转授新产物。采用预先确�
 并同时核对双端应用／USB 的全部请求。缺材料、PID 身份不一致、读取失败或屏障越界
 都应保留失败；旧镜像没有该观测，不要把缺失改成零。具体单位及高水位边界见
 [指标参考](../reference/socket-benchmark.md#vm-应用进程资源检查点)。
+
+若长包等待需要进一步定位，可在独立 Native benchmark 运行中添加
+`--session-service-observe`。先核对当前工具与 prepared 镜像的来源，选择有限 count，
+保留原业务参数、期限和失败记录。该追踪仅在 VM 内启用；不要在宿主配置 tracefs。
+运行结束后执行：
+
+```sh
+python3 tools/ws73_session_service.py analyze-benchmark "$RUN_DIRECTORY" > session-timings.json
+```
+
+先检查原 manifest 的业务与 Session 观测都通过，再查看每 phase、请求／回复的
+入队到出队、首次接受与分片跨度。缺数据、丢失追踪或重放失败时保留失败，减少下一次
+明确负载或检查捕获预算，不能屏蔽断言或覆盖原件。分析结果不是性能资格，具体时钟、
+USB 关联与 credit 含义见[指标参考](../reference/socket-benchmark.md#session-入队与提交时间)。

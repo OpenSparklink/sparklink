@@ -203,6 +203,45 @@ class PrefixApplicationProof(unittest.TestCase):
             if kind=='credentials':source['credentials']['uids']=[0]*4
             with self.subTest(kind=kind),self.assertRaises(CaptureError):prefix_application_frames(changed)
 
+    def test_post_close_dispatch_validates_prefix_and_propagates_ssap_failure(self):
+        """Actual coordinator; child/credentials are explicit offline fixtures.
+
+        The real prefix parser runs. The SSAP dependency deliberately fails;
+        this does not grant Native, app-binary or remote SSAP qualification.
+        """
+        from contextlib import ExitStack
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import subprocess
+        import tempfile
+        import ws73_channel_socket as channel
+        import ws73_ssap_value as ssap
+        real_popen=subprocess.Popen
+        for corrupt in [False,True]:
+            with self.subTest(corrupt=corrupt),tempfile.TemporaryDirectory() as directory:
+                fixture_row=self.prefix();outputs={}
+                for app in fixture_row['applications']:
+                    value=app['stdout']+'NativeChannelDup: original_closed=1 duplicate_live=1\n'
+                    if app['role']=='peer':value+='NativeChannelLastClose: same_lifetime_reopen=NotSupported\n'
+                    if corrupt and app['role']=='peer':value=value.replace('NativeChannelReceived:','InvalidPrefix:')
+                    outputs[app['role']]=value
+                row=copy.deepcopy(fixture_row);row.update(applications=[],burst=False,phase=0,
+                    security_requirement=0,message_security_required=False,
+                    application_tool=dict(path='/bin/slktest',sha256='0'*64),
+                    owners=[dict(owner=dict(path=f'/org/sparklink/slk{i}_g{i+1}'),
+                                 object=dict(path=f'/org/sparklink/fixture/link_{i+1:016x}'))for i in range(2)])
+                credentials=fixture_row['applications'][0]['credentials']
+                def child(args,*,stdout,stderr):
+                    role='peer'if args[4]=='peer'else'initiator'
+                    return real_popen([sys.executable,'-c','import sys;sys.stdout.write(sys.argv[1])',outputs[role]],stdout=stdout,stderr=stderr)
+                run=SimpleNamespace(output=Path(directory),save=lambda:None)
+                error='one original prefix receipt required'if corrupt else'explicit offline SSAP dependency failure'
+                with ExitStack()as files,patch.object(channel.subprocess,'Popen',side_effect=child),patch.object(channel,'credentials',return_value=credentials),patch.object(ssap,'execute',side_effect=CaptureError('explicit offline SSAP dependency failure'))as execute:
+                    with self.assertRaisesRegex(CaptureError,error):
+                        channel.run_applications(run,row,[],files)
+                    self.assertEqual(execute.call_count,0 if corrupt else 1)
+                    if not corrupt:self.assertGreater(row['after_close_ssap_start_wall_ns'],row['end_wall_ns'])
+
 
 class IndependentUSBProof(unittest.TestCase):
     def fixture(self,rounds=4,boundaries=False,message_bytes=61):

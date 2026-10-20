@@ -126,6 +126,7 @@ def run_applications(run,row,processes,files,original_deadline=None):
         row['end_wall_ns']=time.time_ns()
         prefix_application_frames(row)
         row['after_close_ssap_start_wall_ns']=time.time_ns()
+        from ws73_ssap_value import execute as ssap_value_execute
         ssap_value_execute(run,row) # actual other Channel traffic after fd release
     else:application_frames(row)
 

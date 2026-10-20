@@ -16,6 +16,16 @@ import ws73_role_snapshot as snapshot
 
 
 class ClosedSnapshot(unittest.TestCase):
+    def test_shared_child_record_is_remapped_once_without_destination_fallback(self):
+        child=dict(output_files=['/run/root/child.stdout','/run/root/child.stderr'],stdout='/run/root/literal',stderr='')
+        row=dict(index=[child],operation=dict(actual_child=child))
+        snapshot.remap_outputs(row,Path('/run/root'),Path('/evidence/closed'))
+        self.assertIs(row['index'][0],row['operation']['actual_child'])
+        self.assertEqual(child['output_files'],['/evidence/closed/child.stdout','/evidence/closed/child.stderr'])
+        self.assertEqual(child['stdout'],'/run/root/literal')
+        # Independent pre-mapped data is still rejected,not called an alias.
+        with self.assertRaises(ValueError):snapshot.remap_outputs(dict(output_files=child['output_files'].copy()),Path('/run/root'),Path('/evidence/closed'))
+
     def test_outside_explicit_vm_cannot_mount_or_create_scratch(self):
         # A rejecting boundary,not a successful VM or Native dependency stub.
         with patch('ws73_application_role.require_vm',side_effect=CaptureError('outside disposable VM')):

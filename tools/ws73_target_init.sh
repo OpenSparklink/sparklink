@@ -493,6 +493,12 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                     connection_arg="$connection_arg --channel-benchmark-close-short"
                 fi
             fi
+            benchmark_ssap=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_ssap=/){sub(/^ws73.benchmark_ssap=/,"",$i);print $i}}' /proc/cmdline)
+            case "$benchmark_ssap" in
+                '') ;;
+                owned) connection_arg="$connection_arg --channel-benchmark-ssap-owned" ;;
+                *) fail 'one explicit concurrent SSAP profile' ;;
+            esac
         fi
         for word in $(cat /proc/cmdline); do
             case "$word" in

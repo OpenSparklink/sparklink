@@ -106,6 +106,7 @@ def prepare_locked(args, build_fd):
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['firmware_evidence_contract_version'] = 1
     manifest['socket_benchmark_role_contract_version'] = 1
+    manifest['benchmark_ssap_contract_version'] = 1
     manifest['benchmark_trace_contract_version'] = 1
     manifest['benchmark_process_resource_contract_version'] = 1
     manifest['ssap_exchange_contract_version'] = 2
@@ -139,7 +140,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -328,7 +329,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -596,7 +597,10 @@ def _run(args):
     from ws73_socket_benchmark import requested_configuration,requested_channel,is_parallel,channel_boot
     benchmark_config=requested_configuration(args)
     benchmark_channel=requested_channel(args)
+    import ws73_benchmark_ssap as benchmark_ssap
+    benchmark_service=benchmark_ssap.requested(args)
     benchmark_verifier_names=['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py']+(['ws73_dynamic_channels.py']if benchmark_channel is not None else[])+(['ws73_channel_fairness.py']if is_parallel(benchmark_channel)else[])
+    if benchmark_service is not None:benchmark_verifier_names+=benchmark_ssap.VERIFIERS
     if benchmark_xhci not in ('on','off') or (not benchmark_mode and benchmark_xhci!='on'):raise ValueError('explicit benchmark required for xHCI comparison')
     if benchmark_mode and (benchmark_mode not in ['rate','window','duplex'] or not passthrough or not connection_verify or support or parallel or acb_probe or agent_mode or dynamic_channels or getattr(args,'daemon_link_resync',False) or getattr(args,'channel_socket_verify',False)):
         raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
@@ -843,6 +847,8 @@ def _run(args):
         m['socket_benchmark_window_requested']=benchmark_window
         m['socket_benchmark_config_requested']=benchmark_config
         if benchmark_channel is not None:m['benchmark_channel_request']=benchmark_channel
+        if benchmark_service is not None:
+            m[benchmark_ssap.FIELD]=benchmark_service;m['benchmark_ssap_acceptance']=False
         m['socket_benchmark_xhci_requested']=benchmark_xhci
         m['benchmark_verifiers']=[file_record(HERE/name) for name in benchmark_verifier_names]
     m['socket_benchmark_acceptance']=False
@@ -1068,7 +1074,7 @@ def _run(args):
                     m['ssap_subscription_inflight_expiry_contract_version']=1
         if benchmark_mode:
             from ws73_socket_benchmark import validate_role_sources
-            validate_role_sources(package,dynamic=benchmark_channel is not None,parallel=is_parallel(benchmark_channel))
+            validate_role_sources(package,dynamic=benchmark_channel is not None,parallel=is_parallel(benchmark_channel),ssap=benchmark_service is not None)
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if application_clients:
@@ -1210,6 +1216,7 @@ def _run(args):
                      (' ws73.socket_benchmark_apps=1'if benchmark_mode else '')+
                      (f' ws73.benchmark_mode={benchmark_mode} ws73.benchmark_window={benchmark_window} ws73.benchmark_xhci={benchmark_xhci} ws73.benchmark_count={benchmark_config["count"]} ws73.benchmark_bytes={benchmark_config["bytes"]} ws73.benchmark_interval_us={benchmark_config["interval_us"]}' if benchmark_mode else '')+
                      (' '+ ' '.join(channel_boot(benchmark_channel))if benchmark_channel is not None else'')+
+                     (' '+ ' '.join(benchmark_ssap.boot(benchmark_service))if benchmark_service is not None else'')+
                      (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
@@ -1631,6 +1638,7 @@ def _run(args):
                     validate_application_tools(control,args.prepared/'root',package['guest_files'])
                     if any(r['config']!=benchmark_config for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from exact requested workload')
                     if any(row_channel(r)!=benchmark_channel for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from original channel target')
+                    if any(benchmark_ssap.selected(r)!=benchmark_service for r in control['socket_benchmark']):raise ValueError('actual concurrent SSAP differs from original request')
                     m['socket_benchmark_corroboration']=benchmark_corroborate(control,capture,share)
                     from ws73_benchmark_timeline import check_xhci
                     m['socket_benchmark_xhci_observation']=check_xhci(share,benchmark_xhci)
@@ -1639,6 +1647,9 @@ def _run(args):
                     validate_role_tools(control,args.prepared/'root',package['guest_files'])
                     m['socket_benchmark_role_supervision']=verify_role_artifacts(control,share)
                     if not valid_role_supervision(m['socket_benchmark_role_supervision']):raise ValueError('actual benchmark apps-only supervisor required')
+                    if benchmark_service is not None:
+                        if not benchmark_ssap.valid_summary(m['socket_benchmark_corroboration']):raise ValueError('actual SSAP/channel before-during-after and original SDK proofs required')
+                        m['benchmark_ssap_acceptance']=True
                     m['socket_benchmark_apps_acceptance']=True
                     m['socket_benchmark_acceptance']=True
                 if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
@@ -2421,6 +2432,19 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or proof.get('status')!='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED'
                 or any(type(proof.get(k)) is not int or proof[k]<=0 for k in ['services','attempts','accepted_usb_packets','operations'])):return 1
     benchmark_role=record.get('socket_benchmark_role_contract_version')
+    import ws73_benchmark_ssap as benchmark_ssap
+    try:
+        service=benchmark_ssap.selected(record)
+        if benchmark_ssap.from_boot([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()])!=service:return 1
+        if service is not None:
+            from ws73_socket_benchmark import record_configuration,row_channel
+            benchmark_ssap.workload(record_configuration(record),row_channel(record))
+            if (record.get('benchmark_ssap_acceptance')is not True
+                or benchmark_ssap.selected(record.get('socket_benchmark_role_supervision',{}))!=service
+                or not benchmark_ssap.valid_summary(record.get('socket_benchmark_corroboration',{}))):return 1
+        elif(record.get('benchmark_ssap_acceptance')or benchmark_ssap.FIELD in record.get('socket_benchmark_role_supervision',{})
+             or 'ssap'in record.get('socket_benchmark_corroboration',{})or any('ssap_concurrent_progress'in p for p in record.get('socket_benchmark_corroboration',{}).get('proofs',[]))):return 1
+    except(ValueError,KeyError,TypeError):return 1
     trace_contract=record.get('benchmark_trace_contract_version')
     if trace_contract is not None:
         from ws73_benchmark_timeline import valid_trace_summary
@@ -2435,6 +2459,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         names=[Path(v.get('path','')).name for v in record.get('benchmark_verifiers',[])]
         resource=record.get('benchmark_process_resource_contract_version')
         expected_names={'ws73_benchmark_resources.py'}if resource is not None else set()
+        if service is not None:expected_names.update(benchmark_ssap.VERIFIERS)
         if 'benchmark_channel_request'in record:
             expected_names.add('ws73_dynamic_channels.py')
             from ws73_socket_benchmark import row_channel,is_parallel
@@ -2702,6 +2727,7 @@ def main():
             cmd.add_argument('--channel-benchmark-dynamic',action='store_true',help='explicit basic dynamic endpoint target;requires real CMTC and paired business evidence')
             cmd.add_argument('--channel-benchmark-parallel',action='store_true',help='finite four-app short/long load on two dynamic channels;requires default window workload')
             cmd.add_argument('--channel-benchmark-close-short',action='store_true')
+            cmd.add_argument('--channel-benchmark-ssap-owned',action='store_true',help='fixed128x2042/window8 dynamic correctness load with actual ordinary Owned SSAP callers;not performance')
             cmd.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1],help='dynamic negotiation role independent of business direction;default0 when dynamic')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
             cmd.add_argument('--native-return-verify',action='store_true',help='VM-only actual Native bind-return/physical Down/parent cleanup,then ordinary data preservation')

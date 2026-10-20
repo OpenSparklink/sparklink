@@ -285,3 +285,27 @@ python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT
 该场景包含退出和报告写出开销，参数及限定范围见
 [关闭隔离负载](../reference/socket-benchmark.md#版本3短通道关闭期间长通道继续业务)；
 入口接通不表示当前artifact已经取得实机资格。
+
+## 检查服务与通道同时进展
+
+使用新 prepared、明确板型和专用叶子端口，先核对 SSAP 策略为基础等级0。
+此门禁复用现有 Root、SDK 和 slktest，不与上面的四应用或关闭场景组合：
+
+```sh
+python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT_B" \
+  --firmware-evidence runtime-observation \
+  --qmp-hotplug --connection-verify --connection-advertising negotiable-t \
+  --channel-benchmark window --channel-benchmark-count 128 \
+  --channel-benchmark-bytes 2042 --channel-benchmark-window 8 \
+  --channel-benchmark-dynamic --channel-benchmark-active-endpoint 0 \
+  --channel-benchmark-ssap-owned --timeout 900 --output "$NEW_RUN_DIRECTORY"
+```
+
+检查两种连接角色的原始应用报告、Owned发布者与48次 C／Python SDK调用、实际审批
+及本地值观察，再重放两端USB。在 `ssap_concurrent_progress` 中，before／during／
+after 三段均需有完整普通通道往返；动态TCID和SMTC应分别归属原lifetime。
+Root在何时读取stdout不能代替真实USB业务窗口，旧的顺序执行记录不能换标签。
+
+任一段无进展、SDK／审批失败、缺原文件、丢包或最终Down失败时保留整轮失败，
+先定位原件；不删断言或把单条业务的通过当作完整并发结果。该负载有服务与证据IO，
+指标含义和未覆盖范围见[并发正确性参考](../reference/socket-benchmark.md#动态通道与-owned-ssap-并发正确性)。

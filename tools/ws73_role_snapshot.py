@@ -42,10 +42,17 @@ def requested(row):
     return version is not None
 
 
-def remap_outputs(value,source,destination):
+def remap_outputs(value,source,destination,*,_seen=None):
     """Only structured file references change;raw process strings stay exact."""
+    # The existing SSAP value receipts intentionally share the actual child
+    # record with their client index. Remap that object once,without treating
+    # an arbitrary pre-mapped destination as trusted source input.
+    seen=set()if _seen is None else _seen
+    if isinstance(value,(list,dict)):
+        if id(value)in seen:return
+        seen.add(id(value))
     if isinstance(value,list):
-        for item in value:remap_outputs(item,source,destination)
+        for item in value:remap_outputs(item,source,destination,_seen=seen)
     elif isinstance(value,dict):
         for key,item in value.items():
             if key=='output_files':
@@ -56,7 +63,7 @@ def remap_outputs(value,source,destination):
                     if '..'in relative.parts or path.suffix not in('.stdout','.stderr'):raise CaptureError('fixed local process output required')
                     mapped.append(str(destination/relative))
                 value[key]=mapped
-            else:remap_outputs(item,source,destination)
+            else:remap_outputs(item,source,destination,_seen=seen)
 
 
 def inventory(root,*,kind='subscription'):

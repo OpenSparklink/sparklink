@@ -19,6 +19,17 @@ def application_environment(root=Path('/')):
     return dict(PYTHONPATH=os.pathsep.join(str(root/p) for p in ['usr/share/sparklink/python','usr/share/sparklink/tools']),LIBSPARKLINK_PATH=str(root/'usr/lib/libsparklink.so.0'))
 
 
+def validate_consumer_sources(package):
+    """Same compiled C/interpreted Python input binding for finite SDK gates."""
+    import hashlib
+    here=Path(__file__).resolve().parent
+    for name in ('testing/application_client/client.c','testing/application_client/client.py'):
+        path=here/name;records=package.get('application_client_tools',{}).get('sources',[])
+        matches=[v for v in records if Path(v['path']).resolve()==path.resolve()]
+        if len(matches)!=1 or matches[0]['sha256']!=hashlib.sha256(path.read_bytes()).hexdigest():
+            raise ValueError('fresh exact application consumer source required: '+name)
+
+
 def process_identity(pid, uid=1000):
     status=Path(f'/proc/{pid}/status').read_text()
     fields=dict(line.split(':',1) for line in status.splitlines() if ':' in line)
@@ -160,12 +171,13 @@ def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,upda
 
 
 @contextmanager
-def owned_services(run,row,live):
+def owned_services(run,row,live,*,vm_token='ws73.application_clients=1'):
     """Real SDK publishers,not manager staging. Existing value loop is reused."""
     from ws73_application_role import require_vm
     from ws73_ssap_owned import wait_text
     import secrets,sys
-    require_vm();row['ssap_registration_kind']='owned-sdk-requests-v1';row['ssap_owned_publishers_required']=True
+    if vm_token not in ('ws73.application_clients=1','ws73.socket_benchmark_apps=1'):raise CaptureError('fixed Owned VM role required')
+    require_vm(vm_token);row['ssap_registration_kind']='owned-sdk-requests-v1';row['ssap_owned_publishers_required']=True
     local=[];processes=[]
     with ExitStack() as files:
         try:
@@ -207,12 +219,12 @@ def owned_value_snapshot(run,live,owner,args,expected):
     observation=value_snapshot(process,app,expected.hex());observation.update(api=app['api'],publisher_pid=app['pid']);run.save();return observation
 
 
-def ssap_phase(run,row,*,application_uid=1000):
+def ssap_phase(run,row,*,application_uid=1000,vm_token='ws73.application_clients=1'):
     from ws73_ssap_value import execute as ssap_execute
     row['ssap_language_required']=True;run.save()
     live={}
     ssap_execute(run,row,value_command=lambda entry,args,expected:ssap_command(run,row,entry,args,expected,application_uid=application_uid),
-        services=lambda _run,_row,_command:owned_services(_run,_row,live),
+        services=lambda _run,_row,_command:owned_services(_run,_row,live,vm_token=vm_token),
         local_value_command=lambda owner,args,expected:owned_value_snapshot(run,live,owner,args,expected))
 
 def execute(run, phase):
@@ -319,6 +331,7 @@ def verify_owned_publishers(row):
 
 
 def corroborate_ssap(rows,capture):
+    if len(rows)!=2 or any(row.get('phase')!=n for n,row in enumerate(rows)):raise CaptureError('two original ordered SSAP phases required')
     from ws73_ssap_value import corroborate as value_corroborate
     sdus=reassemble_acb(capture);proofs=[];payloads=set()
     for n,row in enumerate(rows):

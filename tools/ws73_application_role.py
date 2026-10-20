@@ -167,6 +167,17 @@ def require_vm(token='ws73.application_clients=1'):
         raise CaptureError('explicit disposable QEMU SDK role gate required')
 
 
+def prepare_ssap_commands(context,row):
+    """Same finite manager observation wrapper for values and concurrent load."""
+    from ws73_north_star import Run
+    from ws73_application_client import process_identity
+    row['role_ssap_commands']=context.data.setdefault('ssap_values',[])
+    def observed(process,record):
+        record['credentials'],record['process_status']=process_identity(process.pid,1000)
+    context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
+        child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
+
+
 def supervise(daemon_pid,*,mode='values'):
     """New subscription artifacts keep all hot files off the9p export."""
     from ws73_role_snapshot import TOKEN,local_root
@@ -248,13 +259,8 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None):
             if benchmark:execute_phase(context,row)
             else:
                 if not subscription:channel_pair(context,row)
-                from ws73_north_star import Run
                 from ws73_application_client import ssap_phase
-                row['role_ssap_commands']=context.data.setdefault('ssap_values',[])
-                def observed(process,record):
-                    record['credentials'],record['process_status']=process_identity(process.pid,1000)
-                context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
-                    child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
+                prepare_ssap_commands(context,row)
                 if subscription:execute_phase(context,row)
                 else:ssap_phase(context,row,application_uid=1004)
                 row['ssap_gate_status']='OWNED_SDK_VALUE_EVIDENCE_PENDING'if not subscription else'CONTINUOUS_SUBSCRIPTION_PENDING_USB'

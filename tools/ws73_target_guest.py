@@ -443,6 +443,9 @@ def verify_passthrough():
     if dynamic_boot and not benchmark_modes:raise ValueError('dynamic benchmark boot target without benchmark')
     benchmark_role=[v for v in Path('/proc/cmdline').read_text().split()if v.startswith('ws73.socket_benchmark_apps=')]
     if benchmark_role and(benchmark_role!=['ws73.socket_benchmark_apps=1']or not benchmark_modes):raise ValueError('benchmark apps-only boot scope mismatch')
+    from ws73_benchmark_ssap import from_boot as service_boot,selected as selected_service,workload as service_workload
+    service=service_boot(Path('/proc/cmdline').read_text().split())
+    if service is not None and not benchmark_modes:raise ValueError('concurrent SSAP requires the benchmark root scope')
     if benchmark_modes:
         from ws73_socket_benchmark import corroborate as benchmark_corroborate,apps_role
         if bool(benchmark_role)!=all(apps_role(row)for row in run['socket_benchmark']):raise ValueError('benchmark role/boot/evidence mismatch')
@@ -458,6 +461,8 @@ def verify_passthrough():
         from ws73_socket_benchmark import channel_from_boot,row_channel
         channel=channel_from_boot(words,config)
         if any(row_channel(row)!=channel for row in run['socket_benchmark']):raise ValueError('requested channel target differs from actual benchmark')
+        if any(selected_service(row)!=service for row in run['socket_benchmark']):raise ValueError('requested concurrent SSAP differs from actual benchmark')
+        if service is not None:service_workload(config,channel)
         proofs.append({'socket_benchmark':benchmark_corroborate(run,capture,EVIDENCE)})
     if 'daemon_removal' in run:
         from ws73_daemon_removal import corroborate_wire

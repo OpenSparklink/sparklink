@@ -16,6 +16,7 @@ import time
 from ws73_capture import CaptureError, reassemble_acb
 from ws73_channel_socket import credentials, test_program, validate_application_binary
 from ws73_benchmark import load_application_reports, read_report
+import ws73_benchmark_ssap as ssap_gate
 
 COUNT, SIZE, WINDOW = 20, 61, 4
 CONFIG_FIELDS={'mode','count','bytes','window','interval_us'}
@@ -133,7 +134,7 @@ def channel_from_boot(words,config):
 
 
 def request_fields(row):
-    return ROLE_REQUEST_FIELDS|({RESOURCE_FIELD}if RESOURCE_FIELD in row else set())|({CHANNEL_FIELD}if CHANNEL_FIELD in row else set())
+    return ROLE_REQUEST_FIELDS|({RESOURCE_FIELD}if RESOURCE_FIELD in row else set())|({CHANNEL_FIELD}if CHANNEL_FIELD in row else set())|({ssap_gate.FIELD}if ssap_gate.FIELD in row else set())
 
 
 def channel_groups(row):
@@ -206,22 +207,23 @@ def role_tool_path(root,name):
     return resolved
 
 
-def role_tools(root=Path('/'),*,dynamic=False,parallel=False):
+def role_tools(root=Path('/'),*,dynamic=False,parallel=False,ssap=False):
     import hashlib
     from ws73_role_snapshot import HELPER,SUPERVISOR
     names=('/bin/slktest','/bin/bus-policy-probe',HELPER,SUPERVISOR,'/usr/share/sparklink/tools/ws73_socket_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark_timeline.py','/usr/share/sparklink/tools/ws73_benchmark_resources.py')
     if dynamic:names+=('/usr/share/sparklink/tools/ws73_dynamic_channels.py',)
     if parallel:names+=('/usr/share/sparklink/tools/ws73_channel_fairness.py',)
+    if ssap:names+=tuple('/usr/share/sparklink/tools/'+n for n in ssap_gate.VERIFIERS)+ssap_gate.RUNTIME
     return {n:dict(sha256=hashlib.sha256(role_tool_path(root,n).read_bytes()).hexdigest(),bytes=role_tool_path(root,n).stat().st_size)for n in names}
 
 
 def request_tools(row,root=Path('/')):
     """Same typed source profile for producer, root admission and replay."""
     channel=row_channel(row)
-    return role_tools(root,dynamic=channel is not None,parallel=is_parallel(channel))
+    return role_tools(root,dynamic=channel is not None,parallel=is_parallel(channel),ssap=ssap_gate.selected(row)is not None)
 
 
-def validate_role_sources(package,*,dynamic=False,parallel=False):
+def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False):
     from ws73_north_star import file_record
     here=Path(__file__).resolve().parent
     if type(package.get('socket_benchmark_role_contract_version'))is not int or package['socket_benchmark_role_contract_version']!=1:raise ValueError('fresh apps-only benchmark prepared contract1 required')
@@ -230,6 +232,11 @@ def validate_role_sources(package,*,dynamic=False,parallel=False):
     names=('ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh')
     if dynamic:names+=('ws73_dynamic_channels.py',)
     if parallel:names+=('ws73_channel_fairness.py',)
+    if ssap:
+        if type(package.get('benchmark_ssap_contract_version'))is not int or package['benchmark_ssap_contract_version']!=1:raise ValueError('fresh concurrent SSAP prepared contract1 required')
+        from ws73_application_client import validate_consumer_sources
+        validate_consumer_sources(package)
+        names+=ssap_gate.VERIFIERS
     for name in names:
         matches=[v for v in package['inputs']if Path(v['path']).name==name]
         if len(matches)!=1 or matches[0]['sha256']!=file_record(here/name)['sha256']:raise ValueError('prepared benchmark role/source closure mismatch: '+name)
@@ -238,6 +245,8 @@ def validate_role_sources(package,*,dynamic=False,parallel=False):
 def validate_role_request(row,phase,*,live=False):
     extra={RESOURCE_FIELD}if RESOURCE_FIELD in row else set()
     if row_channel(row)is not None:extra.add(CHANNEL_FIELD)
+    if ssap_gate.selected(row)is not None:
+        extra.add(ssap_gate.FIELD);ssap_gate.workload(row['config'],row_channel(row))
     if (live or RESOURCE_FIELD in row)and(type(row.get(RESOURCE_FIELD))is not int or row[RESOURCE_FIELD]!=1):raise CaptureError('new live resource checkpoint contract required')
     if(type(phase)is not int or phase not in(0,1)or type(row.get('phase'))is not int or row['phase']!=phase or not apps_role(row)
         or set(row)!=ROLE_REQUEST_FIELDS|extra
@@ -261,6 +270,8 @@ def execute(run,phase):
     row=dict(phase=len(run.data['connection_control']['phases'])-1,owners=phase['typed_objects'],config=requested_configuration(run.args),application_tool=test_program(run),start_wall_ns=time.time_ns(),status='RUNNING',applications=[],events=[],performance_qualified=False,clock=CLOCK,socket_benchmark_role_contract_version=ROLE_VERSION,benchmark_process_resource_contract_version=1,tools=role_tools())
     channel=requested_channel(run.args)
     if channel is not None:row[CHANNEL_FIELD]=channel
+    service=ssap_gate.requested(run.args)
+    if service is not None:row[ssap_gate.FIELD]=service
     row['tools']=request_tools(row)
     validate_role_request(row,row['phase'],live=True);run.data.setdefault('socket_benchmark',[]).append(row);run.save()
     path=run.output/f'benchmark-role-{row["phase"]}.request.json';temporary=path.with_suffix('.tmp')
@@ -334,6 +345,7 @@ def execute_supervised(run,row):
     from ws73_application_client import process_identity,application_environment
     from ws73_north_star import file_record
     require_vm(ROLE_TOKEN)
+    if ssap_gate.from_boot(Path('/proc/cmdline').read_text().split())!=ssap_gate.selected(row):raise CaptureError('concurrent SSAP boot/request mismatch')
     if not apps_role(row):raise CaptureError('live benchmark requires explicit apps-only contract')
     validate_role_request({k:row[k]for k in request_fields(row)},row['phase'],live=True)
     if row['tools']!=request_tools(row)or row['application_tool']!=file_record(Path('/bin/slktest').resolve(strict=True)):
@@ -409,12 +421,14 @@ def execute_supervised(run,row):
             wait_marker('armed',45)
             from ws73_benchmark_resources import collect
             for proc,app in processes:app['process_resources']={'before':collect(proc.pid,row['application_tool']['path'])}
-            # No disk writes between start and both quiescent; bounded IO receipts
-            # stay in memory. These are sparse supervision events, not per-packet logs.
+            # Plain load keeps sparse IO receipts in memory until quiescent.
+            # The explicit SSAP correctness profile records actual SDK work
+            # during load and cannot be called a low-perturbation measurement.
             from ws73_benchmark_timeline import phase_marker
             row['trace_observation']=phase_marker(row['phase'],'BEGIN')
             release('start')
             business_deadline=time.monotonic()+620
+            if ssap_gate.selected(row)is not None:ssap_gate.execute(run,row)
             if closes_short(channel):
                 wait_marker('quiescent',620,(0,1),original_deadline=business_deadline)
                 if observed['quiescent']&{2,3}:raise CaptureError('long applications already quiescent before short close')
@@ -466,6 +480,13 @@ def check_supervision(row):
     if RESOURCE_FIELD in row and not apps_role(row):raise CaptureError('resource checkpoint requires apps-only role')
     observations(row)
     channel=row_channel(row)
+    if ssap_gate.selected(row)is not None:
+        ssap_gate.workload(config,channel);ssap_gate.streams(row)
+        start=max(e['wall_ns']for e in row['events']if e['kind']=='start')
+        finish=min(e['before_wall_ns']for e in row['events']if e['kind']=='finish')
+        if not start<=row[ssap_gate.SOURCE]['start_wall_ns']<=row[ssap_gate.SOURCE]['end_wall_ns']<=finish:raise CaptureError('actual SDK source between original start/finish barriers required')
+        if any(app['report']['channel_identity'][k]==10 for app in row['applications']for k in ('local_tcid','remote_tcid')):raise CaptureError('application channel and SSAP SMTC must be distinct')
+    else:ssap_gate.streams(row)
     if channel is not None and not apps_role(row):raise CaptureError('dynamic measurement requires apps-only role')
     all_events=row['events'];events=[e for e in all_events if e['kind']!='staged']
     if channel is None and events!=all_events:raise CaptureError('basic CUTC has no dynamic staging')
@@ -673,11 +694,14 @@ def _match_payloads(run,capture,share):
         if not all(type(row.get(RESOURCE_FIELD))is int and row[RESOURCE_FIELD]==1 for row in rows):raise CaptureError('both resource observation phases required')
     if rows[0]['config']!=rows[1]['config']:raise CaptureError('same requested workload in both physical connection roles required')
     if row_channel(rows[0])!=row_channel(rows[1]):raise CaptureError('same original channel target in both physical roles required')
+    if ssap_gate.selected(rows[0])!=ssap_gate.selected(rows[1]):raise CaptureError('same original concurrent SSAP profile in both roles required')
+    service=ssap_gate.corroborate(rows,capture,proofs)if ssap_gate.selected(rows[0])is not None else None
     result=dict(mode=rows[0]['config']['mode'],round_trips=sum(len(a['report']['outgoing']) for row in rows for a in row['applications']),
                 proofs=proofs,performance_qualified=False,
                 remaining=['repeatstablebaseline/traceoverhead/resources','crossclockmapping/per-layer latency','fullperformance/stress/fairness/recovery qualification'])
     if RESOURCE_FIELD in rows[0]:result[RESOURCE_FIELD]=1
     if row_channel(rows[0])is not None:result[CHANNEL_FIELD]=row_channel(rows[0])
+    if service is not None:result.update({ssap_gate.FIELD:ssap_gate.profile(),'ssap':service})
     if is_parallel(row_channel(rows[0])):result['full_fairness_acceptance']=False
     if closes_short(row_channel(rows[0])):result['channel_close_isolation_acceptance']=True
     if rows[0]['config']['window']!=WINDOW:result['window']=rows[0]['config']['window']
@@ -827,7 +851,7 @@ def _closed_role_facts(control,evidence):
         validate_role_request(request,phase)
         verify_probe(row);check_supervision(row);check_report_files(row,evidence)
         snapshots.append(verify(root/f'phase-{phase}',phase=phase,expected_helper=row['tools'][HELPER]['sha256'],kind='benchmark'))
-        for app in [row['role_probe'],*row['applications']]:
+        for app in [row['role_probe'],*row['applications'],*ssap_gate.streams(row)]:
             if len(app['output_files'])!=2:raise CaptureError('complete original benchmark stdout/stderr paths required')
             for name in app['output_files']:
                 relative=Path(name).relative_to('/evidence/benchmark-role/phase-'+str(phase))
@@ -836,12 +860,18 @@ def _closed_role_facts(control,evidence):
     parallel=is_parallel(channels[0]);count=8 if parallel else 4
     result=dict(version=supervision_version(channels[0]),uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,daemon=finished['daemon'],supervisor=finished['supervisor'],snapshot_files=sum(len(v['files'])for v in snapshots),snapshot_bytes=sum(v['bytes']for v in snapshots),performance_qualified=False)
     if parallel:result[CHANNEL_FIELD]=channels[0]
+    service=ssap_gate.selected(control['socket_benchmark'][0])
+    if any(ssap_gate.selected(row)!=service for row in control['socket_benchmark']):raise CaptureError('same actual closed service profile required')
+    if service is not None:result.update({ssap_gate.FIELD:service,'ssap_client_processes':48,'ssap_provider_processes':4})
     return result
 
 
 def valid_role_supervision(proof):
     try:
         channel=row_channel(proof);parallel=is_parallel(channel);count=8 if parallel else 4
+        service=ssap_gate.selected(proof)
+        if service is not None and any(type(proof.get(k))is not int or proof[k]!=v for k,v in dict(ssap_client_processes=48,ssap_provider_processes=4).items()):return False
+        if service is None and any(k in proof for k in ('ssap_client_processes','ssap_provider_processes')):return False
         if channel is not None and not parallel:return False
         expected=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=supervision_version(channel),uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,performance_qualified=False)
         return(all(type(proof[k])is type(v)and proof[k]==v for k,v in expected.items())

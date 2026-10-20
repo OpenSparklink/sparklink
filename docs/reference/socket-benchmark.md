@@ -430,3 +430,28 @@ trace 逐项对应，不因它是动态信令而过滤。新记录按实际匹�
 `overall_run_acceptance=false`。它不补造缺失的 daemon-after 观察，不恢复 Ready，
 不放宽原 Down 期限，也不授完整连接生命周期、追踪或整轮资格。正常验收入口仍
 要求原控制角色完成和真实 daemon-after 身份；终态核对器拒绝将诊断状态当作成功。
+
+## 动态通道与 Owned SSAP 并发正确性
+
+显式 `--channel-benchmark-ssap-owned` 要求 `window`、`--channel-benchmark-dynamic`、
+128条／2042字节／窗口8，以及原动态端点角色0或1。它与 parallel、close、rate、
+duplex 和安全 Agent 场景分开，当前要求预先冻结的 SSAP `channel_security=0`；
+本地 Owned 审批不能描述为认证、加密或 Bond。新 prepared 必须声明
+`benchmark_ssap_contract_version=1`，boot、原请求、helper、C／Python消费者及
+SDK库均按准确输入绑定。旧 benchmark 不因新标识取得服务并发资格。
+
+每连接角色仍由两个 UID1004／空附加组／零能力的实际 slktest 进程完成128条长消息
+校验回复；同一 Session 的两个 UID1005 Owned 服务，由现有 C／Python客户端以
+UID1004执行四轮、两个方向的读／写／读。管理 UID1000 只承担原有发现／UUID观察。
+两个连接角色共256次通道往返、48次 SDK 读写调用、16个值周期及80个实际审批；
+Owner 本地值检查、真实收据、源文件关闭与退出仍必须完整。
+
+原全端 Armed→start／Quiescent→finish 屏障和原始期限不变。监督器在业务期间执行
+真实 SDK／审批和证据写入，因此它是正确性负载，不能作为低扰动性能基线。
+接收和业务发送继续使用原 Session／Grant／credit／Ticket 与唯一 SSAP Engine。
+
+重放必须在同一 guest USB wall 时钟下，找到 SSAP 实际读写窗口之前、期间、之后的
+完整通道请求和对端校验回复；仅应用存活、Root事件或 NOCP 不够。普通动态TCID与
+SMTC10必须不同，长PDU按完整分片末尾判定时序。缺真实交叠则失败，不增加负载或
+插入延时直到通过。该门禁不覆盖通知／指示并发、完整公平性、credit真值、引用排空、
+安全撤销、四设备、冷启动或自然恢复；准确实机范围仍只由资格入口记录。

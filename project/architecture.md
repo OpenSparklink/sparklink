@@ -106,6 +106,9 @@ Native管理系统调用和特权通道fd创建集中在`slk-native`；`slkd`决
 owner/token/队列/期限分开，最后一个有效配置引用才请求远端停用；共享保留与
 实际停用必须在终态中区分，详见[应用所有权决策](../docs/decisions/0004-application-ownership-and-delivery.md)。
 动态过滤／模式合并不由引用数量推导；实现及资格按唯一记录分别开放。
+每租约独立记录满队列、通知丢弃和指示拒绝，慢接收者不能阻塞其他有效租约。
+指示 ACK1 仅表示至少一个队列接受；应用处理仍需实际校验及回复，见
+[交付契约](../docs/reference/interfaces.md)。
 D-Bus tuple与纯ABI观察映射归`slk-contract`，不反向引入
 Native调用、状态缓存或协议Engine。创建fd只表示本地资源准入/暂存，实际协商、
 授权和业务交付分别由原Kernel/Session/Grant机制及真实对端结果决定。

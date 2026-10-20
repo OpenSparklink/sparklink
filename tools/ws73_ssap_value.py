@@ -166,6 +166,17 @@ def length_mtu(row):
     return 2042
 
 
+def uuid_result(receipt,source,handle,uuid,expected):
+    """CLI exit zero is not a successful remote UUID read."""
+    request=b'\x0a\x01\x10\x00\xff\xff\x00'+uuid
+    response=b'\x0b\x03'+handle.to_bytes(2,'little')+expected
+    line=f"SsapUuidValue: path={source['object']['path']} handle={handle} success=true error=0 value={expected.hex()}"
+    trace=f"SsapUuidTrace: request={request.hex()} response={response.hex()}"
+    if (receipt['exit']or receipt['stdout'].splitlines().count(line)!=1
+        or receipt['stdout'].splitlines().count(trace)!=1):raise CaptureError('original peer UUID value and raw trace required')
+    return request,response
+
+
 def execute(run,row,*,value_command=None,services=None,local_value_command=None):
     row['ssap_value_required']=True;row['ssap_read_uuid_required']=True;row['ssap_update_local_rejection_required']=True;row['ssap_values']=[]
     owners=row['owners'];local=[]
@@ -228,11 +239,13 @@ def execute(run,row,*,value_command=None,services=None,local_value_command=None)
                 item=dict(sequence=sequence,sender=sender,target=target,handle=prop['discovered_handle'],before=prop['value'].hex(),value=payload.hex(),start_wall_ns=time.time_ns())
                 item['property_uuid']=prop['property_uuid']
                 item['uuid_read_before']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
+                uuid_result(item['uuid_read_before'],source,prop['handle'],bytes.fromhex(prop['property_uuid']),prop['value'])
                 item['read_before']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],prop['value'])
                 item['write']=command(source,['ssap-write',source['object']['path'],str(prop['handle']),payload.hex()],payload)
                 item['local_check']=command(destination,['ssap-local-read',str(prop['handle'])],payload)
                 item['read_after']=command(source,['ssap-read',source['object']['path'],str(prop['handle'])],payload)
                 item['uuid_read_after']=command(source,['ssap-read-uuid',source['object']['path'],'16','65535',prop['property_uuid']])
+                uuid_result(item['uuid_read_after'],source,prop['handle'],bytes.fromhex(prop['property_uuid']),payload)
                 item['end_wall_ns']=time.time_ns();row['ssap_values'].append(item);run.save()
                 def peer_value(record,operation,value):
                     expected=f"SsapPeerValue: operation={operation} path={source['object']['path']} handle={prop['handle']} value={value}"
@@ -302,10 +315,8 @@ def corroborate(row,matched):
             if len(uuid)!=16 or registered['property_uuid']!=item['property_uuid']:raise CaptureError('original target UUID required')
             request=b'\x0a\x01\x10\x00\xff\xff\x00'+uuid
             for name,expected in [('uuid_read_before',before),('uuid_read_after',value)]:
-                c=item[name];response=b'\x0b\x03'+handle.to_bytes(2,'little')+expected
-                line=f"SsapUuidValue: path={source['object']['path']} handle={handle} success=true error=0 value={expected.hex()}"
-                trace=f"SsapUuidTrace: request={request.hex()} response={response.hex()}"
-                if c['exit'] or c['stdout'].splitlines().count(line)!=1 or c['stdout'].splitlines().count(trace)!=1:raise CaptureError('original peer UUID value and raw trace required')
+                c=item[name];actual_request,response=uuid_result(c,source,handle,uuid,expected)
+                if actual_request!=request:raise CaptureError('original target UUID request required')
                 if not item['start_wall_ns']<=c['start_wall_ns']<=c['end_wall_ns']<=item['end_wall_ns']:raise CaptureError('UUID request original interval required')
                 uuid_wire.append(dict(request=pair_wire(row,matched,source,destination,request,c),response=pair_wire(row,matched,destination,source,response,c)))
                 credit[sender]+=sends(uuid_wire[-1]['request']['tx']);credit[target]+=sends(uuid_wire[-1]['response']['tx'])

@@ -60,6 +60,16 @@ class ActualValueEvidence(unittest.TestCase):
             else:wire.pop()
             with self.assertRaises(CaptureError):corroborate(row,matched)
 
+    def test_live_UUID_result_rejects_zero_exit_remote_error_before_cleanup(self):
+        # Receipt fixtures only. No Native/peer or successful ioctl substitute.
+        from ws73_ssap_value import uuid_result
+        row,_,_=self.uuid_fixture();item=row['ssap_values'][0]
+        source=row['owners'][item['sender']];uuid=bytes.fromhex(item['property_uuid']);value=bytes.fromhex(item['value'])
+        original=item['uuid_read_after'];uuid_result(original,source,2,uuid,value)
+        for text in ('SsapUuidValue: path=/adapter0/link handle=16 success=false error=11 value=\n',
+                     original['stdout'].splitlines()[0]+'\n',original['stdout']*2):
+            with self.subTest(text=text),self.assertRaises(CaptureError):uuid_result(dict(original,stdout=text),source,2,uuid,value)
+
     def test_actual_unsupported_receive_interest_is_not_success(self):
         row,matched,wire=self.fixture();row['ssap_update_local_rejection_required']=True;row['unsupported_incoming']=[]
         for a,b in [(0,1),(1,0)]:row['unsupported_incoming'].append(dict(sender=a,target=b,handle=2,receipt=dict(args=['slctl','--adapter',f'/adapter{a}','ssap-receive',f'/adapter{a}/link','2','notify','10'],exit=1,stderr='peer has not advertised requested property update capabilities')))

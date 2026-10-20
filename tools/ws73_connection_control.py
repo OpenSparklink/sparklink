@@ -76,13 +76,26 @@ def requested_down_failure_observation(args, *, passthrough=None):
         return 0
     real = getattr(args, 'passthrough', False) if passthrough is None else passthrough
     allowed = {'passthrough', 'qmp_hotplug', 'connection_verify', 'channel_socket_verify'}
+    inflight = getattr(args, 'ssap_subscription_inflight_release_verify', False)
+    if type(inflight) is not bool:
+        raise ValueError('typed in-flight passive observation selector required')
+    if inflight:
+        # Reuse the existing exact workload validator,not a looser second
+        # selector. This only permits quiet capture after the original FAIL.
+        from ws73_ssap_subscription import requested
+        if (type(real) is not bool or real is not True
+                or any(type(getattr(args,k,None)) is not bool or getattr(args,k) is not True
+                       for k in ('connection_verify','channel_socket_verify','ssap_subscription_verify'))
+                or not requested(args,passthrough=real)):
+            raise ValueError('passive capture requires the exact protected in-flight subscription gate')
+        allowed |= {'ssap_subscription_verify','ssap_subscription_inflight_release_verify'}
     if (not real or not getattr(args, 'connection_verify', False)
             or not getattr(args, 'channel_socket_verify', False)
             or any(value is True and key not in allowed for key, value in vars(args).items())
             or any(getattr(args, key, None) for key in [
-                'security_agent', 'channel_benchmark', 'managed_partial_case',
+                *([] if inflight else ['security_agent']), 'channel_benchmark', 'managed_partial_case',
                 'managed_connected_case', 'daemon_hold_case'])):
-        raise ValueError('passive Down failure capture requires a dedicated real ordinary socket gate')
+        raise ValueError('passive Down failure capture requires a dedicated ordinary or protected in-flight socket gate')
     return seconds
 
 

@@ -96,8 +96,14 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 
 `--connection-down-failure-observe-seconds` 仅用于现有真实双设备 Native VM 的
 `--qmp-hotplug --connection-verify --channel-socket-verify` 普通门禁。
-取值为0（默认关闭）、6或12秒，不能叠加其他故障、Agent或生命周期子门禁。
+取值为0（默认关闭）、6或12秒。除下述明确组合外，不能叠加其他故障、Agent或生命周期子门禁。
 新选项需要重新封存包含匹配 Host／guest 工具的 prepared root；旧镜像不会自动获得。
+
+另一明确组合为 `--ssap-subscription-verify --ssap-subscription-inflight-release-verify`
+与 `--security-agent numeric-approve`。它仍要求真实双设备、连接和 socket 门禁；
+续租、满队列、进程退出及其他选择器不能混入。Host 与 guest 都重新校验同一
+订阅场景，相关布尔值必须为真布尔类型；新增组合只改变失败后是否保留观察窗口，
+不改变保护等级、在途释放断言、正常流量或原期限。实际执行资格单独记录。
 
 原两端 canonical Down 共同5秒判定保持不变。只有它失败后，工具先保存原FAIL，
 再在清理前休眠并继续已有抓包，期间不发起测试控制请求；随后仍抛出原失败。

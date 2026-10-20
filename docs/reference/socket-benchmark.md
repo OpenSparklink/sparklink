@@ -516,3 +516,17 @@ SMTC10必须不同，长PDU按完整分片末尾判定时序。缺真实交叠�
 VM失败路径先尝试停止自己拥有的应用监督器及daemon，再封存ABORTED追踪，捕获
 清理期间的本地队列退休。停止等待有原上限，失败追踪始终不变成成功；未观察到的
 端点继续为null，不能因为调整封存位置便宣称callback／物理排空。
+
+## intent 过期与 binding 退休的错误阶段
+
+当前 deadline 场景显式声明 `intent_phase_contract_version=2`，分别严格检查：
+
+- 同一有效 binding 上已过期的 intent：普通用户实际 `sendmsg` 返回 `ETIMEDOUT`；
+  前后 channel-info 相同，重新 prepare 成功；随机拒绝标识不得出现在 USB 捕获中。
+- 原已开始 PDU 超时、binding 退休后：裸收发、新 prepare 和原缓存 intent 重试均
+  返回 `ENOTCONN`。binding 状态检查先于 intent 检查；不能用过期错误代替退休状态。
+
+第一项使用独立的 100 ms 原始 setup 期限，在被持有 PDU 准入前结束，不延长或
+续期后者的 5 秒期限。两项不是任选错误码；缺少任一阶段、旧 boot、身份变化或
+拒绝载荷到达 USB 都失败。历史版本1保留原命令和精确断言；版本2不改写历史
+失败、扩大历史资格或证明物理义务已排空。

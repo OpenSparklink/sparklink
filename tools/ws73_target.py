@@ -999,7 +999,9 @@ def _run(args):
     if key_agreement:m['security_key_agreement_verifier']=file_record(HERE/'ws73_key_agreement.py')
     if security_capabilities:m['security_capabilities_verifier']=file_record(HERE/'ws73_security_capabilities.py')
     m['live_channel_deadline_requested']=channel_deadline
-    if channel_deadline:m['channel_deadline_verifier']=file_record(HERE/'ws73_channel_deadline.py')
+    if channel_deadline:
+        m['channel_deadline_verifier']=file_record(HERE/'ws73_channel_deadline.py')
+        m['intent_phase_contract_version']=2
     m['live_channel_link_down_requested']=channel_link_down
     if channel_link_down:m['channel_link_down_verifier']=file_record(HERE/'ws73_channel_link_down.py')
     if channel_revoke_prefix:
@@ -1255,7 +1257,7 @@ def _run(args):
                      (' ws73.channel_revoke_prefix=1' if channel_revoke_prefix else '')+
                      (' ws73.channel_queued_discard=1' if queued_discard else '')+
                      (' ws73.channel_link_down=1' if channel_link_down else '')+
-                     (' ws73.channel_deadline=1' if channel_deadline else '')+
+                     (' ws73.channel_deadline=1 ws73.intent_phase=2' if channel_deadline else '')+
                      (' ws73.session_idle=1' if session_idle else '')+
                      (' ws73.session_service=1' if session_service else '')+
                      (' ws73.security_capabilities=1' if security_capabilities else '')+
@@ -1859,6 +1861,7 @@ def _run(args):
                     if bool(probe.get('prefix_hold'))!=(channel_revoke_prefix and not channel_deadline):raise ValueError('requested causal incomplete-PDU barrier missing or unexpected')
                     if channel_revoke_prefix and not channel_deadline and file_record(HERE/'ws73_channel_prefix_hold.py')!=m['prefix_hold_verifier']:raise ValueError('prefix barrier verifier changed during run')
                     if bool(probe.get('data_deadline'))!=channel_deadline:raise ValueError('requested original PDU deadline gate mismatch')
+                    if probe.get('channel_grant',{}).get('intent_phase_contract_version')!=(2 if channel_deadline else None):raise ValueError('requested live/retired intent phases mismatch')
                     if bool(probe.get('unauthenticated_encryption',False))!=encryption:raise ValueError('explicit installation gate mismatch')
                     if bool(probe.get('security_original_deadline',False))!=original_deadline:raise ValueError('original security deadline gate mismatch')
                     if bool(probe.get('security_cancel_pending',False))!=cancel_pending:raise ValueError('passive cancellation gate mismatch')
@@ -2452,6 +2455,16 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or queued_proof['mode']!=queued_mode or queued_proof['controller']!=record.get('live_connected_file_index')
                 or record.get('session_service_observation',{}).get('queued_discarded_operations')!=2):return 1
     elif queued_proof is not None or queued_boot:return 1
+    phase=record.get('intent_phase_contract_version')
+    phase_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.intent_phase=')]
+    tx_phases=record.get('connected_file_corroboration',{}).get('tx_constraints',{})
+    if phase is not None:
+        if (type(phase)is not int or phase!=2 or phase_boot!=['ws73.intent_phase=2']
+                or record.get('live_channel_deadline_requested')is not True
+                or any(type(tx_phases.get(k))is not int for k in ['intent_phase_contract_version','expired_intent_refusals','retired_binding_refusals'])
+                or tx_phases.get('intent_phase_contract_version')!=2
+                or tx_phases.get('expired_intent_refusals')!=1 or tx_phases.get('retired_binding_refusals')!=2):return 1
+    elif phase_boot or tx_phases.get('intent_phase_contract_version')is not None:return 1
     benchmark_role=record.get('socket_benchmark_role_contract_version')
     import ws73_benchmark_ssap as benchmark_ssap
     try:

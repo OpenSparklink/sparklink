@@ -42,6 +42,9 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,s
             if time.monotonic()>limit:raise TimeoutError('real IN81 hold acknowledgment '+ack)
             time.sleep(.005)
         value=json.loads(path.read_text());row['acks'].append(value);row['ack_receipts'].append(dict(stage=ack,wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns()));save()
+    # Distinguish live expired intent from the binding retired by PDU timeout.
+    # The original held-PDU absolute5s deadline starts only after this probe.
+    grant.expired_intent()
     # Allow previous real business completions to drain before arming once.
     time.sleep(.15);stage('arm_ready','armed');grant.arm(sample_before_block=True);stage('wait_held','held')
     row['blocked_result']=receive(grant.parents[i]);row['timeout_observed_wall_ns']=time.time_ns();save()

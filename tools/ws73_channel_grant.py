@@ -202,6 +202,30 @@ def worker(data, control, minimum=0):
                     else:
                         arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False);values.append(arrived.hex())
                 send(control,dict(stage='primed',sender=command['sender'],values=values,pid=os.getpid(),fd=data.fileno(),start_wall_ns=before,end_wall_ns=time.time_ns()))
+            elif kind=='expired_intent':
+                from sparklink.channel import channel_info
+                start=time.time_ns();before_info=bytes(channel_info(data.fileno())).hex()
+                before=time.monotonic_ns();deadline=before+100_000_000
+                expired=channel_prepare_tx(data.fileno(),minimum,deadline);prepared=time.monotonic_ns()
+                # One absolute setup deadline, before the held PDU is admitted.
+                while True:
+                    remaining=deadline-time.monotonic_ns()
+                    if remaining<=0:break
+                    time.sleep(remaining/1_000_000_000)
+                marker=b'INTENTEX'+secrets.token_bytes(32);submitted=time.monotonic_ns()
+                try:channel_send_constrained(data.fileno(),marker,expired,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL)
+                except OSError as error:actual=error.errno
+                else:raise ValueError('expired live-binding intent was admitted')
+                after=time.monotonic_ns();after_info=bytes(channel_info(data.fileno())).hex()
+                fresh_before=time.monotonic_ns();fresh=channel_prepare_tx(data.fileno(),minimum,fresh_before+5_000_000_000)
+                fresh_after=time.monotonic_ns()
+                if actual!=errno.ETIMEDOUT or before_info!=after_info:raise ValueError('live binding must reject only the expired intent')
+                send(control,dict(stage='expired_live_intent',pid=os.getpid(),fd=data.fileno(),errno=actual,
+                    marker=marker.hex(),info_before=before_info,info_after=after_info,constraint=bytes(expired).hex(),
+                    before_monotonic_ns=before,prepared_monotonic_ns=prepared,submit_before_monotonic_ns=submitted,
+                    submit_after_monotonic_ns=after,fresh_constraint=bytes(fresh).hex(),
+                    fresh_before_monotonic_ns=fresh_before,fresh_after_monotonic_ns=fresh_after,
+                    start_wall_ns=start,end_wall_ns=time.time_ns(),boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip()))
             elif kind=='tx_status':
                 from sparklink.channel import channel_tx_status
                 send(control,dict(stage='tx_status',pid=os.getpid(),fd=data.fileno(),value=bytes(channel_tx_status(data.fileno())).hex(),wall_ns=time.time_ns()))
@@ -354,6 +378,13 @@ class Gate:
             time.sleep(.005)
         row.update(end_wall_ns=time.time_ns(),status='PRIMING_RECEIPTS_RECORDED');self.save()
 
+    def expired_intent(self):
+        if 'ws73.intent_phase=2' not in Path('/proc/cmdline').read_text().split():
+            raise ValueError('explicit phase2 live/retired intent contract required')
+        send(self.parents[self.index],dict(kind='expired_intent'))
+        self.row['expired_live_intent']=receive(self.parents[self.index])
+        self.row['intent_phase_contract_version']=2;self.save()
+
     def arm(self, sample_before_block=False):
         request=dict(kind='block')
         if sample_before_block:request['sample_before_block']=True
@@ -496,6 +527,11 @@ def verify_intents(row, outer):
             if m.version!=1 or m.size!=40 or m.flags!=3 or not scope(m,row['owners'][n]) or m.security_epoch!=c.security_epoch or not c.minimum<=m.security<=2:raise ValueError('actual original RX scope/epoch/grade required')
             if c.minimum!=(floor if b['initiator']==n else m.security):raise ValueError('initiator minimum and original reply observation required')
             count+=1
+    phase=row.get('intent_phase_contract_version')
+    if phase is not None:
+        if type(phase)is not int or phase!=2 or 'data_deadline' not in outer:raise ValueError('explicit deadline intent phase2 required')
+        verify_expired_live_intent(row,outer)
+    elif 'expired_live_intent' in row:raise ValueError('unexpected unversioned intent probe')
     armed=row.get('armed',{});prefix=armed.get('tx_intent')
     if 'revoke_prefix' in row:
         if prefix is None:raise ValueError('actual long PDU admission must carry TX intent')
@@ -521,14 +557,49 @@ def verify_intents(row, outer):
         expected=raw
         if 'data_deadline' in outer:
             cached=decode(SleSendConstraint,d['constraint'])
-            # Actual production sl_prepare_tx rejects inactive Session first;
-            # sl_tx_access checks the expired constraint before later sl_admit.
             if raw!=errno.ENOTCONN or sb<cached.deadline_monotonic_ns:raise ValueError('original Session timeout before cached expired-intent retry required')
-            expected=errno.ETIMEDOUT
+            # Historical v1 receipts retain their original exact oracle. New
+            # runs distinguish expired live intent from a retired binding:
+            # production sl_tx_access rejects the latter before the constraint.
+            expected=errno.ENOTCONN if phase==2 else errno.ETIMEDOUT
         if d['errors']!={'prepare':raw,'submit':expected}:raise ValueError('fresh prepare and unchanged cached intent need their exact phase-specific errors')
         if original is not None and d['constraint']!=original:raise ValueError('withdrawal retry must use the original admitted intent unchanged')
-    return dict(status='ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED',business_sends=count,prefix_admission=bool(prefix),late_refusals=len(receipts)*2,expired_intent_refusals=len(receipts) if 'data_deadline' in outer else 0,
+    result=dict(status='ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED',business_sends=count,prefix_admission=bool(prefix),late_refusals=len(receipts)*2,expired_intent_refusals=(1 if phase==2 else len(receipts)) if 'data_deadline' in outer else 0,
                 scope='Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof')
+    if phase==2:result.update(intent_phase_contract_version=2,retired_binding_refusals=len(receipts))
+    return result
+
+
+def verify_expired_live_intent(row,outer):
+    """Validate actual syscall receipts; USB absence is checked independently."""
+    import re
+    from sparklink.structs import SleChannelInfo,SleSendConstraint
+    from ws73_management_setup import decode
+    from ws73_protected_grant import requirement
+    value=row['expired_live_intent'];owner=row['owners'][outer['index']];worker=row['workers'][outer['index']]
+    before,prepared,submit,after,fresh_before,fresh_after=[value[k]for k in ['before_monotonic_ns','prepared_monotonic_ns','submit_before_monotonic_ns','submit_after_monotonic_ns','fresh_before_monotonic_ns','fresh_after_monotonic_ns']]
+    c=decode(SleSendConstraint,value['constraint']);fresh=decode(SleSendConstraint,value['fresh_constraint'])
+    if (value['stage']!='expired_live_intent' or value['errno']!=errno.ETIMEDOUT
+            or (value['pid'],value['fd'])!=(worker['pid'],worker['fd'])
+            or not isinstance(value['boot_id'],str)or not re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',value['boot_id'])
+            or any(type(t)is not int for t in [before,prepared,submit,after,fresh_before,fresh_after])
+            or not 0<before<=prepared<c.deadline_monotonic_ns<=submit<=after<=fresh_before<=fresh_after<fresh.deadline_monotonic_ns
+            or c.deadline_monotonic_ns!=before+100_000_000 or fresh.deadline_monotonic_ns!=fresh_before+5_000_000_000
+            or not fresh_after<row['armed']['admission_before_monotonic_ns']
+            or not value['start_wall_ns']<=value['end_wall_ns']<row['revoke_prefix']['admission_before_wall_ns']):
+        raise ValueError('one actual expired-intent refusal before original held-PDU deadline required')
+    scope=lambda v:(v.controller,v.generation,v.lifetime,v.handle,v.local_tcid,v.remote_tcid,v.pi)
+    expected=(owner['index'],owner['generation'],owner['lifetime'],owner['handle'],31,31,241)
+    for v in [c,fresh]:
+        if (v.version,v.size,v.minimum,v.reserved)!=(1,48,requirement(outer),0)or scope(v)!=expected or not v.security_epoch:raise ValueError('original live fd scoped intent required')
+    if c.security_epoch!=fresh.security_epoch:raise ValueError('unchanged security epoch required across expired live intent')
+    info=decode(SleChannelInfo,value['info_before']);marker=bytes.fromhex(value['marker'])
+    if (value['info_before']!=value['info_after']or (info.version,info.size,info.reserved)!=(1,40,0)
+            or scope(info)!=expected or info.directions!=3 or info.mode!=0 or not 0<info.mps<=info.mtu
+            or len(marker)!=40 or marker[:8]!=b'INTENTEX'):
+        raise ValueError('same actual live channel before/after expired intent required')
+    if row.get('queue_boot_id',value['boot_id'])!=value['boot_id']:raise ValueError('one original guest boot required')
+    return value
 
 
 def queued_admissions(row):
@@ -565,6 +636,10 @@ def business_evidence(row, outer, capture):
     if any(len(business['applications'])!=2 for business in row['business']):
         raise CaptureError('two actual business application receipts required')
     if row.get('tx_constraint_required'):verify_intents(row,outer)
+    if row.get('intent_phase_contract_version')==2:
+        probe=verify_expired_live_intent(row,outer)
+        if any(probe['marker'] in p['data']for p in capture['acb_packets']):
+            raise CaptureError('expired live intent marker reached USB')
     sdus=reassemble_acb(capture);legs=[]
     for business in row['business']:
         for n,application in enumerate(business['applications']):

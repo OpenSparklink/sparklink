@@ -11,14 +11,15 @@ from ws73_capture import CaptureError
 from ws73_application_client import application_environment,process_identity,owned_arguments,authorization_context
 from ws73_ssap_owned import publisher,value_snapshot,await_removed
 from ws73_ssap_update_delivery import configuration,command_receipt,discover,discovery_wire,sdk_receipt
-from ws73_ssap_subscription import checked_update_reply,wait_stage,role
+from ws73_ssap_subscription import checked_update_reply,wait_stage,role,shared_case,stop_reader_process
 
 TOOL='/usr/share/sparklink/tools/ws73_ssap_shared.py'
 
 @contextmanager
 def reader(run,row,peer,item,api,mode,member):
+    duration=2000 if shared_case(row)=='expiry'and member=='a0'else 30000
     prefix=['/bin/ws73-application-client-c']if api=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
-    args=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),peer['object']['path'],str(item['handle']),str(mode),'30000']
+    args=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),peer['object']['path'],str(item['handle']),str(mode),str(duration)]
     label=f'shared-{row["phase"]}-{item["sender"]}-{mode}-{member}';out=run.output/(label+'.stdout');err=run.output/(label+'.stderr')
     begin=time.time_ns()
     app=dict(api=api,args=args,environment=application_environment(),start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
@@ -49,8 +50,27 @@ def release(run,process,lease,flags):
     lease['released_wall_ns']=time.time_ns();run.save()
 
 
+def expire_reader(run,process,lease):
+    """Observe the original lease expiry;never issue release to produce it."""
+    expires=lease['active']['expires_ns']
+    observed=dict(original_expires_ns=expires,wait_started_ns=time.monotonic_ns())
+    lease['expiry']=observed;run.save()
+    while time.monotonic_ns()<expires:
+        time.sleep(min(.01,max(0,(expires-time.monotonic_ns())/1e9)))
+    observed.update(read_request_ns=time.monotonic_ns(),read_request_wall_ns=time.time_ns())
+    process.stdin.write('poll\n');process.stdin.flush()
+    lease['expiry_observation']=wait_stage(process,lease['application'],'ssap_subscription_batch',4,time.monotonic()+5)
+    observed.update(observed_ns=time.monotonic_ns(),observed_wall_ns=time.time_ns())
+    if lease['expiry_observation']!=dict(stage='ssap_subscription_batch',api=lease['application']['api'],last=4,dropped=0,refused=0,state=3,flags=3,reason=2,discarded=1,packets=[]):
+        raise CaptureError('actual original expiry retained sibling and discarded accepted unread data required')
+    process.stdin.write('quit\n');process.stdin.flush();process.wait(timeout=2)
+    if process.returncode:raise CaptureError('actual expired reader exit')
+    lease['withdrawn_wall_ns']=time.time_ns();run.save()
+
+
 def execute(run,row):
     from ws73_ssap_subscription import STATUS
+    kind=shared_case(row)
     row.update(ssap_subscription=[],ssap_subscription_required=True,ssap_subscription_contract_version=1);run.save()
     for sender in(0,1):
         peer,server=row['owners'][sender],row['owners'][1-sender];api='c'if(row['phase']+sender)%2==0 else'python';other='python'if api=='c'else'c'
@@ -65,8 +85,14 @@ def execute(run,row):
                     if la['active']['token']==lb['active']['token']or la['active']['epoch']!=lb['active']['epoch']:raise CaptureError('independent token at original epoch required')
                     counts={'a0':0,'b':0,'a1':0}
                     for number in range(7):
-                        if number==3:
+                        if number==3 and kind=='release':
                             release(run,a,la,3);group['retained_observation']=configuration(owner,item,mode,b);run.save()
+                        if number==4 and kind!='release':
+                            if time.monotonic_ns()>=la['active']['expires_ns']:raise CaptureError('unread publication must finish before original expiry')
+                            if kind=='expiry':expire_reader(run,a,la)
+                            else:
+                                stop_reader_process(run,la,a);la['withdrawn_wall_ns']=time.time_ns();run.save()
+                            group['retained_observation']=configuration(owner,item,mode,b);run.save()
                         if number==5:
                             fresh,lf=resources.enter_context(reader(run,row,peer,item,other,mode,'a1'));group['lease_indexes'].append(len(item['leases'])-1)
                             if lf['active']['token']in(la['active']['token'],lb['active']['token'])or lf['active']['epoch']!=lb['active']['epoch']:raise CaptureError('fresh replacement token and unchanged epoch required')
@@ -94,7 +120,14 @@ def part_valid(value,phase,sender):
     from ws73_ssap_value import valid_wire
     try:
         api='c'if(phase+sender)%2==0 else'python'
-        wanted=dict(sender=sender,target=1-sender,leases=6,updates=14,application_replies=24,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=4,last_disables=2)
+        kind=value.get('shared_case','release');version=value.get('shared_lifetime_contract_version')
+        if type(kind)is not str or kind not in ('release','expiry','owner-exit')or(kind=='release'and version is not None)or(kind!='release'and(type(version)is not int or version!=1)):return False
+        if kind=='release'and any(value.get(k)is not None for k in ('partial_expirations','expired_discarded','partial_owner_exits','unconsumed_published')):return False
+        if kind=='expiry'and any(value.get(k)is not None for k in ('partial_owner_exits','unconsumed_published')):return False
+        if kind=='owner-exit'and any(value.get(k)is not None for k in ('partial_expirations','expired_discarded')):return False
+        wanted=dict(sender=sender,target=1-sender,leases=6,updates=14,application_replies=24,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=2 if kind=='owner-exit'else 4,last_disables=2)
+        if kind=='expiry':wanted.update(partial_expirations=2,expired_discarded=2)
+        if kind=='owner-exit':wanted.update(partial_owner_exits=2,unconsumed_published=2)
         return(all(type(value[k])is type(v)and value[k]==v for k,v in wanted.items())
             and value['publisher']==api and value['peer']==('python'if api=='c'else'c')
             and len(value['wire'])==91 and all(valid_wire(v)for v in value['wire'])
@@ -123,7 +156,7 @@ def native_security_epochs(row):
 
 
 def corroborate(row,matched):
-    owners=row['owners'];proof=[];credit={0:0,1:0};unique=set();epochs=native_security_epochs(row)
+    owners=row['owners'];proof=[];credit={0:0,1:0};unique=set();epochs=native_security_epochs(row);kind=shared_case(row)
     if len(row.get('ssap_subscription',[]))!=2:raise CaptureError('two original shared providers required')
     for sender,item in enumerate(row['ssap_subscription']):
         s,t=sender,1-sender;peer,server=owners[s],owners[t];api='c'if(row['phase']+s)%2==0 else'python';other='python'if api=='c'else'c';h=item['handle'];legs=[];snapshots=[];tokens=set();pidset=set();commands={'SdkOwnedReplaced':[],'SdkOwnedUpdate':[],'SdkOwnedConfiguration':[]}
@@ -144,9 +177,11 @@ def corroborate(row,matched):
             for member,lease in by_member.items():
                 app=lease['application'];reader_api=api if member=='b'else other;role(app['credentials'],1004)
                 prefix=['/bin/ws73-application-client-c']if reader_api=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+                duration=2000 if kind=='expiry'and member=='a0'else 30000
+                expected_exit=-9 if kind=='owner-exit'and member=='a0'else 0
                 if (lease['member']!=member or type(lease['mode'])is not int or lease['mode']!=mode or app['api']!=reader_api or app['environment']!=application_environment()
-                    or app['args']!=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),peer['object']['path'],str(h),str(mode),'30000']
-                    or type(app['exit'])is not int or app['exit']!=0 or app['stderr']or type(app['pid'])is not int or app['pid']<=0 or app['pid']in pidset
+                    or app['args']!=prefix+['subscription',str(peer['owner']['index']),str(peer['owner']['generation']),peer['object']['path'],str(h),str(mode),str(duration)]
+                    or type(app['exit'])is not int or app['exit']!=expected_exit or app['stderr']or type(app['pid'])is not int or app['pid']<=0 or app['pid']in pidset
                     or not group['start_wall_ns']<=lease['start_wall_ns']<=app['start_wall_ns']<=app['end_wall_ns']<=lease['end_wall_ns']<=group['end_wall_ns']<=item['end_wall_ns']):raise CaptureError('actual separate ordinary SDK reader process required')
                 pidset.add(app['pid']);active=lease['active'];expected[member].append(active)
                 if (set(active)!={'stage','api','token','epoch','expires_ns','started_ns','deadline_ns','returned_ns','client_closed'}
@@ -154,10 +189,12 @@ def corroborate(row,matched):
                     or any(type(active[k])is not int or active[k]<=0 for k in ('token','epoch','expires_ns','started_ns','deadline_ns','returned_ns'))
                     or active['epoch']!=epochs[s]or active['token']in tokens or active['deadline_ns']-active['started_ns']!=5_000_000_000
                     or not active['started_ns']<=active['returned_ns']<active['deadline_ns'] or lease['ready_ns']<active['returned_ns']
-                    or not active['started_ns']+30_000_000_000<=active['expires_ns']<=active['deadline_ns']+30_000_000_000):raise CaptureError('distinct original shared token/lease/deadline required')
+                    or not active['started_ns']+duration*1_000_000<=active['expires_ns']<=active['deadline_ns']+duration*1_000_000):raise CaptureError('distinct original shared token/lease/deadline required')
                 tokens.add(active['token'])
             if len({v['active']['epoch']for v in leases})!=1:raise CaptureError('same original security epoch required')
-            if not(by_member['a0']['released_wall_ns']<=group['messages'][3]['start_wall_ns']<=group['messages'][4]['end_wall_ns']<=by_member['a1']['application']['start_wall_ns']):raise CaptureError('partial release,continued sibling business then fresh replacement required')
+            withdrawn=by_member['a0']['released_wall_ns']if kind=='release'else by_member['a0']['withdrawn_wall_ns']
+            first_after=3 if kind=='release'else 4
+            if not(withdrawn<=group['messages'][first_after]['start_wall_ns']<=group['messages'][4]['end_wall_ns']<=by_member['a1']['application']['start_wall_ns']):raise CaptureError('partial withdrawal,continued sibling business then fresh replacement required')
             if not(by_member['a0']['ready_wall_ns']<=by_member['b']['application']['start_wall_ns']<=by_member['b']['ready_wall_ns']<=group['messages'][0]['start_wall_ns']
                 and by_member['a1']['ready_wall_ns']<=group['messages'][5]['start_wall_ns']):raise CaptureError('both actual acquisitions before publication and fresh acquisition before replacement data required')
             for number,case in enumerate(group['messages']):
@@ -181,12 +218,33 @@ def corroborate(row,matched):
                     if not(case['start_wall_ns']<=received['start_wall_ns']<=request['tx']['wall_ns']<=response['rx']['wall_ns']<=received['end_wall_ns']<=case['end_wall_ns']):raise CaptureError('original per-recipient writeback window required')
                 if not(group['start_wall_ns']<=case['start_wall_ns']<=case['send']['start_wall_ns']<=case['send']['end_wall_ns']<=case['end_wall_ns']<=group['end_wall_ns']):raise CaptureError('original shared update window required')
             for member,lease in by_member.items():
-                started=lease['release_started'];flags=1 if member=='b'else 3;reader_api=lease['application']['api']
-                if (set(started)!={'stage','api','started_ns','deadline_ns'}or started['stage']!='ssap_subscription_release_started'or started['api']!=reader_api
-                    or any(type(started[k])is not int for k in ('started_ns','deadline_ns'))or started['deadline_ns']-started['started_ns']!=5_000_000_000
-                    or not lease['release_request_ns']<=started['started_ns']<=lease['release_completed_ns']<started['deadline_ns']
-                    or any(type(lease['release'][k])is not int for k in ('flags','discarded'))or lease['release']!=dict(stage='ssap_subscription_released',api=reader_api,flags=flags,discarded=0)):raise CaptureError('actual original scoped cleanup receipt required')
-                expected[member].extend((started,lease['release']))
+                reader_api=lease['application']['api']
+                if member=='a0'and kind!='release':
+                    if any(k in lease for k in ('release','release_started','release_request_ns','release_request_wall_ns','released_wall_ns')):raise CaptureError('manual release cannot substitute shared lifetime withdrawal')
+                    case=group['messages'][3]
+                    if kind=='expiry':
+                        observed=lease['expiry'];expires=lease['active']['expires_ns'];terminal=dict(stage='ssap_subscription_batch',api=reader_api,last=4,dropped=0,refused=0,state=3,flags=3,reason=2,discarded=1,packets=[])
+                        if (set(observed)!={'original_expires_ns','wait_started_ns','read_request_ns','read_request_wall_ns','observed_ns','observed_wall_ns'}
+                            or observed['original_expires_ns']!=expires or not case['end_monotonic_ns']<=observed['wait_started_ns']<expires<=observed['read_request_ns']<=observed['observed_ns']<observed['read_request_ns']+5_000_000_000
+                            or not case['end_wall_ns']<=observed['read_request_wall_ns']<=observed['observed_wall_ns']<=withdrawn
+                            or lease['expiry_observation']!=terminal or 'owner_loss'in lease):raise CaptureError('actual original expiry/retained terminal/accepted unread discard required')
+                        expected[member].append(terminal)
+                    else:
+                        death=lease['owner_loss']
+                        if ('expiry'in lease or 'expiry_observation'in lease or any(type(death.get(k))is not int for k in ('pid','signal','exit','start_monotonic_ns','exit_monotonic_ns','observation_deadline_ns','start_wall_ns','exit_wall_ns'))
+                            or death['pid']!=lease['application']['pid']or death['signal']!=9 or death['exit']!=-9
+                            or death['observation_deadline_ns']-death['start_monotonic_ns']!=5_000_000_000
+                            or not case['end_monotonic_ns']<=death['start_monotonic_ns']<=death['exit_monotonic_ns']<death['observation_deadline_ns']
+                            or not case['end_wall_ns']<=death['start_wall_ns']<=death['exit_wall_ns']<=withdrawn
+                            or group['messages'][4]['end_monotonic_ns']>=death['observation_deadline_ns']):raise CaptureError('actual bounded original VM child exit before continuing sibling business required')
+                else:
+                    if any(k in lease for k in ('expiry','owner_loss','expiry_observation')):raise CaptureError('unexpected lifetime observation on surviving owner')
+                    started=lease['release_started'];flags=1 if member=='b'else 3
+                    if (set(started)!={'stage','api','started_ns','deadline_ns'}or started['stage']!='ssap_subscription_release_started'or started['api']!=reader_api
+                        or any(type(started[k])is not int for k in ('started_ns','deadline_ns'))or started['deadline_ns']-started['started_ns']!=5_000_000_000
+                        or not lease['release_request_ns']<=started['started_ns']<=lease['release_completed_ns']<started['deadline_ns']
+                        or any(type(lease['release'][k])is not int for k in ('flags','discarded'))or lease['release']!=dict(stage='ssap_subscription_released',api=reader_api,flags=flags,discarded=0)):raise CaptureError('actual original scoped cleanup receipt required')
+                    expected[member].extend((started,lease['release']))
                 if [json.loads(v)for v in lease['application']['stdout'].splitlines()]!=expected[member]:raise CaptureError('complete exact independent reader stream required')
             if not by_member['a1']['released_wall_ns']<=by_member['b']['release_request_wall_ns']:raise CaptureError('last reference cleanup order required')
             for key,wanted in [('enabled',mode),('retained_observation',mode),('disabled',0)]:
@@ -194,7 +252,7 @@ def corroborate(row,matched):
                 if not 1<=len(records)<=12:raise CaptureError('finite actual shared configuration observation required')
                 receipts=[sdk_receipt(v,api,h,{'modes'})for v in records]
                 if receipts[-1]['modes']!=wanted:raise CaptureError('actual shared configuration outcome required')
-                if key=='retained_observation'and not by_member['a0']['released_wall_ns']<=records[0]['start_wall_ns']<=records[-1]['end_wall_ns']<=group['messages'][3]['start_wall_ns']:raise CaptureError('actual retained observation between partial release and continued business required')
+                if key=='retained_observation'and not withdrawn<=records[0]['start_wall_ns']<=records[-1]['end_wall_ns']<=group['messages'][first_after]['start_wall_ns']:raise CaptureError('actual retained observation between partial release and continued business required')
                 commands['SdkOwnedConfiguration'].extend(v['receipt']for v in records)
             for request,response in [(b'\x08\x03'+h.to_bytes(2,'little')+b'\x02',b'\x09\x03\0\0'),(b'\x0d\x23'+h.to_bytes(2,'little')+bytes([2,mode,0]),b'\x0e\x03'+h.to_bytes(2,'little')+bytes([2,mode,0])),(b'\x0d\x23'+h.to_bytes(2,'little')+b'\x02\0\0',b'\x0e\x03'+h.to_bytes(2,'little')+b'\x02\0\0')]:
                 window=dict(start_wall_ns=by_member['b']['release_request_wall_ns'],end_wall_ns=by_member['b']['release_completed_wall_ns'])if request[:2]==b'\x0d\x23'and request[-2:]==b'\0\0'else group
@@ -209,7 +267,8 @@ def corroborate(row,matched):
         for decision,value in zip(decisions,wanted,strict=True):
             authorization_context({k:v for k,v in decision.items()if k not in {'allow','decision_ns','decision_wall_ns'}},api,level=2,data_type=2)
             if (decision['index'],decision['generation'],decision['lifetime'],decision['handle'],decision['property'])!=(server['owner']['index'],server['owner']['generation'],server['object']['lifetime'],server['object']['handle'],h) or decision['value']!=value or decision['allow']is not True or decision['epoch']!=epochs[t]or decision['decision_ns']>=decision['deadline_ns']or not item['start_wall_ns']<=decision['decision_wall_ns']<=item['end_wall_ns']:raise CaptureError('actual bound shared configuration approval required')
-        part=dict(sender=s,target=t,publisher=api,peer=other,leases=6,updates=14,application_replies=24,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=4,last_disables=2,wire=legs)
+        part=dict(sender=s,target=t,publisher=api,peer=other,leases=6,updates=14,application_replies=24,decisions=4,shared_contract_version=1,shared_groups=2,shared_joins=4,retained_releases=2 if kind=='owner-exit'else 4,last_disables=2,wire=legs)
+        if kind!='release':part.update(shared_case=kind,shared_lifetime_contract_version=1,**({'partial_expirations':2,'expired_discarded':2}if kind=='expiry'else{'partial_owner_exits':2,'unconsumed_published':2}))
         if not part_valid(part,row['phase'],s):raise CaptureError('exact complete shared paired-wire matrix required')
         proof.append(part)
     return proof,credit

@@ -415,9 +415,11 @@ def verify_passthrough():
     from ws73_ssap_subscription import boot_inflight_case,inflight_case
     requested_case=boot_inflight_case(Path('/proc/cmdline').read_text().split(),inflight_requested)
     if any(inflight_case(row)!=requested_case for row in run.get('channel_socket',[])):raise ValueError('in-flight original case boot/evidence mismatch')
-    from ws73_ssap_subscription import shared_boot,shared_required
+    from ws73_ssap_subscription import shared_boot,shared_required,boot_shared_case,shared_case
     shared_requested=shared_boot(Path('/proc/cmdline').read_text().split())
     if shared_requested and not subscription_requested or any(shared_required(row)!=shared_requested for row in run.get('channel_socket',[])):raise ValueError('shared owner boot/request/evidence mismatch')
+    requested_shared_case=boot_shared_case(Path('/proc/cmdline').read_text().split(),shared_requested)
+    if any(shared_case(row)!=requested_shared_case for row in run.get('channel_socket',[])):raise ValueError('shared lifetime boot/evidence mismatch')
     from ws73_role_snapshot import TOKEN,requested as snapshot_requested
     snapshot_boot=Path('/proc/cmdline').read_text().split().count(TOKEN)
     if snapshot_boot>1 or snapshot_boot and not subscription_requested or any(snapshot_requested(row)!=bool(snapshot_boot)for row in run.get('channel_socket',[])):raise ValueError('snapshot boot/request/evidence mismatch')

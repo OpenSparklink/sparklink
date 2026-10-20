@@ -1147,6 +1147,36 @@ mod tests {
             let (mut t, mut waiter) = shared_group(&service, &a).await;
             attach(&mut t, &service, &b, 18, 10).await;
             t.maintain(&mut waiter, Instant::now()).unwrap();
+            // Actual production Queue/Sink paths with declared Native metadata
+            // fixture. One owner's retirement must discard only its own queue.
+            let receipt = slk_protocol::SleMessageSecurity {
+                version: 1,
+                size: 40,
+                controller: 2,
+                generation: 7,
+                lifetime: 9,
+                handle: 11,
+                local_tcid: 10,
+                remote_tcid: 10,
+                pi: 0,
+                security_epoch: 13,
+                flags: 3,
+                security: 2,
+            };
+            let packet = (true, vec![16, 3, 19, 0, 1, 0, 71]);
+            let sinks: Vec<_> = t
+                .stream
+                .as_ref()
+                .unwrap()
+                .iter()
+                .map(Stream::sink)
+                .collect();
+            for sink in &sinks {
+                assert!(
+                    sink.offer(packet.clone(), Some(receipt), Instant::now())
+                        .unwrap()
+                );
+            }
             let now = if expiry {
                 t.stream.as_ref().unwrap()[1].queue.lock().unwrap().expires
             } else {
@@ -1163,6 +1193,17 @@ mod tests {
             assert_eq!(closed.len(), 1);
             let terminal = closed[0].result.as_ref().unwrap();
             assert_eq!(terminal.flags, 3);
+            assert_eq!(terminal.last_sequence, 1);
+            assert_eq!(terminal.discarded_on_close, 1);
+            assert!(terminal.packets.is_empty());
+            assert!(!sinks[1].offer(packet.clone(), Some(receipt), now).unwrap());
+            let sibling = sinks[0].queue.lock().unwrap().take_batch();
+            assert_eq!(sibling.info.state, stream::ACTIVE);
+            assert_eq!(sibling.discarded_on_close, 0);
+            assert_eq!(sibling.packets.len(), 1);
+            assert_eq!(sibling.packets[0].pdu, packet.1);
+            assert!(sinks[0].offer(packet, Some(receipt), now).unwrap());
+            assert_eq!(sinks[0].queue.lock().unwrap().take_batch().last_sequence, 2);
             assert_eq!(
                 terminal.reason,
                 if expiry {

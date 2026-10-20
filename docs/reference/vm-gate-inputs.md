@@ -721,3 +721,24 @@ lease is matched to its own endpoint’s actual Native SCM security receipt;
 provider authorization is matched to the server endpoint’s receipt. Equal epochs
 across peers are not required. Missing, stale or changed endpoint context fails
 the gate; a verifier fix does not rewrite an earlier failed run.
+
+The separate `--ssap-subscription-shared-case expiry` and `owner-exit` cases
+require `--ssap-subscription-shared-verify` and a fresh prepared lifetime
+contract. They retain the existing protected SDK, supervision and paired-wire
+path. Each group publishes one additional unread update while both owners live,
+then withdraws the first owner. The expiry case uses its original 2000 ms lease,
+observes EXPIRED with retained configuration and one discarded packet, and never
+issues release to cause expiry. The exit case kills only the known ordinary
+reader child inside the disposable VM; its complete pre-exit stream and actual
+exit are required. The surviving caller checks further payloads and replies,
+a fresh caller joins, and only the final reference performs wire disable.
+
+These cases each require eight groups, 24 leases, 56 publications and 96 actual
+checked writebacks across both connection roles. An unread publication at owner
+exit is not claimed as observed application delivery or an inspected dead-owner
+tombstone. The expiry read does not prove timer execution before all possible
+queries. Neither case is kernel Grant revocation, security-epoch withdrawal,
+callback/reference drain, recovery or performance qualification. New gate source
+and offline checks alone do not qualify a compiled artifact; use the canonical
+capability record for the exact run. Existing release evidence keeps its original
+case and identity.

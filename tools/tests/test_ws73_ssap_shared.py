@@ -56,6 +56,31 @@ class SharedGate(unittest.TestCase):
         for tokens in [['ws73.ssap_subscription_shared=1']*2,['ws73.ssap_subscription_shared=0'],['ws73.ssap_subscription_shared=true']]:
             with self.assertRaises(CaptureError):base.shared_boot(tokens)
 
+    def test_shared_lifetime_selector_boot_and_supervision_do_not_relabel_release(self):
+        for case in ('expiry','owner-exit'):
+            args=SimpleNamespace(ssap_subscription_verify=True,ssap_subscription_shared_verify=True,channel_socket_verify=True,security_agent='numeric-approve',ssap_subscription_shared_case=case)
+            self.assertTrue(base.requested(args,passthrough=True));self.assertEqual(base.requested_shared_case(args),case)
+            row=dict(ssap_subscription_shared_required=True,ssap_subscription_shared_contract_version=1,ssap_subscription_shared_case=case,ssap_subscription_shared_lifetime_contract_version=1)
+            self.assertEqual(base.shared_case(row),case)
+            for update in [dict(ssap_subscription_shared_required=False),dict(ssap_subscription_shared_lifetime_contract_version=True),dict(ssap_subscription_shared_lifetime_contract_version=2),dict(ssap_subscription_shared_case='release')]:
+                with self.subTest(update=update),self.assertRaises(CaptureError):base.shared_case(row|update)
+            for enabled,tokens in [(False,['ws73.subscription_shared_case='+case]),(True,['ws73.subscription_shared_case='+case]*2),(True,['ws73.subscription_shared_case=release']),(True,['ws73.subscription_shared_case=bad'])]:
+                with self.assertRaises(CaptureError):base.boot_shared_case(tokens,enabled)
+            self.assertEqual(base.boot_shared_case(['ws73.subscription_shared_case='+case],True),case)
+            old=dict(status='ACTUAL_ROOT_SUBSCRIPTION_PHASES_AND_OUTPUTS_CHECKED',version=1,phases=2,reader_UID=1004,provider_UID=1005,readers=24,providers=4,updates=56,daemon=dict(pid=1,start_ticks=1),supervisor=dict(pid=2,start_ticks=2),shared_contract_version=1,shared_groups=8,shared_joins=16,checked_replies=96,retained_releases=16,last_disables=8)
+            self.assertFalse(base.valid_shared_supervision(old,case=case))
+            current=old|dict(shared_case=case,shared_lifetime_contract_version=1)
+            if case=='expiry':current.update(partial_expirations=8,expired_discarded=8)
+            else:current.update(partial_owner_exits=8,unconsumed_published=8,retained_releases=8)
+            self.assertTrue(base.valid_shared_supervision(current,case=case));self.assertFalse(base.valid_shared_supervision(current))
+            for key in ['shared_lifetime_contract_version','partial_expirations'if case=='expiry'else'partial_owner_exits']:
+                bad=current.copy();bad.pop(key);self.assertFalse(base.valid_shared_supervision(bad,case=case))
+            self.assertFalse(base.valid_shared_supervision(current|{'expired_discarded':8},case=case))if case=='owner-exit'else self.assertFalse(base.valid_shared_supervision(current|{'partial_owner_exits':8},case=case))
+        for case in (True,None,'bad'):
+            with self.assertRaises(ValueError):base.requested_shared_case(SimpleNamespace(ssap_subscription_shared_case=case,ssap_subscription_shared_verify=True))
+        with self.assertRaises(ValueError):base.requested_shared_case(SimpleNamespace(ssap_subscription_shared_case='expiry'))
+        with self.assertRaises(CaptureError):base.shared_case(dict(ssap_subscription_shared_lifetime_contract_version=1))
+
     def test_actual_parser_rejects_extra_missing_duplicate_configuration_writes(self):
         with tempfile.TemporaryDirectory()as tmp:
             path=Path(tmp)/'capture.pcap'

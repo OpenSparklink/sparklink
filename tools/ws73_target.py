@@ -110,6 +110,7 @@ def prepare_locked(args, build_fd):
     manifest['application_role_contract_version'] = 2
     manifest['ssap_subscription_contract_version'] = 1
     manifest['ssap_subscription_shared_contract_version'] = 1
+    manifest['ssap_subscription_shared_lifetime_contract_version'] = 1
     manifest['ssap_subscription_renewal_contract_version'] = 1
     manifest['ssap_subscription_pressure_contract_version'] = 1
     manifest['ssap_subscription_owner_loss_contract_version'] = 1
@@ -610,6 +611,8 @@ def _run(args):
     from ws73_ssap_subscription import requested as subscription_requested
     subscription=subscription_requested(args,passthrough=passthrough)
     subscription_shared=getattr(args,'ssap_subscription_shared_verify',False)
+    from ws73_ssap_subscription import requested_shared_case
+    subscription_shared_case=requested_shared_case(args)
     subscription_renewal=getattr(args,'ssap_subscription_renewal_verify',False)
     subscription_pressure=getattr(args,'ssap_subscription_pressure_verify',False)
     subscription_owner_loss=getattr(args,'ssap_subscription_owner_loss_verify',False)
@@ -859,6 +862,8 @@ def _run(args):
     m['ssap_subscription_acceptance']=False
     m['ssap_subscription_shared_requested']=subscription_shared
     m['ssap_subscription_shared_acceptance']=False
+    m['ssap_subscription_shared_case']=subscription_shared_case
+    if subscription_shared_case!='release':m['ssap_subscription_shared_lifetime_contract_version']=1
     m['ssap_subscription_renewal_requested']=subscription_renewal
     m['ssap_subscription_renewal_acceptance']=False
     m['ssap_subscription_pressure_requested']=subscription_pressure
@@ -1022,6 +1027,7 @@ def _run(args):
                 if type(package.get('ssap_subscription_shared_contract_version'))is not int or package['ssap_subscription_shared_contract_version']!=1:raise ValueError('fresh shared-owner prepared contract1 required')
                 from ws73_ssap_sender_deadline import validate_inputs
                 validate_inputs(package,subscription=True,shared=True)
+                if subscription_shared_case!='release'and(type(package.get('ssap_subscription_shared_lifetime_contract_version'))is not int or package['ssap_subscription_shared_lifetime_contract_version']!=1):raise ValueError('fresh prepared shared lifetime contract1 required')
                 m['ssap_subscription_shared_contract_version']=1
                 m['ssap_subscription_shared_verifier']=file_record(HERE/'ws73_ssap_shared.py')
             if type(package.get('ssap_subscription_snapshot_contract_version'))is not int or package['ssap_subscription_snapshot_contract_version']!=1:raise ValueError('subscription requires new closed local phase snapshots')
@@ -1156,6 +1162,7 @@ def _run(args):
                      (' ws73.ssap_update_delivery=1' if update_delivery else '')+
                      (' ws73.ssap_subscription=1' if subscription else '')+
                      (' ws73.ssap_subscription_shared=1' if subscription_shared else '')+
+                     (' ws73.subscription_shared_case='+subscription_shared_case if subscription_shared_case!='release'else '')+
                      (' ws73.ssap_subscription_renewal=1' if subscription_renewal else '')+
                      (' ws73.ssap_subscription_pressure=1' if subscription_pressure else '')+
                      (' ws73.ssap_subscription_owner_loss=1' if subscription_owner_loss else '')+
@@ -1707,7 +1714,7 @@ def _run(args):
                     if subscription_shared:
                         from ws73_ssap_subscription import valid_shared_summary,valid_shared_supervision
                         from ws73_ssap_shared import configuration_wire
-                        if file_record(HERE/'ws73_ssap_shared.py')!=m['ssap_subscription_shared_verifier']or not valid_shared_summary(m['channel_socket_corroboration'])or not valid_shared_supervision(m['ssap_subscription_supervision']):raise ValueError('exact shared owner/application/cleanup proofs required')
+                        if file_record(HERE/'ws73_ssap_shared.py')!=m['ssap_subscription_shared_verifier']or not valid_shared_summary(m['channel_socket_corroboration'],case=subscription_shared_case)or not valid_shared_supervision(m['ssap_subscription_supervision'],case=subscription_shared_case):raise ValueError('exact shared owner/application/cleanup proofs required')
                         m['ssap_subscription_shared_wire']=configuration_wire(control,capture)
                     m['ssap_subscription_shared_acceptance']=subscription_shared
                     m['ssap_subscription_acceptance']=subscription
@@ -2172,8 +2179,11 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     elif record.get('ssap_subscription_acceptance')or record.get('ssap_subscription_supervision')or any(p.get('ssap_subscription')for p in record.get('channel_socket_corroboration',{}).get('proofs',[])):return 1
     shared=record.get('ssap_subscription_shared_requested',False)
     if type(shared)is not bool or shared and not subscription:return 1
-    from ws73_ssap_subscription import shared_boot
+    from ws73_ssap_subscription import shared_boot,boot_shared_case
+    shared_case=record.get('ssap_subscription_shared_case','release');shared_lifetime=record.get('ssap_subscription_shared_lifetime_contract_version')
+    if(type(shared_case)is not str or shared_case not in ('release','expiry','owner-exit')or shared_case!='release'and(not shared or type(shared_lifetime)is not int or shared_lifetime!=1)or shared_case=='release'and shared_lifetime is not None):return 1
     try:
+        if boot_shared_case([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()],shared)!=shared_case:return 1
         if shared_boot([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()])!=shared:return 1
     except CaptureError:return 1
     if shared:
@@ -2184,7 +2194,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if(type(record.get('ssap_subscription_shared_contract_version'))is not int or record['ssap_subscription_shared_contract_version']!=1
             or type(record.get('ssap_subscription_snapshot_contract_version'))is not int or record['ssap_subscription_snapshot_contract_version']!=1
             or set(verifier)!={'path','sha256'}or not isinstance(verifier['path'],str)or not verifier['path'].endswith('/ws73_ssap_shared.py')or not isinstance(verifier['sha256'],str)or not re.fullmatch('[0-9a-f]{64}',verifier['sha256'])
-            or record.get('ssap_subscription_shared_acceptance')is not True or not valid_shared_summary(channel_proof)or not valid_shared_supervision(record.get('ssap_subscription_supervision',{}))
+            or record.get('ssap_subscription_shared_acceptance')is not True or not valid_shared_summary(channel_proof,case=shared_case)or not valid_shared_supervision(record.get('ssap_subscription_supervision',{}),case=shared_case)
             or not valid_configuration_summary(wire)):return 1
     elif(record.get('ssap_subscription_shared_acceptance')or record.get('ssap_subscription_shared_contract_version')is not None
         or record.get('ssap_subscription_shared_wire')or record.get('ssap_subscription_supervision',{}).get('shared_contract_version')is not None
@@ -2588,6 +2598,7 @@ def main():
             cmd.add_argument('--ssap-owned-update-verify',action='store_true')
             cmd.add_argument('--ssap-subscription-verify',action='store_true',help='real protected continuous caller-owned lease,multiple random updates and actual apps-only distinct replies')
             cmd.add_argument('--ssap-subscription-shared-verify',action='store_true',help='two actual SDK subscribers,partial retained release and last physical cleanup;dedicated gate')
+            cmd.add_argument('--ssap-subscription-shared-case',choices=('release','expiry','owner-exit'),default='release',help='separate original-expiry or actual known-reader exit;not kernel Grant revocation')
             cmd.add_argument('--ssap-subscription-renewal-verify',action='store_true',help='actual same-token long renewal and checked replies beyond original short lease expiry;requires subscription gate')
             cmd.add_argument('--ssap-subscription-pressure-verify',action='store_true',help='actual bounded subscriber queue full/refusal,ordered drain and checked resume;separate from controller credit pressure')
             cmd.add_argument('--ssap-subscription-owner-loss-verify',action='store_true',help='actual guest reader death,paired cleanup/read barrier and fresh same-Session subscription;not full lifecycle qualification')

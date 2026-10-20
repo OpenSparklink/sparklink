@@ -134,7 +134,127 @@ def pressure_fixture(phase=0):
     return row
 
 
+def owner_fixture(phase=0):
+    """Finite verifier-shape inputs;no kernel,actual death or wire is simulated."""
+    row=fixture(phase);row.update(ssap_subscription_owner_loss_required=True,
+        ssap_subscription_owner_loss_contract_version=1,role_ssap_commands=[])
+    for s,item in enumerate(row['ssap_subscription']):
+        api=item['publisher_api'];lines=item['stdout'].splitlines()[:2]
+        decisions=[json.loads(v.split(': ',1)[1])for v in item['stdout'].splitlines()if v.startswith('SdkAuthorizationDecision: ')]
+        templates=item['leases'];item['leases']=[]
+        for position,(mode,attempt)in enumerate((m,n)for m in(1,2)for n in(0,1)):
+            lease=copy.deepcopy(templates[mode-1]);begin=1000*(position+1);delta=begin-lease['start_wall_ns']
+            lease.update(attempt=attempt,start_wall_ns=begin,end_wall_ns=begin+900)
+            app=lease['application'];app.update(pid=100+position,start_wall_ns=begin+1,end_wall_ns=begin+800,exit=-9 if attempt==0 else 0)
+            active=lease['active'];active['token']=position+1
+            for key in ('enabled','disabled'):
+                for observation in lease[key]:
+                    observation['start_wall_ns']+=delta;observation['end_wall_ns']+=delta
+            for d in decisions[2*(mode-1):2*mode]:
+                d=copy.deepcopy(d);d['decision_wall_ns']=begin+4;d['token']+=position*8;d['request_id']+=position*8
+                lines.append('SdkAuthorizationDecision: '+json.dumps(d))
+            lines.append('SdkOwnedConfiguration: '+json.dumps(lease['enabled'][0]['receipt']))
+            raw=[active]
+            for c in lease['messages']:
+                seq=(phase<<24)|(s<<20)|(mode<<16)|(attempt<<12)|c['number']
+                c['value']=(seq.to_bytes(4,'little')+bytes.fromhex(c['value'])[4:]).hex()
+                c['reply']=((seq|0x80000000).to_bytes(4,'little')+bytes.fromhex(c['reply'])[4:]).hex()
+                for k in ('start_wall_ns','end_wall_ns'):c[k]+=delta
+                c['end_monotonic_ns']=c['end_wall_ns']*1_000_000
+                for k in ('replacement','send'):
+                    c[k]['start_wall_ns']+=delta;c[k]['end_wall_ns']+=delta
+                c['replacement']['receipt']['value']=c['value'];c['before']['value']=c['value'];c['after']['value']=c['reply']
+                pdu=(bytes([16 if mode==2 else 15,3,17,0,32,0])+bytes.fromhex(c['value'])).hex()
+                c['send']['receipt']['pdu']=pdu;c['batch']['packets'][0]['pdu']=pdu
+                c['checked'].update(value=c['value'],reply=c['reply']);raw.extend((c['checked'],c['batch']))
+                lines+=['SdkOwnedReplaced: '+json.dumps(c['replacement']['receipt']),f'SsapOwnedValue: handle=17 value={c["value"]}',
+                    'SdkOwnedUpdate: '+json.dumps(c['send']['receipt']),f'SsapOwnedValue: handle=17 value={c["reply"]}']
+            if attempt==0:
+                lease.pop('release');lease['disabled'][0].update(start_wall_ns=begin+620,end_wall_ns=begin+621)
+                peer=row['owners'][s]
+                read=dict(args=['/bin/slctl','--adapter',peer['owner']['path'],'ssap-read',peer['object']['path'],'17','0'],
+                    exit=0,credentials=credential(1000),start_wall_ns=begin+650,end_wall_ns=begin+660,
+                    start_monotonic_ns=(begin+650)*1_000_000,end_monotonic_ns=(begin+660)*1_000_000,stderr='',
+                    stdout=f'SsapPeerValue: operation=ssap-read path={peer["object"]["path"]} handle=17 value={lease["messages"][-1]["reply"]}\n')
+                lease['owner_loss']=dict(start_wall_ns=begin+600,exit_wall_ns=begin+610,end_wall_ns=begin+700,
+                    start_monotonic_ns=(begin+600)*1_000_000,exit_monotonic_ns=(begin+610)*1_000_000,
+                    end_monotonic_ns=(begin+700)*1_000_000,observation_deadline_ns=(begin+600)*1_000_000+5_000_000_000,
+                    pid=app['pid'],signal=9,exit=-9,read_attempts=[read])
+                row['role_ssap_commands'].append(read)
+            else:raw.append(lease['release'])
+            app['stdout']='\n'.join(json.dumps(v)for v in raw)+'\n'
+            lines.append('SdkOwnedConfiguration: '+json.dumps(lease['disabled'][0]['receipt']));item['leases'].append(lease)
+        lines.append(f'SdkOwnedRemoved: api={api} start=16');item['stdout']='\n'.join(lines)+'\n'
+    return row
+
+
+def owner_matched(owner,direction,payload,window):
+    return matched(owner,direction,payload,window)|{'wall_ns':window['start_wall_ns']}
+
+
 class SubscriptionGate(unittest.TestCase):
+    def test_owner_loss_shape_and_physical_barrier_counts(self):
+        rows=[]
+        for phase in (0,1):
+            proof,credit=gate.corroborate(owner_fixture(phase),owner_matched)
+            self.assertEqual(credit,{0:80,1:80});self.assertEqual([len(v['wire'])for v in proof],[80,80])
+            rows.append(dict(phase=phase,ssap_subscription=proof))
+        summary=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=rows)
+        self.assertTrue(gate.valid_summary(summary));self.assertTrue(gate.valid_owner_loss_summary(summary))
+        for k,v in [('owner_loss_contract_version',True),('owner_losses',0),('replacement_leases',1),('cleanup_read_barriers',True)]:
+            bad=copy.deepcopy(summary);bad['proofs'][0]['ssap_subscription'][0][k]=v
+            self.assertFalse(gate.valid_owner_loss_summary(bad),k)
+
+    def test_owner_loss_no_graceful_exit_stale_token_or_hidden_cleanup_attempt(self):
+        for kind in ('unrequested','version','graceful','pid','signal','release','deadline','late','exit-wait',
+                'read-error','read-result','read-UID','read-args','read-late','missing-read','hidden-read',
+                'token','epoch','old-child','early-replacement','raw','missing-disable','same-epoch'):
+            row=owner_fixture();item=row['ssap_subscription'][0];lease=item['leases'][0];app=lease['application'];death=lease['owner_loss'];read=death['read_attempts'][0];replacement=item['leases'][1]
+            if kind=='unrequested':row.pop('ssap_subscription_owner_loss_required')
+            elif kind=='version':row['ssap_subscription_owner_loss_contract_version']=True
+            elif kind=='graceful':app['exit']=0
+            elif kind=='pid':death['pid']+=1
+            elif kind=='signal':death['signal']=15
+            elif kind=='release':lease['release']={}
+            elif kind=='deadline':death['observation_deadline_ns']+=1
+            elif kind=='late':death['end_monotonic_ns']=death['observation_deadline_ns']
+            elif kind=='exit-wait':death['exit_monotonic_ns']=death['start_monotonic_ns']+2_000_000_001
+            elif kind=='read-error':read['exit']=-110
+            elif kind=='read-result':read['stdout']=''
+            elif kind=='read-UID':read['credentials']=credential(1004)
+            elif kind=='read-args':read['args'][-1]='2'
+            elif kind=='read-late':read['end_monotonic_ns']=death['end_monotonic_ns']+1
+            elif kind=='missing-read':death['read_attempts']=[]
+            elif kind=='hidden-read':row['role_ssap_commands']=[]
+            elif kind=='token':replacement['active']['token']=lease['active']['token']
+            elif kind=='epoch':replacement['active']['epoch']+=1
+            elif kind=='old-child':replacement['application']['pid']=app['pid']
+            elif kind=='early-replacement':replacement['application']['start_wall_ns']=death['end_wall_ns']-1
+            elif kind=='raw':app['stdout']=''
+            elif kind=='missing-disable':lease['disabled'][-1]['receipt']['modes']=1
+            else:replacement['active']['epoch']+=1
+            with self.subTest(kind=kind),self.assertRaises((CaptureError,KeyError,ValueError)):
+                gate.corroborate(row,owner_matched)
+
+    def test_owner_loss_actual_disable_response_must_precede_read(self):
+        row=owner_fixture()
+        def late(owner,direction,payload,window):
+            p=owner_matched(owner,direction,payload,window)
+            if payload.endswith(b'\x0e\x03\x11\0\x02\0\0'):p['wall_ns']=window['end_wall_ns']
+            return p
+        with self.assertRaises(CaptureError):gate.corroborate(row,late)
+
+    def test_owner_loss_busy_attempts_are_finite_explicit_and_not_other_errors(self):
+        row=owner_fixture();death=row['ssap_subscription'][0]['leases'][0]['owner_loss'];read=death['read_attempts'][0]
+        busy=copy.deepcopy(read);busy.update(exit=1,stdout='',stderr='SSAP client sequence owned by receive transaction',
+            start_wall_ns=read['start_wall_ns']-4,end_wall_ns=read['start_wall_ns']-2,
+            start_monotonic_ns=read['start_monotonic_ns']-4,end_monotonic_ns=read['start_monotonic_ns']-2)
+        death['read_attempts'].insert(0,busy);row['role_ssap_commands'].insert(0,busy)
+        gate.corroborate(row,owner_matched)
+        for text in ('timeout','PermissionDenied',''):
+            busy['stderr']=text
+            with self.subTest(text=text),self.assertRaises(CaptureError):gate.corroborate(row,owner_matched)
+
     def test_pressure_shape_counts_and_distinct_old_qualifications(self):
         rows=[]
         for phase in (0,1):
@@ -270,6 +390,11 @@ class SubscriptionGate(unittest.TestCase):
         self.assertTrue(gate.requested(SimpleNamespace(**args),passthrough=True))
         self.assertTrue(gate.requested(SimpleNamespace(**args,ssap_subscription_renewal_verify=True),passthrough=True))
         self.assertTrue(gate.requested(SimpleNamespace(**args,ssap_subscription_pressure_verify=True),passthrough=True))
+        self.assertTrue(gate.requested(SimpleNamespace(**args,ssap_subscription_owner_loss_verify=True),passthrough=True))
+        for invalid in (dict(ssap_subscription_owner_loss_verify=True),
+                dict(**args,ssap_subscription_owner_loss_verify=True,ssap_subscription_pressure_verify=True),
+                dict(**args,ssap_subscription_owner_loss_verify=True,ssap_subscription_renewal_verify=True)):
+            with self.assertRaises(ValueError):gate.requested(SimpleNamespace(**invalid),passthrough=True)
         for invalid in (dict(ssap_subscription_pressure_verify=True),dict(**args,ssap_subscription_pressure_verify=True,ssap_subscription_renewal_verify=True)):
             with self.assertRaises(ValueError):gate.requested(SimpleNamespace(**invalid),passthrough=True)
         with self.assertRaises(ValueError):gate.requested(SimpleNamespace(ssap_subscription_renewal_verify=True),passthrough=True)
@@ -302,6 +427,22 @@ class SubscriptionGate(unittest.TestCase):
             security_agent_corroboration=dict(status='REAL_AGENT_AND_NATIVE_WIRE_AND_APPLICATION_SCOPED_PASS',
                 phases=[dict(mode='numeric-approve',ssap_security_requirement=2)for _ in (0,1)],business_round_trips=8))
         self.assertEqual(run_exit_code(record),0)
+        owner=copy.deepcopy(record)
+        owner.update(ssap_subscription_owner_loss_requested=True,ssap_subscription_owner_loss_contract_version=1,
+            ssap_subscription_owner_loss_acceptance=True,qemu_args=['ws73.ssap_subscription=1 ws73.ssap_subscription_owner_loss=1'])
+        for phase,row in enumerate(owner['channel_socket_corroboration']['proofs']):
+            row['ssap_subscription']=gate.corroborate(owner_fixture(phase),owner_matched)[0]
+        owner['ssap_subscription_supervision'].update(owner_loss_contract_version=1,readers=16,updates=48,
+            owner_losses=8,replacement_leases=8,cleanup_read_barriers=8)
+        self.assertEqual(run_exit_code(owner),0)
+        for change in [dict(ssap_subscription_owner_loss_requested=False),dict(ssap_subscription_owner_loss_requested=1),
+                dict(ssap_subscription_owner_loss_contract_version=True),dict(ssap_subscription_owner_loss_acceptance=False),
+                dict(qemu_args=['ws73.ssap_subscription=1']),dict(ssap_subscription_supervision=record['ssap_subscription_supervision']),
+                dict(channel_socket_corroboration=record['channel_socket_corroboration']),dict(ssap_subscription_pressure_requested=True)]:
+            with self.subTest(change=change):self.assertEqual(run_exit_code(owner|change),1)
+        for field in ('owner_losses','replacement_leases','cleanup_read_barriers'):
+            bad=copy.deepcopy(owner);bad['ssap_subscription_supervision'][field]=0
+            self.assertEqual(run_exit_code(bad),1,field)
         pressure=copy.deepcopy(record)
         pressure.update(ssap_subscription_pressure_requested=True,ssap_subscription_pressure_contract_version=1,
             ssap_subscription_pressure_acceptance=True,qemu_args=['ws73.ssap_subscription=1 ws73.ssap_subscription_pressure=1'])

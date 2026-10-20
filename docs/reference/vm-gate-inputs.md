@@ -567,6 +567,31 @@ handle、mode、errno 和原始毫秒预算；当前只接受 ETIMEDOUT 和50至
 
 <a id="ssap-完整-pdu-长度门禁"></a>
 
+## 持续订阅接收进程退出门禁
+
+维护者选项 `--ssap-subscription-owner-loss-verify` 仅与独立的
+`--ssap-subscription-verify`、protected2 和 numeric-approve 门禁组合，
+不能与 renewal 或 pressure 用例混用。需要新 prepared root、匹配的 Host／guest
+工具及已关闭文件的本地 phase snapshot；这项接口不代表已有实机资格。
+
+每个方向和连接角色分别测试通知与指示。UID1004 的真实 C／Python 接收进程先
+校验三条随机更新并写回不同业务值；root VM 监督器随后只对自己持有的该子进程
+发送 SIGKILL，记录实际 `-9` 退出。不能以正常 quit、SDK Drop 或伪造 release
+替代进程死亡。UID1005 服务拥有者、daemon、generation、lifetime 与物理 Session
+保持不变；之后新接收进程使用同一安全 epoch、新 token 完成三条新业务回复。
+
+配置归零只说明服务端处理了停用。门禁还须在死亡时选定的原始五秒观察预算内，
+经现有 UID1000 控制角色调用同一连接的真实值读取，作为接收 actor 释放客户端
+事务的收敛屏障；保留最多16次原 Busy 拒绝及最终成功，其他错误或超时均失败。
+最终双端 USB 原件须证明停用回复先于该读取请求，且读取完成先于替代进程启动。
+UID1000 此次读取是测试屏障，不能替代 UID1004 应用实际校验和回复的交付证据。
+不新增捕获代理、协议 Engine 或生产数据旁路。
+
+完整有限矩阵为16个 lease、8次实际退出／重新订阅、48条更新及不同业务回复、
+8次真实读取屏障，另有8次替代 lease 的显式释放。全部原始进程输出、请求、
+源码／工具身份和双端捕获均须保留。它不证明在途退出、lease 自然到期、
+Grant 撤销、断链、无编号回复复用、全部引用排空、多应用共享或自然恢复。
+
 ## SSAP 应用值长度及分片门禁
 
 未发布 runner 的 `--ssap-value-lengths-verify` 要求独立的

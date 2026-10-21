@@ -104,6 +104,7 @@ def prepare_locked(args, build_fd):
     manifest = {'version':1, 'scope':'isolated development environment preparation',
                 'physical_acceptance':False, 'status':'PREPARING', 'inputs':[],
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
+    manifest['runtime_address_contract_version'] = 1
     manifest['firmware_evidence_contract_version'] = 1
     manifest['socket_benchmark_role_contract_version'] = 1
     manifest['benchmark_ssap_contract_version'] = 2
@@ -140,7 +141,7 @@ def prepare_locked(args, build_fd):
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
                   HERE/'ws73_usb_partial_diagnostic.py',HERE/'ws73_usb_lifecycle.py',
                   HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_role_snapshot.py',HERE/'ws73_application_discovery.py',
-                  HERE/'ws73_discovery_policy_capture.py',
+                  HERE/'ws73_discovery_policy_capture.py', HERE/'ws73_runtime_address.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
                   HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
@@ -332,7 +333,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -578,6 +579,8 @@ def _run(args):
     if business:
         validate_business_mode(args)
     parallel=business or bool(getattr(args,'parallel_pairs',False))
+    from ws73_runtime_address import requested as address_requested
+    runtime_addresses=address_requested(args)
     early_fault=bool(getattr(args,'early_bootstrap_fault',False))
     if early_fault and (support or passthrough or recovery or parallel or any(getattr(args,n,False) for n in ['connection_verify','channel_socket_verify','diagnostic_verify','managed_partial_case','managed_connected_case','channel_daemon_crash'])):
         raise ValueError('early bootstrap fault requires separate native three-device VM')
@@ -830,6 +833,8 @@ def _run(args):
         m['firmware_evidence_helpers'] = [file_record(HERE/name) for name in FIRMWARE_EVIDENCE_HELPERS]
         m['runner_inputs'] += m['firmware_evidence_helpers']
     if ssap_initialization:m['runner_inputs'] += [file_record(HERE/name) for name in ('ws73_ssap_initialization.py','ws73_diagnostic_hold.py','ws73_channel_prefix_hold.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_daemon_hold.py') ]
+    m['runtime_addresses_requested']=runtime_addresses
+    if runtime_addresses:m['runtime_address_verifier']=file_record(HERE/'ws73_runtime_address.py')
     m['early_bootstrap_fault_requested']=early_fault
     if early_fault:m['early_bootstrap_verifier']=file_record(HERE/'ws73_early_fault.py')
     m['four_device_parallel_rf']=parallel and not business
@@ -1165,6 +1170,8 @@ def _run(args):
             if package.get('firmware_evidence_contract_version') != 1:
                 raise ValueError('old prepared artifact lacks explicit firmware evidence contract; prepare a new artifact')
             physical_boundary=resources.PhysicalBoundary(args.ports, package, args.prepared.resolve())
+            if runtime_addresses and (physical_boundary.models!=['E','E'] or package.get('runtime_address_contract_version')!=1):
+                raise ValueError('fresh explicitly prepared E/E volatile address guest required')
             m['physical_resource_allocation']={'policy':file_record(resources.POLICY),
                 'guard':file_record(HERE/'ws73_lab_resources.py'),
                 'selected_ports':list(args.ports),
@@ -1199,6 +1206,7 @@ def _run(args):
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
                      '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+
                      (' ws73.expected_models='+','.join(physical_boundary.models) if physical_boundary else '')+
+                     (' ws73.runtime_addresses='+','.join(runtime_addresses) if runtime_addresses else '')+
                      (' ws73.support=1' if support else '')+
                      (' ws73.passthrough=1' if passthrough else '')+
                      (' ws73.parallel=1' if parallel else '')+
@@ -1464,7 +1472,7 @@ def _run(args):
                     elif active_gate and active == 1:
                         from ws73_active_deadline import metadata_ready
                         peer_metadata = metadata_ready(share)
-                    if active<selected_count and (peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else f'WS73_TARGET_READY: slot={active-1}') in text):
+                    if active<selected_count and (peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else f'WS73_TARGET_ADDRESS_SETUP: slot={active-1}' if runtime_addresses else f'WS73_TARGET_READY: slot={active-1}') in text):
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                     **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
@@ -1509,6 +1517,12 @@ def _run(args):
                     if file_record(HERE/'ws73_early_fault.py')!=m['early_bootstrap_verifier']:raise ValueError('early fault verifier changed')
                     m['early_bootstrap_corroboration']=early_corroborate(record,capture,share)
                     m['capture_packets']=packets;m['guest_identities']=identities
+                if runtime_addresses:
+                    from ws73_runtime_address import corroborate as address_corroborate
+                    record=json.loads((share/'runtime-address/run.json').read_text())
+                    m['runtime_address_corroboration']=list(address_corroborate(record,capture,runtime_addresses).values())
+                    m['runtime_address_record']=file_record(share/'runtime-address/run.json')
+                    if file_record(HERE/'ws73_runtime_address.py')!=m['runtime_address_verifier']:raise ValueError('address verifier changed during run')
                     m['status']='REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS'
                     print(m['status'],output/'manifest.json')
                     return 0
@@ -2168,6 +2182,16 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         return 1
     # These summaries are reconstructed from raw evidence during _run. Saved
     # reports must retain them as well; a PASS label is not their replacement.
+    addresses=record.get('runtime_addresses_requested')
+    address_tokens=[v for arg in record.get('qemu_args',[]) if isinstance(arg,str) for v in arg.split() if v.startswith('ws73.runtime_addresses=')]
+    if addresses is not None:
+        from ws73_runtime_address import parse_addresses
+        try:addresses=parse_addresses(addresses)
+        except (ValueError,TypeError):return 1
+        if (address_tokens!=['ws73.runtime_addresses='+','.join(addresses)] or
+                len(record.get('runtime_address_corroboration',[]))!=2 or
+                not record.get('runtime_address_record') or not record.get('runtime_address_verifier')):return 1
+    elif address_tokens or record.get('runtime_address_corroboration'):return 1
     connection=record.get('connection_verify_requested',False)
     channel=record.get('channel_socket_verification_requested',False)
     prefix=record.get('channel_socket_close_prefix_requested',False)
@@ -2740,6 +2764,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs='+',required=True)
+            cmd.add_argument('--runtime-addresses',nargs=2,help='explicit temporary volatile E pair addresses;Native setup before daemon,not official identity')
             cmd.add_argument('--firmware-evidence',choices=firmware_evidence.MODES,
                              help='required physical scope: rom-upload demands actual inputs before every observed Runtime; runtime-observation grants no loaded-image qualification')
             cmd.add_argument('--four-device-burst',action='store_true',help='two real pairs,2roles16replies2042bytes each:64actual app replies,USB fragmentation,finite-queue pressure and observed pool/NOCP resumption;not fairness or credit correctness proof')

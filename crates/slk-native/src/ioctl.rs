@@ -2,6 +2,13 @@
 pub const SL_MAGIC: u8 = b'S';
 
 nix::ioctl_readwrite!(
+    sl_runtime_address_submit,
+    SL_MAGIC,
+    0xd7,
+    slk_protocol::SleRuntimeAddressSubmit
+);
+
+nix::ioctl_readwrite!(
     sl_connection_security,
     SL_MAGIC,
     0xd6,

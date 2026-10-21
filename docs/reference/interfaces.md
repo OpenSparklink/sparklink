@@ -1114,3 +1114,27 @@ ABI布局、指针契约、权限、生命周期、外部消费者或实机资�
 未接通业务事件被拒绝并计数。WS73 Native发现/连接/ACB/安全使用原本的独立
 lifetime-bound入口，不能从历史标准事件名称推导当前能力。原始状态与限定资格见
 [能力记录](../../project/current-capabilities.md)。
+
+## 实验性运行期地址配置
+
+Native Rust 管理封装 `Adapter::runtime_address_submit` 与
+`slkconfig --adapter INDEX --generation GENERATION runtime-address ADDRESS`
+接通未发布的 `SL_IOCTL_RUNTIME_ADDRESS_SUBMIT`（0xd7，48 字节）。
+它只接受 WS73 profile 1 的未使用 Setup，要求 CAP_NET_ADMIN 及原 File 独占
+Diagnostic lease；普通应用 SDK、C/Python 应用 API 不开放此管理操作。
+六字节按显式控制器顺序传输，不套用 Wi-Fi/Bluetooth 的分配位规则，
+不代表厂商、联盟或认证地址；没有 eFuse、Flash 或 NV 写入入口。
+
+每次注册最多一次配置。请求携带 generation、单调 request_id、原始
+1..5000 ms 期限；完全相同请求重试仅取回原 seq，不重复发送。
+已有命令队列、credit 和提交票据发送 DLI 0x0405。真实 status-only Complete
+只证明设置命令完成；随后必须在原期限内取得匹配六字节的真实 0x0406 回复，
+才在 Runtime 锁与 Host 锁保护下发布当前地址。读回前元数据无效，Managed 被拒绝。
+CLI 先真实查询并输出原地址，再设置、读回并检查 Runtime 快照。
+libws 的本地地址缓存不能作为控制器读回证据。
+
+取消或最后关闭不抹去已提交的物理义务；未核实设置在释放时隔离为不确定状态，
+不能宣布 Free/Ready。进一步改变地址须经已有重新初始化流程获得新生命周期身份。
+旧 own-address 的广播参数返回 ESTALE；不进行活动连接迁移。
+CLI 成功也不证明发现、建链、对端应用交付、断电保持或生产唯一身份。
+新入口的实际资格仍按项目能力记录的准确 artifact 单独核对。

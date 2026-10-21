@@ -584,6 +584,23 @@ pub struct SleDiagnosticSubmit {
     pub action: u32,
 }
 
+/// Experimental setup-only volatile address operation (ioctl 0xd7).
+/// Diagnostic lease and original author required. Setter Complete is not
+/// verified identity: real newer 0406 readback must finish the original budget.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[repr(C, align(8))]
+pub struct SleRuntimeAddressSubmit {
+    pub version: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub request_id: u64,
+    pub timeout_ms: u32,
+    pub seq: u32,
+    pub action: u32,
+    pub address: [u8; 6],
+    pub reserved: [u8; 6],
+}
+
 /// Native connection parameters use the explicit controller profile dialect.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]

@@ -244,6 +244,14 @@ if grep -q 'ws73.active_deadline=1' /proc/cmdline; then
     if grep -q 'ws73.active_close=1' /proc/cmdline; then close_arg='--last-file-close'; fi
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_active_deadline.py $close_arg --output /evidence/active-deadline > /evidence/active-deadline-supervisor.log 2>&1 || fail 'active deadline retirement gate'
 fi
+if grep -q 'ws73.runtime_addresses=' /proc/cmdline; then
+    echo 'WS73_TARGET_CAPTURE_READY'
+    (
+        /bin/python3 /usr/share/sparklink/tools/ws73_runtime_address.py
+        echo "$?" > /evidence/runtime-address-exit.txt
+    ) 2>&1 | /bin/busybox tee /evidence/runtime-address-supervisor.log
+    [ "$(cat /evidence/runtime-address-exit.txt)" = 0 ] || fail 'volatile runtime address gate'
+fi
 config_args=''
 if [ -f /expected-discovery-config-sha256 ]; then
     chown 0:0 /expected-discovery-config-sha256 /etc/sparklink/main.conf || fail 'frozen config ownership'
@@ -276,7 +284,7 @@ if native_return_fixture_enabled; then
 else
     /bin/slkd $config_args -n > /evidence/slkd.log 2>&1 & daemon=$!
 fi
-if ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline && ! grep -q 'ws73.setup_release=1' /proc/cmdline; then
+if ! grep -q 'ws73.runtime_addresses=' /proc/cmdline && ! grep -q 'ws73.diagnostic=1' /proc/cmdline && ! grep -q 'ws73.active_deadline=1' /proc/cmdline && ! grep -q 'ws73.setup_release=1' /proc/cmdline; then
     echo 'WS73_TARGET_CAPTURE_READY'
 fi
 if grep -qw ws73.early_bootstrap_fault=1 /proc/cmdline; then

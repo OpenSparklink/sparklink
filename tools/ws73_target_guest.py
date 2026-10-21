@@ -344,7 +344,10 @@ def verify_passthrough():
     capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
     packets=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     if packets!=capture['packet_count']:raise ValueError('passthrough capture packet count mismatch')
-    proofs=corroborate_passthrough(run,capture)
+    from ws73_runtime_address import boot_addresses
+    addresses=boot_addresses(Path('/proc/cmdline').read_text().split())
+    address_record=json.loads((EVIDENCE/'runtime-address/run.json').read_text()) if addresses else None
+    proofs=corroborate_passthrough(run,capture,address_record,addresses)
     if ('ws73.link_resync=1' in Path('/proc/cmdline').read_text().split()) != ('link_resync' in run):
         raise ValueError('explicit subscriber resync request/evidence mismatch')
     if 'link_resync' in run:

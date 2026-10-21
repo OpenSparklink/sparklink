@@ -221,6 +221,39 @@ impl Adapter {
         Ok(())
     }
 
+    /// One volatile setup per registration;no storage or allocation authority.
+    /// Only a real later 0406 readback can validate the current metadata. This
+    /// does not expose raw mutation through the metadata diagnostic whitelist.
+    pub fn runtime_address_submit(&self, request: &mut SleRuntimeAddressSubmit) -> Result<()> {
+        if request.version != 1
+            || request.flags != 0
+            || request.generation == 0
+            || request.request_id == 0
+            || request.seq != 0
+            || request.reserved != [0; 6]
+            || !matches!(request.action, 1 | 2)
+            || !(1..=5000).contains(&request.timeout_ms)
+            || request.address == [0; 6]
+            || request.address == [255; 6]
+        {
+            return Err(Error::InvalidParam(
+                "invalid volatile runtime address request",
+            ));
+        }
+        let original = *request;
+        let mut value = original;
+        // SAFETY: complete initialized fixed ABI;kernel validates authority and
+        // exact registration. Only commit successful validated copyout below.
+        unsafe { ioctl::sl_runtime_address_submit(self.raw_fd(), &mut value)? };
+        if value.seq == 0 || (SleRuntimeAddressSubmit { seq: 0, ..value }) != original {
+            return Err(Error::InvalidParam(
+                "invalid volatile address admission response",
+            ));
+        }
+        *request = value;
+        Ok(())
+    }
+
     /// Fetch a result admitted by this exact fd/generation. Requires the same
     /// file to hold Diagnostic and CAP_NET_ADMIN; ENOENT means missing/evicted.
     /// No cursor, shared event dequeue or legacy response fallback is used.
@@ -609,6 +642,73 @@ mod native_validation_tests {
     use super::*;
 
     #[test]
+    fn runtime_address_submit_is_typed_and_preserves_syscall_failure() {
+        assert_eq!(std::mem::size_of::<SleRuntimeAddressSubmit>(), 48);
+        assert_eq!(std::mem::align_of::<SleRuntimeAddressSubmit>(), 8);
+        assert_eq!(std::mem::offset_of!(SleRuntimeAddressSubmit, address), 36);
+        let adapter = Adapter::open("/dev/null").unwrap();
+        let good = SleRuntimeAddressSubmit {
+            version: 1,
+            generation: 7,
+            request_id: 2,
+            timeout_ms: 5000,
+            action: 1,
+            address: [0xa6, 0x7b, 0x73, 0x10, 0xe0, 1],
+            ..Default::default()
+        };
+        for bad in [
+            SleRuntimeAddressSubmit { version: 2, ..good },
+            SleRuntimeAddressSubmit { flags: 1, ..good },
+            SleRuntimeAddressSubmit {
+                generation: 0,
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                request_id: 0,
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                timeout_ms: 0,
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                timeout_ms: 5001,
+                ..good
+            },
+            SleRuntimeAddressSubmit { seq: 1, ..good },
+            SleRuntimeAddressSubmit { action: 3, ..good },
+            SleRuntimeAddressSubmit {
+                address: [0; 6],
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                address: [255; 6],
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                reserved: [1; 6],
+                ..good
+            },
+        ] {
+            let mut value = bad;
+            assert!(matches!(
+                adapter.runtime_address_submit(&mut value),
+                Err(Error::InvalidParam(_))
+            ));
+            assert_eq!(value, bad);
+        }
+        for action in [1, 2] {
+            let mut value = SleRuntimeAddressSubmit { action, ..good };
+            let original = value;
+            assert!(matches!(
+                adapter.runtime_address_submit(&mut value),
+                Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+            ));
+            assert_eq!(value, original);
+        }
+    }
+
+    #[test]
     fn diagnostic_admission_guards_and_errno_preserve_caller_request() {
         let good = SleDiagnosticSubmit {
             version: 1,
@@ -637,6 +737,10 @@ mod native_validation_tests {
                 ..good
             },
             SleDiagnosticSubmit { action: 3, ..good },
+            SleDiagnosticSubmit {
+                opcode: 0x0405,
+                ..good
+            },
             SleDiagnosticSubmit {
                 opcode: 0x0c05,
                 ..good

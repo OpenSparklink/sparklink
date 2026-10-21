@@ -391,7 +391,7 @@ def physical_device_descriptors(owners):
                 raise CaptureError('synthetic descriptors excluded from physical corroboration')
 
 
-def corroborate_passthrough(run, capture):
+def corroborate_passthrough(run, capture, address_record=None, requested_addresses=None):
     """Real RF with QMP guest lifecycle, never physical unplug acceptance."""
     if (run.get('scope') != 'real WS73 RF with QMP guest-detach control support'
             or run.get('status') != 'CONTROL_PASSTHROUGH_EVIDENCE_PENDING'
@@ -399,7 +399,11 @@ def corroborate_passthrough(run, capture):
             or run.get('physical_acceptance') is not False):
         raise CaptureError('explicit passthrough QMP control run required')
     physical_descriptors(run)
-    return _corroborate_control(run, capture)
+    addresses=None
+    if address_record is not None or requested_addresses is not None:
+        from ws73_runtime_address import corroborate as address_corroborate
+        addresses=address_corroborate(address_record,capture,requested_addresses)
+    return _corroborate_control(run, capture, address_setups=addresses)
 
 
 def corroborate_synthetic(run, capture):
@@ -684,7 +688,7 @@ def corroborate_diagnostic(run, capture, diagnostic):
     return {json_identity(owner): rows[0]['start_wall_ns']}, proofs
 
 
-def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns', metadata_before=None, metadata_after=None):
+def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns', metadata_before=None, metadata_after=None, address_setups=None):
     # Verify supporting records rather than trusting the success label alone.
     from ws73_north_star import parse_result, parse_match, parse_scan_window, parse_scan_complete, parse_scan_observed, stable
     identity = run['application_identity']
@@ -739,7 +743,15 @@ def _corroborate_control(run, capture, replacement_phase='replug', boundary_fiel
     identities = {json_identity(r[side]): r[side] for r in rounds for side in ['tx', 'rx']}
     metadata = {}
     for identity in identities.values():
-        metadata[json_identity(identity)] = [command_reply(capture, identity, opcode,
+        if address_setups and json_identity(identity) in address_setups:
+            proof=address_setups[json_identity(identity)]['readback']['reply']
+            if ((proof['bus'],proof['device'])!=(identity['bus'],identity['device'])
+                    or proof['value']!=identity['address'].replace(':','').lower()
+                    or proof['wall_ns']>identity['observed_wall_ns']):
+                raise CaptureError('verified volatile address differs from observed RF identity')
+        metadata[json_identity(identity)] = [address_setups[json_identity(identity)]['readback']
+            if opcode==0x0406 and address_setups and json_identity(identity) in address_setups
+            else command_reply(capture, identity, opcode,
             run[boundary_field] if identity == replacement else (metadata_after or {}).get(json_identity(identity), 0),
             (metadata_before or {}).get(json_identity(identity), identity['observed_wall_ns']), b'', value)
             for opcode,value in [(0x0404, identity['version']),

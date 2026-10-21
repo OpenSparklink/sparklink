@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: OpenSparklink/linux
-          ref: c41fd4e698ef6d86cd921fa677269b5c62102bb0
+          ref: 708273a03b3dfa7f51b24b4b0faf8d6f78026656
           path: .kernel-tools
           sparse-checkout: |
             tools/testing/selftests/sparklink
@@ -128,7 +128,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: OpenSparklink/linux
-          ref: c41fd4e698ef6d86cd921fa677269b5c62102bb0
+          ref: 708273a03b3dfa7f51b24b4b0faf8d6f78026656
           path: .kernel-tools
           sparse-checkout: |
             tools/testing/selftests/sparklink

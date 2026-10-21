@@ -21,6 +21,11 @@
 Installed、transport 可用和每设备 Ready 分开观察。内核及所有真实 WS73 操作保持
 VM-only，主机不安装实验内核、驱动或服务。普通应用业务权限与环境管理/捕获权限分开。
 
+外部 C SDK 小程序的 `CC` 为单个编译器可执行文件，默认 `cc`；不接受隐式 shell
+参数或缺失时回退。调用保留符号链接名称，使 `cc → ccache` 等按名称分发的入口
+能正确工作。manifest 分别记录实际调用路径／参数、解析后入口文件的 hash 和该
+调用返回的编译器版本；wrapper 的 hash 不是整条底层工具链已被认证的证明。
+
 ## 固件证据范围是必选输入
 
 新物理 `run` 必须显式指定 `--firmware-evidence runtime-observation|rom-upload`。

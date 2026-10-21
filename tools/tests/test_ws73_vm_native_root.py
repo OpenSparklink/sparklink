@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 from pathlib import Path
+import os
+import shutil
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -9,11 +11,49 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only, stage_runtime_libraries
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only, stage_runtime_libraries, compiler_invocation
 from ws73_north_star import file_record
 
 
 class NativeVMProfile(unittest.TestCase):
+    def test_compiler_symlink_invocation_reaches_real_compiler_and_old_resolution_fails(self):
+        # Real process/compiler with a synthetic argv[0] dispatcher; no kernel
+        # fixture or firmware. Like ccache,its basename selects the compiler.
+        actual = shutil.which('cc', path=os.defpath)
+        self.assertIsNotNone(actual)
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); launcher = base/'compiler-cache'; alias = base/'cc'
+            launcher.write_text(f'#!{sys.executable}\nimport os,sys\n'
+                'if os.path.basename(sys.argv[0]) != "cc": sys.exit(81)\n'
+                f'os.execv({actual!r}, [{actual!r}, *sys.argv[1:]])\n')
+            launcher.chmod(0o755); alias.symlink_to(launcher.name)
+            with patch.dict(os.environ, {'CC': 'cc', 'PATH': str(base)+os.pathsep+os.defpath}):
+                compiler = compiler_invocation()
+                self.assertEqual(compiler, alias)
+                self.assertNotEqual(compiler, compiler.resolve())
+                old = subprocess.run([str(compiler.resolve()), '--version'], capture_output=True)
+                self.assertEqual(old.returncode, 81)
+                program = base/'consumer'
+                subprocess.run([str(compiler), '-std=c11', '-Wall', '-Wextra', '-Werror',
+                    '-x', 'c', '-', '-o', str(program)], input='int main(void) { return 0; }\n',
+                    text=True, capture_output=True, check=True)
+                subprocess.run([str(program)], check=True)
+                self.assertTrue(subprocess.check_output([str(compiler), '--version'], text=True).strip())
+                # Image identity and invocation identity stay distinct.
+                self.assertEqual(file_record(compiler), file_record(launcher))
+
+    def test_compiler_explicit_missing_empty_or_shell_command_never_falls_back(self):
+        for selected in ['', '/no-such-compiler-fixture', 'cc -m64']:
+            with self.subTest(CC=selected), patch.dict(os.environ, {'CC': selected}), self.assertRaisesRegex(ValueError, 'selected C compiler'):
+                compiler_invocation()
+
+    def test_compiler_explicit_absolute_launcher_name_is_preserved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)/'compiler-cache'; alias = Path(tmp)/'cc'
+            target.write_text('#!/bin/sh\nexit 0\n'); target.chmod(0o755); alias.symlink_to(target.name)
+            with patch.dict(os.environ, {'CC': str(alias)}):
+                self.assertEqual(compiler_invocation(), alias)
+
     def test_runtime_major_names_share_canonical_identity_and_validate_before_copy(self):
         import shutil
         from install_layout import LIBRARIES

@@ -22,6 +22,20 @@ from install_layout import LIBRARIES
 OPTIONS = ('native_module_tree', 'native_boot_smoke', 'native_service_bundle')
 
 
+def compiler_invocation():
+    """Keep the executable's invocation name (e.g. cc -> ccache).
+
+    file_record still hashes the resolved executable image separately. Executing
+    that resolved image directly changes argv[0] dispatch for compiler wrappers.
+    CC is one explicit executable, not a shell command or an implicit fallback.
+    """
+    selected = os.environ.get('CC', 'cc')
+    found = shutil.which(selected) if selected else None
+    if found is None:
+        raise ValueError('selected C compiler executable not found')
+    return Path(found).absolute()
+
+
 def stage_runtime_libraries(root, libraries, copy_elf):
     """Private fresh VM root only; same actual ABI-major libraries as installation.
 
@@ -264,7 +278,7 @@ def stage(args, manifest, root, source, copy_elf):
     fixtures = source / 'tools/testing/application_client'
     c_probe = root / 'bin/ws73-application-client-c'
     compiled_probe = root.parent / 'application-client-c'
-    compiler = Path(shutil.which(os.environ.get('CC', 'cc'))).resolve(strict=True)
+    compiler = compiler_invocation()
     command = [str(compiler), '-std=c11', '-O2', '-Wall', '-Wextra', '-Werror',
                '-I' + str(source / 'crates/libsparklink/include'),
                str(fixtures / 'client.c'), str(library), '-Wl,-rpath,/usr/lib',
@@ -281,7 +295,7 @@ def stage(args, manifest, root, source, copy_elf):
         sources=[file_record(fixtures / name) for name in ('client.c', 'client.py')],
         verifier=file_record(source / 'tools/ws73_application_client.py'),
         role_supervisor=file_record(source / 'tools/ws73_application_role.py'),
-        c_compile=command, compiler=file_record(compiler),
+        c_compile=command, compiler_invocation=str(compiler), compiler=file_record(compiler),
         compiler_version=subprocess.check_output([str(compiler), '--version'],text=True),
         c=file_record(c_probe), python=file_record(python_probe))
     custom_config = getattr(args, 'native_discovery_config', None)

@@ -27,4 +27,16 @@ Hi3873E 与 Hi3873U 的固件、校准及板级配置通用。端口号可复用
 
 失败处理：不要覆盖旧候选。缺字段、重复字段、超范围或 flash 模式须修正输入后在新目录重试；flash 校准及地址不能由 efuse 导出器还原。不要将候选直接刷到主机硬件。后续打包与驱动加载仅在隔离 VM 中进行。
 
+若两只设备的 USB 身份不同，却查询到相同的 DLI 本地地址，停止双设备门禁并保留
+各自的原始查询、HCC、镜像 hash 和抓包。HCC 型号正确、Native Ready 或板级文件
+布局正确均不能替代业务验收；不要放宽不同地址断言或尝试烧写 eFuse。
+明确授权的运行期实验可使用[临时地址配置](configure-experimental-ws73-addresses.md)，
+经真实设置及读回后单独验收；这不解决厂商地址来源或正式配置契约。
+
+后续诊断内核的只读 `sle_address_source` 观察针对固定 SLE eFuse 字段，不是地址
+配置接口。使用它时仍须把准确 kernel/module、实际 HCC 请求/回复、DLI 地址及
+当前 generation 分别封存。错误状态的输出不应作为地址公开；全零也不能表示
+读取有效、合法分配或已查明重复地址原因。离线 codec 检查不能代替新 VM 的
+固件回复与初始化证据；此诊断不会解决或绕过不同地址门禁。
+
 [原始输入依据及历史步骤](../../project/reference/environment/ws73-board-configuration.md) 保留；以 [当前资格](../../project/current-capabilities.md) 判定实机范围。

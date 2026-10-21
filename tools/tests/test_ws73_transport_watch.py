@@ -145,6 +145,24 @@ class WatchContract(unittest.TestCase):
         package.pop('benchmark_credit_observation_contract_version')
         validate_role_sources(package,dynamic=True,ssap=True)
 
+    def test_actual_production_guards_with_visible_filesystem_fixtures(self):
+        # Execute both real guards/boot parser; only OS identity/file inputs are fixtures.
+        def check(tokens,uid=0,vendor='QEMU',scratch=True):
+            def read(path,*a,**k):
+                return tokens if str(path)=='/proc/cmdline'else vendor
+            with patch('os.geteuid',return_value=uid),patch.object(Path,'read_text',read),patch.object(Path,'is_file',return_value=scratch):
+                watch.require_environment()
+        tokens='ws73.socket_benchmark_apps=1 ws73.session_service=1 ws73.session_service_profile=full-load-v2'
+        check(tokens)
+        for kwargs in (dict(uid=1000),dict(vendor='host'),dict(scratch=False),
+                       dict(tokens=tokens.replace('ws73.socket_benchmark_apps=1','')),
+                       dict(tokens=tokens.replace('ws73.session_service=1','')),
+                       dict(tokens=tokens.replace('ws73.session_service_profile=full-load-v2','')),
+                       dict(tokens=tokens+' ws73.session_service=1'),
+                       dict(tokens=tokens+' ws73.session_service_profile=full-load-v2')):
+            with self.subTest(kwargs=kwargs),self.assertRaises((CaptureError,ValueError)):
+                check(**(dict(tokens=tokens)|kwargs))
+
 
 class ActualProcessBudgets(unittest.TestCase):
     def run_child(self,code,event=None):
@@ -188,7 +206,7 @@ class ActualProcessBudgets(unittest.TestCase):
     def test_thread_joins_and_does_not_mutate_owners_or_claim_kernel_samples(self):
         row=fixture();owners=copy.deepcopy(row['owners'])
         def local_query(entry,event):return self.run_child("import time;print('OS fixture',flush=True);time.sleep(.05)",event)
-        with patch('ws73_application_role.require_vm'),patch.object(watch,'query',side_effect=local_query):
+        with patch.object(watch,'require_environment'),patch.object(watch,'query',side_effect=local_query):
             observer=watch.Watch(owners,0).start();time.sleep(.1);report=observer.close()
             self.assertIs(observer.close(),report)
         self.assertEqual(owners,row['owners'])
@@ -201,7 +219,7 @@ class ActualProcessBudgets(unittest.TestCase):
     def test_exhausted_finite_observer_is_not_upgraded_by_close(self):
         row=fixture()
         def local_query(entry,event):return self.run_child("import time;print('fixture',flush=True);time.sleep(.05)",event)
-        with patch('ws73_application_role.require_vm'),patch.object(watch,'query',side_effect=local_query),patch.dict(watch.SPEC,max_pairs=1):
+        with patch.object(watch,'require_environment'),patch.object(watch,'query',side_effect=local_query),patch.dict(watch.SPEC,max_pairs=1):
             observer=watch.Watch(row['owners'],0).start();observer.thread.join(3)
             self.assertFalse(observer.thread.is_alive())
             report=observer.close()

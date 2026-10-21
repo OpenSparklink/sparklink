@@ -18,7 +18,8 @@ FIELD = 'transport_observation'
 SPEC = dict(version=1, pair_period_ns=1_000_000_000, max_pairs=128,
             duration_ns=128_000_000_000, query_budget_ns=1_250_000_000,
             stream_limit_bytes=8192, report_limit_bytes=33_554_432)
-VERIFIERS = ('ws73_transport_watch.py', 'ws73_session_drain.py')
+VERIFIERS = ('ws73_transport_watch.py', 'ws73_session_drain.py',
+             'ws73_session_service.py', 'ws73_trace_layout.py')
 RUNTIME = '/bin/slctl'
 CAPABILITIES = {'CapEff', 'CapPrm', 'CapAmb', 'CapInh'}
 
@@ -112,6 +113,18 @@ def query(entry, stop):
     return row
 
 
+def require_environment():
+    """Reuse each guard for its own supported role, before any child/thread."""
+    from pathlib import Path
+    from ws73_application_role import require_vm
+    from ws73_session_service import vm_guard, collector_boot, FULL_LOAD_PROFILE
+    require_vm('ws73.socket_benchmark_apps=1')
+    vm_guard()
+    tokens = Path('/proc/cmdline').read_text().split()
+    if tokens.count('ws73.session_service=1') != 1 or collector_boot(tokens) != FULL_LOAD_PROFILE:
+        raise CaptureError('one explicit full-load-v2 Session observation VM required')
+
+
 class Watch:
     def __init__(self, owners, phase):
         self.owners = copy.deepcopy(owners)
@@ -123,10 +136,7 @@ class Watch:
         self.closed = False
 
     def start(self):
-        from ws73_application_role import require_vm
-        require_vm('ws73.socket_benchmark_apps=1')
-        require_vm('ws73.session_service=1')
-        require_vm('ws73.session_service_profile=full-load-v2')
+        require_environment()
         self.thread.start()
         if not self.armed.wait(1):
             self.close()

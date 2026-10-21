@@ -31,7 +31,10 @@ def requested(args):
     if values is None:
         return None
     values = parse_addresses(values)
-    if (args.command != 'run' or list(args.ports) != ['1-2.1.1', '1-2.1.2']
+    ports = list(args.ports)
+    # Slot order is explicit input, not device selection. Keep exactly the two
+    # assigned E leaves; addresses follow that order through QMP and readback.
+    if (args.command != 'run' or len(ports) != 2 or set(ports) != {'1-2.1.1', '1-2.1.2'}
             or not getattr(args, 'qmp_hotplug', False) or not getattr(args, 'channel_socket_verify', False)
             or not getattr(args, 'connection_verify', False)):
         raise ValueError('volatile E gate requires the explicit assigned E pair and ordinary connection/socket VM')

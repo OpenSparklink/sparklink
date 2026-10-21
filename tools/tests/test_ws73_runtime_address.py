@@ -103,7 +103,12 @@ class RuntimeAddressEvidence(unittest.TestCase):
             with self.subTest(bad=bad),self.assertRaises(ValueError):parse_addresses(bad)
         args=dict(runtime_addresses=ADDRESSES,command='run',ports=['1-2.1.1','1-2.1.2'],qmp_hotplug=True,channel_socket_verify=True,connection_verify=True)
         self.assertEqual(requested(SimpleNamespace(**args)),ADDRESSES)
-        for changes in [dict(ports=['1-2.1.3','1-2.1.4']),dict(ports=['1-1.1.1','1-1.1.2']),dict(qmp_hotplug=False),dict(channel_socket_verify=False),dict(command='support')]:
+        # An explicit permutation preserves caller address order. It grants no
+        # permission to select another leaf or infer a model from enumeration.
+        reverse=args|dict(ports=list(reversed(args['ports'])),runtime_addresses=list(reversed(ADDRESSES)))
+        self.assertEqual(requested(SimpleNamespace(**reverse)),list(reversed(ADDRESSES)))
+        self.assertEqual(reverse['ports'],['1-2.1.2','1-2.1.1'])
+        for changes in [dict(ports=[]),dict(ports=['1-2.1.1']),dict(ports=['1-2.1.1']*2),dict(ports=['1-2.1.1','1-2.1.2','1-2.1.1']),dict(ports=['1-2.1.3','1-2.1.4']),dict(ports=['1-2.1.1','1-2.1.3']),dict(ports=['1-1.1.1','1-2.1.2']),dict(ports=['1-1.1.1','1-1.1.2']),dict(qmp_hotplug=False),dict(channel_socket_verify=False),dict(connection_verify=False),dict(command='support')]:
             with self.subTest(changes=changes),self.assertRaises(ValueError):requested(SimpleNamespace(**(args|changes)))
         self.assertIsNone(requested(SimpleNamespace()))
         words=['ws73.expected_models=E,E','ws73.runtime_addresses='+','.join(ADDRESSES)]

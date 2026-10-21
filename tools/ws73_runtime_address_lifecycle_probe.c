@@ -174,7 +174,17 @@ int main(int argc, char **argv)
 		CHECK(pending.state == 3 && pending.error == -ETIMEDOUT && !pending.status && !pending.data_len);
 		result_record("expired-result", &pending);
 	}
+	uint64_t fault_start_wall = clock_ns(CLOCK_REALTIME);
+	uint64_t fault_start_monotonic = clock_ns(CLOCK_MONOTONIC);
 	struct sle_controller_snapshot fault = snapshot(observer, generation);
+	uint64_t fault_end_monotonic = clock_ns(CLOCK_MONOTONIC);
+	uint64_t fault_end_wall = clock_ns(CLOCK_REALTIME);
+	/* Serialize the exact operands before CHECK can terminate the process.
+	 * A later observation is not evidence of the first syscall's state. */
+	printf("{\"stage\":\"before-fault-assert\",\"start_wall_ns\":%llu,\"wall_ns\":%llu,\"start_monotonic_ns\":%llu,\"monotonic_ns\":%llu,\"snapshot\":",
+	       (unsigned long long)fault_start_wall, (unsigned long long)fault_end_wall,
+	       (unsigned long long)fault_start_monotonic, (unsigned long long)fault_end_monotonic);
+	hex(&fault, sizeof(fault)); puts("}"); fflush(stdout);
 	CHECK(fault.flags == SLE_CONTROLLER_FAULT && fault.valid_fields == 0 && fault.error == (!strcmp(kind, "deadline") ? -ETIMEDOUT : -EIO));
 	CHECK(!memcmp(before.address, fault.address, 6));
 	if (strcmp(kind, "deadline")) {

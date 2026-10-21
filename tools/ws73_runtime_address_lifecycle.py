@@ -68,9 +68,16 @@ def verify_records(r):
     expected=['owner','initialized','admitted','pending-result','held']
     if kind=='dup':expected+=['dup-first-close-result','dup-first-close']
     if kind=='deadline':expected+=['expired-result']
-    expected+=['withdrawn']+(['late-result']if kind=='deadline'else[])+['after-late-reply']
+    expected+=['before-fault-assert','withdrawn']+(['late-result']if kind=='deadline'else[])+['after-late-reply']
     if [e.get('stage')for e in r['events']]!=expected:raise CaptureError('missing/extra probe syscall stages')
     events={e['stage']:e for e in r['events']};admitted=events['admitted']
+    first=events['before-fault-assert']
+    for start,end in [('start_wall_ns','wall_ns'),('start_monotonic_ns','monotonic_ns')]:
+        if any(type(first.get(k))is not int or first[k]<=0 for k in (start,end))or first[start]>first[end]:
+            raise CaptureError('original first snapshot syscall clock interval required')
+    decode(SleControllerSnapshot,first['snapshot'])
+    if first['snapshot']!=events['withdrawn']['snapshot']:
+        raise CaptureError('later snapshot cannot replace original failed-assert operands')
     late_ingress(r)
     if not r['markers'][2]['wall_ns']<r['late_trace_observed_wall_ns']<events['after-late-reply']['wall_ns']:
         raise CaptureError('actual late Native ingress must precede final metadata query')
@@ -87,12 +94,13 @@ def verify_records(r):
     previous=0
     for row in r['events']:
         if row['stage']=='owner':continue
-        key='start_wall_ns'if row['stage']=='admitted'else'wall_ns'
+        key='start_wall_ns'if row['stage']in ('admitted','before-fault-assert')else'wall_ns'
         if type(row[key])is not int or row[key]<=previous:raise CaptureError('ordered typed syscall evidence clocks required')
         previous=row[key]
         if row['stage']=='admitted':
             if type(row['end_wall_ns'])is not int or not row[key]<=row['end_wall_ns']:raise CaptureError('admission clock interval required')
             previous=row['end_wall_ns']
+        elif row['stage']=='before-fault-assert':previous=row['wall_ns']
     if len(bytes.fromhex(admitted['input']))!=48 or len(bytes.fromhex(admitted['output']))!=48:
         raise CaptureError('actual 48-byte UAPI address submit required')
     output=struct.unpack('<IIQQIII6s6s',bytes.fromhex(admitted['output']));seq=output[5]
@@ -245,6 +253,7 @@ def run(args):
             ready.phase(2);r['withdraw_before_wall_ns']=time.time_ns();save();send('withdraw')
             if args.case=='dup':event('dup-first-close-result');event('dup-first-close')
             if args.case=='deadline':event('expired-result')
+            event('before-fault-assert')
             event('withdrawn');r['withdraw_after_wall_ns']=time.time_ns();save()
             stage('release_ready','released')
             # An acknowledgement that QEMU released a frame does not prove the

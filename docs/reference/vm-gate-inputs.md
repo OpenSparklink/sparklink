@@ -141,6 +141,10 @@ PB 分片门禁按每个实际发送 controller 的 DLI buffer 上限核对完�
 QMP 已释放不等于 guest 已收到；最终状态检查前须由独立 fd 的既有 Native seam
 trace 确认当前 generation 的真实 RX，不能用固定 sleep 代替。该 ingress 观察仍不
 等于 callback／worker 已排空，后者另有引用和退出门禁。
+探针在终态断言前保存同一次 snapshot ioctl 的原始字节及墙钟／单调时钟区间；
+即使断言失败，收集器也必须保留这组操作数。之后的新查询不能替换原点快照。
+请求结果、Host 状态发布和 jiffies 期限分别核对，墙钟区间本身不证明精确的
+内核到期时点；不得为得到通过而改断言、加固定等待或延长原始预算。
 该开发探针及原始 USB／QMP 核对的实机状态由准确资格记录单独说明。
 
 ## Down 期限失败后的被动观察

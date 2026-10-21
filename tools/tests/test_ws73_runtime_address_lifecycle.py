@@ -31,7 +31,10 @@ def fixture(kind='release'):
     rows.append(dict(stage='pending-result',wall_ns=201,result=pending));observation('held',202,held=True)
     if kind=='dup':
         rows.append(dict(stage='dup-first-close-result',wall_ns=301,result=pending));observation('dup-first-close',302,held=True)
-    observation('withdrawn',310,fault=True);observation('after-late-reply',410,fault=True)
+    observation('withdrawn',310,fault=True)
+    rows.insert(len(rows)-1,dict(stage='before-fault-assert',start_wall_ns=305,wall_ns=306,
+        start_monotonic_ns=205,monotonic_ns=206,snapshot=rows[-1]['snapshot']))
+    observation('after-late-reply',410,fault=True)
     activity=copy.deepcopy(previous['ready_peer']);activity['on_after_quarantine']=activity.pop('on_after_free')
     r=dict(version=1,status='RUNTIME_ADDRESS_FILE_PENDING_RAW_CORROBORATION',case=kind,runtime_only=True,
         official_identity=False,daemon_running=False,automatic_recovery_acceptance=False,
@@ -61,6 +64,23 @@ class RuntimeAddressLifecycle(unittest.TestCase):
         with self.assertRaises(ValueError):corroborate_activity_rows(record['ready_peer'],peer,wire,dict(bus=1,device=2))
         broken=copy.deepcopy(wire);broken['complete'].pop()
         with self.assertRaises(ValueError):corroborate_activity_rows(record['ready_peer'],peer,broken,dict(bus=1,device=3))
+
+    def test_first_fault_operands_cannot_be_replaced_by_later_snapshot(self):
+        for change in ['missing-first','missing-clock','bool-clock','backward-wall','backward-monotonic','before-previous','truncated','old-generation','different-error']:
+            r,_,_=fixture();events={v['stage']:v for v in r['events']};first=events['before-fault-assert']
+            if change=='missing-first':r['events'].remove(first)
+            elif change=='missing-clock':del first['start_monotonic_ns']
+            elif change=='bool-clock':first['wall_ns']=True
+            elif change=='backward-wall':first['start_wall_ns']=first['wall_ns']+1
+            elif change=='backward-monotonic':first['start_monotonic_ns']=first['monotonic_ns']+1
+            elif change=='before-previous':first['start_wall_ns']=events['held']['wall_ns']-1
+            elif change=='truncated':first['snapshot']=first['snapshot'][:-2]
+            else:
+                s=SleControllerSnapshot.from_buffer_copy(bytes.fromhex(first['snapshot']))
+                if change=='old-generation':s.generation+=1
+                else:s.error=-errno.ETIMEDOUT
+                first['snapshot']=bytes(s).hex()
+            with self.subTest(change=change),self.assertRaises(ValueError):verify_records(r)
 
     def test_scope_exit_clock_retry_and_unverified_qualification_negatives(self):
         for change in ['scope','business','exit','uid-bool','version-bool','timeout','missing-stage','wrong-pending',

@@ -73,6 +73,14 @@ HCC 型号／总线回复与 DLI 无线地址是不同证据。相同 VID/PID、
 本输入契约不开放 raw 写或eFuse／Flash／NV写；当前未发布的运行期入口及其
 Setup／Diagnostic／原File／每注册一次限制见[接口契约](interfaces.md)。
 
+## 冻结 daemon 配置
+
+daemon 配置由现有 `prepare --native-discovery-config` 路径交给准确的 staged
+`slkd` 校验，并冻结整份配置 hash 与策略预期。SSAP 安全等级等非无线字段的变化
+也需要创建新的 prepared artifact、重新冻结这些凭据；已封存镜像保持原样。
+guest 启动时核对配置与凭据，缺失或不一致即拒绝。准备校验通过仅证明该配置被
+对应 daemon 接受；实际安全机制、固件兼容和对端业务仍需各自实机门禁。
+
 ## 当前共享硬件边界
 
 本线程的 [资源配置](../../project/lab-resource-policy.json)固定允许 U

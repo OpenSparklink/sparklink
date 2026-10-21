@@ -1083,6 +1083,11 @@ Grant。VM专用实例在原业务/USB门禁后核对生命周期、PB和预算�
 不完整记录不能因业务循环完成而升级通过。见[ADR0006](../docs/decisions/0006-event-driven-session-and-performance-evidence.md)，
 准确结果只在唯一资格入口维护，诊断不另建Host/Engine或公开ABI。
 
+NOCP 到 worker／提交的只读关联仅提供候选时序，不补造线上缺失的 generation／
+lifetime 或重演 credit 归属。参数对照须绑定明确配置、准确 daemon 验证、完整
+实际 Create 及双端原始事件；请求、实际值、单位和 PHY 分开。未完整覆盖的失败
+阶段保持不可用，不能借参数局部成功关闭原失败或擅改默认与原期限。见 ADR0006。
+
 
 Session 只读发送观测复用 Runtime Host/data/gate → Session → TX queue 锁序与现有
 授权 fd；daemon 只通过已有唯一 actor 读取，不创建新 owner。worker 私有 pending

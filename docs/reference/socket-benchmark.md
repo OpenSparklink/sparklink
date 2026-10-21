@@ -650,3 +650,8 @@ pcap 内容不具备身份认证。历史默认拒绝和整个业务失败保留
 它不授credit退款、物理callback／引用drain、硬件清除、NOCP真值、RF或业务资格。
 Host／guest绝对时间不得直接相减；长度／顺序相同仍不是带认证的包身份。默认业务
 门禁、普通用户fd、Session／Grant／Ticket、原期限与VM-only均不变。
+
+
+分析器退出码只表示命令是否完成解析，不能单独作为关联门禁。调用者须核对
+`logical.status == LOGICAL_USB_REQUESTS_CLOSED`、零pending及零未关联终态；即使
+满足这些条件，`original_gate_qualified`仍为false，原业务与物理drain门禁另行判断。

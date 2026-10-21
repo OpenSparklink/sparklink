@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Native ordinary-application load supervision, using existing slktest/USB gates.
 
-No Host, echo server or controller transition is implemented here. Fixed small
-first-baseline workload; application clocks never subtracted across endpoints.
+No Host, echo server or controller transition is implemented here. Existing
+bounded workloads; application clocks never subtracted across endpoints.
 """
 from contextlib import ExitStack
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -34,6 +35,8 @@ RESOURCE_FIELD='benchmark_process_resource_contract_version'
 CHANNEL_FIELD='benchmark_channel_request'
 ROLE_STATUS='TWO_FINITE_BENCHMARK_PHASES_COMPLETED'
 CLOCK='guest wall_ns for observed IO/capture;guest monotonic_ns for supervisory budgets;no cross-application timestamp subtraction'
+STDOUT_FIELD='benchmark_stdout_capture_contract_version'
+STDOUT_LIMIT=65536
 ROLE_REQUEST_FIELDS={'phase','owners','config','application_tool','start_wall_ns','status','applications','events','performance_qualified','clock','socket_benchmark_role_contract_version','tools'}
 
 
@@ -359,6 +362,79 @@ def arguments(binary, entry, mode, report, window=WINDOW, *, count=COUNT, size=S
     return args
 
 
+def capture_stdout(proc, prefix, deadline):
+    """Drain one reaped child's owned pipe; never parse or generate IO markers.
+
+    A surviving writer may hold EOF forever. Nonblocking reads, one absolute
+    deadline and the retained-byte limit apply even when the pipe stays ready.
+    Capture completeness says nothing about the child's application result.
+    """
+    raw=bytearray(prefix[:STDOUT_LIMIT]);seen=len(prefix)
+    receipt=dict(version=1,eof=False,complete=False,limit_exceeded=seen>STDOUT_LIMIT,
+                 error=None,started_monotonic_ns=time.monotonic_ns(),deadline_monotonic_ns=int(deadline*1e9))
+    try:
+        if proc.poll() is None:raise ValueError('stdout capture requires a reaped child')
+        if receipt['limit_exceeded']:raise ValueError('benchmark stdout byte budget')
+        fd=proc.stdout.fileno();os.set_blocking(fd,False)
+        with selectors.DefaultSelector()as ready:
+            ready.register(fd,selectors.EVENT_READ)
+            while True:
+                remaining=deadline-time.monotonic()
+                if remaining<=0:raise ValueError('benchmark stdout EOF deadline')
+                try:data=os.read(fd,min(8192,STDOUT_LIMIT-len(raw)+1))
+                except BlockingIOError:
+                    ready.select(remaining);continue
+                if not data:receipt['eof']=True;break
+                seen+=len(data);raw.extend(data[:STDOUT_LIMIT-len(raw)])
+                if seen>STDOUT_LIMIT:
+                    receipt['limit_exceeded']=True;raise ValueError('benchmark stdout byte budget')
+    except (OSError,ValueError)as error:
+        receipt['error']=type(error).__name__+': '+str(error)
+    finally:
+        try:proc.stdout.close()
+        except (OSError,ValueError)as error:
+            if receipt['error']is None:receipt['error']='stdout close: '+type(error).__name__+': '+str(error)
+    raw=bytes(raw)
+    try:raw.decode('utf-8');valid=True
+    except UnicodeDecodeError:valid=False
+    receipt.update(bytes=len(raw),observed_bytes_at_least=seen,sha256=hashlib.sha256(raw).hexdigest(),
+                   utf8_valid=valid,end_monotonic_ns=time.monotonic_ns())
+    if not valid and receipt['error']is None:receipt['error']='invalid UTF-8 in benchmark stdout'
+    if receipt['end_monotonic_ns']>receipt['deadline_monotonic_ns']and receipt['error']is None:
+        receipt['error']='benchmark stdout EOF deadline'
+    receipt['complete']=receipt['eof']and valid and not receipt['limit_exceeded']and receipt['error']is None
+    return raw,receipt
+
+
+def store_stdout_capture(proc, app, prefix, path, deadline):
+    """Preserve raw bytes even if invalid UTF-8; ordinary IO errors stay data."""
+    raw,proof=capture_stdout(proc,prefix,deadline)
+    app.update(stdout=raw.decode('utf-8',errors='replace'),stdout_capture=proof)
+    try:path.write_bytes(raw)
+    except OSError as error:
+        proof.update(complete=False,error='stdout storage: '+type(error).__name__+': '+str(error))
+    return raw
+
+
+def check_stdout_capture(app):
+    """Selected new captures require complete raw bytes, not merely exit zero."""
+    proof=app.get('stdout_capture')
+    fields={'version','eof','complete','limit_exceeded','error','started_monotonic_ns','deadline_monotonic_ns',
+            'bytes','observed_bytes_at_least','sha256','utf8_valid','end_monotonic_ns'}
+    if (type(proof)is not dict or set(proof)!=fields or type(proof['version'])is not int or proof['version']!=1
+        or proof['complete']is not True or proof['eof']is not True or proof['utf8_valid']is not True
+        or proof['limit_exceeded']is not False or proof['error']is not None
+        or any(type(proof[k])is not int for k in ('bytes','observed_bytes_at_least','started_monotonic_ns','end_monotonic_ns','deadline_monotonic_ns'))
+        or not 0<=proof['bytes']==proof['observed_bytes_at_least']<=STDOUT_LIMIT
+        or not 0<proof['started_monotonic_ns']<=proof['end_monotonic_ns']
+        or proof['started_monotonic_ns']>=proof['deadline_monotonic_ns']or proof['end_monotonic_ns']>proof['deadline_monotonic_ns']
+        or type(app.get('stdout'))is not str):
+        raise CaptureError('complete bounded original stdout capture required')
+    raw=app['stdout'].encode('utf-8')
+    if len(raw)!=proof['bytes']or hashlib.sha256(raw).hexdigest()!=proof['sha256']:
+        raise CaptureError('original stdout capture bytes/hash differ')
+
+
 def execute_supervised(run,row):
     """Only normative live workload:fixed disposable-VM apps-only children."""
     from ws73_application_role import require_vm
@@ -370,6 +446,7 @@ def execute_supervised(run,row):
     validate_role_request({k:row[k]for k in request_fields(row)},row['phase'],live=True)
     if row['tools']!=request_tools(row)or row['application_tool']!=file_record(Path('/bin/slktest').resolve(strict=True)):
         raise CaptureError('fixed prepared benchmark executables and tools required')
+    row[STDOUT_FIELD]=1
     validate_configuration(row['config']);count=application_count(row);indices=tuple(range(count))
     reports=run.output/'reports';reports.mkdir(mode=0o700);os.chown(reports,1004,1004)
     processes=[None]*count;row['applications']=[None]*count
@@ -388,7 +465,7 @@ def execute_supervised(run,row):
                 index=key.data;data=os.read(key.fileobj.fileno(),8192)
                 if not data:raise CaptureError('benchmark exited before both '+kind+' markers')
                 output[index]+=data;buffers[index]+=data
-                if len(output[index])>65536:raise CaptureError('bounded benchmark stdout exceeded')
+                if len(output[index])>STDOUT_LIMIT:raise CaptureError('bounded benchmark stdout exceeded')
                 while b'\n' in buffers[index]:
                     raw,buffers[index]=buffers[index].split(b'\n',1)
                     text=raw.decode('utf-8',errors='strict')
@@ -415,14 +492,19 @@ def execute_supervised(run,row):
             before_wall=time.time_ns();before_mono=time.monotonic_ns()
             proc.stdin.write((kind+'\n').encode());proc.stdin.flush()
             event(kind,i,before_wall_ns=before_wall,before_monotonic_ns=before_mono)
+    def collect_stdout(i,deadline):
+        proc,app=processes[i]
+        try:selector.unregister(proc.stdout)
+        except KeyError:pass # A credentials/startup failure can precede registration.
+        output[i]=store_stdout_capture(proc,app,output.get(i,b''),
+                                      run.output/f'benchmark-{row["phase"]}-{i}.stdout',deadline)
     def collect_ends(selected,deadline):
         for i in selected:
             proc,app=processes[i]
             proc.stdin.close();proc.wait(timeout=max(.001,deadline-time.monotonic()))
-            selector.unregister(proc.stdout)
-            tail=proc.stdout.read(65537-len(output[i]));output[i]+=tail
-            if len(output[i])>65536:raise CaptureError('benchmark output byte budget')
-            app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=output[i].decode(),stderr=Path(app['stderr_path']).read_text())
+            collect_stdout(i,deadline)
+            app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stderr=Path(app['stderr_path']).read_text())
+            check_stdout_capture(app)
             if proc.returncode:raise CaptureError('actual slktest failed:'+app['stderr'])
             report,record=read_report(app['report_path'],expected_uid=1004);app['report']=report;app['report_file']=record
     try:
@@ -509,13 +591,17 @@ def execute_supervised(run,row):
                 try:proc.wait(timeout=5)
                 except subprocess.TimeoutExpired:proc.kill();proc.wait()
             app.setdefault('exit',proc.returncode)
-            if 'stdout' not in app:app['stdout']=output.get(i,b'').decode(errors='replace')
+            # Reaping does not drain a pipe. Preserve failed tails without
+            # creating markers or replacing the original exception/verdict.
+            if 'stdout_capture' not in app:collect_stdout(i,time.monotonic()+1)
             if Path(app['stderr_path']).is_file():app['stderr']=Path(app['stderr_path']).read_text()
-            (run.output/f'benchmark-{row["phase"]}-{i}.stdout').write_text(app['stdout'])
         selector.close();row['end_wall_ns']=time.time_ns();run.save()
 
 
 def check_supervision(row):
+    selected_stdout=STDOUT_FIELD in row
+    if selected_stdout and(type(row[STDOUT_FIELD])is not int or row[STDOUT_FIELD]!=1):
+        raise CaptureError('explicit stdout capture contract1 required')
     config=row['config']
     validate_configuration(config)
     count=application_count(row);indices=set(range(count))
@@ -579,6 +665,8 @@ def check_supervision(row):
                 raise CaptureError('short final release must precede continuing long application completion')
     elif 'closed_short'in row:raise CaptureError('early close cannot change the original global finish contract')
     for i,app in enumerate(row['applications']):
+        if selected_stdout:check_stdout_capture(app)
+        elif 'stdout_capture'in app:raise CaptureError('stdout capture lacks its original contract selector')
         config=application_config(row,i);window=config['window'];expected=application_mode(row,i)
         requested=application_request(row,i)
         if app['mode']!=expected or app['args']!=arguments(row['application_tool']['path'],application_owner(row,i),expected,app['report_path'],window,count=config['count'],size=config['bytes'],interval_us=config['interval_us'],channel=requested):raise CaptureError('actual slktest argv/mode mismatch')

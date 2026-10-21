@@ -46,6 +46,12 @@ supervisor退出凭据。只有producer内部计算尚未写出的supervisor结�
 
 ## 材料与信任边界
 
+私有生产者报告在metadata模式不可取得时，即使两个提交含有相同生产源码字节，
+也无法据此确定artifact实际由哪个提交编译。依赖私有报告的编译身份、范围或结果
+绑定负对照必须在local模式读取并核对原报告；metadata接受同字节提交别名只能记作
+该模式未验证此身份，不能当作实际编译来源或当前硬件资格通过。公共CI的metadata
+检查、可取得源码检查、完整local材料校验及实机门禁分别报告。
+
 新报告可声明 `evidence_manifest_version: 1`，冻结其 `materials` 元数据。
 对应registry必须提供 `material_binding_version: 1` 和完整的 `material_bindings`
 映射：每个材料的路径、hash、大小、访问方式及来源元数据必须与报告一致，不能

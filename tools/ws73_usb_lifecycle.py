@@ -26,6 +26,13 @@ CONTROL = re.compile(DEVICE+r', req (0x[0-9a-f]+), value (-?\d+), index (-?\d+)$
 EMULATED = re.compile(DEVICE+r', status (-?\d+)$')
 
 
+def encoded_report(value):
+    """Bound the actual normative CLI bytes, including indentation/newline."""
+    text=json.dumps(value,indent=2)+'\n'
+    if len(text.encode())>REPORT_LIMIT:raise CaptureError('QEMU request report byte budget')
+    return text
+
+
 def parse(text, targets):
     if (not isinstance(text,str) or len(text.encode())>BYTE_LIMIT or not text.endswith('\n')
             or not targets or any(type(b)is not int or type(d)is not int or not 0<b<65536 or not 0<d<128 for b,d in targets)):
@@ -103,7 +110,7 @@ def parse(text, targets):
                        'Completion is QEMU callback or synchronous return metadata, not peer protocol/application delivery or full drain.',
                        'Emulated standard USB control returns are not physical data, DLI Complete or application success; unmapped terminals remain unknown.',
                        'No host/guest absolute-time subtraction or authenticated payload identity.'])
-    if len(json.dumps(result).encode())>REPORT_LIMIT:raise CaptureError('QEMU request report byte budget')
+    encoded_report(result)
     return result
 
 
@@ -135,11 +142,14 @@ def analyze(directory):
         raise CaptureError('explicit original USB leaf allocation required')
     targets={(manifest['inventory_before'][p]['bus'],manifest['inventory_before'][p]['address'])for p in ports}
     proof=parse(text,targets)
-    return dict(status='QEMU_REQUEST_METADATA_OBSERVED_NOT_BUSINESS_QUALIFIED',original_result=manifest['status'],
+    result=dict(status='QEMU_REQUEST_METADATA_OBSERVED_NOT_BUSINESS_QUALIFIED',original_result=manifest['status'],
                 original_gate_qualified=False,materials=materials,logical=proof,
                 scope='Read-only existing collector/parser; no USB/VM operation, credit refund, physical drain or application delivery claim.')
+    encoded_report(result)
+    return result
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('run',type=Path)
-    print(json.dumps(analyze(parser.parse_args().run),indent=2))
+    import sys
+    sys.stdout.write(encoded_report(analyze(parser.parse_args().run)))

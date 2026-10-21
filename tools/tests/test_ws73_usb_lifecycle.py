@@ -105,3 +105,14 @@ class Lifecycle(unittest.TestCase):
             manifest['host_lifecycle_files'][0]['sha256']=hashlib.sha256(events.read_bytes()).hexdigest()
             (root/'manifest.json').write_text(json.dumps(manifest))
             with self.assertRaisesRegex(CaptureError,'event contract'):life.analyze(root)
+
+    def test_result_budget_covers_real_pretty_output_not_only_compact_json(self):
+        import json
+        value={'requests':[{'kind':'DATA','nested':{'result':'pending'}}for _ in range(8)]}
+        compact=len(json.dumps(value).encode())
+        actual=(json.dumps(value,indent=2)+'\n').encode()
+        self.assertGreater(len(actual),compact)
+        with patch.object(life,'REPORT_LIMIT',compact+1),self.assertRaises(CaptureError):life.encoded_report(value)
+        with patch.object(life,'REPORT_LIMIT',len(actual)):
+            self.assertEqual(life.encoded_report(value).encode(),actual)
+        with patch.object(life,'REPORT_LIMIT',len(actual)-1),self.assertRaises(CaptureError):life.encoded_report(value)

@@ -24,6 +24,81 @@ COMPLETE = re.compile(DEVICE+r', status (-?\d+), length (\d+)$')
 CANCEL = re.compile(DEVICE+r'$')
 CONTROL = re.compile(DEVICE+r', req (0x[0-9a-f]+), value (-?\d+), index (-?\d+)$')
 EMULATED = re.compile(DEVICE+r', status (-?\d+)$')
+NATIVE_MARKER = 'WS73_USB_OBSERVE_V1 '
+NATIVE_KEYS = set(('bus device sample phase mono_ns wall_ns allocated freed pending '
+    'pending_rx1 pending_tx1 pending_int3 pending_dead overflow data_cb ctrl_cb dead_cb '
+    'rx1_cb rx1_bytes tx1_cb int3_cb last_cb_ns last_rx1_ns pump_calls pump_returns '
+    'pump_errors pump_begin_ns pump_end_ns pump_max_ns').split())
+NATIVE_COUNTERS = set(('allocated freed data_cb ctrl_cb dead_cb rx1_cb rx1_bytes '
+    'tx1_cb int3_cb pump_calls pump_returns pump_errors pump_max_ns').split())
+
+
+def parse_native(text, targets):
+    """Dedicated QEMU fixture metadata only, never physical drain/RF proof.
+
+    The extra 100ms heartbeat changes scheduling. Callback-entry counters are
+    meaningful only with the separately checked real no-injection execution.
+    They describe libusb delivery to QEMU, not kernel controller readiness.
+    """
+    if (not isinstance(text,str) or len(text.encode())>BYTE_LIMIT or not text.endswith('\n')
+            or not targets or len(targets)>4
+            or any(type(b)is not int or type(d)is not int or not 0<b<65536 or not 0<d<128 for b,d in targets)):
+        raise CaptureError('bounded closed native observer log and explicit identities required')
+    lines=text.splitlines()
+    if len(lines)>LINE_LIMIT:raise CaptureError('native observer line budget')
+    rows={target:[]for target in targets}
+    for line in lines:
+        if 'WS73_TEST_RUNTIME_'in line or 'WS73_TEST_ENUMERATION_RESET'in line:
+            raise CaptureError('injected or held native callbacks excluded')
+        if NATIVE_MARKER not in line:continue
+        if len(line)>2048 or line.count(NATIVE_MARKER)!=1:raise CaptureError('native observer record bound')
+        tokens=line.split(NATIVE_MARKER,1)[1].split();row={}
+        for token in tokens:
+            if token.count('=')!=1:raise CaptureError('typed native observer fields required')
+            key,value=token.split('=')
+            if key not in NATIVE_KEYS or key in row:raise CaptureError('missing/duplicate native observer field')
+            if key=='phase':
+                if value not in('tick','closing','drained'):raise CaptureError('native observer budget or phase failure')
+                row[key]=value
+            else:
+                if not re.fullmatch(r'0|[1-9][0-9]{0,19}',value)or int(value)>=2**64:
+                    raise CaptureError('bounded unsigned native observation required')
+                row[key]=int(value)
+        if set(row)!=NATIVE_KEYS:raise CaptureError('complete native observer record required')
+        key=row['bus'],row['device']
+        if key not in rows:raise CaptureError('native observer outside declared leaf identities')
+        history=rows[key];previous=history[-1]if history else None
+        if row['sample']!=len(history)+1 or row['sample']>4098 or row['overflow']:
+            raise CaptureError('finite contiguous native observer sequence required')
+        if row['freed']>row['allocated']or row['pending']!=row['allocated']-row['freed']or row['pending']>128:
+            raise CaptureError('native request allocation/free observations inconsistent')
+        if (any(row[k]>row['pending']for k in('pending_rx1','pending_tx1','pending_int3','pending_dead'))
+                or row['pending_rx1']+row['pending_tx1']+row['pending_int3']>row['pending']
+                or row['dead_cb']>row['ctrl_cb']+row['data_cb']
+                or row['rx1_cb']+row['tx1_cb']+row['int3_cb']>row['data_cb']
+                or row['ctrl_cb']+row['data_cb']>row['allocated']
+                or row['pump_returns']>row['pump_calls']or row['pump_errors']>row['pump_returns']):
+            raise CaptureError('native callback/endpoint/pump counter bounds')
+        if (not 0<row['mono_ns']<2**63 or not 0<row['wall_ns']<2**63
+                or any(row[k]>row['mono_ns']for k in('last_cb_ns','last_rx1_ns','pump_begin_ns','pump_end_ns'))):
+            raise CaptureError('same-host native clock observation bounds')
+        if previous:
+            if (row['mono_ns']<previous['mono_ns']or row['wall_ns']<previous['wall_ns']
+                    or any(row[k]<previous[k]for k in NATIVE_COUNTERS)
+                    or previous['phase']=='drained'
+                    or(previous['phase']=='closing'and row['phase']!='drained')):
+                raise CaptureError('native observer counter/clock/close regression')
+        if row['phase']=='drained'and(not previous or previous['phase']!='closing'):
+            raise CaptureError('drain-loop snapshot must follow timer retirement')
+        history.append(row)
+    if any(len(r)<2 or r[-1]['phase']!='drained'for r in rows.values()):
+        raise CaptureError('missing native observer terminal or endpoint')
+    result=dict(version=1,status='FINITE_NATIVE_CALLBACK_METADATA_OBSERVED',
+        devices=[dict(bus=b,device=d,samples=r)for(b,d),r in sorted(rows.items())],
+        physical_drain_qualified=False,credit_truth_qualified=False,performance_qualified=False,
+        scope='Original callbacks/free/event-pump counters plus finite heartbeat, not physical USB/RF readiness, implementation refinement, payload delivery, performance or full reference drain. Logical cancellation and native callback are distinct.')
+    encoded_report(result)
+    return result
 
 
 def encoded_report(value):

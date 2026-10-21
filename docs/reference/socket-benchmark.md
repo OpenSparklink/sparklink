@@ -655,3 +655,21 @@ Host／guest绝对时间不得直接相减；长度／顺序相同仍不是带�
 分析器退出码只表示命令是否完成解析，不能单独作为关联门禁。调用者须核对
 `logical.status == LOGICAL_USB_REQUESTS_CLOSED`、零pending及零未关联终态；即使
 满足这些条件，`original_gate_qualified`仍为false，原业务与物理drain门禁另行判断。
+
+### 专用 QEMU 的原生回调观察
+
+`tools/ws73_qemu_event_observer.py --source BASELINE --output NEW_SOURCE`
+只生成独立实验 QEMU 源码；它要求工具中固定的完整 baseline hash，目标文件必须
+不存在。原 source／binary／prepared image 不得替换。这不是普通运行选项，也不是
+默认驱动的新能力；编译、准备和实际执行身份均须单独封存。
+
+该 fixture 以100 ms心跳记录现有libusb event-pump入口／返回、原生callback入口、
+取消后callback、request分配／释放及pending数量。每设备最多4096 tick，最多扫描
+128 pending；无payload、密钥、USB操作或协议结果注入。已有hold／error／reset
+设施仍须由实际QMP记录证明未启用。选择此二进制本身就是显式实验接入。
+
+离线函数`ws73_usb_lifecycle.parse_native(text, explicit_targets)`仅检查有界闭合日志。
+`closing`表示观察timer已退休，`drained`表示原libusb abort loop已返回，均不自动
+证明物理drain、NOCP正确归属或对端交付。缺少终态、错误身份、重复／倒退计数、
+预算耗尽及注入标记拒绝；原业务FAIL不得因计数完整变为PASS。新增心跳会影响调度，
+不能用于授予性能收益或精确RF时延资格。主机内时间线与guest时钟仍分开核对。

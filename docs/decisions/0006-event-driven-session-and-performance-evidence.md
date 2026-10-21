@@ -449,3 +449,17 @@ emulated-return、data、complete、canceled五类事件，不从无匹配完成
 虚拟返回不代表DLI Complete或业务成功；逻辑cancel只撤销packet关联，不删除
 libusb callback／buffer／物理义务，不据此退款credit或宣布drain。Host／guest
 绝对时钟及payload身份另行验证；观测不新增Host、Engine或默认协议行为。
+
+### libusb原生回调与主循环的独立观测
+
+逻辑取消后的原生callback在旧trace中可能不可见。需要隔离这一观察缺口时，使用
+独立固定源码的实验QEMU，对原event-pump入口／返回、callback入口及分配／释放计数，
+不改变packet、credit、buffer所有权或原abort操作。100 ms有界心跳可区分“主循环
+仍运行但没有新callback”与“观察本身停顿”；它不能单独判断内核USB就绪、固件或RF
+根因。心跳改变调度，所以此镜像不能授性能优化资格。
+
+每设备样本／pending扫描及日志／输出均有预算，原no-injection QMP、冻结源码和
+编译闭包必须独立核对。观察timer在原close／exit的abort loop前撤销；loop返回
+不等于硬件、所有引用或协议物理义务已排空。缺少端点／终态、计数倒退、预算耗尽
+及held-transfer重入均不授完整观测资格。应用门禁和历史失败不变，无新增形式化
+refinement或全系统证明，主线仍沿唯一Session／Grant／credit／Ticket推进。

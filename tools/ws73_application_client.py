@@ -45,8 +45,12 @@ def process_identity(pid, uid=1000):
 
 
 def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
-    if app['environment']!=application_environment() or app['exit'] or app['stderr']:
-        raise CaptureError('actual successful SSAP consumer and staged SDK required')
+    if app['environment']!=application_environment():
+        raise CaptureError('original staged SSAP SDK environment required')
+    if type(app['exit'])is not int or app['exit']!=0:
+        raise CaptureError('actual SSAP consumer process failed; inspect retained exit and stderr')
+    if type(app['stderr'])is not str or app['stderr']:
+        raise CaptureError('actual SSAP consumer stderr rejected; inspect original receipt')
     identity=app['credentials']
     if expected_uid not in (1000,1004) or identity['uids']!=[expected_uid]*4 or set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in identity['capabilities'].values()):
         raise CaptureError('ordinary cap-zero SSAP application required')

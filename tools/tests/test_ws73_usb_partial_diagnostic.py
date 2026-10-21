@@ -91,18 +91,56 @@ class PartialDiagnostic(unittest.TestCase):
             selection=diag.select_target(dict(acb_packets=[packet]),request,diag.PEER_OF_UNFINISHED)
             self.assertEqual(selection[0],slot)
             self.assertFalse(selection[1]['whole_PDU_qualified'])
+            source=diag.select_target(dict(acb_packets=[packet]),request,diag.SOURCE_OF_UNFINISHED)
+            self.assertEqual(source[0],1-slot)
+            self.assertEqual(source[1],selection[1])
         for packets in([], [p,reverse], [p|dict(boundary=3)], [p|dict(device=9)]):
             self.assertIsNone(diag.select_target(dict(acb_packets=packets),request,diag.PEER_OF_UNFINISHED))
+            self.assertIsNone(diag.select_target(dict(acb_packets=packets),request,diag.SOURCE_OF_UNFINISHED))
         for value in(None,True,False,2,'auto','0'):
             with self.subTest(value=value),self.assertRaises(CaptureError):
                 diag.select_target(dict(acb_packets=[p]),request,value)
         self.assertIsNone(diag.select_target(dict(acb_packets=[p]),request,1))
 
     def test_cli_target_is_typed_and_has_no_discovery_fallback(self):
-        for raw,value in(('0',0),('1',1),(diag.PEER_OF_UNFINISHED,diag.PEER_OF_UNFINISHED)):
+        for raw,value in(('0',0),('1',1),(diag.PEER_OF_UNFINISHED,diag.PEER_OF_UNFINISHED),(diag.SOURCE_OF_UNFINISHED,diag.SOURCE_OF_UNFINISHED)):
             self.assertEqual(diag.target_value(raw),value)
         for bad in('auto','2','-1','all','0,1','',True,None):
             with self.subTest(bad=bad),self.assertRaises(ValueError):diag.target_value(bad)
+
+    def test_phase_selection_has_one_live_original_request_without_fallback(self):
+        with tempfile.TemporaryDirectory()as folder:
+            root=Path(folder);parent=root/'application/passthrough-control';parent.mkdir(parents=True)
+            request=lambda n:parent/f'benchmark-role-{n}.request.json'
+            terminal=lambda n:root/'benchmark-role'/f'phase-{n}'/'run.json'
+            self.assertIsNone(diag.live_request(root,diag.ACTIVE_PHASE))
+            request(0).write_text('{}')
+            self.assertEqual(diag.live_request(root,diag.ACTIVE_PHASE),(0,request(0)))
+            self.assertIsNone(diag.live_request(root,1))
+            request(1).write_text('{}')
+            self.assertIsNone(diag.live_request(root,diag.ACTIVE_PHASE))
+            terminal(0).parent.mkdir(parents=True);terminal(0).write_text('{}')
+            self.assertEqual(diag.live_request(root,diag.ACTIVE_PHASE),(1,request(1)))
+            self.assertIsNone(diag.live_request(root,0))
+            terminal(1).parent.mkdir(parents=True);terminal(1).write_text('{}')
+            self.assertIsNone(diag.live_request(root,diag.ACTIVE_PHASE))
+            request(1).unlink();request(1).symlink_to(request(0))
+            with self.assertRaises(CaptureError):diag.live_request(root,diag.ACTIVE_PHASE)
+
+    def test_phase_values_are_explicit_and_require_diagnostic_target(self):
+        for raw,value in(('0',0),('1',1),(diag.ACTIVE_PHASE,diag.ACTIVE_PHASE)):
+            self.assertEqual(diag.phase_value(raw),value)
+        self.assertEqual(diag.requested_phase(SimpleNamespace()),1)
+        for bad in(None,True,False,2,'auto','0'):
+            with self.subTest(bad=bad),self.assertRaises(CaptureError):
+                diag.live_request(Path('/unused-fixture'),bad)
+            with self.subTest(bad=bad),self.assertRaises(CaptureError):
+                diag.requested_phase(SimpleNamespace(usb_partial_rx_phase=bad))
+        for bad in('auto','2','-1','all','',True,None):
+            with self.subTest(bad=bad),self.assertRaises(ValueError):diag.phase_value(bad)
+        for phase in(0,diag.ACTIVE_PHASE):
+            with self.subTest(phase=phase),self.assertRaises(CaptureError):
+                diag.requested(SimpleNamespace(usb_partial_rx_phase=phase))
 
     def test_fresh_two_second_two_device_quiet_is_required_not_a_grant(self):
         proof=dict(native=dict(devices=[]),poll_devices=[])
@@ -130,6 +168,7 @@ class PartialDiagnostic(unittest.TestCase):
             session_service_observe=True)
         self.assertEqual(diag.requested(SimpleNamespace(**args)),0)
         self.assertEqual(diag.requested(SimpleNamespace(**(args|dict(usb_partial_rx_target=diag.PEER_OF_UNFINISHED)))),diag.PEER_OF_UNFINISHED)
+        self.assertEqual(diag.requested(SimpleNamespace(**(args|dict(usb_partial_rx_target=diag.SOURCE_OF_UNFINISHED,usb_partial_rx_phase=diag.ACTIVE_PHASE)))),diag.SOURCE_OF_UNFINISHED)
         self.assertIsNone(diag.requested(SimpleNamespace()))
         for change in(dict(usb_partial_rx_target=True),dict(usb_partial_rx_target=2),dict(ports=['1-1.1.1']),
                       dict(command='prepare'),dict(qmp_hotplug=False),dict(connection_verify=False),
@@ -144,7 +183,7 @@ class PartialDiagnostic(unittest.TestCase):
             qemu=Path(folder)/'fixture';qemu.write_bytes(b'explicit unit fixture, not executable QEMU')
             inputs=[dict(path=str(Path(diag.__file__).with_name(name)),
                          sha256=hashlib.sha256(Path(diag.__file__).with_name(name).read_bytes()).hexdigest())
-                    for name in ('ws73_target.py','ws73_usb_partial_diagnostic.py','ws73_usb_lifecycle.py')]
+                    for name in ('ws73_target.py','ws73_usb_partial_diagnostic.py','ws73_usb_lifecycle.py','ws73_application_client.py')]
             package=dict(native_vm={},qemu=dict(path=str(qemu)),inputs=inputs)
             with self.assertRaises(CaptureError):diag.validate_inputs(package)
             with patch.object(diag,'QEMU_SHA256',hashlib.sha256(qemu.read_bytes()).hexdigest()):

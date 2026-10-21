@@ -1371,8 +1371,8 @@ def _run(args):
                     hold=HoldCoordinator(share,m.setdefault('diagnostic_hold',{}))
                 active=0;addresses={port:devices[port]['address'] for port in getattr(args,'ports',[])};transcript=bytearray();support_input=False;hotplug_phase=0
                 if partial_rx_target is not None:
-                    from ws73_usb_partial_diagnostic import Coordinator
-                    partial_rx=Coordinator(share,output,m['usb_partial_rx_diagnostic'],partial_rx_target,args.ports)
+                    from ws73_usb_partial_diagnostic import Coordinator,requested_phase
+                    partial_rx=Coordinator(share,output,m['usb_partial_rx_diagnostic'],partial_rx_target,args.ports,phase=requested_phase(args))
                 watcher=lab.ReattachmentWatcher(addresses,m.setdefault('reattach',[]),owned=opened_usb_node)
                 timeout_seal=None
                 while process.poll() is None:
@@ -2747,8 +2747,9 @@ def main():
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')
             cmd.add_argument('--early-bootstrap-fault',action='store_true',help='separate native three-real-device missing-custom fault, ordinary Core diagnostics and peer business; controlled QMP retry only')
-            from ws73_usb_partial_diagnostic import target_value
-            cmd.add_argument('--usb-partial-rx-target',type=target_value,help='0,1 orpeer-of-unfinished within explicit pair;single VM USB detach after phase1 PB prefix and2s quiet;diagnostic only,never business/recovery PASS')
+            from ws73_usb_partial_diagnostic import target_value,phase_value
+            cmd.add_argument('--usb-partial-rx-target',type=target_value,help='0,1,peer-of-unfinished orsource-of-unfinished within explicit pair;single VM USB detach after declared PB prefix and2s quiet;diagnostic only,never business/recovery PASS')
+            cmd.add_argument('--usb-partial-rx-phase',type=phase_value,default=1,help='0,1 oractive within original phases;default1 preserves old diagnostic scope;requires explicit target')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--channel-daemon-crash',action='store_true',help='actual slkd SIGKILL with ordinary retained business fd, successor and no USB reset')
             cmd.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel','numeric-approve','numeric-reject','numeric-late'],help='actual ordinary Agent policy plus current native relay and peer application evidence; requires separate connection/socket gate')

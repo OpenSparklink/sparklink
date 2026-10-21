@@ -704,6 +704,15 @@ libusb fd执行`poll(..., 0)`，通过本进程fd链接及匹配的`fstat/stat`�
 两个方向均未完成或都无候选时不操作。选择、原guest映射、实际host叶节点及原pending
 请求分别留证，实际动作前仍重新检查。固定`0`／`1`语义保持，不因未命中临时改目标。
 
+`source-of-unfinished`选择同一唯一PB的发送端，测其IN上可能尚未完成的反馈；
+`peer-of-unfinished`测接收端数据。两者只选择测量端点，不判断缓冲中的内容是NOCP
+或业务数据；原取消callback仅报告长度／摘要，不能据此授予credit或交付资格。
+
+`--usb-partial-rx-phase`接受`0`、`1`、`active`，必须与明确target同时使用。默认`1`
+保留旧命令范围。`active`只检查原phase0／1的固定请求及终态路径，恰好一个请求
+已创建且未终结时才选择；完成的phase0不妨碍明确的phase1，无请求或两份活跃请求
+不操作。不是目录扫描、缺失场景回退或扩大业务验收；原阶段、角色、请求hash均留证。
+
 执行时仅通过既有QMP `device_del`移除指定VM leaf，由原teardown取消及排空；不
 re-add、reset或切电。权限及白名单仍由原runner强制。该行政动作不是应用撤权或
 generation准入证明，另一只设备的保留状态和业务须分别验证。
@@ -712,3 +721,7 @@ generation准入证明，另一只设备的保留状态和业务须分别验证�
 决策时原pending packet／分配实例及实际取消callback。零长度不证明硬件未收到
 部分数据，非零不证明完整HCC或对端应用交付。选择此选项的原业务／自然恢复门禁
 始终失败；观测完成只允许报告原始长度，不归还credit或宣称根因已查明。
+
+SSAP子进程回执分别拒绝staged SDK环境不符、非整数／非零exit及非空／非字符串
+stderr。子进程失败须检查原exit／stderr，不能仅由上层success-receipt错误猜测为
+环境问题。完整回执和原失败保留；正常结果仍需原凭据、屏障、完整值及精确参数检查。

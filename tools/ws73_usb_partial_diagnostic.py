@@ -14,22 +14,56 @@ FIELD='usb_partial_rx_diagnostic'
 OPTION='usb_partial_rx_target'
 RX_END='WS73_USB_RX_END_V1 '
 PEER_OF_UNFINISHED='peer-of-unfinished'
+SOURCE_OF_UNFINISHED='source-of-unfinished'
+ACTIVE_PHASE='active'
 
 
 def target_value(value):
-    """Only a fixed slot or the unique PB peer inside the explicit pair."""
+    """Only a fixed slot or a unique PB endpoint inside the explicit pair."""
     if value in ('0','1'):return int(value)
-    if value==PEER_OF_UNFINISHED:return value
-    raise ValueError('target must be0,1 orpeer-of-unfinished within the explicit pair')
+    if value in (PEER_OF_UNFINISHED,SOURCE_OF_UNFINISHED):return value
+    raise ValueError('target must be0,1,peer-of-unfinished orsource-of-unfinished within the explicit pair')
 
 
 def valid_target(value):
-    return type(value)is int and value in(0,1)or type(value)is str and value==PEER_OF_UNFINISHED
+    return type(value)is int and value in(0,1)or type(value)is str and value in(PEER_OF_UNFINISHED,SOURCE_OF_UNFINISHED)
+
+
+def phase_value(value):
+    if value in ('0','1'):return int(value)
+    if value==ACTIVE_PHASE:return value
+    raise ValueError('phase must be0,1 oractive within the two original phases')
+
+
+def requested_phase(args):
+    value=getattr(args,'usb_partial_rx_phase',1)
+    if not(type(value)is int and value in(0,1)or type(value)is str and value==ACTIVE_PHASE):
+        raise CaptureError('explicit original diagnostic phase required')
+    return value
+
+
+def live_request(share,selector):
+    """No directory scan or fallback: only the two original fixed request paths."""
+    if not(type(selector)is int and selector in(0,1)or type(selector)is str and selector==ACTIVE_PHASE):
+        raise CaptureError('explicit original diagnostic phase required')
+    phases=range(2)if selector==ACTIVE_PHASE else(selector,)
+    candidates=[]
+    for phase in phases:
+        path=Path(share)/'application/passthrough-control'/f'benchmark-role-{phase}.request.json'
+        end=Path(share)/'benchmark-role'/f'phase-{phase}'/'run.json'
+        if path.is_symlink()or end.is_symlink():raise CaptureError('original regular role files required')
+        if path.exists()and not path.is_file()or end.exists()and not end.is_file():
+            raise CaptureError('original regular role files required')
+        if path.is_file()and not end.exists():candidates.append((phase,path))
+    return candidates[0]if len(candidates)==1 else None
 
 
 def requested(args):
     target=getattr(args,OPTION,None)
-    if target is None:return None
+    phase=requested_phase(args)
+    if target is None:
+        if phase!=1:raise CaptureError('phase selection requires an explicit partial RX diagnostic')
+        return None
     from ws73_benchmark_ssap import requested as service,profile
     allowed={'qmp_hotplug','connection_verify','channel_benchmark_dynamic','channel_benchmark_ssap_owned',
              'channel_benchmark_credit_observe','session_service_observe'}
@@ -49,7 +83,7 @@ def requested(args):
 def validate_inputs(package):
     if 'native_vm'not in package or hashlib.sha256(Path(package['qemu']['path']).read_bytes()).hexdigest()!=QEMU_SHA256:
         raise CaptureError('exact new RX-terminal observer native QEMU required')
-    for name in ('ws73_target.py','ws73_usb_partial_diagnostic.py','ws73_usb_lifecycle.py'):
+    for name in ('ws73_target.py','ws73_usb_partial_diagnostic.py','ws73_usb_lifecycle.py','ws73_application_client.py'):
         expected=hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
         rows=[v for v in package['inputs']if Path(v['path']).name==name]
         if len(rows)!=1 or rows[0]['sha256']!=expected:raise CaptureError('fresh partial RX diagnostic source required')
@@ -103,20 +137,21 @@ def unfinished_application_prefix(capture,request,target):
 def select_target(capture,request,selector):
     """No device discovery: evaluate only the two already bound guest slots."""
     if not valid_target(selector):raise CaptureError('explicit pair diagnostic target required')
-    slots=range(2)if selector==PEER_OF_UNFINISHED else(selector,)
+    slots=range(2)if selector in(PEER_OF_UNFINISHED,SOURCE_OF_UNFINISHED)else(selector,)
     candidates=[]
     for slot in slots:
         witness=unfinished_application_prefix(capture,request,slot)
-        if witness is not None:candidates.append((slot,witness))
+        if witness is not None:candidates.append((1-slot if selector==SOURCE_OF_UNFINISHED else slot,witness))
     return candidates[0]if len(candidates)==1 else None
 
 
 class Coordinator:
-    def __init__(self,share,output,record,target,ports):
+    def __init__(self,share,output,record,target,ports,*,phase=1):
         self.share=Path(share);self.output=Path(output);self.record=record;self.target=target;self.ports=ports
+        self.phase=phase
         self.next_probe=0;self.observations=[]
         record.update(version=1,method='ONE_QMP_DEVICE_DEL_DURING_UNFINISHED_PB_RX_QUIET',target=target,
-                      attempted=False,complete=False,live_observations=self.observations,
+                      phase_selector=phase,attempted=False,complete=False,live_observations=self.observations,
                       physical_acceptance=False,natural_recovery_acceptance=False)
 
     def poll(self,monitor,owner):
@@ -124,16 +159,19 @@ class Coordinator:
         now=time.monotonic_ns()
         if now<self.next_probe:return
         self.next_probe=now+500_000_000
-        path=self.share/'application/passthrough-control/benchmark-role-1.request.json'
-        if not path.exists():return
-        if(self.share/'benchmark-role/phase-1/run.json').exists():
-            self.record['terminal']='ROLE_TERMINAL_WITHOUT_DIAGNOSTIC';return
+        selection=live_request(self.share,self.phase)
+        if selection is None:
+            if (type(self.phase)is int and(self.share/'application/passthrough-control'/f'benchmark-role-{self.phase}.request.json').is_file()
+                    and(self.share/'benchmark-role'/f'phase-{self.phase}'/'run.json').is_file()):
+                self.record['terminal']='ROLE_TERMINAL_WITHOUT_DIAGNOSTIC'
+            return
+        phase,path=selection
         with path.open('rb')as f:raw=f.read(1_048_577)
         if len(raw)>1_048_576:raise CaptureError('bounded original role request required')
         request=json.loads(raw)
         from ws73_socket_benchmark import validate_role_request
         from ws73_benchmark_ssap import FIELD as service_field,profile
-        validate_role_request(request,1,live=True)
+        validate_role_request(request,phase,live=True)
         if request.get(service_field)!=profile(observe=True):raise CaptureError('original sequential SSAP observer request required')
         hosts=[owner(i)for i in range(2)];targets={(v['bus'],v['address'])for v in hosts}
         text=read_prefix(self.output/'qemu-stderr.log',BYTE_LIMIT)
@@ -170,7 +208,7 @@ class Coordinator:
             path=self.output/name
             with path.open('xb')as stream:stream.write(data)
             path.chmod(0o600)
-        self.record.update(attempted=True,target=target,target_selector=self.target,host=h,original_request=request,request_sha256=hashlib.sha256(raw).hexdigest(),
+        self.record.update(attempted=True,phase=phase,target=target,target_selector=self.target,host=h,original_request=request,request_sha256=hashlib.sha256(raw).hexdigest(),
             candidate=selected2,pending_request=pending[0],wire_prefix=witness,live_observations=self.observations,
             native_prefix_sha256=hashlib.sha256(fresh).hexdigest(),lifecycle_prefix_sha256=hashlib.sha256(lifecycle).hexdigest(),
             before_monotonic_ns=time.monotonic_ns(),before_wall_ns=time.time_ns())

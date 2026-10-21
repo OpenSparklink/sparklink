@@ -218,7 +218,13 @@ def wait_interface(count,timeout):
             device=path.parent/'1-1'
             if ((device/'idVendor').read_text().strip()=='ffff' and (device/'idProduct').read_text().strip()=='3733'
                     and int((path/'bNumEndpoints').read_text(),16)==count):return path,device
-        except (FileNotFoundError,ValueError):pass
+        except OSError as error:
+            # sysfs can retain a disappearing instance between attribute reads.
+            # Retry only removal, within the original descriptor deadline. A
+            # permission/transport error must remain an error, not a ROM match.
+            if error.errno not in (errno.ENOENT, errno.ENODEV):
+                raise
+        except ValueError:pass
         time.sleep(.02)
     raise TimeoutError('exact guest port 1-1 descriptor mode')
 

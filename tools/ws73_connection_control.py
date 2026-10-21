@@ -399,6 +399,109 @@ CONNECTION_POLICY_WORDS = ('scan_interval', 'scan_window', 'interval_min', 'inte
                            'latency', 'supervision_timeout', 'event_min', 'event_max')
 
 
+def observe_down_timing(run, capture):
+    """Inspect successful OR failed original phases, without awarding a gate.
+
+    Reuse the actual decoder and OUT/Status matcher. An absent Down is only an
+    observation over this capture, not proof of hardware silence. A late Down
+    never repairs the original deadline or canonical-property gate. No protocol
+    timeout, RF-only latency, current-source qualification or root cause is
+    inferred from these timestamps or raw supervision values.
+    """
+    span = capture.get('rx_capture_span', {})
+    if span.get('version') != 1 or not span.get('selected_records'):
+        raise CaptureError('validated target capture span required for Down observation')
+    first, last = span['earliest']['wall_ns'], span['latest']['wall_ns']
+    phases = run['connection_control']['phases']
+    if not 1 <= len(phases) <= 2 or first > last:
+        raise CaptureError('bounded original connection phases and ordered span required')
+    rows = []
+    for number, phase in enumerate(phases):
+        if 'disconnect_command' not in phase:
+            rows.append(dict(phase=number, observation='NO_ORIGINAL_DISCONNECT', gate_awarded=False))
+            continue
+        caller, peer = phase['caller'], phase['peer']
+        identities = [(o['bus'], o['device']) for o in (caller, peer)]
+        if (identities[0] == identities[1] or any(type(o['generation']) is not int or o['generation'] <= 0 for o in (caller, peer))
+                or any(list(i) not in span['targets'] for i in identities)):
+            raise CaptureError('two distinct original controller identities required')
+        if any(not any((v['bus'], v['device'], v['generation'], v['address']) ==
+                (o['bus'], o['device'], o['generation'], o['address']) for v in run['initial']) for o in (caller, peer)):
+            raise CaptureError('original controller registration/address mapping required')
+        start_row = run['commands'][phase['connect_command']]
+        stop_row = run['commands'][phase['disconnect_command']]
+        stop = stop_row['start_wall_ns']
+        cutoff = phases[number+1]['start_wall_ns'] if number+1 < len(phases) else last
+        exclusive_end = cutoff if number+1 < len(phases) else last+1
+        if not first <= start_row['start_wall_ns'] <= start_row['end_wall_ns'] < stop <= stop_row['end_wall_ns'] <= cutoff <= last:
+            raise CaptureError('original command order and capture interval required')
+        create, _ = corroborate_wire_status(capture, caller, 0x1401, start_row)
+        wire, status = corroborate_wire_status(capture, caller, 0x1403, stop_row)
+        body = bytes.fromhex(create['params'])
+        if (len(body) != 27 or body[2] != phase['peer_address_type']
+                or body[3:9] != bytes.fromhex(peer['address'].replace(':', ''))):
+            raise CaptureError('original Create target/type required')
+        params = bytes.fromhex(wire['params'])
+        if len(params) != 3:
+            raise CaptureError('bounded original Disconnect parameters required')
+        observation = phase.get('down_property_observation')
+        deadline = None
+        if observation is not None:
+            if (observation.get('version') not in (1, 2)
+                    or observation.get('budget_seconds') != DOWN_OBSERVATION_BUDGET_SECONDS
+                    or not stop_row['end_wall_ns'] <= observation['start_wall_ns'] <= cutoff):
+                raise CaptureError('original unextended Down observation window required')
+            deadline = observation['start_wall_ns'] + DOWN_OBSERVATION_BUDGET_SECONDS * 1_000_000_000
+        ends = []
+        for owner, remote in [(caller, peer), (peer, caller)]:
+            identity = owner['bus'], owner['device']
+            events = [e for e in capture['native_events'] if (e['bus'], e['device']) == identity]
+            up = [e for e in events if e['event'] in (0x15, 0x1401)
+                  and start_row['start_wall_ns'] <= e['wall_ns'] < stop]
+            if len(up) != 1:
+                raise CaptureError('one independent original Up per controller required')
+            payload = bytes.fromhex(up[0]['params'])
+            if (len(payload) < 11 or payload[0] or payload[3] > 1 or payload[4] != 0
+                    or payload[5:11] != bytes.fromhex(remote['address'].replace(':', ''))):
+                raise CaptureError('actual successful Up peer/type/role required')
+            handle = int.from_bytes(payload[1:3], 'little')
+            link_role = payload[3]
+            if owner == caller and params[:2] != payload[1:3]:
+                raise CaptureError('Disconnect must target actual caller handle')
+            if any(e['event'] in (0x15, 0x1401) and stop <= e['wall_ns'] < exclusive_end for e in events):
+                raise CaptureError('later Up/reuse invalidates original Down interval')
+            downs = [e for e in events if e['event'] in (5, 0x1405) and stop <= e['wall_ns'] < exclusive_end]
+            matching = []
+            for event in downs:
+                payload = bytes.fromhex(event['params'])
+                if len(payload) < 4:
+                    raise CaptureError('truncated physical Down')
+                if int.from_bytes(payload[1:3], 'little') == handle:
+                    if payload[0]:
+                        raise CaptureError('unsuccessful physical Down is not a timing receipt')
+                    matching.append(event)
+            if len(matching) > 1:
+                raise CaptureError('duplicate original Down is ambiguous')
+            event = matching[0] if matching else None
+            ends.append(dict(controller=dict(bus=identity[0], device=identity[1], generation=owner['generation']),
+                role='caller' if owner == caller else 'peer', link_role=link_role, handle=handle, up=up[0], down=event,
+                observation='CAPTURED' if event else 'NOT_OBSERVED_IN_CAPTURE_INTERVAL',
+                reason=bytes.fromhex(event['params'])[3] if event else None,
+                from_usb_disconnect_ns=event['wall_ns']-wire['wall_ns'] if event else None,
+                from_original_observation_ns=event['wall_ns']-observation['start_wall_ns'] if event and observation else None,
+                raw_down_no_later_than_original_deadline=event['wall_ns'] <= deadline if event and deadline else None))
+        if {end['link_role'] for end in ends} != {0, 1}:
+            raise CaptureError('independent complementary physical roles required')
+        rows.append(dict(phase=number, observation='TIMING_OBSERVED_NOT_GATE', gate_awarded=False,
+            create=create, raw_supervision_timeout=int.from_bytes(body[21:23], 'little'),
+            disconnect=wire, status=status, wire_reason=params[2], cutoff_wall_ns=cutoff,
+            original_observation=observation, original_deadline_wall_ns=deadline, ends=ends))
+    return dict(version=1, observation='ORIGINAL_DOWN_TIMING_ONLY', gate_awarded=False,
+        original_run_status=run['status'], original_control_status=run['connection_control'].get('status'),
+        original_error=run.get('error'), phases=rows,
+        scope='Original guest capture/wall timeline only;not RF-only or single-way latency, canonical snapshot acceptance, new qualification, deadline extension or root-cause proof. Controller generation/lifetime belongs to retained Host observations,not additional wire identity.')
+
+
 def explicit_connection_policy(text):
     """Reference observation input, not a second daemon config validator.
 

@@ -82,6 +82,28 @@ class PartialDiagnostic(unittest.TestCase):
         bad=p|dict(data=p['data'][:10]+'00'+p['data'][12:])
         self.assertIsNone(diag.unfinished_application_prefix(dict(acb_packets=[bad]),request,0))
 
+    def test_unique_peer_selection_is_confined_to_original_pair(self):
+        request=dict(start_wall_ns=1,owners=[dict(owner=dict(port='1-2',bus=1,device=3),object=dict(handle=0)),
+                                         dict(owner=dict(port='1-1',bus=1,device=2),object=dict(handle=0))])
+        p=dict(direction='out',bus=1,device=3,handle=0,wall_ns=2,record=10,boundary=1,data=app_prefix().hex())
+        reverse=p|dict(device=2,record=11)
+        for packet,slot in((p,0),(reverse,1)):
+            selection=diag.select_target(dict(acb_packets=[packet]),request,diag.PEER_OF_UNFINISHED)
+            self.assertEqual(selection[0],slot)
+            self.assertFalse(selection[1]['whole_PDU_qualified'])
+        for packets in([], [p,reverse], [p|dict(boundary=3)], [p|dict(device=9)]):
+            self.assertIsNone(diag.select_target(dict(acb_packets=packets),request,diag.PEER_OF_UNFINISHED))
+        for value in(None,True,False,2,'auto','0'):
+            with self.subTest(value=value),self.assertRaises(CaptureError):
+                diag.select_target(dict(acb_packets=[p]),request,value)
+        self.assertIsNone(diag.select_target(dict(acb_packets=[p]),request,1))
+
+    def test_cli_target_is_typed_and_has_no_discovery_fallback(self):
+        for raw,value in(('0',0),('1',1),(diag.PEER_OF_UNFINISHED,diag.PEER_OF_UNFINISHED)):
+            self.assertEqual(diag.target_value(raw),value)
+        for bad in('auto','2','-1','all','0,1','',True,None):
+            with self.subTest(bad=bad),self.assertRaises(ValueError):diag.target_value(bad)
+
     def test_fresh_two_second_two_device_quiet_is_required_not_a_grant(self):
         proof=dict(native=dict(devices=[]),poll_devices=[])
         for bus,dev in((1,18),(1,19)):
@@ -107,6 +129,7 @@ class PartialDiagnostic(unittest.TestCase):
             channel_benchmark_ssap_owned=True,channel_benchmark_credit_observe=True,
             session_service_observe=True)
         self.assertEqual(diag.requested(SimpleNamespace(**args)),0)
+        self.assertEqual(diag.requested(SimpleNamespace(**(args|dict(usb_partial_rx_target=diag.PEER_OF_UNFINISHED)))),diag.PEER_OF_UNFINISHED)
         self.assertIsNone(diag.requested(SimpleNamespace()))
         for change in(dict(usb_partial_rx_target=True),dict(usb_partial_rx_target=2),dict(ports=['1-1.1.1']),
                       dict(command='prepare'),dict(qmp_hotplug=False),dict(connection_verify=False),

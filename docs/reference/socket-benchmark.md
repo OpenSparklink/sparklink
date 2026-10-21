@@ -699,6 +699,11 @@ libusb fd执行`poll(..., 0)`，通过本进程fd链接及匹配的`fstat/stat`�
 两设备各一条pending RX、2至4秒静默和新鲜的完整native／poll快照。guest端口映射
 与连接角色顺序分开核对。条件不满足时不执行，不扩大期限或重试追逐样本。
 
+`--usb-partial-rx-target peer-of-unfinished`可在原命令明确指定的两个白名单slot中，
+选择唯一未完成应用PB的对端。它不发现设备，不按枚举顺序挑选，不回退到其他端口；
+两个方向均未完成或都无候选时不操作。选择、原guest映射、实际host叶节点及原pending
+请求分别留证，实际动作前仍重新检查。固定`0`／`1`语义保持，不因未命中临时改目标。
+
 执行时仅通过既有QMP `device_del`移除指定VM leaf，由原teardown取消及排空；不
 re-add、reset或切电。权限及白名单仍由原runner强制。该行政动作不是应用撤权或
 generation准入证明，另一只设备的保留状态和业务须分别验证。

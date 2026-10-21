@@ -2747,7 +2747,8 @@ def main():
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')
             cmd.add_argument('--early-bootstrap-fault',action='store_true',help='separate native three-real-device missing-custom fault, ordinary Core diagnostics and peer business; controlled QMP retry only')
-            cmd.add_argument('--usb-partial-rx-target',type=int,choices=[0,1],help='single selected VM USB detach after observed phase1 PB prefix and2s quiet;diagnostic only,never business/recovery PASS')
+            from ws73_usb_partial_diagnostic import target_value
+            cmd.add_argument('--usb-partial-rx-target',type=target_value,help='0,1 orpeer-of-unfinished within explicit pair;single VM USB detach after phase1 PB prefix and2s quiet;diagnostic only,never business/recovery PASS')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--channel-daemon-crash',action='store_true',help='actual slkd SIGKILL with ordinary retained business fd, successor and no USB reset')
             cmd.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel','numeric-approve','numeric-reject','numeric-late'],help='actual ordinary Agent policy plus current native relay and peer application evidence; requires separate connection/socket gate')

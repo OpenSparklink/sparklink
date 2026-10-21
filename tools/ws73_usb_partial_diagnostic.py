@@ -13,6 +13,18 @@ QEMU_SHA256='5b89e4f5dac5338d1ed7b1c029aa906e68d1276aab15343eee31b9966c400c01'
 FIELD='usb_partial_rx_diagnostic'
 OPTION='usb_partial_rx_target'
 RX_END='WS73_USB_RX_END_V1 '
+PEER_OF_UNFINISHED='peer-of-unfinished'
+
+
+def target_value(value):
+    """Only a fixed slot or the unique PB peer inside the explicit pair."""
+    if value in ('0','1'):return int(value)
+    if value==PEER_OF_UNFINISHED:return value
+    raise ValueError('target must be0,1 orpeer-of-unfinished within the explicit pair')
+
+
+def valid_target(value):
+    return type(value)is int and value in(0,1)or type(value)is str and value==PEER_OF_UNFINISHED
 
 
 def requested(args):
@@ -21,7 +33,7 @@ def requested(args):
     from ws73_benchmark_ssap import requested as service,profile
     allowed={'qmp_hotplug','connection_verify','channel_benchmark_dynamic','channel_benchmark_ssap_owned',
              'channel_benchmark_credit_observe','session_service_observe'}
-    if (type(target)is not int or target not in(0,1)or args.command!='run'
+    if (not valid_target(target)or args.command!='run'
             or len(getattr(args,'ports',[]))!=2
             or any(type(v)is bool and v and k not in allowed for k,v in vars(args).items())
             or getattr(args,'connection_advertising','fixed-t')!='negotiable-t'
@@ -88,6 +100,17 @@ def unfinished_application_prefix(capture,request,target):
                 sequence=sequence,known_prefix_bytes=len(known),whole_PDU_qualified=False)
 
 
+def select_target(capture,request,selector):
+    """No device discovery: evaluate only the two already bound guest slots."""
+    if not valid_target(selector):raise CaptureError('explicit pair diagnostic target required')
+    slots=range(2)if selector==PEER_OF_UNFINISHED else(selector,)
+    candidates=[]
+    for slot in slots:
+        witness=unfinished_application_prefix(capture,request,slot)
+        if witness is not None:candidates.append((slot,witness))
+    return candidates[0]if len(candidates)==1 else None
+
+
 class Coordinator:
     def __init__(self,share,output,record,target,ports):
         self.share=Path(share);self.output=Path(output);self.record=record;self.target=target;self.ports=ports
@@ -121,11 +144,12 @@ class Coordinator:
         capture=read_live_prefix(self.output,self.share/'ws73.pcap',
             {(o['owner']['bus'],o['owner']['device'])for o in request['owners']},self.observations)
         if capture is None:return
-        witness=unfinished_application_prefix(capture,request,self.target)
-        if witness is None:return
+        selection=select_target(capture,request,self.target)
+        if selection is None:return
+        target,witness=selection
         lifecycle=read_prefix(self.output/'usb-lifecycle.log',BYTE_LIMIT)
         logical=parse(lifecycle.decode(),targets)
-        h=hosts[self.target];key=h['bus'],h['address']
+        h=hosts[target];key=h['bus'],h['address']
         pending=[r for r in logical['requests']if r['kind']=='DATA'and r['direction']==1 and r['endpoint']==1
                  and(r['bus'],r['device'])==key and r['terminal']is None]
         if len(pending)!=1 or pending[0]['size']!=20480:raise CaptureError('one exact pending original bulk RX request required')
@@ -141,18 +165,18 @@ class Coordinator:
             if monitor.execute('qom-get',dict(path=path,property='attached'))is not True:raise CaptureError('original attached USB object required')
             for prop in ('host-reset','guest-reset','guest-resets-all','kernel-driver-detach','test-enumeration-reset-once'):
                 if monitor.execute('qom-get',dict(path=path,property=prop))is not False:raise CaptureError('reset/detach experiments excluded')
-        if owner(self.target)!=h:raise CaptureError('USB ownership changed before partial diagnostic')
+        if owner(target)!=h:raise CaptureError('USB ownership changed before partial diagnostic')
         for name,data in (('partial-rx-native-prefix.log',fresh),('partial-rx-lifecycle-prefix.log',lifecycle)):
             path=self.output/name
             with path.open('xb')as stream:stream.write(data)
             path.chmod(0o600)
-        self.record.update(attempted=True,host=h,original_request=request,request_sha256=hashlib.sha256(raw).hexdigest(),
+        self.record.update(attempted=True,target=target,target_selector=self.target,host=h,original_request=request,request_sha256=hashlib.sha256(raw).hexdigest(),
             candidate=selected2,pending_request=pending[0],wire_prefix=witness,live_observations=self.observations,
             native_prefix_sha256=hashlib.sha256(fresh).hexdigest(),lifecycle_prefix_sha256=hashlib.sha256(lifecycle).hexdigest(),
             before_monotonic_ns=time.monotonic_ns(),before_wall_ns=time.time_ns())
         # Existing normal QEMU teardown owns cancellation/drain. No transfer
         # length/status is fabricated and this object is never re-added here.
-        monitor.execute('device_del',{'id':f'ws73_{self.target}'})
+        monitor.execute('device_del',{'id':f'ws73_{target}'})
         self.record.update(after_monotonic_ns=time.monotonic_ns(),after_wall_ns=time.time_ns(),action_acknowledged=True)
 
 

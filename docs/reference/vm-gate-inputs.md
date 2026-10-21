@@ -127,6 +127,12 @@ verifier pin 不符即拒绝。早期初始化故障与 daemon／fd 死亡等独
 相同的清理、固件范围及 QEMU／supervisor 终态流程，并保留各自专用业务及范围摘要；
 状态标签不能代替这些摘要。旧失败不因核对器修复而改写，新工具 artifact 须另验。
 
+PB 分片门禁按每个实际发送 controller 的 DLI buffer 上限核对完整 DTAP PDU，
+包含通道头；不能固定用 249／250 应用字节分界推断所有型号均分片。
+`long_pdu_acceptance` 只表示全部相关业务 TX 确实分片且通过顺序／长度核对；
+较大应用消息在 E 上单包通过时不授予该分片资格。NOCP 数量与对端应用仍另核对，
+旧失败原件不因核对器修复升级。
+
 ## Down 期限失败后的被动观察
 
 `--connection-down-failure-observe-seconds` 仅用于现有真实双设备 Native VM 的

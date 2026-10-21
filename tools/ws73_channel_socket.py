@@ -412,6 +412,34 @@ def controller_budget(entry):
     return buffers[0],buffers[1]
 
 
+def physical_tx_fragments(row, leg):
+    """Check the current Session cursor contract against this sender's DLI bound.
+
+    DTAP bytes include the five-byte channel header. An application length of
+    250 does not imply PB fragmentation on a controller with a larger packet.
+    The actual reassembler/NOCP and opposite RX checks remain independent.
+    """
+    tx=leg['tx']
+    senders=[entry for entry in row['owners'] if
+             (entry['owner']['bus'],entry['owner']['device'])==(tx['bus'],tx['device'])]
+    if len(senders)!=1:raise CaptureError('one original physical sender metadata required')
+    maximum,_=controller_budget(senders[0])
+    raw=bytes.fromhex(tx['data']);pieces=tx.get('fragments',[tx])
+    count=(len(raw)+maximum-1)//maximum
+    if not raw or len(pieces)!=count:
+        raise CaptureError('actual TX fragment count must match sender controller DLI bound')
+    expected_pb=[0] if count==1 else [1]+[2]*(count-2)+[3]
+    if [p.get('boundary',0)for p in pieces]!=expected_pb:
+        raise CaptureError('actual TX requires ordered full or first/middle/last PB')
+    offset=0
+    for piece in pieces:
+        data=bytes.fromhex(piece['data'])
+        if len(data)!=min(maximum,len(raw)-offset) or data!=raw[offset:offset+len(data)]:
+            raise CaptureError('each actual TX fragment must match bounded ordered PDU bytes')
+        offset+=len(data)
+    return dict(controller_acb_maximum=maximum,packet_count=count,fragmented=count>1)
+
+
 def tx_status_receipts(row):
     samples=[]
     if not row.get('tx_status_required',False):return samples # historical never upgrades
@@ -717,7 +745,7 @@ def corroborate(run,capture):
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows if not row.get('close_prefix',False)),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
-                long_pdu_acceptance=all(row.get('message_bytes',61)>249 and not row.get('close_prefix',False) for row in rows),credit_exhaustion_acceptance=False,four_device_acceptance=False)
+                long_pdu_acceptance=False,credit_exhaustion_acceptance=False,four_device_acceptance=False)
     if any(row.get('burst',False) for row in rows):
         if not all(row.get('burst',False) for row in rows):raise CaptureError('both connection roles must observe real pressure')
         proof['software_backpressure_acceptance']=True
@@ -725,17 +753,12 @@ def corroborate(run,capture):
     if any(row.get('close_prefix',False) for row in rows):
         proof['prefix_close_phases']=sum(bool(row.get('close_prefix',False)) for row in rows)
         proof['physical_prefix_delivery_acceptance']=all(row.get('close_prefix',False) for row in rows)
-    if proof['long_pdu_acceptance'] or proof.get('physical_prefix_delivery_acceptance',False):
-        for row,phase in zip(rows,proofs):
-            for leg in phase['legs']:
-                pieces=leg['tx'].get('fragments',[])
-                if len(pieces)<2 or [piece.get('boundary',0) for piece in pieces]!=[1]+[2]*(len(pieces)-2)+[3]:
-                    raise CaptureError('long PDU requires actual ordered first/middle/last TX fragments')
-                senders=[entry for entry in row['owners'] if (entry['owner']['bus'],entry['owner']['device'])==(leg['tx']['bus'],leg['tx']['device'])]
-                if len(senders)!=1:raise CaptureError('one original physical sender metadata required')
-                maximum,_=controller_budget(senders[0])
-                if any(not 1<=len(bytes.fromhex(piece['data']))<=maximum for piece in pieces):
-                    raise CaptureError('each actual WS73 TX packet must respect its controller DLI bound')
+    fragmented=[]
+    for row,phase in zip(rows,proofs):
+        for leg in phase['legs']:
+            shape=physical_tx_fragments(row,leg)
+            fragmented.append(shape['fragmented'])
+    proof['long_pdu_acceptance']=bool(fragmented) and all(fragmented) and not any(row.get('close_prefix',False) for row in rows)
     if any(row.get('boundary_check',False) for row in rows):
         proof['application_boundary_rejections']=sum(len(rejected_frames(row)) for row in rows)
         proof['application_message_bytes']=rows[0].get('message_bytes',61)

@@ -343,6 +343,42 @@ class IndependentUSBProof(unittest.TestCase):
             if kind=='missing_peer':packets.pop(1)
             with self.subTest(kind=kind),patch('ws73_channel_socket.reassemble_acb',return_value=packets),self.assertRaises(CaptureError):corroborate(run,events)
 
+    def test_actual_sender_bound_distinguishes_U_and_E_fragment_thresholds(self):
+        from ws73_channel_socket import physical_tx_fragments
+        for maximum,app_bytes,packets in [(254,249,1),(254,250,2),(1526,250,1),
+                                          (1526,1521,1),(1526,1522,2),(1526,2042,2)]:
+            raw=bytes((n%251 for n in range(app_bytes+5)))
+            parts=[raw[i:i+maximum] for i in range(0,len(raw),maximum)]
+            pieces=[dict(data=p.hex(),boundary=0 if packets==1 else 1 if i==0 else 3 if i==packets-1 else 2)for i,p in enumerate(parts)]
+            row=dict(owners=[dict(owner=dict(bus=1,device=2,buffers=[maximum,6,0,0]))])
+            leg=dict(tx=dict(bus=1,device=2,data=raw.hex(),fragments=pieces))
+            with self.subTest(maximum=maximum,app_bytes=app_bytes):
+                result=physical_tx_fragments(row,leg)
+                self.assertEqual((result['packet_count'],result['fragmented']),(packets,packets>1))
+                for mutation in ['missing','pb','bytes','budget','identity']:
+                    badrow,badleg=copy.deepcopy(row),copy.deepcopy(leg)
+                    if mutation=='missing':badleg['tx']['fragments']=[]
+                    elif mutation=='pb':badleg['tx']['fragments'][-1]['boundary']=2
+                    elif mutation=='bytes':badleg['tx']['fragments'][-1]['data']='00'
+                    elif mutation=='budget':badrow['owners'][0]['owner']['buffers'][0]=1
+                    else:badrow['owners'][0]['owner']['device']=3
+                    with self.subTest(mutation=mutation),self.assertRaises(CaptureError):physical_tx_fragments(badrow,badleg)
+
+    def test_fitting_E_PDU_is_not_fragmented_long_qualification(self):
+        from unittest.mock import patch
+        from ws73_channel_socket import corroborate
+        run,capture,sdus=self.fixture(message_bytes=250)
+        for row in run['channel_socket']:
+            for owner in row['owners']:owner['owner']['buffers']=[1526,6,0,0]
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            result=corroborate(run,capture)
+            self.assertEqual(result['round_trips'],8)
+            self.assertFalse(result['long_pdu_acceptance'])
+        changed=copy.deepcopy(run)
+        for row in changed['channel_socket']:
+            for owner in row['owners']:owner['owner']['buffers']=[254,5,0,0]
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(changed,capture)
+
     def test_boundary_rejections_require_no_matching_usb_data(self):
         from unittest.mock import patch
         from ws73_channel_socket import corroborate,rejected_frames

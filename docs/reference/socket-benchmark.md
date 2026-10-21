@@ -573,3 +573,35 @@ VM失败路径先尝试停止自己拥有的应用监督器及daemon，再封存
 配置依据须绑定实际捕获和容量估算假设，分别记录 kernel ring 内存、文本与解析
 事件预算。编码开销和页尾浪费的估算不是内核 ring-buffer 正确性证明。不同配置的
 失败与成功分别封存；满负载追踪未通过时，独立业务子检查不能把整轮升级为通过。
+
+
+## 显式只读 transport 快照
+
+`--channel-benchmark-credit-observe` 只能附加到原固定的动态通道
+`128 × 2042` 字节、窗口8、Owned SSAP 场景（顺序或显式 duplex）。还要求独立
+QMP 双设备 VM 与 `--session-service-observe --session-service-profile full-load-v2`。
+默认场景及历史 boot 标识不变；新场景使用 `owned-credit`／`owned-duplex-credit`，
+prepared 明确声明 `benchmark_credit_observation_contract_version=1`。
+
+观察器通过现有 `slctl --adapter PATH transport-status CONNECTION` 和生产
+`GetTransportStatus` 查询同一物理 Session。调用者是 VM 内 UID/GID1000、无附加组
+和 capabilities 的获准管理观察者；业务应用仍是独立的 UID1004。它复用现有
+snapshot decoder，不创建 Engine、不发送 DLI、不更新 credit，也不使用“已排空”判据。
+
+| 限制 | 契约 |
+| --- | --- |
+| 采样 | 每秒一对，两端串行，最多128对／128秒；落后时记缺测，不突发补采 |
+| 查询 | 生产原1秒期限，外层监督1.25秒；只允许固定只读命令与原完整连接身份 |
+| 输出 | stdout／stderr 各8192字节，读取时限额；报告最多32 MiB |
+| 生命周期 | 一个拥有的后台线程，停止后有界 join；每个自有 CLI 子进程回收后才准入下一个 |
+| 结果 | 实际快照、拒绝、超时、停止取消、缺测分别保留；失败不得填零或制造 values |
+
+后台线程只维护私有有界收据，join 后交给原监督器封存。缺少两端有效观察、错误
+身份、源文件不一致、输出超限、预算耗尽或未完成 join 均不能通过集合完整性检查。
+正常业务门禁和原期限不变。这是带 D-Bus 查询及记录开销的正确性诊断，不能作为
+低扰动性能结果，也不能证明 NOCP 真实性、旧 debt 归属或 callback／物理排空。
+
+`python3 tools/ws73_transport_watch.py RUN --failed-phase 0|1` 是另一个只读失败诊断
+入口。它要求原 VM/control/role 均失败、原请求与 boot 一致及封存文件校验通过；
+不要求伪造成功的 quiescent 屏障，也不删除失败。输出固定为未取得资格，不能替代
+原成功分析、RX 全区间覆盖检查或对端应用验收。历史资料按原工具身份重放。

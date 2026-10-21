@@ -196,10 +196,10 @@ def role_tool_path(root,name):
     """Resolve only the fixed native-lab executable alias inside the guest root."""
     import re
     root=Path(root).resolve(strict=True);path=root/name.lstrip('/')
-    if name=='/bin/slktest':
-        if not path.is_symlink():raise CaptureError('fixed native-lab slktest alias required')
+    if name in('/bin/slktest','/bin/slctl'):
+        if not path.is_symlink():raise CaptureError('fixed native-lab executable alias required')
         target=path.readlink()
-        if not re.fullmatch(r'/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}/slktest',str(target)):raise CaptureError('unexpected slktest alias target')
+        if not re.fullmatch(r'/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}/'+Path(name).name,str(target)):raise CaptureError('unexpected native-lab executable alias target')
         path=root/str(target).lstrip('/')
     elif path.is_symlink():raise CaptureError('fixed regular role tool required')
     resolved=path.resolve(strict=True)
@@ -207,23 +207,27 @@ def role_tool_path(root,name):
     return resolved
 
 
-def role_tools(root=Path('/'),*,dynamic=False,parallel=False,ssap=False):
+def role_tools(root=Path('/'),*,dynamic=False,parallel=False,ssap=False,observe=False):
     import hashlib
     from ws73_role_snapshot import HELPER,SUPERVISOR
     names=('/bin/slktest','/bin/bus-policy-probe',HELPER,SUPERVISOR,'/usr/share/sparklink/tools/ws73_socket_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark_timeline.py','/usr/share/sparklink/tools/ws73_benchmark_resources.py')
     if dynamic:names+=('/usr/share/sparklink/tools/ws73_dynamic_channels.py',)
     if parallel:names+=('/usr/share/sparklink/tools/ws73_channel_fairness.py',)
     if ssap:names+=tuple('/usr/share/sparklink/tools/'+n for n in ssap_gate.VERIFIERS)+ssap_gate.RUNTIME
+    if observe:
+        from ws73_transport_watch import VERIFIERS,RUNTIME
+        names+=tuple('/usr/share/sparklink/tools/'+n for n in VERIFIERS)+(RUNTIME,)
     return {n:dict(sha256=hashlib.sha256(role_tool_path(root,n).read_bytes()).hexdigest(),bytes=role_tool_path(root,n).stat().st_size)for n in names}
 
 
 def request_tools(row,root=Path('/')):
     """Same typed source profile for producer, root admission and replay."""
     channel=row_channel(row)
-    return role_tools(root,dynamic=channel is not None,parallel=is_parallel(channel),ssap=ssap_gate.selected(row)is not None)
+    service=ssap_gate.selected(row)
+    return role_tools(root,dynamic=channel is not None,parallel=is_parallel(channel),ssap=service is not None,observe=ssap_gate.observing(service))
 
 
-def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False):
+def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False,observe=False):
     from ws73_north_star import file_record
     here=Path(__file__).resolve().parent
     if type(package.get('socket_benchmark_role_contract_version'))is not int or package['socket_benchmark_role_contract_version']!=1:raise ValueError('fresh apps-only benchmark prepared contract1 required')
@@ -237,6 +241,10 @@ def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False):
         from ws73_application_client import validate_consumer_sources
         validate_consumer_sources(package)
         names+=ssap_gate.VERIFIERS
+    if observe:
+        if not ssap or type(package.get('benchmark_credit_observation_contract_version'))is not int or package['benchmark_credit_observation_contract_version']!=1:raise ValueError('fresh bounded transport observation prepared contract1 required')
+        from ws73_transport_watch import VERIFIERS
+        names+=VERIFIERS
     for name in names:
         matches=[v for v in package['inputs']if Path(v['path']).name==name]
         if len(matches)!=1 or matches[0]['sha256']!=file_record(here/name)['sha256']:raise ValueError('prepared benchmark role/source closure mismatch: '+name)
@@ -353,6 +361,7 @@ def execute_supervised(run,row):
     validate_configuration(row['config']);count=application_count(row);indices=tuple(range(count))
     reports=run.output/'reports';reports.mkdir(mode=0o700);os.chown(reports,1004,1004)
     processes=[None]*count;row['applications']=[None]*count
+    transport_watch=None
     buffers={};output={};duplicates=set();selector=selectors.DefaultSelector()
     channel=row_channel(row);observed={kind:set()for kind in ('staged','armed','quiescent')}
     def event(kind,index,**values):
@@ -426,6 +435,9 @@ def execute_supervised(run,row):
             # during load and cannot be called a low-perturbation measurement.
             from ws73_benchmark_timeline import phase_marker
             row['trace_observation']=phase_marker(row['phase'],'BEGIN')
+            if ssap_gate.observing(ssap_gate.selected(row)):
+                from ws73_transport_watch import Watch
+                transport_watch=Watch(row['owners'],row['phase']).start()
             release('start')
             business_deadline=time.monotonic()+620
             if ssap_gate.selected(row)is not None:ssap_gate.execute(run,row)
@@ -447,6 +459,9 @@ def execute_supervised(run,row):
             release('finish',remaining)
             deadline=time.monotonic()+15
             collect_ends(remaining,deadline)
+            if transport_watch is not None:
+                from ws73_transport_watch import FIELD
+                row[FIELD]=transport_watch.close()
             row['end_wall_ns']=time.time_ns()
             check_supervision(row)
             row['application_check']=application_checks(row)
@@ -455,6 +470,12 @@ def execute_supervised(run,row):
     except BaseException as error:
         row.update(status='FAIL',error=str(error),error_type=type(error).__name__);raise
     finally:
+        if transport_watch is not None and not transport_watch.closed:
+            try:
+                from ws73_transport_watch import FIELD
+                row[FIELD]=transport_watch.close()
+            except BaseException as error:
+                row['transport_observer_error']=type(error).__name__+': '+str(error)
         for i,pair in enumerate(processes):
             if pair is None:continue
             proc,app=pair
@@ -479,6 +500,9 @@ def check_supervision(row):
     from ws73_benchmark_resources import observations
     if RESOURCE_FIELD in row and not apps_role(row):raise CaptureError('resource checkpoint requires apps-only role')
     observations(row)
+    if ssap_gate.observing(ssap_gate.selected(row))or 'transport_observation'in row:
+        from ws73_transport_watch import validate as validate_transport_observation
+        validate_transport_observation(row,ssap_gate.observing(ssap_gate.selected(row)))
     channel=row_channel(row)
     if ssap_gate.selected(row)is not None:
         ssap_gate.workload(config,channel);ssap_gate.streams(row)
@@ -689,6 +713,9 @@ def _match_payloads(run,capture,share):
         from ws73_benchmark_resources import observations
         resource=observations(row)
         if resource is not None:phase_proof['resource_observations']=resource
+        if ssap_gate.observing(ssap_gate.selected(row)):
+            from ws73_transport_watch import FIELD,validate
+            phase_proof[FIELD]=validate(row,True)
         proofs.append(phase_proof)
     if any(RESOURCE_FIELD in row for row in rows):
         if not all(type(row.get(RESOURCE_FIELD))is int and row[RESOURCE_FIELD]==1 for row in rows):raise CaptureError('both resource observation phases required')

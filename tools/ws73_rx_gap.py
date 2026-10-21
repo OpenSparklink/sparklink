@@ -121,15 +121,10 @@ def analyze(directory):
                        'No driver/order/generation/buffer/stop-drain change;original source and failure evidence retained.'])
 
 
-def diagnose_failed(directory, phase):
-    """Observe the whole captured failed load phase, not a passing benchmark.
-
-    This entry never calls or relaxes successful qualification. The separate
-    failure export validator checks the same original file/size/hash bounds.
-    A caller cannot supply a shorter, more convenient time window.
-    """
+def failed_phase_inputs(directory, phase):
+    """Shared closed-failure identity/export guard; no RX or success verdict."""
     from ws73_role_snapshot import HELPER, verify_failed
-    from ws73_socket_benchmark import request_fields, validate_role_request, application_count
+    from ws73_socket_benchmark import request_fields, validate_role_request
     if type(phase)is not int or phase not in (0,1):
         raise CaptureError('one explicit failed phase0 or1 required')
     root=Path(directory).resolve(strict=True);share=root/'guest-output'
@@ -149,6 +144,22 @@ def diagnose_failed(directory, phase):
     if (row['status']!='FAIL' or type(row['phase'])is not int or row['phase']!=phase
         or any({k:r[k]for k in stable}!={k:request[k]for k in stable}for r in (row,parent))):
         raise CaptureError('failed local phase must match its original request and owners')
+    return root, manifest, control, request, row, exported
+
+
+def diagnose_failed(directory, phase):
+    """Observe the whole captured failed load phase, not a passing benchmark.
+
+    This entry never calls or relaxes successful qualification. The separate
+    failure export validator checks the same original file/size/hash bounds.
+    A caller cannot supply a shorter, more convenient time window.
+    """
+    from ws73_socket_benchmark import application_count
+    root,manifest,control,request,row,exported=failed_phase_inputs(directory,phase)
+    share=root/'guest-output';manifest_path=root/'manifest.json'
+    control_path=share/'application/passthrough-control/run.json'
+    request_path=control_path.parent/f'benchmark-role-{phase}.request.json'
+    path=share/'benchmark-role'/('phase-'+str(phase))
     starts=[e for e in row['events']if e['kind']=='start']
     expected=set(range(len(row['applications'])))
     if (len(expected)!=application_count(request)or len(starts)!=len(expected)

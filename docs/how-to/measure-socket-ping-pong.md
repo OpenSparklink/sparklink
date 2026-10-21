@@ -373,3 +373,21 @@ python3 tools/ws73_session_service.py analyze-failed-benchmark "$RUN" --failed-p
 
 任何非零丢失、超预算、缺 marker 或未闭合操作都保留为失败。不要修改旧收据的
 buffer／计数，或只截取有利区间；需要下一次实验时使用新目录和准确工具身份。
+
+
+## 在 Owned 并发负载失败时观察 Session
+
+先按[输入参考](../reference/socket-benchmark.md#显式只读-transport-快照)准备新工具
+及明确板型的独立双设备 VM；不能把旧 prepared 补上标记便当作新输入。保留原
+顺序／duplex 选择、随机载荷、窗口、Owner 和调用期限，再显式加入
+`--channel-benchmark-credit-observe --session-service-observe
+--session-service-profile full-load-v2`。
+
+执行后检查每个原 phase 的 `transport_observation`：两端完整身份、实际收据、
+失败及缺测槽位、停止与线程 join 都必须可追溯。成功收集不是业务通过；先看原
+manifest 的整轮结论。若原 role 失败，保留原目录，使用 reference 中的失败诊断
+命令读取封存快照；缺失材料或原请求不匹配时停止分析，不能截取有利窗口。
+
+将同 guest 的快照与现有 Session／USB／NOCP 追踪比较时，明确它们是离散观察，
+不能据此假定两次采样间状态不变。该工具的查询和记录增加扰动；性能基线继续
+使用原低扰动业务路径。真实测试仍 VM-only，仅操作已分配的逐设备端口。

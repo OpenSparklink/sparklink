@@ -19,17 +19,38 @@ RUNTIME=('/bin/ws73-application-client-c','/usr/share/sparklink/tools/ws73-appli
          ('client','ssap','local_services','service_authorization','_library','_validation')))
 
 
-def profile(duplex=False):
-    return dict(version=2 if duplex else 1,kind='owned-sdk-read-write-duplex'if duplex else'owned-sdk-read-write',rounds=4,value_bytes=32)
+def profile(duplex=False, *, observe=False):
+    value=dict(version=2 if duplex else 1,kind='owned-sdk-read-write-duplex'if duplex else'owned-sdk-read-write',rounds=4,value_bytes=32)
+    if observe:
+        from ws73_transport_watch import SPEC
+        value['transport_observation_request']=dict(SPEC)
+    return value
+
+
+def duplex(value):
+    return value is not None and value['version']==2
+
+
+def observing(value):
+    return value is not None and 'transport_observation_request'in value
+
+
+def verifiers(value):
+    if not observing(value):return VERIFIERS
+    from ws73_transport_watch import VERIFIERS as extra
+    return VERIFIERS+extra
 
 
 def selected(row):
     if type(row)is not dict:raise CaptureError('typed concurrent SSAP record required')
     if FIELD not in row:return None
     value=row[FIELD]
-    if (type(value)is not dict or value not in(profile(),profile(True))or type(value.get('version'))is not int
+    observed=type(value)is dict and 'transport_observation_request'in value
+    if (type(value)is not dict or value not in tuple(profile(d,observe=observed)for d in(False,True))or type(value.get('version'))is not int
         or any(type(value.get(k))is not int for k in ('rounds','value_bytes'))):
         raise CaptureError('exact explicit sequential1 or duplex2 Owned SSAP profile required')
+    if observing(value)and any(type(v)is not int for v in value['transport_observation_request'].values()):
+        raise CaptureError('typed explicit bounded transport observation request required')
     return value
 
 
@@ -43,25 +64,27 @@ def workload(config,channel):
 
 def requested(args):
     enabled=getattr(args,'channel_benchmark_ssap_owned',False)
-    duplex=getattr(args,'channel_benchmark_ssap_duplex',False)
-    if type(enabled)is not bool or type(duplex)is not bool or duplex and not enabled:raise CaptureError('typed explicit owned/duplex SSAP selectors required')
+    paired=getattr(args,'channel_benchmark_ssap_duplex',False)
+    observe=getattr(args,'channel_benchmark_credit_observe',False)
+    if type(enabled)is not bool or type(paired)is not bool or type(observe)is not bool or (paired or observe)and not enabled:raise CaptureError('typed explicit owned/duplex/observation SSAP selectors required')
     if not enabled:return None
     from ws73_socket_benchmark import requested_configuration,requested_channel
     workload(requested_configuration(args),requested_channel(args))
-    return profile(duplex)
+    return profile(paired,observe=observe)
 
 
 def boot(value):
     if value is None:return[]
-    selected({FIELD:value});return[TOKEN_DUPLEX if value==profile(True)else TOKEN]
+    selected({FIELD:value});token=TOKEN_DUPLEX if duplex(value)else TOKEN
+    return[token+('-credit'if observing(value)else'')]
 
 
 def from_boot(words):
     values=[w for w in words if w.startswith('ws73.benchmark_ssap=')]
     if not values:return None
-    if (values not in([TOKEN],[TOKEN_DUPLEX])or words.count('ws73.socket_benchmark_apps=1')!=1
+    if (values not in([TOKEN],[TOKEN_DUPLEX],[TOKEN+'-credit'],[TOKEN_DUPLEX+'-credit'])or words.count('ws73.socket_benchmark_apps=1')!=1
         or words.count('ws73.benchmark_mode=window')!=1):raise CaptureError('one exact enabled concurrent SSAP boot profile required')
-    return profile(values==[TOKEN_DUPLEX])
+    return profile(values[0]in(TOKEN_DUPLEX,TOKEN_DUPLEX+'-credit'),observe=values[0].endswith('-credit'))
 
 
 def execute(run,row):
@@ -74,7 +97,7 @@ def execute(run,row):
     workload(row['config'],row['benchmark_channel_request'])
     source=dict(phase=row['phase'],owners=row['owners'],start_wall_ns=time.time_ns(),status='RUNNING')
     row[SOURCE]=source;run.save();prepare_ssap_commands(run,source)
-    ssap_phase(run,source,application_uid=1004,vm_token='ws73.socket_benchmark_apps=1',duplex=selected(row)==profile(True))
+    ssap_phase(run,source,application_uid=1004,vm_token='ws73.socket_benchmark_apps=1',duplex=duplex(selected(row)))
     source.update(end_wall_ns=time.time_ns(),status='OWNED_SDK_CONCURRENT_EVIDENCE_PENDING');run.save()
 
 
@@ -89,7 +112,7 @@ def streams(row):
         or len(source.get('ssap_language_clients',[]))!=24):
         raise CaptureError('complete original same-lifetime concurrent SSAP source required')
     from ws73_application_client import verify_owned_publishers,ssap_receipt
-    if selected(row)==profile(True):
+    if duplex(selected(row)):
         if source.get('ssap_sdk_duplex_required')is not True or len(source.get('ssap_sdk_batches',[]))!=12:raise CaptureError('complete explicit paired SDK source required')
     elif 'ssap_sdk_duplex_required'in source or source.get('ssap_sdk_batches'):raise CaptureError('unrequested duplex source')
     owners=verify_owned_publishers(source)
@@ -140,12 +163,16 @@ def valid_summary(proof):
         from ws73_application_client import ssap_receipt
         from ws73_ssap_value import valid_wire
         for phase,ssap in zip(phases,service['proofs'],strict=True):
+            if observing(selected_profile):
+                from ws73_transport_watch import valid_summary,FIELD as OBSERVATION
+                if not valid_summary(phase.get(OBSERVATION)):return False
+            elif 'transport_observation'in phase:return False
             if (ssap['phase']!=phase['phase']or len(ssap['applications'])!=24 or len(ssap['publishers'])!=2
                 or ssap['authorization_requests']!=40 or phase['ssap_concurrent_progress']!=progress(phase,ssap)):
                 return False
             for app in ssap['applications']:ssap_receipt(app,phase['owners'][app['position']],expected_uid=1004)
             if any(not valid_wire(leg)for value in ssap['values']for leg in value['wire']):return False
-            if selected_profile==profile(True):
+            if duplex(selected_profile):
                 from ws73_application_client import duplex_evidence
                 if ssap['duplex']!=duplex_evidence(ssap['applications'],ssap['values'],ssap['duplex']['source_batches'],phase['owners'],phase['phase']):return False
             elif 'duplex'in ssap:return False

@@ -501,6 +501,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                 '') ;;
                 owned) connection_arg="$connection_arg --channel-benchmark-ssap-owned" ;;
                 owned-duplex) connection_arg="$connection_arg --channel-benchmark-ssap-owned --channel-benchmark-ssap-duplex" ;;
+                owned-credit) connection_arg="$connection_arg --channel-benchmark-ssap-owned --channel-benchmark-credit-observe" ;;
+                owned-duplex-credit) connection_arg="$connection_arg --channel-benchmark-ssap-owned --channel-benchmark-ssap-duplex --channel-benchmark-credit-observe" ;;
                 *) fail 'one explicit concurrent SSAP profile' ;;
             esac
         fi

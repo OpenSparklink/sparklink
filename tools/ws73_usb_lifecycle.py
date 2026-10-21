@@ -31,6 +31,82 @@ NATIVE_KEYS = set(('bus device sample phase mono_ns wall_ns allocated freed pend
     'pump_errors pump_begin_ns pump_end_ns pump_max_ns').split())
 NATIVE_COUNTERS = set(('allocated freed data_cb ctrl_cb dead_cb rx1_cb rx1_bytes '
     'tx1_cb int3_cb pump_calls pump_returns pump_errors pump_max_ns').split())
+POLL_MARKER = 'WS73_USB_POLL_V1 '
+POLL_KEYS = set('bus device sample before_ns after_ns wall_ns count result errno error fds'.split())
+
+
+def parse_native_poll(text, targets):
+    """Pair bounded non-consuming poll snapshots with native heartbeat rows.
+
+    Discrete readiness bits are not continuous USB completion availability,
+    endpoint attribution, hardware liveness or a controller/generation grant.
+    """
+    native=parse_native(text,targets)
+    snapshots={(r['bus'],r['device']):r['samples']for r in native['devices']}
+    rows={target:[]for target in targets}
+    pending_pair=None
+    for line in text.splitlines():
+        if NATIVE_MARKER in line:
+            if pending_pair is not None:raise CaptureError('native sample missing its original following poll observation')
+            fields=dict(token.split('=')for token in line.split(NATIVE_MARKER,1)[1].split())
+            pending_pair=int(fields['bus']),int(fields['device']),int(fields['sample'])
+            continue
+        if POLL_MARKER not in line:continue
+        if len(line)>2048 or line.count(POLL_MARKER)!=1:raise CaptureError('poll observer record bound')
+        row={}
+        for token in line.split(POLL_MARKER,1)[1].split():
+            if token.count('=')!=1:raise CaptureError('typed poll observer fields required')
+            key,value=token.split('=')
+            if key not in POLL_KEYS or key in row:raise CaptureError('duplicate/unknown poll observer field')
+            if key=='fds':row[key]=value
+            else:
+                if not re.fullmatch(r'0|-?[1-9][0-9]{0,19}',value)or not -2**63<int(value)<2**64:
+                    raise CaptureError('bounded poll observer integer required')
+                row[key]=int(value)
+        if set(row)!=POLL_KEYS:raise CaptureError('complete poll observer record required')
+        key=row['bus'],row['device']
+        if key not in rows:raise CaptureError('poll observer outside declared leaf identities')
+        if pending_pair!=(row['bus'],row['device'],row['sample']):
+            raise CaptureError('poll snapshot must follow its original native sample')
+        pending_pair=None
+        history=rows[key];index=len(history)
+        if row['sample']!=index+1 or index>=len(snapshots[key]):
+            raise CaptureError('contiguous native/poll snapshot pairing required')
+        current=snapshots[key][index]
+        if (row['error']or row['errno']or not 1<=row['count']<=8
+                or not 0<=row['result']<=row['count']):
+            raise CaptureError('poll lookup/syscall/identity/budget failure is not no-readiness')
+        if (not current['mono_ns']<=row['before_ns']<=row['after_ns']<2**63
+                or not 0<row['wall_ns']<2**63 or row['wall_ns']<current['wall_ns']
+                or(index and row['before_ns']<history[-1]['after_ns'])
+                or(index+1<len(snapshots[key])and row['after_ns']>snapshots[key][index+1]['mono_ns'])):
+            raise CaptureError('same-host poll snapshot clock/pairing bounds')
+        fds=[];identities=set();numbers=set()
+        for item in row['fds'].split(';'):
+            if not re.fullmatch(r'[0-9]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+',item):
+                raise CaptureError('complete typed poll fd observations required')
+            fd,events,revents,bus,device=map(int,item.split(':'))
+            if (not 0<=fd<2**31 or fd in numbers or events not in(1,4,5)
+                    or not 0<=revents<65536 or revents&~0x3d):
+                raise CaptureError('unique finite Linux poll descriptor/profile required')
+            numbers.add(fd)
+            if (bus,device)!=(0,0):
+                if (bus,device)not in targets or(bus,device)in identities:
+                    raise CaptureError('unique observed USB fd within declared identities required')
+                identities.add((bus,device))
+            fds.append(dict(fd=fd,events=events,revents=revents,bus=bus,device=device))
+        if len(fds)!=row['count']or key not in identities or sum(v['revents']!=0 for v in fds)!=row['result']:
+            raise CaptureError('complete original fd/readiness cardinality and own USB identity required')
+        row['fds']=fds;row['native_phase']=current['phase'];history.append(row)
+    if pending_pair is not None or any(len(rows[k])!=len(snapshots[k])for k in rows):
+        raise CaptureError('missing native/poll pair or declared endpoint')
+    result=dict(version=1,status='FINITE_LIBUSB_POLL_METADATA_OBSERVED',native=native,
+        poll_devices=[dict(bus=b,device=d,samples=r)for(b,d),r in sorted(rows.items())],
+        continuous_completion_availability_proved=False,physical_drain_qualified=False,
+        credit_truth_qualified=False,performance_qualified=False,
+        scope='Discrete same-process poll(0)/proc/stat metadata paired with finite native snapshots only. Non-consuming, no USB operation. Unknown host-kernel implementation, snapshot blind intervals, endpoint attribution and firmware/RF behavior remain explicit limits;no peer delivery, generation authenticity, physical/ref drain or performance proof.')
+    encoded_report(result)
+    return result
 
 
 def parse_native(text, targets):

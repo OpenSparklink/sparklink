@@ -463,3 +463,10 @@ libusb callback／buffer／物理义务，不据此退款credit或宣布drain。
 不等于硬件、所有引用或协议物理义务已排空。缺少端点／终态、计数倒退、预算耗尽
 及held-transfer重入均不授完整观测资格。应用门禁和历史失败不变，无新增形式化
 refinement或全系统证明，主线仍沿唯一Session／Grant／credit／Ticket推进。
+
+需要进一步区分fd未就绪与未分发时，实验fixture可复用原有限心跳做不消费的
+`poll(0)`。只有完整fd集合、进程内USB节点身份和原native样本配对才构成离散观察；
+NULL、错误、缺测或预算耗尽不得替换为零。不会主动调用event pump、read或reap，
+也不以观测就绪授Ready／credit或取消物理义务。fd级结果不是endpoint归属；
+采样盲区、宿主usbfs实现／源码身份及调度扰动须明确，不能由VM内核源码推导宿主
+行为，更不能据此宣称固件／RF根因、性能收益或完整drain已经证明。

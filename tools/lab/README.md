@@ -74,3 +74,20 @@ contract. The heartbeat itself changes scheduling; results cannot qualify a
 performance improvement. Fixture tests are source/metadata tests, not a BQL,
 kernel-concurrency, libusb, firmware or RF proof. Compile/link provenance and
 real-device execution are separate gates, always VM-only on allocated leaves.
+
+`tools/ws73_qemu_poll_observer.py` derives a further **separate** fixture from
+the pinned complete native-observer source. It reuses that timer; it adds no
+second timer or event pump. For each native sample it snapshots at most eight
+libusb pollfds, calls `poll(..., 0)`, and identifies USB fds using bounded local
+`/proc/self/fd` readlink plus matching `fstat/stat` device/inode metadata. It
+never reads/reaps an URB or opens a device. Null lookup, overflow, syscall or
+identity errors are explicit; they are not successful zero-ready samples.
+
+`ws73_usb_lifecycle.parse_native_poll` requires every original native sample's
+following poll record, fd/readiness cardinality and declared USB identities.
+Error/hangup bits remain errors; readiness is not a completed data packet or
+endpoint attribution. Sampling cannot prove continuous absence between ticks.
+The host's usbfs poll semantics and source identity must be recorded separately
+from the VM kernel; an experiment kernel source is not host-source attestation.
+The additional syscalls also perturb scheduling. No performance, RF root cause,
+physical drain, generation authentication or business delivery is implied.

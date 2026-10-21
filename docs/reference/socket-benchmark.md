@@ -673,3 +673,16 @@ Host／guest绝对时间不得直接相减；长度／顺序相同仍不是带�
 证明物理drain、NOCP正确归属或对端交付。缺少终态、错误身份、重复／倒退计数、
 预算耗尽及注入标记拒绝；原业务FAIL不得因计数完整变为PASS。新增心跳会影响调度，
 不能用于授予性能收益或精确RF时延资格。主机内时间线与guest时钟仍分开核对。
+
+`tools/ws73_qemu_poll_observer.py --source NATIVE_BASELINE --output NEW_SOURCE`
+只生成另一个固定源码的实验fixture，复用上述原timer。每份原生快照后对最多8个
+libusb fd执行`poll(..., 0)`，通过本进程fd链接及匹配的`fstat/stat`识别USB节点。
+不read／reap URB，不打开设备，不调用event pump，不新增协议或恢复操作。
+`parse_native_poll(text, explicit_targets)`要求逐份原native／poll配对、完整fd集合、
+返回数量、就绪位及所属USB身份；lookup／syscall／身份错误、溢出或缺测不能填零。
+错误／hangup位保留，不能解释成数据完成。
+
+这些是离散的fd级就绪快照：不能分辨具体endpoint，不能证明两次采样之间一直没有
+完成，不能认证generation或对端交付。宿主usbfs实现及内核来源单独记录，不能用
+实验VM内核的源码冒充宿主实现证明。新增元数据系统调用影响调度，不授性能资格；
+原应用门禁、有限队列、credit／Ticket／Grant及原期限保持不变。

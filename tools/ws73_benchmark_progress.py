@@ -172,3 +172,79 @@ def transport_prefixes(capture, reports, application, owners):
     return dict(status='FAILED_WINDOW_RETIRED_TRANSPORT_PREFIXES_ONLY',retired_streams=len(retired),
                 matched_application_prefixes=result,unclassified_retirements=len(retired)-len(result),
                 hardware_cause_proved=False,original_gate_qualified=False)
+
+
+def business_legs(capture, reports, application, owners, timings):
+    """Associate actual random payloads and accepted USB records, not queue IDs.
+
+    Unsubmitted software work cannot acquire an application identity here.
+    Missing legs stay missing; a retired prefix never becomes a complete SDU.
+    """
+    complete, retired = reassemble_acb_retired(capture)
+    partial = transport_prefixes(capture, reports, application, owners)
+    catalog = application['catalog']
+    by_payload = {payload: index for index, payload in enumerate(catalog)}
+    usb = [(v['owner']['bus'], v['owner']['device']) for v in owners]
+    operations = {}
+    for operation in timings['operations']:
+        records = operation['accepted_usb_records']
+        if records:
+            require(records[0] not in operations, 'unique original operation USB record')
+            operations[records[0]] = operation
+    rows, seen = [], set()
+
+    def add(endpoint, direction, index, reply, pieces, whole):
+        key = endpoint, direction, index, reply
+        require(key not in seen, 'one original business leg')
+        seen.add(key)
+        identity = reports[endpoint]['channel_identity']
+        records = [p['record'] for p in pieces]
+        row = dict(endpoint=endpoint, direction=direction, application_index=index, reply=reply,
+                   complete_sdu=whole, bytes=sum(len(bytes.fromhex(p['data'])) for p in pieces),
+                   fragment_records=records, first_wall_ns=pieces[0]['wall_ns'],
+                   last_wall_ns=pieces[-1]['wall_ns'],
+                   frame_sha256=hashlib.sha256(catalog[index]).hexdigest(), operation=None)
+        if direction == 'out':
+            operation = operations.get(records[0])
+            require(operation is not None and operation['accepted_usb_records'] == records
+                    and (operation['controller'], operation['generation'], operation['lifetime'])
+                    == (identity['controller'], identity['generation'], identity['lifetime']),
+                    'actual business fragments and original Session operation must agree')
+            row['operation'] = {k: operation[k] for k in ('controller','generation','lifetime',
+                'epoch','slot','admission_sequence','admission_ns','retirement_ns','deadline_jiffies',
+                'dtap_bytes','accepted_fragments','reported_credit_waits')}
+        rows.append(row)
+
+    for packet in complete:
+        if (packet['bus'], packet['device']) not in usb:
+            continue
+        endpoint = usb.index((packet['bus'], packet['device']))
+        identity = reports[endpoint]['channel_identity']
+        raw = bytes.fromhex(packet['data'])
+        tcid = identity['remote_tcid' if packet['direction'] == 'out' else 'local_tcid']
+        if len(raw) < 5 or int.from_bytes(raw[:2], 'little') != tcid or raw[4] != 241:
+            continue
+        require(packet['handle'] == identity['handle']
+                and int.from_bytes(raw[2:4], 'little') + 4 == len(raw), 'original DTAP/handle')
+        reply = raw[33] if len(raw) > 33 else -1
+        normalized, _, _ = frame(raw[5:].hex(), reports[endpoint]['config']['bytes'], reply)
+        require(reply in (0, 1) and normalized in by_payload
+                and (endpoint == 0) == ((packet['direction'] == 'out') != bool(reply)),
+                'known actual random payload and direction')
+        add(endpoint, packet['direction'], by_payload[normalized], bool(reply), packet['fragments'], True)
+    for p in partial['matched_application_prefixes']:
+        owner = owners[p['endpoint']]['owner']
+        matches = [s for s in retired if (s['bus'],s['device'],s['direction'])
+                   == (owner['bus'],owner['device'],p['direction'])
+                   and s['fragments'][0]['record'] == p['first_record']
+                   and s['fragments'][-1]['record'] == p['last_record']]
+        require(len(matches) == 1, 'one original retired prefix stream')
+        add(p['endpoint'], p['direction'], p['application_index'], p['reply'], matches[0]['fragments'], False)
+    full = {(r['endpoint'],r['direction'],r['application_index'],r['reply']) for r in rows if r['complete_sdu']}
+    for index in range(len(reports[1]['incoming'])):
+        require((0,'out',index,False) in full and (1,'in',index,False) in full,
+                'actual peer-validated request needs both captured complete legs')
+    for index in application['validated_indices']:
+        require((1,'out',index,True) in full and (0,'in',index,True) in full,
+                'actual source-validated reply needs both captured complete legs')
+    return rows

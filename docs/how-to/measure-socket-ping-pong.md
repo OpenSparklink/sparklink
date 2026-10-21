@@ -351,6 +351,21 @@ python3 tools/ws73_session_service.py analyze-failed-benchmark "$RUN" --failed-p
 结果固定为 `FAILED_GATE_TRANSPORT_TIMINGS_NOT_QUALIFIED`，不赋予业务、性能或
 完整生命周期资格。成功入口继续要求全部操作闭合，原整轮 FAIL 和缺失门禁保持。
 
+需要定位首个未完成业务与主机 USB 的关系时，先保存原失败导出以及主机的 QMP、
+USB lifecycle 原件；将 `NEW_HOST_USB_OBSERVATION` 设为尚不存在的输出路径，再执行
+显式只读分析：
+
+```bash
+python3 tools/ws73_session_service.py analyze-failed-benchmark "$RUN" --failed-phase 0 \
+  --pending-rx-tail --application-progress --host-usb > "$NEW_HOST_USB_OBSERVATION"
+```
+
+检查 `host_usb_observation` 的原载荷片段、Session 操作、首个软件错误与 Down。
+比较缺包区间的 guest／host 重提交间隔时，各用各自时钟；主机长度候选不证明跨域
+包身份或固件／空口根因。缺文件、hash／身份不符或长度序列歧义时保留错误，补取
+原件或记录未证明；不要修改旧 manifest、填零或重跑直到通过。完整约束见
+[主机候选关联参考](../reference/socket-benchmark.md#失败业务与主机-usb-候选关联)。
+
 
 若捕获声明queue退休契约版本2，分析还会核对显式的排队清除stage3：未曾出队的
 工作可直接从入队到本地清除，已出队重排的工作须有确定未提交的EAGAIN。观察到的

@@ -11,7 +11,7 @@ import tempfile
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from test_ws73_benchmark import fixture as complete_fixture
 import ws73_benchmark as gate
-from ws73_benchmark_progress import application_prefixes,read_failed_reports,transport_prefixes
+from ws73_benchmark_progress import application_prefixes,read_failed_reports,transport_prefixes,business_legs
 from ws73_capture import CaptureError,reassemble_acb,reassemble_acb_retired
 
 
@@ -42,6 +42,45 @@ def packet(handle,boundary,record,data,*,device=2,direction='in'):
 
 
 class FailedProgress(unittest.TestCase):
+    def test_business_legs_use_payload_and_trace_fragments_not_admission_id(self):
+        reports, config = fixture();app = application_prefixes(reports, config)
+        owners = [dict(owner=dict(index=r['channel_identity']['controller'],
+            generation=r['channel_identity']['generation'],bus=1,device=2+i),
+            object=dict(lifetime=r['channel_identity']['lifetime'],handle=0)) for i,r in enumerate(reports)]
+        packets=[]
+        for i in range(2):
+            for endpoint,direction,reply in [(0,'out',False),(1,'in',False),(1,'out',True),(0,'in',True)]:
+                payload = bytes.fromhex(reports[1]['incoming'][i]['frame_hex'] if reply else reports[0]['outgoing'][i]['frame_hex'])
+                raw=b'\x80\x00'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload
+                partial = i==1 and endpoint==0 and direction=='in'
+                packets.append(packet(0,1 if partial else 0,len(packets)+1,raw[:40] if partial else raw,
+                                      device=2+endpoint,direction=direction))
+        capture=dict(acb_packets=packets,native_events=[dict(bus=1,device=2,event=5,params='00000007',record=9,wall_ns=9000)])
+        operations=[]
+        for p in packets:
+            if p['direction']!='out':continue
+            identity=reports[p['device']-2]['channel_identity']
+            operations.append(dict(controller=identity['controller'],generation=identity['generation'],
+                lifetime=identity['lifetime'],epoch=1,slot=2,admission_sequence=1234+p['record'],
+                admission_ns=100,retirement_ns=1000,deadline_jiffies=5000,dtap_bytes=66,
+                accepted_fragments=1,reported_credit_waits=0,accepted_usb_records=[p['record']]))
+        timings=dict(operations=operations)
+        rows=business_legs(capture,reports,app,owners,timings)
+        self.assertEqual(len(rows),8)
+        incomplete=[r for r in rows if not r['complete_sdu']]
+        self.assertEqual([(r['application_index'],r['reply'],r['bytes'])for r in incomplete],[(1,True,40)])
+        self.assertEqual(rows[0]['application_index'],0)
+        self.assertNotEqual(rows[0]['operation']['admission_sequence'],0)
+        for case in ['missing-validated-reply','missing-peer-request','wrong-accepted-record','wrong-generation','payload','duplicate-leg']:
+            c,ts=copy.deepcopy(capture),copy.deepcopy(timings)
+            if case=='missing-validated-reply':c['acb_packets'].pop(3)
+            elif case=='missing-peer-request':c['acb_packets'].pop(1)
+            elif case=='wrong-accepted-record':ts['operations'][0]['accepted_usb_records']=[999]
+            elif case=='wrong-generation':ts['operations'][0]['generation']+=1
+            elif case=='payload':c['acb_packets'][0]['data']=c['acb_packets'][0]['data'][:-2]+'ff'
+            else:c['acb_packets'].append(copy.deepcopy(c['acb_packets'][0])|dict(record=10))
+            with self.subTest(case=case),self.assertRaises(CaptureError):business_legs(c,reports,app,owners,ts)
+
     def test_actual_files_must_match_closed_snapshot_not_just_parse(self):
         reports,_=fixture()
         with tempfile.TemporaryDirectory()as folder:

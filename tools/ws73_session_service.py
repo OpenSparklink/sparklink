@@ -944,7 +944,7 @@ def _check_kernel_strings(trace, control):
         raise ValueError('original trace/control kernel identity differs')
 
 
-def analyze_failed_benchmark(directory, phase, *, pending_rx_tail=False, application_progress=False):
+def analyze_failed_benchmark(directory, phase, *, pending_rx_tail=False, application_progress=False, host_usb=False):
     """Censored transport observations from an unchanged failed application gate.
 
     Reuse the strict failed-phase/export/capture validator. No success receipt
@@ -955,6 +955,8 @@ def analyze_failed_benchmark(directory, phase, *, pending_rx_tail=False, applica
     from ws73_rx_gap import diagnose_failed
     from ws73_benchmark_timeline import material
     from ws73_capture import read_capture
+    if type(host_usb) is not bool or host_usb and not application_progress:
+        raise ValueError('host USB analysis requires explicit failed application progress')
     root = Path(directory).resolve(strict=True)
     failure = diagnose_failed(root, phase, pending_rx_tail=pending_rx_tail)
     manifest = json.loads((root/'manifest.json').read_text())
@@ -967,7 +969,8 @@ def analyze_failed_benchmark(directory, phase, *, pending_rx_tail=False, applica
     _check_kernel_strings(row, record)
     parsed = parse_aborted(text, row)
     owners = identities(record)
-    capture = read_capture(share/'ws73.pcap', {(v['bus'], v['device']) for v in owners.values()})
+    capture = read_capture(share/'ws73.pcap', {(v['bus'], v['device']) for v in owners.values()},
+                           observe_rx=host_usb, observe_bulk=host_usb)
     timings = failed_operation_timings(parsed, owners, capture)
     result = dict(status='FAILED_GATE_TRANSPORT_TIMINGS_NOT_QUALIFIED',
                 original_gate_qualified=False, original_result='FAIL',
@@ -989,6 +992,9 @@ def analyze_failed_benchmark(directory, phase, *, pending_rx_tail=False, applica
         reports,report_files=read_failed_reports(share/'benchmark-role'/f'phase-{phase}',phase,exported)
         application=application_prefixes(reports,request['config'])
         transport=transport_prefixes(capture,reports,application,row['owners'])
+        if host_usb:
+            from ws73_host_usb import observe_failed
+            result['host_usb_observation'] = observe_failed(root,manifest,row,reports,application,capture,timings,parsed)
         application.pop('catalog') # Only hashes/indices/counts in this diagnostic summary.
         result['failed_application_progress']=dict(application=application,transport=transport,
             reports=report_files,original_gate_qualified=False,
@@ -1003,6 +1009,7 @@ if __name__ == '__main__':
     p.add_argument('--failed-phase', type=int, choices=[0, 1])
     p.add_argument('--pending-rx-tail', action='store_true',help='explicit offline failed-capture v2;not normal success')
     p.add_argument('--application-progress', action='store_true',help='explicit offline original failed window/peer reports and retired prefixes;never a passing benchmark')
+    p.add_argument('--host-usb', action='store_true',help='opt-in failed business/host-length candidates;not a clock mapping or delivery qualification')
     args = p.parse_args()
     if args.action.startswith('analyze-') != (args.directory is not None):
         p.error('only analysis actions require a captured VM run directory')
@@ -1010,12 +1017,14 @@ if __name__ == '__main__':
         p.error('pending RX tail only applies to original failed observations')
     if args.application_progress and args.action!='analyze-failed-benchmark':
         p.error('application progress only applies to original failed observations')
+    if args.host_usb and (args.action!='analyze-failed-benchmark' or not args.application_progress):
+        p.error('host USB observations require failed application progress')
     if (args.action == 'analyze-failed-benchmark') != (args.failed_phase is not None):
         p.error('only analyze-failed-benchmark requires an explicit failed phase')
     if args.action == 'analyze-benchmark':
         print(json.dumps(analyze_benchmark(args.directory), indent=2))
     elif args.action == 'analyze-failed-benchmark':
-        print(json.dumps(analyze_failed_benchmark(args.directory, args.failed_phase, pending_rx_tail=args.pending_rx_tail,application_progress=args.application_progress), indent=2))
+        print(json.dumps(analyze_failed_benchmark(args.directory, args.failed_phase, pending_rx_tail=args.pending_rx_tail,application_progress=args.application_progress,host_usb=args.host_usb), indent=2))
     elif args.action == 'start':
         configure()
     else:

@@ -203,7 +203,7 @@ def hcc_acb(data):
     return acb(data[68:68 + length])
 
 
-def read_capture(path, targets, *, observe_rx=False, observe_rx_span=False):
+def read_capture(path, targets, *, observe_rx=False, observe_rx_span=False, observe_bulk=False):
     """Read endpoint-1 IN and pair OUT submission/completion by USB/URB identity.
 
     Refuse truncation/malformed traffic on a target; ignore unrelated USB data.
@@ -212,6 +212,8 @@ def read_capture(path, targets, *, observe_rx=False, observe_rx_span=False):
     """
     if observe_rx_span and not observe_rx:
         raise CaptureError('capture span is explicit RX diagnostic metadata only')
+    if type(observe_bulk) is not bool or observe_bulk and not observe_rx:
+        raise CaptureError('bulk lifecycle metadata requires explicit RX observations')
     span = None
     selected_records = 0
     reports, complete, failures, empty, commands = [], [], [], [], []
@@ -219,6 +221,7 @@ def read_capture(path, targets, *, observe_rx=False, observe_rx_span=False):
     native_events = []
     acb_packets = []
     rx_urbs = []
+    bulk_urbs = []
     targets = set(tuple(t) for t in targets)
     with Path(path).open('rb') as stream:
         header = stream.read(24)
@@ -261,6 +264,9 @@ def read_capture(path, targets, *, observe_rx=False, observe_rx_span=False):
                 raise CaptureError('pcap/usbmon clocks disagree')
             identity = {'bus': bus, 'device': device, 'wall_ns': timestamp,
                         'urb': urb, 'record': ordinal, 'file_offset': offset}
+            if observe_bulk:
+                bulk_urbs.append(identity | dict(kind=chr(kind), endpoint=endpoint,
+                                                status=status, length=length))
             if observe_rx_span:
                 point = {k: identity[k] for k in ('bus','device','wall_ns','record','file_offset')}
                 selected_records += 1
@@ -342,6 +348,8 @@ def read_capture(path, targets, *, observe_rx=False, observe_rx_span=False):
             'acb_packets':acb_packets, 'packet_count': ordinal}
     if observe_rx:
         result['rx_urbs'] = rx_urbs
+    if observe_bulk:
+        result['bulk_urbs'] = bulk_urbs
     if observe_rx_span:
         if span is None:
             raise CaptureError('nonempty validated target USB capture span required')

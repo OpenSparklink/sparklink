@@ -524,6 +524,28 @@ SMTC10必须不同，长PDU按完整分片末尾判定时序。缺真实交叠�
 只有未观察到的退休端点可明确列作未知。该输出不构成完整追踪、引用排空、安全复用、
 性能或恢复资格。原 `analyze-benchmark` 及生产验收仍要求所有操作闭合。
 
+### 失败业务与主机 USB 候选关联
+
+额外指定 `--application-progress --host-usb`，才读取固定的 `usb-lifecycle.log`、
+`usb-lifecycle.events` 和 `qmp.jsonl`。首版限原双设备 QMP 直通失败快照；按记录中的
+明确端口与 inventory 关联，不查找或打开当前 USB。前两份材料须符合原 manifest
+hash；QMP 的实际 hash 单列，由外层证据封存核对，不能认证可修改 manifest。
+
+主机请求按设备／packet pointer 配对，取消、仿真和真实完成分开；pointer 在终态后
+可重用。空输入、未闭合请求、错误身份、长度、时序、重复及超预算拒绝。文件限64MiB、
+50万行、10万个请求；分析不触发驱动、固件或设备操作。
+
+`host_usb_observation.business_legs` 复用原随机载荷解码、严格 ACB 重组与失败报告，
+把实际 TX 片段绑定原 Session 操作；application index 与 admission sequence 分开。
+退休前缀继续标为不完整，未提交队列项不获虚构的载荷身份。首个软件错误、两端原始
+Down 和主机退出事件独立保留，不能由同一日志的相邻行推导因果。
+
+主机日志不含载荷或 guest URB ID。`host_candidates` 仅在完整、有序、单请求流的
+长度序列有唯一匹配时输出候选；拒绝歧义。等长丢失／重复互抵不能独立排除，不能
+将此字段称为跨域包身份或安全证明。主机请求、主机重提交及 guest 重提交间隔各在
+原时钟中计算；不相减 host／guest 时间，不把待数据时间或重提交间隔称为callback
+CPU时间、纯空口时延或性能资格。单完成无配对样本时明确记不足，不填零。
+
 
 ## 排队清除的观测终态
 

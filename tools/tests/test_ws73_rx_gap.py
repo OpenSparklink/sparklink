@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ws73_capture import CaptureError, read_capture
 from ws73_rx_gap import distribution, observe, analyze, diagnose_failed, failed_window, frozen_capture_files
-from test_ws73_north_star import pcap
+from test_ws73_north_star import pcap, command_payload
 
 
 def events():
@@ -82,6 +82,26 @@ class RxGap(unittest.TestCase):
             struct.pack_into('<I', malformed, 24 + 16 + 36, 1)
             path.write_bytes(malformed)
             with self.assertRaises(CaptureError): read_capture(path, [(1, 2)], observe_rx=True)
+
+    def test_explicit_bulk_metadata_preserves_original_decoder_results(self):
+        command = command_payload(0x0406)
+        raw = pcap([(1, 2, 1000, command, 'S', 1, -115),
+                    (1, 2, 2000, command, 'C', 1, 0),
+                    (1, 2, 3000, b'', 'S', 0x81, -115),
+                    (1, 2, 4000, b'', 'C', 0x81, 0),
+                    (1, 2, 5000, b'', 'S', 0x81, -115)])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'fixture.pcap'; path.write_bytes(raw)
+            original = read_capture(path, [(1, 2)], observe_rx=True)
+            extra = read_capture(path, [(1, 2)], observe_rx=True, observe_bulk=True)
+            rows = extra.pop('bulk_urbs')
+            self.assertEqual(original, extra)
+            self.assertEqual([(r['endpoint'], r['kind']) for r in rows],
+                             [(1, 'S'), (1, 'C'), (129, 'S'), (129, 'C'), (129, 'S')])
+            self.assertEqual([r['length'] for r in rows[:2]], [128, 128])
+            with self.assertRaises(CaptureError): read_capture(path, [(1, 2)], observe_bulk=True)
+            with self.assertRaises(CaptureError):
+                read_capture(path, [(1, 2)], observe_rx=True, observe_bulk=1)
 
     def test_failure_export_validation_never_accepts_a_qualified_snapshot(self):
         from ws73_role_snapshot import publish,verify,verify_failed

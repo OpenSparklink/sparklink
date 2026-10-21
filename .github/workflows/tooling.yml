@@ -77,6 +77,7 @@ jobs:
             drivers/sparklink/ws73/wire.c
             drivers/sparklink/ws73/wire.h
             tools/testing/selftests/sparklink/run_connection_tx.py
+            tools/testing/selftests/sparklink/usb_source_paths.py
             tools/testing/selftests/sparklink/run_ws73_runtime_rx.py
             tools/testing/selftests/sparklink/ws73-runtime-rx
       - name: Run actual RX functions with detector and mutation controls (no USB)

@@ -133,6 +133,16 @@ PB 分片门禁按每个实际发送 controller 的 DLI buffer 上限核对完�
 较大应用消息在 E 上单包通过时不授予该分片资格。NOCP 数量与对端应用仍另核对，
 旧失败原件不因核对器修复升级。
 
+运行期地址的 File 生命周期门禁在 daemon 启动前执行：只经现有 Native UAPI，
+保留真实成功 IN81 回复后再触发 release、最后 fd 关闭、dup 或原始期限。
+未核实设置的既有策略是隔离 controller，不能用 Free 或 Ready 代替未知清理；
+迟到回复不得重新授予身份或改变原超时结果。同行实际 Ready 和扫描启停只能
+证明控制隔离，不能描述为同行应用业务交付、引用排空或非人工恢复。
+QMP 已释放不等于 guest 已收到；最终状态检查前须由独立 fd 的既有 Native seam
+trace 确认当前 generation 的真实 RX，不能用固定 sleep 代替。该 ingress 观察仍不
+等于 callback／worker 已排空，后者另有引用和退出门禁。
+该开发探针及原始 USB／QMP 核对的实机状态由准确资格记录单独说明。
+
 ## Down 期限失败后的被动观察
 
 `--connection-down-failure-observe-seconds` 仅用于现有真实双设备 Native VM 的

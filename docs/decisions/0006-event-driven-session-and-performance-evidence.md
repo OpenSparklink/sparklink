@@ -439,3 +439,13 @@ snapshot decoder。观察者不拥有协议 credit、不创建 actor、不驱动
 跨端点 span 证明捕获边界，不能证明 endpoint 活性或 RF；pending 本身不证明
 continuity、callback、drain 或恢复。缺任一材料仍拒绝，完整成功业务门禁不变。
 该工具变更不引入轮询、多个 RX URB、另一个协议实现或放宽原期限。
+
+
+### QEMU packet 的控制／数据与逻辑取消分开
+
+请求指针可能在标准USB控制和数据之间复用。有限观测同时记录既有control、
+emulated-return、data、complete、canceled五类事件，不从无匹配完成猜测请求类型。
+每次原准入建立新实例，缺终态、重复或晚到无匹配事件保持未证明。标准USB控制的
+虚拟返回不代表DLI Complete或业务成功；逻辑cancel只撤销packet关联，不删除
+libusb callback／buffer／物理义务，不据此退款credit或宣布drain。Host／guest
+绝对时钟及payload身份另行验证；观测不新增Host、Engine或默认协议行为。

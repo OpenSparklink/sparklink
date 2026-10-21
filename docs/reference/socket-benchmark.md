@@ -625,3 +625,28 @@ snapshot decoder，不创建 Engine、不发送 DLI、不更新 credit，也不�
 设备状态已清除或引用已排空。它信任捕获完整性及无跳变的 guest wall clock；
 pcap 内容不具备身份认证。历史默认拒绝和整个业务失败保留，不因新诊断升级为
 当前镜像资格。两端应用实际校验、协议时限、NOCP 归属和自然恢复仍各自验收。
+
+
+## QEMU 请求的逻辑终态
+
+新 lifecycle 采集器在原 metadata 事件之外同时启用已有的
+`usb_host_req_control`、`usb_host_req_emulated`、`usb_host_req_canceled`。准备时
+通过实际 QEMU `-trace help` 核对支持，不更换 QEMU、不生成 DLI／业务回复。
+控制请求与数据请求使用不同类型，同一 packet 指针每次 admission 都是新实例。
+
+`python3 tools/ws73_usb_lifecycle.py RUN` 只读分析已终结的原 VM 目录；捕获事件
+声明与日志须匹配冻结 hash，不能将旧日志补上事件名冒充新采集。限制为32 MiB
+日志、25万行、10万请求、64个同时 pending 与64 MiB结果；读取时先限制字节。
+原请求、取消、完成、同步返回、缺失和未知终态分别保留，不能静默覆盖活跃指针。
+
+| 观察 | 含义与限制 |
+| --- | --- |
+| `QEMU_COMPLETION` | QEMU callback 或同步返回元数据；保留原status／length，不是对端应用交付 |
+| `LOGICAL_CANCEL` | 撤销packet关联；原libusb callback／buffer释放及物理义务可能仍未观察到 |
+| `EMULATED_CONTROL_RETURN` | QEMU对标准USB控制请求的虚拟返回，不是物理数据或SparkLink Complete |
+| pending／未关联终态 | 整体逻辑关联不完整；不猜测为控制请求，也不升级为成功 |
+
+`LOGICAL_USB_REQUESTS_CLOSED` 仅表示该有限日志中的请求都有唯一可观察逻辑终态。
+它不授credit退款、物理callback／引用drain、硬件清除、NOCP真值、RF或业务资格。
+Host／guest绝对时间不得直接相减；长度／顺序相同仍不是带认证的包身份。默认业务
+门禁、普通用户fd、Session／Grant／Ticket、原期限与VM-only均不变。

@@ -470,3 +470,9 @@ NULL、错误、缺测或预算耗尽不得替换为零。不会主动调用even
 也不以观测就绪授Ready／credit或取消物理义务。fd级结果不是endpoint归属；
 采样盲区、宿主usbfs实现／源码身份及调度扰动须明确，不能由VM内核源码推导宿主
 行为，更不能据此宣称固件／RF根因、性能收益或完整drain已经证明。
+
+pending URB不排除尚未上报的部分USB传输。必要时，独立实验fixture在原错误／
+取消callback的空packet分支之前保存有界长度及摘要，使用原每设备teardown触发
+一次受控取消。该实验与未注入业务资格分离，必须保留原失败；实例匹配、原期限、
+物理义务及同行隔离不变。零或非零reported length均不单独证明硬件／RF根因，
+也不能据此缩小RX、引入多URB或退款credit。见[诊断参考](../reference/socket-benchmark.md#受控取消时的-rx-长度诊断)。

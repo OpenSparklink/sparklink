@@ -137,6 +137,7 @@ def prepare_locked(args, build_fd):
         inputs = [args.kernel_build/'arch/x86/boot/bzImage',args.kernel_build/'.config',
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
+                  HERE/'ws73_usb_partial_diagnostic.py',HERE/'ws73_usb_lifecycle.py',
                   HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_role_snapshot.py',HERE/'ws73_application_discovery.py',
                   HERE/'ws73_discovery_policy_capture.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
@@ -813,6 +814,8 @@ def _run(args):
     if diagnostic and (support or not recovery):
         raise ValueError('live diagnostic gate requires real fault-recovery VM mode')
     firmware_mode = None if support else firmware_evidence.requested_mode(args)
+    from ws73_usb_partial_diagnostic import requested as partial_rx_requested
+    partial_rx_target=partial_rx_requested(args)
     output.mkdir(mode=0o700,parents=True,exist_ok=False)
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
        'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
@@ -953,7 +956,11 @@ def _run(args):
     if observer_policy:m['observer_policy_verifier']=file_record(HERE/'ws73_observer_policy.py')
     m['initializer_lifecycle_requested']=initializer_lifecycle
     if initializer_lifecycle:m['initializer_lifecycle_verifier']=file_record(HERE/'ws73_initialization_lifecycle.py')
-    m['artificial_guest_transport_fault']=recovery
+    m['artificial_guest_transport_fault']=recovery or partial_rx_target is not None
+    if partial_rx_target is not None:
+        m['usb_partial_rx_diagnostic_requested']=True
+        m['usb_partial_rx_diagnostic']={}
+        m['runner_inputs'] += [file_record(HERE/name)for name in ('ws73_usb_partial_diagnostic.py','ws73_usb_lifecycle.py')]
     m['live_event_copy_requested']=event_copy
     m['live_diagnostic_requested']=diagnostic
     m['live_diagnostic_deadline_requested']=deadline_gate
@@ -1030,10 +1037,14 @@ def _run(args):
     if active_gate:
         m['active_deadline_verifier']=file_record(HERE/'ws73_active_deadline.py')
     process=monitor=channel=None
+    partial_rx=None
     physical_boundary=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if partial_rx_target is not None:
+            from ws73_usb_partial_diagnostic import validate_inputs as validate_partial_rx
+            validate_partial_rx(package)
         from ws73_ssap_initialization import exchange_contract
         m['ssap_exchange_contract_version']=exchange_contract(package)
         from ws73_ssap_update_delivery import contract_version as delivery_contract
@@ -1359,6 +1370,9 @@ def _run(args):
                     from ws73_diagnostic_hold import HoldCoordinator
                     hold=HoldCoordinator(share,m.setdefault('diagnostic_hold',{}))
                 active=0;addresses={port:devices[port]['address'] for port in getattr(args,'ports',[])};transcript=bytearray();support_input=False;hotplug_phase=0
+                if partial_rx_target is not None:
+                    from ws73_usb_partial_diagnostic import Coordinator
+                    partial_rx=Coordinator(share,output,m['usb_partial_rx_diagnostic'],partial_rx_target,args.ports)
                 watcher=lab.ReattachmentWatcher(addresses,m.setdefault('reattach',[]),owned=opened_usb_node)
                 timeout_seal=None
                 while process.poll() is None:
@@ -1385,6 +1399,8 @@ def _run(args):
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
                     text=transcript.decode(errors='replace')
+                    if partial_rx:
+                        partial_rx.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if hold:
                         if hold.phase == 'arm_ready' and (hold.folder/'hold-arm_ready.json').exists():
                             hold.record['host_identity_at_arm'] = live_runtime_owner(
@@ -2043,6 +2059,13 @@ def _run(args):
             try:process.wait(timeout=5)
             except subprocess.TimeoutExpired:process.kill();process.wait()
         if process is not None:m['qemu_exit']=process.returncode
+        if partial_rx is not None:
+            from ws73_usb_partial_diagnostic import finalize as finalize_partial_rx
+            try:
+                targets={(m['inventory_before'][p]['bus'],m['inventory_before'][p]['address'])for p in args.ports}
+                finalize_partial_rx(m['usb_partial_rx_diagnostic'],(output/'qemu-stderr.log').read_text(),targets)
+            except (ValueError,KeyError,OSError,TypeError,StopIteration)as error:
+                m['usb_partial_rx_diagnostic'].update(status='DIAGNOSTIC_UNPROVED',complete=False,error=str(error))
         if monitor:monitor.close()
         if channel:channel.close()
         m['guest_files']=[file_record(p) for p in sorted((output/'guest-output').rglob('*')) if p.is_file() and not p.is_symlink()] if (output/'guest-output').exists() else []
@@ -2124,6 +2147,10 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     # One finalization contract for every mode, not just SSAP lifecycle gates.
     # _run alone computes its result before writing supervisor_exit. A saved
     # record without that receipt cannot be interpreted as a completed PASS.
+    # A deliberately canceled USB observation can never qualify the original
+    # unmodified application/recovery gate, even if some workloads completed.
+    if 'usb_partial_rx_diagnostic_requested'in record:
+        return 1
     if type(supervisor_pending) is not bool:
         return 1
     if not firmware_evidence.exit_gate(record, expected_firmware_mode):
@@ -2720,6 +2747,7 @@ def main():
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')
             cmd.add_argument('--early-bootstrap-fault',action='store_true',help='separate native three-real-device missing-custom fault, ordinary Core diagnostics and peer business; controlled QMP retry only')
+            cmd.add_argument('--usb-partial-rx-target',type=int,choices=[0,1],help='single selected VM USB detach after observed phase1 PB prefix and2s quiet;diagnostic only,never business/recovery PASS')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--channel-daemon-crash',action='store_true',help='actual slkd SIGKILL with ordinary retained business fd, successor and no USB reset')
             cmd.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel','numeric-approve','numeric-reject','numeric-late'],help='actual ordinary Agent policy plus current native relay and peer application evidence; requires separate connection/socket gate')

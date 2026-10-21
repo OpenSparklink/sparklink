@@ -36,12 +36,21 @@ POLL_KEYS = set('bus device sample before_ns after_ns wall_ns count result errno
 
 
 def parse_native_poll(text, targets):
+    return _parse_native_poll(text,targets,terminal_required=True)
+
+
+def parse_live_native_poll(text, targets):
+    """Explicit bounded live prefix; never a terminal or qualification proof."""
+    return _parse_native_poll(text,targets,terminal_required=False)
+
+
+def _parse_native_poll(text, targets, *, terminal_required):
     """Pair bounded non-consuming poll snapshots with native heartbeat rows.
 
     Discrete readiness bits are not continuous USB completion availability,
     endpoint attribution, hardware liveness or a controller/generation grant.
     """
-    native=parse_native(text,targets)
+    native=_parse_native(text,targets,terminal_required=terminal_required)
     snapshots={(r['bus'],r['device']):r['samples']for r in native['devices']}
     rows={target:[]for target in targets}
     pending_pair=None
@@ -100,7 +109,7 @@ def parse_native_poll(text, targets):
         row['fds']=fds;row['native_phase']=current['phase'];history.append(row)
     if pending_pair is not None or any(len(rows[k])!=len(snapshots[k])for k in rows):
         raise CaptureError('missing native/poll pair or declared endpoint')
-    result=dict(version=1,status='FINITE_LIBUSB_POLL_METADATA_OBSERVED',native=native,
+    result=dict(version=1,status=('FINITE_LIBUSB_POLL_METADATA_OBSERVED'if terminal_required else'LIVE_LIBUSB_POLL_PREFIX_NOT_QUALIFIED'),native=native,
         poll_devices=[dict(bus=b,device=d,samples=r)for(b,d),r in sorted(rows.items())],
         continuous_completion_availability_proved=False,physical_drain_qualified=False,
         credit_truth_qualified=False,performance_qualified=False,
@@ -110,6 +119,10 @@ def parse_native_poll(text, targets):
 
 
 def parse_native(text, targets):
+    return _parse_native(text,targets,terminal_required=True)
+
+
+def _parse_native(text, targets, *, terminal_required):
     """Dedicated QEMU fixture metadata only, never physical drain/RF proof.
 
     The extra 100ms heartbeat changes scheduling. Callback-entry counters are
@@ -167,9 +180,9 @@ def parse_native(text, targets):
         if row['phase']=='drained'and(not previous or previous['phase']!='closing'):
             raise CaptureError('drain-loop snapshot must follow timer retirement')
         history.append(row)
-    if any(len(r)<2 or r[-1]['phase']!='drained'for r in rows.values()):
+    if any(len(r)<2 or r[-1]['phase']!=('drained'if terminal_required else'tick')for r in rows.values()):
         raise CaptureError('missing native observer terminal or endpoint')
-    result=dict(version=1,status='FINITE_NATIVE_CALLBACK_METADATA_OBSERVED',
+    result=dict(version=1,status=('FINITE_NATIVE_CALLBACK_METADATA_OBSERVED'if terminal_required else'LIVE_NATIVE_PREFIX_NOT_QUALIFIED'),
         devices=[dict(bus=b,device=d,samples=r)for(b,d),r in sorted(rows.items())],
         physical_drain_qualified=False,credit_truth_qualified=False,performance_qualified=False,
         scope='Original callbacks/free/event-pump counters plus finite heartbeat, not physical USB/RF readiness, implementation refinement, payload delivery, performance or full reference drain. Logical cancellation and native callback are distinct.')

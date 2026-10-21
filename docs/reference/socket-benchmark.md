@@ -686,3 +686,24 @@ libusb fd执行`poll(..., 0)`，通过本进程fd链接及匹配的`fstat/stat`�
 完成，不能认证generation或对端交付。宿主usbfs实现及内核来源单独记录，不能用
 实验VM内核的源码冒充宿主实现证明。新增元数据系统调用影响调度，不授性能资格；
 原应用门禁、有限队列、credit／Ticket／Grant及原期限保持不变。
+
+### 受控取消时的 RX 长度诊断
+
+`ws73_qemu_rx_terminal_observer.py`从固定的poll-observer源码生成独立fixture。
+它在原data callback的空packet分支之前记录bulk IN `0x81`的非成功status、
+`actual_length`和有效前缀SHA256，不保存payload。每设备最多128条，摘要最多20KiB；
+无效长度、错误身份、缺终态、重复实例或预算耗尽保持未证明。
+
+`ws73_target.py run --usb-partial-rx-target 0`（或`1`）是独立诊断入口，仅接受准确
+新fixture及原顺序Owned／window负载。选择器要求phase1的真实未完成应用PB前缀、
+两设备各一条pending RX、2至4秒静默和新鲜的完整native／poll快照。guest端口映射
+与连接角色顺序分开核对。条件不满足时不执行，不扩大期限或重试追逐样本。
+
+执行时仅通过既有QMP `device_del`移除指定VM leaf，由原teardown取消及排空；不
+re-add、reset或切电。权限及白名单仍由原runner强制。该行政动作不是应用撤权或
+generation准入证明，另一只设备的保留状态和业务须分别验证。
+
+显式live-prefix解析只返回未具资格的候选；默认闭合日志检查不变。终态必须关联
+决策时原pending packet／分配实例及实际取消callback。零长度不证明硬件未收到
+部分数据，非零不证明完整HCC或对端应用交付。选择此选项的原业务／自然恢复门禁
+始终失败；观测完成只允许报告原始长度，不归还credit或宣称根因已查明。

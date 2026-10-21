@@ -20,6 +20,9 @@ REQUEST_NS = 10_000_000_000
 GRACE_NS = 1_000_000_000
 RUN_NS = 612_000_000_000
 MAX_REPORT_BYTES = 256 * 1024 * 1024
+OUTGOING_FIELDS = {'index','planned_ns','dispatch_ns','first_syscall_ns','admitted_ns','syscall_ns','deadline_ns','read_ns','validated_ns','send_attempts','would_block','errno','local_budget_rejected','timed_out','late','reply_count','frame_hex'}
+INCOMING_FIELDS = {'index','read_ns','validated_ns','deadline_ns','reply_syscall_ns','reply_admitted_ns','send_attempts','would_block','errno','timed_out','frame_hex'}
+PACKET_FAILURES = ['duplicate_requests','duplicate_replies','reordered_replies','corrupt_packets','unknown_replies','unsolicited_requests','receiver_record_overflow','reply_queue_overflow']
 
 
 def require(condition, message):
@@ -187,7 +190,7 @@ def load_application_reports(left, right, *, fixture=False):
             require(type(values) is list and len(values) == expected, 'all '+lane+' records')
             frames=[];nonces=set();seqs=set();previous=0
             for index,row in enumerate(values):
-                expected_fields={'index','planned_ns','dispatch_ns','first_syscall_ns','admitted_ns','syscall_ns','deadline_ns','read_ns','validated_ns','send_attempts','would_block','errno','local_budget_rejected','timed_out','late','reply_count','frame_hex'} if lane=='outgoing' else {'index','read_ns','validated_ns','deadline_ns','reply_syscall_ns','reply_admitted_ns','send_attempts','would_block','errno','timed_out','frame_hex'}
+                expected_fields=OUTGOING_FIELDS if lane=='outgoing' else INCOMING_FIELDS
                 require(type(row) is dict and set(row)==expected_fields and type(row.get('index')) is int and row['index'] == index, 'all original typed row fields/indices')
                 require(row.get('errno') is None and row.get('timed_out') is False, 'no hidden failed row')
                 require(integer(row.get('send_attempts'),1) and integer(row.get('would_block'))
@@ -213,7 +216,7 @@ def load_application_reports(left, right, *, fixture=False):
         outgoing,incoming=rows;nout=len(outgoing);nin=len(incoming)
         expected=dict(scheduled=nout,dispatched=nout,unattempted=0,admitted=nout,validated_replies=nout,timed_out=0,late=0,local_budget_rejected=0,kernel_rejected=0,missing_admitted_replies=0,expired_before_admission=0,admitted_reply_timeouts=0,successful_timely_replies=nout,peer_reply_deadline_exceeded=0,peer_validated_requests=nin,peer_reply_admissions=nin,peer_validated_application_bytes=nin*size)
         exact_counts(report.get('summary'),expected,'summary')
-        counters=report.get('counters');failures=['duplicate_requests','duplicate_replies','reordered_replies','corrupt_packets','unknown_replies','unsolicited_requests','receiver_record_overflow','reply_queue_overflow']
+        counters=report.get('counters');failures=PACKET_FAILURES
         require(type(counters) is dict and set(counters) == set(failures+['rx_packets','inflight_peak','reply_queue_peak','poll_calls','iterations'])
                 and all(integer(v) for v in counters.values()), 'complete typed counters')
         require(all(counters[k] == 0 for k in failures) and counters['rx_packets'] == nout+nin, 'all actual receives and failures')

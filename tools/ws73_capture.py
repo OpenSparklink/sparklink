@@ -138,7 +138,16 @@ def acb(payload):
 
 def reassemble_acb(capture):
     """Independent ordered USB fragment proof, bounded by size/time and link events."""
-    partial, sdus = {}, []
+    return reassemble_acb_retired(capture)[0]
+
+
+def reassemble_acb_retired(capture):
+    """Same strict reassembler, retaining prefixes discarded at observed link events.
+
+    A retired prefix is not a complete SDU or application delivery. Missing link
+    termination still raises the original incomplete-capture error.
+    """
+    partial, sdus, retired = {}, [], []
     timeline = [(p['record'], p.get('hcc_offset', 0), 'data', p) for p in capture['acb_packets']]
     timeline += [(e['record'], e.get('hcc_offset', 0), 'link', e) for e in capture['native_events']
                  if e['event'] in {5, 0x15, 0x1401, 0x1405}]
@@ -147,7 +156,15 @@ def reassemble_acb(capture):
         if kind == 'link':
             body = bytes.fromhex(packet['params'])
             if body and body[0] == 0:
-                partial = {key: value for key, value in partial.items() if key[:2] != device}
+                if len(body) < 3 or int.from_bytes(body[1:3], 'little') > 0x0fff:
+                    raise CaptureError('successful link event lacks a bounded connection handle')
+                handle = int.from_bytes(body[1:3], 'little')
+                for key, pieces in partial.items():
+                    if key[:3] == device + (handle,):
+                        retired.append(dict(bus=key[0], device=key[1], handle=key[2],
+                                            direction=key[3], fragments=pieces,
+                                            retired_by=packet, complete_sdu=False))
+                partial = {key: value for key, value in partial.items() if key[:3] != device + (handle,)}
             continue
         boundary = packet.get('boundary', 0)
         key = device + (packet['handle'], packet['direction'])
@@ -172,7 +189,7 @@ def reassemble_acb(capture):
                 del partial[key]
     if partial:
         raise CaptureError('incomplete A3 at sealed capture end')
-    return sdus
+    return sdus, retired
 
 
 def hcc_acb(data):

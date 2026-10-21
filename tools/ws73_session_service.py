@@ -6,6 +6,7 @@ Software admission, atomic USB acceptance, joined return and retirement remain
 separate. Full application/USB correctness must pass the existing oracle first.
 """
 import argparse
+from bisect import bisect_right
 from collections import defaultdict
 import hashlib
 import json
@@ -13,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import statistics
 import subprocess
 import time
 from ws73_trace_layout import buffer_kib
@@ -807,6 +809,100 @@ def bind_business(timings, rows):
                                          request_frame_sha256=row['frame_sha256'])
 
 
+def nocp_candidates(parsed, owners, capture, timings):
+    """Observed wire/worker timing candidates, never credit attribution.
+
+    Call after the existing complete or censored trace/USB join. NOCP carries
+    only handle/count. An observation window cannot establish its generation,
+    lifetime, accuracy, uniqueness or which ticket it completed.
+    """
+    def stats(values):
+        return dict(count=len(values), min_ns=min(values) if values else None,
+                    median_ns=statistics.median(values) if values else None,
+                    max_ns=max(values) if values else None)
+
+    lo, hi = parsed['offset_ns']
+    quantum = parsed['quantum_ns']
+    windows, services = {}, {}
+    for row in parsed['rows']:
+        key = row['ctl'], row['gen'], row['life']
+        begin, end = windows.get(key, (row['mono_ns'], row['mono_ns']))
+        windows[key] = min(begin, row['mono_ns']), max(end, row['mono_ns'])
+        if row['event'] == 'work' and row['stage'] == 0:
+            services[(*key, row['service'])] = row['mono_ns']
+    indices, wire = {}, []
+    for key, (begin, end) in sorted(windows.items()):
+        owner = owners[key]
+        events = []
+        for event in capture['native_events']:
+            if (event['event'] != 9
+                    or (event['bus'], event['device']) != (owner['bus'], owner['device'])
+                    or not begin+lo-quantum <= event['wall_ns'] <= end+hi+quantum):
+                continue
+            data = bytes.fromhex(event['params'])
+            if len(data) != 3:
+                raise ValueError('SDK110 single-handle NOCP format required for timing observation')
+            if int.from_bytes(data[:2], 'little') != owner['handle']:
+                continue
+            events.append(dict(wall_ns=event['wall_ns'], record=event['record'],
+                               hcc_offset=event.get('hcc_offset', 0), count=data[2]))
+        events.sort(key=lambda v: (v['wall_ns'], v['record'], v['hcc_offset']))
+        indices[key] = [v['wall_ns'] for v in events], events
+        wire.append(dict(controller=key[0], generation=key[1], observed_lifetime=key[2],
+                         wire_has_generation=False, wire_has_lifetime=False,
+                         events=len(events), reported_count_sum=sum(v['count'] for v in events),
+                         count_distribution={str(n): sum(v['count'] == n for v in events)
+                                             for n in sorted({v['count'] for v in events})},
+                         interarrival=stats([b['wall_ns']-a['wall_ns']
+                                             for a, b in zip(events, events[1:])]),
+                         source_window_mono_ns=[begin, end]))
+    episodes, unmatched = [], []
+    for operation in timings['operations']:
+        key = operation['controller'], operation['generation'], operation['lifetime']
+        stamps, events = indices[key]
+        last_wait = {}
+        for call in operation['calls']:
+            if call['result'] == -11 and call['wait'] == 1:
+                last_wait[call['offset']] = call
+            if call['acceptance_ns'] is None or call['offset'] not in last_wait:
+                continue
+            wait = last_wait[call['offset']]
+            index = bisect_right(stamps, call['acceptance_ns']+hi+quantum)-1
+            identity = dict(controller=key[0], generation=key[1], observed_lifetime=key[2],
+                            admission_sequence=operation['admission_sequence'],
+                            slot=operation['slot'], offset=call['offset'])
+            if index < 0:
+                unmatched.append(identity | dict(reason='no_preceding_candidate_in_observed_window'))
+                continue
+            event = events[index]
+            lower, upper = event['wall_ns']-hi-quantum, event['wall_ns']-lo+quantum
+            worker = services[(*key, call['service'])]
+            relation = ('after_last_refusal' if lower >= wait['return_ns'] else
+                        'overlaps_last_refusal' if upper >= wait['return_ns'] else
+                        'before_last_refusal')
+            episodes.append(identity | dict(service=call['service'], wire_candidate=event,
+                wire_relation=relation, worker_start_ns=worker,
+                last_refusal_return_ns=wait['return_ns'], acceptance_ns=call['acceptance_ns'],
+                wire_to_worker_lower_ns=worker-upper, wire_to_worker_upper_ns=worker-lower,
+                wire_to_acceptance_lower_ns=call['acceptance_ns']-upper,
+                wire_to_acceptance_upper_ns=call['acceptance_ns']-lower,
+                worker_to_acceptance_ns=call['acceptance_ns']-worker,
+                refusal_to_acceptance_ns=call['acceptance_ns']-wait['return_ns']))
+    metrics = {name: stats([v[name] for v in episodes]) for name in (
+        'wire_to_worker_lower_ns', 'wire_to_worker_upper_ns',
+        'wire_to_acceptance_lower_ns', 'wire_to_acceptance_upper_ns',
+        'worker_to_acceptance_ns', 'refusal_to_acceptance_ns')}
+    return dict(version=1, status='WIRE_NOCP_TIMING_CANDIDATES_NOT_CAUSAL_OR_CREDIT_PROOF',
+                quantum_ns=quantum, wire=wire, episodes=episodes, unmatched=unmatched,
+                metrics=metrics,
+                scope='Latest preceding same-handle wire event within observed Session window; '
+                      'not authenticated generation/lifetime or a ticket completion mapping. '
+                      'No credit ledger simulation, exact Runtime notification timestamp/cause, '
+                      'NOCP truth/duplicate/late/reuse-barrier proof, isolated RF delay or '
+                      'performance qualification. Bounds use captured wall/mono anchors; '
+                      'negative bounds remain visible for an already running/coalesced worker.')
+
+
 def analyze_benchmark(directory):
     """Replay the original paired application oracle before retrospective timings."""
     from ws73_benchmark_timeline import analyze, material
@@ -832,6 +928,7 @@ def analyze_benchmark(directory):
                 source_manifest=material(root/'manifest.json'),
                 trace=material(folder/'trace.txt'), trace_receipt=material(folder/'run.json'),
                 original_round_trips=timeline['round_trips'], service_observation=proof,
+                nocp_observation=nocp_candidates(parsed, owners, capture, timings),
                 **timings)
 
 
@@ -879,6 +976,7 @@ def analyze_failed_benchmark(directory, phase):
                 trace=material(share/'session-service/trace.txt'),
                 trace_receipt=material(share/'session-service/run.json'),
                 trace_observation=summary(parsed),
+                nocp_observation=nocp_candidates(parsed, owners, capture, timings),
                 **timings)
 
 

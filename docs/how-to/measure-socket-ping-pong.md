@@ -172,6 +172,12 @@ python3 tools/ws73_rx_gap.py "$NEW_RUN_DIRECTORY" --failed-phase 0 > "$NEW_RX_OB
 诊断失败保留 stderr 和原文件；缺失输入、配对错误或掉包不生成完整观测。
 结果字段和限制见[指标参考](../reference/socket-benchmark.md)。
 
+Session 分段分析的完整/失败入口还会输出 `nocp_observation`。先比较拒绝→候选
+NOCP、候选→worker、候选→实际提交，再决定下一次测量；存在未匹配或时钟边界
+重叠时保留不确定性。它不证明 NOCP 支付了哪一笔 debt，不能据此修正 credit、
+放宽期限或宣称固件/无线瓶颈。连接参数对照需独立冻结配置并核对完整 USB 命令
+和两端原始参数；不要仅改标签或沿用旧配置的资格。
+
 
 ## 在封存VM门禁上做同口径对照
 

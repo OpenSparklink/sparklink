@@ -394,6 +394,94 @@ def corroborate_wire_operation(run, phase, capture, operation, command_row, hand
     return dict(command=command, status=status, outcomes=outcomes)
 
 
+CONNECTION_POLICY_BYTES = ('filter', 'own_address_type', 'gt_negotiate', 'frame')
+CONNECTION_POLICY_WORDS = ('scan_interval', 'scan_window', 'interval_min', 'interval_max',
+                           'latency', 'supervision_timeout', 'event_min', 'event_max')
+
+
+def explicit_connection_policy(text):
+    """Reference observation input, not a second daemon config validator.
+
+    Experiments must spell out every field and separately retain validation by
+    the exact staged daemon. No Python defaults or captured-byte echo is used.
+    """
+    import tomllib
+    policy = tomllib.loads(text).get('ws73', {}).get('connection')
+    if not isinstance(policy, dict) or set(policy) != set(
+            (*CONNECTION_POLICY_BYTES, *CONNECTION_POLICY_WORDS, 'timeout_ms')):
+        raise CaptureError('all explicit connection policy fields required for observation')
+    for names, limit in [(CONNECTION_POLICY_BYTES, 255), (CONNECTION_POLICY_WORDS, 65535),
+                          (('timeout_ms',), 10000)]:
+        if any(type(policy[name]) is not int or not 0 <= policy[name] <= limit for name in names):
+            raise CaptureError('typed encodable connection policy observation required')
+    if not policy['timeout_ms'] or not 0 < policy['interval_min'] <= policy['interval_max']:
+        raise CaptureError('positive timeout and ordered explicit interval required')
+    return policy
+
+
+def configured_create_body(policy, peer_type, address):
+    """SDK110/libws73 27-byte dialect, independent of the captured command."""
+    peer = bytes.fromhex(address.replace(':', ''))
+    if type(peer_type) is not int or peer_type not in (0, 1) or len(peer) != 6:
+        raise CaptureError('exact peer type/address required')
+    return (bytes([policy['filter'], policy['own_address_type'], peer_type]) + peer
+            + bytes([policy['gt_negotiate'], policy['frame']])
+            + b''.join(policy[name].to_bytes(2, 'little') for name in CONNECTION_POLICY_WORDS))
+
+
+def observe_connection_policy(run, capture, policy):
+    """Bind explicit input to real Create and both successful SDK110 outcomes.
+
+    Use a separately frozen/hashed staged config validated by the daemon.
+    Only raw returned fields are claimed; no PHY, unit conversion or RF timing.
+    Failed business gates remain failed even when this observation succeeds.
+    """
+    phases = run['connection_control']['phases']
+    if len(phases) != 2:
+        raise CaptureError('both connection roles required for policy observation')
+    rows = []
+    for number, phase in enumerate(phases):
+        command = run['commands'][phase['connect_command']]
+        links = run['commands'][phase['links_command']]
+        if (command['exit'] or links['exit'] or links['args'][-1] != 'connections'
+                or command['end_wall_ns'] > links['end_wall_ns']):
+            raise CaptureError('original bounded successful Create and canonical observation required')
+        reference = link_reference(links['stdout'], phase['caller'], phase['peer'],
+                                   phase['connect']['handle'])
+        bounded = phase | dict(end_wall_ns=links['end_wall_ns'])
+        wire = corroborate_wire_operation(run, bounded, capture, 1, command,
+                                          reference['handle'], {}, reference)
+        if wire['command']['params'] != configured_create_body(
+                policy, phase['peer_address_type'], phase['peer']['address']).hex():
+            raise CaptureError('whole Create body differs from explicit staged connection policy')
+        outcomes = []
+        for event in wire['outcomes']:
+            body = bytes.fromhex(event['params'])
+            if len(body) != 30:
+                raise CaptureError('exact SDK110 30-byte connection outcome required')
+            interval, latency, supervision = (int.from_bytes(body[n:n+2], 'little')
+                                              for n in (23, 25, 27))
+            if not policy['interval_min'] <= interval <= policy['interval_max']:
+                raise CaptureError('returned raw interval outside explicit requested range')
+            outcomes.append(dict(bus=event['bus'], device=event['device'], record=event['record'],
+                                 handle=int.from_bytes(body[1:3], 'little'), role=body[3],
+                                 raw_interval=interval, raw_latency=latency,
+                                 raw_supervision_timeout=supervision, raw_tail_byte=body[29],
+                                 raw_parameters=event['params']))
+        if any(outcomes[0][key] != outcomes[1][key] for key in (
+                'raw_interval', 'raw_latency', 'raw_supervision_timeout')):
+            raise CaptureError('two actual connection parameter outcomes disagree')
+        if outcomes[0]['role'] == outcomes[1]['role']:
+            raise CaptureError('two opposite actual connection roles required')
+        rows.append(dict(phase=number, requested=policy, create=wire['command'], outcomes=outcomes))
+    return dict(version=1, status='EXPLICIT_CREATE_AND_RAW_CONNECTION_PARAMETERS_OBSERVED',
+                phases=rows, performance_qualified=False,
+                scope='Independent explicit config bytes and real SDK110 USB outcomes only. '
+                      'Host timeout is requested policy,not attested by wire. Raw interval '
+                      'is not converted into milliseconds,PHY or isolated RF delay. '
+                      'No business qualification or recovery inferred; original verdict retained.')
+
+
 def corroborate(run, capture, *, expected_disconnect_reason=0x10):
     # Current daemon requests exactly the SLE reason. Historical retained
     # corpora may explicitly audit their old 0x13 request; never infer the

@@ -43,6 +43,26 @@ SDK111 结果转授新固件或混合型号。记录
 对端 USB RX→Session 分流→应用读取/校验→回复；NOCP 独立。无 RF 观测时，中间
 区间写作包含固件/调度/无线的合并区间，不能宣称独立空口时延。
 
+### NOCP 与配置观测的限定范围
+
+Session 的完整及失败诊断入口增加 `nocp_observation`，复用已核对的 trace/USB
+关联。它报告实际 data-credit 拒绝后，后续提交之前最近一条同 handle 的线上 NOCP
+候选，以及候选到 worker/提交的时间上下界、未匹配项和原始记录号。边界来自同一
+guest 的 wall/mono 锚点及 trace 量化；已在运行的 worker 可出现负值，不裁成零。
+原失败入口仍保持 FAIL，不因诊断完成转成资格。
+
+NOCP 只有 handle/count。观测窗口不证明 generation/lifetime、完成准确性、重复/
+迟到处理、复用屏障或某条 credit 的因果归属；工具不重演 CreditLedger，也没有
+精确 Runtime 通知时刻。分布只是本次候选关联，不是独立空口时延或性能资格。
+
+连接参数实验另外核对：明确写全的 `ws73.connection` 配置，经准确 staged daemon
+验证并冻结 hash，再用独立参考编码核对 SDK110 的完整 27 字节 Create 命令和两端
+30 字节成功事件。记录原始 interval/latency/supervision 字段及未知尾字节；实际
+interval 必须在请求范围内，两端字段及角色须一致。`timeout_ms` 是 Host 请求，
+不能声称由线上字段证实。该观测不提供默认值，也不能用捕获内容反推期望值。
+标准时隙、SDK 方言单位及实际 RF 调度须分别核对；字段名、结构相似或测得间隔
+不能证明单位。新参数下通过不修复或覆盖原配置失败，不改变默认策略或原期限。
+
 ## Fail-closed 与版本边界
 
 删除对端记录、捕获缺失/掉包、截断日志、身份/hash 不符、payload 修改、重复序号、

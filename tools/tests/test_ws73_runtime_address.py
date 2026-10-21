@@ -4,7 +4,10 @@ import copy
 from pathlib import Path
 import sys
 import unittest
+import json
+import tempfile
 from types import SimpleNamespace
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parents[1]))
 from ws73_runtime_address import parse_addresses, requested, boot_addresses, corroborate
 
@@ -47,6 +50,53 @@ def fixture():
 
 
 class RuntimeAddressEvidence(unittest.TestCase):
+    def test_host_evidence_addition_never_awards_run_or_business_success(self):
+        from ws73_target import corroborate_runtime_addresses, HERE
+        from ws73_north_star import file_record
+        record,capture=fixture()
+        with tempfile.TemporaryDirectory() as tmp:
+            share=Path(tmp);(share/'runtime-address').mkdir()
+            (share/'runtime-address/run.json').write_text(json.dumps(record))
+            before=copy.deepcopy((record,capture))
+            metadata=corroborate_runtime_addresses(share,capture,ADDRESSES,file_record(HERE/'ws73_runtime_address.py'))
+            self.assertEqual(set(metadata),{'runtime_address_corroboration','runtime_address_record'})
+            self.assertEqual(len(metadata['runtime_address_corroboration']),2)
+            self.assertEqual((record,capture),before)
+            # Add to an in-progress manifest exactly as the actual caller does.
+            manifest=dict(status='RUNNING',connection_verify_requested=True,channel_socket_verification_requested=True)
+            manifest.update(metadata)
+            self.assertEqual(manifest['status'],'RUNNING')
+            self.assertNotIn('ordinary_channel_socket_acceptance',manifest)
+            self.assertNotIn('supervisor_exit',manifest)
+
+    def test_host_evidence_addition_rejects_raw_loss_pin_and_bad_original(self):
+        from ws73_target import corroborate_runtime_addresses,HERE
+        from ws73_north_star import file_record
+        for case in ['missing-set-complete','bad-record','changed-verifier']:
+            record,capture=fixture();pin=file_record(HERE/'ws73_runtime_address.py')
+            if case=='missing-set-complete':capture['complete'].pop(4)
+            elif case=='bad-record':record['status']='FAIL'
+            else:pin['sha256']='0'*64
+            with tempfile.TemporaryDirectory() as tmp:
+                share=Path(tmp);(share/'runtime-address').mkdir();(share/'runtime-address/run.json').write_text(json.dumps(record))
+                with self.subTest(case=case),self.assertRaises(ValueError):corroborate_runtime_addresses(share,capture,ADDRESSES,pin)
+
+    def test_host_evidence_binds_the_record_bytes_actually_verified(self):
+        from ws73_target import corroborate_runtime_addresses,HERE
+        from ws73_north_star import file_record
+        from ws73_runtime_address import corroborate as actual_verifier
+        record,capture=fixture()
+        with tempfile.TemporaryDirectory() as tmp:
+            share=Path(tmp);(share/'runtime-address').mkdir();path=share/'runtime-address/run.json'
+            path.write_text(json.dumps(record))
+            def verify_then_change(*args):
+                proof=actual_verifier(*args)  # Real verifier,not an always-success stub.
+                path.write_text('{}')
+                return proof
+            with patch('ws73_runtime_address.corroborate',side_effect=verify_then_change):
+                with self.assertRaisesRegex(ValueError,'record changed'):
+                    corroborate_runtime_addresses(share,capture,ADDRESSES,file_record(HERE/'ws73_runtime_address.py'))
+
     def test_explicit_parse_and_scope(self):
         self.assertEqual(parse_addresses([x.lower() for x in ADDRESSES]),ADDRESSES)
         for bad in [[],[ADDRESSES[0]]*2,['0:7B:73:10:E0:01',ADDRESSES[1]],['00:00:00:00:00:00',ADDRESSES[1]],['FF:FF:FF:FF:FF:FF',ADDRESSES[1]]]:

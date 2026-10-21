@@ -2,13 +2,97 @@
 """Actual verdict function, terminal-shape fixtures only; no VM/RF acceptance."""
 from pathlib import Path
 import copy
+import ast
+import inspect
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from ws73_target import run_exit_code
 
 
+def protected_returns(statements):
+    """Source-level finalization guard,not a CFG/liveness or kernel proof."""
+    result=[]
+    def visit(node):
+        if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef,ast.Lambda)):return
+        if isinstance(node,ast.Return):result.append(node)
+        for child in ast.iter_child_nodes(node):visit(child)
+    for node in statements:visit(node)
+    return result
+
+
 class TerminalExit(unittest.TestCase):
+    def test_actual_run_cannot_return_before_common_sealing_and_finalization(self):
+        from ws73_target import _run
+        fn=ast.parse(inspect.getsource(_run)).body[0]
+        protected=next(n for n in fn.body if isinstance(n,ast.Try) and n.finalbody)
+        self.assertEqual(protected_returns([protected]),[])
+        tail=fn.body[fn.body.index(protected)+1:]
+        self.assertTrue(any(isinstance(n,ast.Call)and isinstance(n.func,ast.Name)and n.func.id=='run_exit_code'
+                            for statement in tail for n in ast.walk(statement)))
+        # A plausible early success under an optional selector must fail this
+        # guard even when its finally still saves a manifest. No real VM here.
+        bad=copy.deepcopy(protected)
+        bad.body.append(ast.If(test=ast.Name(id='runtime_addresses',ctx=ast.Load()),
+                               body=[ast.Return(value=ast.Constant(value=0))],orelse=[]))
+        self.assertEqual(len(protected_returns([bad])),1)
+
+    def special(self,kind):
+        r=dict(status='REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS'if kind=='early'else'REAL_DAEMON_CHANNEL_DEATH_PASS',
+               qemu_exit=0,supervisor_exit=0)
+        if kind=='early':
+            r['early_bootstrap_fault_requested']=True
+            r['early_bootstrap_corroboration']={k:dict(connection=[{'fixture':1}]*2,
+                data=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=4,proofs=[{'fixture':1}]*2))for k in ['during_fault','after_retry']}
+        else:
+            r.update(channel_daemon_crash_requested=True,channel_daemon_index=0,
+                channel_daemon_corroboration=dict(status='REAL_DAEMON_CHANNEL_DEATH_USB_CORROBORATED',
+                    first_blocked_errno=13,business_round_trips=2,legs=[{'fixture':1}]*8,original_up=[{'fixture':1}]*2,
+                    physical_down_before_wake=[],actual_daemon_death=True,successor_does_not_renew_old_fd=True,
+                    common_owner_both_leases_withdrawn=True,independent_device_business_isolation=False,
+                    physical_acceptance=False,automatic_recovery_acceptance=False,full_grant_complete=False))
+        return r
+
+    def test_special_modes_require_same_actual_terminal_receipts(self):
+        # Terminal-shape fixtures only. Actual special-mode corroborators and
+        # real hardware acceptance remain separate; these are not wire stubs.
+        for kind in ['early','death']:
+            r=self.special(kind);self.assertEqual(run_exit_code(r),0)
+            for key in ['qemu_exit','supervisor_exit']:
+                for value in [None,True,0.0,-9,1]:
+                    with self.subTest(kind=kind,key=key,value=value):self.assertEqual(run_exit_code(r|{key:value}),1)
+                bad=copy.deepcopy(r);bad.pop(key);self.assertEqual(run_exit_code(bad),1)
+            self.assertEqual(run_exit_code(r|dict(connection_verify_requested=True)),1)
+            self.assertEqual(run_exit_code(r|dict(channel_socket_verification_requested=True)),1)
+            self.assertEqual(run_exit_code(r|dict(channel_socket_close_prefix_requested=True)),1)
+            for key in ['connection_verify_requested','channel_socket_verification_requested','channel_socket_close_prefix_requested']:
+                for value in [0,1,None,'false']:
+                    self.assertEqual(run_exit_code(r|{key:value}),1)
+            self.assertEqual(run_exit_code(r|dict(early_bootstrap_fault_requested=True,channel_daemon_crash_requested=True)),1)
+            bad=copy.deepcopy(r);bad.pop('early_bootstrap_fault_requested'if kind=='early'else'channel_daemon_crash_requested')
+            self.assertEqual(run_exit_code(bad),1)
+
+    def test_special_summaries_reject_missing_scope_and_required_business(self):
+        r=self.special('early')
+        for label in ['during_fault','after_retry']:
+            for field,value in [('connection',[]),('data',{}),('data',None)]:
+                bad=copy.deepcopy(r);bad['early_bootstrap_corroboration'][label][field]=value
+                self.assertEqual(run_exit_code(bad),1)
+            for field,value in [('round_trips',True),('round_trips',0),('proofs','xx'),('proofs',[{},{}])]:
+                bad=copy.deepcopy(r);bad['early_bootstrap_corroboration'][label]['data'][field]=value
+                self.assertEqual(run_exit_code(bad),1)
+        r=self.special('death')
+        for field,value in [('business_round_trips',0),('legs',[]),('original_up',[]),
+                            ('automatic_recovery_acceptance',True),('full_grant_complete',True),
+                            ('successor_does_not_renew_old_fd',False),('first_blocked_errno',13.0),
+                            ('physical_down_before_wake',[{'fixture':1}])]:
+            bad=copy.deepcopy(r);bad['channel_daemon_corroboration'][field]=value
+            self.assertEqual(run_exit_code(bad),1)
+        bad=copy.deepcopy(r);bad['channel_daemon_corroboration']['first_blocked_errno']=116
+        self.assertEqual(run_exit_code(bad),1)
+        bad['channel_daemon_corroboration']['physical_down_before_wake']=[{'fixture':1}]
+        self.assertEqual(run_exit_code(bad),0)
+
     def test_requested_connection_and_channel_summaries_cannot_be_deleted(self):
         # Terminal-shape fixtures, not reconstructed USB/application evidence.
         r=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,

@@ -518,6 +518,12 @@ Connection 只读属性 `SsapSecurityRequirement`（D-Bus `u`）返回首次 SMT
 已退休的旧facade不再提供。数据库配置不是远端发布；原始门禁及安全/失败
 语义见准确资格和证据，不转授为完整服务支持。
 
+唯一 SSAP actor 因错误退出时，daemon 记录一次 `SSAP lifetime actor failed`，带
+controller、generation、lifetime、handle、I/O kind、原始 errno（若有）及错误文本。
+日志不含协议载荷或密钥，也不改变退出、撤权或原期限。调用者看到的
+`actor stopped during ...` 可能只是待回复 oneshot 已关闭；定位根因须关联同一
+lifetime 的终态记录和真实通道／USB证据，不能把日志或状态更新当作成功交付。
+
 历史U8438594收紧本地注册：当时仅READ/WRITE_WITH_RSP（mask0x05）接通，
 WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享权限类型
 仍保留标准完整语义。此拒绝只有生产数据库/实际D-Bus离线门禁，不转授Ub5实机资格。

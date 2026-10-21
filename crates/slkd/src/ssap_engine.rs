@@ -155,6 +155,20 @@ impl Engine {
             )
             .await
             {
+                // One event at the sole lifetime owner, before the terminal
+                // watch update. Pending query senders may already be dropped
+                // by run(); their generic oneshot error is not the cause.
+                // Do not include protocol values, keys or application data.
+                tracing::warn!(
+                    controller = expected.0,
+                    generation = expected.1,
+                    lifetime = expected.2,
+                    handle = expected.3,
+                    kind = ?error.kind(),
+                    raw_os_error = ?error.raw_os_error(),
+                    error = %error,
+                    "SSAP lifetime actor failed"
+                );
                 state_tx.send_replace(Status::Failed(error.to_string()));
             } else {
                 state_tx.send_replace(Status::Failed("SSAP actor stopped".into()));

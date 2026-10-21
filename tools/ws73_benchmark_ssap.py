@@ -19,11 +19,16 @@ RUNTIME=('/bin/ws73-application-client-c','/usr/share/sparklink/tools/ws73-appli
          ('client','ssap','local_services','service_authorization','_library','_validation')))
 
 
-def profile(duplex=False, *, observe=False):
+def profile(duplex=False, *, observe=False, hcc=False):
+    if hcc and not observe:
+        raise CaptureError('HCC diagnostic requires the explicit transport observation profile')
     value=dict(version=2 if duplex else 1,kind='owned-sdk-read-write-duplex'if duplex else'owned-sdk-read-write',rounds=4,value_bytes=32)
     if observe:
         from ws73_transport_watch import SPEC
         value['transport_observation_request']=dict(SPEC)
+    if hcc:
+        from ws73_hcc_memory import REQUEST, REQUEST_SPEC
+        value[REQUEST]=dict(REQUEST_SPEC)
     return value
 
 
@@ -35,9 +40,17 @@ def observing(value):
     return value is not None and 'transport_observation_request'in value
 
 
+def observing_hcc(value):
+    from ws73_hcc_memory import REQUEST
+    return value is not None and REQUEST in value
+
+
 def verifiers(value):
     if not observing(value):return VERIFIERS
     from ws73_transport_watch import VERIFIERS as extra
+    if observing_hcc(value):
+        from ws73_hcc_memory import VERIFIERS as hcc
+        return VERIFIERS+extra+hcc
     return VERIFIERS+extra
 
 
@@ -46,11 +59,14 @@ def selected(row):
     if FIELD not in row:return None
     value=row[FIELD]
     observed=type(value)is dict and 'transport_observation_request'in value
-    if (type(value)is not dict or value not in tuple(profile(d,observe=observed)for d in(False,True))or type(value.get('version'))is not int
+    hcc=type(value)is dict and observing_hcc(value)
+    if (type(value)is not dict or value not in tuple(profile(d,observe=observed,hcc=hcc)for d in(False,True))or type(value.get('version'))is not int
         or any(type(value.get(k))is not int for k in ('rounds','value_bytes'))):
         raise CaptureError('exact explicit sequential1 or duplex2 Owned SSAP profile required')
     if observing(value)and any(type(v)is not int for v in value['transport_observation_request'].values()):
         raise CaptureError('typed explicit bounded transport observation request required')
+    if hcc and any(type(v)is not int for v in value['hcc_memory_observation_request'].values()):
+        raise CaptureError('typed fixed HCC diagnostic request required')
     return value
 
 
@@ -66,25 +82,33 @@ def requested(args):
     enabled=getattr(args,'channel_benchmark_ssap_owned',False)
     paired=getattr(args,'channel_benchmark_ssap_duplex',False)
     observe=getattr(args,'channel_benchmark_credit_observe',False)
+    hcc=getattr(args,'channel_benchmark_hcc_memory_observe',False)
+    if type(hcc)is not bool or hcc and not observe:raise CaptureError('explicit HCC diagnostic requires credit observation')
     if type(enabled)is not bool or type(paired)is not bool or type(observe)is not bool or (paired or observe)and not enabled:raise CaptureError('typed explicit owned/duplex/observation SSAP selectors required')
     if not enabled:return None
     from ws73_socket_benchmark import requested_configuration,requested_channel
     workload(requested_configuration(args),requested_channel(args))
-    return profile(paired,observe=observe)
+    return profile(paired,observe=observe,hcc=hcc)
 
 
 def boot(value):
     if value is None:return[]
     selected({FIELD:value});token=TOKEN_DUPLEX if duplex(value)else TOKEN
-    return[token+('-credit'if observing(value)else'')]
+    from ws73_hcc_memory import TOKEN as HCC
+    return[token+('-credit'if observing(value)else'')]+([HCC]if observing_hcc(value)else[])
 
 
 def from_boot(words):
+    from ws73_hcc_memory import TOKEN as HCC
+    hcc=[w for w in words if w.startswith('ws73.hcc_memory_observation=')]
+    if hcc and hcc!=[HCC]:raise CaptureError('one explicit HCC diagnostic boot token required')
     values=[w for w in words if w.startswith('ws73.benchmark_ssap=')]
-    if not values:return None
+    if not values:
+        if hcc:raise CaptureError('HCC diagnostic requires original concurrent SSAP workload')
+        return None
     if (values not in([TOKEN],[TOKEN_DUPLEX],[TOKEN+'-credit'],[TOKEN_DUPLEX+'-credit'])or words.count('ws73.socket_benchmark_apps=1')!=1
         or words.count('ws73.benchmark_mode=window')!=1):raise CaptureError('one exact enabled concurrent SSAP boot profile required')
-    return profile(values[0]in(TOKEN_DUPLEX,TOKEN_DUPLEX+'-credit'),observe=values[0].endswith('-credit'))
+    return profile(values[0]in(TOKEN_DUPLEX,TOKEN_DUPLEX+'-credit'),observe=values[0].endswith('-credit'),hcc=bool(hcc))
 
 
 def execute(run,row):
@@ -167,6 +191,10 @@ def valid_summary(proof):
                 from ws73_transport_watch import valid_summary,FIELD as OBSERVATION
                 if not valid_summary(phase.get(OBSERVATION)):return False
             elif 'transport_observation'in phase:return False
+            from ws73_hcc_memory import FIELD as HCC,valid_summary as hcc_summary
+            if observing_hcc(selected_profile):
+                if not hcc_summary(phase.get(HCC)):return False
+            elif HCC in phase:return False
             if (ssap['phase']!=phase['phase']or len(ssap['applications'])!=24 or len(ssap['publishers'])!=2
                 or ssap['authorization_requests']!=40 or phase['ssap_concurrent_progress']!=progress(phase,ssap)):
                 return False

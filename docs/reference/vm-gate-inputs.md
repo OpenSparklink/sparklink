@@ -853,3 +853,28 @@ controller completion, callback/reference drain or natural recovery. The test
 adds no business round trips: existing peer-checked business remains separate.
 This source contract alone does not qualify an artifact; consult the canonical
 capability record for exact executed gates and remaining conditions.
+
+## 显式 HCC 原始观测
+
+未发布的 `--channel-benchmark-hcc-memory-observe` 是专用 VM 的诊断选项。它要求
+已有 `--channel-benchmark-ssap-owned --channel-benchmark-credit-observe`、原
+128 条 × 2042 字节／window 8 动态通道负载和 `full-load-v2` Session 观测；不改变
+Owner、调用和业务原期限。默认未启用，常规故障采集也不会读取该属性。
+
+该选项只在原两个 guest 端口 `1-1`、`1-2` 对应的 interface 0 读取
+`hcc_memory_observation`。内核属性权限为 `0400`，每次读取发出固定的
+class/interface-IN `a1/05/0000/0000` 四字节控制请求，USB 超时为 250 ms。
+先保留实际普通用户的 `EACCES`，再由 root 子进程读取；管理诊断权限不授予普通
+应用。采集复用既有有界监督器，最多每秒一组、128 组，无重试；任一端点首次出错
+后，本阶段该端点后续槽位只生成实际进程的跳过记录，不再发出 USB 查询。
+
+成功输出携带 controller id、generation、原始小端字、内核单调时间和固定
+`semantics_verified=0`。全零、全一或其他四字节回复只表示收到了原始字，不能证明
+其是有效剩余内存；错误、短回复、停止及旧 generation 不填零，也不授予 Ready。
+该查询不是 DLI 命令／数据 credit、对端业务交付、自然恢复或硬件身份认证。
+SDK SLE 的 HCC 流控开关与该诊断不同，不据原始字启用新的发送门控或归还 credit。
+
+root 诊断进程、普通业务应用和对端 SDK 调用分别记录身份；原始输出、退出、期限、
+访问拒绝、失败和跳过保留在该轮报告。采集完整与业务整轮成功分别检查。
+观测增加控制流量及调度开销，不能将这一配置当成低扰动性能基线。离线夹具和
+无 USB 启动检查也不代表真实固件支持、并发引用排空或业务资格已经通过。

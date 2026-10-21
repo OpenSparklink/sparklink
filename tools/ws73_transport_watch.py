@@ -30,7 +30,7 @@ def ordinary(identity):
             and all(int(v, 16) == 0 for v in identity['capabilities'].values()))
 
 
-def collect_process(args, stop, *, credentials=None):
+def collect_process(args, stop, *, credentials=None, identity_reader=None):
     """Actual OS process/pipe budgets. Tests use local children, not hardware."""
     row = dict(args=args, start_wall_ns=time.time_ns(), start_monotonic_ns=time.monotonic_ns())
     deadline = row['start_monotonic_ns'] + SPEC['query_budget_ns']
@@ -44,7 +44,8 @@ def collect_process(args, stop, *, credentials=None):
     try:
         from ws73_application_client import process_identity
         try:
-            row['credentials'], status = process_identity(proc.pid, 1000)
+            row['credentials'], status = ((identity_reader(proc.pid) if identity_reader is not None
+                                           else process_identity(proc.pid, 1000)))
             if len(status.encode()) > 16384:
                 raise CaptureError('process identity byte budget')
             row['process_status'] = status
@@ -126,8 +127,9 @@ def require_environment():
 
 
 class Watch:
-    def __init__(self, owners, phase):
+    def __init__(self, owners, phase, *, query_fn=None):
         self.owners = copy.deepcopy(owners)
+        self.query_fn = query_fn
         self.stop_event = threading.Event()
         self.armed = threading.Event()
         self.thread = threading.Thread(target=self._run, name='ws73-transport-watch', daemon=False)
@@ -168,7 +170,7 @@ class Watch:
                     if time.monotonic_ns()+SPEC['query_budget_ns'] > start+SPEC['duration_ns']:
                         self.report['status'] = 'OBSERVATION_BUDGET_REACHED'
                         return
-                    receipt = query(entry, self.stop_event)
+                    receipt = (self.query_fn or query)(entry, self.stop_event)
                     self.report['samples'].append(dict(pair=pair, endpoint=endpoint,
                                                        planned_monotonic_ns=planned, receipt=receipt))
                     if not receipt['reaped']:
@@ -204,14 +206,32 @@ class Watch:
         return self.report
 
 
-def _validate(row, requested, *, failed):
+def _snapshot_receipt(receipt, entry, endpoint):
+    if (receipt['args'] != [RUNTIME, '--adapter', entry['owner']['path'], 'transport-status', entry['object']['path']]
+            or receipt['outcome'] not in ('SNAPSHOT_OBSERVED', 'METHOD_OR_IDENTITY_REJECTED',
+                                        'CANCELLED_OBSERVER_STOP', 'QUERY_TIMEOUT')):
+        raise CaptureError('original bounded transport command/outcome required')
+    if receipt['outcome'] == 'SNAPSHOT_OBSERVED':
+        if (not isinstance(receipt.get('values'), dict)
+                or any(type(v) is not int for v in receipt['values'].values())
+                or decode(receipt, entry) != receipt['values']):
+            raise CaptureError('actual production snapshot must match receipt')
+        if not ordinary(receipt['credentials']):
+            raise CaptureError('ordinary actual snapshot observer credentials required')
+        return True
+    if 'values' in receipt:
+        raise CaptureError('failed observation must not manufacture snapshot values')
+    return False
+
+
+def _validate(row, requested, *, failed, field=FIELD, receipt_check=None, require_success=True):
     """Collection integrity only; failures/missing snapshots are not zero data."""
     if failed:
         if row.get('status') != 'FAIL' or not isinstance(row.get('error'), str) or not row['error']:
             raise CaptureError('original failed role with actual error required')
     elif requested and row.get('status') == 'FAIL':
         raise CaptureError('failed role is not a successful observation qualification')
-    report = row.get(FIELD)
+    report = row.get(field)
     if not requested:
         if report is not None:
             raise CaptureError('unrequested transport observation')
@@ -261,27 +281,15 @@ def _validate(row, requested, *, failed):
                 or receipt['start_monotonic_ns'] < previous_end
                 or not receipt['start_monotonic_ns'] <= receipt['end_monotonic_ns'] <= report['end_monotonic_ns']
                 or not report['start_wall_ns'] <= receipt['start_wall_ns'] <= receipt['end_wall_ns'] <= report['end_wall_ns']
-                or receipt['args'] != [RUNTIME, '--adapter', entry['owner']['path'], 'transport-status', entry['object']['path']]
                 or type(receipt['pid']) is not int or receipt['pid'] <= 0
                 or receipt['deadline_monotonic_ns'] != receipt['start_monotonic_ns']+SPEC['query_budget_ns']
                 or receipt['reaped'] is not True
-                or receipt['outcome'] not in ('SNAPSHOT_OBSERVED', 'METHOD_OR_IDENTITY_REJECTED',
-                                              'CANCELLED_OBSERVER_STOP', 'QUERY_TIMEOUT')
                 or max(len(receipt[k].encode()) for k in ('stdout', 'stderr')) > SPEC['stream_limit_bytes']):
             raise CaptureError('original bounded/reaped query receipt required')
         previous_end = receipt['end_monotonic_ns']
-        if receipt['outcome'] == 'SNAPSHOT_OBSERVED':
-            if (not isinstance(receipt.get('values'),dict)
-                    or any(type(v)is not int for v in receipt['values'].values())
-                    or decode(receipt, row['owners'][endpoint]) != receipt['values']):
-                raise CaptureError('actual production snapshot must match receipt')
-            identity = receipt['credentials']
-            if not ordinary(identity):
-                raise CaptureError('ordinary actual snapshot observer credentials required')
+        if (receipt_check or _snapshot_receipt)(receipt, entry, endpoint):
             successful[endpoint] += 1
-        elif 'values' in receipt:
-            raise CaptureError('failed observation must not manufacture snapshot values')
-    if not all(successful):
+    if require_success and not all(successful):
         raise CaptureError('each actual endpoint needs an observed snapshot; missing is not zero')
     skipped = set()
     for gap in report['missed_pairs']:

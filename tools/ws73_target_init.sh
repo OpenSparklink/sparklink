@@ -505,6 +505,14 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                 owned-duplex-credit) connection_arg="$connection_arg --channel-benchmark-ssap-owned --channel-benchmark-ssap-duplex --channel-benchmark-credit-observe" ;;
                 *) fail 'one explicit concurrent SSAP profile' ;;
             esac
+            hcc_observe=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.hcc_memory_observation=/){sub(/^ws73.hcc_memory_observation=/,"",$i);print $i}}' /proc/cmdline)
+            case "$hcc_observe" in
+                '') ;;
+                1)
+                    case "$benchmark_ssap" in owned-credit|owned-duplex-credit) ;; *) fail 'HCC diagnostic requires explicit credit observation' ;; esac
+                    connection_arg="$connection_arg --channel-benchmark-hcc-memory-observe" ;;
+                *) fail 'one explicit HCC diagnostic profile' ;;
+            esac
         fi
         for word in $(cat /proc/cmdline); do
             case "$word" in

@@ -68,17 +68,19 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: OpenSparklink/linux
-          # Test-only revision: existing UAPI/SDK pins stay independent.
-          ref: 83e6cd6d31f8c03ce2019d0e632fde31c63d099d
+          # Exact query/RX functions; existing UAPI/SDK pins stay independent.
+          ref: 883b9c0c19ef7d37f40f6b4b057cd7ca83cde160
           path: .kernel-rx-functions
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             drivers/sparklink/ws73/usb.c
             drivers/sparklink/ws73/wire.c
             drivers/sparklink/ws73/wire.h
+            drivers/usb/core/message.c
             tools/testing/selftests/sparklink/run_connection_tx.py
             tools/testing/selftests/sparklink/usb_source_paths.py
             tools/testing/selftests/sparklink/run_ws73_runtime_rx.py
+            tools/testing/selftests/sparklink/run_ws73_hcc_memory.py
             tools/testing/selftests/sparklink/ws73-runtime-rx
       - name: Run actual RX functions with detector and mutation controls (no USB)
         working-directory: .kernel-rx-functions
@@ -87,6 +89,21 @@ jobs:
         run: |
           clang --version
           python3 tools/testing/selftests/sparklink/run_ws73_runtime_rx.py --output "$RUNNER_TEMP/ws73-runtime-rx.json" --artifacts "$RUNNER_TEMP/ws73-runtime-rx-artifacts"
+      - name: Run actual fixed HCC query and exact-response helper (no USB)
+        working-directory: .kernel-rx-functions
+        env:
+          CC: clang
+        run: python3 tools/testing/selftests/sparklink/run_ws73_hcc_memory.py --output "$RUNNER_TEMP/ws73-hcc-memory.json" --artifacts "$RUNNER_TEMP/ws73-hcc-memory-artifacts"
+      - name: Retain bounded HCC function evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ws73-hcc-memory-offline-functions
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/ws73-hcc-memory.json
+            ${{ runner.temp }}/ws73-hcc-memory-artifacts/
       - name: Retain bounded function evidence, including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

@@ -186,13 +186,17 @@ def hcc_acb(data):
     return acb(data[68:68 + length])
 
 
-def read_capture(path, targets, *, observe_rx=False):
+def read_capture(path, targets, *, observe_rx=False, observe_rx_span=False):
     """Read endpoint-1 IN and pair OUT submission/completion by USB/URB identity.
 
     Refuse truncation/malformed traffic on a target; ignore unrelated USB data.
     Keep raw file offsets and hashes for independently inspecting each proof.
     Capture content is not authenticated and synthetic fixtures are not RF.
     """
+    if observe_rx_span and not observe_rx:
+        raise CaptureError('capture span is explicit RX diagnostic metadata only')
+    span = None
+    selected_records = 0
     reports, complete, failures, empty, commands = [], [], [], [], []
     pending = {}
     native_events = []
@@ -240,6 +244,14 @@ def read_capture(path, targets, *, observe_rx=False):
                 raise CaptureError('pcap/usbmon clocks disagree')
             identity = {'bus': bus, 'device': device, 'wall_ns': timestamp,
                         'urb': urb, 'record': ordinal, 'file_offset': offset}
+            if observe_rx_span:
+                point = {k: identity[k] for k in ('bus','device','wall_ns','record','file_offset')}
+                selected_records += 1
+                if span is None:
+                    span = dict(earliest=point, latest=point)
+                else:
+                    if timestamp < span['earliest']['wall_ns']: span['earliest'] = point
+                    if timestamp > span['latest']['wall_ns']: span['latest'] = point
             if endpoint == 0x81 and observe_rx:
                 if kind in map(ord, 'SE') and (cap or captured != 64 or original != captured):
                     raise CaptureError('IN submission/error unexpectedly contains data or truncation')
@@ -313,6 +325,11 @@ def read_capture(path, targets, *, observe_rx=False):
             'acb_packets':acb_packets, 'packet_count': ordinal}
     if observe_rx:
         result['rx_urbs'] = rx_urbs
+    if observe_rx_span:
+        if span is None:
+            raise CaptureError('nonempty validated target USB capture span required')
+        result['rx_capture_span'] = dict(version=1, quantum_ns=1000,
+            targets=[list(v) for v in sorted(targets)], selected_records=selected_records, **span)
     return result
 
 

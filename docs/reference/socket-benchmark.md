@@ -605,3 +605,23 @@ snapshot decoder，不创建 Engine、不发送 DLI、不更新 credit，也不�
 入口。它要求原 VM/control/role 均失败、原请求与 boot 一致及封存文件校验通过；
 不要求伪造成功的 quiescent 屏障，也不删除失败。输出固定为未取得资格，不能替代
 原成功分析、RX 全区间覆盖检查或对端应用验收。历史资料按原工具身份重放。
+
+
+## 失败捕获的显式 pending RX 尾段
+
+默认失败分析仍要求每个 endpoint 的事件覆盖原完整失败 phase。显式
+`--pending-rx-tail` 只适用于 `ws73_rx_gap.py RUN --failed-phase N` 或
+`ws73_session_service.py analyze-failed-benchmark RUN --failed-phase N` 的离线诊断，
+输出 `rx_coverage_contract_version=2`；正常成功入口和旧默认输出保持原样。
+
+该契约要求原冻结 manifest 中的捕获与 stats hash 匹配、完整停止统计与零丢失、
+原全部应用 start 到失败 role end 的窗口。parser 只为本次明确选择的目标 USB
+事件计算 span，不能用无关设备或未校验的 pcap 时间戳延长范围；首尾须在窗口外
+至少1µs。每端单 URB 的顺序、原提交、完成和重提交仍由原 `observe` 检查。
+若一端最后事件早于窗口终点，还须是同一 RX URB 的有效 pending 提交，不能是
+错误、完成后未提交、换 URB 或没有原始提交。尾段长度和原始 record／offset 保留。
+
+这是完整捕获内的“已提交但没有新事件”观测，不能表示硬件仍健康、callback 已执行、
+设备状态已清除或引用已排空。它信任捕获完整性及无跳变的 guest wall clock；
+pcap 内容不具备身份认证。历史默认拒绝和整个业务失败保留，不因新诊断升级为
+当前镜像资格。两端应用实际校验、协议时限、NOCP 归属和自然恢复仍各自验收。

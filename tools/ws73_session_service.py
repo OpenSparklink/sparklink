@@ -944,7 +944,7 @@ def _check_kernel_strings(trace, control):
         raise ValueError('original trace/control kernel identity differs')
 
 
-def analyze_failed_benchmark(directory, phase):
+def analyze_failed_benchmark(directory, phase, *, pending_rx_tail=False):
     """Censored transport observations from an unchanged failed application gate.
 
     Reuse the strict failed-phase/export/capture validator. No success receipt
@@ -956,7 +956,7 @@ def analyze_failed_benchmark(directory, phase):
     from ws73_benchmark_timeline import material
     from ws73_capture import read_capture
     root = Path(directory).resolve(strict=True)
-    failure = diagnose_failed(root, phase)
+    failure = diagnose_failed(root, phase, pending_rx_tail=pending_rx_tail)
     manifest = json.loads((root/'manifest.json').read_text())
     if (manifest.get('session_service_observation_requested') is not True
             or manifest.get('session_service_acceptance') is not False):
@@ -985,15 +985,18 @@ if __name__ == '__main__':
     p.add_argument('action', choices=['start', 'finish', 'abort', 'analyze-benchmark', 'analyze-failed-benchmark'])
     p.add_argument('directory', nargs='?', type=Path)
     p.add_argument('--failed-phase', type=int, choices=[0, 1])
+    p.add_argument('--pending-rx-tail', action='store_true',help='explicit offline failed-capture v2;not normal success')
     args = p.parse_args()
     if args.action.startswith('analyze-') != (args.directory is not None):
         p.error('only analysis actions require a captured VM run directory')
+    if args.pending_rx_tail and args.action != 'analyze-failed-benchmark':
+        p.error('pending RX tail only applies to original failed observations')
     if (args.action == 'analyze-failed-benchmark') != (args.failed_phase is not None):
         p.error('only analyze-failed-benchmark requires an explicit failed phase')
     if args.action == 'analyze-benchmark':
         print(json.dumps(analyze_benchmark(args.directory), indent=2))
     elif args.action == 'analyze-failed-benchmark':
-        print(json.dumps(analyze_failed_benchmark(args.directory, args.failed_phase), indent=2))
+        print(json.dumps(analyze_failed_benchmark(args.directory, args.failed_phase, pending_rx_tail=args.pending_rx_tail), indent=2))
     elif args.action == 'start':
         configure()
     else:

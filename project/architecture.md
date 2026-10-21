@@ -1088,6 +1088,10 @@ lifetime 或重演 credit 归属。参数对照须绑定明确配置、准确 da
 实际 Create 及双端原始事件；请求、实际值、单位和 PHY 分开。未完整覆盖的失败
 阶段保持不可用，不能借参数局部成功关闭原失败或擅改默认与原期限。见 ADR0006。
 
+异步回复通道退出与物理 actor 的终态分开表达。唯一 actor 的原始错误和完整生命周期
+身份用于关联诊断；日志不制造 Ready、完成或授权，也不新增状态来源。下游关闭／
+过期错误须与先行的 Session／USB 失败核对，不能自动当作业务协议的根因。
+
 
 Session 只读发送观测复用 Runtime Host/data/gate → Session → TX queue 锁序与现有
 授权 fd；daemon 只通过已有唯一 actor 读取，不创建新 owner。worker 私有 pending

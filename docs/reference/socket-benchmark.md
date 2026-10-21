@@ -55,6 +55,11 @@ NOCP 只有 handle/count。观测窗口不证明 generation/lifetime、完成准
 迟到处理、复用屏障或某条 credit 的因果归属；工具不重演 CreditLedger，也没有
 精确 Runtime 通知时刻。分布只是本次候选关联，不是独立空口时延或性能资格。
 
+若另行用生产 CreditLedger 回放，须单列原输入顺序、初始 debt、预留／USB提交
+及捕获／Host处理顺序的假设；不要把本节候选分析改称实际记账回放。查询失败
+不是零 debt，断链附近的批量 NOCP 也不是业务送达或引用排空证明。详见
+[算术一致与完成归属](../explanation/qualification-boundaries.md#credit-算术一致为何仍不证明完成归属)。
+
 连接参数实验另外核对：明确写全的 `ws73.connection` 配置，经准确 staged daemon
 验证并冻结 hash，再用独立参考编码核对 SDK110 的完整 27 字节 Create 命令和两端
 30 字节成功事件。记录原始 interval/latency/supervision 字段及未知尾字节；实际

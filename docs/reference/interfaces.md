@@ -330,6 +330,10 @@ UnknownMethod，旧Encrypted/Paired属性为UnknownProperty。现行per-Connecti
 明确接受 `sdk111-no-mitm` 或 `sdk111-numeric-comparison`；未知方法不降级。`UnregisterAgent(o path, t epoch)` 核对原 caller/path/epoch 后撤销原注册，普通通道权限
 不授予 controller 管理或 Agent 注册权。默认不自动批准。
 
+上述字符串标识当前实现的具体机制配方，不能据其名称判断设备正在运行的固件版本
+或兼容范围。选定镜像、实际上传、运行期 HCC 与真实协议交付分别留证；未知方法
+仍明确拒绝，不自动选择另一机制。
+
 `org.sparklink.Connection` 的原生命周期对象提供：
 
 | 方法 | 输入 → 输出 | 成功的含义 |

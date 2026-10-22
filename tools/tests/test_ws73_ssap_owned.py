@@ -1,4 +1,5 @@
 """Evidence verdict fixtures; not a peer, kernel or protocol implementation."""
+import ast
 import hashlib
 from pathlib import Path
 import sys
@@ -70,7 +71,14 @@ class OwnedEvidence(unittest.TestCase):
     def test_guest_copy_and_hash_inventory_and_opt_in_are_present(self):
         root=Path(__file__).resolve().parents[1]
         source=(root/'ws73_target.py').read_text()
-        self.assertEqual(source.count("'ws73_ssap_owned.py'"),2)
+        # Check the actual staging responsibilities, not every occurrence in
+        # unrelated preparation/verdict guards elsewhere in the module.
+        function=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef)and n.name=='prepare_locked')
+        self.assertEqual(sum(isinstance(n,ast.BinOp)and isinstance(n.op,ast.Div)
+            and isinstance(n.right,ast.Constant)and n.right.value=='ws73_ssap_owned.py'
+            for n in ast.walk(function)),1)
+        self.assertEqual(sum(isinstance(n,ast.List)and any(isinstance(v,ast.Constant)
+            and v.value=='ws73_ssap_owned.py'for v in n.elts)for n in ast.walk(function)),1)
         self.assertIn('ssap_owned_verification_requested',source)
         self.assertIn('owned SSAP request/evidence mismatch',source)
         self.assertIn('--ssap-owned-verify',(root/'ws73_target_init.sh').read_text())

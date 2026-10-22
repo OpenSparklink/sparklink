@@ -51,6 +51,10 @@ manifest。记录内核、编译服务、测试工具的完整提交；三者可
 现场pipe事件和建链／Down后的被动检查，不能用旧报告补版本字段。长包与credit观测
 是独立模式，不能覆盖断链失败，也不授完整流控或自然恢复资格。
 
+Owned并行模式还需按同一参考契约核对16个真实publisher、allow／deny及退出后远端
+错误；每条事务都须对应原调用及双端捕获。只看本地注册成功或两组进程存活不能通过。
+检查SSAP线上区间重叠时仍核对各自的物理Up／Down与完整身份，不能把一组的事务归给另一组。
+
 [理解证据边界](../explanation/qualification-boundaries.md)、
 [VM 输入准备](../reference/vm-gate-inputs.md)、[历史数据面规划](../../history/connections/data-socket-vertical-plan-20261012.md)。
 

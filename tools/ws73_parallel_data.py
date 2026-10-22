@@ -23,6 +23,7 @@ from ws73_parallel import PairRun, EventReader, abort_workers, policy_expectatio
 SCOPE = 'four real WS73 two-pair connected business'
 ISOLATION_SCOPE = 'four real WS73 controlled pair disconnect with surviving business'
 BURST_SCOPE = 'four real WS73 two-pair 2042-byte burst and observed budgets'
+OWNED_SCOPE = 'four real WS73 two-pair owned SSAP approvals and owner loss'
 PENDING = 'PARALLEL_BUSINESS_EVIDENCE_PENDING'
 SUCCESS = 'CONNECTED_PAIR_BUSINESS_EVIDENCE_PENDING'
 SEQUENCE = [('ready', 0), *[(kind, n) for n in range(2)
@@ -56,12 +57,17 @@ class BusinessPair(PairRun):
     def __init__(self,args):
         self.isolation=bool(getattr(args,'disconnect_isolation',False))
         self.burst=bool(getattr(args,'burst',False))
-        if self.isolation and self.burst:raise ValueError('separate burst and Disconnect scopes required')
+        self.owned=bool(getattr(args,'owned_ssap',False))
+        if sum((self.isolation,self.burst,self.owned))>1:raise ValueError('separate burst,Disconnect and Owned scopes required')
         if self.isolation:self.SCOPE=ISOLATION_SCOPE
         if self.burst:self.SCOPE=BURST_SCOPE
+        if self.owned:self.SCOPE=OWNED_SCOPE
         super().__init__(args)
         self.data['disconnect_isolation']=self.isolation
         self.data['burst_mode']=self.burst
+        if self.owned:
+            self.data['owned_ssap_mode']=True
+            self.data['parallel_owned_contract_version']=1
         if self.isolation:
             self.data['disconnect_progress_contract_version']=1
             self.channel_application_progress=self._application_progress
@@ -172,12 +178,14 @@ def run_parallel(args):
     output=args.output.resolve();output.mkdir(parents=True,exist_ok=False,mode=0o700)
     isolation=bool(getattr(args,'disconnect_isolation',False))
     burst=bool(getattr(args,'burst',False))
-    if isolation and burst:raise ValueError('separate burst and Disconnect scopes required')
-    record=dict(format_version=1,scope=BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE,disconnect_isolation=isolation,burst_mode=burst,status='RUNNING',application_identity=ordinary_identity(),
+    owned=bool(getattr(args,'owned_ssap',False))
+    if sum((isolation,burst,owned))>1:raise ValueError('separate burst,Disconnect and Owned scopes required')
+    record=dict(format_version=1,scope=OWNED_SCOPE if owned else BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE,disconnect_isolation=isolation,burst_mode=burst,status='RUNNING',application_identity=ordinary_identity(),
                 workers=[],stages=[],policy_expectation=policy_expectation(args.policy_expectation),
                 barrier_budget_seconds=BARRIER_SECONDS,physical_unplug_acceptance=False,
                 automatic_fault_recovery_acceptance=False,fault_isolation_acceptance=False)
     if isolation:record['disconnect_progress_contract_version']=1
+    if owned:record.update(owned_ssap_mode=True,parallel_owned_contract_version=1)
     def save():
         temp=output/'run.tmp';temp.write_text(json.dumps(record,indent=2)+'\n');temp.replace(output/'run.json')
     processes=[];reader=None;save()
@@ -185,7 +193,7 @@ def run_parallel(args):
         for pair in range(2):
             argv=[sys.executable,str(Path(__file__).resolve()),'pair','--pair',str(pair),'--ports',
                   *args.ports[pair*2:pair*2+2],'--slctl',str(args.slctl),'--slkd-pid',str(args.slkd_pid),
-                  '--output',str(output/f'pair-{pair}'),*(['--disconnect-isolation'] if isolation else []),*(['--burst'] if burst else []),
+                  '--output',str(output/f'pair-{pair}'),*(['--disconnect-isolation'] if isolation else []),*(['--burst'] if burst else []),*(['--owned-ssap']if owned else []),
                   '--policy-expectation',str(args.policy_expectation)]
             row=dict(args=argv,start_wall_ns=time.time_ns(),stdout='',stderr='');record['workers'].append(row)
             p=subprocess.Popen(argv,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -235,11 +243,15 @@ def run_parallel(args):
 def verify_records(record):
     isolation=record.get('disconnect_isolation',False)
     burst=record.get('burst_mode',False)
-    if type(isolation) is not bool or type(burst) is not bool or (isolation and burst):raise CaptureError('explicit exclusive scope booleans required')
+    owned=record.get('owned_ssap_mode',False)
+    if type(isolation) is not bool or type(burst) is not bool or type(owned)is not bool or sum((isolation,burst,owned))>1:raise CaptureError('explicit exclusive scope booleans required')
     version=record.get('disconnect_progress_contract_version')
     if 'disconnect_progress_contract_version'in record and (type(version)is not int or version!=1 or not isolation):raise CaptureError('explicit supported Disconnect progress contract required')
     progress=version==1
-    scope=BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE
+    if owned:
+        if type(record.get('parallel_owned_contract_version'))is not int or record['parallel_owned_contract_version']!=1:raise CaptureError('explicit Owned SSAP contract required')
+    elif 'parallel_owned_contract_version'in record:raise CaptureError('Owned contract without Owned request')
+    scope=OWNED_SCOPE if owned else BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE
     if (record.get('format_version')!=1 or record.get('scope')!=scope or record.get('status')!=PENDING
             or record.get('barrier_budget_seconds')!=BARRIER_SECONDS or len(record.get('workers',[]))!=2
             or record.get('failure_shutdown') or any(record.get(k) is not False for k in
@@ -271,11 +283,14 @@ def verify_records(record):
                 raise CaptureError('survivor progress must release before victim Disconnect admission')
     for pair,w in enumerate(record['workers']):
         r=w['run']
-        if w['exit'] or r['status']!=SUCCESS or r['scope']!=scope or r.get('disconnect_isolation',False)!=isolation or r.get('burst_mode',False)!=burst or r['pair']!=pair or r['application_identity']!=app:
+        if w['exit'] or r['status']!=SUCCESS or r['scope']!=scope or r.get('disconnect_isolation',False)!=isolation or r.get('burst_mode',False)!=burst or r.get('owned_ssap_mode',False)is not owned or r['pair']!=pair or r['application_identity']!=app:
             raise CaptureError('actual successful ordinary pair workers required')
         if (r.get('disconnect_progress_contract_version')!=version
                 or ('disconnect_progress_contract_version'in r and type(r['disconnect_progress_contract_version'])is not int)):
             raise CaptureError('worker progress contract mismatch')
+        if owned:
+            if type(r.get('parallel_owned_contract_version'))is not int or r['parallel_owned_contract_version']!=1:raise CaptureError('worker Owned contract mismatch')
+        elif 'parallel_owned_contract_version'in r:raise CaptureError('unrequested worker Owned contract')
         if type(w['pid']) is not int or w['pid']<=0 or w['pid'] in pids:raise CaptureError('distinct worker PID required')
         pids.add(w['pid'])
         if r['barrier_budget_seconds']!=BARRIER_SECONDS or len(r['initial'])!=2 or len(r['after'])!=2 or not all(stable(a,b) for a,b in zip(r['initial'],r['after'])):
@@ -286,6 +301,7 @@ def verify_records(record):
         daemon,bus=r['daemon_before'],r['bus_before']
         argv=w['args'];expected=['pair','--pair',str(pair),'--ports',*[v['port'] for v in r['initial']],
                     '--slctl',r['slctl']['path'],'--slkd-pid',str(daemon['pid'])]
+        if argv.count('--owned-ssap')!=int(owned):raise CaptureError('explicit worker Owned selector required')
         if argv.count('--burst')!=int(burst):raise CaptureError('explicit worker burst selector required')
         if argv.count('--disconnect-isolation')!=int(isolation):raise CaptureError('explicit worker disconnect selector required')
         if argv[2:12]!=expected or argv[-2:]!=['--policy-expectation',record['policy_expectation']['file']['path']]:
@@ -296,6 +312,7 @@ def verify_records(record):
             raise CaptureError('all four actual owned cleanups required')
         if len(r.get('channel_socket',[]))!=2 or any(x['rounds']!=rounds_for(isolation,pair,n,burst) or x['message_bytes']!=(2042 if burst else 61) or x.get('close_prefix') or x.get('burst',False)!=burst or x.get('boundary_check') for n,x in enumerate(r['channel_socket'])):
             raise CaptureError('exact requested role/message-size/burst slice required')
+        if any(x.get('ssap_owned_required',False)is not owned or (owned and len(x.get('ssap_owned',[]))!=4)for x in r['channel_socket']):raise CaptureError('exact original Owned production cases required')
         sequence=[('ready',0)]
         for n in range(2):
             sequence.extend([('linked',n),('business-ready',n)])
@@ -364,7 +381,7 @@ def corroborate(record,capture):
     from ws73_channel_socket import corroborate as channel_proof,application_frames
     from ws73_rf_rounds import corroborate_stops
     owners=verify_records(record);pairs=[];nonces=set();sequences=set()
-    isolation=record.get('disconnect_isolation',False);burst=record.get('burst_mode',False)
+    isolation=record.get('disconnect_isolation',False);burst=record.get('burst_mode',False);owned=record.get('owned_ssap_mode',False)
     for w in record['workers']:
         r=w['run'];subset=pair_capture(capture,r['initial'])
         conn=connection_proof(r,subset);objects=object_proof(r,subset,conn);channel=channel_proof(r,subset)
@@ -416,7 +433,8 @@ def corroborate(record,capture):
         overlap=overlap_window(windows)
         if overlap[0]<max(v[0] for v in lifetimes) or overlap[1]>min(v[1] for v in lifetimes):raise CaptureError('both physical connections must coexist during real business')
         overlaps.append(dict(role_phase=n,business_windows=windows,overlap_wall_ns=overlap))
-    return dict(status='FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
+    return dict(status='FOUR_REAL_PARALLEL_OWNED_SSAP_CORROBORATED'if owned else 'FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
+                **(dict(parallel_owned_contract_version=1,parallel_owned_control=record,owned_ssap=owned_parallel_proof(pairs),owned_ssap_acceptance=True)if owned else{}),
                 **(dict(disconnect_progress_contract_version=1)if record.get('disconnect_progress_contract_version')==1 else{}),
                 **(dict(disconnect_progress_control=record)if record.get('disconnect_progress_contract_version')==1 else{}),
                 **(dict(disconnect_proofs=disconnect_proofs(pairs),controlled_disconnect_isolation_acceptance=True) if isolation else {}),
@@ -425,6 +443,40 @@ def corroborate(record,capture):
                 fixed_basic_channel_business_acceptance=True,fault_isolation_acceptance=False,
                 dynamic_channel_acceptance=False,automatic_fault_recovery_acceptance=False,
                 protected_ssap_acceptance=False,full_goal_complete=False)
+
+
+def owned_parallel_proof(pairs):
+    """Compose the existing Owned wire proofs, not another SSAP decoder.
+
+    Both pairs must really perform transactions in overlapping intervals while
+    both physical connections are Up. This does not prove that another pair
+    made progress at every owner-death instant or establish fault isolation.
+    """
+    if len(pairs)!=2:raise CaptureError('two original Owned pair proofs required')
+    phases=[]
+    for n in range(2):
+        windows=[];lifetimes=[]
+        for pair in pairs:
+            cases=pair['channel']['proofs'][n].get('ssap_owned',[])
+            if (len(cases)!=4 or {(c['sender'],c['policy'])for c in cases}
+                    !={(s,p)for s in (0,1)for p in ('allow','deny')}
+                    or any(c.get('owner_lost')is not True or len(c.get('wire',[]))!=10 for c in cases)):
+                raise CaptureError('all original Owned approval/denial/owner-loss wire cases required')
+            legs=[w for c in cases for w in c['wire']]
+            window=[min(w['tx']['wall_ns']for w in legs),max(w['rx']['wall_ns']for w in legs)]
+            steps=pair['connections'][n]['steps']
+            lifetime=[max(e['wall_ns']for e in steps[0]['outcomes']),min(e['wall_ns']for e in steps[1]['outcomes'])]
+            if not lifetime[0]<=window[0]<window[1]<=lifetime[1]:
+                raise CaptureError('Owned wire must belong to its physical connection lifetime')
+            windows.append(window);lifetimes.append(lifetime)
+        overlap=overlap_window(windows)
+        if not max(v[0]for v in lifetimes)<=overlap[0]<overlap[1]<=min(v[1]for v in lifetimes):
+            raise CaptureError('both physical links must coexist during Owned wire overlap')
+        phases.append(dict(role_phase=n,wire_windows=windows,overlap_wall_ns=overlap))
+    return dict(version=1,policy_cases=16,request_response_exchanges=80,
+                approved_policy_cases=8,denied_policy_cases=8,owner_exit_remote_refusals=16,
+                overlaps=phases,service_only_deployment=False,fault_isolation_acceptance=False,
+                scope='Existing Owned Engine/caller and independent wire proofs;uid1000/caps0 control-role,not crypto identity,Bond or full lifecycle/fault isolation')
 
 
 def disconnect_proofs(pairs):
@@ -466,9 +518,10 @@ def main():
     parser.add_argument('--slkd-pid',type=int,required=True);parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--policy-expectation',type=Path,required=True);parser.add_argument('--pair',type=int,choices=[0,1])
     parser.add_argument('--disconnect-isolation',action='store_true',help='alternate which physical pair disconnects while the other continues20 real replies; not natural fault recovery')
+    parser.add_argument('--owned-ssap',action='store_true',help='existing Owned SSAP caller/Engine in both physical pairs;actual approvals,denials,owner loss and wire overlap')
     parser.add_argument('--burst',action='store_true',help='16 real2042-byte replies perpair perrole; actual queue pressure and scoped pool/NOCP observations')
     args=parser.parse_args()
-    if args.burst and args.disconnect_isolation:parser.error('select one explicit scope')
+    if sum((args.burst,args.disconnect_isolation,args.owned_ssap))>1:parser.error('select one explicit scope')
     if args.mode=='run':
         if args.pair is not None:parser.error('pair selector internal only')
         return run_parallel(args)
@@ -478,6 +531,8 @@ def main():
     args.start_offset_ms=0;args.channel_socket_verify=True;args.channel_socket_rounds=20
     args.channel_socket_bytes=2042 if args.burst else 61
     args.channel_socket_burst=args.burst;args.connection_advertising='negotiable-t'
+    args.ssap_owned_verify=args.owned_ssap
+    if args.owned_ssap:args.artifact.append('ws73_ssap_owned='+str(Path(__file__).with_name('ws73_ssap_owned.py').resolve()))
     return BusinessPair(args).execute()
 
 

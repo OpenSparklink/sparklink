@@ -427,6 +427,7 @@ elif grep -q 'ws73.parallel_business=1' /proc/cmdline; then
     disconnect_arg=''
     if grep -q 'ws73.parallel_disconnect=1' /proc/cmdline; then disconnect_arg='--disconnect-isolation'; fi
     if grep -q 'ws73.parallel_burst=1' /proc/cmdline; then disconnect_arg='--burst'; fi
+    if grep -q 'ws73.parallel_owned=1' /proc/cmdline; then disconnect_arg='--owned-ssap'; fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_parallel_data.py run $disconnect_arg --ports 1-1 1-2 1-3 1-4 --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/parallel-business --policy-expectation /expected-discovery-policies.json" || fail 'four-device parallel business'
 elif grep -q 'ws73.parallel=1' /proc/cmdline; then
     parallel_offset=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.parallel_offset=/){sub(/^ws73.parallel_offset=/,"",$i);print $i}}' /proc/cmdline)

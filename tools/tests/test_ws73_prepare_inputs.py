@@ -83,6 +83,10 @@ class PrepareInputs(unittest.TestCase):
                 self.assertEqual((source / name).read_bytes(), (args.output / name).read_bytes())
             self.assertEqual((args.output / 'root/usr/share/sparklink/tools/ws73_firmware_profile.py').read_bytes(),
                              (target.HERE / 'ws73_firmware_profile.py').read_bytes())
+            self.assertEqual((args.output / 'root/init').read_bytes(),
+                             (target.HERE / 'ws73_target_init.sh').read_bytes())
+            self.assertEqual((args.output / 'root/init').stat().st_mode & 0o777, 0o755)
+            self.assertIn(file_record(target.HERE / 'ws73_target_init.sh'), new['inputs'])
             ports = [s['host_port'] for s in selections]
             self.assertEqual(resources.check_firmware(new, ports, args.output, allocation)['version'], 2)
             self.assertEqual(resources.check_board_configuration(new, ports, args.output, allocation)['version'], 2)

@@ -54,6 +54,19 @@ Down/退休及原期限到期触发。命令 credit、data credit、peer 流控�
 
 ## 发送及 USB 分期
 
+固定 CUTC／SMTC 与动态通道采用两个软件服务类，各有独立轮转游标。固定类最多
+连续完成两个 PDU，随后服务一个已就绪的动态 PDU；另一类为空时不闲置。这参考
+固定版本 NearLink Host 对固定／动态通道的主机调度分类，但用有界优先级保留
+普通动态通道的进展机会，不采用无限严格优先。它不是标准强制的权重或时延保证。
+
+配额只在真实最后 PB 提交后推进；出队、取消、超时、USB 单片或 NOCP 不代替完整
+PDU 服务。实际 credit 拒绝保留该类内轮次，其他重试可在类内让出但不赚取配额。
+已开始的 PB 保持连续，原期限、执行预算、Grant／Ticket／身份及物理 debt 不变；
+DLI priority 位也不改变。实现见[生产选择器](https://github.com/OpenSparklink/linux/blob/313c3e1ab3036de07b3b65ea724d075c4880081a/net/sparklink/sle_tx_policy.h)。
+限定 CBMC 只检查真实纯选择器在固定就绪集合及完成步下的性质；实际 batch／授权
+fixture、真实内核并发和实机业务分别验收。选择器通过不能授予性能收益、credit
+真值、根因、引用排空或完整负载资格；准确结果继续由唯一能力入口维护。
+
 先测旧路径，再消除轮询等待，再有界连续推进。每次实际提交仍经过原 Grant、
 generation/lifetime、原期限与 Ticket 的原子门禁。USB 成功不归还协议 credit；
 确定未提交和不确定失败分别记账，作者取消不抹去物理义务。

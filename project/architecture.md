@@ -1,6 +1,6 @@
 # SparkLink 架构
 
-### 连接级管理观察
+## 连接级管理观察
 
 连接级只读观察同样经过现有 Managed owner、pending ledger、命令 credit 与实际提交
 票据；固定完整 ExpectedLink、lease epoch 与原始单调时钟期限，在准入、选择及最终

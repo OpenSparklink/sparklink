@@ -32,12 +32,17 @@ def requested(args):
         return None
     values = parse_addresses(values)
     ports = list(args.ports)
+    # Volatile setup is shared by the canonical application gates. Benchmark
+    # deliberately excludes the baseline flag;each retains its own final raw
+    # business corroboration. Selecting addresses awards neither verdict.
+    application_gate = (getattr(args, 'channel_socket_verify', False)
+                        or getattr(args, 'channel_benchmark', None) in ('rate', 'window', 'duplex'))
     # Slot order is explicit input, not device selection. Keep exactly the two
     # assigned E leaves; addresses follow that order through QMP and readback.
     if (args.command != 'run' or len(ports) != 2 or set(ports) != {'1-2.1.1', '1-2.1.2'}
-            or not getattr(args, 'qmp_hotplug', False) or not getattr(args, 'channel_socket_verify', False)
+            or not getattr(args, 'qmp_hotplug', False) or not application_gate
             or not getattr(args, 'connection_verify', False)):
-        raise ValueError('volatile E gate requires the explicit assigned E pair and ordinary connection/socket VM')
+        raise ValueError('volatile E gate requires the explicit assigned E pair and ordinary connection/socket or benchmark VM')
     return values
 
 

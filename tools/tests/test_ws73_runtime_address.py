@@ -50,6 +50,26 @@ def fixture():
 
 
 class RuntimeAddressEvidence(unittest.TestCase):
+    def test_shared_setup_accepts_canonical_benchmark_without_baseline_flag(self):
+        # This is the actual host selector,not a VM or a successful peer.
+        args=dict(runtime_addresses=ADDRESSES,command='run',ports=['1-2.1.1','1-2.1.2'],
+                  qmp_hotplug=True,channel_socket_verify=False,connection_verify=True)
+        for mode in ('rate','window','duplex'):
+            with self.subTest(mode=mode):
+                self.assertEqual(requested(SimpleNamespace(**(args|dict(channel_benchmark=mode)))),ADDRESSES)
+        for mode in (None,'','unknown',True):
+            with self.subTest(mode=mode),self.assertRaises(ValueError):
+                requested(SimpleNamespace(**(args|dict(channel_benchmark=mode))))
+
+    def test_benchmark_setup_preserves_leaf_connection_and_vm_boundaries(self):
+        args=dict(runtime_addresses=ADDRESSES,command='run',ports=['1-2.1.1','1-2.1.2'],
+                  qmp_hotplug=True,channel_socket_verify=False,connection_verify=True,channel_benchmark='window')
+        for change in [dict(command='support'),dict(connection_verify=False),dict(qmp_hotplug=False),
+                       dict(ports=['1-2.1.1','1-2.1.3']),dict(ports=['1-1.1.1','1-1.1.2']),
+                       dict(ports=['1-2.1.1']*2),dict(ports=[]),dict(runtime_addresses=[ADDRESSES[0]]*2)]:
+            with self.subTest(change=change),self.assertRaises(ValueError):
+                requested(SimpleNamespace(**(args|change)))
+
     def test_host_evidence_addition_never_awards_run_or_business_success(self):
         from ws73_target import corroborate_runtime_addresses, HERE
         from ws73_north_star import file_record
@@ -68,6 +88,11 @@ class RuntimeAddressEvidence(unittest.TestCase):
             self.assertEqual(manifest['status'],'RUNNING')
             self.assertNotIn('ordinary_channel_socket_acceptance',manifest)
             self.assertNotIn('supervisor_exit',manifest)
+            benchmark=dict(status='FAIL',socket_benchmark_requested='window',socket_benchmark_acceptance=False)
+            benchmark.update(metadata)
+            self.assertEqual(benchmark['status'],'FAIL')
+            self.assertFalse(benchmark['socket_benchmark_acceptance'])
+            self.assertNotIn('socket_benchmark_corroboration',benchmark)
 
     def test_host_evidence_addition_rejects_raw_loss_pin_and_bad_original(self):
         from ws73_target import corroborate_runtime_addresses,HERE

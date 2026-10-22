@@ -135,11 +135,36 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 保存此次观察与 XML hash，仍不是型号、业务、恢复或绝对独占资格。
 
 `prepare --board-model U|E` 要求对应 SDK110 的主固件与两份校准全部 hash 一致；
-新物理执行要求此 provenance 和新 guest 的 HCC 检查。纯 support 模拟入口不需
-物理配置。新 prepared/run 必须位于该配置的线程独立运行根；旧封存根保持原样。
-当前驱动只有一个固件目录，同一个 guest 只允许同型号；混合 E/U 及无法证明
-每设备 RAM 固件来源的 runtime-only 接管拒绝。不得修改旧 manifest 来绕过检查。
+新物理执行要求此 provenance 和新 guest 的 HCC 检查；准备镜像也须明确选择型号，
+不能隐式选择 U。纯 support 不操作物理设备，不授型号或固件资格。
+新 prepared/run 必须位于该配置的线程独立运行根；旧封存根保持原样。
+每设备输入迁移后，驱动不读取全局默认镜像；当前 runner 仍只准入同型号，混合 E/U
+及无法证明每设备 RAM 固件来源的 runtime-only 接管继续拒绝。源码接通不代表新
+产物或混合冷启动已实测；准确状态见唯一[资格入口](../../project/current-capabilities.md)。
+不得修改旧 manifest 来绕过检查。
 板级 `bsle_custom.bin`／`pm_config.bin` 仍须显式提供并记录，型号匹配不证明板级资格。
+
+### 每设备 OS 输入配置
+
+新 `ws73_native_service_bundle.py` 要求 `--board-model U|E`，输入暂存于
+`usr/share/sparklink/firmware-inputs/<model>/`，不作为驱动默认搜索路径。准备工具核对
+bundle 与明确的五份输入后，生成独立 USB2 端口目录及 `ws73-firmware-profiles.json`，
+消费暂存文件；新镜像不保留旧全局镜像回退。旧 bundle 须用原版本工具重放，不能
+将旧 manifest 改成新格式继续使用。
+
+| 项目 | 新输入契约 |
+| --- | --- |
+| 驱动请求目录 | `sparklink/ws73/by-path/<controller>-usb2-<route>/`，相对 firmware loader 根；不是 USB device number 或 VID/PID。 |
+| 实验 guest 布局 | 显式 xHCI PCI `0000:00:02.0`、USB2 直接端口 1–4；逐叶 QMP 附加仍须通过独立白名单及占用检查。 |
+| `profile.bin` | 恰好 172 字节：8 字节 `WS73P001`，型号 U=0／E=2，USB=0，两字节保留零，再依次为下列五文件的完整 SHA256 原始32字节。 |
+| 五文件顺序 | `ws73.bin`、`wifi_cali.bin`、`btc_cali.bin`、`bsle_custom.bin`、`pm_config.bin`；前三者保留原64字节小写 ASCII payload SHA 头。配置分别为140／4字节。 |
+| 冷 ROM 下载 | 三个启动文件须全部校验成功才开始原 ROM 操作；同端口 ROM→运行期仅接受相同输入闭包。 |
+| 暖态初始化 | 校验 profile 及两份运行配置，再以新 HCC 查询核对所选型号／USB；不伪造当次启动镜像上传。 |
+| sysfs `firmware_profile` | 只观察 OS 输入目录、预期型号和本次文件校验位；`execution_attested=0`。不能代替 HCC、Native Ready、实际上传或执行镜像认证。 |
+
+未知型号、SDIO／UART、短／非法配置、缺文件、hash 不符或待重枚举闭包变化均拒绝；
+没有全局 U 回退。profile 不是冷 ROM 型号自动识别，也不认证芯片、地址或固件。
+宿主不安装实验驱动；该布局只说明明确配置如何进入现有 VM 原生路径。
 新 native bundle 要求同目录的 `ws73-board-config.json`、可取得的原始 INI 和当前
 导出器。准备入口通过生产导出器重放编码，拒绝旧工具哈希、短文件、symlink、参数或
 源文件不一致。显式板型的新 prepared/run 记录 `board_configuration_contract_version=1`，

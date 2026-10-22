@@ -13,6 +13,8 @@ sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
 from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack
 from ws73_north_star import file_record
+import ws73_firmware_profile as profile
+from test_ws73_firmware_profile import inputs as profile_inputs
 
 
 class NativeVMProfile(unittest.TestCase):
@@ -143,18 +145,16 @@ class NativeVMProfile(unittest.TestCase):
                 stage_runtime_libraries(root,libraries,lambda *args:calls.append(args))
             self.assertEqual(calls,[])
 
-    def test_runtime_only_profile_keeps_board_bytes_and_omits_both_boot_search_paths(self):
+    def test_runtime_only_profile_keeps_board_bytes_and_omits_each_device_boot_images(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            for folder in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
-                p = root / folder
-                p.mkdir(parents=True)
-                for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin', 'bsle_custom.bin', 'pm_config.bin']:
-                    (p / name).write_bytes(b'explicit-fixture')
+            blobs=profile_inputs()
+            plan=profile.stage(root,{'1':('U',blobs),'2':('U',blobs)})
             rows = remove_boot_images(root)
             self.assertEqual(len(rows), 6)
             self.assertFalse(any((root / row['path'].lstrip('/')).exists() for row in rows))
-            self.assertEqual((root / 'lib/firmware/sparklink/ws73/bsle_custom.bin').read_bytes(), b'explicit-fixture')
+            self.assertEqual((root / 'lib/firmware'/plan['entries']['1']['directory']/'bsle_custom.bin').read_bytes(), blobs['bsle_custom.bin'])
+            profile.verify(root,plan,boot=False)
             package = dict(native_vm=dict(runtime_only=True))
             check_runtime_only(package, {'port': dict(interfaces=[dict(endpoints=5)])}, ['port'])
             for interfaces in [[], [dict(endpoints=2)], [dict(endpoints=5), dict(endpoints=5)]]:
@@ -166,15 +166,12 @@ class NativeVMProfile(unittest.TestCase):
     def test_runtime_only_missing_image_is_failure_atomic(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            for folder in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
-                p = root / folder
-                p.mkdir(parents=True)
-                for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin']:
-                    (p / name).write_bytes(b'fixture')
-            (root / 'usr/lib/firmware/sparklink/ws73/btc_cali.bin').unlink()
+            plan=profile.stage(root,{'1':('U',profile_inputs()),'2':('E',profile_inputs(b'E'))})
+            (root/'lib/firmware'/plan['entries']['2']['directory']/'btc_cali.bin').unlink()
+            before={str(p.relative_to(root)):p.read_bytes()for p in root.rglob('*')if p.is_file()}
             with self.assertRaises(ValueError):
                 remove_boot_images(root)
-            self.assertEqual(len(list(root.rglob('*.bin'))), 5)
+            self.assertEqual({str(p.relative_to(root)):p.read_bytes()for p in root.rglob('*')if p.is_file()},before)
 
     def test_partial_profile_cannot_fall_back_to_builtin_guest(self):
         self.assertFalse(enabled(SimpleNamespace()))

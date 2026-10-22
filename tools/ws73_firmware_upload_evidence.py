@@ -164,7 +164,8 @@ def startup_rows(outgoing, incoming, kernel_log, ports, selection, observations,
         if host not in rom_ports:
             raise CaptureError('no guarded two-endpoint ROM observation for upload port')
         rows = [r for r in outgoing if (r['bus'], r['device']) == key]
-        proof = corroborate(rows, directory)
+        selected_directory = directory[host] if isinstance(directory, dict) else directory
+        proof = corroborate(rows, selected_directory)
         for image in proof['images']:
             expected = selection['images'][image['image']]
             if (image['image_sha256'] != expected['sha256']
@@ -213,12 +214,17 @@ def startup_rows(outgoing, incoming, kernel_log, ports, selection, observations,
 def observe_run(share, prepared, ports, package, allocation):
     from ws73_boot_code_evidence import successful_in
     from ws73_capture import check_capture_stats, read_capture
+    import ws73_firmware_profile as profile
     capture = Path(share) / 'ws73.pcap'
     log = Path(share) / 'kernel.log'
     packets = check_capture_stats((Path(share) / 'capture-stats.txt').read_text())
+    plan = package['firmware_profiles']
+    profile.verify(Path(prepared) / 'root', plan, [str(i+1) for i in range(len(ports))])
+    directories = {host: Path(prepared) / 'root/lib/firmware' / plan['entries'][str(i+1)]['directory']
+                   for i, host in enumerate(ports)}
     evidence = startup_rows(successful_out(capture), successful_in(capture), log.read_text(),
                             ports, package['explicit_firmware'], allocation['observations'],
-                            Path(prepared) / 'root/lib/firmware/sparklink/ws73')
+                            directories)
     identities = [(r['bus'], r['device']) for r in evidence['runtimes']]
     if not identities or read_capture(capture, identities)['packet_count'] != packets:
         raise CaptureError('complete Runtime capture and matching zero-drop statistics required')

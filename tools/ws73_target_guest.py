@@ -14,6 +14,7 @@ import time
 
 from ws73_capture import command_reply, check_capture_stats, corroborate, corroborate_synthetic, corroborate_passthrough, corroborate_recovery, discovery, read_capture, CaptureError
 from ws73_north_star import daemon_identity, healthy_native_runtime, ordinary_identity, registration, file_record
+import ws73_firmware_profile as firmware_profile
 
 EVIDENCE = Path('/evidence')
 TOOLS = Path(__file__).resolve().parent
@@ -80,6 +81,7 @@ def ready(slot):
                         raise ValueError('one expected board model per physical guest slot required')
                     from ws73_lab_resources import check_hcc
                     data['hcc_chip']=check_hcc((p/'chip_information').read_text().strip(),models[0].split(',')[slot])
+                    data['input_profile']=firmware_profile.guest_observation(p,models[0].split(',')[slot],str(slot+1))
                 if data['bus']!=1:raise ValueError('capture bus and actual guest WS73 bus differ')
                 (EVIDENCE/f'ready-{slot}.json').write_text(json.dumps(data,indent=2)+'\n')
                 return
@@ -105,11 +107,15 @@ def instructions():
     pid=int(subprocess.check_output(['/bin/pidof','slkd'],text=True))
     print('WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0',flush=True)
     print('Ordinary uid1000 shell; capture started BEFORE USB attachment. Exit the shell after testing to seal capture.',flush=True)
+    plan=json.loads((Path('/')/firmware_profile.PLAN).read_text())
+    artifacts=[('kernel_image','/boot/bzImage')]
+    for slot in range(1,3):
+        item=plan['entries'][str(slot)]
+        artifacts += [(f'slot{slot}_'+name.replace('.','_'),'/lib/firmware/'+item['directory']+'/'+name)
+                      for name in [*firmware_profile.FILES,'profile.bin']]
     print(shlex.join(['/bin/python3',str(TOOLS/'ws73_north_star.py'),'run','--ports',a['port'],b['port'],
                       '--slctl','/bin/slctl','--slkd-pid',str(pid),'--output','/evidence/application/control',
-                      *[x for label,p in [('kernel_image','/boot/bzImage'),('firmware','/lib/firmware/sparklink/ws73/ws73.bin'),
-                                        ('wifi_calibration','/lib/firmware/sparklink/ws73/wifi_cali.bin'),('btc_calibration','/lib/firmware/sparklink/ws73/btc_cali.bin'),
-                                        ('bsle_custom','/lib/firmware/sparklink/ws73/bsle_custom.bin'),('pm_config','/lib/firmware/sparklink/ws73/pm_config.bin')]
+                      *[x for label,p in artifacts
                         for x in ['--artifact',label+'='+p]]]),flush=True)
 
 
@@ -157,7 +163,12 @@ def support():
     if any(int(fields[k],16) for k in ['CapEff','CapPrm','CapAmb']):raise ValueError('ordinary app retained capabilities')
     collector=dict(line.split(':',1) for line in (EVIDENCE/'capture-process-status.txt').read_text().splitlines() if ':' in line)
     if list(map(int,collector['Uid'].split()))!=[1003]*4 or any(int(collector[k],16) for k in ['CapEff','CapPrm','CapAmb']):raise ValueError('capture process did not drop privileges')
-    if application('/bin/sh','-c','test -w /bin/slkd || test -w /lib/firmware/sparklink/ws73/ws73.bin').returncode==0:raise ValueError('ordinary app can overwrite privileged code/firmware')
+    privileged=['/bin/slkd']+['/lib/firmware/'+item['directory']+'/'+name
+        for item in json.loads((Path('/')/firmware_profile.PLAN).read_text())['entries'].values()
+        for name in [*firmware_profile.FILES,'profile.bin']]
+    check='import os,sys;p='+repr(privileged)+';sys.exit(2 if not all(os.path.isfile(x) for x in p) else 0 if any(os.access(x,os.W_OK) for x in p) else 1)'
+    checked=application('/bin/python3','-c',check)
+    if checked.returncode!=1:raise ValueError('ordinary privileged-file permission probe failed or writable')
     if application('/bin/sh','-c','test -r /dev/usbmon1 || test -w /dev/usbmon1').returncode==0:raise ValueError('ordinary app has raw USB capture permission')
     for who,mode in [('observer','observer'),('ws73','control')]:
         with (EVIDENCE/f'policy-{mode}.log').open('w') as log:

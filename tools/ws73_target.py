@@ -30,11 +30,13 @@ from ws73_capture import CaptureError, check_capture_stats, read_capture
 import ws73_vm_native_root as native_vm
 import ws73_lab_resources as resources
 import ws73_firmware_upload_evidence as firmware_evidence
+import ws73_firmware_profile as firmware_profile
 from build_resources import build_lock, configuration as build_configuration, workspace as build_workspace, environment as build_environment
 
 USERSPACE = Path(__file__).resolve().parents[1]
 FIRMWARE_EVIDENCE_HELPERS = ('ws73_firmware_upload_evidence.py', 'ws73_boot_code_evidence.py',
-                             'ws73_model_evidence.py', 'ws73_capture.py')
+                             'ws73_model_evidence.py', 'ws73_capture.py',
+                             'ws73_firmware_profile.py', 'ws73_firmware.py')
 # Local workspaces keep both repositories side by side. CI checks out the
 # pinned kernel selftests inside its workspace instead of assuming that layout.
 LINUX = Path(os.environ.get('SPARKLINK_KERNEL_SOURCE', USERSPACE.parent / 'linux')).resolve()
@@ -101,6 +103,8 @@ def prepare(args):
 
 def prepare_locked(args, build_fd):
     ordinary_identity()
+    if getattr(args, 'board_model', None) not in ['U', 'E']:
+        raise ValueError('explicit U/E firmware input profile required;no global default')
     output = args.output.resolve()
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     manifest = {'version':1, 'scope':'isolated development environment preparation',
@@ -147,7 +151,7 @@ def prepare_locked(args, build_fd):
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
                   HERE/'ws73_usb_partial_diagnostic.py',HERE/'ws73_usb_lifecycle.py',
                   HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_role_snapshot.py',HERE/'ws73_application_discovery.py',
-                  HERE/'ws73_discovery_policy_capture.py', HERE/'ws73_runtime_address.py',
+                  HERE/'ws73_discovery_policy_capture.py', HERE/'ws73_runtime_address.py', HERE/'ws73_firmware_profile.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
                   HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_payload.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
@@ -337,7 +341,7 @@ def prepare_locked(args, build_fd):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
+        for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py', 'ws73_firmware_profile.py', 'ws73_firmware.py']:
             shutil.copy2(HERE/name, share/name)
         for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
@@ -361,6 +365,9 @@ def prepare_locked(args, build_fd):
 <include>/etc/sparklink.conf</include></busconfig>''')
         if module_profile:
             native_vm.stage(args, manifest, root, USERSPACE, copy_elf)
+        else:
+            manifest['firmware_profiles'] = firmware_profile.provision(root, args.board_model)
+            manifest['firmware_input_contract_version'] = 1
             if getattr(args, 'acb_probe_module', None) is not None:
                 from ws73_acb_transport_probe import stage_module
                 stage_module(args.acb_probe_module, root, manifest)
@@ -1218,6 +1225,8 @@ def _run(args):
                 'model_basis':'USER_PLACEMENT_UNTIL_GUEST_HCC_CHECK', 'vm_only':True}
             m['board_configuration_contract_version']=1
             m['physical_resource_allocation']['board_configuration']=physical_boundary.board_configuration
+            m['firmware_input_contract_version']=1
+            m['physical_resource_allocation']['input_profiles']=package['firmware_profiles']
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
         if not support:
             native_vm.check_runtime_only(package, devices, args.ports)
@@ -1243,6 +1252,7 @@ def _run(args):
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
                      '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+
                      (' ws73.expected_models='+','.join(physical_boundary.models) if physical_boundary else '')+
+                     (' ws73.firmware_profiles=1' if physical_boundary else '')+
                      (' ws73.runtime_addresses='+','.join(runtime_addresses) if runtime_addresses else '')+
                      (' ws73.prefix_geometry=1' if channel_revoke_prefix else '')+
                      (' ws73.support=1' if support else '')+
@@ -1347,7 +1357,7 @@ def _run(args):
                      (f' ws73.real_later_step=1 ws73.partial_step={real_step}' if real_later else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
-                     '-device','qemu-xhci,id=xhci,p2=8,p3=8',
+                     '-device',firmware_profile.QEMU_DEVICE,
                      '-fsdev',f'local,id=evidence,path={share},security_model=mapped-xattr',
                      '-device','virtio-9p-pci,fsdev=evidence,mount_tag=evidence']
             if not support:
@@ -1599,7 +1609,7 @@ def _run(args):
                                 observed=json.loads((share/f'ready-{slot}.json').read_text())
                             chip=resources.check_hcc(observed['hcc_chip']['raw'],model)
                             checks.append(dict(host_port=args.ports[slot],guest_port=observed['port'],
-                                               generation=observed['generation'],**chip))
+                                               generation=observed['generation'],input_profile=observed['input_profile'],**chip))
                         m['physical_resource_allocation']['hcc_checks']=checks
                     if getattr(args,'hotplug',False) or passthrough:
                         if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
@@ -2247,6 +2257,8 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         return 1
     if not firmware_evidence.exit_gate(record, expected_firmware_mode):
         return 1
+    if not firmware_profile.exit_gate(record):
+        return 1
     from ws73_lab_resources import board_configuration_exit_gate
     if not board_configuration_exit_gate(record):
         return 1
@@ -2867,7 +2879,7 @@ def main():
     pack=commands.add_parser('prepare')
     for name in ['kernel-build','qemu','busybox','dbus-daemon','firmware-dir','runtime-config-dir','output']:
         pack.add_argument('--'+name,type=Path,required=True)
-    pack.add_argument('--board-model',choices=['U','E'],help='explicit SDK110 three-image selection; required for new physical runs; no cold ROM auto selection')
+    pack.add_argument('--board-model',choices=['U','E'],required=True,help='explicit SDK110 per-device input profile;no cold ROM auto selection')
     pack.add_argument('--tcpdump',type=Path,default=Path('/usr/bin/tcpdump'))
     pack.add_argument('--python',type=Path,default=Path(sys.executable))
     for name in native_vm.OPTIONS:

@@ -17,6 +17,7 @@ import time
 import xml.etree.ElementTree as ET
 
 from build_resources import workspace
+import ws73_firmware_profile as firmware_profile
 
 POLICY = Path(__file__).resolve().parents[1] / 'project/lab-resource-policy.json'
 IMAGES = ('ws73.bin', 'wifi_cali.bin', 'btc_cali.bin')
@@ -115,7 +116,7 @@ def snapshot(port, allocation=None, sysfs=Path('/sys/bus/usb/devices')):
 
 
 def check_firmware(package, ports, prepared_root, allocation=None):
-    """Current driver has one image directory. Mixed cold boot is forbidden.
+    """First per-device migration is homogeneous; mixed qualification is open.
 
     Check the actual prepared root as well as preparation provenance. Neither
     a user label nor a runtime-only root proves which image is in device RAM.
@@ -130,15 +131,31 @@ def check_firmware(package, ports, prepared_root, allocation=None):
         raise ValueError('explicit matching SDK110 E/US three-image provenance required; no old default')
     if package.get('native_vm', {}).get('runtime_only'):
         raise ValueError('runtime-only adoption needs independently bound per-device image provenance')
-    for directory in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
+    plan, routes = checked_profiles(package, ports, prepared_root, data)
+    for route in routes:
         for name, expected_file in expected['images'].items():
-            path = prepared_root / 'root' / directory / name
-            if path.is_symlink() or not path.is_file():
-                raise ValueError('regular prepared firmware file required: ' + str(path))
-            raw = path.read_bytes()
-            if dict(sha256=hashlib.sha256(raw).hexdigest(), bytes=len(raw)) != expected_file:
-                raise ValueError('actual prepared image differs from explicit SDK110 model: ' + str(path))
+            if plan['entries'][route]['files'][name] != expected_file:
+                raise ValueError('actual per-device image differs from explicit SDK110 model: ' + name)
     return selection
+
+
+def checked_profiles(package, ports, prepared, allocation=None):
+    models = selected(ports, allocation)
+    if type(package.get('firmware_input_contract_version')) is not int or package.get('firmware_input_contract_version') != 1:
+        raise ValueError('new per-device firmware preparation required;no global fallback')
+    plan = package.get('firmware_profiles', {})
+    if plan.get('controller') != firmware_profile.CONTROLLER:
+        raise ValueError('profile controller differs from pinned guest USB2 controller')
+    routes = [str(i + 1) for i in range(len(ports))]
+    firmware_profile.verify(Path(prepared) / 'root', plan, routes)
+    for route, model in zip(routes, models):
+        if plan['entries'][route]['model'] != model:
+            raise ValueError('per-device profile model differs from explicit leaf allocation')
+    for directory in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
+        if any((Path(prepared) / 'root' / directory / n).exists()
+               or (Path(prepared) / 'root' / directory / n).is_symlink() for n in firmware_profile.FILES):
+            raise ValueError('retired global firmware files must not remain in guest')
+    return plan, routes
 
 
 def explicit_firmware(model, directory, allocation=None):
@@ -175,13 +192,11 @@ def check_board_configuration(package, ports, prepared, allocation=None):
     current = board_configuration(Path(proof['manifest']['path']).parent, models[0])
     if current != proof:
         raise ValueError('board input provenance changed after preparation')
-    for directory in ('lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73'):
+    plan, routes = checked_profiles(package, ports, prepared, allocation)
+    for route in routes:
         for name, expected in proof['images'].items():
-            path = Path(prepared) / 'root' / directory / name
-            if path.is_symlink() or not path.is_file():
-                raise ValueError('regular prepared board payload required')
-            raw = path.read_bytes()
-            if dict(size=len(raw), sha256=hashlib.sha256(raw).hexdigest()) != expected:
+            item = plan['entries'][route]['files'][name]
+            if dict(size=item['bytes'], sha256=item['sha256']) != expected:
                 raise ValueError('prepared board payload differs from provenance: ' + name)
     return proof
 
@@ -397,9 +412,10 @@ def observe_guest_hcc(identity, expected, sysfs=Path('/sys/bus/usb/devices')):
     if len(interfaces) != 1:
         raise ValueError('one current guest HCC interface required')
     chip = check_hcc((interfaces[0] / 'chip_information').read_text().strip(), expected)
+    profile = firmware_profile.guest_observation(interfaces[0], expected, identity['port'].split('-', 1)[1])
     if not stable(before, registration(identity['port'], sysfs)):
         raise ValueError('guest registration changed during HCC observation')
-    return dict(before, hcc_chip=chip)
+    return dict(before, hcc_chip=chip, **({'input_profile': profile} if profile is not None else {}))
 
 
 class PhysicalBoundary:

@@ -17,6 +17,7 @@ import uuid
 from ws73_native_root_smoke import digest
 from ws73_native_service_bundle import PROGRAMS, source_state
 from ws73_north_star import file_record
+import ws73_firmware_profile as firmware_profile
 from ws73_discovery_policy_capture import normalized_dump
 from install_layout import LIBRARIES
 
@@ -89,12 +90,9 @@ def enabled(args):
 def remove_boot_images(root):
     """Mixed-board adoption must fail on ROM, never download a wrong variant."""
     removed = []
-    for directory in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
-        for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin']:
-            path = root / directory / name
-            if not path.is_file() or path.is_symlink():
-                raise ValueError('exact regular staged boot image required: ' + str(path))
-            removed.append(dict(path='/' + str(path.relative_to(root)), sha256=digest(path)))
+    plan = json.loads((root / firmware_profile.PLAN).read_text())
+    for path in firmware_profile.boot_paths(root, plan):
+        removed.append(dict(path='/' + str(path.relative_to(root)), sha256=digest(path)))
     # Validate the entire set before removing anything. Board inputs remain.
     for row in removed:
         (root / row['path'].lstrip('/')).unlink()
@@ -245,7 +243,10 @@ def stage(args, manifest, root, source, copy_elf):
     service_path = args.native_service_bundle.resolve(strict=True)
     service = json.loads((service_path / 'manifest.json').read_text())
     if (service.get('status') != 'PRIVATE_NATIVE_SERVICE_FILES_STAGED'
-            or service['kernel_release'] != release or service['kernel_head'] != smoke['source_head']):
+            or service['kernel_release'] != release or service['kernel_head'] != smoke['source_head']
+            or service.get('firmware_input_contract_version') != 1
+            or service.get('explicit_firmware') != manifest.get('explicit_firmware')
+            or service.get('board_configuration') != manifest.get('board_configuration')):
         raise ValueError('verified matching service bundle required')
     if source_state(source)[1] != service['source_hashes']:
         raise ValueError('compiled/policy sources differ from service bundle')
@@ -305,10 +306,8 @@ def stage(args, manifest, root, source, copy_elf):
     else:
         freeze_policy_expectation(service_path / 'payload' / prefix / 'slkd',
                                   root / 'etc/sparklink/main.conf', root, manifest, False)
-    for name in ('ws73.bin', 'wifi_cali.bin', 'btc_cali.bin', 'bsle_custom.bin', 'pm_config.bin'):
-        if digest(root / 'lib/firmware/sparklink/ws73' / name) != digest(
-                root / 'usr/lib/firmware/sparklink/ws73' / name):
-            raise ValueError('target firmware differs from service bundle: ' + name)
+    manifest['firmware_profiles'] = firmware_profile.provision(root, args.board_model, service)
+    manifest['firmware_input_contract_version'] = 1
     instructions = []
     inputs = []
     for module in modules:

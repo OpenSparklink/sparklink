@@ -115,6 +115,39 @@ jobs:
             ${{ runner.temp }}/ws73-runtime-rx.json
             ${{ runner.temp }}/ws73-runtime-rx-artifacts/
 
+  ws73-input-profiles:
+    name: WS73 per-device input production functions (no hardware)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check out the exact profile and boot production sources
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: OpenSparklink/linux
+          # New file-input dependency;existing ABI/RX pins retain their scopes.
+          ref: 1e0667dd7b075c1340ca2fa5304e556327611dbe
+          path: .kernel-input-profiles
+          sparse-checkout: |
+            drivers/sparklink/ws73
+            tools/testing/selftests/sparklink
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Install host fixture dependencies
+        run: sudo apt-get update && sudo apt-get install -y clang libssl-dev
+      - name: Run actual codec and boot failure boundaries
+        working-directory: .kernel-input-profiles
+        env:
+          ASAN_OPTIONS: detect_leaks=1:abort_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1
+        run: |
+          clang -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer tools/testing/selftests/sparklink/ws73_fw_profile_test.c drivers/sparklink/ws73/fw_profile.c -o /tmp/ws73-fw-profile-test
+          /tmp/ws73-fw-profile-test
+          python3 tools/testing/selftests/sparklink/run_ws73_fw_profile.py
+
   application-sdk:
     name: Application SDK ABI and private-bus contracts (no hardware)
     runs-on: ubuntu-24.04

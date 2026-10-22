@@ -20,6 +20,7 @@ from ws73_firmware import HEADER, MAX_PAYLOAD, NAMES
 from ws73_native_build_check import elf_header, release_name
 from ws73_native_root_smoke import digest, save
 from build_resources import build_lock, configuration, environment as build_environment, workspace
+from ws73_firmware_profile import INPUTS, record as input_record
 
 from install_layout import PROGRAMS, render, check_artifacts
 SOURCE_SCOPE = ('crates', 'data', 'Cargo.toml', 'Cargo.lock')
@@ -71,8 +72,9 @@ def stage_locked(args, build_fd):
     firmware = Path(args.firmware_dir).resolve(strict=True)
     images = firmware_files(firmware, args.combined_sha256)
     runtime = Path(args.runtime_config_dir).resolve(strict=True)
-    from ws73_lab_resources import board_configuration
-    board_provenance = board_configuration(runtime)
+    from ws73_lab_resources import board_configuration, explicit_firmware
+    selected = explicit_firmware(args.board_model, firmware)
+    board_provenance = board_configuration(runtime, args.board_model)
     board = {}
     for name, size in [('bsle_custom.bin', 140), ('pm_config.bin', 4)]:
         blob = (runtime / name).read_bytes()
@@ -82,7 +84,7 @@ def stage_locked(args, build_fd):
     output = Path(args.output).resolve()
     output.mkdir(mode=0o700)
     tool_inputs = {str(Path(__file__).with_name(name)): digest(Path(__file__).with_name(name))
-                   for name in ('ws73_native_service_bundle.py', 'ws73_firmware.py',
+                   for name in ('ws73_native_service_bundle.py', 'ws73_firmware.py', 'ws73_firmware_profile.py',
                                 'ws73_native_build_check.py', 'ws73_native_root_smoke.py', 'install_layout.py',
                                 'build_resources.py', 'ws73_lab_resources.py', 'ws73-board-config.py')}
     policy = Path(__file__).resolve().parents[1] / 'project/build-resource-policy.json'
@@ -96,6 +98,9 @@ def stage_locked(args, build_fd):
               'host_installation': False, 'native_acceptance': False, 'physical_acceptance': False,
               'tool_inputs': tool_inputs,
               'board_configuration': board_provenance,
+              'firmware_input_contract_version': 1, 'explicit_firmware': selected,
+              'firmware_inputs': dict(model=args.board_model, directory=str(INPUTS / args.board_model),
+                                     files={n: input_record(v) for n, v in {**images, **board}.items()}),
               'files': {}, 'runtime_dependencies': {}}
     manifest = output / 'manifest.json'
     save(manifest, record)
@@ -177,9 +182,9 @@ def stage_locked(args, build_fd):
             queries[name] = {'arguments': arguments, 'stdout': result.stdout, 'exit': result.returncode}
         record['offline_queries'] = queries
         for name, blob in images.items():
-            write(Path('usr/lib/firmware/sparklink/ws73') / name, blob)
+            write(INPUTS / args.board_model / name, blob)
         for name, blob in board.items():
-            write(Path('usr/lib/firmware/sparklink/ws73') / name, blob)
+            write(INPUTS / args.board_model / name, blob)
         copy(source / 'data/config/main.conf', Path('etc/sparklink/main.conf'))
         copy(source / 'data/dbus/sparklink.conf', Path('etc/dbus-1/system.d/sparklink-native-lab.conf'))
         copy(source / 'data/udev/99-sparklink.rules', Path('etc/udev/rules.d/99-sparklink-native-lab.rules'))
@@ -195,7 +200,8 @@ def stage_locked(args, build_fd):
                 'service': 'opensparklink-native-lab.service', 'dbus_name': 'org.sparklink',
                 'control_group': 'sparklink', 'default_activation': 'not activated',
                 'required': ['refuse overwrite and conflicting existing org.sparklink service/policy',
-                             'review board/calibration qualification before loading WS73',
+                             'provision explicit per-device USB2 profile inputs before loading WS73;no global firmware fallback',
+                             'review board/calibration qualification and verify fresh HCC after loading WS73',
                              'create the control group with administrator/sysusers step',
                              'explicit administrator enrollment of ordinary control user',
                              'reload udev/system D-Bus/systemd and verify actual permissions',
@@ -208,7 +214,7 @@ def stage_locked(args, build_fd):
         save(output / 'deployment-plan.json', plan)
         if any(digest(Path(path)) != expected for path, expected in tool_inputs.items()):
             raise ValueError('staging tool inputs changed during execution')
-        if board_configuration(runtime) != board_provenance:
+        if board_configuration(runtime, args.board_model) != board_provenance:
             raise ValueError('board inputs changed during staging')
         record.update(status='PRIVATE_NATIVE_SERVICE_FILES_STAGED', binary_prefix='/' + str(prefix),
                       deployment_plan_sha256=digest(output / 'deployment-plan.json'),
@@ -232,6 +238,8 @@ def main():
                  'combined-sha256', 'output'):
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--build-dir', help='fixed incremental Cargo target;default workspace .dev/cargo-native-dev;payload is sealed separately')
+    parser.add_argument('--board-model', choices=['U', 'E'], required=True,
+                        help='explicit SDK110 input model;not cold-ROM automatic detection')
     stage(parser.parse_args())
 
 

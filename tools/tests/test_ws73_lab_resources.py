@@ -15,6 +15,8 @@ from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import ws73_lab_resources as resource
 import build_resources as build
+import ws73_firmware_profile as profile
+from test_ws73_firmware_profile import inputs as profile_inputs
 from ws73_target import usb_properties
 
 
@@ -102,22 +104,28 @@ class AllocatedResources(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)
             expected=data['firmware']['U']
+            blobs=profile_inputs();(root/'root').mkdir()
             for name in resource.IMAGES:
-                raw=('fixture-only-'+name).encode()
+                raw=blobs[name]
                 expected['images'][name]=dict(sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))
-                for directory in ['lib','usr/lib']:
-                    p=root/'root'/directory/'firmware/sparklink/ws73'/name
-                    p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
-            firmware_dir=root/'root/lib/firmware/sparklink/ws73'
+            plan=profile.stage(root/'root',{'1':('U',blobs),'2':('U',blobs)})
+            firmware_dir=root/'root/lib/firmware'/plan['entries']['1']['directory']
             explicit=resource.explicit_firmware('U',firmware_dir,data)
-            package={'explicit_firmware':explicit}
+            package={'explicit_firmware':explicit,'firmware_input_contract_version':1,'firmware_profiles':plan}
             self.assertEqual(resource.check_firmware(package,['1-1.1.1','1-1.1.2'],root,data),explicit)
             for ports, bad in [(['1-1.1.1','1-2.1.1'],package),(['1-1.1.1'],{}),
                                (['1-1.1.1'],dict(package,native_vm={'runtime_only':True})),
                                (['1-2.1.2'],package)]:
                 with self.assertRaises(ValueError):resource.check_firmware(bad,ports,root,data)
-            (root/'root/usr/lib/firmware/sparklink/ws73/btc_cali.bin').write_bytes(b'wrong calibration')
+            old=root/'root/usr/lib/firmware/sparklink/ws73/btc_cali.bin'
+            old.parent.mkdir(parents=True);old.write_bytes(blobs['btc_cali.bin'])
             with self.assertRaises(ValueError):resource.check_firmware(package,['1-1.1.1'],root,data)
+            old.unlink()
+            # A corrupt unselected closure must not poison a different device.
+            second=root/'root/lib/firmware'/plan['entries']['2']['directory']/'btc_cali.bin'
+            second.write_bytes(b'wrong calibration')
+            self.assertEqual(resource.check_firmware(package,['1-1.1.1'],root,data),explicit)
+            with self.assertRaises(ValueError):resource.check_firmware(package,['1-1.1.1','1-1.1.2'],root,data)
             (firmware_dir/'wifi_cali.bin').write_bytes(b'wrong variant')
             with self.assertRaises(ValueError):resource.explicit_firmware('U',firmware_dir,data)
             with self.assertRaises(ValueError):resource.explicit_firmware(None,firmware_dir,data)
@@ -245,9 +253,11 @@ class AllocatedResources(unittest.TestCase):
             proof=resource.board_configuration(candidate,'E')
             package=dict(board_configuration_contract_version=1,board_configuration=proof)
             prepared=root/'prepared'
-            for directory in ['lib/firmware/sparklink/ws73','usr/lib/firmware/sparklink/ws73']:
-                destination=prepared/'root'/directory;destination.mkdir(parents=True)
-                for name in proof['images']:(destination/name).write_bytes((candidate/name).read_bytes())
+            destination=prepared/'root';destination.mkdir(parents=True)
+            blobs=profile_inputs()
+            for name in proof['images']:blobs[name]=(candidate/name).read_bytes()
+            plan=profile.stage(destination,{'1':('E',blobs),'2':('E',blobs)})
+            package.update(firmware_input_contract_version=1,firmware_profiles=plan)
             self.assertEqual(resource.check_board_configuration(package,['1-2.1.1','1-2.1.2'],prepared),proof)
             for ports in [['1-1.1.1'],['1-1.1.1','1-2.1.1']]:
                 with self.assertRaises(ValueError):resource.check_board_configuration(package,ports,prepared)
@@ -261,7 +271,7 @@ class AllocatedResources(unittest.TestCase):
                         dict(receipt,physical_resource_allocation=dict(firmware=dict(model='U'),board_configuration=proof))]:
                 self.assertFalse(resource.board_configuration_exit_gate(bad))
                 self.assertEqual(target.run_exit_code(bad),1)
-            payload=prepared/'root/usr/lib/firmware/sparklink/ws73/pm_config.bin'
+            payload=destination/'lib/firmware'/plan['entries']['1']['directory']/'pm_config.bin'
             payload.write_bytes(b'bad!')
             with self.assertRaises(ValueError):resource.check_board_configuration(package,['1-2.1.1'],prepared)
             payload.unlink();payload.symlink_to(candidate/'pm_config.bin')

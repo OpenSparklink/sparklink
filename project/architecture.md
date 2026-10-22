@@ -2,12 +2,16 @@
 
 ## 连接级管理观察
 
-连接级只读观察同样经过现有 Managed owner、pending ledger、命令 credit 与实际提交
+连接级类型化管理命令经过现有 Managed owner、pending ledger、命令 credit 与实际提交
 票据；固定完整 ExpectedLink、lease epoch 与原始单调时钟期限，在准入、选择及最终
-USB 提交处验证。观察不占用物理连接操作状态，也不能通过诊断白名单或第二个 Native
-租约旁路。实际 Complete 的 opcode、长度及 echoed handle 必须匹配；RSSI 不可用值
+USB 提交处验证。命令不占用物理连接操作状态，也不能通过诊断白名单或第二个 Native
+租约旁路。只读观察与显式链路载荷偏好分别编码；后者的成功 Complete 只回显 handle，
+不回显请求长度，不授有效长度、data credit、DTAP／SSAP MTU、Ready 或安全资格。
+协议形状来自实际回复及固定参考核对，不由包装库的成功状态说明推导零字节回复。
+实际 Complete 的 opcode、精确长度及 echoed handle 必须匹配；RSSI 不可用值
 明确拒绝，未核对语义的 PHY 字节保持原始观察，不能发布为已生效 PHY 策略或安全资格。
-作者撤销与物理回复义务继续分开；新查询的取消组合和设备资格按准确产物另验。
+作者撤销与物理回复义务继续分开；新命令的取消组合和设备资格按准确产物另验。
+显式实验命令不自动进入默认初始化；是否采用须另验实际效果，不能用确认代替业务交付。
 
 <!-- documentation-scope: 20261014 -->
 > **阅读范围：唯一权威入口。** 目标分层、状态所有权和架构约束。

@@ -74,8 +74,8 @@ def credentials(pid):
 
 
 def verify_retired_uapi_receipt(receipt):
-    expected = ('RETIRED_UAPI_ENOTTY_PASS: uid=1000 cases=101 unchanged=101 '
-                'checks=303 invalid_user_address=1 mixed_stats=ENOTTY')
+    expected = ('RETIRED_UAPI_ENOTTY_PASS: uid=1000 cases=103 unchanged=103 '
+                'checks=309 invalid_user_address=1 mixed_stats=ENOTTY')
     if (type(receipt.get('exit')) is not int or receipt['exit'] != 0
             or receipt.get('stdout', '').strip() != expected
             or receipt.get('stderr', '').strip()):

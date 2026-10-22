@@ -19,9 +19,11 @@ RUNTIME=('/bin/ws73-application-client-c','/usr/share/sparklink/tools/ws73-appli
          ('client','ssap','local_services','service_authorization','_library','_validation')))
 
 
-def profile(duplex=False, *, observe=False, hcc=False):
+def profile(duplex=False, *, observe=False, hcc=False, link_probe=False):
     if hcc and not observe:
         raise CaptureError('HCC diagnostic requires the explicit transport observation profile')
+    if link_probe and not observe:
+        raise CaptureError('finite link probe requires the explicit transport observation profile')
     value=dict(version=2 if duplex else 1,kind='owned-sdk-read-write-duplex'if duplex else'owned-sdk-read-write',rounds=4,value_bytes=32)
     if observe:
         from ws73_transport_watch import SPEC
@@ -29,6 +31,9 @@ def profile(duplex=False, *, observe=False, hcc=False):
     if hcc:
         from ws73_hcc_memory import REQUEST, REQUEST_SPEC
         value[REQUEST]=dict(REQUEST_SPEC)
+    if link_probe:
+        from ws73_link_measurement import LOAD_REQUEST, LOAD_SPEC
+        value[LOAD_REQUEST]=dict(LOAD_SPEC)
     return value
 
 
@@ -45,13 +50,19 @@ def observing_hcc(value):
     return value is not None and REQUEST in value
 
 
+def probing_link(value):
+    from ws73_link_measurement import LOAD_REQUEST
+    return value is not None and LOAD_REQUEST in value
+
+
 def verifiers(value):
     if not observing(value):return VERIFIERS
     from ws73_transport_watch import VERIFIERS as extra
+    extra_link=('ws73_link_measurement.py',) if probing_link(value) else ()
     if observing_hcc(value):
         from ws73_hcc_memory import VERIFIERS as hcc
-        return VERIFIERS+extra+hcc
-    return VERIFIERS+extra
+        return VERIFIERS+extra+hcc+extra_link
+    return VERIFIERS+extra+extra_link
 
 
 def selected(row):
@@ -60,13 +71,16 @@ def selected(row):
     value=row[FIELD]
     observed=type(value)is dict and 'transport_observation_request'in value
     hcc=type(value)is dict and observing_hcc(value)
-    if (type(value)is not dict or value not in tuple(profile(d,observe=observed,hcc=hcc)for d in(False,True))or type(value.get('version'))is not int
+    probe=type(value)is dict and probing_link(value)
+    if (type(value)is not dict or value not in tuple(profile(d,observe=observed,hcc=hcc,link_probe=probe)for d in(False,True))or type(value.get('version'))is not int
         or any(type(value.get(k))is not int for k in ('rounds','value_bytes'))):
         raise CaptureError('exact explicit sequential1 or duplex2 Owned SSAP profile required')
     if observing(value)and any(type(v)is not int for v in value['transport_observation_request'].values()):
         raise CaptureError('typed explicit bounded transport observation request required')
     if hcc and any(type(v)is not int for v in value['hcc_memory_observation_request'].values()):
         raise CaptureError('typed fixed HCC diagnostic request required')
+    if probe and any(type(v)is not int for v in value['load_link_probe_request'].values()):
+        raise CaptureError('typed fixed finite link probe request required')
     return value
 
 
@@ -83,32 +97,41 @@ def requested(args):
     paired=getattr(args,'channel_benchmark_ssap_duplex',False)
     observe=getattr(args,'channel_benchmark_credit_observe',False)
     hcc=getattr(args,'channel_benchmark_hcc_memory_observe',False)
+    probe=getattr(args,'channel_benchmark_link_probe',False)
+    if type(probe)is not bool or probe and (not observe or not getattr(args,'link_measurements',False)):
+        raise CaptureError('finite load probe requires explicit credit and initial link observations')
     if type(hcc)is not bool or hcc and not observe:raise CaptureError('explicit HCC diagnostic requires credit observation')
     if type(enabled)is not bool or type(paired)is not bool or type(observe)is not bool or (paired or observe)and not enabled:raise CaptureError('typed explicit owned/duplex/observation SSAP selectors required')
     if not enabled:return None
     from ws73_socket_benchmark import requested_configuration,requested_channel
     workload(requested_configuration(args),requested_channel(args))
-    return profile(paired,observe=observe,hcc=hcc)
+    return profile(paired,observe=observe,hcc=hcc,link_probe=probe)
 
 
 def boot(value):
     if value is None:return[]
     selected({FIELD:value});token=TOKEN_DUPLEX if duplex(value)else TOKEN
     from ws73_hcc_memory import TOKEN as HCC
-    return[token+('-credit'if observing(value)else'')]+([HCC]if observing_hcc(value)else[])
+    from ws73_link_measurement import LOAD_TOKEN
+    return[token+('-credit'if observing(value)else'')]+([HCC]if observing_hcc(value)else[])+([LOAD_TOKEN]if probing_link(value)else[])
 
 
 def from_boot(words):
     from ws73_hcc_memory import TOKEN as HCC
     hcc=[w for w in words if w.startswith('ws73.hcc_memory_observation=')]
+    from ws73_link_measurement import LOAD_TOKEN
+    probe=[w for w in words if w.startswith('ws73.load_link_probe=')]
+    if probe and probe!=[LOAD_TOKEN]:raise CaptureError('one explicit finite load probe token required')
     if hcc and hcc!=[HCC]:raise CaptureError('one explicit HCC diagnostic boot token required')
     values=[w for w in words if w.startswith('ws73.benchmark_ssap=')]
     if not values:
-        if hcc:raise CaptureError('HCC diagnostic requires original concurrent SSAP workload')
+        if hcc or probe:raise CaptureError('diagnostics require original concurrent SSAP workload')
         return None
     if (values not in([TOKEN],[TOKEN_DUPLEX],[TOKEN+'-credit'],[TOKEN_DUPLEX+'-credit'])or words.count('ws73.socket_benchmark_apps=1')!=1
         or words.count('ws73.benchmark_mode=window')!=1):raise CaptureError('one exact enabled concurrent SSAP boot profile required')
-    return profile(values[0]in(TOKEN_DUPLEX,TOKEN_DUPLEX+'-credit'),observe=values[0].endswith('-credit'),hcc=bool(hcc))
+    if probe and words.count('ws73.link_measurements=1')!=1:
+        raise CaptureError('finite load probe requires original initial observations')
+    return profile(values[0]in(TOKEN_DUPLEX,TOKEN_DUPLEX+'-credit'),observe=values[0].endswith('-credit'),hcc=bool(hcc),link_probe=bool(probe))
 
 
 def execute(run,row):
@@ -187,6 +210,10 @@ def valid_summary(proof):
         from ws73_application_client import ssap_receipt
         from ws73_ssap_value import valid_wire
         for phase,ssap in zip(phases,service['proofs'],strict=True):
+            from ws73_link_measurement import LOAD_FIELD,valid_load_summary
+            if probing_link(selected_profile):
+                if not valid_load_summary(phase.get(LOAD_FIELD)):return False
+            elif LOAD_FIELD in phase:return False
             if observing(selected_profile):
                 from ws73_transport_watch import valid_summary,FIELD as OBSERVATION
                 if not valid_summary(phase.get(OBSERVATION)):return False

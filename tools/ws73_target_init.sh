@@ -522,6 +522,15 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                     connection_arg="$connection_arg --channel-benchmark-hcc-memory-observe" ;;
                 *) fail 'one explicit HCC diagnostic profile' ;;
             esac
+            link_probe=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.load_link_probe=/){sub(/^ws73.load_link_probe=/,"",$i);print $i}}' /proc/cmdline)
+            case "$link_probe" in
+                '') ;;
+                once-rssi-6s)
+                    case "$benchmark_ssap" in owned-credit|owned-duplex-credit) ;; *) fail 'finite link probe requires explicit credit observation' ;; esac
+                    grep -qw ws73.link_measurements=1 /proc/cmdline || fail 'finite link probe requires initial measurements'
+                    connection_arg="$connection_arg --channel-benchmark-link-probe" ;;
+                *) fail 'one explicit finite load link probe' ;;
+            esac
         fi
         for word in $(cat /proc/cmdline); do
             case "$word" in

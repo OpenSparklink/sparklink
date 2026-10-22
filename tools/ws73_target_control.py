@@ -192,6 +192,7 @@ def main():
     parser.add_argument('--channel-benchmark-ssap-duplex',action='store_true')
     parser.add_argument('--channel-benchmark-credit-observe',action='store_true')
     parser.add_argument('--channel-benchmark-hcc-memory-observe',action='store_true')
+    parser.add_argument('--channel-benchmark-link-probe',action='store_true')
     parser.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1])
     parser.add_argument('--native-return-verify',action='store_true')
     parser.add_argument('--native-controller-return', choices=['initiator','acceptor'])

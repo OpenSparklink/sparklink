@@ -804,3 +804,33 @@ errno／超时／损坏的已观察前缀。其他失败形状明确拒绝，不
 校验要求选定契约下每应用的完整收据与原字节吻合；历史结果保留原工具、命令及
 原始字节，不倒填新收据。此整改不改变 schema2 应用报告、Session、credit 或 Ticket，
 也不代表新工具 artifact 已通过真实设备门禁。
+
+## 固定时刻的连接级查询
+
+VM runner 的 `--channel-benchmark-link-probe` 是独立、默认关闭的正确性诊断选项。
+它要求原有动态 window8／128×2042／Owned 并发负载、credit 观察及
+`--link-measurements`，不改变 `slktest` 的业务循环或 schema2。
+每阶段从两端实际 start 屏障的较晚时刻起算 6 秒，顺序对每端最多执行一次
+`slctl link-measurement <connection-path> rssi 5000`，不重试。
+
+查询复用管理角色、当前 generation／connection lifetime、Native 命令 credit 及
+提交票据。每请求仍为原 5000 ms 协议期限；外层子进程最多 7 秒只用于采集和回收。
+业务、SSAP 和 Down 的原始期限不变。提前退出或停止时保留未尝试、失败、超时及
+取消收据，停止线程并回收自己的子进程；这些动作不证明物理命令／USB callback
+已经排空，也不归还协议 credit。
+
+成功证据要求实际普通用户凭据、完整身份与原始期限、类型化回复，以及双端捕获中
+对应的 `0x180c`／Complete。缺失、缓存值、取消后的伪结果或仅有软件日志不够。
+RSSI 回复也不证明读取时刻的新 RF 状态或对端业务交付。本配置含管理干预，不能称为
+低扰动性能基线。未选此选项的原负载和失败校验行为保持原范围。
+若查询干预后业务恢复，也只记录该配置下的结果；不能把定时查询加入默认生产路径
+充当修复，或免除不含该干预的原业务门禁。
+
+原业务失败时，可对保留的完整运行目录执行纯离线查询分析：
+
+```sh
+python3 tools/ws73_link_measurement.py diagnose-load --directory "$RUN" --phase 1
+```
+
+它保留原 FAIL，只核对原请求／boot／phase、有限采集及真实 DLI 回复，不裁剪失败窗口，
+不执行设备操作，不把两个查询成功升级为整个业务门禁通过。

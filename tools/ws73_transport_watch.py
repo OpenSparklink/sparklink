@@ -30,10 +30,13 @@ def ordinary(identity):
             and all(int(v, 16) == 0 for v in identity['capabilities'].values()))
 
 
-def collect_process(args, stop, *, credentials=None, identity_reader=None):
+def collect_process(args, stop, *, credentials=None, identity_reader=None, budget_ns=None):
     """Actual OS process/pipe budgets. Tests use local children, not hardware."""
+    budget = SPEC['query_budget_ns'] if budget_ns is None else budget_ns
+    if type(budget) is not int or not 0 < budget <= 7_000_000_000:
+        raise CaptureError('bounded actual child budget required before process creation')
     row = dict(args=args, start_wall_ns=time.time_ns(), start_monotonic_ns=time.monotonic_ns())
-    deadline = row['start_monotonic_ns'] + SPEC['query_budget_ns']
+    deadline = row['start_monotonic_ns'] + budget
     row['deadline_monotonic_ns'] = deadline
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             bufsize=0, **(credentials or {}))

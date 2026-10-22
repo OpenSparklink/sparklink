@@ -113,6 +113,7 @@ def prepare_locked(args, build_fd):
     manifest['benchmark_ssap_contract_version'] = 2
     manifest['benchmark_credit_observation_contract_version'] = 1
     manifest['benchmark_hcc_observation_contract_version'] = 1
+    manifest['benchmark_link_probe_contract_version'] = 1
     manifest['benchmark_trace_contract_version'] = 1
     manifest['benchmark_process_resource_contract_version'] = 1
     manifest['ssap_exchange_contract_version'] = 2
@@ -1120,7 +1121,7 @@ def _run(args):
                     m['ssap_subscription_inflight_expiry_contract_version']=1
         if benchmark_mode:
             from ws73_socket_benchmark import validate_role_sources
-            validate_role_sources(package,dynamic=benchmark_channel is not None,parallel=is_parallel(benchmark_channel),ssap=benchmark_service is not None,observe=benchmark_ssap.observing(benchmark_service),hcc=benchmark_ssap.observing_hcc(benchmark_service))
+            validate_role_sources(package,dynamic=benchmark_channel is not None,parallel=is_parallel(benchmark_channel),ssap=benchmark_service is not None,observe=benchmark_ssap.observing(benchmark_service),hcc=benchmark_ssap.observing_hcc(benchmark_service),link_probe=benchmark_ssap.probing_link(benchmark_service))
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
         if application_clients:
@@ -2929,6 +2930,7 @@ def main():
             cmd.add_argument('--channel-benchmark-ssap-duplex',action='store_true',help='pair actual opposite-controller SDK steps with USB pending overlap;requires --channel-benchmark-ssap-owned;not a sequential-gate replacement')
             cmd.add_argument('--channel-benchmark-credit-observe',action='store_true',help='explicit finite ordinary GetTransportStatus observation during Owned SSAP load;not credit/drain/performance qualification')
             cmd.add_argument('--channel-benchmark-hcc-memory-observe',action='store_true',help='opt-in root-only bounded fixed HCC memory query during original observed SSAP load;raw/unsupported,not verified credit or recovery')
+            cmd.add_argument('--channel-benchmark-link-probe',action='store_true',help='one existing Managed RSSI attempt per endpoint six seconds after each phase start;requires initial link/credit observations;not RF delivery,drain or performance')
             cmd.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1],help='dynamic negotiation role independent of business direction;default0 when dynamic')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
             cmd.add_argument('--native-return-verify',action='store_true',help='VM-only actual Native bind-return/physical Down/parent cleanup,then ordinary data preservation')

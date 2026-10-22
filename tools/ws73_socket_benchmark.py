@@ -214,7 +214,7 @@ def role_tool_path(root,name):
     return resolved
 
 
-def role_tools(root=Path('/'),*,dynamic=False,parallel=False,ssap=False,observe=False,hcc=False):
+def role_tools(root=Path('/'),*,dynamic=False,parallel=False,ssap=False,observe=False,hcc=False,link_probe=False):
     import hashlib
     from ws73_role_snapshot import HELPER,SUPERVISOR
     names=('/bin/slktest','/bin/bus-policy-probe',HELPER,SUPERVISOR,'/usr/share/sparklink/tools/ws73_socket_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark.py','/usr/share/sparklink/tools/ws73_benchmark_timeline.py','/usr/share/sparklink/tools/ws73_benchmark_resources.py')
@@ -227,6 +227,7 @@ def role_tools(root=Path('/'),*,dynamic=False,parallel=False,ssap=False,observe=
     if hcc:
         from ws73_hcc_memory import VERIFIERS,RUNTIME
         names+=tuple('/usr/share/sparklink/tools/'+n for n in VERIFIERS)+(RUNTIME,)
+    if link_probe:names+=('/usr/share/sparklink/tools/ws73_link_measurement.py',)
     return {n:dict(sha256=hashlib.sha256(role_tool_path(root,n).read_bytes()).hexdigest(),bytes=role_tool_path(root,n).stat().st_size)for n in names}
 
 
@@ -234,10 +235,10 @@ def request_tools(row,root=Path('/')):
     """Same typed source profile for producer, root admission and replay."""
     channel=row_channel(row)
     service=ssap_gate.selected(row)
-    return role_tools(root,dynamic=channel is not None,parallel=is_parallel(channel),ssap=service is not None,observe=ssap_gate.observing(service),hcc=ssap_gate.observing_hcc(service))
+    return role_tools(root,dynamic=channel is not None,parallel=is_parallel(channel),ssap=service is not None,observe=ssap_gate.observing(service),hcc=ssap_gate.observing_hcc(service),link_probe=ssap_gate.probing_link(service))
 
 
-def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False,observe=False,hcc=False):
+def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False,observe=False,hcc=False,link_probe=False):
     from ws73_north_star import file_record
     here=Path(__file__).resolve().parent
     if type(package.get('socket_benchmark_role_contract_version'))is not int or package['socket_benchmark_role_contract_version']!=1:raise ValueError('fresh apps-only benchmark prepared contract1 required')
@@ -260,6 +261,10 @@ def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False,obse
             raise ValueError('fresh explicit HCC diagnostic prepared contract1 required')
         from ws73_hcc_memory import VERIFIERS
         names+=VERIFIERS
+    if link_probe:
+        if not observe or type(package.get('benchmark_link_probe_contract_version'))is not int or package['benchmark_link_probe_contract_version']!=1:
+            raise ValueError('fresh explicit finite load link probe prepared contract1 required')
+        names+=('ws73_link_measurement.py',)
     for name in names:
         matches=[v for v in package['inputs']if Path(v['path']).name==name]
         if len(matches)!=1 or matches[0]['sha256']!=file_record(here/name)['sha256']:raise ValueError('prepared benchmark role/source closure mismatch: '+name)
@@ -452,6 +457,7 @@ def execute_supervised(run,row):
     processes=[None]*count;row['applications']=[None]*count
     transport_watch=None
     hcc_watch=None
+    link_probe=None
     buffers={};output={};duplicates=set();selector=selectors.DefaultSelector()
     channel=row_channel(row);observed={kind:set()for kind in ('staged','armed','quiescent')}
     def event(kind,index,**values):
@@ -538,6 +544,11 @@ def execute_supervised(run,row):
                 hcc_watch=observer(row['owners'],row['phase'])
             release('start')
             business_deadline=time.monotonic()+620
+            if ssap_gate.probing_link(ssap_gate.selected(row)):
+                from ws73_link_measurement import LoadProbe
+                barrier=max(e['monotonic_ns']for e in row['events']if e['kind']=='start')
+                link_probe=LoadProbe(row['owners'],row['phase'],barrier)
+                link_probe.start()
             if ssap_gate.selected(row)is not None:ssap_gate.execute(run,row)
             if closes_short(channel):
                 wait_marker('quiescent',620,(0,1),original_deadline=business_deadline)
@@ -563,6 +574,9 @@ def execute_supervised(run,row):
             if hcc_watch is not None:
                 from ws73_hcc_memory import FIELD
                 row[FIELD]=hcc_watch.close()
+            if link_probe is not None:
+                from ws73_link_measurement import LOAD_FIELD
+                row[LOAD_FIELD]=link_probe.close()
             row['end_wall_ns']=time.time_ns()
             check_supervision(row)
             row['application_check']=application_checks(row)
@@ -571,6 +585,12 @@ def execute_supervised(run,row):
     except BaseException as error:
         row.update(status='FAIL',error=str(error),error_type=type(error).__name__);raise
     finally:
+        if link_probe is not None and not link_probe.closed:
+            try:
+                from ws73_link_measurement import LOAD_FIELD
+                row[LOAD_FIELD]=link_probe.close()
+            except BaseException as error:
+                row['load_link_probe_error']=type(error).__name__+': '+str(error)
         if hcc_watch is not None and not hcc_watch.closed:
             try:
                 from ws73_hcc_memory import FIELD
@@ -613,6 +633,8 @@ def check_supervision(row):
     observations(row)
     from ws73_hcc_memory import validate as validate_hcc
     validate_hcc(row,ssap_gate.observing_hcc(ssap_gate.selected(row)))
+    from ws73_link_measurement import validate_load
+    validate_load(row,None,ssap_gate.probing_link(ssap_gate.selected(row)))
     if ssap_gate.observing(ssap_gate.selected(row))or 'transport_observation'in row:
         from ws73_transport_watch import validate as validate_transport_observation
         validate_transport_observation(row,ssap_gate.observing(ssap_gate.selected(row)))
@@ -834,6 +856,9 @@ def _match_payloads(run,capture,share):
         if ssap_gate.observing_hcc(ssap_gate.selected(row)):
             from ws73_hcc_memory import FIELD,validate
             phase_proof[FIELD]=validate(row,True)
+        from ws73_link_measurement import LOAD_FIELD,validate_load
+        probe_proof=validate_load(row,capture,ssap_gate.probing_link(ssap_gate.selected(row)))
+        if probe_proof is not None:phase_proof[LOAD_FIELD]=probe_proof
         proofs.append(phase_proof)
     if any(RESOURCE_FIELD in row for row in rows):
         if not all(type(row.get(RESOURCE_FIELD))is int and row[RESOURCE_FIELD]==1 for row in rows):raise CaptureError('both resource observation phases required')

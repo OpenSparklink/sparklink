@@ -470,6 +470,30 @@ impl Context {
                 }
                 self.cmd_peer_info(args[1]).await
             }
+            "link-measurement" => {
+                if !(3..=4).contains(&args.len()) {
+                    anyhow::bail!(
+                        "usage: link-measurement <connection-path> <rssi|phy> [timeout-ms]"
+                    );
+                }
+                let kind = match args[2] {
+                    "rssi" => 1,
+                    "phy" => 2,
+                    _ => anyhow::bail!("kind must be rssi or phy"),
+                };
+                let timeout_ms = args.get(3).map(|v| v.parse()).transpose()?.unwrap_or(5000);
+                let value = self
+                    .controller()
+                    .await?
+                    .management()
+                    .read_link_measurement(args[1], kind, timeout_ms)
+                    .await?;
+                println!("NativeLinkMeasurement: {}", serde_json::to_string(&value)?);
+                if value.state != 2 || value.flags & 7 != 7 {
+                    anyhow::bail!("no successful current valid measurement");
+                }
+                Ok(())
+            }
             "connection-info" | "disconnect-object" => {
                 if args.len() != 2 {
                     anyhow::bail!("usage: {} <connection-object-path>", args[0]);

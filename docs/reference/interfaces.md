@@ -1142,3 +1142,42 @@ libws 的本地地址缓存不能作为控制器读回证据。
 旧 own-address 的广播参数返回 ESTALE；不进行活动连接迁移。
 CLI 成功也不证明发现、建链、对端应用交付、断电保持或生产唯一身份。
 新入口的实际资格仍按项目能力记录的准确 artifact 单独核对。
+
+
+## Managed 连接期测量
+
+未发布的 `SL_IOCTL_LINK_QUERY_SUBMIT`／`RESULT` 为 0xd8／0xd9，当前结构为72／88字节。
+Native Rust `link_query_submit`／`link_query_result`、显式 Native C
+`slk_link_query_submit`／`slk_link_query_result` 和 Python `sparklink.native`
+使用同一实现；普通应用 API 不会取得 Native fd 或管理 lease。
+
+输入携带原 File 的 Managed epoch、generation、完整 connection lifetime、handle、
+role、地址类型／地址，以及原始 `CLOCK_MONOTONIC` 纳秒期限。Native 调用者必须使用
+同一内核时钟域；不得使用另一主机、旧启动或任意时钟偏移。`timeout_ms`1..5000限制
+剩余预算，不是排队或 ioctl 等锁后重新授予的相对期限。完全相同的 request_id／
+范围／期限重试只取回原 seq；不同参数拒绝，旧编号不复用。
+
+kind1为RSSI、kind2为PHY；action1提交，action2撤销原作者。命令仍通过原 Host 队列、
+command credit 和原子提交票据，准入／出队／实际提交均检查原身份及权限。
+成功 Status 只确认接受；真实 Complete 必须匹配完整长度与 echoed handle。
+不开放任意 opcode，也不在 Native Host 占用时取得 Diagnostic 或走 libusb 旁路。
+
+结果不消费记录，可用 seq 或原 request_id查询，释放 lease 后同 File 仍可读取历史。
+state1等待、2控制器成功、3本地／控制器失败；flags1仅表示锁内快照时连接与lease身份
+仍当前，flags2表示值可用，flags4表示确有控制器状态。CURRENT 不表示样本新鲜度，
+也不授权后续提交。本地负errno不能伪装成控制器 Complete。RSSI的127是无效哨兵；
+PHY保留八个原始线字段，SDK方言解释和空口行为另行验证。取消、关闭、撤权或到期
+不抹去已开始的物理义务；迟到回复不能覆盖原作者终态。
+
+`org.sparklink.Connection.ReadLinkMeasurement(kind,timeout_ms)` 是 control-role 管理
+RPC，虽以Read开头也不向默认观察者或apps-only组开放。daemon使用原Managed fd，
+每controller最多一个查询；等待回复时不持有租约准入锁。调用者退出／原期限结束会
+通知实际阻塞任务撤销原请求；该任务保留fd与预算直至真正退出，不宣称USB drain。
+显式管理客户端为 `Controller.management().read_link_measurement`；CLI是
+`slctl --adapter ADAPTER link-measurement CONNECTION rssi|phy [timeout-ms]`。
+CLI输出真实结果后，若没有成功、当前且有效的测量则失败退出，不生成默认值。
+
+这些是开发源码契约。`ENOTTY`／`EOPNOTSUPP`表示接口或模式缺失，`EPERM`表示权限／
+作者不符，`ESTALE`表示身份或epoch失效，`ETIMEDOUT`表示原期限结束，`ENOENT`表示
+结果缺失／淘汰。准确实机资格只由[能力入口](../../project/current-capabilities.md)授予；
+编译、ffi负向测试、有效线格式和命令 Complete 均不能替代对端应用交付或无线根因证据。

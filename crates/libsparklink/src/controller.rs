@@ -332,6 +332,51 @@ impl Management {
             .await?;
         Ok(())
     }
+    /// Explicit control-role RPC, not a passive observation or application
+    /// channel Grant. No Native fd/lease is opened by this client.
+    pub async fn read_link_measurement(
+        &self,
+        path: &str,
+        kind: u8,
+        timeout_ms: u32,
+    ) -> Result<contract::link_query::Observation> {
+        if !matches!(kind, 1 | 2) || !(1..=5000).contains(&timeout_ms) {
+            return Err(ApplicationError::Invalid("link observation kind/deadline"));
+        }
+        let link = self
+            .controller
+            .client
+            .connection(&self.controller.path(), path)
+            .await?;
+        let info = link.info().await?;
+        let value: contract::link_query::Observation = self
+            .controller
+            .client
+            .proxy(link.path(), contract::CONNECTION)
+            .await?
+            .call(contract::link_query::READ, &(kind, timeout_ms))
+            .await?;
+        if value.generation != info.0
+            || value.lifetime != info.1
+            || value.handle != info.2
+            || value.role != info.3
+            || value.address_type != info.4
+            || value.address != info.5
+            || value.kind != kind
+            || value.request_id == 0
+            || value.deadline_monotonic_ns == 0
+            || !matches!(value.state, 2 | 3)
+            || value.flags & !7 != 0
+            || value.data.len() > 10
+        {
+            return Err(ApplicationError::Identity("link observation response"));
+        }
+        self.controller
+            .client
+            .check_generation(self.controller.id)
+            .await?;
+        Ok(value)
+    }
     pub async fn connection_result(&self, id: u64) -> Result<wire::ConnectionResult> {
         let v: wire::ConnectionResult = self
             .controller

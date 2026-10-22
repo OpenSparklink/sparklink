@@ -21,6 +21,15 @@ pub(crate) async fn caller_scoped<T>(
     sender: &str,
     future: impl std::future::Future<Output = zbus::fdo::Result<T>>,
 ) -> zbus::fdo::Result<T> {
+    caller_scoped_as(connection, sender, "SSAP application", future).await
+}
+
+pub(crate) async fn caller_scoped_as<T>(
+    connection: &zbus::Connection,
+    sender: &str,
+    domain: &'static str,
+    future: impl std::future::Future<Output = zbus::fdo::Result<T>>,
+) -> zbus::fdo::Result<T> {
     use zbus::export::ordered_stream::OrderedStreamExt;
     let bus = zbus::fdo::DBusProxy::new(connection)
         .await
@@ -37,13 +46,11 @@ pub(crate) async fn caller_scoped<T>(
         )
         .await?
     {
-        return Err(zbus::fdo::Error::Failed(
-            "SSAP application caller retired".into(),
-        ));
+        return Err(zbus::fdo::Error::Failed(format!("{domain} caller retired")));
     }
     tokio::select! {
         biased;
-        _=lost.next()=>Err(zbus::fdo::Error::Failed("SSAP application caller disappeared or owner stream closed".into())),
+        _=lost.next()=>Err(zbus::fdo::Error::Failed(format!("{domain} caller disappeared or owner stream closed"))),
         result=future=>result,
     }
 }
@@ -958,6 +965,57 @@ impl ConnectionOwner {
 
 #[interface(name = "org.sparklink.Connection")]
 impl ConnectionIface {
+    /// Management-role RPC: submits protocol work, not a passive observer
+    /// property. The system bus default/apps policy does not allow this method.
+    async fn read_link_measurement(
+        &self,
+        kind: u8,
+        timeout_ms: u32,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::link_query::Observation> {
+        if !matches!(kind, 1 | 2) || !(1..=5000).contains(&timeout_ms) {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "kind1RSSI/2PHY and1..5000ms required".into(),
+            ));
+        }
+        let deadline_monotonic_ns = crate::security_policy::monotonic_ns()?
+            .checked_add(u64::from(timeout_ms) * 1_000_000)
+            .ok_or_else(|| zbus::fdo::Error::InvalidArgs("deadline overflow".into()))?;
+        let original = std::time::Instant::now()
+            .checked_add(std::time::Duration::from_millis(u64::from(timeout_ms)))
+            .ok_or_else(|| zbus::fdo::Error::InvalidArgs("deadline overflow".into()))?;
+        let sender = crate::security_policy::sender(&header)?;
+        let work = async {
+            if self.observation().await != (true, true) {
+                return Err(zbus::fdo::Error::Failed(
+                    "retired/unknown connection lifetime".into(),
+                ));
+            }
+            let value = crate::link_query::read(
+                &self.state,
+                self.generation,
+                self.reference,
+                kind,
+                original,
+                deadline_monotonic_ns,
+            )
+            .await?;
+            if self.observation().await != (true, true) {
+                return Err(zbus::fdo::Error::Failed(
+                    "connection retired during link observation".into(),
+                ));
+            }
+            Ok(value)
+        };
+        tokio::time::timeout_at(
+            tokio::time::Instant::from_std(original),
+            caller_scoped_as(connection, &sender, "Native link observation", work),
+        )
+        .await
+        .map_err(|_| zbus::fdo::Error::Failed("link observation original deadline".into()))?
+    }
+
     /// Fixed before the first SMTC bind; this is not a live security grade.
     #[zbus(property)]
     fn ssap_security_requirement(&self) -> u32 {

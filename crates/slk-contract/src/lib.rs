@@ -3,6 +3,7 @@
 use slk_protocol::SleAddr;
 pub mod controller_events;
 pub mod discovery;
+pub mod link_query;
 pub mod security;
 
 /// Absolute CLOCK_MONOTONIC ns, UUID high/low (big-endian bytes), namespace

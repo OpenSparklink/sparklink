@@ -140,6 +140,7 @@ Commands:
   connection-objects            List typed physical connection objects
   peer-info <path>               Show a typed peer and its connection lifetimes
   connection-info <path>        Show one immutable connection identity
+  link-measurement <path> <rssi|phy> [timeout-ms]  Read a real Managed link observation
   disconnect-object <path>      Disconnect the exact physical lifetime
   ssap-discover <path> [structure|service|property uuid-hex] Discover actual peer metadata
   ssap-list                            Inspect local service metadata only

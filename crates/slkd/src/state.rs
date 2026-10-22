@@ -97,6 +97,8 @@ pub struct AdapterState {
     pub adapter: Arc<Adapter>,
     pub native_control: Option<Arc<Adapter>>,
     pub(crate) native_lease: Option<NativeLease>,
+    /// Per-controller RPC budget only; Runtime owns command state and credit.
+    pub(crate) link_query_slots: Arc<tokio::sync::Semaphore>,
     pub(crate) native_discovery_policy: Option<slk_native::Ws73DiscoveryPolicy>,
     pub radio_advertising: u32,
     pub radio_scanning: u32,
@@ -147,6 +149,7 @@ impl AdapterState {
             ssap_subscription_slots: Arc::new(tokio::sync::Semaphore::new(16)),
             native_control: None,
             native_lease: None,
+            link_query_slots: Arc::new(tokio::sync::Semaphore::new(1)),
             native_discovery_policy: None,
             radio_advertising: 0,
             radio_scanning: 0,

@@ -11,6 +11,7 @@ mod controller_events;
 mod dbus_iface;
 mod discovery;
 mod event_loop;
+mod link_query;
 #[cfg(test)]
 mod profile_runtime;
 mod radio;

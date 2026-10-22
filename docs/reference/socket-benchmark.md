@@ -597,8 +597,10 @@ VM失败路径先尝试停止自己拥有的应用监督器及daemon，再封存
 
 - 同一有效 binding 上已过期的 intent：普通用户实际 `sendmsg` 返回 `ETIMEDOUT`；
   前后 channel-info 相同，重新 prepare 成功；随机拒绝标识不得出现在 USB 捕获中。
-- 原已开始 PDU 超时、binding 退休后：裸收发、新 prepare 和原缓存 intent 重试均
-  返回 `ENOTCONN`。binding 状态检查先于 intent 检查；不能用过期错误代替退休状态。
+- 原已开始 PDU 超时、Session 已 Failed 后：原 Runtime／Grant 仍有效时，裸收发、
+  新 prepare 和原缓存 intent 重试均返回 `ENOTCONN`。Binding 可仍存在；首次发送
+  准入和最终入队都先检查 Session 活动性与 Binding 存活，再检查 intent。
+  不能用过期错误代替终态；更早的撤权／旧 lifetime 拒绝仍保留。
 
 第一项使用独立的 100 ms 原始 setup 期限，在被持有 PDU 准入前结束，不延长或
 续期后者的 5 秒期限。两项不是任选错误码；缺少任一阶段、旧 boot、身份变化或

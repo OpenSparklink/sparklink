@@ -942,11 +942,13 @@ slkd Engine 的真实内核 RX 观察可用于生产值访问；管理 staging �
 
 ### 原限制过期与失效 Session 的错误阶段
 
-PREPARE_TX 在 Session 不再活动时返回 ENOTCONN；在原 Runtime/Grant 仍有效的情况下，
-sendmsg 的 `sl_tx_access` 会先检查携带限制的原始期限，原限制过期返回 ETIMEDOUT，
-先于后续 `sl_admit` 的活动状态判断。因此原 PDU 超时后，新 prepare 和缓存旧限制的
-submit 可以分别返回 ENOTCONN 与 ETIMEDOUT；这不表示新准入或续期。撤权/旧 lifetime
-等更早的范围检查仍可返回 EACCES/ESTALE，不能任意接受所有错误或猜测优先级。
+从内核 `98b8bb4afa89` 起，首次发送准入和最终入队都在同一 Session 锁下先检查
+Session 活动性及 Binding 存活，再检查缓存限制。Session Failed／Closed 或 Binding
+退休时，原 Runtime／Grant 仍有效的新 prepare 和缓存 submit 均返回 ENOTCONN；
+Session 失败不要求 Binding 立刻销毁。有效且已授权的 Session 上，原限制过期仍返回
+ETIMEDOUT，不刷新原期限。撤权／旧 lifetime 等更早的 Runtime 范围检查仍可返回
+EACCES／ESTALE；畸形 ancillary 保留解析错误。旧内核的错误顺序只适用于其历史记录，
+不能套用为新实现的期望，也不能任意接受所有错误。
 
 一次重试被拒绝不能抹去之前已准入并开始的 USB/PB 前缀或未结清物理义务。errno
 不能充当“对端没有执行”、协议 credit 退款、排空或安全 handle 复用的证据。可复现门禁

@@ -483,15 +483,17 @@ pre-daemon File/Grant 受控测试，不等同实际 slkd Agent/授权部署或 
 新 basic Grant 请求可以观察新 epoch，不能因此更新缓存旧 intent 或 protected Grant。
 
 原2秒/8秒 QEMU fixture 只暂扣真实成功 IN81，不能生成回复、NOCP、credit 或恢复。
-必须保留完整的 held/released 因果握手、满池5个实际 debt、确切不完整前缀和原5秒
-期限；不能降低断言以适应当前输出。两个 controller 的 Ready/lease/扫描隔离不代表
+必须保留完整的 held/released 因果握手、实际满池 debt、确切不完整前缀和原5秒
+期限。旧固定几何记录仍按其原五个 debt 核对，新版本按同一 controller 的真实
+buffer 报告与状态快照核对容量；不能降低断言以适应当前输出。两个 controller 的 Ready/lease/扫描隔离不代表
 四设备独立业务隔离。USB 写成功/NOCP 与对端应用校验仍分开。此新增门禁的源码、
 实机资格和旧失败记录分别维护；当前实现不等于新镜像已通过该矩阵。
 
 
-原期限后的错误分阶段判断：生产 `sl_prepare_tx` 首先拒绝已失败 Session（ENOTCONN）；
-携带原已过期限制的 send 在 `sl_tx_access` 检查限制时返回 ETIMEDOUT，先于之后的
-准入状态检查。撤权/旧 lifetime 仍保留 EACCES/ESTALE 的原检查。门禁分别记录新
+原期限后的错误分阶段判断：内核 `98b8bb4afa89` 的首次发送准入与最终入队均先拒绝
+已失效 Session／Binding（ENOTCONN），然后检查缓存 intent；同一有效且已授权 Session
+上的过期 intent 仍返回 ETIMEDOUT。Session 失败不等于 Binding 已销毁。撤权／旧 lifetime
+仍保留 EACCES／ESTALE 的更早检查，畸形 ancillary 保留解析错误。门禁分别记录新
 prepare 与缓存 submit 的单调 before/after；期限用例必须证实原限制在重试前已过期，
 不能简单要求所有阶段 errno 相同，也不能任意接受错误。跨期限不明确的样本不授通过。
 

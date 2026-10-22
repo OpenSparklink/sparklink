@@ -122,7 +122,8 @@ def prepare_locked(args, build_fd):
     manifest['benchmark_link_probe_contract_version'] = 1
     manifest['benchmark_trace_contract_version'] = 1
     manifest['benchmark_process_resource_contract_version'] = 1
-    manifest['ssap_exchange_contract_version'] = 2
+    from ws73_ssap_initialization import CURRENT_EXCHANGE_CONTRACT
+    manifest['ssap_exchange_contract_version'] = CURRENT_EXCHANGE_CONTRACT
     manifest['ssap_update_delivery_contract_version'] = 2
     manifest['application_role_contract_version'] = 2
     manifest['ssap_subscription_contract_version'] = 1
@@ -137,6 +138,8 @@ def prepare_locked(args, build_fd):
     manifest['ssap_subscription_snapshot_contract_version'] = 1
     try:
         module_profile = native_vm.enabled(args)
+        lifetime_probe=getattr(args,'discovery_lifetime_probe',False)
+        if lifetime_probe and not module_profile:raise ValueError('discovery lifetime SDK probe requires isolated native VM')
         config_required(args.kernel_build / '.config', module_profile)
         lab = lab_module()
         images = lab.firmware(args)
@@ -154,7 +157,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_discovery_policy_capture.py', HERE/'ws73_runtime_address.py', HERE/'ws73_firmware_profile.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_payload.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_payload.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -192,6 +195,7 @@ def prepare_locked(args, build_fd):
                                file_record(USERSPACE / 'project/build-resource-policy.json')]
         if 'board_configuration' in manifest:
             manifest['inputs'] += [file_record(Path(manifest['board_configuration'][key]['path'])) for key in ('manifest', 'source', 'exporter')]
+        if lifetime_probe:manifest['inputs'].append(file_record(USERSPACE/'crates/libsparklink/examples/discovery_lifetime.rs'))
         source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
         source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates','bindings/python/sparklink'],cwd=USERSPACE,text=True).splitlines()
         manifest['userspace_sources'] = [file_record(USERSPACE/p) for p in sorted(set(source_files))]
@@ -207,6 +211,9 @@ def prepare_locked(args, build_fd):
             subprocess.run(['cargo','build','--offline','--locked','-p','slkd','-p','slctl','-p','slktest','-p','slkconfig',
                             '-p','slkmon','-p','slkdump','--bins','--examples'],cwd=USERSPACE,
                            env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
+            if lifetime_probe:
+                subprocess.run(['cargo','build','--offline','--locked','-p','libsparklink','--example','discovery_lifetime'],cwd=USERSPACE,
+                               env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror',
                             '-I'+str(USERSPACE/'crates/slk-native/include'),str(HERE/'ws73_bindings_probe.c'),
                             '-L'+str(build_target/'debug'),'-Wl,-rpath,/usr/lib','-l:libslk_native.so',
@@ -315,6 +322,7 @@ def prepare_locked(args, build_fd):
         programs['bus-policy-probe'] = build_target/'debug/examples/bus_policy_probe'
         programs['ws73-security-agent-probe'] = build_target/'debug/examples/native_security_agent_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
+        if lifetime_probe:programs['discovery-lifetime-probe']=build_target/'debug/examples/discovery_lifetime'
         shared_library=build_target/'debug/liblibsparklink.so'
         native_shared_library=build_target/'debug/libslk_native.so'
         manifest['unstripped_programs'] = [file_record(p) for p in [*programs.values(),shared_library,native_shared_library]]
@@ -327,6 +335,7 @@ def prepare_locked(args, build_fd):
         for filename in ('libsparklink.so', 'libslk_native.so'):
             subprocess.run(['strip','--strip-debug',str(root/'usr/lib'/filename)],check=True)
         manifest['native_security_agent_probe']=file_record(root/'bin/ws73-security-agent-probe')
+        if lifetime_probe:manifest['discovery_lifetime_probe']=dict(binary=file_record(root/'bin/discovery-lifetime-probe'),source=file_record(USERSPACE/'crates/libsparklink/examples/discovery_lifetime.rs'))
         shutil.copytree(USERSPACE/'bindings/python/sparklink',root/'usr/share/sparklink/python/sparklink',
                         ignore=shutil.ignore_patterns('__pycache__'))
         python = args.python.resolve()
@@ -343,7 +352,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py', 'ws73_firmware_profile.py', 'ws73_firmware.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_sender_deadline.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -661,6 +670,8 @@ def _run(args):
     subscription_inflight_case=requested_inflight_case(args)
     from ws73_ssap_receive_lifecycle import requested as receive_lifecycle_requested
     receive_lifecycle=receive_lifecycle_requested(args,passthrough=passthrough)
+    from ws73_ssap_sender_deadline import requested as sender_deadline_requested
+    sender_deadline=sender_deadline_requested(args,passthrough=passthrough)
     from ws73_ssap_value import lengths_requested
     value_lengths=lengths_requested(args,passthrough=passthrough)
     owner_lifecycle=bool(getattr(args,'ssap_owner_lifecycle_verify',False))
@@ -951,6 +962,11 @@ def _run(args):
     m['ssap_update_delivery_acceptance']=False
     m['ssap_receive_lifecycle_requested']=receive_lifecycle
     m['ssap_receive_lifecycle_acceptance']=False
+    m['ssap_sender_deadline_requested']=sender_deadline
+    from ws73_ssap_sender_deadline import lifecycle_case
+    m['ssap_sender_lifecycle_case']=lifecycle_case(args)
+    m['ssap_sender_deadline_acceptance']=False
+    if sender_deadline:m['ssap_sender_deadline_verifier']=file_record(HERE/'ws73_ssap_sender_deadline.py')
     if receive_lifecycle:m['ssap_receive_lifecycle_verifier']=file_record(HERE/'ws73_ssap_receive_lifecycle.py')
     if update_delivery:m['ssap_update_delivery_verifier']=file_record(HERE/'ws73_ssap_update_delivery.py')
     m['ssap_owned_update_requested']=owned_update
@@ -1103,10 +1119,19 @@ def _run(args):
             m['native_return_probe']=package['native_return_probe']
         if ssap_initialization:
             from ws73_ssap_initialization import validate_qemu,check_selector_contract
-            check_selector_contract(package,initialization_stage)
-            validate_qemu(package['qemu']['path'], initialization_stage)
+            selector_version=check_selector_contract(package,initialization_stage)
+            validate_qemu(package['qemu']['path'], initialization_stage,selector_version)
+        if sender_deadline:
+            from ws73_ssap_sender_deadline import validate_qemu,validate_inputs
+            validate_qemu(package['qemu']['path'])
+            validate_inputs(package)
         if application_discovery and 'native_vm' not in package:
             raise ValueError('application discovery requires the verified native VM profile')
+        if application_discovery and getattr(args,'application_discovery_case','release')=='ttl':
+            if 'discovery_lifetime_probe' not in package:raise ValueError('TTL requires prepared actual SDK lifetime probe')
+            from ws73_application_discovery import validate_probe
+            probe=dict(path='/bin/discovery-lifetime-probe',sha256=package['discovery_lifetime_probe']['binary']['sha256'])
+            validate_probe(probe,args.prepared/'root',package['guest_files']);m['application_discovery_probe']=probe
         if subscription:
             if type(package.get('ssap_subscription_contract_version'))is not int or package['ssap_subscription_contract_version']!=1 or 'native_vm'not in package:raise ValueError('subscription requires newly prepared native contract1')
             m['ssap_subscription_contract_version']=1
@@ -1285,10 +1310,12 @@ def _run(args):
                      (' ws73.subscription_inflight_case=expiry' if subscription_inflight_case=='expiry' else '')+
                      (' ws73.subscription_snapshot=1' if subscription else '')+
                      (' ws73.ssap_receive_lifecycle=1' if receive_lifecycle else '')+
+                     (' ws73.ssap_sender_deadline=1' if sender_deadline else '')+
+                     (' ws73.ssap_sender_case='+m['ssap_sender_lifecycle_case'] if sender_deadline and m['ssap_sender_lifecycle_case']!='deadline' else '')+
                      (' ws73.ssap_value_lengths=1' if value_lengths else '')+
                      (' ws73.application_clients=1' if application_clients else '')+
                      (' ws73.application_discovery=1' if application_discovery else '')+
-                     (' ws73.application_discovery_case=owner-loss' if application_discovery and getattr(args,'application_discovery_case','release')=='owner-loss' else '')+
+                     (' ws73.application_discovery_case='+args.application_discovery_case if application_discovery and getattr(args,'application_discovery_case','release')!='release' else '')+
                      (' ws73.ssap_owner_lifecycle=1' if owner_lifecycle else '')+
                      (' ws73.ssap_owner_sdk=1' if owner_publisher=='sdk' else '')+
                      (' ws73.ssap_requester_lifecycle=1' if requester_lifecycle else '')+
@@ -1388,6 +1415,9 @@ def _run(args):
                 initialization_hold=None
                 receive_capture=None
                 sender_hold=None
+                if sender_deadline:
+                    from ws73_ssap_sender_deadline import Coordinator
+                    sender_hold=Coordinator(share,output,m.setdefault('ssap_sender_deadline_hold',{}),package['qemu']['path'])
                 if subscription_inflight:
                     from ws73_ssap_sender_deadline import Coordinator
                     sender_hold=Coordinator(share,output,m.setdefault('ssap_subscription_inflight_hold',{}),package['qemu']['path'],purpose='subscription-'+subscription_inflight_case)
@@ -1396,7 +1426,7 @@ def _run(args):
                     receive_capture=CaptureCoordinator(share,output,m.setdefault('ssap_receive_capture_observations',{}))
                 if ssap_initialization:
                     from ws73_ssap_initialization import Coordinator
-                    initialization_hold=Coordinator(share,m.setdefault('ssap_initialization_hold',{}),package['qemu']['path'],initialization_stage)
+                    initialization_hold=Coordinator(share,m.setdefault('ssap_initialization_hold',{}),package['qemu']['path'],initialization_stage,exchange_contract(package))
                 if agent_mode=='install-cancel':
                     from ws73_security_install_hold import InstallCoordinator
                     install_hold=InstallCoordinator(share,m.setdefault('security_install_hold',{}),package['qemu']['path'])
@@ -1636,7 +1666,7 @@ def _run(args):
                         if text.count('WS73_TARGET_CHANNEL_GRANT_FINISHED')!=1:raise ValueError('standalone Grant finish proof missing')
                         control={}
                     packets=check_capture_stats((share/'capture-stats.txt').read_text())
-                    capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities],observe_rx=subscription_inflight)
+                    capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities],observe_rx=sender_deadline or subscription_inflight)
                     if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
                     m['capture_packets']=packets;m['guest_identities']=identities
                     if runtime_addresses:
@@ -1781,6 +1811,14 @@ def _run(args):
                         from ws73_application_discovery import case as discovery_case
                         if discovery_case(m['application_discovery_corroboration'])!=m['application_discovery_case']:
                             raise ValueError('original explicit discovery termination differs from actual evidence')
+                        if m['application_discovery_case']=='sdk-release':
+                            from ws73_application_discovery import validate_sdk_clients
+                            for row in control['application_discovery']:
+                                validate_sdk_clients(row['request']['clients'],args.prepared/'root',package['guest_files'])
+                        if m['application_discovery_case']=='ttl':
+                            from ws73_application_discovery import validate_probe
+                            validate_probe(m['application_discovery_corroboration']['probe'],args.prepared/'root',package['guest_files'])
+                            if m['application_discovery_corroboration']['probe']!=m['application_discovery_probe']:raise ValueError('original actual SDK probe identity changed')
                         m['application_discovery_acceptance']=True
                     if application_clients != ('application_clients' in control):raise ValueError('explicit application client request/evidence mismatch')
                     if application_clients:
@@ -1832,6 +1870,14 @@ def _run(args):
                             validate_coordination(control['channel_socket'],m['ssap_receive_capture_observations'])
                         if any(bool(row.get('ssap_receive_lifecycle_required',False))!=receive_lifecycle for row in control['channel_socket']):raise ValueError('receive lifecycle request/evidence mismatch')
                         m['channel_socket_corroboration']=channel_corroborate(control,capture)
+                        if any(bool(row.get('ssap_sender_deadline_required',False))!=sender_deadline for row in control['channel_socket']):raise ValueError('sender deadline request/evidence mismatch')
+                        if sender_deadline and any(row.get('ssap_sender_lifecycle_case','deadline')!=m['ssap_sender_lifecycle_case']for row in control['channel_socket']):raise ValueError('sender lifecycle case/evidence mismatch')
+                        if sender_deadline:
+                            from ws73_ssap_sender_deadline import valid_summary as sender_summary,corroborate_holds,validate_prefixes as sender_prefixes
+                            if file_record(HERE/'ws73_ssap_sender_deadline.py')!=m['ssap_sender_deadline_verifier'] or not sender_summary(m['channel_socket_corroboration']):raise ValueError('exact sender deadline verifier and two-ended proof required')
+                            sender_prefixes(m['ssap_sender_deadline_hold'],share/'ws73.pcap')
+                            m['ssap_sender_deadline_corroboration']=corroborate_holds(m['ssap_sender_deadline_hold'],control,capture,(output/'qemu-stderr.log').read_text())
+                        m['ssap_sender_deadline_acceptance']=sender_deadline
                         if any(bool(row.get('ssap_value_lengths_required',False))!=value_lengths for row in control['channel_socket']):raise ValueError('SSAP lengths request/evidence mismatch')
                         if value_lengths:
                             from ws73_ssap_update_delivery import validate_tools as validate_read_tools
@@ -2067,67 +2113,67 @@ def _run(args):
                         m['graceful_timeout']['state']='SEALED'
                         m['status']='FAIL'
                         m['error']='environment timeout; capture sealed; physical control not accepted'
-            if agent_mode and agent_mode.startswith('cli-') and file_record(HERE/'ws73_security_cli.py')!=m['security_cli_verifier']:
-                raise ValueError('CLI witness changed during execution')
-            if agent_mode and file_record(HERE/'ws73_security_agent.py')!=m['security_agent_verifier']:
-                raise ValueError('Agent verifier changed during run')
-            if business and file_record(HERE/'ws73_parallel_data.py')!=m['parallel_business_verifier']:
-                raise ValueError('parallel business verifier changed during run')
-            if parallel and file_record(HERE/'ws73_parallel.py')!=m['parallel_verifier']:
-                raise ValueError('parallel verifier changed during run')
-            prepared(args.prepared.resolve())
-            if session_service:
-                if m['status'] not in ['PASSTHROUGH_SUPPORT_PASS','REAL_CHANNEL_GRANT_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS']:
-                    raise ValueError('Session observation cannot replace failed original real gate')
-                from ws73_session_service import corroborate as service_corroborate
-                control_path=share/('connected-file/run.json' if channel_grant else 'application/passthrough-control/run.json')
-                m['session_service_observation']=service_corroborate(json.loads(control_path.read_text()),capture,share)
-                if m.get('session_service_collector_profile')!=m['session_service_observation'].get('collector_profile'):
-                    raise ValueError('actual Session collector profile must match original request')
-                if m['session_service_verifiers']!=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]:
-                    raise ValueError('Session observation verifier changed during execution')
-                m['session_service_acceptance']=True
+        if agent_mode and agent_mode.startswith('cli-') and file_record(HERE/'ws73_security_cli.py')!=m['security_cli_verifier']:
+            raise ValueError('CLI witness changed during execution')
+        if agent_mode and file_record(HERE/'ws73_security_agent.py')!=m['security_agent_verifier']:
+            raise ValueError('Agent verifier changed during run')
+        if business and file_record(HERE/'ws73_parallel_data.py')!=m['parallel_business_verifier']:
+            raise ValueError('parallel business verifier changed during run')
+        if parallel and file_record(HERE/'ws73_parallel.py')!=m['parallel_verifier']:
+            raise ValueError('parallel verifier changed during run')
+        prepared(args.prepared.resolve())
+        if session_service:
+            if m['status'] not in ['PASSTHROUGH_SUPPORT_PASS','REAL_CHANNEL_GRANT_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS']:
+                raise ValueError('Session observation cannot replace failed original real gate')
+            from ws73_session_service import corroborate as service_corroborate
+            control_path=share/('connected-file/run.json' if channel_grant else 'application/passthrough-control/run.json')
+            m['session_service_observation']=service_corroborate(json.loads(control_path.read_text()),capture,share)
+            if m.get('session_service_collector_profile')!=m['session_service_observation'].get('collector_profile'):
+                raise ValueError('actual Session collector profile must match original request')
+            if m['session_service_verifiers']!=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]:
+                raise ValueError('Session observation verifier changed during execution')
+            m['session_service_acceptance']=True
 
-            if queue_peer and file_record(HERE/'ws73_management_queue_ready_peer.py')!=m['managed_queue_ready_peer_verifier']:
-                raise ValueError('Ready queue peer verifier changed during run')
-            if queued_gate and file_record(HERE/'ws73_management_queued.py')!=m['managed_queue_verifier']:
-                raise ValueError('Managed queue verifier changed during run')
-            if real_later and file_record(HERE/'ws73_host_later_hold.py')!=m['managed_real_later_verifier']:
-                raise ValueError('actual later host verifier changed during run')
-            if daemon_remove and file_record(HERE/'ws73_daemon_removal.py')!=m['daemon_removal_verifier']:
-                raise ValueError('daemon removal verifier changed during run')
-            if daemon_hold and file_record(HERE/'ws73_daemon_hold.py')!=m['daemon_hold_verifier']:
-                raise ValueError('daemon held verifier changed during run')
-            if daemon_crash and file_record(HERE/'ws73_daemon_crash.py')!=m['daemon_crash_verifier']:
-                raise ValueError('daemon crash verifier changed during run')
-            if service_policy and file_record(HERE/'ws73_ssap_service_policy.py')!=m['ssap_service_policy_verifier']:raise ValueError('service-role verifier changed during run')
-            if observer_policy and file_record(HERE/'ws73_observer_policy.py')!=m['observer_policy_verifier']:
-                raise ValueError('observer policy verifier changed during run')
-            if initializer_lifecycle and file_record(HERE/'ws73_initialization_lifecycle.py')!=m['initializer_lifecycle_verifier']:
-                raise ValueError('initializer lifecycle verifier changed during run')
-            if ordinary_eviction and file_record(HERE/'ws73_management_eviction.py')!=m['managed_eviction_verifier']:
-                raise ValueError('ordinary queue verifier changed during run')
-            if ready_peer and file_record(HERE/'ws73_management_ready_peer.py')!=m['managed_ready_peer_verifier']:
-                raise ValueError('Ready peer verifier changed during run')
-            if channel_grant and file_record(HERE/'ws73_channel_grant.py')!=m['channel_grant_verifier']:raise ValueError('channel Grant verifier changed during run')
-            if channel_link_down and file_record(HERE/'ws73_channel_link_down.py')!=m['channel_link_down_verifier']:raise ValueError('direct Down verifier changed during run')
-            if channel_deadline and file_record(HERE/'ws73_channel_deadline.py')!=m['channel_deadline_verifier']:raise ValueError('original deadline verifier changed during run')
-            if cancel_pending and file_record(HERE/'ws73_security_cancel.py')!=m['security_cancel_verifier']:raise ValueError('passive cancel verifier changed during run')
-            if numeric and [file_record(HERE/name) for name in ['ws73_security_numeric.py','ws73_key_agreement.py']]!=m['security_numeric_verifiers']:raise ValueError('numeric mechanism verifiers changed during run')
-            if key_agreement and file_record(HERE/'ws73_key_agreement.py')!=m['security_key_agreement_verifier']:raise ValueError('candidate key agreement verifier changed during run')
-            if protected and m['protected_security_verifiers']!=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']]:raise ValueError('protected prelude verifier changed during execution')
-            if security_capabilities and file_record(HERE/'ws73_security_capabilities.py')!=m['security_capabilities_verifier']:raise ValueError('limited capability verifier changed during run')
-            if connected_case and file_record(HERE/'ws73_connected_file_gate.py')!=m['connected_file_verifier']:
-                raise ValueError('connected File verifier changed during run')
-            if resource_recreation and file_record(HERE/'ws73_resource_file_gate.py')!=m['managed_resource_verifier']:
-                raise ValueError('resource File verifier changed during run')
-            if partial_gate and file_record(HERE/'ws73_management_partial.py')!=m['managed_partial_verifier']:
-                raise ValueError('Managed partial verifier changed during run')
-            if setup_gate and file_record(HERE/'ws73_management_setup.py')!=m['setup_release_verifier']:
-                raise ValueError('Setup release verifier changed during run')
-            if active_gate and file_record(HERE/'ws73_active_deadline.py')!=m['active_deadline_verifier']:
-                raise ValueError('active deadline host verifier changed during run')
-            if file_record(args.prepared.resolve()/'manifest.json')!=m['prepared_manifest']:raise ValueError('prepared manifest changed during run')
+        if queue_peer and file_record(HERE/'ws73_management_queue_ready_peer.py')!=m['managed_queue_ready_peer_verifier']:
+            raise ValueError('Ready queue peer verifier changed during run')
+        if queued_gate and file_record(HERE/'ws73_management_queued.py')!=m['managed_queue_verifier']:
+            raise ValueError('Managed queue verifier changed during run')
+        if real_later and file_record(HERE/'ws73_host_later_hold.py')!=m['managed_real_later_verifier']:
+            raise ValueError('actual later host verifier changed during run')
+        if daemon_remove and file_record(HERE/'ws73_daemon_removal.py')!=m['daemon_removal_verifier']:
+            raise ValueError('daemon removal verifier changed during run')
+        if daemon_hold and file_record(HERE/'ws73_daemon_hold.py')!=m['daemon_hold_verifier']:
+            raise ValueError('daemon held verifier changed during run')
+        if daemon_crash and file_record(HERE/'ws73_daemon_crash.py')!=m['daemon_crash_verifier']:
+            raise ValueError('daemon crash verifier changed during run')
+        if service_policy and file_record(HERE/'ws73_ssap_service_policy.py')!=m['ssap_service_policy_verifier']:raise ValueError('service-role verifier changed during run')
+        if observer_policy and file_record(HERE/'ws73_observer_policy.py')!=m['observer_policy_verifier']:
+            raise ValueError('observer policy verifier changed during run')
+        if initializer_lifecycle and file_record(HERE/'ws73_initialization_lifecycle.py')!=m['initializer_lifecycle_verifier']:
+            raise ValueError('initializer lifecycle verifier changed during run')
+        if ordinary_eviction and file_record(HERE/'ws73_management_eviction.py')!=m['managed_eviction_verifier']:
+            raise ValueError('ordinary queue verifier changed during run')
+        if ready_peer and file_record(HERE/'ws73_management_ready_peer.py')!=m['managed_ready_peer_verifier']:
+            raise ValueError('Ready peer verifier changed during run')
+        if channel_grant and file_record(HERE/'ws73_channel_grant.py')!=m['channel_grant_verifier']:raise ValueError('channel Grant verifier changed during run')
+        if channel_link_down and file_record(HERE/'ws73_channel_link_down.py')!=m['channel_link_down_verifier']:raise ValueError('direct Down verifier changed during run')
+        if channel_deadline and file_record(HERE/'ws73_channel_deadline.py')!=m['channel_deadline_verifier']:raise ValueError('original deadline verifier changed during run')
+        if cancel_pending and file_record(HERE/'ws73_security_cancel.py')!=m['security_cancel_verifier']:raise ValueError('passive cancel verifier changed during run')
+        if numeric and [file_record(HERE/name) for name in ['ws73_security_numeric.py','ws73_key_agreement.py']]!=m['security_numeric_verifiers']:raise ValueError('numeric mechanism verifiers changed during run')
+        if key_agreement and file_record(HERE/'ws73_key_agreement.py')!=m['security_key_agreement_verifier']:raise ValueError('candidate key agreement verifier changed during run')
+        if protected and m['protected_security_verifiers']!=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']]:raise ValueError('protected prelude verifier changed during execution')
+        if security_capabilities and file_record(HERE/'ws73_security_capabilities.py')!=m['security_capabilities_verifier']:raise ValueError('limited capability verifier changed during run')
+        if connected_case and file_record(HERE/'ws73_connected_file_gate.py')!=m['connected_file_verifier']:
+            raise ValueError('connected File verifier changed during run')
+        if resource_recreation and file_record(HERE/'ws73_resource_file_gate.py')!=m['managed_resource_verifier']:
+            raise ValueError('resource File verifier changed during run')
+        if partial_gate and file_record(HERE/'ws73_management_partial.py')!=m['managed_partial_verifier']:
+            raise ValueError('Managed partial verifier changed during run')
+        if setup_gate and file_record(HERE/'ws73_management_setup.py')!=m['setup_release_verifier']:
+            raise ValueError('Setup release verifier changed during run')
+        if active_gate and file_record(HERE/'ws73_active_deadline.py')!=m['active_deadline_verifier']:
+            raise ValueError('active deadline host verifier changed during run')
+        if file_record(args.prepared.resolve()/'manifest.json')!=m['prepared_manifest']:raise ValueError('prepared manifest changed during run')
     except (Exception,KeyboardInterrupt) as error:
         m['status']='FAIL';m['error']=str(error) or type(error).__name__
     finally:
@@ -2358,6 +2404,12 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         variant=boot_case([token for arg in record.get('qemu_args',[]) if isinstance(arg,str) for token in arg.split()])
         if record.get('application_discovery_case','release')!=variant:return 1
     except CaptureError:return 1
+    if variant=='ttl':
+        from ws73_application_discovery import validate_probe
+        try:validate_probe(record.get('application_discovery_probe',{}))
+        except (CaptureError,KeyError,TypeError):return 1
+        if record.get('application_discovery_corroboration',{}).get('probe')!=record['application_discovery_probe']:return 1
+    elif 'application_discovery_probe' in record:return 1
     if discovery:
         postures=[token for arg in record.get('qemu_args',[]) if isinstance(arg,str)
                   for token in arg.split() if token.startswith('ws73.connection_advertising=')]
@@ -2417,8 +2469,10 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     initialization=record.get('ssap_initialization_requested',False)
     if type(initialization)is not bool:return 1
     if initialization:
-        from ws73_ssap_initialization import valid_summary, profile
-        try:spec=profile(record.get('ssap_initialization_stage','cmtc'))
+        from ws73_ssap_initialization import valid_summary, profile, exchange_contract
+        try:
+            selector_version=exchange_contract(record)
+            spec=profile(record.get('ssap_initialization_stage','cmtc'),selector_version)
         except ValueError:return 1
         ordinary=record.get('channel_socket_corroboration',{})
         held=record.get('ssap_initialization_hold',{})
@@ -2429,8 +2483,9 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or type(ordinary.get('round_trips'))is not int or ordinary['round_trips']!=8
                 or held.get('method')!=spec['method'] or held.get('qemu_sha256')!=spec['qemu'] or held.get('complete')is not True
                 or held.get('stage','cmtc')!=spec['stage']
+                or type(held.get('exchange_contract',1)) is not int or held.get('exchange_contract',1)!=selector_version
                 or record.get('ssap_initialization_corroboration',{}).get('stage','cmtc')!=spec['stage']
-                or not valid_summary(record.get('ssap_initialization_corroboration',{}))):return 1
+                or not valid_summary(record.get('ssap_initialization_corroboration',{}),expected_version=selector_version)):return 1
     elif record.get('ssap_initialization_acceptance')or record.get('ssap_initialization_corroboration'):return 1
     channel_proof=record.get('channel_socket_corroboration',{})
     if not isinstance(channel_proof,dict):return 1
@@ -2562,6 +2617,19 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         from ws73_ssap_receive_lifecycle import valid_summary as receive_summary,valid_observer_summary
         if not delivery or record.get('ssap_receive_lifecycle_acceptance')is not True or not receive_summary(channel_proof)or not valid_observer_summary(record.get('ssap_receive_capture_observations')):return 1
     elif record.get('ssap_receive_lifecycle_acceptance')or record.get('ssap_receive_capture_observations')or any(p.get('ssap_receive_lifecycle')for p in channel_proof.get('proofs',[])):return 1
+    sender=record.get('ssap_sender_deadline_requested',False)
+    if type(sender)is not bool:return 1
+    sender_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_sender_deadline=1']
+    if sender_boot!=(['ws73.ssap_sender_deadline=1']if sender else[]):return 1
+    if sender:
+        from ws73_ssap_sender_deadline import valid_summary as sender_summary,valid_hold_summary,boot_case
+        selected=record.get('ssap_sender_lifecycle_case','deadline')
+        try:actual_case=boot_case([t for arg in record.get('qemu_args',[])if isinstance(arg,str)for t in arg.split()],True)
+        except (ValueError,TypeError):return 1
+        if (not delivery or record.get('ssap_sender_deadline_acceptance')is not True or not sender_summary(channel_proof)
+                or actual_case!=selected or any(p['ssap_sender_deadline'][0].get('lifecycle_case','deadline')!=selected for p in channel_proof.get('proofs',[]))
+                or not valid_hold_summary(record.get('ssap_sender_deadline_hold',{}),record.get('ssap_sender_deadline_corroboration',{}))):return 1
+    elif record.get('ssap_sender_lifecycle_case','deadline')!='deadline' or any(t.startswith('ws73.ssap_sender_case=')for arg in record.get('qemu_args',[])if isinstance(arg,str)for t in arg.split())or record.get('ssap_sender_deadline_acceptance')or record.get('ssap_sender_deadline_hold')or any(p.get('ssap_sender_deadline')for p in channel_proof.get('proofs',[])):return 1
     update=record.get('ssap_owned_update_requested',False)
     if type(update)is not bool:return 1
     update_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_owned_update=1']
@@ -2886,6 +2954,7 @@ def main():
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
     pack.add_argument('--controller-directory-clients',action='store_true',help='stage actual C/Python SDK directory consumers for the explicit VM observer gate')
+    pack.add_argument('--discovery-lifetime-probe',action='store_true',help='compile/stage optional public Rust SDK TTL consumer only in the isolated native VM;no production install')
     pack.add_argument('--native-return-fixture',action='store_true',help='compile VM-only real SYS_bind return barrier; never default daemon instrumentation')
     pack.add_argument('--native-return-probe',type=Path,help='explicit gdbus executable staged only for direct original-owner retirement observation')
     pack.add_argument('--native-channel-fd-probe',type=Path,help='explicit isolated real D-Bus fd client binary; native VM only')
@@ -3003,6 +3072,8 @@ def main():
             cmd.add_argument('--ssap-subscription-inflight-case',choices=['release','expiry'],default='release',help='explicit original lease expiry or application release,through same bounded in-flight gate')
             cmd.add_argument('--ssap-update-delivery-verify',action='store_true',help='real typed/authenticated CPCD,notification/indication and C/Python peer business reply')
             cmd.add_argument('--ssap-update-lifecycle-verify',action='store_true',help='dedicated same-actor receiver exit,original deadline and confirmed CPCD cleanup;requires update delivery')
+            cmd.add_argument('--ssap-sender-deadline-verify',action='store_true',help='original1s SDK deadline with bounded2s real IN81 hold,late ACK and actual peer reply;requires dedicated update delivery')
+            cmd.add_argument('--ssap-sender-lifecycle-case',choices=['deadline','owner-after-deadline'],default='deadline',help='same controlled barrier;owner-after-deadline requires actual owner death andpaired oldservice refusals')
             cmd.add_argument('--ssap-value-lengths-verify',action='store_true',help='dedicated real complete-PDU value lengths/MTU refusal gate;not SSAP protocol fragmentation')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
             cmd.add_argument('--ssap-owner-publisher',choices=['cli','sdk'],default='cli',help='explicit owner frontend;SDK selects C/Python per role,no fallback')
@@ -3010,7 +3081,7 @@ def main():
             cmd.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
             cmd.add_argument('--application-discovery-verify',action='store_true',help='actual apps-only shared discovery, two scanner roles; optional ordinary connection/socket preservation')
-            cmd.add_argument('--application-discovery-case',choices=['release','owner-loss'],default='release',help='explicit release or SIGKILL of only owned VM callers;not natural recovery or complete lifecycle qualification')
+            cmd.add_argument('--application-discovery-case',choices=['release','owner-loss','ttl','sdk-release'],default='release',help='bounded release/caller-loss/TTL;TTL requires prepared live-caller SDK probe;not full lifecycle/recovery qualification')
             cmd.add_argument('--application-client-verify',action='store_true',help='dedicated real public C/Python SDK one-shot/dup/final-close gate;not fullSDK orpermission qualification')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')

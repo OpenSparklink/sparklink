@@ -320,7 +320,60 @@ class ExchangeArtifactContract(unittest.TestCase):
         self.assertEqual(init.check_selector_contract({},'exchange'),1)
         self.assertEqual(init.check_selector_contract({'ssap_exchange_contract_version':1},'exchange'),1)
         self.assertEqual(init.check_selector_contract({'ssap_exchange_contract_version':2},'cmtc'),2)
-        with self.assertRaisesRegex(ValueError,'NotSupported.*ten-byte'):
-            init.check_selector_contract({'ssap_exchange_contract_version':2},'exchange')
+        self.assertEqual(init.check_selector_contract({'ssap_exchange_contract_version':2},'exchange'),2)
+        old,new=init.profile('exchange',1),init.profile('exchange',2)
+        self.assertNotEqual(old['qemu'],new['qemu'])
+        self.assertEqual(old['response'],'0a0006000303fa070102')
+        self.assertEqual(new['response'],'0a000a000307fa07010204000000')
+        # Hash-selection fixtures only;actual QEMU bytes/smoke are a separate gate.
+        with tempfile.TemporaryDirectory()as tmp,patch.object(init.hashlib,'sha256')as digest:
+            path=Path(tmp)/'qemu';path.write_bytes(b'explicit hash-selection fixture')
+            for version in (1,2):
+                digest.return_value.hexdigest.return_value=init.profile('exchange',version)['qemu']
+                init.validate_qemu(path,'exchange',version)
+                with self.assertRaises(ValueError):init.validate_qemu(path,'exchange',3-version)
         for version in [True,False,0,3,'2',None]:
             with self.subTest(version=version),self.assertRaises(ValueError):init.exchange_contract({'ssap_exchange_contract_version':version})
+
+    def test_current_witnesses_require_all_original_ten_byte_legs(self):
+        a=dict(bus=1,device=2);b=dict(bus=1,device=3)
+        phase=dict(target=a,other=b,cancel=dict(start_wall_ns=50),end_wall_ns=90)
+        create=dict(command=dict(wall_ns=10),outcomes=[dict(**o,params='000700')for o in [a,b]])
+        def row(owner,direction,data,stamp):return dict(**owner,direction=direction,data=data,wall_ns=stamp,handle=7,boundary=0)
+        spec=init.profile('exchange',2)
+        events=[row(a,'in',init.RESPONSE,11),row(b,'in',init.RESPONSE,12),row(a,'out',spec['request'],20),
+                row(b,'in',spec['request'],21),row(b,'out',spec['response'],30),row(a,'in',spec['response'],80)]
+        cap=dict(acb_packets=events);late=events[-1]
+        self.assertEqual(init.exchange_witnesses(cap,phase,create,late,2)['response_rx'],late)
+        for slot in [2,3,4,5]:
+            bad=copy.deepcopy(cap)
+            bad['acb_packets'][slot]['data']=init.profile('exchange',1)['request'if slot<4 else'response']
+            with self.subTest(slot=slot),self.assertRaises(ValueError):init.exchange_witnesses(bad,phase,create,late,2)
+        for version in [True,0,3,'2',None]:
+            with self.subTest(version=version),self.assertRaises(ValueError):init.exchange_witnesses(cap,phase,create,late,version)
+
+    def test_new_profile_cannot_upgrade_a_historical_final_verdict(self):
+        proofs=[]
+        for n in range(2):
+            down=dict(event=5)
+            proofs.append(dict(selection=dict(slot=n,role=n),host_hold=dict(status='ACTUAL_HOST_HOLD_CORROBORATED'),
+                late_capability=dict(data=init.profile('exchange',2)['response']),cleanup=dict(outcomes=[down]),peer_rx_progress_during_hold=down))
+            proofs[-1]['exchange_witnesses']={k:proofs[-1]['late_capability']for k in ['target_capability','peer_capability','request_tx','request_rx','response_tx','response_rx']}
+        spec=init.profile('exchange',2)
+        proof=dict(stage='exchange',exchange_contract=2,status=spec['status'],proofs=proofs,
+            **dict.fromkeys(['kernel_reference_or_uaf_proof','native_bind_inflight_proof','initializer_task_join_proof','connection_object_removal_proof','natural_recovery_acceptance'],False))
+        r=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,ssap_initialization_requested=True,
+            ssap_initialization_acceptance=True,ssap_exchange_contract_version=2,ssap_initialization_stage='exchange',
+            ordinary_channel_socket_acceptance=True,channel_socket_verification_requested=True,
+            channel_socket_corroboration=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=8),
+            ssap_initialization_hold=dict(method=spec['method'],stage='exchange',exchange_contract=2,qemu_sha256=spec['qemu'],complete=True),
+            ssap_initialization_corroboration=proof)
+        self.assertEqual(run_exit_code(r),0)  # verdict shape fixture,not actual capture/VM
+        changes=[lambda d:d.update(ssap_exchange_contract_version=1),
+                 lambda d:d['ssap_initialization_hold'].pop('exchange_contract'),
+                 lambda d:d['ssap_initialization_corroboration'].pop('exchange_contract'),
+                 lambda d:d['ssap_initialization_hold'].update(qemu_sha256=init.profile('exchange',1)['qemu']),
+                 lambda d:d['ssap_initialization_corroboration']['proofs'][0]['late_capability'].update(data=init.profile('exchange',1)['response'])]
+        for change in changes:
+            bad=copy.deepcopy(r);change(bad)
+            with self.subTest(change=change):self.assertEqual(run_exit_code(bad),1)

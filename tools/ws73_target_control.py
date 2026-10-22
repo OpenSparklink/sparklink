@@ -164,7 +164,7 @@ def main():
     parser.add_argument('--slkd-pid',type=int,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--application-discovery-verify',action='store_true')
-    parser.add_argument('--application-discovery-case',choices=['release','owner-loss'],default='release')
+    parser.add_argument('--application-discovery-case',choices=['release','owner-loss','ttl','sdk-release'],default='release')
     parser.add_argument('--application-client-verify',action='store_true',help='dedicated actual public C/Python fixed-channel one-shot/dup/final-close gate')
     parser.add_argument('--passthrough',action='store_true',help='real RF, QMP guest-only disconnect; excludes physical unplug acceptance')
     parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')
@@ -211,6 +211,8 @@ def main():
     parser.add_argument('--ssap-subscription-inflight-case',choices=['release','expiry'],default='release',help='explicit original lease expiry or application release,through same bounded in-flight gate')
     parser.add_argument('--ssap-update-delivery-verify',action='store_true')
     parser.add_argument('--ssap-update-lifecycle-verify',action='store_true')
+    parser.add_argument('--ssap-sender-deadline-verify',action='store_true')
+    parser.add_argument('--ssap-sender-lifecycle-case',choices=['deadline','owner-after-deadline'],default='deadline')
     parser.add_argument('--ssap-value-lengths-verify',action='store_true')
     parser.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
     parser.add_argument('--ssap-owner-publisher',choices=['cli','sdk'],default='cli',help='explicit owner frontend;SDK selects C/Python per role,no fallback')
@@ -227,6 +229,9 @@ def main():
         parser.error('link payload preference requires existing native paired workload')
     if args.link_measurements and (not args.passthrough or not args.connection_verify or not (args.channel_socket_verify or args.channel_benchmark)):
         parser.error('link measurements require a real two-controller connection/application gate')
+    from ws73_ssap_sender_deadline import requested as sender_requested
+    try:sender_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
     # Fixed guest xHCI slots, not host topology defaults or device selection.
     # Establish them before any mode validator checks the selected pair.
     args.ports=['1-1','1-2']

@@ -83,6 +83,8 @@ def ready(slot):
                     data['hcc_chip']=check_hcc((p/'chip_information').read_text().strip(),models[0].split(',')[slot])
                     data['input_profile']=firmware_profile.guest_observation(p,models[0].split(',')[slot],str(slot+1))
                 if data['bus']!=1:raise ValueError('capture bus and actual guest WS73 bus differ')
+                if (p/'sle_address_source').exists():
+                    data['sle_address_source']=(p/'sle_address_source').read_text().strip()
                 (EVIDENCE/f'ready-{slot}.json').write_text(json.dumps(data,indent=2)+'\n')
                 return
             except OSError as error:
@@ -406,12 +408,17 @@ def verify_passthrough():
     if initialization_requested:
         from ws73_ssap_initialization import corroborate_guest, verify_fd_supervisor, profile
         stages=[v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.ssap_initialization_stage=')]
-        if len(stages)>1 or run['ssap_initialization'].get('stage','cmtc')!=profile(stages[0] if stages else 'cmtc')['stage']:
+        if len(stages)>1 or run['ssap_initialization'].get('stage','cmtc')!=profile(stages[0] if stages else 'cmtc',run['ssap_initialization'].get('exchange_contract',1))['stage']:
             raise ValueError('actual VM command line and guest initialization stage differ')
         verify_fd_supervisor(run,EVIDENCE)
         proofs.append({'ssap_initialization':corroborate_guest(run,capture)})
     requester_requested='ws73.ssap_requester_lifecycle=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_requester_lifecycle_required',False))!=requester_requested for row in run.get('channel_socket',[])) or(requester_requested and not run.get('channel_socket')):raise ValueError('requester lifecycle request/evidence mismatch')
+    sender_requested='ws73.ssap_sender_deadline=1' in Path('/proc/cmdline').read_text().split()
+    if any(bool(row.get('ssap_sender_deadline_required',False))!=sender_requested for row in run.get('channel_socket',[]))or(sender_requested and not run.get('channel_socket')):raise ValueError('sender deadline request/evidence mismatch')
+    from ws73_ssap_sender_deadline import boot_case
+    sender_case=boot_case(Path('/proc/cmdline').read_text().split(),sender_requested)
+    if sender_requested and any(row.get('ssap_sender_lifecycle_case','deadline')!=sender_case for row in run.get('channel_socket',[])):raise ValueError('sender lifecycle case/boot evidence mismatch')
     subscription_requested='ws73.ssap_subscription=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_subscription_required',False))!=subscription_requested for row in run.get('channel_socket',[]))or subscription_requested and not run.get('channel_socket'):raise ValueError('subscription request/evidence mismatch')
     renewal_requested='ws73.ssap_subscription_renewal=1'in Path('/proc/cmdline').read_text().split()

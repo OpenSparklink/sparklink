@@ -9,6 +9,27 @@ export PYTHONHOME=/usr
 # loader may search /usr/lib64 instead; select the sealed Native image
 # explicitly for pre-daemon gates too, independently of the application SDK.
 export LIBSLK_NATIVE_PATH=/usr/lib/libslk_native.so.0
+sender_case_argument() {
+    selected_sender_case=''
+    sender_case_enabled=''
+    for sender_word do
+        case "$sender_word" in
+            ws73.ssap_sender_deadline=1)
+                [ -z "$sender_case_enabled" ] || return 1
+                sender_case_enabled=1 ;;
+            ws73.ssap_sender_case=*)
+                [ -z "$selected_sender_case" ] || return 1
+                selected_sender_case=${sender_word#ws73.ssap_sender_case=}
+                case "$selected_sender_case" in
+                    deadline|owner-after-deadline) ;;
+                    *) return 1 ;;
+                esac ;;
+        esac
+    done
+    [ -n "$selected_sender_case" ] || return 0
+    [ "$sender_case_enabled" = 1 ] || return 1
+    printf '%s' "$selected_sender_case"
+}
 fail() {
     echo "WS73_TARGET_FAILURE: $*"
     if [ -n "${application_role_supervisor:-}" ]; then
@@ -42,7 +63,7 @@ fail() {
     for interface in /sys/bus/usb/devices/*:*; do
         [ -f "$interface/boot_stage" ] || continue
         name=${interface##*/}
-        for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics runtime_transport metadata_valid native_runtime controller_information; do
+        for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics runtime_transport metadata_valid native_runtime controller_information chip_information sle_address_source; do
             [ -f "$interface/$attribute" ] && cat "$interface/$attribute" > "/evidence/device-failure/$name-$attribute.txt"
         done
     done
@@ -429,6 +450,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         if grep -qw ws73.application_clients=1 /proc/cmdline; then connection_arg="$connection_arg --application-client-verify"; fi
         if grep -qw ws73.application_discovery=1 /proc/cmdline; then connection_arg="$connection_arg --application-discovery-verify"; fi
         if grep -qw ws73.application_discovery_case=owner-loss /proc/cmdline; then connection_arg="$connection_arg --application-discovery-case owner-loss"; fi
+        if grep -qw ws73.application_discovery_case=ttl /proc/cmdline; then connection_arg="$connection_arg --application-discovery-case ttl"; fi
+        if grep -qw ws73.application_discovery_case=sdk-release /proc/cmdline; then connection_arg="$connection_arg --application-discovery-case sdk-release"; fi
         if grep -qw ws73.channel_socket=1 /proc/cmdline; then
             channel_rounds=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_rounds=/){sub(/^ws73.channel_rounds=/,"",$i);print $i}}' /proc/cmdline)
             channel_bytes=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_bytes=/){sub(/^ws73.channel_bytes=/,"",$i);print $i}}' /proc/cmdline)
@@ -466,6 +489,9 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             if grep -qw ws73.subscription_inflight_case=expiry /proc/cmdline; then connection_arg="$connection_arg --ssap-subscription-inflight-case expiry"; fi
             if grep -qw ws73.ssap_update_delivery=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-update-delivery-verify"; fi
             if grep -qw ws73.ssap_receive_lifecycle=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-update-lifecycle-verify"; fi
+            if grep -qw ws73.ssap_sender_deadline=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-sender-deadline-verify"; fi
+            sender_case=$(sender_case_argument $(cat /proc/cmdline)) || fail sender-lifecycle-case
+            if [ -n "$sender_case" ]; then connection_arg="$connection_arg --ssap-sender-lifecycle-case $sender_case"; fi
             if grep -qw ws73.ssap_value_lengths=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-value-lengths-verify"; fi
             if grep -qw ws73.ssap_owned=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owned-verify"; fi
             if grep -qw ws73.channel_fairness=1 /proc/cmdline; then connection_arg="$connection_arg --channel-fairness-verify"; fi

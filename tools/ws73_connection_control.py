@@ -247,6 +247,10 @@ def connect_phase(run, phase, kind, previous_objects=(), number=0):
     phase['reference']=link_reference(row['stdout'],caller,peer,phase['connect']['handle'])
     from ws73_connection_objects import observe, reject_old
     phase['typed_objects']=[observe(run,owner,remote) for owner,remote in [(caller,peer),(peer,caller)]]
+    if getattr(run.args,'link_payload_preference',None) is not None:
+        from ws73_link_payload import execute as payload_execute
+        for entry in phase['typed_objects']:
+            payload_execute(run,entry)
     phase['stale_object_rejections']=[]
     for old in previous_objects:
         phase['stale_object_rejections'].append(reject_old(run,old,'while-reused-handle-live'));run.save()

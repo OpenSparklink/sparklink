@@ -109,6 +109,7 @@ def prepare_locked(args, build_fd):
     manifest['runtime_address_contract_version'] = 1
     manifest['firmware_evidence_contract_version'] = 1
     manifest['link_measurement_contract_version'] = 1
+    manifest['link_payload_preference_contract_version'] = 1
     manifest['socket_benchmark_role_contract_version'] = 1
     manifest['benchmark_ssap_contract_version'] = 2
     manifest['benchmark_credit_observation_contract_version'] = 1
@@ -148,7 +149,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_discovery_policy_capture.py', HERE/'ws73_runtime_address.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_payload.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -337,7 +338,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_sender_deadline.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -617,6 +618,9 @@ def _run(args):
         raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
     link_measurements=bool(getattr(args,'link_measurements',False))
+    link_payload=getattr(args,'link_payload_preference',None)
+    if link_payload is not None and (link_payload!='reported-acb-maximum' or support or parallel or not passthrough or not connection_verify or not getattr(args,'qmp_hotplug',False) or not (channel_socket or benchmark_mode) or agent_mode or dynamic_channels or getattr(args,'fault_recovery',False)):
+        raise ValueError('link payload preference requires separate explicit paired native workload gate')
     if link_measurements and (support or parallel or not passthrough or not connection_verify or not getattr(args,'qmp_hotplug',False) or not (channel_socket or benchmark_mode) or agent_mode or dynamic_channels or getattr(args,'fault_recovery',False)):
         raise ValueError('link observations require a dedicated real two-controller connection/application gate')
     from ws73_application_discovery import requested as discovery_requested
@@ -895,6 +899,10 @@ def _run(args):
     m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
     m['connection_down_failure_observe_seconds']=down_failure_observe
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
+    if link_payload is not None:
+        m['link_payload_preference_requested']=link_payload
+        m['link_payload_preference_verifier']=file_record(HERE/'ws73_link_payload.py')
+        m['runner_inputs'].append(m['link_payload_preference_verifier'])
     if link_measurements:
         m['link_measurements_requested']=True
         m['link_measurement_verifier']=file_record(HERE/'ws73_link_measurement.py')
@@ -1178,6 +1186,13 @@ def _run(args):
         if not support:
             if package.get('resource_contract_version') != 1:
                 raise ValueError('old prepared guest lacks explicit model/HCC resource contract; prepare a new artifact')
+            if link_payload is not None:
+                if package.get('link_payload_preference_contract_version') != 1:
+                    raise ValueError('new prepared link command and CLI artifact required')
+                guest_path=str(args.prepared.resolve()/'root/usr/share/sparklink/tools/ws73_link_payload.py')
+                pins=[row for row in package['guest_files'] if row['path']==guest_path]
+                if len(pins)!=1 or pins[0]['sha256']!=m['link_payload_preference_verifier']['sha256']:
+                    raise ValueError('prepared link payload helper differs from host verifier')
             if link_measurements:
                 if package.get('link_measurement_contract_version') != 1:
                     raise ValueError('new prepared link observation contract required')
@@ -1299,6 +1314,7 @@ def _run(args):
                      (f' ws73.connected_reply={connected_reply}' if connected_reply else '')+
                      (' ws73.link_snapshot=1' if link_snapshot else '')+
                      (' ws73.link_measurements=1' if link_measurements else '')+
+                     (' ws73.link_payload_preference='+link_payload if link_payload is not None else '')+
                      (' ws73.peer_binding=1' if peer_binding else '')+
                      (' ws73.channel_daemon_crash=1 ws73.channel_daemon_index='+str(channel_death_index) if channel_death else '')+
                      (' ws73.channel_grant=1' if channel_grant else '')+
@@ -1655,6 +1671,15 @@ def _run(args):
                                 raise ValueError('link observation verifier changed during run')
                             m['link_measurement_corroboration']=measured
                             m['link_measurement_acceptance']=True
+                        from ws73_link_payload import corroborate as payload_corroborate
+                        if control.get('link_payload_preference_requested')!=link_payload:
+                            raise ValueError('link payload boot/request mismatch')
+                        payload_proof=payload_corroborate(control,capture,link_payload)
+                        if link_payload is not None:
+                            if file_record(HERE/'ws73_link_payload.py')!=m['link_payload_preference_verifier']:
+                                raise ValueError('link payload verifier changed during run')
+                            m['link_payload_preference_corroboration']=payload_proof
+                            m['link_payload_preference_acceptance']=True
                         if link_resync != ('link_resync' in control):raise ValueError('explicit link resync request/evidence mismatch')
                         if link_resync:
                             from ws73_link_resync import corroborate as resync_corroborate
@@ -2207,6 +2232,9 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if 'usb_partial_rx_diagnostic_requested'in record:
         return 1
     if type(supervisor_pending) is not bool:
+        return 1
+    from ws73_link_payload import exit_gate as payload_exit_gate
+    if not payload_exit_gate(record):
         return 1
     from ws73_link_measurement import exit_gate as measurement_exit_gate
     if not measurement_exit_gate(record):
@@ -2846,6 +2874,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs='+',required=True)
+            cmd.add_argument('--link-payload-preference',choices=['reported-acb-maximum'],help='one explicit Managed payload preference per controller/lifetime;acknowledgment is not effective length or performance')
             cmd.add_argument('--link-measurements',action='store_true',help='finite actual Managed RSSI/PHY observations before the ordinary workload;not RF policy or performance proof')
             cmd.add_argument('--runtime-addresses',nargs=2,help='explicit temporary volatile E pair addresses;Native setup before daemon,not official identity')
             cmd.add_argument('--firmware-evidence',choices=firmware_evidence.MODES,

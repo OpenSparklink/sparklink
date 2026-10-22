@@ -1,5 +1,27 @@
 # VM 回归输入契约（集成／测试参考）
 
+## 显式链路发送载荷偏好
+
+可选 `--link-payload-preference reported-acb-maximum` 仅用于独立的双设备 Native
+连接／业务门禁。每个连接角色下，对两端各提交一次
+`slctl link-payload-preference CONNECTION OCTETS 5000`；`OCTETS` 取该端真实
+ReadBufferSize 返回的 ACB 最大长度，须能编码为非零 16 位值。这是参考 Host 的
+显式实验参数，不是新的默认初始化步骤，也不证明该值在固件中有效。
+
+命令复用现有 Managed 队列、物理 Session、命令 credit、提交票据和五秒原期限。
+须使用包含新内核 ABI、CLI 与固定 helper 的新产物；旧查询 ioctl 已退休，不能
+只替换一个二进制。启动参数、原始调用、完整 generation／lifetime／handle、
+请求参数及双端捕获必须一致。每端原始 DLI `0x1804` 参数为 handle LE16、
+requested octets LE16；当前方言的成功 Complete 仅含 status，没有参数回显。
+
+独立核对器要求两端、两角色共四次真实确认，不重试、降级或接受多余回复数据。
+缺失、错身份、错参数、超时和部分场景均拒绝完整门禁。确认只表示保留请求的
+控制器命令成功，不能更新或证明有效数据长度、DTAP／SSAP MTU、Ready、安全、
+性能或对端业务交付；晚到／重复完成的硬件假设仍需单独验证。工作负载仍须通过
+原有随机载荷及对端实际回复门禁。测试故障及旧资格保留，不由新名字或新确认覆盖。
+
+## 有限链路观察
+
 可选 `--link-measurements` 在现有双设备连接／应用门禁中、业务工作负载开始前，
 经普通管理角色的真实 `slctl link-measurement` 对两端读取 RSSI 与 PHY，并交换连接角色。
 须使用包含该契约的新镜像；准备工具固定 guest helper，启动参数与原始记录必须一致。

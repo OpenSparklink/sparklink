@@ -447,6 +447,12 @@ def verify_passthrough():
             raise ValueError('link observation boot/request mismatch')
         measured=measurement_corroborate(run,capture,bool(requested_measurements))
         if measured is not None:proofs.append({'link_measurements':measured})
+        from ws73_link_payload import TOKEN as PAYLOAD_TOKEN,corroborate as payload_corroborate,MODE
+        modes=[t for t in tokens if t.startswith('ws73.link_payload_preference=')]
+        if len(modes)>1 or modes not in ([],[PAYLOAD_TOKEN]) or bool(modes)!=(run.get('link_payload_preference_requested') is not None):
+            raise ValueError('link payload boot/request mismatch')
+        payload=payload_corroborate(run,capture,MODE if modes else None)
+        if payload is not None:proofs.append({'link_payload_preference':payload})
     benchmark_modes=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_mode=')]
     if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
     dynamic_boot=[w for w in Path('/proc/cmdline').read_text().split()if w.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close='))]

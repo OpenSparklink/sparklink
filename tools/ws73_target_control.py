@@ -61,6 +61,8 @@ class PassthroughControlRun(Run):
 class ConnectionControlRun(PassthroughControlRun):
     def __init__(self, args):
         super().__init__(args)
+        if getattr(args,'link_payload_preference',None) is not None:
+            self.data['link_payload_preference_requested']=args.link_payload_preference
         if getattr(args,'link_measurements',False):
             self.data['link_measurements_requested']=True
         self.native_controller_return = None
@@ -217,9 +219,12 @@ def main():
     parser.add_argument('--channel-socket-verify',action='store_true')
     parser.add_argument('--acb-transport-probe',action='store_true')
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
+    parser.add_argument('--link-payload-preference',choices=['reported-acb-maximum'])
     parser.add_argument('--link-measurements',action='store_true',help='finite actual Managed RSSI/PHY queries before ordinary workloads')
     parser.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t')
     args=parser.parse_args()
+    if args.link_payload_preference is not None and (not args.passthrough or not args.connection_verify or not (args.channel_socket_verify or args.channel_benchmark)):
+        parser.error('link payload preference requires existing native paired workload')
     if args.link_measurements and (not args.passthrough or not args.connection_verify or not (args.channel_socket_verify or args.channel_benchmark)):
         parser.error('link measurements require a real two-controller connection/application gate')
     # Fixed guest xHCI slots, not host topology defaults or device selection.

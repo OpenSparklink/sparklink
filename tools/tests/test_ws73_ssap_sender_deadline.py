@@ -184,10 +184,25 @@ class SenderDeadline(unittest.TestCase):
             'assert!(value::ValuePdu::decode(2048,&[14,11,4,0]).is_err());}\n')
         with tempfile.TemporaryDirectory()as directory:
             p=Path(directory)/'vector.rs';out=Path(directory)/'vector';p.write_text(source)
-            compile=subprocess.run(['rustc','--edition=2024','--test','-Dwarnings',str(p),'-o',str(out)],capture_output=True,text=True,timeout=30)
+            try:
+                compile=subprocess.run(['rustc','--edition=2024','--test','-Dwarnings',str(p),'-o',str(out)],capture_output=True,text=True,timeout=30)
+            except subprocess.TimeoutExpired as error:
+                self.fail(f'actual production codec compile exceeded the original {error.timeout}s limit; '
+                          f'command={error.cmd!r}; stdout_tail={(error.stdout or b"")[-4096:]!r}; '
+                          f'stderr_tail={(error.stderr or b"")[-4096:]!r}')
             self.assertEqual(compile.returncode,0,compile.stdout+compile.stderr)
             run=subprocess.run([str(out)],capture_output=True,text=True,timeout=5)
             self.assertEqual(run.returncode,0,run.stdout+run.stderr)
+
+    def test_production_codec_compile_timeout_remains_failure_with_diagnostics(self):
+        # Tool failure reporting fixture only. The real compiler/vector test
+        # above remains mandatory with its original deadline and assertions.
+        error=subprocess.TimeoutExpired(['rustc','fixture-command'],30,
+                                        output=b'fixture-compiler-output',stderr=b'fixture-compiler-error')
+        with patch('subprocess.run',side_effect=error):
+            with self.assertRaisesRegex(self.failureException,
+                    'original 30s limit.*fixture-compiler-output.*fixture-compiler-error'):
+                self.test_new_gate_write_refusal_bytes_use_actual_production_codec()
 
     def test_owner_case_rejects_fabricated_success_late_removal_wrong_error_and_new_authority(self):
         for mutate in [lambda i:i['case'].update(owner_exit=0),

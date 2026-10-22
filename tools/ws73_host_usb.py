@@ -191,7 +191,47 @@ def original_mapping(manifest, messages, owners):
     return mapping
 
 
-def observe_failed(root, manifest, row, reports, application, capture, timings, parsed):
+def terminal_observations(row, reports, capture, mapping, parsed, *, observe_without_work_error=False):
+    """Recorded work errors and physical Down, never a fabricated first fault.
+
+    The caller has already checked the whole retained trace/capture/export.
+    Explicit v2 permits absence of a matching Session-work error in that trace;
+    it cannot exclude daemon errors, missing instrumentation or hardware faults.
+    """
+    if type(observe_without_work_error) is not bool:
+        raise CaptureError('explicit boolean no-work-error observation required')
+    scopes = {(r['channel_identity']['controller'], r['channel_identity']['generation'],
+               r['channel_identity']['lifetime']) for r in reports}
+    errors = [r for r in parsed['rows'] if r['event'] == 'work' and r['stage'] == 1
+              and r['error'] and (r['ctl'], r['gen'], r['life']) in scopes]
+    if not errors and not observe_without_work_error:
+        raise CaptureError('original trace has no software fault to locate')
+    first = min(errors, key=lambda r: r['mono_ns']) if errors else None
+    start = min(e['before_wall_ns'] for e in row['events'] if e['kind'] == 'start')
+    lo, hi = parsed['offset_ns']
+    quantum = parsed['quantum_ns']
+    downs = []
+    for endpoint, owner in enumerate(row['owners']):
+        identity = reports[endpoint]['channel_identity']
+        for event in capture['native_events']:
+            params = bytes.fromhex(event['params'])
+            if ((event['bus'],event['device']) != mapping[endpoint]['guest']
+                    or event['event'] not in (5,0x1405) or event['wall_ns'] < start):
+                continue
+            if len(params) != 4 or params[0] != 0 or int.from_bytes(params[1:3], 'little') != identity['handle']:
+                raise CaptureError('original successful Down has a different handle/shape')
+            downs.append(dict(endpoint=endpoint, record=event['record'], reason=params[3],
+                guest_wall_ns=event['wall_ns'],
+                after_first_software_fault_lower_ns=event['wall_ns']-hi-quantum-first['mono_ns'] if first else None,
+                after_first_software_fault_upper_ns=event['wall_ns']-lo+quantum-first['mono_ns'] if first else None))
+    if len(downs) != 2 or {r['endpoint'] for r in downs} != {0,1}:
+        raise CaptureError('both original physical Down observations required')
+    end = max(r['guest_wall_ns'] for r in downs)
+    disconnects = [r['record'] for r in capture['commands'] if r['opcode'] == 0x1403 and start <= r['wall_ns'] <= end]
+    return first, downs, disconnects
+
+
+def observe_failed(root, manifest, row, reports, application, capture, timings, parsed, *, observe_without_work_error=False):
     """Opt-in addition after the existing complete failed-window oracle.
 
     Host trace hashes are checked at fixed paths. QMP bytes are separately
@@ -270,34 +310,11 @@ def observe_failed(root, manifest, row, reports, application, capture, timings, 
                     'right_censored_completions','peak_observed_outstanding')}
             else:
                 leg['guest_resubmit_gaps'] = dict(status='INSUFFICIENT_PAIRED_COMPLETIONS')
-    errors = [r for r in parsed['rows'] if r['event'] == 'work' and r['stage'] == 1 and r['error']]
-    if not errors:
-        raise CaptureError('original trace has no software fault to locate')
-    first = min(errors, key=lambda r: r['mono_ns'])
-    start = min(e['before_wall_ns'] for e in row['events'] if e['kind'] == 'start')
-    lo, hi = parsed['offset_ns']
-    quantum = parsed['quantum_ns']
-    downs = []
-    for endpoint, owner in enumerate(row['owners']):
-        identity = reports[endpoint]['channel_identity']
-        for event in capture['native_events']:
-            params = bytes.fromhex(event['params'])
-            if ((event['bus'],event['device']) != mapping[endpoint]['guest']
-                    or event['event'] not in (5,0x1405) or event['wall_ns'] < start):
-                continue
-            if len(params) != 4 or params[0] != 0 or int.from_bytes(params[1:3], 'little') != identity['handle']:
-                raise CaptureError('original successful Down has a different handle/shape')
-            downs.append(dict(endpoint=endpoint, record=event['record'], reason=params[3],
-                guest_wall_ns=event['wall_ns'],
-                after_first_software_fault_lower_ns=event['wall_ns']-hi-quantum-first['mono_ns'],
-                after_first_software_fault_upper_ns=event['wall_ns']-lo+quantum-first['mono_ns']))
-    if len(downs) != 2 or {r['endpoint'] for r in downs} != {0,1}:
-        raise CaptureError('both original physical Down observations required')
-    end = max(r['guest_wall_ns'] for r in downs)
-    disconnects = [r['record'] for r in capture['commands'] if r['opcode'] == 0x1403 and start <= r['wall_ns'] <= end]
+    first, downs, disconnects = terminal_observations(row, reports, capture, mapping, parsed,
+        observe_without_work_error=observe_without_work_error)
     failures = [r for r in ledger['closed'] if r['type'] == 'data'
                 and r['terminal'] == 'complete' and r['status']]
-    return dict(status='FAILED_BUSINESS_AND_HOST_LENGTH_CANDIDATES_NOT_QUALIFIED',
+    result = dict(status='FAILED_BUSINESS_AND_HOST_LENGTH_CANDIDATES_NOT_QUALIFIED',
         observed_link_windows=windows,
         original_result='FAIL', original_gate_qualified=False, mapping=mapping,
         materials=[dict(path=str(p),bytes=len(raw[p]),sha256=hashlib.sha256(raw[p]).hexdigest())
@@ -305,7 +322,7 @@ def observe_failed(root, manifest, row, reports, application, capture, timings, 
         host_request_count=len(ledger['closed']), host_event_counts=ledger['counts'],
         sequences=sequences, business_legs=legs,
         first_unanswered_application_index=min(application['unanswered_indices'],default=None),
-        first_software_fault={k:first[k] for k in ('ctl','gen','life','service','mono_ns','error')},
+        first_software_fault={k:first[k] for k in ('ctl','gen','life','service','mono_ns','error')} if first else None,
         physical_Down=downs, captured_disconnect_commands=disconnects,
         host_nonzero_data_completions=failures, host_halts=ledger['halts'], host_releases=ledger['releases'],
         scope=['Original failed artifacts only. Random payload/fragment and Session-operation joins do not turn the whole failure into business qualification.',
@@ -313,3 +330,7 @@ def observe_failed(root, manifest, row, reports, application, capture, timings, 
                'Guest wall/trace-mono comparison uses original validated guest anchors and quantization. Host intervals stay separate; no host/guest clock mapping, one-way RF latency or callback CPU-time claim.',
                'Raw Down reason and software timeout are different observations, not a firmware/RF/root-cause proof. NOCP does not prove peer delivery; no credit refunds or deadline/load changes.',
                'Final host nonzero completions/halts/releases are retained, not called the first business failure or natural recovery. No new hardware run, drain proof or current-image qualification.'])
+    if observe_without_work_error:
+        result['terminal_observation_version'] = 2
+        result['work_error_observation'] = 'MATCHING_SESSION_WORK_ERROR_OBSERVED' if first else 'NO_MATCHING_SESSION_WORK_ERROR_OBSERVED_IN_RETAINED_TRACE'
+    return result

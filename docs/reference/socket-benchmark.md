@@ -551,6 +551,13 @@ Down 和主机退出事件独立保留，不能由同一日志的相邻行推导
 原时钟中计算；不相减 host／guest 时间，不把待数据时间或重提交间隔称为callback
 CPU时间、纯空口时延或性能资格。单完成无配对样本时明确记不足，不填零。
 
+若完整保留的 trace 没有该 connection lifetime 的 `Session work.error`，默认分析仍
+拒绝套用“首个软件错误”模型。只有显式增加 `--observe-without-work-error` 才生成诊断
+v2：`first_software_fault` 和以它为起点的区间均为 `null`，并记录
+`NO_MATCHING_SESSION_WORK_ERROR_OBSERVED_IN_RETAINED_TRACE`。这不排除 daemon 的事务
+超时、其他错误或未插桩路径。已有匹配错误不得被该选项隐藏；两端真实 Down、完整
+原失败窗口、原 trace／USB 关联和材料封存仍是必需条件，不能产生业务 PASS。
+
 
 ## 排队清除的观测终态
 

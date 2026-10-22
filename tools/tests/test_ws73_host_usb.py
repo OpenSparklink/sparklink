@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ws73_capture import CaptureError
-from ws73_host_usb import request_ledger, read_requests, completion_candidates, original_mapping, observe_failed
+from ws73_host_usb import request_ledger, read_requests, completion_candidates, original_mapping, observe_failed, terminal_observations
 
 
 def event(micros, name, tail):
@@ -21,10 +21,53 @@ def pair():
 
 
 class HostUSB(unittest.TestCase):
+    def test_no_work_error_requires_explicit_mode_and_never_invents_fault_or_interval(self):
+        row=dict(owners=[{},{}],events=[dict(kind='start',before_wall_ns=1000)])
+        reports=[dict(channel_identity=dict(controller=i,generation=7+i,lifetime=3,handle=0))for i in (0,1)]
+        mapping=[dict(guest=(1,2+i))for i in (0,1)]
+        capture=dict(commands=[],native_events=[dict(bus=1,device=2+i,event=5,record=10+i,wall_ns=3000+i,params='00000007')for i in (0,1)])
+        parsed=dict(rows=[],offset_ns=[100,200],quantum_ns=1)
+        with self.assertRaisesRegex(CaptureError,'no software fault'):
+            terminal_observations(row,reports,capture,mapping,parsed)
+        first,downs,commands=terminal_observations(row,reports,capture,mapping,parsed,observe_without_work_error=True)
+        self.assertIsNone(first);self.assertEqual(commands,[])
+        self.assertTrue(all(d['after_first_software_fault_lower_ns']is None and d['after_first_software_fault_upper_ns']is None for d in downs))
+        for case in ('missing-down','wrong-handle','duplicate-down','bad-mode','old-lifetime-error'):
+            import copy
+            c,p=copy.deepcopy(capture),copy.deepcopy(parsed);enabled=True
+            if case=='missing-down':c['native_events'].pop()
+            elif case=='wrong-handle':c['native_events'][0]['params']='00010007'
+            elif case=='duplicate-down':c['native_events'].append(copy.deepcopy(c['native_events'][0]))
+            elif case=='bad-mode':enabled=1
+            else:
+                p['rows']=[dict(event='work',stage=1,error=-110,ctl=0,gen=7,life=1,mono_ns=500)]
+                # An earlier physical lifetime cannot supply the missing fault.
+                self.assertIsNone(terminal_observations(row,reports,c,mapping,p,observe_without_work_error=True)[0])
+                with self.assertRaises(CaptureError):terminal_observations(row,reports,c,mapping,p)
+                continue
+            with self.subTest(case=case),self.assertRaises(CaptureError):
+                terminal_observations(row,reports,c,mapping,p,observe_without_work_error=enabled)
+
+    def test_opt_in_mode_cannot_hide_existing_matching_work_error(self):
+        row=dict(owners=[{},{}],events=[dict(kind='start',before_wall_ns=1000)])
+        reports=[dict(channel_identity=dict(controller=i,generation=7+i,lifetime=3,handle=0))for i in (0,1)]
+        mapping=[dict(guest=(1,2+i))for i in (0,1)]
+        capture=dict(commands=[],native_events=[dict(bus=1,device=2+i,event=5,record=10+i,wall_ns=3000+i,params='00000007')for i in (0,1)])
+        error=dict(event='work',stage=1,error=-110,ctl=0,gen=7,life=3,service=2,mono_ns=500)
+        parsed=dict(rows=[error],offset_ns=[100,200],quantum_ns=1)
+        original=terminal_observations(row,reports,capture,mapping,parsed)
+        explicit=terminal_observations(row,reports,capture,mapping,parsed,observe_without_work_error=True)
+        self.assertEqual(original,explicit);self.assertEqual(original[0],error)
+        self.assertEqual(original[1][0]['after_first_software_fault_lower_ns'],2299)
+        self.assertEqual(original[1][0]['after_first_software_fault_upper_ns'],2401)
+
     def test_host_analysis_is_explicit_and_hash_failure_precedes_association(self):
         from ws73_session_service import analyze_failed_benchmark
         with self.assertRaisesRegex(ValueError,'explicit failed application'):
             analyze_failed_benchmark('/never-opened-host-fixture',0,host_usb=True)
+        for options in (dict(observe_without_work_error=True),dict(observe_without_work_error=1,host_usb=True,application_progress=True)):
+            with self.assertRaisesRegex(ValueError,'explicit failed host USB'):
+                analyze_failed_benchmark('/never-opened-host-fixture',0,**options)
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             for n,text in [('usb-lifecycle.log','\n'.join(pair())),('usb-lifecycle.events','usb_host_req_data'),('qmp.jsonl','{}')]:

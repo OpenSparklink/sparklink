@@ -107,6 +107,7 @@ def prepare_locked(args, build_fd):
                 'physical_acceptance':False, 'status':'PREPARING', 'inputs':[],
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['runtime_address_contract_version'] = 1
+    manifest['managed_prefix_geometry_contract_version'] = 1
     manifest['firmware_evidence_contract_version'] = 1
     manifest['link_measurement_contract_version'] = 1
     manifest['link_payload_preference_contract_version'] = 1
@@ -1048,7 +1049,8 @@ def _run(args):
     if channel_link_down:m['channel_link_down_verifier']=file_record(HERE/'ws73_channel_link_down.py')
     if channel_revoke_prefix:
         m['revoke_prefix_verifier']=file_record(HERE/'ws73_revoke_prefix.py')
-        if not channel_deadline:m['prefix_hold_verifier']=file_record(HERE/'ws73_channel_prefix_hold.py')
+        m['prefix_hold_verifier']=file_record(HERE/'ws73_channel_prefix_hold.py')
+        m['managed_prefix_geometry_contract_version']=1
     m['live_channel_directions_gate']=channel_directions
     if channel_grant:m['channel_grant_verifier']=file_record(HERE/'ws73_channel_grant.py')
     if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py')
@@ -1067,6 +1069,8 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if channel_revoke_prefix and (type(package.get('managed_prefix_geometry_contract_version')) is not int or package['managed_prefix_geometry_contract_version']!=1):
+            raise ValueError('new prepared buffer-geometry contract required before USB attachment;no old-root fallback')
         if partial_rx_target is not None:
             from ws73_usb_partial_diagnostic import validate_inputs as validate_partial_rx
             validate_partial_rx(package)
@@ -1240,6 +1244,7 @@ def _run(args):
                      '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+
                      (' ws73.expected_models='+','.join(physical_boundary.models) if physical_boundary else '')+
                      (' ws73.runtime_addresses='+','.join(runtime_addresses) if runtime_addresses else '')+
+                     (' ws73.prefix_geometry=1' if channel_revoke_prefix else '')+
                      (' ws73.support=1' if support else '')+
                      (' ws73.passthrough=1' if passthrough else '')+
                      (' ws73.parallel=1' if parallel else '')+
@@ -1947,7 +1952,8 @@ def _run(args):
                         if channel_link_down and not probe.get('prefix_hold',{}).get('primed',False):raise ValueError('requested primed-debt physicalDown barrier missing')
                         if bool(probe.get('data_link_down'))!=channel_link_down:raise ValueError('requested direct physical Down gate mismatch')
                         if bool(probe.get('prefix_hold'))!=(channel_revoke_prefix and not channel_deadline):raise ValueError('requested causal incomplete-PDU barrier missing or unexpected')
-                        if channel_revoke_prefix and not channel_deadline and file_record(HERE/'ws73_channel_prefix_hold.py')!=m['prefix_hold_verifier']:raise ValueError('prefix barrier verifier changed during run')
+                        if channel_revoke_prefix and file_record(HERE/'ws73_channel_prefix_hold.py')!=m['prefix_hold_verifier']:raise ValueError('prefix barrier verifier changed during run')
+                        if channel_revoke_prefix and probe.get('data_deadline'if channel_deadline else'prefix_hold',{}).get('geometry',{}).get('version')!=1:raise ValueError('requested actual reported-buffer geometry missing')
                         if bool(probe.get('data_deadline'))!=channel_deadline:raise ValueError('requested original PDU deadline gate mismatch')
                         if probe.get('channel_grant',{}).get('intent_phase_contract_version')!=(2 if channel_deadline else None):raise ValueError('requested live/retired intent phases mismatch')
                         if bool(probe.get('unauthenticated_encryption',False))!=encryption:raise ValueError('explicit installation gate mismatch')
@@ -2593,6 +2599,13 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     required=record.get('live_channel_security_required',0)
     connected=record.get('connected_file_corroboration',{})
     if not isinstance(connected,dict):return 1
+    geometry_tokens=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.prefix_geometry=')]
+    geometry_version=record.get('managed_prefix_geometry_contract_version')
+    if geometry_version is not None or geometry_tokens:
+        from ws73_channel_prefix_hold import valid_geometry_summary
+        if (type(geometry_version)is not int or geometry_version!=1 or geometry_tokens!=['ws73.prefix_geometry=1']
+                or record.get('live_channel_revoke_prefix_gate')is not True
+                or not valid_geometry_summary(connected.get('prefix_geometry'))):return 1
     proof=connected.get('protected_security')
     if type(required) is not int or required not in (0,1,2):return 1
     if required:

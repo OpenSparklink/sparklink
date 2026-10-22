@@ -364,6 +364,10 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None):
     if r.get('channel_grant',{}).get('tx_constraint_required'):
         from ws73_channel_grant import verify_intents
         proof['tx_constraints']=verify_intents(r['channel_grant'],r)
+    field='data_deadline' if 'data_deadline' in r else 'prefix_hold'
+    if 'geometry' in r.get(field,{}):
+        from ws73_channel_prefix_hold import corroborate_geometry
+        proof['prefix_geometry']=corroborate_geometry(r,capture,field)
     return proof
 
 

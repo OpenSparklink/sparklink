@@ -46,7 +46,12 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,s
     # The original held-PDU absolute5s deadline starts only after this probe.
     grant.expired_intent()
     # Allow previous real business completions to drain before arming once.
-    time.sleep(.15);stage('arm_ready','armed');grant.arm(sample_before_block=True);stage('wait_held','held')
+    time.sleep(.15);row['geometry']=grant.prefix_geometry();save();stage('arm_ready','armed')
+    count=row['geometry']['plan']['prime_count']
+    if count:
+        row['primed']=True;grant.prime(count);stage('wait_held','held')
+    grant.arm(sample_before_block=True)
+    if not count:stage('wait_held','held')
     row['blocked_result']=receive(grant.parents[i]);row['timeout_observed_wall_ns']=time.time_ns();save()
     marker=b'DEADLINE'+secrets.token_bytes(32);send(grant.parents[i],dict(kind='deny',marker=marker.hex()));row['old_fd_before_release']=receive(grant.parents[i]);save()
     row['management_at_timeout']=[bytes(a.management_status()).hex() for a in observers]
@@ -98,8 +103,10 @@ def verify(r):
         for key in ['ready_before','ready_at_timeout','ready_after']:
             ready=decode(SleControllerSnapshot,d[key][n])
             if ready.flags!=1 or ready.generation!=a.generation:raise ValueError('same registered Ready controller required')
-    armed=g['armed'];samples=g['blocking_witness'];result=d['blocked_result'];tx=decode(SleChannelTxStatus,armed['pre_block_tx_status']);owner=g['owners'][i]
-    if (tx.version,tx.size,tx.controller,tx.generation,tx.lifetime,tx.handle,tx.packet_maximum,tx.capacity,tx.outstanding,tx.connection_debt,tx.flags,tx.active_pdu_bytes,tx.active_pdu_offset)!=(1,64,i,owner['generation'],owner['lifetime'],owner['handle'],254,5,5,5,3,2047,1270) or tx.reserved or not tx.pool_exhaustions:raise ValueError('actual full pool5/begun1270byte snapshot before blocked RX required')
+    armed=g['armed'];samples=g['blocking_witness'];result=d['blocked_result'];owner=g['owners'][i]
+    from ws73_channel_prefix_hold import full_pool,verify_priming
+    full_pool(r,'data_deadline')
+    if d.get('primed',False):verify_priming(r,'data_deadline')
     if armed['pid']!=g['workers'][i]['pid'] or armed['fd']!=g['workers'][i]['fd'] or len(samples)!=2 or any(v['syscall']!=45 or v['fd']!=armed['fd'] or v['state']!='S' or v['wchan'] not in ['__skb_wait_for_more_packets','schedule_timeout'] for v in samples) or not armed['pre_block_tx_status_wall_ns']<=armed['wall_ns']<samples[0]['wall_ns']<samples[1]['wall_ns']<result['end_wall_ns']:raise ValueError('actual blocked RX after real full-pool observation required')
     if result['stage']!='blocked_denied' or result['errno']!=errno.ETIMEDOUT:raise ValueError('original timeout, not EAGAIN/revoke/Down/EOF required')
     lower=result['end_monotonic_ns']-armed['admission_after_monotonic_ns'];upper=result['end_monotonic_ns']-armed['admission_before_monotonic_ns']
@@ -114,7 +121,9 @@ def verify(r):
     # Host and guest wall clocks have independent offsets. Use the guest's
     # actual ack-file receipt to connect causal stages; never compare clocks.
     receipts=d['ack_receipts']
-    if not receipts[0]['wall_ns']<=armed['admission_before_wall_ns']<=armed['admission_after_wall_ns']<d['markers'][1]['wall_ns']<=receipts[1]['wall_ns']<result['end_wall_ns']<=d['timeout_observed_wall_ns']<d['markers'][2]['wall_ns']<=receipts[2]['wall_ns']<d['post_release_checked_wall_ns']<d['cleanup_before_wall_ns'] or not receipts[0]['monotonic_ns']<receipts[1]['monotonic_ns']<receipts[2]['monotonic_ns']:raise ValueError('guest receipts must show original timeout while real reply held')
+    held_order=(receipts[1]['wall_ns']<armed['admission_before_wall_ns'] if d.get('primed',False)
+                else armed['admission_after_wall_ns']<d['markers'][1]['wall_ns']<=receipts[1]['wall_ns'])
+    if not (receipts[0]['wall_ns']<=armed['admission_before_wall_ns']<=armed['admission_after_wall_ns']<result['end_wall_ns']<=d['timeout_observed_wall_ns']<d['markers'][2]['wall_ns']<=receipts[2]['wall_ns']<d['post_release_checked_wall_ns']<d['cleanup_before_wall_ns'] and held_order and receipts[1]['wall_ns']<result['end_wall_ns']) or not receipts[0]['monotonic_ns']<receipts[1]['monotonic_ns']<receipts[2]['monotonic_ns']:raise ValueError('guest receipts must show original timeout while real reply held')
     if not d['acks'][0]['host_wall_ns']<d['acks'][1]['host_wall_ns']<d['acks'][2]['host_wall_ns']:raise ValueError('host observations must be ordered on their own clock')
     request=decode(SleConnectionSubmit,d['cleanup_disconnect_input']);link=decode(SleLinkSnapshot,d['links_at_timeout'][i]).links[0]
     if (request.version,request.operation,request.generation,request.request_id,request.handle,request.reason,request.expected_lifetime)!=(2,2,owner['generation'],950,owner['handle'],0x13,owner['lifetime']) or bytes(request.expected_address)!=bytes(link.address) or request.expected_role!=link.role or request.expected_address_type!=link.address_type:raise ValueError('exact lifetime-bound cleanup input required')
@@ -130,15 +139,18 @@ def verify(r):
 
 def corroborate(r,capture,hold,stderr,expected):
     d=verify(r);g=r['channel_grant'];i=r['index'];owner=g['owners'][i]
+    from ws73_channel_prefix_hold import geometry,corroborate_geometry,corroborate_priming
+    plan=geometry(r,'data_deadline')
     if not hold or not hold.get('complete') or hold.get('hold_budget_ms')!=8000 or hold['observations']!=d['acks'] or hold['index']!=i:raise CaptureError('sealed real bounded8s coordinator required')
     sdus,legs=business_evidence(g,r,capture);same=lambda v,n:(v['bus'],v['device'])==(r['usb'][n]['bus'],r['usb'][n]['device'])
     start=g['revoke_prefix']['admission_before_wall_ns'];end=d['cleanup_before_wall_ns'];payload=bytes.fromhex(g['revoke_prefix']['payload']);wire=b'\x1f\0\xfb\x07\xf1'+payload
     if len(payload)!=2042 or payload[:8]!=b'SLKREV01' or g['armed']['prefix']!=payload.hex():raise CaptureError('original random admitted2042byte PDU required')
     packets=[v for v in capture['acb_packets'] if same(v,i) and v['direction']=='out' and v['handle']==owner['handle'] and start<=v['wall_ns']<=end];data=b''
     for n,p in enumerate(packets):
-        if p['boundary']!=(1 if n==0 else 2) or not p.get('completion') or p['wall_ns']>=g['armed']['pre_block_tx_status_wall_ns']:raise CaptureError('only original prefix before full-pool snapshot may submit, never after timeout/release')
+        if p['boundary']!=(1 if n==0 else 2) or not p.get('completion') or p['wall_ns']>=g['armed']['pre_block_tx_status_wall_ns'] or len(bytes.fromhex(p['data']))!=plan['packet_maximum']:raise CaptureError('only original prefix before full-pool snapshot may submit, never after timeout/release')
         data+=bytes.fromhex(p['data'])
-    if len(packets)!=5 or len(data)!=1270 or not wire.startswith(data):raise CaptureError('actual five original fragments1270bytes required')
+    if len(packets)!=plan['fragments'] or len(data)!=plan['offset'] or not wire.startswith(data):raise CaptureError('exact actual original incomplete prefix required')
+    if d.get('primed',False):corroborate_priming(r,capture,'data_deadline')
     nocp=[v for v in capture['native_events'] if same(v,i) and v['event']==9 and start<=v['wall_ns']<=end]
     if not nocp or any(v['wall_ns']<=d['markers'][2]['wall_ns'] for v in nocp):raise CaptureError('NOCP must be withheld until explicit post-timeout real reply release')
     counts=[]
@@ -146,7 +158,7 @@ def corroborate(r,capture,hold,stderr,expected):
         body=bytes.fromhex(e['params'])
         if len(body)!=3 or int.from_bytes(body[:2],'little')!=owner['handle'] or not body[2]:raise CaptureError('exact original handle nonzero NOCP required')
         counts.append(body[2])
-    if sum(counts)!=5:raise CaptureError('five actual delayed controller completions required, not an assumed refund')
+    if sum(counts)!=plan['capacity']:raise CaptureError('exact full-pool delayed controller completions required, not an assumed refund')
     from ws73_diagnostic_hold import corroborate_host_hold
     hold_proof=corroborate_host_hold(hold,dict(records=d['markers'],host_hold_acknowledgements=d['acks']),[],stderr,expected,held_reply=nocp[0],expected_method='BOUNDED8S_HOLD_REAL_IN81_FOR_ORIGINAL5S_PDU_DEADLINE')
     for n,e in enumerate(d['down']):
@@ -156,7 +168,7 @@ def corroborate(r,capture,hold,stderr,expected):
     control(capture,r['usb'][i],0x1403,owner['handle'].to_bytes(2,'little')+b'\x13',d['cleanup_before_wall_ns'],d['cleanup_after_wall_ns'],status=True)
     for enabled in [True,False]:control(capture,r['usb'][1-i],0x1002,bytes([enabled,0]),d['cleanup_after_wall_ns'],d['scan_checked_wall_ns'])
     if any(d['old_fd_after_release']['marker'] in p['data'] for p in sdus):raise CaptureError('failed oldfd marker reached USB')
-    return dict(status='REAL_ORIGINAL5S_BEGUN_DEADLINE_CORROBORATED',submitted_fragments=5,submitted_bytes=1270,business_round_trips_before_hold=2,partial_pdu_application_round_trips=0,elapsed_monotonic_ns=d['blocked_result']['end_monotonic_ns']-g['armed']['admission_after_monotonic_ns'],actual_full_pool_snapshot=g['armed']['pre_block_tx_status'],delayed_nocp_records=[v['record'] for v in nocp],business_legs=legs,host_hold=hold_proof,scope='Bounded delay of real successful USB IN, not natural recovery, full debt/reuse proof or another independent peer business link')
+    return dict(status='REAL_ORIGINAL5S_BEGUN_DEADLINE_CORROBORATED',submitted_fragments=plan['fragments'],submitted_bytes=plan['offset'],prefix_geometry=corroborate_geometry(r,capture,'data_deadline'),business_round_trips_before_hold=2,partial_pdu_application_round_trips=0,elapsed_monotonic_ns=d['blocked_result']['end_monotonic_ns']-g['armed']['admission_after_monotonic_ns'],actual_full_pool_snapshot=g['armed']['pre_block_tx_status'],delayed_nocp_records=[v['record'] for v in nocp],business_legs=legs,host_hold=hold_proof,scope='Bounded delay of real successful USB IN, not natural recovery, full debt/reuse proof or another independent peer business link')
 
 
 def control(capture,usb,opcode,params,start,end,*,status=False):

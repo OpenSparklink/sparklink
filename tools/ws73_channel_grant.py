@@ -192,7 +192,7 @@ def worker(data, control, minimum=0):
                 send(control,dict(stage='oneway',initiator=command['initiator'],sent=sent,received=arrived,direction_errno=denied,denied_marker=marker.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
             elif kind=='prime':
                 payloads=[bytes.fromhex(v) for v in command['payloads']]
-                if len(payloads)!=4 or len(set(payloads))!=4:raise ValueError('four distinct bounded real priming messages required')
+                if not 1<=len(payloads)<=31 or len(set(payloads))!=len(payloads):raise ValueError('distinct bounded real priming messages required')
                 values=[];before=time.time_ns()
                 for payload in payloads:
                     validate(payload,payload,False)
@@ -361,10 +361,35 @@ class Gate:
             self.row['business'].append(row);self.save()
         return rows
 
-    def prime(self):
+    def prefix_geometry(self,force_prime=False):
+        from sparklink.structs import SleChannelTxStatus
+        from ws73_management_setup import decode
+        from ws73_channel_prefix_hold import geometry_plan
+        row=dict(version=1,force_prime=force_prime,samples=[],start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns())
+        # Retain bounded observations even if setup fails before arm(). This
+        # is fixture evidence, not another production credit/state authority.
+        self.row['prefix_geometry_observation']=row;self.save()
+        deadline=time.monotonic()+.5
+        while True:
+            send(self.parents[self.index],dict(kind='tx_status'));value=receive(self.parents[self.index]);row['samples'].append(value)
+            self.save()
+            tx=decode(SleChannelTxStatus,value['value']);owner=self.row['owners'][self.index];worker=self.row['workers'][self.index]
+            if ((value['stage'],value['pid'],value['fd'],tx.version,tx.size,tx.controller,tx.generation,tx.lifetime,tx.handle)
+                    !=('tx_status',worker['pid'],worker['fd'],1,64,self.index,owner['generation'],owner['lifetime'],owner['handle'])or tx.reserved):
+                raise ValueError('current original worker and Native pool identity required')
+            plan=geometry_plan(tx.packet_maximum,tx.capacity,force_prime)
+            if time.monotonic()>deadline or len(row['samples'])>101:raise TimeoutError('bounded actual empty data pool before hold')
+            if not any([tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset]):break
+            time.sleep(.005)
+        row.update(plan=plan,end_wall_ns=time.time_ns(),end_monotonic_ns=time.monotonic_ns())
+        self.save()
+        return row
+
+    def prime(self,count):
         from ws73_management_setup import decode
         from sparklink.structs import SleChannelTxStatus
-        payloads=[message().hex() for _ in range(4)]
+        if type(count)is not int or not 1<=count<=31:raise ValueError('bounded explicit priming count required')
+        payloads=[message().hex() for _ in range(count)]
         row=dict(payloads=payloads,start_wall_ns=time.time_ns(),applications=[],source_pool_samples=[])
         self.row['priming']=row;self.save()
         for n,parent in enumerate(self.parents):send(parent,dict(kind='prime',sender=n==self.index,payloads=payloads))
@@ -373,8 +398,8 @@ class Gate:
         while True:
             send(self.parents[self.index],dict(kind='tx_status'));value=receive(self.parents[self.index]);row['source_pool_samples'].append(value);self.save()
             tx=decode(SleChannelTxStatus,value['value'])
-            if (tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset)==(4,4,0,0,0,0,0):break
-            if time.monotonic()>deadline:raise TimeoutError('actual four unpaid priming credits before long PDU')
+            if (tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset)==(count,count,0,0,0,0,0):break
+            if time.monotonic()>deadline:raise TimeoutError('actual unpaid priming credits before long PDU')
             time.sleep(.005)
         row.update(end_wall_ns=time.time_ns(),status='PRIMING_RECEIPTS_RECORDED');self.save()
 

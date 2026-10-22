@@ -356,6 +356,24 @@ C输出包含32条完整十六进制收发记录，版本3的每stdout/stderr预
 
 ## 受控原期限与生产转换序列输入
 
+新prepare记录`managed_prefix_geometry_contract_version=1`，对应运行凭据
+`ws73.prefix_geometry=1`。当前受控前缀门禁在接管USB前拒绝缺少该版本的旧root；
+历史报告仍保留原源码及固定条件，不能改字段升级资格。
+
+门禁先通过原普通进程查询同一controller／generation／lifetime的空闲发送池，
+有限0.5秒观察要求队列、busy、active PDU和旧debt均清空。ACB片长须为66..2046、
+容量为2..32；这是有界夹具范围，超出时明确拒绝，不截断实际buffer声明。
+当整个池足以提交2047字节PDU时，先由真实对端校验capacity−1条不同的61字节单向
+消息，实际Native快照须显示相同未支付debt且没有active PDU，再以长PDU占用最后
+一个slot。否则保留原来的多片耗尽路径。Direct Down仍要求预填充。
+
+空池快照、原始0402回复、预填充的应用收据及双端包、满池快照与未完成offset必须
+一致；任何完整PDU、额外源端包、缺失对端校验、提前NOCP或错误归还数量均拒绝。
+0402可来自同一USB实例先前的共享Native初始化，不能人为把时间下界设为connected
+子门禁开始后。片长不是RF包长、SSAP MTU或独立NOCP真实性证明。夹具观察、预填充
+和下列2／8秒hold不改变生产5秒原期限，也不是正常通信的固定等待或性能优化。
+离线输入域检查不授予真实内核并发、固件credit、完整复用或新实机资格。
+
 `--managed-channel-deadline` 需要独立的pre-daemon Managed channel gate、
 `--managed-connected-case release`、`--managed-channel-grant` 与
 `--managed-channel-revoke-prefix`。原生产期限为5秒；QEMU需有独立8秒的
@@ -379,11 +397,12 @@ seed/case/操作轨迹，编译失败不算性质反例；PASS也不证明NOCP�
 ## 未完成PDU的Down与空闲观测输入
 
 `--managed-channel-link-down` 与上述独立Managed channel gate、release、Grant和
-revoke-prefix组合使用普通2秒真实IN暂缓。当前工具要求primed模式：四条不同
-61字节消息由对端真实校验，源端实际TX快照为四份未支付debt、空队列且flags=0；
-长PDU先耗尽剩余一份，须观察ACTIVE/BEGUN、未完成offset和五份debt。收到对端
+revoke-prefix组合使用普通2秒真实IN暂缓。当前工具要求primed模式：capacity−1条不同
+61字节消息由对端真实校验，源端实际TX快照为相同未支付debt、空队列且flags=0；
+长PDU先耗尽剩余一份，须观察ACTIVE/BEGUN、未完成offset和完整池debt。收到对端
 真实Down后才显式释放原完成。缺前提、限时自动释放或前缀已完整均失败，不能
-以guest成功标记覆盖USB核对。四条单向预备消息不计作四次往返。
+以guest成功标记覆盖USB核对。单向预备消息不计作往返；历史容量5的四条预备消息
+保留原条件，不自动授予不同buffer的新设备资格。
 
 `--managed-channel-idle-observe` 仅适用于独立release/Grant/revoke-prefix门禁，
 指定index 0或1；不得和Down、deadline或其他专项模式合并。仅在带scratch标识

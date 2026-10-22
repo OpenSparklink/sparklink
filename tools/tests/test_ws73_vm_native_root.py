@@ -11,11 +11,62 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only, stage_runtime_libraries, compiler_invocation
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack
 from ws73_north_star import file_record
 
 
 class NativeVMProfile(unittest.TestCase):
+    def test_nonexecutable_init_is_rejected_before_image_or_formatter(self):
+        # Real filesystem mode reproduces the staged 0644 failure. No guest,
+        # USB, firmware or fake boot success is involved.
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); root = base / 'root'; root.mkdir()
+            output = base / 'out'; output.mkdir()
+            entry = root / 'init'; entry.write_text('#!/bin/sh\nexit 0\n')
+            for mode in (0o644, 0o600, 0o000):
+                entry.chmod(mode)
+                with self.subTest(mode=oct(mode)), patch('ws73_vm_native_root.subprocess.run') as run:
+                    with self.assertRaisesRegex(ValueError, 'root/init.*executable'):
+                        pack(SimpleNamespace(output=output), {'native_vm': {'root_uuid': 'fixture'}}, root)
+                    run.assert_not_called()
+                    self.assertEqual(list(output.iterdir()), [])
+
+    def test_missing_empty_directory_or_symlink_init_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); root = base / 'root'; root.mkdir()
+            output = base / 'out'; output.mkdir(); entry = root / 'init'
+            for kind in ('missing', 'empty', 'directory', 'symlink'):
+                if kind == 'empty':
+                    entry.touch(); entry.chmod(0o755)
+                elif kind == 'directory':
+                    entry.mkdir(mode=0o755)
+                elif kind == 'symlink':
+                    target = base / 'host-entry'; target.write_text('not a guest entry'); target.chmod(0o755)
+                    entry.symlink_to(target)
+                with self.subTest(kind=kind), patch('ws73_vm_native_root.subprocess.run') as run:
+                    with self.assertRaisesRegex(ValueError, 'root/init.*executable'):
+                        pack(SimpleNamespace(output=output), {'native_vm': {'root_uuid': 'fixture'}}, root)
+                    run.assert_not_called()
+                    self.assertEqual(list(output.iterdir()), [])
+                if entry.is_dir():
+                    entry.rmdir()
+                elif entry.exists():
+                    entry.unlink()
+
+    def test_valid_init_keeps_existing_pack_command_and_formatter_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); root = base / 'root'; root.mkdir()
+            output = base / 'out'; output.mkdir()
+            entry = root / 'init'; entry.write_text('#!/bin/sh\nexit 0\n'); entry.chmod(0o755)
+            # The external formatter is a visible failing dependency, not an
+            # image/boot fixture upgraded to qualification.
+            with patch('ws73_vm_native_root.subprocess.run', side_effect=subprocess.CalledProcessError(9, 'mkfs.btrfs')) as run:
+                with self.assertRaises(subprocess.CalledProcessError):
+                    pack(SimpleNamespace(output=output), {'native_vm': {'root_uuid': 'fixture'}}, root)
+                self.assertEqual(run.call_args.args[0], ['mkfs.btrfs', '-U', 'fixture', '--rootdir', str(root), str(output / 'root.btrfs')])
+                self.assertTrue(run.call_args.kwargs['check'])
+                self.assertEqual((output / 'root.btrfs').stat().st_size, 1024 ** 3)
+
     def test_compiler_symlink_invocation_reaches_real_compiler_and_old_resolution_fails(self):
         # Real process/compiler with a synthetic argv[0] dispatcher; no kernel
         # fixture or firmware. Like ccache,its basename selects the compiler.

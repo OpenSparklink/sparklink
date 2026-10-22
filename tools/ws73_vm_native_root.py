@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
 import uuid
 
@@ -353,6 +354,15 @@ def stage(args, manifest, root, source, copy_elf):
 
 
 def pack(args, manifest, root):
+    # This profile boots exactly init=/init. Reject a bad staged entry before
+    # allocating an image or invoking mkfs; source hashes alone miss chmod.
+    entry = root / 'init'
+    try:
+        mode = entry.lstat().st_mode
+    except FileNotFoundError as error:
+        raise ValueError('native VM root/init must be a nonempty executable regular file') from error
+    if not stat.S_ISREG(mode) or not mode & 0o111 or not entry.stat().st_size:
+        raise ValueError('native VM root/init must be a nonempty executable regular file')
     disk = args.output / 'root.btrfs'
     with disk.open('xb') as stream:
         stream.truncate(1024 * 1024 * 1024)

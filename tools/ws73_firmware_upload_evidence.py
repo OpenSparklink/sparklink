@@ -96,7 +96,7 @@ def requested_mode(args):
     if mode not in MODES:
         raise ValueError('explicit --firmware-evidence rom-upload|runtime-observation required; staged files are not a loaded-image witness')
     if mode == 'rom-upload':
-        allowed = {'qmp_hotplug', 'connection_verify', 'channel_socket_verify', 'channel_socket_boundaries'}
+        allowed = {'qmp_hotplug', 'connection_verify', 'channel_socket_verify', 'channel_socket_boundaries', 'link_measurements'}
         if (not all(getattr(args, key, False) is True for key in ['qmp_hotplug', 'connection_verify', 'channel_socket_verify'])
                 or any(type(value) is bool and value and key not in allowed for key, value in vars(args).items())):
             raise ValueError('rom-upload evidence requires a dedicated ordinary two-device connection/socket gate')

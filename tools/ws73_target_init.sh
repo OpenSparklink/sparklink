@@ -421,6 +421,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
         posture=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connection_advertising=/){sub(/^ws73.connection_advertising=/,"",$i);print $i}}' /proc/cmdline)
         case "$posture" in fixed-t|negotiable-t) ;; *) fail 'explicit connection posture' ;; esac
         connection_arg="--connection-verify --connection-advertising $posture"
+        if grep -qw ws73.link_measurements=1 /proc/cmdline; then connection_arg="$connection_arg --link-measurements"; fi
         if grep -qw ws73.application_clients=1 /proc/cmdline; then connection_arg="$connection_arg --application-client-verify"; fi
         if grep -qw ws73.application_discovery=1 /proc/cmdline; then connection_arg="$connection_arg --application-discovery-verify"; fi
         if grep -qw ws73.application_discovery_case=owner-loss /proc/cmdline; then connection_arg="$connection_arg --application-discovery-case owner-loss"; fi

@@ -55,8 +55,12 @@ def observe(run,owner,remote):
     row=run.ctl(owner,'peers')
     if f"Peer: path={path} address={value['address']} address_type={value['address_type']} observation_valid=" not in row['stdout']:
         raise CaptureError('typed SDK Peer listing must contain actual fresh peer identity')
-    return dict(owner=owner,remote=remote,object=value,enumeration_commands=polls,info_command=connection_command,
+    result = dict(owner=owner,remote=remote,object=value,enumeration_commands=polls,info_command=connection_command,
                 peer_command=peer_command,observation_command=observation_command,peer_list_command=len(run.data['commands'])-1)
+    if getattr(run.args,'link_measurements',False):
+        from ws73_link_measurement import execute
+        execute(run,result)
+    return result
 
 
 def reject_old(run,record,scope):

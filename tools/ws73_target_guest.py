@@ -440,6 +440,13 @@ def verify_passthrough():
         if run['connection_control'].get('connection_objects'):
             from ws73_connection_objects import corroborate as object_corroborate
             object_corroborate(run,capture,connections)
+        from ws73_link_measurement import TOKEN,corroborate as measurement_corroborate
+        tokens=Path('/proc/cmdline').read_text().split()
+        requested_measurements=tokens.count(TOKEN)
+        if requested_measurements>1 or bool(requested_measurements)!=run.get('link_measurements_requested',False):
+            raise ValueError('link observation boot/request mismatch')
+        measured=measurement_corroborate(run,capture,bool(requested_measurements))
+        if measured is not None:proofs.append({'link_measurements':measured})
     benchmark_modes=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_mode=')]
     if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
     dynamic_boot=[w for w in Path('/proc/cmdline').read_text().split()if w.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close='))]

@@ -174,8 +174,16 @@ static void owned_info_json(const struct SlkAuthorizationRequestInfo *p) {
 static void owned_clear(struct OwnedPending *p) {
     slk_authorization_request_free(p->request);p->request=NULL;
 }
+/* Explicit benchmark observation only. No server TTL,commit or delivery claim. */
+static void owned_lifecycle(const char *stage,const struct SlkServiceReceipt *r,
+    uint64_t created,uint64_t end,int error,uint64_t token,uint64_t request,
+    uint64_t call_started,uint64_t call_returned) {
+    printf("SdkOwnedLifecycle: {\"version\":1,\"api\":\"c\",\"stage\":\"%s\",\"pid\":%ld,\"index\":%u,\"generation\":%"PRIu64",\"start\":%u,\"property\":%u,\"created_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"sampled_ns\":%"PRIu64",\"wall_ns\":%"PRIu64",\"error\":%d,\"token\":%"PRIu64",\"request_id\":%"PRIu64",\"call_started_ns\":%"PRIu64",\"call_returned_ns\":%"PRIu64"}\n",
+        stage,(long)getpid(),r->controller.index,r->controller.generation,r->start,r->handles[0],
+        created,end,now_ns(),wall_ns(),error,token,request,call_started,call_returned);fflush(stdout);
+}
 static int owned_receive(struct SlkLocalService *view,const struct SlkServiceReceipt *receipt,
-                         struct OwnedPending *p,int ask,int allow) {
+                         struct OwnedPending *p,int ask,int allow,uint64_t created,uint64_t end) {
     if (p->request) return 0;
     int error=slk_local_service_next_authorization(view,&p->request);
     if (error==-EAGAIN) return 0;
@@ -202,6 +210,10 @@ static int owned_receive(struct SlkLocalService *view,const struct SlkServiceRec
     /* Call-start observations,not the internal decision linearization point. */
     uint64_t decision=now_ns(),wall=wall_ns();
     error=slk_authorization_request_reply(p->request,(uint32_t)allow);
+    if (created) {
+        uint64_t returned=now_ns();
+        owned_lifecycle("approval_return",receipt,created,end,error,info->token,info->request_id,decision,returned);
+    }
     owned_clear(p);
     if (!error) {
         printf("SdkAuthorizationDecision: ");owned_info_json(info);
@@ -234,7 +246,8 @@ static int owned_mode(int argc,char **argv) {
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkLocalService *view=NULL;struct SlkServiceReceipt receipt={0};
     struct SlkConnection *link=NULL;
-    int status=1,error,approval_fd=-1;struct OwnedPending pending={0};const uint64_t original=now_ns()+5000000000ULL;
+    int status=1,error,approval_fd=-1,observing=0;uint64_t created=0,end=0;
+    struct OwnedPending pending={0};const uint64_t original=now_ns()+5000000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
     error=slk_client_register_local_service(client,&id,service,service_n,&property,1,requests?SLK_SERVICE_AUTHORIZATION_REQUESTS:SLK_SERVICE_AUTHORIZATION_NONE,original,&view);if (error) {errno=-error;goto done;}
     error=slk_local_service_receipt(view,&receipt);if (error) {errno=-error;goto done;}
@@ -246,10 +259,10 @@ static int owned_mode(int argc,char **argv) {
     }
     slk_client_close(client);client=NULL;
     printf("SdkOwnedAPI: api=c client_closed=true\nSsapOwnedService: start=%u end=%u property=%u; local registration only\n",receipt.start,receipt.end,receipt.handles[0]);fflush(stdout);
-    const uint64_t end=now_ns()+30000000000ULL;char line[4096];size_t used=0;
+    created=now_ns();end=created+30000000000ULL;char line[4096];size_t used=0;
     for (;;) {
         /* Try next before sleeping;the duplicated eventfd is poll-only. */
-        if (requests && view) {error=owned_receive(view,&receipt,&pending,ask,allow);if (error) {errno=-error;goto done;}}
+        if (requests && view) {error=owned_receive(view,&receipt,&pending,ask,allow,observing?created:0,end);if (error) {errno=-error;goto done;}}
         uint64_t now=now_ns();if (now>=end) {errno=ETIMEDOUT;goto done;}
         struct pollfd fds[2]={{.fd=STDIN_FILENO,.events=POLLIN},{.fd=view?approval_fd:-1,.events=POLLIN}};
         int count=poll(fds,requests?2:1,(int)((end-now+999999)/1000000));
@@ -265,7 +278,11 @@ static int owned_mode(int argc,char **argv) {
         if (n!=1) {errno=EPIPE;goto done;}
         if (line[used++]!='\n') {if (used==sizeof line-1) {errno=E2BIG;goto done;}continue;}
         line[used]='\0';used=0;
-        if (!strcmp(line,"value\n")) {
+        if (!strcmp(line,"lifecycle\n")) {
+            if (updates || !allow || !view || observing) {errno=EINVAL;goto done;}
+            if (now_ns()>=end) {errno=ETIMEDOUT;goto done;}
+            observing=1;owned_lifecycle("observed",&receipt,created,end,0,0,0,0,0);
+        } else if (!strcmp(line,"value\n")) {
             if (!view) {errno=ESHUTDOWN;goto done;}
             uint8_t value[2042];uintptr_t length=0;
             error=slk_local_service_read(view,receipt.handles[0],value,sizeof value,&length,now_ns()+5000000000ULL);if (error) {errno=-error;goto done;}
@@ -323,10 +340,13 @@ static int owned_mode(int argc,char **argv) {
         } else {errno=EINVAL;goto done;}
     }
 done:
+    if (observing) owned_lifecycle("cleanup_begin",&receipt,created,end,status?-errno:0,0,0,0,0);
     if (status) perror("application-client-c-owned");
     owned_clear(&pending);
     if (approval_fd>=0) close(approval_fd);
-    slk_local_service_free(view);slk_connection_close(link);slk_client_close(client);return status;
+    slk_local_service_free(view);slk_connection_close(link);slk_client_close(client);
+    if (observing) owned_lifecycle("cleanup_end",&receipt,created,end,0,0,0,0,0);
+    return status;
 }
 
 /* Ordinary application actually verifies the complete random update,then writes

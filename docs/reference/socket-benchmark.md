@@ -6,6 +6,21 @@ Native 双端证据闭包已接通，完整性能门禁仍缺。准确构建与�
 历史 channel-roundtrip／burst 与当前 slktest --check 是功能门禁，计时包含日志等开销，不能升级为基线。
 [接口支持范围](interfaces.md)继续适用；此页不新增 socket 能力。
 
+## 并行 Owned 发布者的生命周期诊断
+
+规范 Owned 并行门禁在开始消费者调用前，向原 C/Python 测试发布者发送一次
+`lifecycle` 命令。`SdkOwnedLifecycle` 保存该进程实际创建的 30 秒循环预算、审批
+API 调用开始／返回以及前端清理调用开始／返回，绑定 PID、controller generation、
+注册 start 和 property handle。它是测试客户端退出预算，不能描述为 daemon 服务租约。
+每条记录使用同一 guest 的 `CLOCK_MONOTONIC`；wall clock 样本另列，不作跨域单向时延。
+
+观察不重设预算，不改变原调用或增加协议 Engine。原成功／失败、20 次审批、对端
+业务校验、双端字节和 finish 屏障仍独立必需。缺失、重复、身份不符、预算被续期或
+API 返回无法关联原 token／request 时，完整门禁拒绝；旧报告保留其原工具身份。
+失败运行可单独保留结构化时间线，不能因此变成成功。清理调用返回只表示前端 API
+返回，不证明 daemon 数据库已移除、内核引用已排空或对端已完成；C 的 void free
+也不提供远端清理结果。这是带观察开销的正确性诊断，不是低扰动性能基线。
+
 ## 负载与时间
 
 | 模式 | 负载约束 | 主要测量 |

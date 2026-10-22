@@ -156,7 +156,9 @@ def streams(row):
     if (source['phase']!=row['phase']or source['owners']!=row['owners']
         or source['status']!='OWNED_SDK_CONCURRENT_EVIDENCE_PENDING'
         or not row['start_wall_ns']<=source['start_wall_ns']<=source['end_wall_ns']<=row['end_wall_ns']
-        or len(source.get('ssap_language_clients',[]))!=24):
+        or len(source.get('ssap_language_clients',[]))!=24
+        or type(source.get('publisher_lifecycle_observation_version'))is not int
+        or source['publisher_lifecycle_observation_version']!=1):
         raise CaptureError('complete original same-lifetime concurrent SSAP source required')
     from ws73_application_client import verify_owned_publishers,ssap_receipt
     if duplex(selected(row)):

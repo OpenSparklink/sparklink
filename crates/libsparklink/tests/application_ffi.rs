@@ -950,6 +950,16 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         26,
         "eight added actual value calls; invalid expectations rejected before RPC"
     );
+    authorization::lifecycle(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
     let unchanged = Command::new("sha256sum")
         .arg("--check")
         .arg(directory.join("materials.sha256"))

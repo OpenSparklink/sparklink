@@ -253,6 +253,11 @@ def owned_services(run,row,live,*,vm_token='ws73.application_clients=1'):
                 matches,text=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
                 if len(matches)!=1 or text.splitlines()[0]!=f'SdkOwnedAPI: api={api} client_closed=true':raise CaptureError('actual original SDK owner and Client-close barrier required')
                 start,end,handle=map(int,matches[0]);app.update(start=start,end=end,handle=handle);live[owner['owner']['path']]=(process,app)
+                if vm_token=='ws73.socket_benchmark_apps=1':
+                    from ws73_ssap_update_delivery import command_receipt
+                    row['publisher_lifecycle_observation_version']=1
+                    app['lifecycle_observation']=command_receipt(process,app,'lifecycle','SdkOwnedLifecycle')
+                    publisher_lifecycle_trace(app,owner,terminal=False,stdout=out.read_text())
                 local.append(dict(owner=owner,start=start,handle=handle,value=value,registration=app,service_uuid=service,property_uuid=uuid));run.save()
             yield local
         finally:
@@ -362,6 +367,54 @@ def authorization_decisions(app):
     return rows
 
 
+def publisher_lifecycle_trace(app,owner,*,terminal=True,stdout=None):
+    """Original test-client timer/call/cleanup samples;not serverTTL or commit.
+
+    Partial failed runs can retain this structural diagnostic. The existing
+    full workload still requires actual successful calls,wire and finalization.
+    """
+    from ws73_link_measurement import unique_object
+    text=app.get('stdout','')if stdout is None else stdout
+    lines=[v[len('SdkOwnedLifecycle: '):]for v in text.splitlines()if v.startswith('SdkOwnedLifecycle: ')]
+    if 'lifecycle_observation'not in app:
+        if lines:raise CaptureError('unrequested publisher lifecycle samples')
+        return None
+    if not 1<=len(lines)<=35 or any(len(line.encode())>2048 for line in lines):raise CaptureError('bounded original publisher lifecycle samples required')
+    rows=[json.loads(line,object_pairs_hook=unique_object)for line in lines]
+    fields={'version','api','stage','pid','index','generation','start','property','created_ns','deadline_ns',
+            'sampled_ns','wall_ns','error','token','request_id','call_started_ns','call_returned_ns'}
+    identity=owner['owner']
+    previous=0;budget=None
+    for row in rows:
+        if (type(row)is not dict or set(row)!=fields or any(type(row[k])is not int for k in fields-{'api','stage'})
+            or row['version']!=1 or row['api']!=app['api']
+            or not 0<row['pid']<2**31 or not 0<=row['index']<=65535 or not row['generation']
+            or not 0<row['start']<row['property']<=65535
+            or (row['pid'],row['index'],row['generation'],row['start'],row['property'])!=(app['pid'],identity['index'],identity['generation'],app['start'],app['handle'])
+            or not -4095<=row['error']<=0 or any(not 0<=row[k]<2**64 for k in fields-{'api','stage','error'})
+            or not 0<row['created_ns']<row['deadline_ns'] or row['deadline_ns']-row['created_ns']!=30_000_000_000
+            or not row['created_ns']<=row['sampled_ns'] or not row['wall_ns'] or row['sampled_ns']<previous):
+            raise CaptureError('exact original publisher identity,30second loop budget and clock samples required')
+        current=(row['created_ns'],row['deadline_ns'])
+        if budget is not None and current!=budget:raise CaptureError('publisher budget renewed or replaced')
+        budget=current;previous=row['sampled_ns']
+        if row['stage']=='approval_return':
+            if (not row['token'] or not row['request_id']
+                or not row['created_ns']<=row['call_started_ns']<=row['call_returned_ns']<=row['sampled_ns']):
+                raise CaptureError('actual approval API return samples required')
+        elif row['stage']not in ('observed','cleanup_begin','cleanup_end') or any(row[k]for k in ('token','request_id','call_started_ns','call_returned_ns')):
+            raise CaptureError('bounded original lifecycle stage required')
+    observation=app['lifecycle_observation'];first=rows[0]
+    if (first['stage']!='observed' or first['error'] or first!=observation['receipt']
+        or not observation['start_monotonic_ns']<=first['sampled_ns']<=observation['end_monotonic_ns']
+        or first['sampled_ns']>=first['deadline_ns']):raise CaptureError('original live observation command/receipt required')
+    if terminal:
+        if len(rows)<3 or [r['stage']for r in rows[-2:]]!=['cleanup_begin','cleanup_end'] or any(r['stage']!='approval_return'for r in rows[1:-2]):
+            raise CaptureError('complete original frontend cleanup begin/end required;not remote drain proof')
+    elif len(rows)!=1:raise CaptureError('one initial observation before workload required')
+    return rows
+
+
 def verify_owned_publishers(row):
     """Terminal source/role/stream contract;not an independent USB decoder."""
     import re
@@ -375,7 +428,17 @@ def verify_owned_publishers(row):
                 or set(credentials['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or any(int(v,16) for v in credentials['capabilities'].values())):raise CaptureError('actual successful service-only cap-zero publisher required')
         expected=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['owned',str(owner['owner']['index']),str(owner['owner']['generation']),registered['service_uuid'],registered['property_uuid']]
         if app['args'][:-2]!=expected or app['args'][-1]!='allow' or len(bytes.fromhex(app['args'][-2]))!=32 or not row['start_wall_ns']<=app['start_wall_ns']<=app['end_wall_ns']<=row['end_wall_ns']:raise CaptureError('actual explicit-policy SDK publisher arguments/interval required')
+        lifecycle=publisher_lifecycle_trace(app,owner)
+        requested=row.get('publisher_lifecycle_observation_version')
+        if requested is not None and (type(requested)is not int or requested!=1):raise CaptureError('exact explicit publisher lifecycle version required')
+        if (requested==1)!=(lifecycle is not None):raise CaptureError('publisher lifecycle request/receipt mismatch')
+        if lifecycle is not None and any(r['error'] or r['stage']=='approval_return'and r['call_started_ns']>=r['deadline_ns']for r in lifecycle):
+            raise CaptureError('publisher failure or admission after original loop budget')
         decisions=authorization_decisions(app)
+        if lifecycle is not None:
+            calls=lifecycle[1:-2]
+            if len(calls)!=len(decisions)or any((c['token'],c['request_id'],c['call_started_ns'])!=(d['token'],d['request_id'],d['decision_ns'])for c,d in zip(calls,decisions)):
+                raise CaptureError('actual approval API return must match every original decision')
         expected_calls=[(item,name) for item in row.get('ssap_values',[]) if item['target']==position
                         for name in ['uuid_read_before','read_before','write','read_after','uuid_read_after']]
         if len(expected_calls)!=20:raise CaptureError('complete actual authorization operation coverage required')
@@ -386,7 +449,7 @@ def verify_owned_publishers(row):
                     or d['write']!=(name=='write') or d['value']!=(item['value'] if name=='write' else '')
                     or not window['start_wall_ns']<=d['decision_wall_ns']<=window['end_wall_ns']):
                 raise CaptureError('decision must match actual operation,proposal and original receiver lifetime/window')
-        lines=[line for line in app['stdout'].splitlines() if not line.startswith('SdkAuthorizationDecision: ')]
+        lines=[line for line in app['stdout'].splitlines() if not line.startswith(('SdkAuthorizationDecision: ','SdkOwnedLifecycle: '))]
         start,handle=registered['start'],registered['handle']
         if lines[:2]!=[f'SdkOwnedAPI: api={api} client_closed=true',f'SsapOwnedService: start={start} end={handle} property={handle}; local registration only'] or lines[-1:]!=[f'SdkOwnedRemoved: api={api} start={start}'] or len(lines)!=7:raise CaptureError('actual retained caller/register/four values/unregister stream required')
         observations=app.get('value_snapshots',[])

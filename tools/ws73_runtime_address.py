@@ -39,10 +39,22 @@ def requested(args):
                         or getattr(args, 'channel_benchmark', None) in ('rate', 'window', 'duplex'))
     # Slot order is explicit input, not device selection. Keep exactly the two
     # assigned E leaves; addresses follow that order through QMP and readback.
+    ordinary = (getattr(args, 'qmp_hotplug', False) and application_gate
+                and getattr(args, 'connection_verify', False))
+    # The existing pre-daemon Grant supervisor also owns a physical connection
+    # and real application sockets. It uses per-leaf QMP attachment internally,
+    # but deliberately excludes the separate --qmp-hotplug RF/re-add scenario.
+    # Setup's untouched-File proof must precede address initialization; neither
+    # this selector nor successful address setup grants a lifecycle verdict.
+    controlled = (getattr(args, 'managed_connected_case', None) in ('release', 'close', 'dup')
+                  and getattr(args, 'managed_channel_grant', False)
+                  and getattr(args, 'setup_release_verify', False)
+                  and not getattr(args, 'qmp_hotplug', False)
+                  and not getattr(args, 'connection_verify', False)
+                  and not application_gate)
     if (args.command != 'run' or len(ports) != 2 or set(ports) != {'1-2.1.1', '1-2.1.2'}
-            or not getattr(args, 'qmp_hotplug', False) or not application_gate
-            or not getattr(args, 'connection_verify', False)):
-        raise ValueError('volatile E gate requires the explicit assigned E pair and ordinary connection/socket or benchmark VM')
+            or not (ordinary or controlled)):
+        raise ValueError('volatile E gate requires the assigned E pair and an explicit ordinary or controlled Grant VM')
     return values
 
 

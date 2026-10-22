@@ -50,6 +50,35 @@ def fixture():
 
 
 class RuntimeAddressEvidence(unittest.TestCase):
+    def test_controlled_grant_reuses_setup_without_awarding_a_verdict(self):
+        args=dict(runtime_addresses=ADDRESSES,command='run',ports=['1-2.1.1','1-2.1.2'],
+                  qmp_hotplug=False,connection_verify=False,channel_socket_verify=False,
+                  managed_channel_grant=True,setup_release_verify=True)
+        for case in ('release','close','dup'):
+            for index in (0,1):
+                selected=SimpleNamespace(**(args|dict(managed_connected_case=case,managed_connected_index=index)))
+                before=copy.deepcopy(vars(selected))
+                self.assertEqual(requested(selected),ADDRESSES)
+                self.assertEqual(vars(selected),before)
+        args['managed_connected_case']='release'
+        for change in [dict(command='support'),dict(managed_connected_case=None),dict(managed_connected_case='echo'),
+                       dict(managed_channel_grant=False),dict(setup_release_verify=False),dict(qmp_hotplug=True),
+                       dict(connection_verify=True),dict(channel_socket_verify=True),dict(channel_benchmark='window'),
+                       dict(ports=['1-2.1.1','1-2.1.3']),dict(ports=['1-1.1.1','1-1.1.2']),dict(ports=[args['ports'][0]]*2)]:
+            with self.subTest(change=change),self.assertRaises(ValueError):
+                requested(SimpleNamespace(**(args|change)))
+
+    def test_single_guest_setup_follows_untouched_setup_and_precedes_grant(self):
+        text=(Path(__file__).parents[1]/'ws73_target_init.sh').read_text()
+        untouched=text.index('/usr/share/sparklink/tools/ws73_management_setup.py')
+        address=text.index('/usr/share/sparklink/tools/ws73_runtime_address.py')
+        connected=text.index('/usr/share/sparklink/tools/ws73_connected_file_gate.py')
+        finish=text.index("echo 'WS73_TARGET_CHANNEL_GRANT_FINISHED'")
+        daemon=text.index('/bin/slkd ')
+        self.assertEqual(text.count('/usr/share/sparklink/tools/ws73_runtime_address.py'),1)
+        self.assertLess(untouched,address);self.assertLess(address,connected)
+        self.assertLess(connected,finish);self.assertLess(finish,daemon)
+
     def test_shared_setup_accepts_canonical_benchmark_without_baseline_flag(self):
         # This is the actual host selector,not a VM or a successful peer.
         args=dict(runtime_addresses=ADDRESSES,command='run',ports=['1-2.1.1','1-2.1.2'],

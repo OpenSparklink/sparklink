@@ -150,6 +150,15 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 这不是冷 ROM 自动选择，也不是芯片认证。历史三设备 SDK111 reference 诊断
 无法满足此分配下同型号/SDK110约束，须等待明确适配；原代码及证据保留。
 
+同一运行期地址步骤也可用于已有的独立 Managed Grant 回归：显式选择
+`--setup-release-verify --managed-connected-case release|close|dup --managed-channel-grant`，
+这条模式不与 `--qmp-hotplug`、普通 connection/socket 或 benchmark 模式混用。
+runner 内部仍逐设备经受保护的 QMP 接入；该选项区别不授予其他端口权限。
+启动顺序必须是：原有 untouched Setup／lease 检查 → 共享真实地址配置及读回 →
+connected File／Grant 门禁 → 捕获封存及独立核对。此模式在 daemon 前结束；
+成功配置地址不能替代撤权、实际业务、credit、原期限或清理结果。原 Native
+connected 广播已经显式使用 negotiable-T 参数，不添加第二套广播实现或改变默认值。
+
 禁止整 hub／主控制器透传、复位、切电；单口恢复若无法证明无连带影响先协调。
 现有构建 wrapper 与物理 runner 通过共享 build lock 和 VM lease 握手：合计
 最多12路，有任一真实 VM 最多8路；旧工具不持该锁时须另行核对，不能各开12路。

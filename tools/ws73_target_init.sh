@@ -197,6 +197,17 @@ if grep -q 'ws73.managed_partial=1' /proc/cmdline; then
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_management_partial.py $selected_cleanup_arg --case "$partial_case" --domain "$partial_domain" --output /evidence/managed-partial > /evidence/managed-partial-supervisor.log 2>&1 || fail 'partial Managed held-reply cleanup gate'
     fi
 fi
+# Keep untouched Setup/lease checks above address initialization. The same
+# Native address setup serves ordinary applications and the pre-daemon Grant
+# gate; the latter exits before daemon startup, so setup must precede it.
+if grep -q 'ws73.runtime_addresses=' /proc/cmdline; then
+    echo 'WS73_TARGET_CAPTURE_READY'
+    (
+        /bin/python3 /usr/share/sparklink/tools/ws73_runtime_address.py
+        echo "$?" > /evidence/runtime-address-exit.txt
+    ) 2>&1 | /bin/busybox tee /evidence/runtime-address-supervisor.log
+    [ "$(cat /evidence/runtime-address-exit.txt)" = 0 ] || fail 'volatile runtime address gate'
+fi
 if grep -q 'ws73.connected_case=' /proc/cmdline; then
     connected_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connected_case=/){sub(/^ws73.connected_case=/,"",$i);print $i}}' /proc/cmdline)
     connected_index=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.connected_index=/){sub(/^ws73.connected_index=/,"",$i);print $i}}' /proc/cmdline)
@@ -243,14 +254,6 @@ if grep -q 'ws73.active_deadline=1' /proc/cmdline; then
     close_arg=''
     if grep -q 'ws73.active_close=1' /proc/cmdline; then close_arg='--last-file-close'; fi
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_active_deadline.py $close_arg --output /evidence/active-deadline > /evidence/active-deadline-supervisor.log 2>&1 || fail 'active deadline retirement gate'
-fi
-if grep -q 'ws73.runtime_addresses=' /proc/cmdline; then
-    echo 'WS73_TARGET_CAPTURE_READY'
-    (
-        /bin/python3 /usr/share/sparklink/tools/ws73_runtime_address.py
-        echo "$?" > /evidence/runtime-address-exit.txt
-    ) 2>&1 | /bin/busybox tee /evidence/runtime-address-supervisor.log
-    [ "$(cat /evidence/runtime-address-exit.txt)" = 0 ] || fail 'volatile runtime address gate'
 fi
 config_args=''
 if [ -f /expected-discovery-config-sha256 ]; then

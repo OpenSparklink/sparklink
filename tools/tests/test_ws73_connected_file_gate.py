@@ -13,13 +13,23 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_connected_file_gate import duplicate_result, verify_records, connection, stop, bound_disconnect, mutate_reference, ConnectedHoldCoordinator, ConnectedOutcomeCoordinator
+from ws73_connected_file_gate import duplicate_result, verify_records, connection, stop, bound_disconnect, mutate_reference, ConnectedHoldCoordinator, ConnectedOutcomeCoordinator, announcement
 from ws73_diagnostic_hold import PROPERTIES
 from ws73_host_later_hold import SELECTORS
 from sparklink.structs import SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit, SleManagementQuery, SleLinkInfo, SleConnectionSubmit
 
 
 class ConnectedFileGate(unittest.TestCase):
+    def test_existing_announcement_already_uses_negotiable_t_without_new_wire_path(self):
+        snapshot=SleControllerSnapshot(generation=7)
+        snapshot.address[:]=bytes.fromhex('a67b7310e001')
+        value=announcement(snapshot,'00112233445566778899aabbccddeeff')
+        self.assertEqual((value.version,value.operation,value.generation),(1,1,7))
+        p=value.advertising
+        self.assertEqual((p.mode,p.gt_role,p.max_requests,p.conn_interval_min,p.conn_interval_max),(3,0,1,100,100))
+        self.assertEqual(bytes(p.own_address),bytes(snapshot.address))
+        self.assertEqual((p.interval_min,p.interval_max,p.channel_map,p.tx_power,p.supervision_timeout),(1200,1200,7,127,200))
+
     def test_disconnect_reference_uses_full_v2_tuple_and_bounded_mutations(self):
         snapshot=SleControllerSnapshot(generation=7)
         link=SleLinkInfo(lifetime=3,handle=12,role=1,address_type=0)

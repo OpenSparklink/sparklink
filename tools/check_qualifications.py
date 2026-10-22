@@ -342,6 +342,11 @@ def render(data):
                       '```json', json.dumps(record['bounds'], ensure_ascii=False,
                                            indent=2, sort_keys=True), '```']
         lines[2:2] = ['']+selection+['', '以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。', '']
+    # The active execution plan is distinct from the retained qualification.
+    # Both human views must invalidate when only the batch/next action changes.
+    lines[2:2] = ['', '当前实施批次（不是新产物资格，直接读取唯一记录）：',
+                  '```json', json.dumps(data['batch'],ensure_ascii=False,indent=2),
+                  '```', '']
     for record in data['records']:
         lines.append(f'| {record["title"]} | `{record["level"]}` | `{record["result"]}` |')
     lines += ['', '历史registry基线（非当前资格）：K `' + data['baseline']['kernel'] + '`；编译 U `' + data['baseline']['compiled_userspace'] +

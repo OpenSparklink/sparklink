@@ -251,6 +251,27 @@ class QualificationTests(unittest.TestCase):
         (project / 'goal-execution-state.json').write_text(json.dumps(state))
         self.assertTrue(q.sync_views(self.data, self.repo))
 
+    def test_changed_execution_batch_invalidates_both_reader_summaries_even_with_current_goal(self):
+        self.data['baseline']={'kernel':'k','compiled_userspace':'u','executed_tools':'t'}
+        self.data['batch']={'id':'pending-fixture','state':'NOT_QUALIFIED','next':'first'}
+        self.data['records'][0]['title']='retained fixture'
+        project=self.repo/'project';project.mkdir()
+        for name in ['current-capabilities.md','implementation-plan.md']:
+            (project/name).write_text('<!-- qualification-summary:start -->old<!-- qualification-summary:end -->')
+        (project/'goal-execution-state.json').write_text('{}')
+        self.assertFalse(q.sync_views(self.data,self.repo,write=True))
+        self.data['batch']['next']='new-execution-not-new-qualification'
+        state=json.loads((project/'goal-execution-state.json').read_text())
+        state['qualification_view']=q.summary(self.data)
+        (project/'goal-execution-state.json').write_text(json.dumps(state))
+        self.assertEqual(set(q.sync_views(self.data,self.repo)),{
+            'current-capabilities.md: stale qualification summary',
+            'implementation-plan.md: stale qualification summary'})
+        self.assertFalse(q.sync_views(self.data,self.repo,write=True))
+        text=(project/'implementation-plan.md').read_text()
+        self.assertIn('new-execution-not-new-qualification',text)
+        self.assertIn('NOT_REVALIDATED',text)
+
     def test_architecture_reference_cannot_maintain_independent_source_ids(self):
         self.data['baseline'] = {'kernel': 'a', 'compiled_userspace': 'b', 'executed_tools': 'c'}
         self.data['batch'] = {'id': 'fixture'}

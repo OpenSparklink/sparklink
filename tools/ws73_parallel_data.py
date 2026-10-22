@@ -7,6 +7,7 @@ fabricate controller events or data. Positive fixed-channel and controlled pair-
 no transport-fault, dynamic-channel, protected SSAP or natural-recovery claim.
 """
 import argparse
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -31,10 +32,12 @@ from ws73_discovery_policy_capture import checked_expectation, expected_policy, 
 BARRIER_SECONDS = 45  # bounded test synchronization, not a refreshed protocol deadline
 
 
-def stage_specs(isolation):
+def stage_specs(isolation,progress=False):
+    if progress and not isolation:raise ValueError('progress contract is Disconnect-only')
     stages=[('ready',0,(0,1))]
     for n in range(2):
         stages.extend([('linked',n,(0,1)),('business-ready',n,(0,1))])
+        if progress:stages.append(('business-progress',n,(1-n,)))
         stages.extend([('business-done',n,(n,)),('business-done',n,(1-n,))]
                       if isolation else [('business-done',n,(0,1))])
         stages.append(('down',n,(0,1)))
@@ -59,6 +62,9 @@ class BusinessPair(PairRun):
         super().__init__(args)
         self.data['disconnect_isolation']=self.isolation
         self.data['burst_mode']=self.burst
+        if self.isolation:
+            self.data['disconnect_progress_contract_version']=1
+            self.channel_application_progress=self._application_progress
 
     # Share bounded pipe coordination and cleanup, not the RF-only start/match hooks.
     def ctl(self, identity, *words):
@@ -73,6 +79,27 @@ class BusinessPair(PairRun):
     def channel_barrier(self, row):
         row['rounds']=rounds_for(self.isolation,self.args.pair,row['phase'],self.burst)
         self.barrier('business-ready', row['phase'])
+
+    def channel_completion(self,phase,finish):
+        # Keep the one typed Disconnect implementation in connection_control.
+        return finish if self.isolation else None
+
+    def _application_progress(self,row):
+        # A hint wakes the test coordinator;actual USB/app oracles still decide.
+        # Blocking this supervisor on its pipe does not pause the applications.
+        if self.args.pair==row['phase'] or 'business_progress_hint'in row:return
+        apps=[a for a in row['applications']if a['role']=='initiator']
+        if not apps:return
+        app=apps[0]
+        with Path(app['output_files'][0]).open('rb')as stream:prefix=stream.read(128*1024+1)
+        if len(prefix)>128*1024:raise CaptureError('bounded application progress stdout exceeded')
+        values=re.findall(rb'^NativeChannelRoundTrip: sequence=(\d+) elapsed_ms=\d+ bytes=[0-9a-f]+\n',prefix,re.M)
+        sequences=[int(v)for v in values]
+        if sequences!=list(range(len(sequences))):raise CaptureError('invalid original progress sequence')
+        if len(sequences)<2:return
+        row['business_progress_hint']=dict(version=1,minimum_replies=2,sequences=sequences,
+            pid=app['pid'],prefix_bytes=len(prefix),prefix_sha256=hashlib.sha256(prefix).hexdigest(),observed_wall_ns=time.time_ns())
+        self.save();self.barrier('business-progress',row['phase'])
 
     def execute(self):
         try:
@@ -150,6 +177,7 @@ def run_parallel(args):
                 workers=[],stages=[],policy_expectation=policy_expectation(args.policy_expectation),
                 barrier_budget_seconds=BARRIER_SECONDS,physical_unplug_acceptance=False,
                 automatic_fault_recovery_acceptance=False,fault_isolation_acceptance=False)
+    if isolation:record['disconnect_progress_contract_version']=1
     def save():
         temp=output/'run.tmp';temp.write_text(json.dumps(record,indent=2)+'\n');temp.replace(output/'run.json')
     processes=[];reader=None;save()
@@ -164,7 +192,7 @@ def run_parallel(args):
             processes.append(p);row['pid']=p.pid;save()
         reader=EventReader(processes,record['workers'],timeout_seconds=BARRIER_SECONDS)
         held_down={}
-        for kind,number,participants in stage_specs(isolation):
+        for kind,number,participants in stage_specs(isolation,progress=isolation):
             waits=[held_down.pop((number,pair)) if (kind=='down' and (number,pair) in held_down)
                    else reader.wait_one(processes,pair,kind,number) for pair in participants]
             stage=dict(phase=kind,round=number,waits=waits,release_wall_ns=time.time_ns());record['stages'].append(stage);save()
@@ -208,6 +236,9 @@ def verify_records(record):
     isolation=record.get('disconnect_isolation',False)
     burst=record.get('burst_mode',False)
     if type(isolation) is not bool or type(burst) is not bool or (isolation and burst):raise CaptureError('explicit exclusive scope booleans required')
+    version=record.get('disconnect_progress_contract_version')
+    if version is not None and (type(version)is not int or version!=1 or not isolation):raise CaptureError('explicit supported Disconnect progress contract required')
+    progress=version==1
     scope=BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE
     if (record.get('format_version')!=1 or record.get('scope')!=scope or record.get('status')!=PENDING
             or record.get('barrier_budget_seconds')!=BARRIER_SECONDS or len(record.get('workers',[]))!=2
@@ -219,7 +250,7 @@ def verify_records(record):
     if app['uids']!=[1000]*4 or any(int(app[k],16) for k in ['cap_eff','cap_prm','cap_amb']):
         raise CaptureError('actual ordinary coordinator required')
     owners=[];daemon=None;bus=None;pids=set()
-    specs=stage_specs(isolation)
+    specs=stage_specs(isolation,progress)
     if [(s['phase'],s['round']) for s in record['stages']]!=[(kind,n) for kind,n,_ in specs]:
         raise CaptureError('all ordered live connection/business barriers required')
     observations={}
@@ -236,10 +267,13 @@ def verify_records(record):
             down=observations[n,'down',n][1]
             if not victim_done['release_wall_ns']<=down['observed_wall_ns']<=survivor_done['release_wall_ns']:
                 raise CaptureError('victim actual Down must precede survivor disconnect admission')
+            if progress and observations[1-n,'business-progress',n][0]['release_wall_ns']>victim_done['release_wall_ns']:
+                raise CaptureError('survivor progress must release before victim Disconnect admission')
     for pair,w in enumerate(record['workers']):
         r=w['run']
         if w['exit'] or r['status']!=SUCCESS or r['scope']!=scope or r.get('disconnect_isolation',False)!=isolation or r.get('burst_mode',False)!=burst or r['pair']!=pair or r['application_identity']!=app:
             raise CaptureError('actual successful ordinary pair workers required')
+        if r.get('disconnect_progress_contract_version')!=version:raise CaptureError('worker progress contract mismatch')
         if type(w['pid']) is not int or w['pid']<=0 or w['pid'] in pids:raise CaptureError('distinct worker PID required')
         pids.add(w['pid'])
         if r['barrier_budget_seconds']!=BARRIER_SECONDS or len(r['initial'])!=2 or len(r['after'])!=2 or not all(stable(a,b) for a,b in zip(r['initial'],r['after'])):
@@ -260,7 +294,12 @@ def verify_records(record):
             raise CaptureError('all four actual owned cleanups required')
         if len(r.get('channel_socket',[]))!=2 or any(x['rounds']!=rounds_for(isolation,pair,n,burst) or x['message_bytes']!=(2042 if burst else 61) or x.get('close_prefix') or x.get('burst',False)!=burst or x.get('boundary_check') for n,x in enumerate(r['channel_socket'])):
             raise CaptureError('exact requested role/message-size/burst slice required')
-        if [(s['phase'],s['round']) for s in r['barriers']]!=SEQUENCE:raise CaptureError('worker barrier history mismatch')
+        sequence=[('ready',0)]
+        for n in range(2):
+            sequence.extend([('linked',n),('business-ready',n)])
+            if progress and pair!=n:sequence.append(('business-progress',n))
+            sequence.extend([('business-done',n),('down',n)])
+        if [(s['phase'],s['round']) for s in r['barriers']]!=sequence:raise CaptureError('worker barrier history mismatch')
         for index,entry in enumerate(r['barriers']):
             stage,seen=observations[pair,entry['phase'],entry['round']];live=seen['event']
             if entry['phase']=='ready' and entry.get('owners')!=r['initial']:
@@ -269,6 +308,7 @@ def verify_records(record):
                     or not live['wait_wall_ns']<=seen['observed_wall_ns']<=stage['release_wall_ns']<=entry['ack_wall_ns']
                     or entry['ack_wall_ns']-live['wait_wall_ns']>BARRIER_SECONDS*1_000_000_000):
                 raise CaptureError('live pipe/parent release/worker acknowledgement cause mismatch')
+        if progress:verify_progress_contract(r,observations,pair)
         owners.extend(r['initial'])
     for key in ['port','path','address','index']:
         if len({o[key] for o in owners})!=4:raise CaptureError('four distinct original owner identities required')
@@ -276,6 +316,29 @@ def verify_records(record):
         raise CaptureError('four independent USB/controller registrations required')
     physical_device_descriptors(owners)
     return owners
+
+
+def verify_progress_contract(run,observations,pair):
+    for n,row in enumerate(run['channel_socket']):
+        if row.get('post_application_disconnect')is not True:raise CaptureError('actual application-completion Disconnect required')
+        from ws73_channel_socket import validate_passive_controller_stages
+        validate_passive_controller_stages(run,row,run['connection_control']['phases'][n])
+        if pair==n:
+            if 'business_progress_hint'in row:raise CaptureError('victim cannot claim survivor progress')
+            continue
+        hint=row.get('business_progress_hint',{});apps=[a for a in row['applications']if a['role']=='initiator']
+        if len(apps)!=1:raise CaptureError('one original progress application required')
+        app=apps[0];prefix_bytes=hint.get('prefix_bytes');sequences=hint.get('sequences')
+        if (hint.get('version')!=1 or hint.get('minimum_replies')!=2 or hint.get('pid')!=app['pid']
+                or type(prefix_bytes)is not int or not 0<prefix_bytes<=128*1024
+                or not isinstance(sequences,list)or not 2<=len(sequences)<=20 or sequences!=list(range(len(sequences)))):
+            raise CaptureError('bounded original survivor progress hint required')
+        prefix=app['stdout'].encode()[:prefix_bytes]
+        values=[int(v)for v in re.findall(rb'^NativeChannelRoundTrip: sequence=(\d+) elapsed_ms=\d+ bytes=[0-9a-f]+\n',prefix,re.M)]
+        event=observations[pair,'business-progress',n][1]['event']
+        if (len(prefix)!=prefix_bytes or hashlib.sha256(prefix).hexdigest()!=hint.get('prefix_sha256')or values!=sequences
+                or not app['start_wall_ns']<=hint['observed_wall_ns']<=event['wait_wall_ns']<=app['end_wall_ns']):
+            raise CaptureError('progress hint differs from original application stdout/timeline')
 
 
 def pair_capture(capture, owners):
@@ -350,6 +413,8 @@ def corroborate(record,capture):
         if overlap[0]<max(v[0] for v in lifetimes) or overlap[1]>min(v[1] for v in lifetimes):raise CaptureError('both physical connections must coexist during real business')
         overlaps.append(dict(role_phase=n,business_windows=windows,overlap_wall_ns=overlap))
     return dict(status='FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
+                **(dict(disconnect_progress_contract_version=1)if record.get('disconnect_progress_contract_version')==1 else{}),
+                **(dict(disconnect_progress_control=record)if record.get('disconnect_progress_contract_version')==1 else{}),
                 **(dict(disconnect_proofs=disconnect_proofs(pairs),controlled_disconnect_isolation_acceptance=True) if isolation else {}),
                 **(dict(long_pdu_acceptance=True,software_backpressure_acceptance=True,observed_controller_pool_saturation_and_resumption=True,controller_credit_correctness_proof=False,fairness_acceptance=False) if burst else {}),
                 controller_count=len(owners),round_trips=64 if burst else 48 if isolation else 80,ordinary_uid=1000,

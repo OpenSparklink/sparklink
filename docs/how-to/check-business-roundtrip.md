@@ -45,6 +45,12 @@ manifest。记录内核、编译服务、测试工具的完整提交；三者可
 不匹配、缺少原始记录、丢包或来源不明时保留失败，停止传播 PASS；修正后使用新输出目录。
 人工拔插、hub 切电和 QMP 操作记录为干预，不记作自然恢复。
 
+核对四设备报告时，分别检查[对应门禁契约](../reference/four-device-gates.md)。断链场景
+还须以原始USB时间线确认存活组在实际Disconnect前至少两次、双方Down后至少四次
+完整回复；两组都返回了数据并不足以证明隔离。新进展契约还需核对原应用stdout前缀、
+现场pipe事件和建链／Down后的被动检查，不能用旧报告补版本字段。长包与credit观测
+是独立模式，不能覆盖断链失败，也不授完整流控或自然恢复资格。
+
 [理解证据边界](../explanation/qualification-boundaries.md)、
 [VM 输入准备](../reference/vm-gate-inputs.md)、[历史数据面规划](../../history/connections/data-socket-vertical-plan-20261012.md)。
 

@@ -206,6 +206,7 @@ def prepare_from_carrier(args):
         for key in ('explicit_firmware', 'board_configuration'):
             manifest.pop(key, None)
         manifest.update(staged)
+        manifest['four_disconnect_progress_contract_version']=1
         inputs = [file_record(source / 'manifest.json'), file_record(source / 'root.btrfs'), plan_identity]
         for path in sorted((root / 'usr/share/sparklink/tools').glob('*.py')):
             client = native_vm.STAGED_PYTHON_CLIENTS.get(path.name)
@@ -270,6 +271,7 @@ def prepare_locked(args, build_fd):
                 'physical_acceptance':False, 'status':'PREPARING', 'inputs':[],
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['runtime_address_contract_version'] = 1
+    manifest['four_disconnect_progress_contract_version'] = 1
     manifest['managed_prefix_geometry_contract_version'] = 1
     manifest['firmware_evidence_contract_version'] = 1
     manifest['link_measurement_contract_version'] = 1
@@ -1364,6 +1366,15 @@ def _run(args):
             raise ValueError('four-device gate requires qualified scratch-root native VM')
         if parallel and 'policy_expectation' not in package:
             raise ValueError('current four-device gate requires frozen policy expectation')
+        if disconnect_isolation:
+            if (type(package.get('four_disconnect_progress_contract_version'))is not int
+                    or package['four_disconnect_progress_contract_version']!=1):
+                raise ValueError('current Disconnect gate requires new causal-progress preparation')
+            for name in ['ws73_parallel_data.py','ws73_channel_socket.py','ws73_connection_control.py']:
+                staged=args.prepared/'root/usr/share/sparklink/tools'/name
+                if file_record(staged)['sha256']!=file_record(HERE/name)['sha256']:
+                    raise ValueError('current Disconnect preparation/source mismatch: '+name)
+            m['four_disconnect_progress_contract_version']=1
         if 'policy_expectation' in package:
             m['policy_expectation'] = package['policy_expectation']
         if event_copy:
@@ -3017,6 +3028,13 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         burst=record['status']=='FOUR_DEVICE_PARALLEL_BURST_PASS'
         proof=record.get('parallel_corroboration',{})
         overlaps=proof.get('overlaps',[])
+        if 'four_disconnect_progress_contract_version'in record:
+            from ws73_parallel_data import verify_records as verify_parallel_records
+            try:
+                control=proof['disconnect_progress_control']
+                if control.get('disconnect_progress_contract_version')!=1:return 1
+                verify_parallel_records(control)
+            except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
         valid=(record.get('four_device_burst_requested',False) is burst
                and record.get('four_device_disconnect_requested',False) is isolation
                and record.get('four_device_parallel_business') is True
@@ -3027,6 +3045,10 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                and proof.get('ordinary_uid')==1000
                and proof.get('fixed_basic_channel_business_acceptance') is True
                and proof.get('controlled_disconnect_isolation_acceptance',False) is isolation
+               and ('four_disconnect_progress_contract_version'not in record
+                    or (isolation and type(record['four_disconnect_progress_contract_version'])is int
+                        and record['four_disconnect_progress_contract_version']==1
+                        and proof.get('disconnect_progress_contract_version')==1))
                and all(proof.get(k) is False for k in ['fault_isolation_acceptance',
                     'dynamic_channel_acceptance','automatic_fault_recovery_acceptance',
                     'protected_ssap_acceptance','full_goal_complete'])

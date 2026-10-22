@@ -273,6 +273,21 @@ def observe_phase_down(run, phase):
     run.check(caller); run.check(peer)
 
 
+def disconnect_phase(run,phase,selected):
+    """One existing typed submission and original bounded physical Down proof."""
+    if 'disconnect_command' in phase:
+        raise CaptureError('connection phase already has a Disconnect submission')
+    caller=phase['caller']
+    phase['disconnect_command'] = len(run.data['commands'])
+    row = run.command([str(run.args.slctl), '--adapter', caller['path'],
+        'disconnect-object',selected['path']], 18, collection='commands')
+    phase['disconnect'] = result(row['stdout'], caller, 2)
+    if row['exit'] or phase['disconnect']['handle'] != phase['connect']['handle']:
+        raise CaptureError('exact established handle must disconnect')
+    observe_phase_down(run, phase)
+    phase['disconnect_completed_wall_ns']=time.time_ns();run.save()
+
+
 def execute(run, a, b):
     """Run once, before ordinary RF rounds, and retain every failed command."""
     kind = getattr(run.args, 'connection_advertising', 'fixed-t')
@@ -305,9 +320,22 @@ def execute(run, a, b):
                 agent_execute(run,phase)
             if hasattr(run, 'connection_barrier'):
                 run.connection_barrier('linked',phase)
+            def finish_connection():
+                if hasattr(run, 'connection_barrier'):
+                    run.connection_barrier('business-done',phase)
+                disconnect_phase(run,phase,selected)
+                if hasattr(run, 'connection_barrier'):
+                    run.connection_barrier('down',phase)
+            completion=None
             if getattr(run.args, 'channel_socket_verify', False):
                 from ws73_channel_socket import execute as channel_execute
-                channel_execute(run, phase)
+                factory=getattr(run,'channel_completion',None)
+                completion=factory(phase,finish_connection) if factory is not None else None
+                if completion is not None:
+                    if any(getattr(run.args,k,False)for k in ['application_client_verify','channel_benchmark','channel_fairness_verify','dynamic_channel_verify']):
+                        raise CaptureError('completion Disconnect requires a dedicated regular channel gate')
+                    channel_execute(run,phase,after_application=completion)
+                else:channel_execute(run, phase)
             if getattr(run.args, 'application_client_verify', False):
                 from ws73_application_client import execute as application_execute
                 application_execute(run, phase)
@@ -320,18 +348,10 @@ def execute(run, a, b):
             if getattr(run.args, 'dynamic_channel_verify', False):
                 from ws73_dynamic_channels import execute as dynamic_execute
                 dynamic_execute(run, phase)
-            if hasattr(run, 'connection_barrier'):
-                run.connection_barrier('business-done',phase)
-            phase['disconnect_command'] = len(run.data['commands'])
-            row = run.command([str(run.args.slctl), '--adapter', caller['path'],
-                'disconnect-object',selected['path']], 18, collection='commands')
-            phase['disconnect'] = result(row['stdout'], caller, 2)
-            if row['exit'] or phase['disconnect']['handle'] != phase['connect']['handle']:
-                raise CaptureError('exact established handle must disconnect')
-            observe_phase_down(run, phase)
+            if completion is None:finish_connection()
+            elif 'disconnect_completed_wall_ns' not in phase:
+                raise CaptureError('application completion did not finish the actual Disconnect')
             previous_objects=phase['typed_objects']
-            if hasattr(run, 'connection_barrier'):
-                run.connection_barrier('down',phase)
             phase['end_wall_ns'] = time.time_ns(); run.save()
         record['status'] = 'CONNECTION_CONTROL_EVIDENCE_PENDING'
     except BaseException as error:

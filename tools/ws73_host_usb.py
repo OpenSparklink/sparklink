@@ -163,14 +163,18 @@ def original_mapping(manifest, messages, owners):
             or any(m.get('execute') in ('device_del','qom-set','system_reset') for m in messages)):
         raise CaptureError('original explicit two-device QMP attachment required')
     mapping = []
-    for position, entry in enumerate(owners):
+    for entry in owners:
         owner = entry['owner']
         matches = [a for a in adds if owner['port'] == f'{owner["bus"]}-{a.get("port")}']
         if len(matches) != 1:
             raise CaptureError('one original guest port attachment required')
         config = matches[0]
         host_port = f'{config.get("hostbus")}-{config.get("hostport")}'
-        if (config.get('driver') != 'usb-host' or host_port != selected[position]
+        # Connection-role exchange reverses the application owners, not the
+        # original QMP attachment. Join by the captured guest port and require
+        # the complete explicit allocation below; never use list position as
+        # device identity.
+        if (config.get('driver') != 'usb-host' or host_port not in selected
                 or any(config.get(k) is not False for k in
                        ('guest-reset','guest-resets-all','kernel-driver-detach','host-reset'))
                 or any('test' in k for k in config)):
@@ -181,7 +185,8 @@ def original_mapping(manifest, messages, owners):
         mapping.append(dict(host_port=host_port, host=(original['bus'], original['address']),
                             guest=(owner['bus'], owner['device']),
                             controller=owner['index'], generation=owner['generation']))
-    if len({r['host'] for r in mapping}) != 2 or len({r['guest'] for r in mapping}) != 2:
+    if (len({r['host'] for r in mapping}) != 2 or len({r['guest'] for r in mapping}) != 2
+            or {r['host_port'] for r in mapping} != set(selected)):
         raise CaptureError('distinct captured host/guest identities required')
     return mapping
 
@@ -193,7 +198,7 @@ def observe_failed(root, manifest, row, reports, application, capture, timings, 
     recorded for an outer evidence seal; this function cannot authenticate
     a mutable manifest or its claimed original identities.
     """
-    from ws73_benchmark_progress import business_legs
+    from ws73_benchmark_progress import business_legs, observed_link_window
 
     root = Path(root)
     trace, events, qmp = [root / n for n in ('usb-lifecycle.log','usb-lifecycle.events','qmp.jsonl')]
@@ -233,7 +238,9 @@ def observe_failed(root, manifest, row, reports, application, capture, timings, 
                 submissions[submitted] = point['record']
     if pending:
         raise CaptureError('OUT metadata has an unfinished request')
-    legs = business_legs(capture, reports, application, row['owners'], timings)
+    anchor = min(e['before_wall_ns'] for e in row['events'] if e['kind'] == 'start')
+    scoped, windows = observed_link_window(capture, row['owners'], anchor)
+    legs = business_legs(scoped, reports, application, row['owners'], timings)
     for leg in legs:
         direction = int(leg['direction'] == 'in')
         keys = leg['fragment_records'] if direction else [submissions[r] for r in leg['fragment_records']]
@@ -291,6 +298,7 @@ def observe_failed(root, manifest, row, reports, application, capture, timings, 
     failures = [r for r in ledger['closed'] if r['type'] == 'data'
                 and r['terminal'] == 'complete' and r['status']]
     return dict(status='FAILED_BUSINESS_AND_HOST_LENGTH_CANDIDATES_NOT_QUALIFIED',
+        observed_link_windows=windows,
         original_result='FAIL', original_gate_qualified=False, mapping=mapping,
         materials=[dict(path=str(p),bytes=len(raw[p]),sha256=hashlib.sha256(raw[p]).hexdigest())
                    for p in (trace,events,qmp)],

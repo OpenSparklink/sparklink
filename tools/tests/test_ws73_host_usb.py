@@ -132,11 +132,19 @@ class HostUSB(unittest.TestCase):
         messages=[dict(execute='device_add',arguments=dict(driver='usb-host',port=str(i+1),hostbus=1,
             hostport=p[2:],**{'guest-reset':False,'guest-resets-all':False,'kernel-driver-detach':False,'host-reset':False}))for i,p in enumerate(ports)]
         self.assertEqual(original_mapping(manifest,messages,owners)[0]['host'],(1,18))
-        for case in ['foreign-port','old-default','duplicate-guest-port','reset','detach','test','extra-owner','mutation','inventory']:
+        exchanged = original_mapping(manifest,messages,list(reversed(owners)))
+        self.assertEqual([r['host'] for r in exchanged], [(1,19),(1,18)])
+        self.assertEqual([r['guest'] for r in exchanged], [(1,3),(1,2)])
+        self.assertEqual([r['controller'] for r in exchanged], [1,0])
+        self.assertEqual([r['generation'] for r in exchanged], [9,8])
+        self.assertEqual(original_mapping(manifest,list(reversed(messages)),owners)[0]['host'],(1,18))
+        for case in ['foreign-port','old-default','duplicate-guest-port','duplicate-owner','duplicate-host','reset','detach','test','extra-owner','mutation','inventory']:
             m,ms,os=copy.deepcopy(manifest),copy.deepcopy(messages),copy.deepcopy(owners)
             if case=='foreign-port':ms[0]['arguments']['hostport']='1.1.3'
             elif case=='old-default':ms[0]['arguments']['hostport']='2.1.2'
             elif case=='duplicate-guest-port':ms[1]['arguments']['port']='1'
+            elif case=='duplicate-owner':os[1]=copy.deepcopy(os[0])
+            elif case=='duplicate-host':ms[1]['arguments']['hostport']=ports[0][2:]
             elif case=='reset':ms[0]['arguments']['host-reset']=True
             elif case=='detach':ms[0]['arguments']['kernel-driver-detach']=True
             elif case=='test':ms[0]['arguments']['test-runtime-in-held']=False

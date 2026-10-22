@@ -132,6 +132,58 @@ def application_prefixes(reports, config):
                 catalog=catalog,performance_qualified=False,original_gate_qualified=False)
 
 
+def observed_link_window(capture, owners, anchor):
+    """Whole raw Up-to-Down windows containing the original app start.
+
+    Handle/TCID reuse across roles must not import an earlier phase's data.
+    These are observed windows, not a hardware proof excluding late old RX.
+    The caller gets anchor from the frozen original failed-phase export;
+    it cannot choose a shorter window to discard inconvenient business data.
+    """
+    require(type(anchor) is int and anchor > 0 and len(owners) == 2,
+            'original failed application start and two owners')
+    windows = []
+    for entry in owners:
+        owner, identity = entry['owner'], entry['object']
+        require(owner['generation'] == identity['generation'] and identity['lifetime'] > 0,
+                'current canonical generation/lifetime')
+        events = [e for e in capture['native_events']
+                  if (e['bus'], e['device']) == (owner['bus'], owner['device'])
+                  and e['event'] in (5, 0x1405, 0x15, 0x1401)]
+        events.sort(key=lambda e: (e['record'], e.get('hcc_offset', 0)))
+        preceding = [e for e in events if e['wall_ns'] <= anchor and bytes.fromhex(e['params'])[:1] == b'\0']
+        require(bool(preceding) and preceding[-1]['event'] in (0x15, 0x1401),
+                'original start inside an observed physical Up')
+        up = preceding[-1]
+        body = bytes.fromhex(up['params'])
+        require(len(body) >= 11 and int.from_bytes(body[1:3], 'little') == identity['handle']
+                and body[3] == identity['role'] and body[4] == identity['address_type']
+                and body[5:11] == bytes.fromhex(identity['address'].replace(':', '')),
+                'raw Up agrees with original full peer/role identity')
+        following = [e for e in events if (e['record'], e.get('hcc_offset', 0))
+                     > (up['record'], up.get('hcc_offset', 0)) and bytes.fromhex(e['params'])[:1] == b'\0']
+        require(bool(following) and following[0]['event'] in (5, 0x1405),
+                'observed Down required before another physical Up')
+        down = following[0]
+        body = bytes.fromhex(down['params'])
+        require(len(body) == 4 and int.from_bytes(body[1:3], 'little') == identity['handle']
+                and down['wall_ns'] > anchor and down['record'] > up['record'],
+                'original handle Down after application start')
+        windows.append(dict(bus=owner['bus'], device=owner['device'], controller=owner['index'],
+                            generation=owner['generation'], lifetime=identity['lifetime'], up=up, down=down))
+    require(len({(w['bus'], w['device']) for w in windows}) == 2, 'distinct physical window owners')
+    def inside(packet):
+        for window in windows:
+            if (packet['bus'], packet['device']) == (window['bus'], window['device']):
+                point = packet['record'], packet.get('hcc_offset', 0)
+                return ((window['up']['record'], window['up'].get('hcc_offset', 0)) <= point
+                        <= (window['down']['record'], window['down'].get('hcc_offset', 0)))
+        return False
+    scoped = capture | {name: [p for p in capture[name] if inside(p)]
+                        for name in ('acb_packets', 'native_events')}
+    return scoped, windows
+
+
 def transport_prefixes(capture, reports, application, owners):
     complete,retired=reassemble_acb_retired(capture)
     catalog=application['catalog'];result=[]

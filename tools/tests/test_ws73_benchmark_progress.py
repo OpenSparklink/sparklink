@@ -11,7 +11,7 @@ import tempfile
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from test_ws73_benchmark import fixture as complete_fixture
 import ws73_benchmark as gate
-from ws73_benchmark_progress import application_prefixes,read_failed_reports,transport_prefixes,business_legs
+from ws73_benchmark_progress import application_prefixes,read_failed_reports,transport_prefixes,business_legs,observed_link_window
 from ws73_capture import CaptureError,reassemble_acb,reassemble_acb_retired
 
 
@@ -42,6 +42,41 @@ def packet(handle,boundary,record,data,*,device=2,direction='in'):
 
 
 class FailedProgress(unittest.TestCase):
+    def test_physical_windows_keep_whole_current_lifetime_not_old_role_data(self):
+        owners=[];events=[];packets=[]
+        for i in range(2):
+            owner=dict(index=i,generation=7+i,bus=1,device=2+i)
+            identity=dict(generation=7+i,lifetime=3,handle=0,role=i,address_type=0,address='00:01:09:32:54:CD')
+            owners.append(dict(owner=owner,object=identity))
+            for record,up in [(1,True),(4,False),(6,True),(12,False)]:
+                body=b'\0\0\0'+bytes([i,0])+bytes.fromhex('0001093254cd') if up else bytes.fromhex('00000007')
+                events.append(dict(bus=1,device=2+i,record=record,wall_ns=record*1000,
+                                   event=0x1401 if up else 5,params=body.hex()))
+            for record in (2,7,10,13):
+                packets.append(packet(0,0,record,b'unknown-current-data',device=2+i))
+        capture=dict(native_events=events,acb_packets=packets)
+        scoped,windows=observed_link_window(capture,owners,9000)
+        self.assertEqual([p['record']for p in scoped['acb_packets']],[7,10,7,10])
+        self.assertEqual([(w['up']['record'],w['down']['record'])for w in windows],[(6,12),(6,12)])
+        self.assertEqual([p['record']for p in capture['acb_packets']],[2,7,10,13,2,7,10,13])
+        # The full interval, including unknown payloads on either side of the
+        # original app start, survives. No payload-based selection is allowed.
+        for case in ('role','address-type','address','generation','lifetime','missing-up','missing-down',
+                     'down-before-start','replacement-up','duplicate-owner','invalid-anchor'):
+            old=copy.deepcopy(capture);entries=copy.deepcopy(owners);anchor=9000
+            if case=='role':entries[0]['object']['role']=1
+            elif case=='address-type':entries[0]['object']['address_type']=1
+            elif case=='address':entries[0]['object']['address']='00:01:09:32:54:F9'
+            elif case=='generation':entries[0]['object']['generation']+=1
+            elif case=='lifetime':entries[0]['object']['lifetime']=0
+            elif case=='missing-up':old['native_events']=[e for e in old['native_events']if not(e['device']==2 and e['record']==6)]
+            elif case=='missing-down':old['native_events']=[e for e in old['native_events']if not(e['device']==2 and e['record']==12)]
+            elif case=='down-before-start':anchor=13000
+            elif case=='replacement-up':old['native_events'][3]['event']=0x1401
+            elif case=='duplicate-owner':entries[1]=copy.deepcopy(entries[0])
+            else:anchor=True
+            with self.subTest(case=case),self.assertRaises(CaptureError):observed_link_window(old,entries,anchor)
+
     def test_business_legs_use_payload_and_trace_fragments_not_admission_id(self):
         reports, config = fixture();app = application_prefixes(reports, config)
         owners = [dict(owner=dict(index=r['channel_identity']['controller'],

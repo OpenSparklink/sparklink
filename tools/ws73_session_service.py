@@ -984,20 +984,22 @@ def analyze_failed_benchmark(directory, phase, *, pending_rx_tail=False, applica
     if type(application_progress)is not bool:
         raise ValueError('explicit offline application-progress selector required')
     if application_progress:
-        from ws73_benchmark_progress import application_prefixes, read_failed_reports, transport_prefixes
+        from ws73_benchmark_progress import application_prefixes, read_failed_reports, transport_prefixes, observed_link_window
         from ws73_rx_gap import failed_phase_inputs
         _,_,_,request,row,exported=failed_phase_inputs(root,phase)
         if len(row['applications'])!=2 or row.get('benchmark_channel_request',{}).get('version')!=1:
             raise ValueError('original two-application dynamic window slice required')
         reports,report_files=read_failed_reports(share/'benchmark-role'/f'phase-{phase}',phase,exported)
         application=application_prefixes(reports,request['config'])
-        transport=transport_prefixes(capture,reports,application,row['owners'])
+        anchor=min(e['before_wall_ns'] for e in row['events'] if e['kind']=='start')
+        scoped,windows=observed_link_window(capture,row['owners'],anchor)
+        transport=transport_prefixes(scoped,reports,application,row['owners'])
         if host_usb:
             from ws73_host_usb import observe_failed
             result['host_usb_observation'] = observe_failed(root,manifest,row,reports,application,capture,timings,parsed)
         application.pop('catalog') # Only hashes/indices/counts in this diagnostic summary.
         result['failed_application_progress']=dict(application=application,transport=transport,
-            reports=report_files,original_gate_qualified=False,
+            reports=report_files,observed_link_windows=windows,original_gate_qualified=False,
             scope='Original failed socket-fault window/peer slice only. Independent report/frame/prefix association;no clock subtraction,credit truth,firmware cause or successful application gate. Other failure shapes refused.')
     return result
 

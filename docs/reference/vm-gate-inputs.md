@@ -170,6 +170,16 @@ bundle 与明确的五份输入后，生成独立 USB2 端口目录及 `ws73-fir
 未知型号、SDIO／UART、短／非法配置、缺文件、hash 不符或待重枚举闭包变化均拒绝；
 没有全局 U 回退。profile 不是冷 ROM 型号自动识别，也不认证芯片、地址或固件。
 宿主不安装实验驱动；该布局只说明明确配置如何进入现有 VM 原生路径。
+开发准备 API `ws73_lab_resources.prepare_device_inputs(root, selections)` 可以为新私有
+root 明确列出每个物理叶子、型号、SDK110目录和板级输入目录，复用同一五文件
+provisioner。列表顺序就是固定 guest USB2 端口顺序；不扫描挑选或按 device number
+映射。`device_input_contract_version=1` 的 `device_inputs.entries` 同时保留逐叶固件和
+板级 provenance，拒绝并存的单型号 `explicit_firmware`／`board_configuration` 别名。
+该表示的板级和上传观察契约版本为2，必须完整保留端口、route、型号及文件身份；
+单型号旧表示仍为1。每次附加重新检查实际准备目录，缺叶、交换顺序、错误型号、
+残留全局文件或任一五文件变化均拒绝。通用 `prepare` CLI 仍使用显式单型号入口，
+该开发 API 不是另一套启动／Host，也不代表混合实机、真实冷启动或自动选型已验收。
+
 新 native bundle 要求同目录的 `ws73-board-config.json`、可取得的原始 INI 和当前
 导出器。准备入口通过生产导出器重放编码，拒绝旧工具哈希、短文件、symlink、参数或
 源文件不一致。显式板型的新 prepared/run 记录 `board_configuration_contract_version=1`，

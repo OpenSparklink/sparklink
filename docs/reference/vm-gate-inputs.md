@@ -178,8 +178,16 @@ provisioner。列表顺序就是固定 guest USB2 端口顺序；不扫描挑选
 板级 provenance，拒绝并存的单型号 `explicit_firmware`／`board_configuration` 别名。
 该表示的板级和上传观察契约版本为2，必须完整保留端口、route、型号及文件身份；
 单型号旧表示仍为1。每次附加重新检查实际准备目录，缺叶、交换顺序、错误型号、
-残留全局文件或任一五文件变化均拒绝。通用 `prepare` CLI 仍使用显式单型号入口，
-该开发 API 不是另一套启动／Host，也不代表混合实机、真实冷启动或自动选型已验收。
+残留全局文件或任一五文件变化均拒绝。标准 `prepare --from-prepared CARRIER
+--device-inputs PLAN --output NEW` 复用此 API 和明确封存载体；不重新编译内核或 Rust。
+`PLAN` 是精确 `{ "version": 1, "entries": [...] }`，每项只包含 `host_port`、`model`、
+`firmware_dir`、`board_dir`；相对目录以计划文件所在目录为基准，列表顺序为 guest route。
+不能并存 `--board-model`、全局固件／配置、构建或额外 staging 参数。载体须保留完整
+ROM 输入、明确的 `compiled_userspace_identity`、原 manifest、磁盘和对应私有 root。
+准备器校验原文件闭包、QEMU data、mode／symlink快照，复制到新目录，替换已验证的
+旧输入目录，暂存当前共享工具再封存；不原地修改旧载体。原编译身份、父载体与新
+工具提交／hash分别保留。失败写为FAIL，新目录不得作为PREPARED使用；不覆盖重试。
+这不是另一套启动／Host，也不代表新载体已取得混合实机、冷启动或自动选型资格。
 
 新 native bundle 要求同目录的 `ws73-board-config.json`、可取得的原始 INI 和当前
 导出器。准备入口通过生产导出器重放编码，拒绝旧工具哈希、短文件、symlink、参数或
@@ -540,8 +548,9 @@ prepare 与缓存 submit 的单调 before/after；期限用例必须证实原限
 
 ## 混合型号的运行期接管
 
-旧 `prepare --native-runtime-only` 格式移除三份 ROM 镜像、保留 BSLE/PM 输入，
-仅保留其原工具和封存磁盘的历史重放语义。当前物理守卫拒绝这种没有合格逐设备
+旧 `prepare --native-runtime-only` 现场入口及其生产镜像删除函数已退休，格式的历史
+fixture及封存磁盘解码仍保留：曾移除三份 ROM 镜像、保留 BSLE/PM 输入。
+当前物理守卫拒绝这种没有合格逐设备
 来源交接的接管；五端点、删除镜像或先前另一 VM 的上传均不能补齐该来源。
 
 新混合载体使用显式逐叶输入计划，保留每个固定 guest route 的五文件闭包，复用

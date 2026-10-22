@@ -26,12 +26,29 @@ Hi3873E 与 Hi3873U 的固件、校准及板级配置通用。端口号可复用
 输入一致性通过不授予板型兼容、已装载镜像或冷启动资格。
 
 更换型号时还须以明确的 `--board-model U|E` 生成匹配的新 Native service bundle。
-VM 准备会逐字节核对 bundle
+首次构建式 VM 准备会逐字节核对 bundle
 与目标固件目录中的主固件及两份校准；只更改 `--firmware-dir` 不能把原 E 包改成
 U 包，反之亦然。遇到 bundle 输入与明确配置不匹配时，保留失败
 目录，用现有打包工具选择正确输入生成独立 bundle，再准备新目录；不要修改旧
 manifest、删除检查或直接替换 guest 中的文件。增量 Cargo 构建若复用了原 ELF，
 分别记录原产物来源、当前构建／打包来源及字节比较，不能宣称所有对象已经重编。
+
+若已有明确保留编译身份、完整ROM输入及私有root的 Native载体，可以不重编业务
+程序，改用标准逐设备准备入口。先创建私有 `PLAN` JSON，填写明确获授权的物理端口、
+板型及刚导出的候选目录；字段与版本见[逐设备计划参考](../reference/vm-gate-inputs.md#每设备-os-输入配置)。
+依序列出所有要接入的设备，不能扫描后任选；相对输入目录以JSON所在目录为基准。
+在用户态仓库根目录执行：
+
+```sh
+python3 tools/ws73_target.py prepare --from-prepared "$CARRIER" \
+  --device-inputs "$PLAN" --output "$NEW_PREPARED"
+```
+
+检查新目录 manifest为PREPARED、逐叶型号／route／五文件hash及板级provenance完整，
+原 compiled identity与父载体来源未被新工具提交取代。此步骤只准备文件；真实附加
+还须重新检查端口白名单、占用及新HCC，ROM上传、Ready与业务资格分别取得。
+遇到输入或载体变化、缺失编译身份、旧runtime-only载体或封存失败时，保留失败目录，
+从完整、来源明确的载体及正确候选重新准备新目录；不要改旧manifest或删除守卫。
 
 新准备工具在独立 USB2 端口目录生成有版本的输入配置，并消费全局暂存文件；
 启动后分别核对 HCC 与驱动的输入观察。目录、格式及拒绝条件见

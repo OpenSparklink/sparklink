@@ -6,6 +6,7 @@ Environment readiness is not physical North Star acceptance. The explicit
 support command uses synthetic USB and cannot produce physical acceptance.
 """
 import argparse
+import copy
 from datetime import datetime, timezone
 import errno
 import hashlib
@@ -98,11 +99,169 @@ def copy_elf(source, target, root):
 def prepare(args):
     # Hold through copying/sealing binaries from the shared debug target too.
     with build_lock() as build_fd:
+        if getattr(args, 'from_prepared', None) is not None:
+            return prepare_from_carrier(args)
         return prepare_locked(args, build_fd)
+
+
+def carrier_root_files(root, expected=None):
+    """Check the retained regular-file closure and snapshot link/mode inputs.
+
+    The source is an explicitly retained private carrier, not an executing-image
+    attestation. Never follow a source pathname outside that private root.
+    """
+    if root.is_symlink() or not root.is_dir():
+        raise ValueError('regular retained carrier root directory required')
+    root = root.resolve(strict=True)
+    files, metadata = {}, {}
+    for path in sorted(root.rglob('*')):
+        relative = str(path.relative_to(root))
+        if path.is_symlink():
+            metadata[relative] = dict(link=os.readlink(path))
+        elif path.is_file():
+            if path.resolve() != path or not path.is_relative_to(root):
+                raise ValueError('retained carrier file escapes private root')
+            files[relative] = file_record(path)
+            metadata[relative] = dict(mode=path.stat().st_mode & 0o7777)
+        elif not path.is_dir():
+            raise ValueError('retained carrier contains unsupported special file')
+    if expected is not None:
+        records = {}
+        for row in expected:
+            relative = str(Path(row['path']).relative_to(root))
+            if relative in records:
+                raise ValueError('duplicate retained carrier file')
+            records[relative] = row
+        if files != records:
+            raise ValueError('retained carrier root file closure changed')
+    return dict(files=files, metadata=metadata)
+
+
+def prepare_from_carrier(args):
+    """Canonical per-leaf preparation; reuse frozen artifacts, not a second Host."""
+    ordinary_identity()
+    exclusive = ('kernel_build', 'qemu', 'busybox', 'dbus_daemon', 'tcpdump', 'python', 'firmware_dir',
+                 'runtime_config_dir', 'board_model', *native_vm.OPTIONS,
+                 'native_discovery_config', 'native_return_probe', 'native_channel_fd_probe',
+                 'acb_probe_module', 'controller_directory_clients', 'discovery_lifetime_probe',
+                 'native_return_fixture')
+    if any(getattr(args, n, None) for n in exclusive) or getattr(args, 'native_runtime_only', False):
+        raise ValueError('carrier preparation refuses global firmware, build and additional staging options')
+    plan_path = getattr(args, 'device_inputs', None)
+    if plan_path is None:
+        raise ValueError('carrier preparation requires an explicit device input plan')
+    plan_path = plan_path.resolve(strict=True)
+    plan_identity = file_record(plan_path)
+    selection = json.loads(plan_path.read_text())
+    if (not isinstance(selection, dict) or set(selection) != {'version', 'entries'}
+            or type(selection['version']) is not int or selection['version'] != 1):
+        raise ValueError('version1 exact device input plan required')
+    selections = copy.deepcopy(selection['entries'])
+    if not isinstance(selections, list):
+        raise ValueError('ordered device input entries required')
+    for entry in selections:
+        if not isinstance(entry, dict) or set(entry) != {'host_port', 'model', 'firmware_dir', 'board_dir'}:
+            raise ValueError('exact explicit leaf/model/firmware/board fields required')
+        for key in ('firmware_dir', 'board_dir'):
+            value = Path(entry[key])
+            entry[key] = str((plan_path.parent / value).resolve(strict=True))
+    # Validate every leaf/file/provenance before copying or packing a carrier.
+    with tempfile.TemporaryDirectory(prefix='ws73-input-check-') as temporary:
+        selected = resources.prepare_device_inputs(Path(temporary), selections)
+    source = args.from_prepared.resolve(strict=True)
+    package = prepared(source)
+    if ('native_vm' not in package or package['native_vm'].get('runtime_only')
+            or not re.fullmatch('[0-9a-f]{40}', package.get('compiled_userspace_identity', ''))):
+        raise ValueError('retained Native carrier with explicit compiled identity and boot inputs required')
+    original_root = source / 'root'
+    original = carrier_root_files(original_root, package['guest_files'])
+    original_qemu = carrier_root_files((source / 'qemu-data').resolve(), package['native_vm']['qemu_data'])
+    firmware_profile.verify(original_root, package['firmware_profiles'])
+    output = args.output.resolve()
+    if output.is_relative_to(source) or source.is_relative_to(output):
+        raise ValueError('fresh sibling preparation directory required')
+    output.mkdir(mode=0o700, parents=True, exist_ok=False)
+    manifest = copy.deepcopy(package)
+    manifest.update(status='PREPARING', physical_acceptance=False,
+                    scope='Explicit per-leaf preparation from retained Native artifacts;not a new compilation or hardware qualification',
+                    started_at=datetime.now(timezone.utc).isoformat())
+    try:
+        root = output / 'root'
+        subprocess.run(['cp', '--reflink=auto', '-a', str(original_root), str(root)], check=True)
+        cloned = carrier_root_files(root)
+        if ({n: r['sha256'] for n, r in cloned['files'].items()}
+                != {n: r['sha256'] for n, r in original['files'].items()}
+                or cloned['metadata'] != original['metadata']):
+            raise ValueError('carrier clone differs from retained root')
+        for name in ('bzImage', 'kernel.config', 'initramfs.cpio.gz'):
+            native_vm.checked_copy(source / name, output / name)
+        shutil.copytree(source / 'qemu-data', output / 'qemu-data', symlinks=True)
+        manifest['native_vm']['qemu_data'] = [file_record(p) for p in sorted((output / 'qemu-data').rglob('*')) if p.is_file()]
+        for entry in package['firmware_profiles']['entries'].values():
+            shutil.rmtree(firmware_profile.inside(root, Path('lib/firmware') / entry['directory']))
+        (root / firmware_profile.PLAN).unlink()
+        staged = resources.prepare_device_inputs(root, selections)
+        if staged != selected:
+            raise ValueError('selected inputs changed while copying carrier')
+        for key in ('explicit_firmware', 'board_configuration'):
+            manifest.pop(key, None)
+        manifest.update(staged)
+        inputs = [file_record(source / 'manifest.json'), file_record(source / 'root.btrfs'), plan_identity]
+        for path in sorted((root / 'usr/share/sparklink/tools').glob('*.py')):
+            client = native_vm.STAGED_PYTHON_CLIENTS.get(path.name)
+            current = HERE / (client if client is not None else path.name)
+            if not current.is_file():
+                raise ValueError('retained carrier contains a retired or private staged tool: ' + path.name)
+            if client is not None and current.read_bytes() != path.read_bytes():
+                raise ValueError('frozen SDK consumer differs from its current explicit source: ' + path.name)
+            shutil.copy2(current, path)
+            inputs.append(file_record(current))
+        for entry in staged['device_inputs']['entries']:
+            proof = entry['board_configuration']
+            inputs += [file_record(Path(proof[key]['path'])) for key in ('manifest', 'source', 'exporter')]
+        for entry in selections:
+            inputs += [file_record(Path(entry['firmware_dir']) / n) for n in resources.IMAGES]
+            inputs += [file_record(Path(entry['board_dir']) / n) for n in ('bsle_custom.bin', 'pm_config.bin')]
+        inputs += [file_record(Path(__file__)), file_record(resources.POLICY)]
+        head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=USERSPACE, text=True).strip()
+        manifest.update(inputs=inputs, userspace_head=head,
+                        carrier_parent=dict(manifest=file_record(source / 'manifest.json'),
+                                            artifact=file_record(source / 'root.btrfs'), root_inputs=original),
+                        new_production_compilation=False)
+        manifest['native_vm']['parent_carrier_userspace_head'] = package['native_vm']['userspace_head']
+        manifest['native_vm']['userspace_head'] = head
+        ports = [s['host_port'] for s in selections]
+        resources.check_firmware(manifest, ports, output)
+        resources.check_board_configuration(manifest, ports, output)
+        manifest['guest_files'] = [file_record(p) for p in sorted(root.rglob('*')) if p.is_file() and not p.is_symlink()]
+        staged_root = carrier_root_files(root, manifest['guest_files'])
+        native_vm.pack(args, manifest, root)
+        if (carrier_root_files(original_root, package['guest_files']) != original
+                or carrier_root_files((source / 'qemu-data').resolve(), package['native_vm']['qemu_data']) != original_qemu
+                or carrier_root_files(root, manifest['guest_files']) != staged_root
+                or prepared(source) != package
+                or any(file_record(r['path']) != r for r in inputs + package['userspace_sources'])):
+            raise ValueError('carrier or source inputs changed while preparing')
+        manifest['artifacts'] = [file_record(output / n) for n in ('bzImage', 'kernel.config', 'initramfs.cpio.gz', 'root.btrfs')]
+        manifest['status'] = 'PREPARED'
+    except Exception as error:
+        manifest.update(status='FAIL', error=str(error))
+    finally:
+        manifest['finished_at'] = datetime.now(timezone.utc).isoformat()
+        write_json(output / 'manifest.json', manifest)
+    print(manifest['status'], output / 'manifest.json')
+    return 0 if manifest['status'] == 'PREPARED' else 1
 
 
 def prepare_locked(args, build_fd):
     ordinary_identity()
+    if getattr(args, 'device_inputs', None) is not None:
+        raise ValueError('per-leaf input preparation requires an explicit retained carrier')
+    args.tcpdump = getattr(args, 'tcpdump', None) or Path('/usr/bin/tcpdump')
+    args.python = getattr(args, 'python', None) or Path(sys.executable)
+    required = ('kernel_build', 'qemu', 'busybox', 'dbus_daemon', 'firmware_dir', 'runtime_config_dir')
+    if any(getattr(args, name, None) is None for name in required):
+        raise ValueError('complete build, runtime and explicit model inputs required')
     if getattr(args, 'board_model', None) not in ['U', 'E']:
         raise ValueError('explicit U/E firmware input profile required;no global default')
     output = args.output.resolve()
@@ -388,7 +547,7 @@ def prepare_locked(args, build_fd):
             manifest['native_channel_fd_probe']=before
 
         if getattr(args,'controller_directory_clients',False):
-            source=HERE/'testing/controller_events/client.py';target=root/'usr/share/sparklink/tools/ws73_controller_directory_client.py'
+            source=HERE/native_vm.STAGED_PYTHON_CLIENTS['ws73_controller_directory_client.py'];target=root/'usr/share/sparklink/tools/ws73_controller_directory_client.py'
             shutil.copy2(source,target)
             from ws73_controller_directory import stage_clients
             manifest['controller_directory_clients']=stage_clients(root,python.name,manifest['controller_directory_client_compile'])
@@ -2948,11 +3107,14 @@ def run(args):
 def main():
     parser=argparse.ArgumentParser(description=__doc__);commands=parser.add_subparsers(dest='command',required=True)
     pack=commands.add_parser('prepare')
-    for name in ['kernel-build','qemu','busybox','dbus-daemon','firmware-dir','runtime-config-dir','output']:
-        pack.add_argument('--'+name,type=Path,required=True)
-    pack.add_argument('--board-model',choices=['U','E'],required=True,help='explicit SDK110 per-device input profile;no cold ROM auto selection')
-    pack.add_argument('--tcpdump',type=Path,default=Path('/usr/bin/tcpdump'))
-    pack.add_argument('--python',type=Path,default=Path(sys.executable))
+    for name in ['kernel-build','qemu','busybox','dbus-daemon','firmware-dir','runtime-config-dir']:
+        pack.add_argument('--'+name,type=Path)
+    pack.add_argument('--output',type=Path,required=True)
+    pack.add_argument('--board-model',choices=['U','E'],help='explicit SDK110 single-model build inputs;no cold ROM auto selection')
+    pack.add_argument('--from-prepared',type=Path,help='reuse an explicit retained Native carrier with separate compiled identity;no new compilation')
+    pack.add_argument('--device-inputs',type=Path,help='version1 ordered leaf/model/firmware_dir/board_dir JSON plan;requires --from-prepared')
+    pack.add_argument('--tcpdump',type=Path)
+    pack.add_argument('--python',type=Path)
     for name in native_vm.OPTIONS:
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
@@ -2964,8 +3126,6 @@ def main():
     pack.add_argument('--acb-probe-module',type=Path,help='explicit signed external selftest; never ordinary socket qualification')
     pack.add_argument('--native-discovery-config', type=Path,
                       help='freeze a private slkd TOML config in the native VM; checked by staged slkd, no RF qualification')
-    pack.add_argument('--native-runtime-only', action='store_true',
-                      help='native adoption only: omit ROM boot images, refuse initial non-runtime devices; prevents wrong-variant download on mixed boards')
     for name in ['run','support']:
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)

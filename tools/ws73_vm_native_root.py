@@ -22,6 +22,12 @@ from ws73_discovery_policy_capture import normalized_dump
 from install_layout import LIBRARIES
 
 OPTIONS = ('native_module_tree', 'native_boot_smoke', 'native_service_bundle')
+# External SDK consumers have deployed names distinct from their verifier.
+# Carrier refresh must keep their frozen bytes, not replace them with a verifier.
+STAGED_PYTHON_CLIENTS = {
+    'ws73-application-client.py': Path('testing/application_client/client.py'),
+    'ws73_controller_directory_client.py': Path('testing/controller_events/client.py'),
+}
 
 
 def compiler_invocation():
@@ -77,26 +83,14 @@ def stage_runtime_libraries(root, libraries, copy_elf):
 
 
 def enabled(args):
+    if getattr(args, 'native_runtime_only', False):
+        raise ValueError('runtime-only preparation is retired;explicit per-device boot inputs required')
     supplied = [getattr(args, name, None) is not None for name in OPTIONS]
     if any(supplied) and not all(supplied):
         raise ValueError('native VM profile requires module tree, boot smoke and service bundle together')
     if getattr(args, 'native_discovery_config', None) is not None and not all(supplied):
         raise ValueError('discovery config requires the complete native VM profile')
-    if getattr(args, 'native_runtime_only', False) and not all(supplied):
-        raise ValueError('runtime-only requires the complete native VM profile')
     return all(supplied)
-
-
-def remove_boot_images(root):
-    """Mixed-board adoption must fail on ROM, never download a wrong variant."""
-    removed = []
-    plan = json.loads((root / firmware_profile.PLAN).read_text())
-    for path in firmware_profile.boot_paths(root, plan):
-        removed.append(dict(path='/' + str(path.relative_to(root)), sha256=digest(path)))
-    # Validate the entire set before removing anything. Board inputs remain.
-    for row in removed:
-        (root / row['path'].lstrip('/')).unlink()
-    return removed
 
 
 def check_runtime_only(package, devices, ports):
@@ -217,6 +211,8 @@ def check_discovery_config_gate(package, args):
 
 
 def stage(args, manifest, root, source, copy_elf):
+    if getattr(args, 'native_runtime_only', False):
+        raise ValueError('runtime-only preparation is retired')
     smoke_path = args.native_boot_smoke.resolve(strict=True)
     smoke = json.loads(smoke_path.read_text())
     if smoke.get('status') != 'PASS_ISOLATED_NATIVE_ROOT_SMOKE':
@@ -288,7 +284,7 @@ def stage(args, manifest, root, source, copy_elf):
     subprocess.run(command, check=True)
     copy_elf(compiled_probe, c_probe, root)
     python_probe = root / 'usr/share/sparklink/tools/ws73-application-client.py'
-    checked_copy(fixtures / 'client.py', python_probe)
+    checked_copy(source / 'tools' / STAGED_PYTHON_CLIENTS[python_probe.name], python_probe)
     checked_copy(source / 'tools/ws73_application_client.py',
                  root / 'usr/share/sparklink/tools/ws73_application_client.py')
     checked_copy(source / 'tools/ws73_application_role.py',
@@ -348,8 +344,6 @@ def stage(args, manifest, root, source, copy_elf):
                              'userspace_head': service['userspace_head'],
                              'host_installation': False, 'native_host_acceptance': False,
                              'systemd_sandbox_acceptance': False, 'board_qualification': 'NOT_ASSERTED'}
-    if getattr(args, 'native_runtime_only', False):
-        manifest['native_vm'].update(runtime_only=True, removed_boot_images=remove_boot_images(root))
 
 
 def pack(args, manifest, root):

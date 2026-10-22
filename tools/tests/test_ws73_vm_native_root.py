@@ -11,10 +11,21 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack
 from ws73_north_star import file_record
 import ws73_firmware_profile as profile
 from test_ws73_firmware_profile import inputs as profile_inputs
+
+
+def remove_boot_images(root):
+    """Historical fixture producer only; no live preparation emits this format."""
+    import json
+    plan = json.loads((root / profile.PLAN).read_text())
+    paths = profile.boot_paths(root, plan)  # whole closure before any mutation
+    rows = [dict(path='/' + str(p.relative_to(root)), sha256=file_record(p)['sha256']) for p in paths]
+    for path in paths:
+        path.unlink()
+    return rows
 
 
 class NativeVMProfile(unittest.TestCase):

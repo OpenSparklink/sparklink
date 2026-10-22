@@ -67,6 +67,12 @@ WS73 bulk RX 已异步，但目前 completion 处理完一份 buffer 后才重�
 不能凭 URB 数量断言性能。发送预分配、多个在途 URB 与 HCC 聚合也要各自比较
 尾延迟、顺序、公平性及退出清理，不能只看吞吐。
 
+测量源端 OUT 到对端 IN 的区间时，对端可能在这期间接收其他包，不能假定同一个
+IN 请求一直等待目标消息。应核对区间开始时的待处理 URB、逐次 completion 到
+resubmission、错误与边界删失，再统计这些空窗；USB 时间线仍不等于 callback CPU
+时间或纯空口时延。NOCP 到下一轮 worker 的间隔也只是同 handle 的时序候选，
+没有 generation／lifetime 的线上完成事件不能据时间邻近变成 Ticket 归属证明。
+
 普通用户应用的校验回复才是业务闭环。软件准入、USB 完成、NOCP 和协议 ACK
 各有不同含义；[benchmark 指标契约](../reference/socket-benchmark.md)解释如何避免
 闭环过载隐藏、整批起点计时、日志扰动和跨时钟错误。准确源码的限定基线与改造

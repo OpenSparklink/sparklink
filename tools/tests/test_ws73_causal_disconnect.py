@@ -20,7 +20,8 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from ws73_capture import CaptureError
 from ws73_channel_socket import passive_controller_checks,validate_passive_controller_stages,wait_application
 from ws73_connection_control import disconnect_phase
-from ws73_parallel_data import BusinessPair,stage_specs
+from ws73_parallel_data import BusinessPair,stage_specs,verify_progress_contract,verify_records
+from test_ws73_parallel_data import disconnect_fixture
 from ws73_target import run_exit_code
 
 
@@ -154,3 +155,29 @@ class CausalDisconnect(unittest.TestCase):
         record=dict(supervisor_exit=0,status='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS',
                     four_disconnect_progress_contract_version=1,parallel_corroboration=dict(disconnect_progress_contract_version=1))
         self.assertEqual(run_exit_code(record),1)
+
+    def test_declared_null_boolean_and_unknown_contracts_are_not_legacy(self):
+        for version in (None,True,False,0,2,'1'):
+            r=disconnect_fixture();r['disconnect_progress_contract_version']=version
+            with self.subTest(version=version),self.assertRaisesRegex(CaptureError,'supported Disconnect progress'):
+                verify_records(r)
+
+    def test_original_progress_prefix_validates_integer_version_and_sequences(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            fixture,row,phase=passive_fixture(Path(tmp));row['post_application_disconnect']=True
+            app=next(a for a in row['applications']if a['role']=='initiator')
+            prefix='NativeChannelRoundTrip: sequence=0 elapsed_ms=1 bytes=00\nNativeChannelRoundTrip: sequence=1 elapsed_ms=1 bytes=01\n'
+            app.update(pid=55,stdout=prefix)
+            row['business_progress_hint']=dict(version=1,minimum_replies=2,pid=55,sequences=[0,1],prefix_bytes=len(prefix),
+                prefix_sha256=hashlib.sha256(prefix.encode()).hexdigest(),observed_wall_ns=app['start_wall_ns'])
+            other=copy.deepcopy(row);other.pop('business_progress_hint')
+            run=dict(fixture.data,channel_socket=[row,other],connection_control=dict(phases=[phase,phase]))
+            observations={(1,'business-progress',0):(None,dict(event=dict(wait_wall_ns=app['start_wall_ns'])))}
+            verify_progress_contract(run,observations,1)
+            for case in ('bool-version','bool-sequences','wrong-prefix','wrong-pid'):
+                bad=copy.deepcopy(run);hint=bad['channel_socket'][0]['business_progress_hint']
+                if case=='bool-version':hint['version']=True
+                elif case=='bool-sequences':hint['sequences']=[False,True]
+                elif case=='wrong-prefix':hint['prefix_sha256']='0'*64
+                else:hint['pid']=56
+                with self.subTest(case=case),self.assertRaises(CaptureError):verify_progress_contract(bad,observations,1)

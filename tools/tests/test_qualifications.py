@@ -17,6 +17,11 @@ class QualificationTests(unittest.TestCase):
         self.repo = Path(self.tmp.name) / 'sparklink'
         self.repo.mkdir()
         subprocess.run(['git', 'init', '-q', str(self.repo)], check=True)
+        # This fixture owns and removes the repository synchronously.  A user's
+        # automatic Git maintenance policy must not leave a child writing packs
+        # after the final commit exits and race TemporaryDirectory cleanup.
+        for key, value in [('gc.auto', '0'), ('maintenance.auto', 'false')]:
+            subprocess.run(['git', '-C', str(self.repo), 'config', key, value], check=True)
         (self.repo / 'production.rs').write_text('production v1\n')
         subprocess.run(['git', '-C', str(self.repo), 'add', '.'], check=True)
         subprocess.run(['git', '-C', str(self.repo), '-c', 'user.name=Fixture', '-c',

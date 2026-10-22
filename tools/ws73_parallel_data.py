@@ -237,7 +237,7 @@ def verify_records(record):
     burst=record.get('burst_mode',False)
     if type(isolation) is not bool or type(burst) is not bool or (isolation and burst):raise CaptureError('explicit exclusive scope booleans required')
     version=record.get('disconnect_progress_contract_version')
-    if version is not None and (type(version)is not int or version!=1 or not isolation):raise CaptureError('explicit supported Disconnect progress contract required')
+    if 'disconnect_progress_contract_version'in record and (type(version)is not int or version!=1 or not isolation):raise CaptureError('explicit supported Disconnect progress contract required')
     progress=version==1
     scope=BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE
     if (record.get('format_version')!=1 or record.get('scope')!=scope or record.get('status')!=PENDING
@@ -273,7 +273,9 @@ def verify_records(record):
         r=w['run']
         if w['exit'] or r['status']!=SUCCESS or r['scope']!=scope or r.get('disconnect_isolation',False)!=isolation or r.get('burst_mode',False)!=burst or r['pair']!=pair or r['application_identity']!=app:
             raise CaptureError('actual successful ordinary pair workers required')
-        if r.get('disconnect_progress_contract_version')!=version:raise CaptureError('worker progress contract mismatch')
+        if (r.get('disconnect_progress_contract_version')!=version
+                or ('disconnect_progress_contract_version'in r and type(r['disconnect_progress_contract_version'])is not int)):
+            raise CaptureError('worker progress contract mismatch')
         if type(w['pid']) is not int or w['pid']<=0 or w['pid'] in pids:raise CaptureError('distinct worker PID required')
         pids.add(w['pid'])
         if r['barrier_budget_seconds']!=BARRIER_SECONDS or len(r['initial'])!=2 or len(r['after'])!=2 or not all(stable(a,b) for a,b in zip(r['initial'],r['after'])):
@@ -329,9 +331,11 @@ def verify_progress_contract(run,observations,pair):
         hint=row.get('business_progress_hint',{});apps=[a for a in row['applications']if a['role']=='initiator']
         if len(apps)!=1:raise CaptureError('one original progress application required')
         app=apps[0];prefix_bytes=hint.get('prefix_bytes');sequences=hint.get('sequences')
-        if (hint.get('version')!=1 or hint.get('minimum_replies')!=2 or hint.get('pid')!=app['pid']
+        if (type(hint.get('version'))is not int or hint['version']!=1
+                or hint.get('minimum_replies')!=2 or hint.get('pid')!=app['pid']
                 or type(prefix_bytes)is not int or not 0<prefix_bytes<=128*1024
-                or not isinstance(sequences,list)or not 2<=len(sequences)<=20 or sequences!=list(range(len(sequences)))):
+                or not isinstance(sequences,list)or not 2<=len(sequences)<=20
+                or any(type(v)is not int for v in sequences)or sequences!=list(range(len(sequences)))):
             raise CaptureError('bounded original survivor progress hint required')
         prefix=app['stdout'].encode()[:prefix_bytes]
         values=[int(v)for v in re.findall(rb'^NativeChannelRoundTrip: sequence=(\d+) elapsed_ms=\d+ bytes=[0-9a-f]+\n',prefix,re.M)]

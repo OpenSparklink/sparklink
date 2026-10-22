@@ -204,7 +204,7 @@ def passive_controller_checks(run,row,expected_connections,stage):
 def validate_passive_controller_stages(run,row,phase):
     """The new Disconnect contract retains every probe at both link states."""
     stages=row.get('passive_controller_checks',[])
-    if [(s.get('stage'),s.get('expected_connections'))for s in stages]!=[
+    if any(type(s.get('expected_connections'))is not int for s in stages)or [(s.get('stage'),s.get('expected_connections'))for s in stages]!=[
             ('before-applications',1),('after-applications-and-down',0)]:
         raise CaptureError('both connected and after-Down passive checks required')
     apps=row['applications'];begin=min(a['start_wall_ns']for a in apps);end=max(a['end_wall_ns']for a in apps)

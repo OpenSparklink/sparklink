@@ -254,6 +254,55 @@ impl Adapter {
         Ok(())
     }
 
+    /// Typed Managed read. Kernel checks the original lease epoch and exact
+    /// physical lifetime at admission, selection and atomic USB submission.
+    /// Identical retries return the original seq/deadline, not another sample.
+    pub fn link_query_submit(&self, request: &mut SleLinkQuerySubmit) -> Result<()> {
+        validate_link_query_submit(request)?;
+        let original = *request;
+        let mut value = original;
+        // SAFETY: initialized fixed ABI, synchronous borrow; original storage
+        // is committed only after validating the complete successful copyout.
+        unsafe { ioctl::sl_link_query_submit(self.raw_fd(), &mut value)? };
+        if value.seq == 0 || (SleLinkQuerySubmit { seq: 0, ..value }) != original {
+            return Err(Error::InvalidParam(
+                "invalid link observation admission response",
+            ));
+        }
+        *request = value;
+        Ok(())
+    }
+
+    /// Nonconsuming same-File history, including after lease release. Either
+    /// seq or caller-known request_id permits recovery from submit EFAULT.
+    /// Pending is Some(state1); None means missing/evicted, never success.
+    pub fn link_query_result(
+        &self,
+        generation: u64,
+        seq: u32,
+        request_id: u64,
+    ) -> Result<Option<SleLinkQueryResult>> {
+        if generation == 0 || (seq == 0 && request_id == 0) {
+            return Err(Error::InvalidParam("link observation identity required"));
+        }
+        let mut value = SleLinkQueryResult {
+            version: 1,
+            generation,
+            seq,
+            request_id,
+            ..Default::default()
+        };
+        // SAFETY: initialized output-capable fixed ABI, no retained pointer.
+        match unsafe { ioctl::sl_link_query_result(self.raw_fd(), &mut value) } {
+            Ok(_) => {
+                validate_link_query_result(&value, generation, seq, request_id)?;
+                Ok(Some(value))
+            }
+            Err(nix::Error::ENOENT) => Ok(None),
+            Err(error) => Err(Error::Ioctl(error)),
+        }
+    }
+
     /// Fetch a result admitted by this exact fd/generation. Requires the same
     /// file to hold Diagnostic and CAP_NET_ADMIN; ENOENT means missing/evicted.
     /// No cursor, shared event dequeue or legacy response fallback is used.
@@ -590,6 +639,88 @@ fn validate_security_observation(
     Ok(())
 }
 
+fn validate_link_query_submit(value: &SleLinkQuerySubmit) -> Result<()> {
+    if value.version != 1
+        || !matches!(value.action, 1 | 2)
+        || value.generation == 0
+        || value.lease_epoch == 0
+        || value.request_id == 0
+        || value.lifetime == 0
+        || value.deadline_monotonic_ns == 0
+        || value.seq != 0
+        || !(1..=5000).contains(&value.timeout_ms)
+        || value.role > 1
+        || !matches!(value.kind, 1 | 2)
+        || value.reserved != [0; 5]
+        || value.address == [0; 6]
+        || value.address == [255; 6]
+    {
+        return Err(Error::InvalidParam(
+            "invalid Managed link observation request",
+        ));
+    }
+    Ok(())
+}
+
+fn validate_link_query_result(
+    value: &SleLinkQueryResult,
+    generation: u64,
+    seq: u32,
+    request_id: u64,
+) -> Result<()> {
+    let invalid = || Error::InvalidParam("invalid link observation result response");
+    if value.version != 1
+        || value.flags & !7 != 0
+        || value.generation != generation
+        || value.seq == 0
+        || (seq != 0 && value.seq != seq)
+        || value.request_id == 0
+        || (request_id != 0 && value.request_id != request_id)
+        || value.lease_epoch == 0
+        || value.lifetime == 0
+        || value.deadline_monotonic_ns == 0
+        || value.role > 1
+        || !matches!(value.kind, 1 | 2)
+        || value.address == [0; 6]
+        || value.address == [255; 6]
+        || value.reserved != [0; 4]
+        || usize::from(value.data_len) > value.data.len()
+    {
+        return Err(invalid());
+    }
+    let valid = match value.state {
+        1 => {
+            value.error == 0
+                && value.status == 0
+                && value.data_len == 0
+                && value.data == [0; 10]
+                && value.flags & 6 == 0
+        }
+        2 => {
+            let len = if value.kind == 1 { 3 } else { 10 };
+            value.error == 0
+                && value.status == 0
+                && value.flags & 4 != 0
+                && usize::from(value.data_len) == len
+                && u16::from_le_bytes([value.data[0], value.data[1]]) == value.handle
+                && value.data[len..].iter().all(|v| *v == 0)
+                && (value.flags & 2 != 0) == (value.kind == 2 || value.data[2] != 127)
+        }
+        3 => {
+            value.data_len == 0
+                && value.data == [0; 10]
+                && value.flags & 2 == 0
+                && ((value.error < 0 && value.status == 0 && value.flags & 4 == 0)
+                    || (value.error == 0 && value.status != 0 && value.flags & 4 != 0))
+        }
+        _ => false,
+    };
+    if !valid {
+        return Err(invalid());
+    }
+    Ok(())
+}
+
 fn validate_diagnostic_submit(value: &SleDiagnosticSubmit) -> Result<()> {
     if value.version != 1
         || value.flags != 0
@@ -640,6 +771,123 @@ fn validate_diagnostic_result(
 #[cfg(test)]
 mod native_validation_tests {
     use super::*;
+
+    #[test]
+    fn managed_query_layout_and_invalid_inputs_are_checked_before_syscall() {
+        assert_eq!(std::mem::size_of::<SleLinkQuerySubmit>(), 72);
+        assert_eq!(std::mem::size_of::<SleLinkQueryResult>(), 88);
+        assert_eq!(std::mem::offset_of!(SleLinkQuerySubmit, kind), 66);
+        assert_eq!(std::mem::offset_of!(SleLinkQueryResult, data), 78);
+        let good = SleLinkQuerySubmit {
+            version: 1,
+            action: 1,
+            generation: 2,
+            lease_epoch: 3,
+            request_id: 4,
+            lifetime: 5,
+            deadline_monotonic_ns: 100_000_000,
+            timeout_ms: 5000,
+            address: [1; 6],
+            kind: 1,
+            ..Default::default()
+        };
+        validate_link_query_submit(&good).unwrap();
+        for bad in [
+            SleLinkQuerySubmit {
+                generation: 0,
+                ..good
+            },
+            SleLinkQuerySubmit {
+                lease_epoch: 0,
+                ..good
+            },
+            SleLinkQuerySubmit {
+                request_id: 0,
+                ..good
+            },
+            SleLinkQuerySubmit {
+                lifetime: 0,
+                ..good
+            },
+            SleLinkQuerySubmit { seq: 1, ..good },
+            SleLinkQuerySubmit {
+                timeout_ms: 5001,
+                ..good
+            },
+            SleLinkQuerySubmit { action: 3, ..good },
+            SleLinkQuerySubmit { kind: 3, ..good },
+            SleLinkQuerySubmit { role: 2, ..good },
+            SleLinkQuerySubmit {
+                reserved: [1; 5],
+                ..good
+            },
+        ] {
+            assert!(validate_link_query_submit(&bad).is_err());
+        }
+    }
+
+    #[test]
+    fn query_samples_status_current_identity_and_invalid_rssi_are_distinct() {
+        let base = SleLinkQueryResult {
+            version: 1,
+            generation: 2,
+            lease_epoch: 3,
+            request_id: 4,
+            lifetime: 5,
+            deadline_monotonic_ns: 100_000_000,
+            seq: 6,
+            handle: 7,
+            kind: 1,
+            address: [1; 6],
+            state: 1,
+            ..Default::default()
+        };
+        validate_link_query_result(&base, 2, 6, 4).unwrap();
+        for sample in 0..=255 {
+            let mut r = SleLinkQueryResult {
+                state: 2,
+                flags: 4 | if sample == 127 { 0 } else { 2 },
+                data_len: 3,
+                ..base
+            };
+            r.data[..3].copy_from_slice(&[7, 0, sample]);
+            validate_link_query_result(&r, 2, 6, 4).unwrap();
+            r.flags ^= 2;
+            assert!(validate_link_query_result(&r, 2, 6, 4).is_err());
+        }
+        let cancelled = SleLinkQueryResult {
+            state: 3,
+            error: -125,
+            ..base
+        };
+        validate_link_query_result(&cancelled, 2, 0, 4).unwrap();
+        let failed = SleLinkQueryResult {
+            state: 3,
+            status: 0x0c,
+            flags: 4,
+            ..base
+        };
+        validate_link_query_result(&failed, 2, 6, 0).unwrap();
+        for bad in [
+            SleLinkQueryResult {
+                generation: 3,
+                ..base
+            },
+            SleLinkQueryResult { flags: 2, ..base },
+            SleLinkQueryResult {
+                data_len: 11,
+                ..base
+            },
+            SleLinkQueryResult { state: 2, ..base },
+            SleLinkQueryResult { state: 3, ..base },
+            SleLinkQueryResult {
+                reserved: [1; 4],
+                ..base
+            },
+        ] {
+            assert!(validate_link_query_result(&bad, 2, 6, 4).is_err());
+        }
+    }
 
     #[test]
     fn runtime_address_submit_is_typed_and_preserves_syscall_failure() {

@@ -601,6 +601,53 @@ pub struct SleRuntimeAddressSubmit {
     pub reserved: [u8; 6],
 }
 
+/// Managed link observations: immutable request scope, no raw opcode API.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[repr(C, align(8))]
+pub struct SleLinkQuerySubmit {
+    pub version: u32,
+    pub action: u32,
+    pub generation: u64,
+    pub lease_epoch: u64,
+    pub request_id: u64,
+    pub lifetime: u64,
+    pub deadline_monotonic_ns: u64,
+    pub timeout_ms: u32,
+    pub seq: u32,
+    pub handle: u16,
+    pub role: u8,
+    pub address_type: u8,
+    pub address: [u8; 6],
+    pub kind: u8,
+    pub reserved: [u8; 5],
+}
+
+/// Same-File history; current identity and available value are separate bits.
+/// RSSI 127 is invalid; PHY bytes are SDK wire observations, not RF policy.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[repr(C, align(8))]
+pub struct SleLinkQueryResult {
+    pub version: u32,
+    pub flags: u32,
+    pub generation: u64,
+    pub lease_epoch: u64,
+    pub request_id: u64,
+    pub lifetime: u64,
+    pub deadline_monotonic_ns: u64,
+    pub seq: u32,
+    pub state: u32,
+    pub error: i32,
+    pub handle: u16,
+    pub kind: u8,
+    pub status: u8,
+    pub role: u8,
+    pub address_type: u8,
+    pub address: [u8; 6],
+    pub data_len: u16,
+    pub reserved: [u8; 4],
+    pub data: [u8; 10],
+}
+
 /// Native connection parameters use the explicit controller profile dialect.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]

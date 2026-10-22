@@ -2,6 +2,19 @@
 pub const SL_MAGIC: u8 = b'S';
 
 nix::ioctl_readwrite!(
+    sl_link_query_submit,
+    SL_MAGIC,
+    0xd8,
+    slk_protocol::SleLinkQuerySubmit
+);
+nix::ioctl_readwrite!(
+    sl_link_query_result,
+    SL_MAGIC,
+    0xd9,
+    slk_protocol::SleLinkQueryResult
+);
+
+nix::ioctl_readwrite!(
     sl_runtime_address_submit,
     SL_MAGIC,
     0xd7,

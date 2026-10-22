@@ -1236,7 +1236,9 @@ def _run(args):
                 guest_pins=[row for row in package['guest_files'] if row['path']==guest_path]
                 if len(guest_pins)!=1 or guest_pins[0]['sha256']!=m['link_measurement_verifier']['sha256']:
                     raise ValueError('prepared guest link observation helper differs from host verifier')
-            if package.get('firmware_evidence_contract_version') != 1:
+            firmware_version = 2 if 'device_input_contract_version' in package else 1
+            if (type(package.get('firmware_evidence_contract_version')) is not int
+                    or package['firmware_evidence_contract_version'] != firmware_version):
                 raise ValueError('old prepared artifact lacks explicit firmware evidence contract; prepare a new artifact')
             physical_boundary=resources.PhysicalBoundary(args.ports, package, args.prepared.resolve())
             if runtime_addresses and (physical_boundary.models!=['E','E'] or package.get('runtime_address_contract_version')!=1):
@@ -1248,7 +1250,8 @@ def _run(args):
                 'firmware':physical_boundary.firmware,'observations':physical_boundary.observations,
                 'firmware_scope':'STAGED_INPUT_HASHES_ONLY_NOT_A_LOADED_IMAGE_WITNESS',
                 'model_basis':'USER_PLACEMENT_UNTIL_GUEST_HCC_CHECK', 'vm_only':True}
-            m['board_configuration_contract_version']=1
+            m['board_configuration_contract_version']=2 if 'device_input_contract_version' in package else 1
+            m['firmware_evidence_contract_version']=firmware_version
             m['physical_resource_allocation']['board_configuration']=physical_boundary.board_configuration
             m['firmware_input_contract_version']=1
             m['physical_resource_allocation']['input_profiles']=package['firmware_profiles']

@@ -106,6 +106,19 @@ class DaemonHoldTests(unittest.TestCase):
         self.assertEqual(p.identifier(),7);r=p.finish();self.assertEqual(r['exit'],0);self.assertIn('done',r['stdout'])
         p=Invocation([sys.executable,'-c',script],'on');self.assertEqual(p.identifier(),7);self.assertEqual(p.finish(kill=True)['exit'],-9)
 
+    def test_cached_pipe_barrier_stdin_and_exact_final_prefix(self):
+        p=Invocation([sys.executable,'-c','import sys;print("first\\nheld",flush=True);input();print("tail",flush=True)'],'fixture',stdin=subprocess.PIPE)
+        try:
+            p.pump_until(lambda b:b'held\n' in b,timeout=1,limit=1024)
+            # No new output can arrive before stdin. A cached complete marker
+            # must be accepted without a file read, lost suffix or duplicate.
+            self.assertEqual(p.until(rb'^held\n',timeout=.1),b'held\n')
+            with self.assertRaises(ValueError):p.until(rb'^first\n',limit=1,timeout=.1)
+            p.process.stdin.write(b'finish\n');p.process.stdin.flush();p.process.stdin.close();p.process.stdin=None
+            self.assertEqual(p.finish()['stdout'],'first\nheld\ntail\n')
+        finally:
+            if p.process.poll() is None:p.finish(kill=True)
+
 class CancelAuthorTests(unittest.TestCase):
     @staticmethod
     def fixture(case):

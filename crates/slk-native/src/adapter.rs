@@ -703,14 +703,13 @@ fn validate_link_command_result(
             let len = match value.kind {
                 1 => 3,
                 2 => 10,
-                _ => 0,
+                _ => 2,
             };
             value.error == 0
                 && value.status == 0
                 && value.flags & 4 != 0
                 && usize::from(value.data_len) == len
-                && (value.kind == 3
-                    || u16::from_le_bytes([value.data[0], value.data[1]]) == value.handle)
+                && u16::from_le_bytes([value.data[0], value.data[1]]) == value.handle
                 && value.data[len..].iter().all(|v| *v == 0)
                 && (value.flags & 2 != 0)
                     == (value.kind == 2 || value.kind == 1 && value.data[2] != 127)
@@ -917,6 +916,19 @@ mod native_validation_tests {
             argument: 1526,
             state: 2,
             flags: 5,
+            data_len: 2,
+            data: [
+                base.handle as u8,
+                (base.handle >> 8) as u8,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
             ..base
         };
         validate_link_command_result(&ack, 2, 6, 4).unwrap();
@@ -924,6 +936,15 @@ mod native_validation_tests {
             SleLinkCommandResult { argument: 0, ..ack },
             SleLinkCommandResult { kind: 1, ..ack },
             SleLinkCommandResult { flags: 7, ..ack },
+            SleLinkCommandResult {
+                handle: ack.handle ^ 1,
+                ..ack
+            },
+            SleLinkCommandResult {
+                data_len: 0,
+                data: [0; 10],
+                ..ack
+            },
             SleLinkCommandResult { data_len: 1, ..ack },
             SleLinkCommandResult {
                 data: [1; 10],

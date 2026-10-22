@@ -41,7 +41,7 @@ def acknowledgment(row, entry):
         raise CaptureError('full original physical lifetime required')
     if (not 0 < value['request_id'] < 1 << 64 or not 0 < value['deadline_monotonic_ns'] < 1 << 64
             or value['requested_octets'] != maximum or (value['state'],value['error'],value['status'],value['flags']) != (2,0,0,5)):
-        raise CaptureError('actual current status-only command success required;no available/effective value')
+        raise CaptureError('actual current handle-echo command success required;no available/effective value')
     return value
 
 
@@ -78,7 +78,8 @@ def corroborate_entry(entry, capture):
         raise CaptureError('acknowledgment differs from original command output')
     params = entry['object']['handle'].to_bytes(2,'little') + value['requested_octets'].to_bytes(2,'little')
     row = record['command']
-    wire = command_reply(capture, entry['owner'], 0x1804, row['start_wall_ns'], row['end_wall_ns'], params, '')
+    wire = command_reply(capture, entry['owner'], 0x1804, row['start_wall_ns'], row['end_wall_ns'], params,
+                         entry['object']['handle'].to_bytes(2,'little').hex())
     owner = {k:entry['owner'][k] for k in ('path','bus','device','generation','buffers')}
     return dict(scope=value, real_DLI=wire, entry=dict(owner=owner,object=entry['object']), original=row)
 
@@ -123,7 +124,7 @@ def exit_gate(record):
             if value != item['scope']: return False
             params = value['handle'].to_bytes(2,'little') + value['requested_octets'].to_bytes(2,'little')
             expected = command_reply(dict(commands=[raw['command']],complete=[raw['reply']]),entry['owner'],
-                0x1804,row['start_wall_ns'],row['end_wall_ns'],params,'')
+                0x1804,row['start_wall_ns'],row['end_wall_ns'],params,value['handle'].to_bytes(2,'little').hex())
             if expected != raw: return False
             key = (entry['owner']['bus'],entry['owner']['device'])
             previous = seen.get(key)

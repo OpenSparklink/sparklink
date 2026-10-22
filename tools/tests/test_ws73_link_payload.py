@@ -26,7 +26,7 @@ def fixture(index=0):
     entry=dict(owner=owner,object=link,link_payload_preference=record)
     wire=dict(bus=1,device=owner['device'],opcode=0x1804)
     capture=dict(commands=[dict(wire,record=index*10+1,wall_ns=clock+10,params='3412f605',completion=dict(wall_ns=clock+11))],
-                 complete=[dict(wire,record=index*10+2,wall_ns=clock+12,status=0,value='')])
+                 complete=[dict(wire,record=index*10+2,wall_ns=clock+12,status=0,value='3412')])
     return entry,capture
 
 
@@ -48,7 +48,7 @@ class PayloadPreferenceTests(unittest.TestCase):
     def test_original_receipt_and_actual_raw_command_shape_agree(self):
         entry,capture=fixture();p=corroborate_entry(entry,capture)
         self.assertEqual(p['real_DLI']['command']['params'],'3412f605')
-        self.assertEqual(p['real_DLI']['reply']['value'],'')
+        self.assertEqual(p['real_DLI']['reply']['value'],'3412')
         self.assertNotIn('effective_octets',p['scope'])
 
     def test_identity_argument_status_and_original_receipt_cannot_be_replaced(self):
@@ -68,7 +68,7 @@ class PayloadPreferenceTests(unittest.TestCase):
             elif case==1:capture['commands'][0]['params']='3412fe00'
             elif case==2:capture['complete'][0]['device']=7
             elif case==3:capture['complete'][0]['wall_ns']=1000
-            elif case==4:capture['complete'][0]['value']='3412'
+            elif case==4:capture['complete'][0]['value']='3512'
             else:capture['complete'][0]['status']=1
             with self.subTest(case=case),self.assertRaises(ValueError):corroborate_entry(entry,capture)
 
@@ -85,7 +85,7 @@ class PayloadPreferenceTests(unittest.TestCase):
             elif case==2:bad['link_payload_preference_corroboration']['proofs'][0]['scope']['requested_octets']=254
             elif case==3:bad['link_payload_preference_corroboration']['proofs'][3]=copy.deepcopy(bad['link_payload_preference_corroboration']['proofs'][0])
             elif case==4:bad['link_payload_preference_acceptance']=False
-            else:bad['link_payload_preference_corroboration']['proofs'][0]['real_DLI']['reply']['value']='3412'
+            else:bad['link_payload_preference_corroboration']['proofs'][0]['real_DLI']['reply']['value']=''
             self.assertFalse(exit_gate(bad),case)
 
     def test_unrequested_and_partial_scopes_never_gain_acceptance(self):

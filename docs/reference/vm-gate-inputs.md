@@ -12,9 +12,9 @@ ReadBufferSize 返回的 ACB 最大长度，须能编码为非零 16 位值。�
 须使用包含新内核 ABI、CLI 与固定 helper 的新产物；旧查询 ioctl 已退休，不能
 只替换一个二进制。启动参数、原始调用、完整 generation／lifetime／handle、
 请求参数及双端捕获必须一致。每端原始 DLI `0x1804` 参数为 handle LE16、
-requested octets LE16；当前方言的成功 Complete 仅含 status，没有参数回显。
+requested octets LE16；实测 SDK110 E 的成功 Complete 返回 handle LE16，没有请求长度回显。
 
-独立核对器要求两端、两角色共四次真实确认，不重试、降级或接受多余回复数据。
+独立核对器要求两端、两角色共四次真实确认及原 handle 回显，不重试、降级或接受多余回复数据。
 缺失、错身份、错参数、超时和部分场景均拒绝完整门禁。确认只表示保留请求的
 控制器命令成功，不能更新或证明有效数据长度、DTAP／SSAP MTU、Ready、安全、
 性能或对端业务交付；晚到／重复完成的硬件假设仍需单独验证。工作负载仍须通过

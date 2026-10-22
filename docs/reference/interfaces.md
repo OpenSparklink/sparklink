@@ -1162,7 +1162,8 @@ kind1为RSSI、kind2为PHY，argument必须为0；kind3为链路payload偏好，
 请求值。action1提交，action2撤销原作者。命令仍通过原 Host 队列、
 command credit 和原子提交票据，准入／出队／实际提交均检查原身份及权限。
 成功 Status 只确认接受；查询的真实 Complete 必须匹配完整长度与 echoed handle。
-kind3按当前SDK方言要求status-only Complete，不制造echo或有效长度；实际不同格式会
+kind3按实测SDK110 E方言要求Complete返回两字节handle LE16，必须匹配原handle；不制造
+请求参数回显或有效长度。空数据、错误handle或其他长度会
 拒绝并保留失败，不能静默选择另一种解码。
 不开放任意 opcode，也不在 Native Host 占用时取得 Diagnostic 或走 libusb 旁路。
 

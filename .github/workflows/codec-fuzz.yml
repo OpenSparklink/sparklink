@@ -29,7 +29,7 @@ jobs:
           repository: OpenSparklink/linux
           # Review/bump with changes to these production codecs or the harness.
           # This is an explicit source pin; it does not silently follow a branch.
-          ref: 400bd6812608935e2845d6d2b80ec58e7a6a6415
+          ref: 1832e9450d8fe481e95b620bf5baf6c434a7563c
           path: kernel
           sparse-checkout: |
             drivers/sparklink/ws73/wire.c

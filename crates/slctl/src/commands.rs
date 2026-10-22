@@ -470,6 +470,32 @@ impl Context {
                 }
                 self.cmd_peer_info(args[1]).await
             }
+            "link-payload-preference" => {
+                if !(3..=4).contains(&args.len()) {
+                    anyhow::bail!(
+                        "usage: link-payload-preference <connection-path> <octets> [timeout-ms]"
+                    );
+                }
+                let requested_octets = args[2].parse::<u16>()?;
+                let timeout_ms = args.get(3).map(|v| v.parse()).transpose()?.unwrap_or(5000);
+                if requested_octets == 0 || !(1..=5000).contains(&timeout_ms) {
+                    anyhow::bail!("nonzero16bit payload preference and1..5000ms required");
+                }
+                let value = self
+                    .controller()
+                    .await?
+                    .management()
+                    .set_link_payload_preference(args[1], requested_octets, timeout_ms)
+                    .await?;
+                println!(
+                    "NativeLinkPayloadAcknowledgment: {}",
+                    serde_json::to_string(&value)?
+                );
+                if value.state != 2 || value.flags != 5 {
+                    anyhow::bail!("no successful current controller acknowledgment");
+                }
+                Ok(())
+            }
             "link-measurement" => {
                 if !(3..=4).contains(&args.len()) {
                     anyhow::bail!(

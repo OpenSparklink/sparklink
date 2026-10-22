@@ -368,9 +368,9 @@ typedef struct SPARKLINK_ALIGN(8) SleDiagnosticSubmit {
 } SleDiagnosticSubmit;
 
 /**
- * Managed link observations: immutable request scope, no raw opcode API.
+ * Typed Managed link commands: immutable scope, no raw opcode API.
  */
-typedef struct SPARKLINK_ALIGN(8) SleLinkQuerySubmit {
+typedef struct SPARKLINK_ALIGN(8) SleLinkCommandSubmit {
     uint32_t version;
     uint32_t action;
     uint64_t generation;
@@ -385,14 +385,16 @@ typedef struct SPARKLINK_ALIGN(8) SleLinkQuerySubmit {
     uint8_t address_type;
     uint8_t address[6];
     uint8_t kind;
-    uint8_t reserved[5];
-} SleLinkQuerySubmit;
+    uint8_t reserved;
+    uint16_t argument;
+    uint16_t reserved_tail;
+} SleLinkCommandSubmit;
 
 /**
  * Same-File history; current identity and available value are separate bits.
  * RSSI 127 is invalid; PHY bytes are SDK wire observations, not RF policy.
  */
-typedef struct SPARKLINK_ALIGN(8) SleLinkQueryResult {
+typedef struct SPARKLINK_ALIGN(8) SleLinkCommandResult {
     uint32_t version;
     uint32_t flags;
     uint64_t generation;
@@ -410,9 +412,10 @@ typedef struct SPARKLINK_ALIGN(8) SleLinkQueryResult {
     uint8_t address_type;
     uint8_t address[6];
     uint16_t data_len;
-    uint8_t reserved[4];
+    uint16_t argument;
+    uint8_t reserved[2];
     uint8_t data[10];
-} SleLinkQueryResult;
+} SleLinkCommandResult;
 
 /**
  * Native connection parameters use the explicit controller profile dialect.
@@ -758,12 +761,12 @@ int slk_diagnostic_result(const struct SlkAdapter *adapter,
 int slk_diagnostic_submit(const struct SlkAdapter *adapter, struct SleDiagnosticSubmit *request);
 
 /**
- * Typed Managed link observation; returns 0 or -errno. Unchanged on failure.
- * Admission is not a sample or a controller/peer completion.
+ * Typed Managed link command; returns 0 or -errno. Unchanged on failure.
+ * Admission is not completion; cancellation does not undo an on-wire preference.
  * # Safety
  * Non-null pointers are valid, aligned, nonoverlapping; request is writable.
  */
-int slk_link_query_submit(const struct SlkAdapter *adapter, struct SleLinkQuerySubmit *request);
+int slk_link_command_submit(const struct SlkAdapter *adapter, struct SleLinkCommandSubmit *request);
 
 /**
  * Same-File nonconsuming result: 1=record (possibly pending),0=absent,-errno.
@@ -771,11 +774,11 @@ int slk_link_query_submit(const struct SlkAdapter *adapter, struct SleLinkQueryS
  * # Safety
  * Non-null pointers are valid, aligned, nonoverlapping; output is writable.
  */
-int slk_link_query_result(const struct SlkAdapter *adapter,
-                          uint64_t generation,
-                          uint32_t seq,
-                          uint64_t request_id,
-                          struct SleLinkQueryResult *out);
+int slk_link_command_result(const struct SlkAdapter *adapter,
+                            uint64_t generation,
+                            uint32_t seq,
+                            uint64_t request_id,
+                            struct SleLinkCommandResult *out);
 
 /**
  * Admit a typed Native connection procedure under this fd's Managed lease.

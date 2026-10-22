@@ -3,6 +3,7 @@
 use slk_protocol::SleAddr;
 pub mod controller_events;
 pub mod discovery;
+pub mod link_parameter;
 pub mod link_query;
 pub mod security;
 

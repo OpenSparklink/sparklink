@@ -1144,11 +1144,12 @@ CLI 成功也不证明发现、建链、对端应用交付、断电保持或生�
 新入口的实际资格仍按项目能力记录的准确 artifact 单独核对。
 
 
-## Managed 连接期测量
+## Managed 类型化链路命令
 
-未发布的 `SL_IOCTL_LINK_QUERY_SUBMIT`／`RESULT` 为 0xd8／0xd9，当前结构为72／88字节。
-Native Rust `link_query_submit`／`link_query_result`、显式 Native C
-`slk_link_query_submit`／`slk_link_query_result` 和 Python `sparklink.native`
+未发布的 `SL_IOCTL_LINK_COMMAND_SUBMIT`／`RESULT` 为 0xda／0xdb，当前结构为72／88字节。
+旧查询专用0xd8／0xd9已退休，不复用编号或保留兼容门面。
+Native Rust `link_command_submit`／`link_command_result`、显式 Native C
+`slk_link_command_submit`／`slk_link_command_result` 和 Python `sparklink.native`
 使用同一实现；普通应用 API 不会取得 Native fd 或管理 lease。
 
 输入携带原 File 的 Managed epoch、generation、完整 connection lifetime、handle、
@@ -1157,9 +1158,12 @@ role、地址类型／地址，以及原始 `CLOCK_MONOTONIC` 纳秒期限。Nat
 剩余预算，不是排队或 ioctl 等锁后重新授予的相对期限。完全相同的 request_id／
 范围／期限重试只取回原 seq；不同参数拒绝，旧编号不复用。
 
-kind1为RSSI、kind2为PHY；action1提交，action2撤销原作者。命令仍通过原 Host 队列、
+kind1为RSSI、kind2为PHY，argument必须为0；kind3为链路payload偏好，argument是非零16位
+请求值。action1提交，action2撤销原作者。命令仍通过原 Host 队列、
 command credit 和原子提交票据，准入／出队／实际提交均检查原身份及权限。
-成功 Status 只确认接受；真实 Complete 必须匹配完整长度与 echoed handle。
+成功 Status 只确认接受；查询的真实 Complete 必须匹配完整长度与 echoed handle。
+kind3按当前SDK方言要求status-only Complete，不制造echo或有效长度；实际不同格式会
+拒绝并保留失败，不能静默选择另一种解码。
 不开放任意 opcode，也不在 Native Host 占用时取得 Diagnostic 或走 libusb 旁路。
 
 结果不消费记录，可用 seq 或原 request_id查询，释放 lease 后同 File 仍可读取历史。
@@ -1171,11 +1175,25 @@ PHY保留八个原始线字段，SDK方言解释和空口行为另行验证。�
 
 `org.sparklink.Connection.ReadLinkMeasurement(kind,timeout_ms)` 是 control-role 管理
 RPC，虽以Read开头也不向默认观察者或apps-only组开放。daemon使用原Managed fd，
-每controller最多一个查询；等待回复时不持有租约准入锁。调用者退出／原期限结束会
+每controller的查询和偏好设置共用一个操作预算；等待回复时不持有租约准入锁。调用者退出／原期限结束会
 通知实际阻塞任务撤销原请求；该任务保留fd与预算直至真正退出，不宣称USB drain。
 显式管理客户端为 `Controller.management().read_link_measurement`；CLI是
 `slctl --adapter ADAPTER link-measurement CONNECTION rssi|phy [timeout-ms]`。
 CLI输出真实结果后，若没有成功、当前且有效的测量则失败退出，不生成默认值。
+
+`org.sparklink.Connection.SetLinkPayloadPreference(requested_octets, deadline)` 也是control-role
+管理RPC，默认观察者与apps-only组不获准调用。deadline复用现有五字段原始时钟域戳，
+包含boot/time namespace身份和CLOCK_MONOTONIC期限，不是重新开始的相对预算。
+SDK `Controller.management().set_link_payload_preference(path,octets,timeout_ms)` 在首次
+工作前创建同一个原期限；连接查询、RPC和返回检查都受它约束，daemon验证时钟域并
+将原始纳秒期限原样交给Kernel票据。CLI为
+`slctl --adapter ADAPTER link-payload-preference CONNECTION OCTETS [TIMEOUT_MS]`。
+
+回复 `Acknowledgment` 绑定完整连接身份、原request_id／期限和 `requested_octets`。
+这个字段只复述原请求，不是协商结果。state2仅表示真实控制器命令成功；kind3永远不
+设置value-available位，也不更改controller ACB上限、DTAP MTU／MPS、SSAP MTU、Ready
+或安全状态。取消／关闭不能撤销已经生效的控制器偏好，也不能抹去在途义务。
+编码范围1..65535不保证固件支持；未设置自动fallback或默认初始化步骤。
 
 这些是开发源码契约。`ENOTTY`／`EOPNOTSUPP`表示接口或模式缺失，`EPERM`表示权限／
 作者不符，`ESTALE`表示身份或epoch失效，`ETIMEDOUT`表示原期限结束，`ENOENT`表示

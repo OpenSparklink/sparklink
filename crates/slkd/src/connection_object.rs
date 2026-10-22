@@ -965,6 +965,61 @@ impl ConnectionOwner {
 
 #[interface(name = "org.sparklink.Connection")]
 impl ConnectionIface {
+    /// Explicit controller-management operation. A real Complete acknowledges
+    /// the preference only; neither effective payload, MTU nor Ready changes.
+    async fn set_link_payload_preference(
+        &self,
+        requested_octets: u16,
+        wire: slk_contract::Deadline,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::link_parameter::Acknowledgment> {
+        if requested_octets == 0 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "nonzero16bit payload preference required".into(),
+            ));
+        }
+        let deadline =
+            slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(wire))
+                .map_err(deadline_error)?;
+        if deadline.remaining().map_err(deadline_error)? > slk_channel::deadline::PROTOCOL_WAIT {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "link preference maximum five seconds".into(),
+            ));
+        }
+        let deadline_monotonic_ns = deadline.stamp().monotonic_ns;
+        let original = deadline.instant();
+        let sender = crate::security_policy::sender(&header)?;
+        let work = async {
+            if self.observation().await != (true, true) {
+                return Err(zbus::fdo::Error::Failed(
+                    "retired/unknown connection lifetime".into(),
+                ));
+            }
+            let value = crate::link_command::set_payload_preference(
+                &self.state,
+                self.generation,
+                self.reference,
+                requested_octets,
+                original,
+                deadline_monotonic_ns,
+            )
+            .await?;
+            if self.observation().await != (true, true) {
+                return Err(zbus::fdo::Error::Failed(
+                    "connection retired during link preference command".into(),
+                ));
+            }
+            Ok(value)
+        };
+        tokio::time::timeout_at(
+            tokio::time::Instant::from_std(original),
+            caller_scoped_as(connection, &sender, "Native link payload preference", work),
+        )
+        .await
+        .map_err(|_| zbus::fdo::Error::Failed("link preference original deadline".into()))?
+    }
+
     /// Management-role RPC: submits protocol work, not a passive observer
     /// property. The system bus default/apps policy does not allow this method.
     async fn read_link_measurement(
@@ -992,7 +1047,7 @@ impl ConnectionIface {
                     "retired/unknown connection lifetime".into(),
                 ));
             }
-            let value = crate::link_query::read(
+            let value = crate::link_command::read(
                 &self.state,
                 self.generation,
                 self.reference,

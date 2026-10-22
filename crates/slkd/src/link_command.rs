@@ -1,6 +1,6 @@
 //! Thin Managed caller; Runtime owns state, credit and physical obligations.
 use crate::state::SharedState;
-use slk_protocol::{SleLinkInfo, SleLinkQueryResult, SleLinkQuerySubmit};
+use slk_protocol::{SleLinkCommandResult, SleLinkCommandSubmit, SleLinkInfo};
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},
@@ -20,21 +20,21 @@ impl Drop for RpcLifetime {
 }
 struct Author {
     fd: Arc<slk_native::Adapter>,
-    request: SleLinkQuerySubmit,
+    request: SleLinkCommandSubmit,
 }
 impl Drop for Author {
     fn drop(&mut self) {
-        let mut request = SleLinkQuerySubmit {
+        let mut request = SleLinkCommandSubmit {
             seq: 0,
             action: 2,
             ..self.request
         };
-        if let Err(error) = self.fd.link_query_submit(&mut request) {
-            tracing::debug!(%error,request_id=request.request_id,"link observation author withdrawal;not physical cleanup");
+        if let Err(error) = self.fd.link_command_submit(&mut request) {
+            tracing::debug!(%error,request_id=request.request_id,"link command author withdrawal;not physical cleanup");
         }
     }
 }
-fn matches(value: &SleLinkQueryResult, request: &SleLinkQuerySubmit) -> bool {
+fn matches(value: &SleLinkCommandResult, request: &SleLinkCommandSubmit) -> bool {
     value.deadline_monotonic_ns == request.deadline_monotonic_ns
         && value.generation == request.generation
         && value.lease_epoch == request.lease_epoch
@@ -45,19 +45,21 @@ fn matches(value: &SleLinkQueryResult, request: &SleLinkQuerySubmit) -> bool {
         && value.address_type == request.address_type
         && value.address == request.address
         && value.kind == request.kind
+        && value.argument == request.argument
 }
 
-pub(crate) async fn read(
+async fn execute(
     state: &SharedState,
     generation: u64,
     reference: SleLinkInfo,
     kind: u8,
+    argument: u16,
     original: Instant,
     deadline_monotonic_ns: u64,
-) -> zbus::fdo::Result<slk_contract::link_query::Observation> {
-    if !matches!(kind, 1 | 2) {
+) -> zbus::fdo::Result<SleLinkCommandResult> {
+    if !matches!(kind, 1..=3) || ((kind == 3) != (argument != 0)) {
         return Err(zbus::fdo::Error::InvalidArgs(
-            "kind1RSSI/2PHY required".into(),
+            "kind1RSSI/2PHY require zero argument;kind3 requires nonzero payload preference".into(),
         ));
     }
     let (fd, lease, slots) = {
@@ -72,7 +74,7 @@ pub(crate) async fn read(
             s.native_lease
                 .clone()
                 .ok_or_else(|| failed("management unavailable"))?,
-            s.link_query_slots.clone(),
+            s.link_command_slots.clone(),
         )
     };
     let permit = slots
@@ -97,9 +99,9 @@ pub(crate) async fn read(
         .as_nanos()
         .div_ceil(1_000_000);
     if remaining == 0 {
-        return Err(failed("link observation original deadline"));
+        return Err(failed("link command original deadline"));
     }
-    let request = SleLinkQuerySubmit {
+    let request = SleLinkCommandSubmit {
         version: 1,
         action: 1,
         deadline_monotonic_ns,
@@ -112,12 +114,13 @@ pub(crate) async fn read(
         address_type: reference.address_type,
         address: reference.address,
         kind,
+        argument,
         timeout_ms: remaining.min(5000) as u32,
         ..Default::default()
     };
     let cancelled = Arc::new(AtomicBool::new(false));
     let _rpc = RpcLifetime(cancelled.clone());
-    let task = tokio::task::spawn_blocking(move || -> slk_native::Result<SleLinkQueryResult> {
+    let task = tokio::task::spawn_blocking(move || -> slk_native::Result<SleLinkCommandResult> {
         let _permit = permit;
         if cancelled.load(Ordering::Acquire) || Instant::now() >= original {
             return Err(slk_native::Error::Timeout);
@@ -125,7 +128,7 @@ pub(crate) async fn read(
         let mut author = Author { fd, request };
         // Admission only: do not hold the lease guard across the reply wait.
         // Runtime revalidates the epoch at the actual atomic USB submission.
-        let admitted = author.fd.link_query_submit(&mut author.request);
+        let admitted = author.fd.link_command_submit(&mut author.request);
         drop(authority);
         admitted?;
         loop {
@@ -134,13 +137,13 @@ pub(crate) async fn read(
             }
             let result = author
                 .fd
-                .link_query_result(generation, author.request.seq, id)?
+                .link_command_result(generation, author.request.seq, id)?
                 .ok_or(slk_native::Error::InvalidParam(
-                    "link observation result missing",
+                    "link command result missing",
                 ))?;
             if !matches(&result, &request) {
                 return Err(slk_native::Error::InvalidParam(
-                    "link observation scope changed",
+                    "link command scope changed",
                 ));
             }
             if result.state != 1 {
@@ -152,14 +155,40 @@ pub(crate) async fn read(
     });
     let value = tokio::time::timeout_at(tokio::time::Instant::from_std(original), task)
         .await
-        .map_err(|_| failed("link observation original deadline"))?
+        .map_err(|_| failed("link command original deadline"))?
         .map_err(failed)?
         .map_err(|e| match e {
             slk_native::Error::Ioctl(nix::errno::Errno::ENOTTY | nix::errno::Errno::EOPNOTSUPP) => {
-                zbus::fdo::Error::NotSupported("typed link observation unavailable".into())
+                zbus::fdo::Error::NotSupported("typed link command unavailable".into())
             }
             _ => failed(e),
         })?;
+    Ok(value)
+}
+
+pub(crate) async fn read(
+    state: &SharedState,
+    generation: u64,
+    reference: SleLinkInfo,
+    kind: u8,
+    original: Instant,
+    deadline_monotonic_ns: u64,
+) -> zbus::fdo::Result<slk_contract::link_query::Observation> {
+    if !matches!(kind, 1 | 2) {
+        return Err(zbus::fdo::Error::InvalidArgs(
+            "query kind1RSSI/2PHY required".into(),
+        ));
+    }
+    let value = execute(
+        state,
+        generation,
+        reference,
+        kind,
+        0,
+        original,
+        deadline_monotonic_ns,
+    )
+    .await?;
     Ok(slk_contract::link_query::Observation {
         generation: value.generation,
         lifetime: value.lifetime,
@@ -178,12 +207,47 @@ pub(crate) async fn read(
     })
 }
 
+pub(crate) async fn set_payload_preference(
+    state: &SharedState,
+    generation: u64,
+    reference: SleLinkInfo,
+    requested_octets: u16,
+    original: Instant,
+    deadline_monotonic_ns: u64,
+) -> zbus::fdo::Result<slk_contract::link_parameter::Acknowledgment> {
+    let value = execute(
+        state,
+        generation,
+        reference,
+        3,
+        requested_octets,
+        original,
+        deadline_monotonic_ns,
+    )
+    .await?;
+    Ok(slk_contract::link_parameter::Acknowledgment {
+        generation: value.generation,
+        lifetime: value.lifetime,
+        handle: value.handle,
+        role: value.role,
+        address_type: value.address_type,
+        address: crate::dbus_iface::format_addr(&reference.address),
+        request_id: value.request_id,
+        deadline_monotonic_ns: value.deadline_monotonic_ns,
+        requested_octets: value.argument,
+        state: value.state,
+        error: value.error,
+        status: value.status,
+        flags: value.flags,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
     fn result_scope_never_uses_handle_as_lifetime_or_authority() {
-        let r = SleLinkQuerySubmit {
+        let r = SleLinkCommandSubmit {
             generation: 1,
             lease_epoch: 2,
             request_id: 3,
@@ -193,7 +257,7 @@ mod tests {
             address: [1; 6],
             ..Default::default()
         };
-        let v = SleLinkQueryResult {
+        let v = SleLinkCommandResult {
             generation: 1,
             lease_epoch: 2,
             request_id: 3,
@@ -205,19 +269,20 @@ mod tests {
         };
         assert!(matches(&v, &r));
         for bad in [
-            SleLinkQueryResult { generation: 2, ..v },
-            SleLinkQueryResult {
+            SleLinkCommandResult { generation: 2, ..v },
+            SleLinkCommandResult {
                 lease_epoch: 3,
                 ..v
             },
-            SleLinkQueryResult { request_id: 4, ..v },
-            SleLinkQueryResult { lifetime: 5, ..v },
-            SleLinkQueryResult { role: 1, ..v },
-            SleLinkQueryResult {
+            SleLinkCommandResult { request_id: 4, ..v },
+            SleLinkCommandResult { lifetime: 5, ..v },
+            SleLinkCommandResult { role: 1, ..v },
+            SleLinkCommandResult {
                 address: [2; 6],
                 ..v
             },
-            SleLinkQueryResult { kind: 2, ..v },
+            SleLinkCommandResult { kind: 2, ..v },
+            SleLinkCommandResult { argument: 251, ..v },
         ] {
             assert!(!matches(&bad, &r));
         }

@@ -2,16 +2,16 @@
 pub const SL_MAGIC: u8 = b'S';
 
 nix::ioctl_readwrite!(
-    sl_link_query_submit,
+    sl_link_command_submit,
     SL_MAGIC,
-    0xd8,
-    slk_protocol::SleLinkQuerySubmit
+    0xda,
+    slk_protocol::SleLinkCommandSubmit
 );
 nix::ioctl_readwrite!(
-    sl_link_query_result,
+    sl_link_command_result,
     SL_MAGIC,
-    0xd9,
-    slk_protocol::SleLinkQueryResult
+    0xdb,
+    slk_protocol::SleLinkCommandResult
 );
 
 nix::ioctl_readwrite!(

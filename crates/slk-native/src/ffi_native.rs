@@ -374,14 +374,14 @@ pub unsafe extern "C" fn slk_diagnostic_submit(
     }
 }
 
-/// Typed Managed link observation; returns 0 or -errno. Unchanged on failure.
-/// Admission is not a sample or a controller/peer completion.
+/// Typed Managed link command; returns 0 or -errno. Unchanged on failure.
+/// Admission is not completion; cancellation does not undo an on-wire preference.
 /// # Safety
 /// Non-null pointers are valid, aligned, nonoverlapping; request is writable.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_link_query_submit(
+pub unsafe extern "C" fn slk_link_command_submit(
     adapter: *const SlkAdapter,
-    request: *mut SleLinkQuerySubmit,
+    request: *mut SleLinkCommandSubmit,
 ) -> c_int {
     let (Some(adapter), Some(request)) = (unsafe { adapter.as_ref() }, unsafe { request.as_mut() })
     else {
@@ -389,7 +389,7 @@ pub unsafe extern "C" fn slk_link_query_submit(
     };
     adapter
         .inner
-        .link_query_submit(request)
+        .link_command_submit(request)
         .map_or_else(errno, |()| 0)
 }
 
@@ -398,17 +398,20 @@ pub unsafe extern "C" fn slk_link_query_submit(
 /// # Safety
 /// Non-null pointers are valid, aligned, nonoverlapping; output is writable.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn slk_link_query_result(
+pub unsafe extern "C" fn slk_link_command_result(
     adapter: *const SlkAdapter,
     generation: u64,
     seq: u32,
     request_id: u64,
-    out: *mut SleLinkQueryResult,
+    out: *mut SleLinkCommandResult,
 ) -> c_int {
     let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
         return -nix::libc::EINVAL;
     };
-    match adapter.inner.link_query_result(generation, seq, request_id) {
+    match adapter
+        .inner
+        .link_command_result(generation, seq, request_id)
+    {
         Ok(Some(value)) => {
             *out = value;
             1
@@ -584,7 +587,7 @@ mod link_query_ffi_tests {
         let adapter = SlkAdapter {
             inner: crate::Adapter::open("/dev/null").unwrap(),
         };
-        let mut request = SleLinkQuerySubmit {
+        let mut request = SleLinkCommandSubmit {
             version: 1,
             action: 1,
             generation: 2,
@@ -598,7 +601,7 @@ mod link_query_ffi_tests {
             ..Default::default()
         };
         let original = request;
-        let mut result = SleLinkQueryResult {
+        let mut result = SleLinkCommandResult {
             data: [0x5a; 10],
             ..Default::default()
         };
@@ -607,25 +610,25 @@ mod link_query_ffi_tests {
         // checks do not claim support for arbitrary invalid non-null pointers.
         unsafe {
             assert_eq!(
-                slk_link_query_submit(std::ptr::null(), &mut request),
+                slk_link_command_submit(std::ptr::null(), &mut request),
                 -nix::libc::EINVAL
             );
             assert_eq!(
-                slk_link_query_submit(&adapter, std::ptr::null_mut()),
+                slk_link_command_submit(&adapter, std::ptr::null_mut()),
                 -nix::libc::EINVAL
             );
             assert_eq!(
-                slk_link_query_submit(&adapter, &mut request),
+                slk_link_command_submit(&adapter, &mut request),
                 -nix::libc::ENOTTY
             );
             assert_eq!(request, original);
             assert_eq!(
-                slk_link_query_result(&adapter, 2, 1, 0, &mut result),
+                slk_link_command_result(&adapter, 2, 1, 0, &mut result),
                 -nix::libc::ENOTTY
             );
             assert_eq!(result, canary);
             assert_eq!(
-                slk_link_query_result(&adapter, 2, 1, 0, std::ptr::null_mut()),
+                slk_link_command_result(&adapter, 2, 1, 0, std::ptr::null_mut()),
                 -nix::libc::EINVAL
             );
         }

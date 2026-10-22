@@ -106,7 +106,7 @@ class SleSnoopQuery(ctypes.Structure):
     ]
 
 
-class SleLinkQuerySubmit(ctypes.Structure):
+class SleLinkCommandSubmit(ctypes.Structure):
     _align_ = 8
     _fields_ = [
         ("version", ctypes.c_uint32), ("action", ctypes.c_uint32),
@@ -116,11 +116,12 @@ class SleLinkQuerySubmit(ctypes.Structure):
         ("timeout_ms", ctypes.c_uint32), ("seq", ctypes.c_uint32),
         ("handle", ctypes.c_uint16), ("role", ctypes.c_uint8),
         ("address_type", ctypes.c_uint8), ("address", ctypes.c_uint8 * 6),
-        ("kind", ctypes.c_uint8), ("reserved", ctypes.c_uint8 * 5),
+        ("kind", ctypes.c_uint8), ("reserved", ctypes.c_uint8),
+        ("argument", ctypes.c_uint16), ("reserved_tail", ctypes.c_uint16),
     ]
 
 
-class SleLinkQueryResult(ctypes.Structure):
+class SleLinkCommandResult(ctypes.Structure):
     _align_ = 8
     _fields_ = [
         ("version", ctypes.c_uint32), ("flags", ctypes.c_uint32),
@@ -130,7 +131,8 @@ class SleLinkQueryResult(ctypes.Structure):
         ("seq", ctypes.c_uint32), ("state", ctypes.c_uint32), ("error", ctypes.c_int32),
         ("handle", ctypes.c_uint16), ("kind", ctypes.c_uint8), ("status", ctypes.c_uint8),
         ("role", ctypes.c_uint8), ("address_type", ctypes.c_uint8), ("address", ctypes.c_uint8 * 6),
-        ("data_len", ctypes.c_uint16), ("reserved", ctypes.c_uint8 * 4), ("data", ctypes.c_uint8 * 10),
+        ("data_len", ctypes.c_uint16), ("argument", ctypes.c_uint16),
+        ("reserved", ctypes.c_uint8 * 2), ("data", ctypes.c_uint8 * 10),
     ]
 
 

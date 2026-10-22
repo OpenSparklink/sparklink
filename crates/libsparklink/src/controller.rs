@@ -377,6 +377,68 @@ impl Management {
             .await?;
         Ok(value)
     }
+    /// Control-role command through the daemon's existing Managed owner.
+    /// Acknowledgment is not the effective packet budget, MTU or peer delivery.
+    pub async fn set_link_payload_preference(
+        &self,
+        path: &str,
+        requested_octets: u16,
+        timeout_ms: u32,
+    ) -> Result<contract::link_parameter::Acknowledgment> {
+        if requested_octets == 0 || !(1..=5000).contains(&timeout_ms) {
+            return Err(ApplicationError::Invalid(
+                "link payload preference/deadline",
+            ));
+        }
+        let deadline = slk_channel::deadline::Deadline::after(std::time::Duration::from_millis(
+            u64::from(timeout_ms),
+        ))?;
+        crate::client::bounded(&self.controller.client, deadline, async {
+            let link = self
+                .controller
+                .client
+                .connection(&self.controller.path(), path)
+                .await?;
+            let info = link.info().await?;
+            let value: contract::link_parameter::Acknowledgment = self
+                .controller
+                .client
+                .proxy(link.path(), contract::CONNECTION)
+                .await?
+                .call(
+                    contract::link_parameter::SET_PAYLOAD_PREFERENCE,
+                    &(requested_octets, contract::deadline_wire(deadline.stamp())),
+                )
+                .await?;
+            if (
+                value.generation,
+                value.lifetime,
+                value.handle,
+                value.role,
+                value.address_type,
+                &value.address,
+            ) != (info.0, info.1, info.2, info.3, info.4, &info.5)
+                || value.requested_octets != requested_octets
+                || value.request_id == 0
+                || value.deadline_monotonic_ns != deadline.stamp().monotonic_ns
+                || !matches!(value.state, 2 | 3)
+                || value.flags & !5 != 0
+                || value.state == 3
+                    && !((value.error < 0 && value.status == 0 && value.flags & 4 == 0)
+                        || (value.error == 0 && value.status != 0 && value.flags & 4 != 0))
+                || value.state == 2
+                    && (value.error != 0 || value.status != 0 || value.flags & 4 == 0)
+            {
+                return Err(ApplicationError::Identity("link payload acknowledgment"));
+            }
+            self.controller
+                .client
+                .check_generation(self.controller.id)
+                .await?;
+            Ok(value)
+        })
+        .await
+    }
     pub async fn connection_result(&self, id: u64) -> Result<wire::ConnectionResult> {
         let v: wire::ConnectionResult = self
             .controller

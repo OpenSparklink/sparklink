@@ -141,6 +141,7 @@ Commands:
   peer-info <path>               Show a typed peer and its connection lifetimes
   connection-info <path>        Show one immutable connection identity
   link-measurement <path> <rssi|phy> [timeout-ms]  Read a real Managed link observation
+  link-payload-preference <path> <octets> [timeout-ms]  Request link payload preference; acknowledgment only
   disconnect-object <path>      Disconnect the exact physical lifetime
   ssap-discover <path> [structure|service|property uuid-hex] Discover actual peer metadata
   ssap-list                            Inspect local service metadata only

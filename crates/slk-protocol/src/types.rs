@@ -601,10 +601,10 @@ pub struct SleRuntimeAddressSubmit {
     pub reserved: [u8; 6],
 }
 
-/// Managed link observations: immutable request scope, no raw opcode API.
+/// Typed Managed link commands: immutable scope, no raw opcode API.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[repr(C, align(8))]
-pub struct SleLinkQuerySubmit {
+pub struct SleLinkCommandSubmit {
     pub version: u32,
     pub action: u32,
     pub generation: u64,
@@ -619,14 +619,16 @@ pub struct SleLinkQuerySubmit {
     pub address_type: u8,
     pub address: [u8; 6],
     pub kind: u8,
-    pub reserved: [u8; 5],
+    pub reserved: u8,
+    pub argument: u16,
+    pub reserved_tail: u16,
 }
 
 /// Same-File history; current identity and available value are separate bits.
 /// RSSI 127 is invalid; PHY bytes are SDK wire observations, not RF policy.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[repr(C, align(8))]
-pub struct SleLinkQueryResult {
+pub struct SleLinkCommandResult {
     pub version: u32,
     pub flags: u32,
     pub generation: u64,
@@ -644,7 +646,8 @@ pub struct SleLinkQueryResult {
     pub address_type: u8,
     pub address: [u8; 6],
     pub data_len: u16,
-    pub reserved: [u8; 4],
+    pub argument: u16,
+    pub reserved: [u8; 2],
     pub data: [u8; 10],
 }
 

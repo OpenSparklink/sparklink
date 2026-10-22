@@ -254,17 +254,17 @@ impl Adapter {
         Ok(())
     }
 
-    /// Typed Managed read. Kernel checks the original lease epoch and exact
+    /// Typed Managed link command. Kernel checks the original lease epoch and exact
     /// physical lifetime at admission, selection and atomic USB submission.
     /// Identical retries return the original seq/deadline, not another sample.
-    pub fn link_query_submit(&self, request: &mut SleLinkQuerySubmit) -> Result<()> {
-        validate_link_query_submit(request)?;
+    pub fn link_command_submit(&self, request: &mut SleLinkCommandSubmit) -> Result<()> {
+        validate_link_command_submit(request)?;
         let original = *request;
         let mut value = original;
         // SAFETY: initialized fixed ABI, synchronous borrow; original storage
         // is committed only after validating the complete successful copyout.
-        unsafe { ioctl::sl_link_query_submit(self.raw_fd(), &mut value)? };
-        if value.seq == 0 || (SleLinkQuerySubmit { seq: 0, ..value }) != original {
+        unsafe { ioctl::sl_link_command_submit(self.raw_fd(), &mut value)? };
+        if value.seq == 0 || (SleLinkCommandSubmit { seq: 0, ..value }) != original {
             return Err(Error::InvalidParam(
                 "invalid link observation admission response",
             ));
@@ -276,16 +276,16 @@ impl Adapter {
     /// Nonconsuming same-File history, including after lease release. Either
     /// seq or caller-known request_id permits recovery from submit EFAULT.
     /// Pending is Some(state1); None means missing/evicted, never success.
-    pub fn link_query_result(
+    pub fn link_command_result(
         &self,
         generation: u64,
         seq: u32,
         request_id: u64,
-    ) -> Result<Option<SleLinkQueryResult>> {
+    ) -> Result<Option<SleLinkCommandResult>> {
         if generation == 0 || (seq == 0 && request_id == 0) {
             return Err(Error::InvalidParam("link observation identity required"));
         }
-        let mut value = SleLinkQueryResult {
+        let mut value = SleLinkCommandResult {
             version: 1,
             generation,
             seq,
@@ -293,9 +293,9 @@ impl Adapter {
             ..Default::default()
         };
         // SAFETY: initialized output-capable fixed ABI, no retained pointer.
-        match unsafe { ioctl::sl_link_query_result(self.raw_fd(), &mut value) } {
+        match unsafe { ioctl::sl_link_command_result(self.raw_fd(), &mut value) } {
             Ok(_) => {
-                validate_link_query_result(&value, generation, seq, request_id)?;
+                validate_link_command_result(&value, generation, seq, request_id)?;
                 Ok(Some(value))
             }
             Err(nix::Error::ENOENT) => Ok(None),
@@ -639,7 +639,7 @@ fn validate_security_observation(
     Ok(())
 }
 
-fn validate_link_query_submit(value: &SleLinkQuerySubmit) -> Result<()> {
+fn validate_link_command_submit(value: &SleLinkCommandSubmit) -> Result<()> {
     if value.version != 1
         || !matches!(value.action, 1 | 2)
         || value.generation == 0
@@ -650,8 +650,10 @@ fn validate_link_query_submit(value: &SleLinkQuerySubmit) -> Result<()> {
         || value.seq != 0
         || !(1..=5000).contains(&value.timeout_ms)
         || value.role > 1
-        || !matches!(value.kind, 1 | 2)
-        || value.reserved != [0; 5]
+        || !matches!(value.kind, 1..=3)
+        || value.reserved != 0
+        || value.reserved_tail != 0
+        || ((value.kind == 3) != (value.argument != 0))
         || value.address == [0; 6]
         || value.address == [255; 6]
     {
@@ -662,8 +664,8 @@ fn validate_link_query_submit(value: &SleLinkQuerySubmit) -> Result<()> {
     Ok(())
 }
 
-fn validate_link_query_result(
-    value: &SleLinkQueryResult,
+fn validate_link_command_result(
+    value: &SleLinkCommandResult,
     generation: u64,
     seq: u32,
     request_id: u64,
@@ -680,10 +682,11 @@ fn validate_link_query_result(
         || value.lifetime == 0
         || value.deadline_monotonic_ns == 0
         || value.role > 1
-        || !matches!(value.kind, 1 | 2)
+        || !matches!(value.kind, 1..=3)
         || value.address == [0; 6]
         || value.address == [255; 6]
-        || value.reserved != [0; 4]
+        || value.reserved != [0; 2]
+        || ((value.kind == 3) != (value.argument != 0))
         || usize::from(value.data_len) > value.data.len()
     {
         return Err(invalid());
@@ -697,14 +700,20 @@ fn validate_link_query_result(
                 && value.flags & 6 == 0
         }
         2 => {
-            let len = if value.kind == 1 { 3 } else { 10 };
+            let len = match value.kind {
+                1 => 3,
+                2 => 10,
+                _ => 0,
+            };
             value.error == 0
                 && value.status == 0
                 && value.flags & 4 != 0
                 && usize::from(value.data_len) == len
-                && u16::from_le_bytes([value.data[0], value.data[1]]) == value.handle
+                && (value.kind == 3
+                    || u16::from_le_bytes([value.data[0], value.data[1]]) == value.handle)
                 && value.data[len..].iter().all(|v| *v == 0)
-                && (value.flags & 2 != 0) == (value.kind == 2 || value.data[2] != 127)
+                && (value.flags & 2 != 0)
+                    == (value.kind == 2 || value.kind == 1 && value.data[2] != 127)
         }
         3 => {
             value.data_len == 0
@@ -774,11 +783,11 @@ mod native_validation_tests {
 
     #[test]
     fn managed_query_layout_and_invalid_inputs_are_checked_before_syscall() {
-        assert_eq!(std::mem::size_of::<SleLinkQuerySubmit>(), 72);
-        assert_eq!(std::mem::size_of::<SleLinkQueryResult>(), 88);
-        assert_eq!(std::mem::offset_of!(SleLinkQuerySubmit, kind), 66);
-        assert_eq!(std::mem::offset_of!(SleLinkQueryResult, data), 78);
-        let good = SleLinkQuerySubmit {
+        assert_eq!(std::mem::size_of::<SleLinkCommandSubmit>(), 72);
+        assert_eq!(std::mem::size_of::<SleLinkCommandResult>(), 88);
+        assert_eq!(std::mem::offset_of!(SleLinkCommandSubmit, kind), 66);
+        assert_eq!(std::mem::offset_of!(SleLinkCommandResult, data), 78);
+        let good = SleLinkCommandSubmit {
             version: 1,
             action: 1,
             generation: 2,
@@ -791,44 +800,60 @@ mod native_validation_tests {
             kind: 1,
             ..Default::default()
         };
-        validate_link_query_submit(&good).unwrap();
+        validate_link_command_submit(&good).unwrap();
         for bad in [
-            SleLinkQuerySubmit {
+            SleLinkCommandSubmit {
                 generation: 0,
                 ..good
             },
-            SleLinkQuerySubmit {
+            SleLinkCommandSubmit {
                 lease_epoch: 0,
                 ..good
             },
-            SleLinkQuerySubmit {
+            SleLinkCommandSubmit {
                 request_id: 0,
                 ..good
             },
-            SleLinkQuerySubmit {
+            SleLinkCommandSubmit {
                 lifetime: 0,
                 ..good
             },
-            SleLinkQuerySubmit { seq: 1, ..good },
-            SleLinkQuerySubmit {
+            SleLinkCommandSubmit { seq: 1, ..good },
+            SleLinkCommandSubmit {
                 timeout_ms: 5001,
                 ..good
             },
-            SleLinkQuerySubmit { action: 3, ..good },
-            SleLinkQuerySubmit { kind: 3, ..good },
-            SleLinkQuerySubmit { role: 2, ..good },
-            SleLinkQuerySubmit {
-                reserved: [1; 5],
+            SleLinkCommandSubmit { action: 3, ..good },
+            SleLinkCommandSubmit { kind: 3, ..good },
+            SleLinkCommandSubmit { role: 2, ..good },
+            SleLinkCommandSubmit {
+                reserved: 1,
+                ..good
+            },
+            SleLinkCommandSubmit {
+                reserved_tail: 1,
+                ..good
+            },
+            SleLinkCommandSubmit {
+                argument: 1526,
                 ..good
             },
         ] {
-            assert!(validate_link_query_submit(&bad).is_err());
+            assert!(validate_link_command_submit(&bad).is_err());
+        }
+        for argument in [1, 254, 1526, u16::MAX] {
+            validate_link_command_submit(&SleLinkCommandSubmit {
+                kind: 3,
+                argument,
+                ..good
+            })
+            .unwrap();
         }
     }
 
     #[test]
     fn query_samples_status_current_identity_and_invalid_rssi_are_distinct() {
-        let base = SleLinkQueryResult {
+        let base = SleLinkCommandResult {
             version: 1,
             generation: 2,
             lease_epoch: 3,
@@ -842,50 +867,70 @@ mod native_validation_tests {
             state: 1,
             ..Default::default()
         };
-        validate_link_query_result(&base, 2, 6, 4).unwrap();
+        validate_link_command_result(&base, 2, 6, 4).unwrap();
         for sample in 0..=255 {
-            let mut r = SleLinkQueryResult {
+            let mut r = SleLinkCommandResult {
                 state: 2,
                 flags: 4 | if sample == 127 { 0 } else { 2 },
                 data_len: 3,
                 ..base
             };
             r.data[..3].copy_from_slice(&[7, 0, sample]);
-            validate_link_query_result(&r, 2, 6, 4).unwrap();
+            validate_link_command_result(&r, 2, 6, 4).unwrap();
             r.flags ^= 2;
-            assert!(validate_link_query_result(&r, 2, 6, 4).is_err());
+            assert!(validate_link_command_result(&r, 2, 6, 4).is_err());
         }
-        let cancelled = SleLinkQueryResult {
+        let cancelled = SleLinkCommandResult {
             state: 3,
             error: -125,
             ..base
         };
-        validate_link_query_result(&cancelled, 2, 0, 4).unwrap();
-        let failed = SleLinkQueryResult {
+        validate_link_command_result(&cancelled, 2, 0, 4).unwrap();
+        let failed = SleLinkCommandResult {
             state: 3,
             status: 0x0c,
             flags: 4,
             ..base
         };
-        validate_link_query_result(&failed, 2, 6, 0).unwrap();
+        validate_link_command_result(&failed, 2, 6, 0).unwrap();
         for bad in [
-            SleLinkQueryResult {
+            SleLinkCommandResult {
                 generation: 3,
                 ..base
             },
-            SleLinkQueryResult { flags: 2, ..base },
-            SleLinkQueryResult {
+            SleLinkCommandResult { flags: 2, ..base },
+            SleLinkCommandResult {
                 data_len: 11,
                 ..base
             },
-            SleLinkQueryResult { state: 2, ..base },
-            SleLinkQueryResult { state: 3, ..base },
-            SleLinkQueryResult {
-                reserved: [1; 4],
+            SleLinkCommandResult { state: 2, ..base },
+            SleLinkCommandResult { state: 3, ..base },
+            SleLinkCommandResult {
+                reserved: [1; 2],
                 ..base
             },
         ] {
-            assert!(validate_link_query_result(&bad, 2, 6, 4).is_err());
+            assert!(validate_link_command_result(&bad, 2, 6, 4).is_err());
+        }
+        let ack = SleLinkCommandResult {
+            kind: 3,
+            argument: 1526,
+            state: 2,
+            flags: 5,
+            ..base
+        };
+        validate_link_command_result(&ack, 2, 6, 4).unwrap();
+        for bad in [
+            SleLinkCommandResult { argument: 0, ..ack },
+            SleLinkCommandResult { kind: 1, ..ack },
+            SleLinkCommandResult { flags: 7, ..ack },
+            SleLinkCommandResult { data_len: 1, ..ack },
+            SleLinkCommandResult {
+                data: [1; 10],
+                ..ack
+            },
+        ] {
+            assert!(validate_link_command_result(&bad, 2, 6, 4).is_err());
         }
     }
 

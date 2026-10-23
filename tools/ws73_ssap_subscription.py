@@ -226,6 +226,13 @@ def validate_tools(records,root,manifest):
             raise CaptureError('subscription actual tool missing from original build manifest')
 
 
+def request_tools(row,root=Path('/')):
+    """Same exact dependency selection for the requester and root consumer."""
+    from ws73_role_snapshot import requested as snapshot_required
+    return tool_records(root,snapshot=snapshot_required(row),inflight=inflight_required(row),
+                        shared=shared_required(row),observed=output_contract(row)==1)
+
+
 def validate_request(row,phase):
     renewal=renewal_required(row)
     pressure=pressure_required(row)
@@ -270,7 +277,7 @@ def request(run,row):
     phase=row['phase']
     from ws73_role_snapshot import TOKEN
     snapshot=Path('/proc/cmdline').read_text().split().count(TOKEN)==1
-    value=dict(phase=phase,owners=row['owners'],tools=tool_records(snapshot=snapshot,inflight=getattr(run.args,'ssap_subscription_inflight_release_verify',False),shared=getattr(run.args,'ssap_subscription_shared_verify',False),observed=True),ssap_subscription_output_contract_version=1,security_requirement=row['security_requirement'],
+    value=dict(phase=phase,owners=row['owners'],tools={},ssap_subscription_output_contract_version=1,security_requirement=row['security_requirement'],
                message_security_required=row['message_security_required'],status='RUNNING',start_wall_ns=time.time_ns())
     if getattr(run.args,'ssap_subscription_renewal_verify',False):
         value.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
@@ -286,6 +293,7 @@ def request(run,row):
     if case!='release':value.update(ssap_subscription_shared_case=case,**{'ssap_subscription_shared_pressure_contract_version'if case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
     if snapshot:value['ssap_subscription_snapshot_contract_version']=1
     if getattr(run.args,'shared_subscription',False):value['parallel_pair']=run.args.pair
+    value['tools']=request_tools(value)
     validate_request(value,phase)
     path=run.output/f'subscription-role-{phase}.request.json';temporary=path.with_suffix('.tmp')
     with temporary.open('x')as stream:json.dump(value,stream)
@@ -299,8 +307,8 @@ def request(run,row):
     result=read_json(response,0,limit=(4096 if case=='pressure'else 1024 if pressure_required(value)or shared_required(value)else 512)*1024)
     for key in value:
         if result.get(key)!=value[key]:raise CaptureError('root subscription supervisor changed original request')
-    verify_probe(result)
     if result.get('ssap_subscription_status')!=STATUS:raise CaptureError('actual subscription phase failed: '+str(result.get('error')))
+    verify_probe(result)
     for key in ('ssap_subscription','ssap_subscription_status','role_probe','role_supervisor','channel_role','application_role_contract_version'):
         row[key]=result[key]
     if owner_loss_required(value):row['role_ssap_commands']=result['role_ssap_commands']
@@ -591,7 +599,7 @@ def verify_supervisor_artifacts(control,evidence,*,pair=None):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
         if original.get('parallel_pair')!=pair or row.get('parallel_pair')!=pair:raise CaptureError('original role pair namespace required')
         verify_probe(original)
-        if output_contract(row)!=output_contract(original):raise CaptureError('original subscription output contract differs from parent result')
+        if output_contract(row)!=output_contract(original)or output_contract(row['ssap_subscription_request'])!=output_contract(original):raise CaptureError('original subscription output contract differs from parent request/result')
         verify_outputs(original)
         for key,value in row['ssap_subscription_request'].items():
             if original[key]!=value:raise CaptureError('original root request identity changed')

@@ -19,9 +19,27 @@ from ws73_capture import CaptureError
 from ws73_ssap_owned import observed_process,output_text,wait_text,verify_output,OUTPUT_MAXIMUM,wait_output
 from ws73_ssap_update_delivery import command_receipt
 from ws73_ssap_subscription import app_rows,wait_stage,verify_outputs,require_current_output
+from ws73_ssap_subscription import request_tools,tool_records,OUTPUT_TOOLS,TOOLS,validate_tools
 
 
 class SsapOutput(unittest.TestCase):
+    def test_request_and_root_share_actual_dependency_selection(self):
+        # Real opaque files for hashing only; no SDK binary is executed/stubbed.
+        with tempfile.TemporaryDirectory()as tmp:
+            root=Path(tmp)
+            for name in (*TOOLS,*OUTPUT_TOOLS):
+                path=root/name.lstrip('/');path.parent.mkdir(parents=True,exist_ok=True)
+                path.write_bytes(('file identity fixture '+name).encode())
+            row=dict(ssap_subscription_output_contract_version=1)
+            actual=request_tools(row,root)
+            self.assertEqual(actual,tool_records(root,observed=True))
+            self.assertEqual(set(actual)-set(tool_records(root)),set(OUTPUT_TOOLS))
+            manifest=[dict(path=str(root/n.lstrip('/')),sha256=v['sha256'])for n,v in actual.items()]
+            validate_tools(actual,root,manifest)
+            changed=copy.deepcopy(actual);changed[OUTPUT_TOOLS[-1]]['sha256']='0'*64
+            with self.assertRaises(CaptureError):validate_tools(changed,root,manifest)
+            self.assertEqual(request_tools({},root),tool_records(root)) # Historical selection only.
+
     def test_reader_real_split_pipe_ignores_injected_live_file_read_failure(self):
         with tempfile.TemporaryDirectory()as tmp:
             out,err=[Path(tmp)/n for n in ('stdout','stderr')];app={}

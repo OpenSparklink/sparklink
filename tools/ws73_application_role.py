@@ -248,8 +248,8 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None,pair=None):
                 from ws73_socket_benchmark import request_tools
                 expected_tools=request_tools(row)
             elif subscription:
-                from ws73_ssap_subscription import tool_records,inflight_required,shared_required
-                expected_tools=tool_records(snapshot=snapshot_root is not None,inflight=inflight_required(row),shared=shared_required(row))
+                from ws73_ssap_subscription import request_tools
+                expected_tools=request_tools(row)
             else:expected_tools={key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
             if row['tools']!=expected_tools:
                 raise CaptureError('exact actual SDK artifacts required')

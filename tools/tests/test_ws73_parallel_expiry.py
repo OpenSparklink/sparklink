@@ -52,14 +52,14 @@ class FourOriginalExpiry(unittest.TestCase):
         self.assertEqual(requested_shared_case(args,four_pair=True),'expiry')
         self.assertFalse(requested(args,passthrough=False)) # Does not enable a standalone gate.
         with self.assertRaises(ValueError):requested_shared_case(args)
-        for case in (True,None,'owner-exit','pressure','unknown'):
+        for case in (True,None,'pressure','unknown'):
             with self.subTest(case=case),self.assertRaises(ValueError):requested_shared_case(SimpleNamespace(four_device_shared_subscription=True,ssap_subscription_shared_case=case),four_pair=True)
         # Existing separate two-device cases are not removed or upgraded.
         self.assertEqual(requested_shared_case(SimpleNamespace(ssap_subscription_shared_verify=True,ssap_subscription_shared_case='owner-exit')),'owner-exit')
 
     def test_original_record_worker_cli_and_phase_must_name_same_case(self):
         self.assertEqual(len(verify_records(expiry_metadata())),4)
-        for change in ('coordinator-version','worker-case','worker-version','missing-flag','wrong-flag','phase-case','phase-version','wrong-mode','unsupported'):
+        for change in ('coordinator-version','worker-case','worker-version','missing-flag','wrong-flag','phase-case','phase-version','wrong-mode','wrong-coordinator-case'):
             record=expiry_metadata();worker=record['workers'][1];phase=worker['run']['channel_socket'][0]
             if change=='coordinator-version':record['ssap_subscription_shared_lifetime_contract_version']=True
             elif change=='worker-case':worker['run']['ssap_subscription_shared_case']='release'

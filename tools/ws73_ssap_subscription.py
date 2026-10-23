@@ -105,7 +105,7 @@ def inflight_required(row):
 
 def requested_inflight_case(args):
     case=getattr(args,'ssap_subscription_inflight_case','release')
-    if case not in ('release','expiry')or case!='release'and not getattr(args,'ssap_subscription_inflight_release_verify',False):
+    if case not in ('release','expiry','owner-exit')or case!='release'and not getattr(args,'ssap_subscription_inflight_release_verify',False):
         raise ValueError('expiry case requires the dedicated protected in-flight gate')
     return case
 
@@ -113,7 +113,7 @@ def requested_inflight_case(args):
 def inflight_case(row):
     case=row.get('ssap_subscription_inflight_case','release')
     version=row.get('ssap_subscription_inflight_expiry_contract_version')
-    if (case not in ('release','expiry')or case=='expiry'and(not inflight_required(row)or type(version)is not int or version!=1)
+    if (case not in ('release','expiry','owner-exit')or case=='expiry'and(not inflight_required(row)or type(version)is not int or version!=1)
             or case=='release'and version is not None):
         raise CaptureError('explicit in-flight expiry contract1 required;old release is not expiry evidence')
     return case
@@ -143,7 +143,7 @@ def requested_shared_case(args,*,four_pair=False):
     parallel=four_pair and getattr(args,'four_device_shared_subscription',False)is True
     if(type(four_pair)is not bool or type(case)is not str or case not in ('release','expiry','owner-exit','pressure')
         or case!='release'and not(getattr(args,'ssap_subscription_shared_verify',False)is True or parallel)
-        or parallel and case not in ('release','expiry')):
+        or parallel and case not in ('release','expiry','owner-exit')):
         raise ValueError('lifetime case requires its dedicated supported shared-owner gate')
     return case
 

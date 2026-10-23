@@ -205,6 +205,25 @@ def native_security_epochs(row):
     return epochs
 
 
+def validate_owner_exit_timing(lease,group):
+    """Original child/sibling window;caller also verifies roles,transcripts,wire.
+
+    An exit after the original lease expiry cannot establish owner-loss cause.
+    This is the actual wire-verifier predicate,not a second lifetime model.
+    """
+    death=lease['owner_loss'];case=group['messages'][3];expires=lease['active']['expires_ns']
+    fields=('pid','signal','exit','start_monotonic_ns','exit_monotonic_ns','observation_deadline_ns','start_wall_ns','exit_wall_ns')
+    if ('expiry'in lease or 'expiry_observation'in lease or any(type(death.get(k))is not int for k in fields)
+        or type(expires)is not int or expires<=0
+        or death['pid']!=lease['application']['pid']or death['signal']!=9 or death['exit']!=-9
+        or death['observation_deadline_ns']-death['start_monotonic_ns']!=5_000_000_000
+        or not case['end_monotonic_ns']<=death['start_monotonic_ns']<=death['exit_monotonic_ns']<death['observation_deadline_ns']
+        or death['exit_monotonic_ns']>=expires
+        or not case['end_wall_ns']<=death['start_wall_ns']<=death['exit_wall_ns']<=lease['withdrawn_wall_ns']
+        or group['messages'][4]['end_monotonic_ns']>=death['observation_deadline_ns']):
+        raise CaptureError('actual child exit before original lease expiry and bounded continuing sibling business required')
+
+
 def corroborate(row,matched):
     owners=row['owners'];proof=[];credit={0:0,1:0};unique=set();epochs=native_security_epochs(row);kind=shared_case(row)
     pressure=kind=='pressure';total,withdraw,fresh_at=workload(kind)
@@ -299,13 +318,7 @@ def corroborate(row,matched):
                             or lease['expiry_observation']!=terminal or 'owner_loss'in lease):raise CaptureError('actual original expiry/retained terminal/accepted unread discard required')
                         expected[member].append(terminal)
                     else:
-                        death=lease['owner_loss']
-                        if ('expiry'in lease or 'expiry_observation'in lease or any(type(death.get(k))is not int for k in ('pid','signal','exit','start_monotonic_ns','exit_monotonic_ns','observation_deadline_ns','start_wall_ns','exit_wall_ns'))
-                            or death['pid']!=lease['application']['pid']or death['signal']!=9 or death['exit']!=-9
-                            or death['observation_deadline_ns']-death['start_monotonic_ns']!=5_000_000_000
-                            or not case['end_monotonic_ns']<=death['start_monotonic_ns']<=death['exit_monotonic_ns']<death['observation_deadline_ns']
-                            or not case['end_wall_ns']<=death['start_wall_ns']<=death['exit_wall_ns']<=withdrawn
-                            or group['messages'][4]['end_monotonic_ns']>=death['observation_deadline_ns']):raise CaptureError('actual bounded original VM child exit before continuing sibling business required')
+                        validate_owner_exit_timing(lease,group)
                 else:
                     if any(k in lease for k in ('expiry','owner_loss','expiry_observation')):raise CaptureError('unexpected lifetime observation on surviving owner')
                     started=lease['release_started'];flags=1 if member=='b'else 3

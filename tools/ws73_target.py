@@ -2514,8 +2514,8 @@ def require_delivery_preparation(package,path):
 def require_subscription_preparation(package,path,*,case='release'):
     if type(package.get('four_subscription_contract_version'))is not int or package['four_subscription_contract_version']!=1:
         raise ValueError('shared subscriptions require explicit current preparation')
-    if type(case)is not str or case not in ('release','expiry'):raise ValueError('explicit supported four-pair shared case required')
-    if case!='release'and(type(package.get('four_subscription_lifetime_contract_version'))is not int or package['four_subscription_lifetime_contract_version']!=1):raise ValueError('shared expiry requires fresh lifetime preparation')
+    if type(case)is not str or case not in ('release','expiry','owner-exit'):raise ValueError('explicit supported four-pair shared case required')
+    if case!='release'and(type(package.get('four_subscription_lifetime_contract_version'))is not int or package['four_subscription_lifetime_contract_version']!=1):raise ValueError('shared lifetime requires fresh preparation')
     require_delivery_preparation(package,path)
     for name in ['ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target_guest.py']:
         if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
@@ -3344,7 +3344,7 @@ def main():
             cmd.add_argument('--runtime-addresses',nargs=2,help='explicit temporary volatile E pair addresses;Native setup before daemon,not official identity')
             cmd.add_argument('--firmware-evidence',choices=firmware_evidence.MODES,
                              help='required physical scope: rom-upload demands actual inputs before every observed Runtime; runtime-observation grants no loaded-image qualification')
-            cmd.add_argument('--four-device-shared-subscription',action='store_true',help='two pairs/full shared release or original-expiry matrix with actual UID1004 readers/1005 publishers and closed snapshots;protected2/original80socketreplies')
+            cmd.add_argument('--four-device-shared-subscription',action='store_true',help='two pairs/full shared release,original-expiry or reader-exit matrix with actual UID1004 readers/1005 publishers and closed snapshots;protected2/original80socketreplies')
             cmd.add_argument('--four-device-update-delivery',action='store_true',help='two real pairs/full update-v2 matrix after actual numeric protected2;original80socketreplies and real receivercheck/reply')
             cmd.add_argument('--four-device-owned',action='store_true',help='two real pairs/two roles;existing Owned SSAP approval,denial,owner loss and actual wire overlap plus original80shortreplies')
             cmd.add_argument('--four-device-burst',action='store_true',help='two real pairs,2roles16replies2042bytes each:64actual app replies,USB fragmentation,finite-queue pressure and observed pool/NOCP resumption;not fairness or credit correctness proof')

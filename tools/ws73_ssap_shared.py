@@ -9,7 +9,7 @@ from pathlib import Path
 import json,os,secrets,subprocess,time
 from ws73_capture import CaptureError
 from ws73_application_client import application_environment,process_identity,owned_arguments,authorization_context
-from ws73_ssap_owned import publisher,value_snapshot,await_removed
+from ws73_ssap_owned import publisher,value_snapshot,await_removed,observed_process,wait_output
 from ws73_ssap_update_delivery import configuration,command_receipt,discover,discovery_wire,sdk_receipt
 from ws73_ssap_subscription import checked_update_reply,checked_cached_reply,wait_stage,role,shared_case,stop_reader_process
 
@@ -48,16 +48,11 @@ def reader(run,row,peer,item,api,mode,member):
     if shared_case(row)=='pressure':app['ssap_shared_pressure_contract_version']=1
     lease=dict(mode=mode,member=member,application=app,start_wall_ns=begin);item['leases'].append(lease);run.save();process=None
     try:
-        with out.open('x')as stdout,err.open('x')as stderr:
-            process=subprocess.Popen(args,user=1004,group=1004,extra_groups=[],env=dict(os.environ,**application_environment()),stdin=subprocess.PIPE,stdout=stdout,stderr=stderr,text=True)
+        with observed_process(args,app,out,err,user=1004,group=1004,extra_groups=[],env=dict(os.environ,**application_environment()),stdin=subprocess.PIPE,text=True)as process:
             app['pid']=process.pid;app['credentials'],app['process_status']=process_identity(process.pid,1004);run.save()
             lease['active']=wait_stage(process,app,'ssap_subscription_active',1,time.monotonic()+6);lease.update(ready_wall_ns=time.time_ns(),ready_ns=time.monotonic_ns());run.save()
             yield process,lease
     finally:
-        if process is not None:
-            if process.poll()is None:process.kill();process.wait(timeout=2)
-            if process.stdin:process.stdin.close()
-            app.update(exit=process.returncode,end_wall_ns=time.time_ns(),stdout=out.read_text(),stderr=err.read_text())
         lease['end_wall_ns']=time.time_ns();run.save()
 
 
@@ -68,7 +63,7 @@ def release(run,process,lease,flags):
     lease['release']=wait_stage(process,lease['application'],'ssap_subscription_released',1,lease['release_started']['deadline_ns']/1e9)
     lease.update(release_completed_ns=time.monotonic_ns(),release_completed_wall_ns=time.time_ns())
     if lease['release']!=dict(stage='ssap_subscription_released',api=lease['application']['api'],flags=flags,discarded=0):raise CaptureError('actual scoped lease release result required')
-    process.stdin.write('quit\n');process.stdin.flush();process.wait(timeout=2)
+    process.stdin.write('quit\n');process.stdin.flush();wait_output(process,2)
     if process.returncode:raise CaptureError('actual shared reader exit')
     lease['released_wall_ns']=time.time_ns();run.save()
 
@@ -86,7 +81,7 @@ def expire_reader(run,process,lease):
     observed.update(observed_ns=time.monotonic_ns(),observed_wall_ns=time.time_ns())
     if lease['expiry_observation']!=dict(stage='ssap_subscription_batch',api=lease['application']['api'],last=4,dropped=0,refused=0,state=3,flags=3,reason=2,discarded=1,packets=[]):
         raise CaptureError('actual original expiry retained sibling and discarded accepted unread data required')
-    process.stdin.write('quit\n');process.stdin.flush();process.wait(timeout=2)
+    process.stdin.write('quit\n');process.stdin.flush();wait_output(process,2)
     if process.returncode:raise CaptureError('actual expired reader exit')
     lease['withdrawn_wall_ns']=time.time_ns();run.save()
 
@@ -94,7 +89,7 @@ def expire_reader(run,process,lease):
 def execute(run,row):
     from ws73_ssap_subscription import STATUS
     kind=shared_case(row);pressure=kind=='pressure';total,withdraw,fresh_at=workload(kind)
-    row.update(ssap_subscription=[],ssap_subscription_required=True,ssap_subscription_contract_version=1);run.save()
+    row.update(ssap_subscription=[],ssap_subscription_required=True,ssap_subscription_contract_version=1,ssap_subscription_output_contract_version=1);run.save()
     for sender in(0,1):
         peer,server=row['owners'][sender],row['owners'][1-sender];api='c'if(row['phase']+sender)%2==0 else'python';other='python'if api=='c'else'c'
         with publisher(run,row,sender,'allow',collection='ssap_subscription',label='shared-subscription',sdk_api=api,updates=True,application_uid=1005)as(owner,item):

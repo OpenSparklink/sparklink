@@ -405,7 +405,7 @@ class SubscriptionGate(unittest.TestCase):
         with tempfile.TemporaryDirectory()as tmp:
             p=Path(tmp)/'output';p.write_text('{"stage":"ready"}\n{"sta')
             app=dict(output_files=[str(p)])
-            self.assertEqual(gate.app_rows(None,app),[{'stage':'ready'}])
+            self.assertEqual(gate.parse_app_rows(p.read_text(),app),[{'stage':'ready'}])
 
     def test_terminal_status_and_original_supervisor_receipt_fail_closed(self):
         # Report-shape fixtures only;no successful Native dependency or device.

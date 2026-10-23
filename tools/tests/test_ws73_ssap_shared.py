@@ -66,11 +66,11 @@ class SharedGate(unittest.TestCase):
         with tempfile.TemporaryDirectory()as tmp:
             path=Path(tmp)/'reader.stdout';path.write_text('{}\n'*47)
             app=dict(output_files=[str(path)])
-            with self.assertRaises(CaptureError):base.app_rows(None,app)
-            self.assertEqual(len(base.app_rows(None,app|dict(ssap_shared_pressure_contract_version=1))),47)
-            with self.assertRaises(CaptureError):base.app_rows(None,app|dict(ssap_shared_pressure_contract_version=True))
+            with self.assertRaises(CaptureError):base.parse_app_rows(path.read_text(),app)
+            self.assertEqual(len(base.parse_app_rows(path.read_text(),app|dict(ssap_shared_pressure_contract_version=1))),47)
+            with self.assertRaises(CaptureError):base.parse_app_rows(path.read_text(),app|dict(ssap_shared_pressure_contract_version=True))
             path.write_text('{}\n'*65)
-            with self.assertRaises(CaptureError):base.app_rows(None,app|dict(ssap_shared_pressure_contract_version=1))
+            with self.assertRaises(CaptureError):base.parse_app_rows(path.read_text(),app|dict(ssap_shared_pressure_contract_version=1))
 
     def test_value_observer_budget_fails_before_command_and_is_profile_scoped(self):
         from ws73_ssap_owned import value_snapshot,wait_text,observed_process,output_text

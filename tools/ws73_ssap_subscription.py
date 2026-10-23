@@ -5,7 +5,6 @@ No protocol sender,ACK generator,Host or Engine. The actual C/Python reader
 checks each payload and sends a distinct verified write using its original view.
 Literal packet expectations below are independent evidence checks,not a codec.
 """
-from contextlib import ExitStack
 from pathlib import Path
 import hashlib
 import json
@@ -17,7 +16,7 @@ import time
 from ws73_capture import CaptureError
 from ws73_north_star import file_record
 from ws73_application_client import application_environment,process_identity,owned_arguments,authorization_context
-from ws73_ssap_owned import publisher,wait_text,value_snapshot,await_removed
+from ws73_ssap_owned import publisher,wait_text,value_snapshot,await_removed,observed_process,output_text,verify_output,wait_output
 from ws73_ssap_update_delivery import configuration,command_receipt,discover,discovery_wire,sdk_receipt
 
 ROOT=Path('/evidence/subscription-role')
@@ -183,18 +182,43 @@ INFLIGHT_TOOLS=tuple('/usr/share/sparklink/tools/'+n for n in
     ('ws73_ssap_sender_deadline.py','ws73_diagnostic_hold.py','ws73_channel_prefix_hold.py'))
 
 
-def tool_records(root=Path('/'),*,snapshot=False,inflight=False,shared=False):
+OUTPUT_TOOLS=tuple('/usr/share/sparklink/tools/'+n for n in ('ws73_ssap_owned.py','ws73_dynamic_channels.py'))
+
+
+def output_contract(row):
+    version=row.get('ssap_subscription_output_contract_version')
+    if version is not None and(type(version)is not int or version!=1):raise CaptureError('explicit subscription pipe output contract required')
+    return version
+
+
+def require_current_output(row):
+    if output_contract(row)!=1:raise CaptureError('current subscription reader requires bounded pipes')
+
+
+def verify_outputs(row):
+    # Unversioned retained captures keep their original protocol/raw checks.
+    # Current execution below always requires1;there is no live file fallback.
+    if output_contract(row)is None:return
+    for item in row.get('ssap_subscription',[]):
+        verify_output(item)
+        for lease in item.get('leases',[]):
+            app=lease['application'];verify_output(app)
+            if not app['stdout'].endswith('\n'):raise CaptureError('complete newline-terminated reader transcript required')
+
+
+def tool_records(root=Path('/'),*,snapshot=False,inflight=False,shared=False,observed=False):
     from ws73_role_snapshot import HELPER,SUPERVISOR
     names=(*TOOLS,HELPER,SUPERVISOR)if snapshot else TOOLS
     if inflight:names=(*names,*INFLIGHT_TOOLS)
     if shared:names=(*names,"/usr/share/sparklink/tools/ws73_ssap_shared.py","/usr/share/sparklink/tools/ws73_ssap_owned.py")
+    if observed:names=(*names,*OUTPUT_TOOLS)
     return {name:dict(sha256=hashlib.sha256((root/name.lstrip('/')).read_bytes()).hexdigest(),
                      bytes=(root/name.lstrip('/')).stat().st_size)for name in names}
 
 
 def validate_tools(records,root,manifest):
     from ws73_role_snapshot import HELPER
-    if records!=tool_records(root,snapshot=HELPER in records,inflight=INFLIGHT_TOOLS[0]in records,shared="/usr/share/sparklink/tools/ws73_ssap_shared.py"in records):raise CaptureError('subscription tools differ from sealed root')
+    if records!=tool_records(root,snapshot=HELPER in records,inflight=INFLIGHT_TOOLS[0]in records,shared="/usr/share/sparklink/tools/ws73_ssap_shared.py"in records,observed=OUTPUT_TOOLS[-1]in records):raise CaptureError('subscription tools differ from sealed root')
     for name,receipt in records.items():
         actual=(root/name.lstrip('/')).resolve(strict=True)
         matches=[p for p in manifest if Path(p['path']).resolve()==actual]
@@ -210,6 +234,9 @@ def validate_request(row,phase):
     expiry=inflight_case(row)=='expiry'
     from ws73_role_snapshot import requested as snapshot_required
     fields={'phase','owners','tools','security_requirement','message_security_required','status','start_wall_ns'}
+    if output_contract(row)is not None:
+        fields.add('ssap_subscription_output_contract_version')
+        if any(n not in row['tools']for n in OUTPUT_TOOLS):raise CaptureError('exact current reader collector dependency identities required')
     if 'parallel_pair'in row:
         pair=row['parallel_pair'];role_paths(pair)
         if pair is None or {x['owner'].get('port')for x in row['owners']}!={f'1-{2*pair+1}',f'1-{2*pair+2}'}:
@@ -243,7 +270,7 @@ def request(run,row):
     phase=row['phase']
     from ws73_role_snapshot import TOKEN
     snapshot=Path('/proc/cmdline').read_text().split().count(TOKEN)==1
-    value=dict(phase=phase,owners=row['owners'],tools=tool_records(snapshot=snapshot,inflight=getattr(run.args,'ssap_subscription_inflight_release_verify',False),shared=getattr(run.args,'ssap_subscription_shared_verify',False)),security_requirement=row['security_requirement'],
+    value=dict(phase=phase,owners=row['owners'],tools=tool_records(snapshot=snapshot,inflight=getattr(run.args,'ssap_subscription_inflight_release_verify',False),shared=getattr(run.args,'ssap_subscription_shared_verify',False),observed=True),ssap_subscription_output_contract_version=1,security_requirement=row['security_requirement'],
                message_security_required=row['message_security_required'],status='RUNNING',start_wall_ns=time.time_ns())
     if getattr(run.args,'ssap_subscription_renewal_verify',False):
         value.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
@@ -277,7 +304,7 @@ def request(run,row):
     for key in ('ssap_subscription','ssap_subscription_status','role_probe','role_supervisor','channel_role','application_role_contract_version'):
         row[key]=result[key]
     if owner_loss_required(value):row['role_ssap_commands']=result['role_ssap_commands']
-    row.update(ssap_subscription_required=True,ssap_subscription_contract_version=1,
+    row.update(ssap_subscription_required=True,ssap_subscription_contract_version=1,ssap_subscription_output_contract_version=1,
                ssap_subscription_tools=value['tools'],ssap_subscription_request=value)
     if renewal_required(value):row.update(ssap_subscription_renewal_required=True,ssap_subscription_renewal_contract_version=1)
     if pressure_required(value):row.update(ssap_subscription_pressure_required=True,ssap_subscription_pressure_contract_version=1)
@@ -292,9 +319,12 @@ def request(run,row):
 
 
 def app_rows(process,app):
-    text=Path(app['output_files'][0]).read_text()
-    # A live regular file can end in the middle of one stdio write. Only the
-    # current incomplete tail is pending;terminal raw output is checked exactly.
+    return parse_app_rows(output_text(process,app['output_files'][0]),app)
+
+
+def parse_app_rows(text,app):
+    # The real pipe may split a stdio write;only its incomplete live tail waits.
+    # Final exact streams,UTF-8,byte/line budgets and newline remain mandatory.
     raw=[line for line in text.splitlines(keepends=True)if line.endswith('\n')]
     version=app.get('ssap_shared_pressure_contract_version')
     if version is not None and(type(version)is not int or version!=1):raise CaptureError('explicit shared-pressure transcript contract required')
@@ -430,6 +460,7 @@ def execute_supervised(run,row):
     """Only the existing root VM role supervisor calls this finite workload."""
     from ws73_application_role import require_vm
     require_vm('ws73.ssap_subscription=1')
+    require_current_output(row)
     renewal=renewal_required(row)
     pressure=pressure_required(row)
     owner_loss=owner_loss_required(row)
@@ -448,7 +479,7 @@ def execute_supervised(run,row):
     if shared_required(row):
         from ws73_ssap_shared import execute
         return execute(run,row)
-    row.update(ssap_subscription=[],ssap_subscription_required=True,ssap_subscription_contract_version=1);run.save()
+    row.update(ssap_subscription=[],ssap_subscription_required=True,ssap_subscription_contract_version=1,ssap_subscription_output_contract_version=1);run.save()
     for sender in (0,1):
         peer,server=row['owners'][sender],row['owners'][1-sender]
         api='c'if (row['phase']+sender)%2==0 else'python';reader='python'if api=='c'else'c'
@@ -470,9 +501,7 @@ def execute_supervised(run,row):
                 app=dict(api=reader,args=args,environment=application_environment(),start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
                 lease['application']=app;run.save();process=None
                 try:
-                    with ExitStack()as files:
-                        process=subprocess.Popen(args,user=1004,group=1004,extra_groups=[],env=dict(os.environ,**application_environment()),
-                            stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
+                    with observed_process(args,app,out,err,user=1004,group=1004,extra_groups=[],env=dict(os.environ,**application_environment()),stdin=subprocess.PIPE,text=True)as process:
                         app.update(pid=process.pid);app['credentials'],app['process_status']=process_identity(process.pid,1004);run.save()
                         lease['active']=wait_stage(process,app,'ssap_subscription_active',1,time.monotonic()+6)
                         if (owner_loss or inflight)and attempt==1:
@@ -524,13 +553,9 @@ def execute_supervised(run,row):
                             else:
                                 process.stdin.write('release\n');process.stdin.flush()
                                 lease['release']=wait_stage(process,app,'ssap_subscription_released',1,time.monotonic()+6);run.save()
-                            process.stdin.write('quit\n');process.stdin.flush();process.wait(timeout=2)
+                            process.stdin.write('quit\n');process.stdin.flush();wait_output(process,2)
                             if process.returncode:raise CaptureError('actual subscription reader failed')
                 finally:
-                    if process is not None:
-                        if process.poll()is None:process.kill();process.wait(timeout=2)
-                        if process.stdin:process.stdin.close()
-                        app.update(exit=process.returncode,end_wall_ns=time.time_ns(),stdout=out.read_text(),stderr=err.read_text())
                     run.save()
                 if not(owner_loss and attempt==0):lease['disabled']=configuration(owner,item,0)
                 lease['end_wall_ns']=time.time_ns();run.save()
@@ -566,6 +591,8 @@ def verify_supervisor_artifacts(control,evidence,*,pair=None):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
         if original.get('parallel_pair')!=pair or row.get('parallel_pair')!=pair:raise CaptureError('original role pair namespace required')
         verify_probe(original)
+        if output_contract(row)!=output_contract(original):raise CaptureError('original subscription output contract differs from parent result')
+        verify_outputs(original)
         for key,value in row['ssap_subscription_request'].items():
             if original[key]!=value:raise CaptureError('original root request identity changed')
         for key in ('ssap_subscription','ssap_subscription_status','role_probe','role_supervisor','channel_role','application_role_contract_version'):
@@ -841,6 +868,7 @@ def corroborate(row,matched):
     if not row.get('ssap_subscription_required',False):return [],{0:0,1:0}
     from ws73_application_role import verify_probe
     verify_probe(row)
+    verify_outputs(row)
     if (type(row.get('ssap_subscription_contract_version'))is not int or row['ssap_subscription_contract_version']!=1 or row.get('ssap_subscription_status')!=STATUS
             or row.get('security_requirement')!=2 or row.get('message_security_required')is not True
             or len(row.get('ssap_subscription',[]))!=2):raise CaptureError('completed protected continuous subscription phase required')

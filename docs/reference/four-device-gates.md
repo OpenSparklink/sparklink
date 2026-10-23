@@ -85,6 +85,18 @@ Bond、service-only部署或完整协议安全。
 fallback。新记录的`ssap_update_delivery_output_contract_version=1`要求每个publisher
 与peer的完整pipe／字节记账；历史记录保留原观察方式和原判定，不补字段升级。
 
+当前订阅读取也复用同一有界子进程pipe收集器；文件只作持久化证据sink，不在
+活跃reader上反复重读。`ssap_subscription_output_contract_version=1`绑定原请求、
+root结果及父记录；当前执行必须具备该契约和准确collector依赖，不能回退旧观察方式。
+普通reader原24行、shared pressure原64行、现有每流2MiB和phase快照预算分别保持。
+原始期限、租约、队列、载荷及角色矩阵不变；部分stdio行只在活跃观察时等待补全，
+完整关闭转录、UTF-8、终止换行、字节记账、EOF／错误与最终文件身份均须检查。
+缺失／重复／超限／清理失败仍拒绝，作者原错误不得被后续清理错误覆盖。
+
+旧未带该观察契约的捕获只按原身份进行离线重放，不升级为当前pipe资格；保留的
+ENODATA原堆栈和失败不变。注入活跃文件读取失败验证的是观察依赖，不是底层9p／
+文件系统根因证明，也不授自然恢复资格。
+
 ## 并行共享订阅
 
 `--four-device-shared-subscription`复用现有shared-release调用者、唯一SSAP Engine、

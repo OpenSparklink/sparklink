@@ -1910,11 +1910,12 @@ def _run(args):
                         if parallel_subscription:
                             from ws73_parallel_data import subscription_case as parallel_case
                             if parallel_case(control)!=subscription_shared_case:raise ValueError('original shared lifetime request/worker mismatch')
-                            from ws73_ssap_subscription import validate_tools as validate_subscription_tools
+                            from ws73_ssap_subscription import validate_tools as validate_subscription_tools,require_current_output
                             for worker in control['workers']:
                                 data=worker['run']
                                 if data['artifacts']['security_agent_probe']!=delivery_probe_identity(args.prepared/'root',package['guest_files']):raise ValueError('executed subscription Agent witness differs from sealed artifact')
                                 for row in data['channel_socket']:
+                                    require_current_output(row)
                                     validate_subscription_tools(row['ssap_subscription_tools'],args.prepared/'root',package['guest_files'])
                         if parallel_delivery:
                             from ws73_ssap_update_delivery import validate_tools as validate_update_tools
@@ -2080,9 +2081,11 @@ def _run(args):
                             if file_record(HERE/'ws73_ssap_update_delivery.py')!=m['ssap_update_delivery_verifier']:raise ValueError('delivery verifier changed during execution')
                             for row in control['channel_socket']:validate_delivery_tools(row['ssap_update_delivery_tools'],args.prepared/'root',package['guest_files'])
                         if subscription:
-                            from ws73_ssap_subscription import validate_tools as validate_subscription_tools,verify_supervisor_artifacts
+                            from ws73_ssap_subscription import validate_tools as validate_subscription_tools,verify_supervisor_artifacts,require_current_output
                             if file_record(HERE/'ws73_ssap_subscription.py')!=m['ssap_subscription_verifier']:raise ValueError('subscription verifier changed during run')
-                            for row in control['channel_socket']:validate_subscription_tools(row['ssap_subscription_tools'],args.prepared/'root',package['guest_files'])
+                            for row in control['channel_socket']:
+                                require_current_output(row)
+                                validate_subscription_tools(row['ssap_subscription_tools'],args.prepared/'root',package['guest_files'])
                             m['ssap_subscription_supervision']=verify_supervisor_artifacts(control,share)
                             from ws73_ssap_subscription import renewal_required
                             if any(renewal_required(row)!=subscription_renewal for row in control['channel_socket']):raise ValueError('renewal request/evidence mismatch')

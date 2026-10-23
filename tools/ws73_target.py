@@ -211,6 +211,7 @@ def prepare_from_carrier(args):
         manifest['four_disconnect_progress_contract_version']=1
         manifest['four_owned_contract_version']=1
         manifest['four_delivery_contract_version']=1
+        manifest['four_subscription_contract_version']=1
         inputs = [file_record(source / 'manifest.json'), file_record(source / 'root.btrfs'), plan_identity]
         # The current test entry point is source,not part of the frozen Rust ELF.
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -285,6 +286,7 @@ def prepare_locked(args, build_fd):
     manifest['four_disconnect_progress_contract_version'] = 1
     manifest['four_owned_contract_version'] = 1
     manifest['four_delivery_contract_version'] = 1
+    manifest['four_subscription_contract_version'] = 1
     manifest['managed_prefix_geometry_contract_version'] = 1
     manifest['firmware_evidence_contract_version'] = 1
     manifest['link_measurement_contract_version'] = 1
@@ -773,7 +775,8 @@ def _run(args):
     parallel_burst=bool(getattr(args,'four_device_burst',False))
     parallel_owned=bool(getattr(args,'four_device_owned',False))
     parallel_delivery=bool(getattr(args,'four_device_update_delivery',False))
-    business=parallel_delivery or parallel_owned or parallel_burst or disconnect_isolation or bool(getattr(args,'four_device_business',False))
+    parallel_subscription=bool(getattr(args,'four_device_shared_subscription',False))
+    business=parallel_subscription or parallel_delivery or parallel_owned or parallel_burst or disconnect_isolation or bool(getattr(args,'four_device_business',False))
     if business:
         validate_business_mode(args)
     parallel=business or bool(getattr(args,'parallel_pairs',False))
@@ -1049,10 +1052,11 @@ def _run(args):
     m['four_device_burst_requested']=parallel_burst
     m['four_device_owned_requested']=parallel_owned
     m['four_device_update_delivery_requested']=parallel_delivery
+    m['four_device_shared_subscription_requested']=parallel_subscription
     if business:m['parallel_business_verifier']=file_record(HERE/'ws73_parallel_data.py')
     m['parallel_start_offset_ms']=parallel_offset
     if parallel:
-        m['scope']='four real WS73 two-pair protected update delivery'if parallel_delivery else 'four real WS73 two-pair owned SSAP approvals and owner loss'if parallel_owned else 'four real WS73 two-pair 2042-byte burst and observed budgets' if parallel_burst else 'four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
+        m['scope']='four real WS73 two-pair protected shared subscriptions'if parallel_subscription else 'four real WS73 two-pair protected update delivery'if parallel_delivery else 'four real WS73 two-pair owned SSAP approvals and owner loss'if parallel_owned else 'four real WS73 two-pair 2042-byte burst and observed budgets' if parallel_burst else 'four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
     if parallel:m['parallel_verifier']=file_record(HERE/'ws73_parallel.py')
     m['qmp_guest_hotplug']=passthrough
     m['connection_verify_requested']=connection_verify
@@ -1372,8 +1376,8 @@ def _run(args):
             ssap_requirement=tomllib.loads((args.prepared/'root/etc/sparklink/main.conf').read_text()).get('ssap',{}).get('channel_security',0)
             if type(ssap_requirement) is not int or ssap_requirement not in (0,1,2):raise ValueError('invalid frozen SMTC policy')
             m['live_ssap_security_requirement']=ssap_requirement
-            if (parallel_delivery or update_delivery or subscription) and ssap_requirement!=2:raise ValueError('update delivery/subscription requires explicit protected2 SSAP prepared config')
-            if ssap_requirement and ('numeric-approve'if parallel_delivery else agent_mode,ssap_requirement) not in [('approve',1),('numeric-approve',2)]:raise ValueError('protected SMTC qualification requires matching positive Agent mechanism')
+            if (parallel_subscription or parallel_delivery or update_delivery or subscription) and ssap_requirement!=2:raise ValueError('update delivery/subscription requires explicit protected2 SSAP prepared config')
+            if ssap_requirement and ('numeric-approve'if parallel_delivery or parallel_subscription else agent_mode,ssap_requirement) not in [('approve',1),('numeric-approve',2)]:raise ValueError('protected SMTC qualification requires matching positive Agent mechanism')
 
         if 'discovery_config' in package:
             m['discovery_config'] = package['discovery_config']
@@ -1395,6 +1399,10 @@ def _run(args):
         if parallel_owned:
             require_owned_preparation(package,args.prepared)
             m['four_owned_contract_version']=1
+        if parallel_subscription:
+            require_subscription_preparation(package,args.prepared)
+            m['four_subscription_contract_version']=1
+            m['four_subscription_security_requirement']=2
         if parallel_delivery:
             require_delivery_preparation(package,args.prepared)
             m['four_delivery_contract_version']=1
@@ -1485,6 +1493,7 @@ def _run(args):
                      (' ws73.parallel_burst=1' if parallel_burst else '')+
                      (' ws73.parallel_owned=1'if parallel_owned else '')+
                      (' ws73.parallel_delivery=1'if parallel_delivery else '')+
+                     (' ws73.parallel_subscription=1 ws73.ssap_subscription=1 ws73.ssap_subscription_shared=1 ws73.subscription_snapshot=1'if parallel_subscription else '')+
                      (f' ws73.parallel_offset={parallel_offset}' if parallel else '')+
                      (' ws73.daemon_remove=1' if daemon_remove else '')+
                      (' ws73.initializer_lifecycle=1' if initializer_lifecycle else '')+
@@ -1892,6 +1901,14 @@ def _run(args):
                             validate_application_tools(control,args.prepared/'root',package['guest_files'])
                         if control.get('owned_ssap_mode',False)is not parallel_owned:raise ValueError('original Owned request and worker evidence mismatch')
                         if control.get('update_delivery_mode',False)is not parallel_delivery:raise ValueError('original protected delivery request/worker mismatch')
+                        if control.get('shared_subscription_mode',False)is not parallel_subscription:raise ValueError('original shared subscription request/worker mismatch')
+                        if parallel_subscription:
+                            from ws73_ssap_subscription import validate_tools as validate_subscription_tools
+                            for worker in control['workers']:
+                                data=worker['run']
+                                if data['artifacts']['security_agent_probe']!=delivery_probe_identity(args.prepared/'root',package['guest_files']):raise ValueError('executed subscription Agent witness differs from sealed artifact')
+                                for row in data['channel_socket']:
+                                    validate_subscription_tools(row['ssap_subscription_tools'],args.prepared/'root',package['guest_files'])
                         if parallel_delivery:
                             from ws73_ssap_update_delivery import validate_tools as validate_update_tools
                             for worker in control['workers']:
@@ -1900,7 +1917,7 @@ def _run(args):
                                 for row in data['channel_socket']:
                                     if type(row.get('ssap_update_delivery_output_contract_version'))is not int or row['ssap_update_delivery_output_contract_version']!=1:raise ValueError('current delivery requires original bounded pipe observations')
                                     validate_update_tools(row['ssap_update_delivery_tools'],args.prepared/'root',package['guest_files'])
-                        m['parallel_corroboration']=corroborate_parallel(control,capture)
+                        m['parallel_corroboration']=corroborate_parallel(control,capture,**({'evidence':share}if parallel_subscription else{}))
                         m['parallel_control']=file_record(control_path)
                     if daemon_remove:
                         from ws73_daemon_removal import corroborate as corroborate_removal
@@ -2317,7 +2334,7 @@ def _run(args):
                         # later qualification must not erase/mutate earlier evidence.
                         from ws73_daemon_removal import verify_sealed_record
                         verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                    m['status']='FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS'if parallel_delivery else 'FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS'if parallel_owned else 'FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_NUMERIC_COMPARISON_MECHANISM_PASS' if numeric else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                    m['status']='FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'if parallel_subscription else 'FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS'if parallel_delivery else 'FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS'if parallel_owned else 'FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_NUMERIC_COMPARISON_MECHANISM_PASS' if numeric else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                     if timeout_seal is not None:
                         m['graceful_timeout']['state']='SEALED'
                         m['status']='FAIL'
@@ -2489,6 +2506,15 @@ def require_delivery_preparation(package,path):
             raise ValueError('guest CMAC oracle closure differs from sealed inputs')
 
 
+def require_subscription_preparation(package,path):
+    if type(package.get('four_subscription_contract_version'))is not int or package['four_subscription_contract_version']!=1:
+        raise ValueError('shared subscriptions require explicit current preparation')
+    require_delivery_preparation(package,path)
+    for name in ['ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target_guest.py']:
+        if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
+            raise ValueError('shared subscription source mismatch: '+name)
+
+
 def require_owned_preparation(package,path):
     if type(package.get('four_owned_contract_version'))is not int or package['four_owned_contract_version']!=1:
         raise ValueError('Owned SSAP requires freshly matched explicit preparation')
@@ -2503,9 +2529,9 @@ def require_owned_preparation(package,path):
 def validate_business_mode(args):
     # Dedicated positive gate: never silently combine injection, RF diagnostics
     # or two-device options with a four-controller business qualification.
-    if (args.command!='run' or sum(bool(getattr(args,k,False)) for k in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery'])!=1
+    if (args.command!='run' or sum(bool(getattr(args,k,False)) for k in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription'])!=1
             or any(v for k,v in vars(args).items()
-            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery'])
+            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription'])
             or getattr(args,'parallel_start_offset_ms',0)
             or any(getattr(args,k,None) for k in ['security_agent','daemon_hold_case',
                 'managed_partial_case','managed_connected_case','managed_connected_reply',
@@ -2753,10 +2779,11 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         from ws73_ssap_value import valid_length_summary
         if record.get('ssap_value_lengths_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or record.get('qemu_exit')!=0 or not valid_length_summary(channel_proof,expected_version=record.get('ssap_value_lengths_contract_version',1)):return 1
     elif record.get('ssap_value_lengths_acceptance')or any(v.get('length_gate')for p in channel_proof.get('proofs',[])for v in p.get('ssap_values',[])):return 1
+    parallel_subscription=record.get('status')=='FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'
     subscription=record.get('ssap_subscription_requested',False)
-    if type(subscription)is not bool:return 1
+    if type(subscription)is not bool or parallel_subscription and subscription:return 1
     subscription_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription=1']
-    if subscription_boot!=(['ws73.ssap_subscription=1']if subscription else[]):return 1
+    if subscription_boot!=(['ws73.ssap_subscription=1']if subscription or parallel_subscription else[]):return 1
     if subscription:
         from ws73_ssap_subscription import valid_summary as subscription_summary,valid_supervision as subscription_supervision
         if (type(record.get('ssap_subscription_contract_version'))is not int or record['ssap_subscription_contract_version']!=1 or record.get('ssap_subscription_acceptance')is not True
@@ -2774,7 +2801,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     try:
         shared_case=validate_shared_case(dict(record,ssap_subscription_shared_required=shared))
         if boot_shared_case([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()],shared)!=shared_case:return 1
-        if shared_boot([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()])!=shared:return 1
+        if shared_boot([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()])!=(shared or parallel_subscription):return 1
     except CaptureError:return 1
     if shared:
         from ws73_ssap_subscription import valid_shared_summary,valid_shared_supervision
@@ -2796,7 +2823,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         from ws73_ssap_subscription import valid_snapshot_supervision
         if(type(snapshot)is not int or snapshot!=1 or not subscription or snapshot_boot!=['ws73.subscription_snapshot=1']
                 or not valid_snapshot_supervision(record.get('ssap_subscription_supervision',{}))):return 1
-    elif snapshot_boot or record.get('ssap_subscription_supervision',{}).get('snapshot_contract_version')is not None:return 1
+    elif snapshot_boot!=(['ws73.subscription_snapshot=1']if parallel_subscription else[])or record.get('ssap_subscription_supervision',{}).get('snapshot_contract_version')is not None:return 1
     if type(renewal)is not bool or renewal and not subscription:return 1
     renewal_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_renewal=1']
     if renewal_boot!=(['ws73.ssap_subscription_renewal=1']if renewal else[]):return 1
@@ -2923,7 +2950,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if type(required) is not int or required not in (0,1,2):return 1
     if not required and (any(v.get('ssap_security_requirement',0) for v in record.get('security_agent_corroboration',{}).get('phases',[])) or any(v.get('protected_ssap') for v in record.get('channel_socket_corroboration',{}).get('proofs',[]))):return 1
     # The dedicated four-pair status validates both per-pair security tuples below.
-    if required and record.get('status')!='FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS':
+    if required and record.get('status')not in ('FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS','FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'):
         security=record.get('security_agent_corroboration',{}).get('phases',[])
         business=record.get('channel_socket_corroboration',{}).get('proofs',[])
         if (record.get('status')!='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS'
@@ -3107,11 +3134,12 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 identity=fields.get(role,[])
                 if not isinstance(identity,(list,tuple)) or len(identity)!=11 or any(endpoint.get(k)!=v for k,v in zip(['controller','generation','lifetime','handle'],identity[:4])):return 1
                 if endpoint.get('capacity')!=5 or endpoint.get('wire_peak')!=5 or endpoint.get('wire_final_debt')!=0 or not 0<endpoint.get('usb_submissions',0)==endpoint.get('nocp_packets') or not endpoint.get('full_nocp_resume_intervals'):return 1
-    if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS','FOUR_DEVICE_PARALLEL_BURST_PASS','FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS','FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS']:
+    if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS','FOUR_DEVICE_PARALLEL_BURST_PASS','FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS','FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS','FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS']:
         isolation=record['status']=='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS'
         burst=record['status']=='FOUR_DEVICE_PARALLEL_BURST_PASS'
         owned=record['status']=='FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS'
         delivery=record['status']=='FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS'
+        subscription=record['status']=='FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'
         proof=record.get('parallel_corroboration',{})
         overlaps=proof.get('overlaps',[])
         if 'four_disconnect_progress_contract_version'in record:
@@ -3135,9 +3163,27 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 if delivery_parallel_proof(proof['pairs'])!=proof.get('update_delivery'):return 1
             except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
         elif 'four_delivery_contract_version'in record or any(k in proof for k in ['parallel_delivery_contract_version','parallel_delivery_control','update_delivery']):return 1
+        subscription_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_subscription=1']
+        if subscription_boot!=(['ws73.parallel_subscription=1']if subscription else[]):return 1
+        if subscription:
+            from ws73_parallel_data import verify_records,subscription_parallel_proof
+            try:
+                if type(record.get('four_subscription_contract_version'))is not int or record['four_subscription_contract_version']!=1 or type(record.get('four_subscription_security_requirement'))is not int or record['four_subscription_security_requirement']!=2:return 1
+                if record.get('live_ssap_security_requirement')!=2:return 1
+                words=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()]
+                if any(words.count(k)!=1 for k in ['ws73.ssap_subscription=1','ws73.ssap_subscription_shared=1','ws73.subscription_snapshot=1']):return 1
+                if any(v.startswith(('ws73.subscription_shared_case=','ws73.ssap_subscription_renewal=','ws73.ssap_subscription_pressure=','ws73.ssap_subscription_owner_loss=','ws73.ssap_subscription_inflight_release='))for v in words):return 1
+                control=proof['parallel_subscription_control']
+                if control.get('shared_subscription_mode')is not True:return 1
+                verify_records(control)
+                if type(proof.get('parallel_subscription_contract_version'))is not int or proof['parallel_subscription_contract_version']!=1:return 1
+                if subscription_parallel_proof(proof['pairs'])!=proof.get('shared_subscription'):return 1
+                if any(p['subscription_supervision']['daemon']!=w['run']['daemon_before'] for p,w in zip(proof['pairs'],control['workers'],strict=True)):return 1
+            except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
+        elif 'four_subscription_contract_version'in record or any(k in proof for k in ['parallel_subscription_contract_version','parallel_subscription_control','shared_subscription']):return 1
         owned_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_owned=1']
         if owned_boot!=(['ws73.parallel_owned=1']if owned else[]):return 1
-        if owned or delivery:
+        if owned or delivery or subscription:
             # The declared scope and actual guest selectors must agree. The
             # shell must not pick Owned by silently overriding another mode.
             words=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()]
@@ -3154,9 +3200,11 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 if owned_parallel_proof(proof['pairs'])!=proof.get('owned_ssap'):return 1
             except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
         elif any(k in record for k in ['four_owned_contract_version'])or any(k in proof for k in ['parallel_owned_contract_version','parallel_owned_control','owned_ssap']):return 1
-        valid=(record.get('four_device_update_delivery_requested',False)is delivery
+        valid=(record.get('four_device_shared_subscription_requested',False)is subscription
+               and proof.get('shared_subscription_acceptance',False)is subscription
+               and record.get('four_device_update_delivery_requested',False)is delivery
                and proof.get('update_delivery_acceptance',False)is delivery
-               and proof.get('protected_ssap_acceptance')is delivery
+               and proof.get('protected_ssap_acceptance')is (delivery or subscription)
                and record.get('four_device_owned_requested',False)is owned
                and proof.get('owned_ssap_acceptance',False)is owned
                and record.get('four_device_burst_requested',False) is burst
@@ -3164,7 +3212,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                and record.get('four_device_parallel_business') is True
                and record.get('four_device_parallel_rf') is False
                and record.get('qemu_exit')==0
-               and proof.get('status')==('FOUR_REAL_PARALLEL_UPDATE_DELIVERY_CORROBORATED'if delivery else 'FOUR_REAL_PARALLEL_OWNED_SSAP_CORROBORATED'if owned else 'FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED')
+               and proof.get('status')==('FOUR_REAL_PARALLEL_SHARED_SUBSCRIPTION_CORROBORATED'if subscription else 'FOUR_REAL_PARALLEL_UPDATE_DELIVERY_CORROBORATED'if delivery else 'FOUR_REAL_PARALLEL_OWNED_SSAP_CORROBORATED'if owned else 'FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED')
                and proof.get('controller_count')==4 and proof.get('round_trips')==(64 if burst else 48 if isolation else 80)
                and proof.get('ordinary_uid')==1000
                and proof.get('fixed_basic_channel_business_acceptance') is True
@@ -3183,7 +3231,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                     and all(len(v.get('legs',[]))==(32 if burst else 8 if isolation and n==pair else 40)
                             for n,v in enumerate(p['channel']['proofs']))
                     and len(p.get('connections',[]))==2
-                    and all(bool(v.get('ssap_owned',[]))is owned and bool(v.get('ssap_update_delivery',[]))is delivery for v in p['channel']['proofs']) for pair,p in enumerate(proof['pairs']))
+                    and all(bool(v.get('ssap_owned',[]))is owned and bool(v.get('ssap_update_delivery',[]))is delivery and bool(v.get('ssap_subscription',[]))is subscription for v in p['channel']['proofs']) for pair,p in enumerate(proof['pairs']))
                and (not burst or valid_parallel_burst(proof))
                and (not isolation or (proof.get('controlled_disconnect_isolation_acceptance') is True
                     and len(proof.get('disconnect_proofs',[]))==2
@@ -3284,6 +3332,7 @@ def main():
             cmd.add_argument('--runtime-addresses',nargs=2,help='explicit temporary volatile E pair addresses;Native setup before daemon,not official identity')
             cmd.add_argument('--firmware-evidence',choices=firmware_evidence.MODES,
                              help='required physical scope: rom-upload demands actual inputs before every observed Runtime; runtime-observation grants no loaded-image qualification')
+            cmd.add_argument('--four-device-shared-subscription',action='store_true',help='two pairs/full shared release matrix with actual UID1004 readers/1005 publishers and closed snapshots;protected2/original80socketreplies')
             cmd.add_argument('--four-device-update-delivery',action='store_true',help='two real pairs/full update-v2 matrix after actual numeric protected2;original80socketreplies and real receivercheck/reply')
             cmd.add_argument('--four-device-owned',action='store_true',help='two real pairs/two roles;existing Owned SSAP approval,denial,owner loss and actual wire overlap plus original80shortreplies')
             cmd.add_argument('--four-device-burst',action='store_true',help='two real pairs,2roles16replies2042bytes each:64actual app replies,USB fragmentation,finite-queue pressure and observed pool/NOCP resumption;not fairness or credit correctness proof')

@@ -261,9 +261,10 @@ def check_discovery_config_gate(package, args):
     """
     if 'discovery_config' not in package:
         return
-    if getattr(args,'four_device_update_delivery',False):
-        if (args.command!='run'or type(package.get('four_delivery_contract_version'))is not int
-                or package['four_delivery_contract_version']!=1
+    if getattr(args,'four_device_update_delivery',False)or getattr(args,'four_device_shared_subscription',False):
+        key='four_subscription_contract_version'if getattr(args,'four_device_shared_subscription',False)else'four_delivery_contract_version'
+        if (args.command!='run'or type(package.get(key))is not int
+                or package[key]!=1
                 or package.get('policy_expectation',{}).get('data',{}).get('custom_configuration')is not True):
             raise ValueError('protected parallel delivery requires explicit validated current configuration')
         return

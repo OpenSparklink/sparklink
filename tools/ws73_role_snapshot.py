@@ -25,8 +25,12 @@ HELPER='/usr/share/sparklink/tools/ws73_role_snapshot.py'
 SUPERVISOR='/usr/share/sparklink/tools/ws73_application_role.py'
 
 
-def profile(kind):
-    if kind=='subscription':return dict(root='/run/ws73-subscription-role',artifact='/evidence/subscription-role',token=TOKEN,vm_token='ws73.ssap_subscription=1',limit=LIMIT,file_limit=4*1024*1024,mount='32M')
+def profile(kind,pair=None):
+    if pair is not None and(type(pair)is not int or pair not in(0,1)or kind!='subscription'):
+        raise CaptureError('fixed subscription pair0/1 only')
+    if kind=='subscription':
+        suffix=''if pair is None else'-pair-'+str(pair)
+        return dict(root='/run/ws73-subscription-role'+suffix,artifact='/evidence/subscription-role'+suffix,token=TOKEN,vm_token='ws73.ssap_subscription=1',limit=LIMIT,file_limit=4*1024*1024,mount='32M')
     if kind=='benchmark':return dict(root='/run/ws73-benchmark-role',artifact='/evidence/benchmark-role',token='ws73.socket_benchmark_apps=1',vm_token='ws73.socket_benchmark_apps=1',limit=512*1024*1024,file_limit=256*1024*1024,mount='768M')
     raise CaptureError('fixed role snapshot profile required')
 
@@ -90,9 +94,9 @@ def inventory(root,*,kind='subscription'):
     return result
 
 
-def publish(source,destination,*,phase,success,kind='subscription'):
+def publish(source,destination,*,phase,success,kind='subscription',pair=None):
     """Caller has joined fixed children/closed files. No replacement/retry."""
-    bounds=profile(kind)
+    bounds=profile(kind,pair)
     source=Path(source);destination=Path(destination)
     if type(phase)is not int or phase not in(0,1)or type(success)is not bool:raise CaptureError('fixed completed phase required')
     if destination.exists()or destination.is_symlink():raise CaptureError('never replace original evidence')
@@ -112,8 +116,8 @@ def publish(source,destination,*,phase,success,kind='subscription'):
     return manifest
 
 
-def _verify_export(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription',success):
-    bounds=profile(kind)
+def _verify_export(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription',pair=None,success):
+    bounds=profile(kind,pair)
     destination=Path(destination);path=destination/NAME
     if path.is_symlink()or not path.is_file()or not 0<path.stat().st_size<65536:raise CaptureError('closed phase manifest missing/budget')
     proof=json.loads(path.read_text())
@@ -131,23 +135,25 @@ def _verify_export(destination,*,phase,runtime_root=None,expected_helper=None,ki
     return proof
 
 
-def verify(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription'):
+def verify(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription',pair=None):
     """Qualified consumers still require an actual successful phase."""
     return _verify_export(destination,phase=phase,runtime_root=runtime_root,
-                          expected_helper=expected_helper,kind=kind,success=True)
+                          expected_helper=expected_helper,kind=kind,pair=pair,success=True)
 
 
-def verify_failed(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription'):
+def verify_failed(destination,*,phase,runtime_root=None,expected_helper=None,kind='subscription',pair=None):
     """Verify only exported failure bytes; never a successful phase receipt."""
     return _verify_export(destination,phase=phase,runtime_root=runtime_root,
-                          expected_helper=expected_helper,kind=kind,success=False)
+                          expected_helper=expected_helper,kind=kind,pair=pair,success=False)
 
 
 @contextmanager
-def local_root(*,kind='subscription'):
-    bounds=profile(kind)
+def local_root(*,kind='subscription',pair=None):
+    bounds=profile(kind,pair)
     from ws73_application_role import require_vm
     require_vm(bounds['vm_token'])
+    if pair is not None and Path('/proc/cmdline').read_text().split().count('ws73.parallel_subscription=1')!=1:
+        raise CaptureError('explicit four-pair subscription boot required')
     if Path('/proc/cmdline').read_text().split().count(bounds['token'])!=1:raise CaptureError('explicit VM snapshot boot required')
     root=Path(bounds['root']);root.mkdir(mode=0o755)
     mounted=False

@@ -32,6 +32,11 @@ sender_case_argument() {
 }
 fail() {
     echo "WS73_TARGET_FAILURE: $*"
+    for role_pid in ${parallel_role_supervisors:-}; do
+        kill -TERM "$role_pid" 2>/dev/null
+        wait "$role_pid"
+    done
+    parallel_role_supervisors=''
     if [ -n "${application_role_supervisor:-}" ]; then
         kill -TERM "$application_role_supervisor" 2>/dev/null
         wait "$application_role_supervisor"
@@ -407,7 +412,15 @@ if grep -qw ws73.application_discovery=1 /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_application_discovery.py "$daemon" > /evidence/discovery-role-supervisor.log 2>&1 & application_role_supervisor=$!
 fi
 if grep -qw ws73.ssap_subscription=1 /proc/cmdline; then
-    /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" subscription > /evidence/subscription-role-supervisor.log 2>&1 & application_role_supervisor=$!
+    if grep -qw ws73.parallel_subscription=1 /proc/cmdline; then
+        parallel_role_supervisors=''
+        for pair in 0 1; do
+            /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" subscription --parallel-pair "$pair" > "/evidence/subscription-role-supervisor-pair-$pair.log" 2>&1 &
+            parallel_role_supervisors="$parallel_role_supervisors $!"
+        done
+    else
+        /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" subscription > /evidence/subscription-role-supervisor.log 2>&1 & application_role_supervisor=$!
+    fi
 fi
 if grep -qw ws73.socket_benchmark_apps=1 /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" benchmark > /evidence/benchmark-role-supervisor.log 2>&1 & application_role_supervisor=$!
@@ -429,6 +442,7 @@ elif grep -q 'ws73.parallel_business=1' /proc/cmdline; then
     if grep -q 'ws73.parallel_burst=1' /proc/cmdline; then disconnect_arg='--burst'; fi
     if grep -q 'ws73.parallel_owned=1' /proc/cmdline; then disconnect_arg='--owned-ssap'; fi
     if grep -q 'ws73.parallel_delivery=1' /proc/cmdline; then disconnect_arg='--update-delivery'; fi
+    if grep -qw ws73.parallel_subscription=1 /proc/cmdline; then disconnect_arg='--shared-subscription'; fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_parallel_data.py run $disconnect_arg --ports 1-1 1-2 1-3 1-4 --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/parallel-business --policy-expectation /expected-discovery-policies.json" || fail 'four-device parallel business'
 elif grep -q 'ws73.parallel=1' /proc/cmdline; then
     parallel_offset=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.parallel_offset=/){sub(/^ws73.parallel_offset=/,"",$i);print $i}}' /proc/cmdline)
@@ -617,6 +631,10 @@ if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     /bin/busybox touch /run/diagnostic-retired
     wait "$diagnostic" || fail 'diagnostic retired-fd gate'
 fi
+for role_pid in ${parallel_role_supervisors:-}; do
+    wait "$role_pid" || fail 'actual per-pair shared subscription roles'
+done
+parallel_role_supervisors=''
 if [ -n "${application_role_supervisor:-}" ]; then
     wait "$application_role_supervisor" || fail 'actual SDK application-only roles'
     application_role_supervisor=''

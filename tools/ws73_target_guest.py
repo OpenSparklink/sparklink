@@ -346,7 +346,9 @@ def verify_parallel():
     capture=read_capture(EVIDENCE/'ws73.pcap',[(o['bus'],o['device']) for o in owners])
     count=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     if capture['packet_count']!=count:raise ValueError('parallel sealed capture count mismatch')
-    proof=corroborate(run,capture)
+    subscription='ws73.parallel_subscription=1'in Path('/proc/cmdline').read_text().split()
+    if business and run.get('shared_subscription_mode',False)is not subscription:raise ValueError('explicit shared subscription boot/evidence mismatch')
+    proof=corroborate(run,capture,**({'evidence':EVIDENCE}if subscription else{}))
     (EVIDENCE/f'{name}-proofs.json').write_text(json.dumps(proof,indent=2)+'\n')
     print('WS73_TARGET_PARALLEL_BUSINESS: PASS' if business else 'WS73_TARGET_PARALLEL_RF: PASS',flush=True)
 

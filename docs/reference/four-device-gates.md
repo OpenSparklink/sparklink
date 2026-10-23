@@ -12,7 +12,9 @@
 | `--four-device-owned` | 原80次短消息，另运行两组／两角色／两方向的Owned审批和拒绝 | 16个真实拥有者、80次请求／回复交换，包含退出后远端拒绝；两组SSAP线上窗口重叠 |
 | `--four-device-update-delivery` | 原80次短消息，另执行protected2下的完整update-v2矩阵 | 两组／两角色／两方向，32／2036／2037／2042字节，notification及indication共64次更新、64次对端应用校验回复和128次CPCD决定；两组更新线上窗口重叠 |
 
-五个模式分别运行；不能混入QMP热插拔、故障注入或双设备参数。每条数据由对端应用
+| `--four-device-shared-subscription` | 原80次短消息，另运行原共享订阅release矩阵 | protected2；两组／两角色／双向notify和indicate共112次更新、192次应用校验回复、32次共享加入、32次保留同行的部分释放、16次最终disable；实际UID1004 reader／UID1005 publisher与两组线上窗口重叠 |
+
+六个模式分别运行；不能混入QMP热插拔、故障注入或双设备参数。每条数据由对端应用
 实际校验并回复；USB成功、NOCP、协议ACK和日志不能替代它。普通应用仍经slkd取得
 授权fd。实验协调者与只具应用组权限的部署资格分别验收，非root并不自动证明权限分离。
 
@@ -82,6 +84,30 @@ Bond、service-only部署或完整协议安全。
 最终文件身份或预算错误仍失败，清理错误不得覆盖原首因；没有文件读取重试或隐式
 fallback。新记录的`ssap_update_delivery_output_contract_version=1`要求每个publisher
 与peer的完整pipe／字节记账；历史记录保留原观察方式和原判定，不补字段升级。
+
+## 并行共享订阅
+
+`--four-device-shared-subscription`复用现有shared-release调用者、唯一SSAP Engine、
+真实system bus角色probe和关闭后快照。准备要求`four_subscription_contract_version=1`，
+保留上述protected2配置、numeric Agent、独立CMAC校验器及准确冻结产物闭包。
+`parallel_subscription_contract_version=1`绑定实际请求和两个工作进程；不接受其他
+共享订阅case、单reader降级、减少原80次socket回复或放宽期限。
+
+两个有限root监督器只各自读取固定`parallel-business/pair-0`或`pair-1`请求，
+校验选中的两个guest端口、完整controller／generation／Connection身份和实际产物。
+每组独立使用`/run/ws73-subscription-role-pair-N`及对应`/evidence`关闭快照路径，
+保留原32MiB tmpfs、每phase16MiB／64文件和每请求90秒／监督器180秒上限。
+不接受任意目录或跨组请求；退出只清理本VM已知子进程。
+
+每组保持原56次更新、96次应用校验回复、24个reader和4个publisher。reader实际
+UID/GID1004、publisher1005，无附加组或capability；管理协调者仍为UID1000。
+部分释放后另一个reader继续实际校验回复，最后引用才产生真实disable。独立检查器
+核对完整原始输出、两phase快照hash、权限拒绝、enable／最终disable线上写入，
+再核对两组更新在原物理connection lifetime内重叠；缺少一组原材料即拒绝。
+
+此门禁不授整个部署仅应用权限、共享expiry／owner-exit／pressure、完整多通道、
+故障隔离、公平性、Bond或射频密文资格。快照存储隔离是测试设施职责，不构成生产
+daemon进程故障域隔离；新模式存在也不代表准确新artifact的实机门禁已通过。
 
 ## 范围与拒绝
 

@@ -33,6 +33,11 @@ TOOLS=('/bin/ws73-application-client-c','/usr/share/sparklink/tools/ws73-applica
        '/usr/share/sparklink/python/sparklink/local_services.py',
        '/usr/share/sparklink/python/sparklink/service_authorization.py','/bin/bus-policy-probe')
 
+def role_paths(pair=None):
+    from ws73_role_snapshot import profile
+    bounds=profile('subscription',pair)
+    return Path(bounds['artifact']),INPUT if pair is None else Path('/evidence/application/parallel-business')/('pair-'+str(pair))
+
 
 def requested(args,*,passthrough):
     value=getattr(args,'ssap_subscription_verify',False)
@@ -203,6 +208,11 @@ def validate_request(row,phase):
     expiry=inflight_case(row)=='expiry'
     from ws73_role_snapshot import requested as snapshot_required
     fields={'phase','owners','tools','security_requirement','message_security_required','status','start_wall_ns'}
+    if 'parallel_pair'in row:
+        pair=row['parallel_pair'];role_paths(pair)
+        if pair is None or {x['owner'].get('port')for x in row['owners']}!={f'1-{2*pair+1}',f'1-{2*pair+2}'}:
+            raise CaptureError('actual selected controller pair required')
+        fields.add('parallel_pair')
     if renewal:fields|={'ssap_subscription_renewal_required','ssap_subscription_renewal_contract_version'}
     if pressure:fields|={'ssap_subscription_pressure_required','ssap_subscription_pressure_contract_version'}
     if owner_loss:fields|={'ssap_subscription_owner_loss_required','ssap_subscription_owner_loss_contract_version'}
@@ -246,11 +256,13 @@ def request(run,row):
     case=requested_shared_case(run.args)
     if case!='release':value.update(ssap_subscription_shared_case=case,**{'ssap_subscription_shared_pressure_contract_version'if case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
     if snapshot:value['ssap_subscription_snapshot_contract_version']=1
+    if getattr(run.args,'shared_subscription',False):value['parallel_pair']=run.args.pair
     validate_request(value,phase)
     path=run.output/f'subscription-role-{phase}.request.json';temporary=path.with_suffix('.tmp')
     with temporary.open('x')as stream:json.dump(value,stream)
     temporary.chmod(0o600);os.link(temporary,path);temporary.unlink()
-    response=ROOT/f'phase-{phase}'/'run.json';deadline=time.monotonic()+90
+    root,_=role_paths(value.get('parallel_pair'))
+    response=root/f'phase-{phase}'/'run.json';deadline=time.monotonic()+90
     while not response.is_file():
         if time.monotonic()>=deadline:raise CaptureError('subscription role supervisor deadline')
         time.sleep(.01)
@@ -273,6 +285,7 @@ def request(run,row):
     if shared_required(value):row.update(ssap_subscription_shared_required=True,ssap_subscription_shared_contract_version=1)
     if case!='release':row.update(ssap_subscription_shared_case=case,**{'ssap_subscription_shared_pressure_contract_version'if case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
     if snapshot:row['ssap_subscription_snapshot_contract_version']=1
+    if 'parallel_pair'in value:row['parallel_pair']=value['parallel_pair']
     run.save()
 
 
@@ -532,14 +545,14 @@ def role(identity,uid):
         raise CaptureError('exact independent cap-zero application/service-only credentials required')
 
 
-def verify_supervisor_artifacts(control,evidence):
+def verify_supervisor_artifacts(control,evidence,*,pair=None):
     """Actual root outputs,not a caller-supplied completed summary."""
     from ws73_application_role import verify_probe
-    evidence=Path(evidence);root=evidence/'subscription-role'
+    evidence=Path(evidence);artifact,_=role_paths(pair);root=evidence/artifact.relative_to('/evidence')
     finished=json.loads((root/'finished.json').read_text())
     if (finished['status']!='TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'
             or finished['daemon']!=control['daemon_before']or control['daemon_before']!=control['daemon_after']
-            or len(control['channel_socket'])!=2):raise CaptureError('two actual root subscription phases and unchanged daemon required')
+            or len(control['channel_socket'])!=2 or finished.get('parallel_pair')!=pair):raise CaptureError('two actual root subscription phases and unchanged daemon required')
     from ws73_role_snapshot import requested as snapshot_required,verify as verify_snapshot,HELPER
     snapshots=[snapshot_required(row)for row in control['channel_socket']]
     if any(snapshots)and not all(snapshots):raise CaptureError('two matching snapshot phases required')
@@ -549,6 +562,7 @@ def verify_supervisor_artifacts(control,evidence):
     exported=[]
     for phase,row in enumerate(control['channel_socket']):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
+        if original.get('parallel_pair')!=pair or row.get('parallel_pair')!=pair:raise CaptureError('original role pair namespace required')
         verify_probe(original)
         for key,value in row['ssap_subscription_request'].items():
             if original[key]!=value:raise CaptureError('original root request identity changed')
@@ -561,14 +575,14 @@ def verify_supervisor_artifacts(control,evidence):
                 or original['role_supervisor']!=finished['supervisor']):raise CaptureError('completed original root subscription phase required')
         if snapshot_required(row):
             if snapshot_required(original)is not True or HELPER not in row['ssap_subscription_tools']:raise CaptureError('actual snapshot helper identity required')
-            exported.append(verify_snapshot(root/f'phase-{phase}',phase=phase,expected_helper=row['ssap_subscription_tools'][HELPER]['sha256']))
+            exported.append(verify_snapshot(root/f'phase-{phase}',phase=phase,expected_helper=row['ssap_subscription_tools'][HELPER]['sha256'],pair=pair))
         apps=[original['role_probe']]
         for item in original['ssap_subscription']:
             apps.append(item);apps.extend(l['application']for l in item['leases'])
         for app in apps:
             for filename in app['output_files']:
                 relative=Path(filename).relative_to('/evidence')
-                if not relative.is_relative_to(Path('subscription-role')/f'phase-{phase}'):
+                if not relative.is_relative_to(artifact.relative_to('/evidence')/f'phase-{phase}'):
                     raise CaptureError('fixed phase output paths required')
                 if (evidence/relative).read_text()!=app['stdout'if filename.endswith('.stdout')else'stderr']:
                     raise CaptureError('raw process stream differs from original subscription record')
@@ -604,6 +618,7 @@ def verify_supervisor_artifacts(control,evidence):
         if shared_pressure:result.update(shared_case='pressure',shared_pressure_contract_version=1,slow_notification_drops=4,slow_indication_refusals=4,healthy_losses=0,ordered_drains=8,resumed=8,healthy_replies=176)
         elif cases[0]!='release':result.update(shared_case=cases[0],shared_lifetime_contract_version=1,**({'partial_expirations':8,'expired_discarded':8}if cases[0]=='expiry'else{'partial_owner_exits':8,'unconsumed_published':8}))
     if exported:result.update(snapshot_contract_version=1,snapshot_phases=2,snapshot_files=sum(len(s['files'])for s in exported),snapshot_bytes=sum(s['bytes']for s in exported))
+    if pair is not None:result['parallel_pair']=pair
     return result
 
 
@@ -1046,5 +1061,5 @@ def valid_inflight_summary(proof,*,case='release'):
         for row in proof['proofs']for sender,v in enumerate(row['ssap_subscription'])))
 
 
-def valid_shared_summary(proof,*,case='release'):
-    return(case in ('release','expiry','owner-exit','pressure')and valid_summary(proof)and proof.get('round_trips')==8 and all(type(v.get('shared_contract_version'))is int and v['shared_contract_version']==1 and v.get('shared_case','release')==case for row in proof['proofs']for v in row['ssap_subscription']))
+def valid_shared_summary(proof,*,case='release',expected_round_trips=8):
+    return(type(expected_round_trips)is int and expected_round_trips in(8,40)and case in ('release','expiry','owner-exit','pressure')and valid_summary(proof)and proof.get('round_trips')==expected_round_trips and all(type(v.get('shared_contract_version'))is int and v['shared_contract_version']==1 and v.get('shared_case','release')==case for row in proof['proofs']for v in row['ssap_subscription']))

@@ -43,7 +43,8 @@
 
 新准备记录的 `four_owned_contract_version=1` 要求当前Python工具及可执行`/init`。
 复用旧载体时保留冻结ELF和父产物，另行封存当前启动脚本及其输入hash；不能仅更新
-Python或启动参数。协调记录的 `parallel_owned_contract_version=1` 绑定原始工作进程、
+Python或启动参数。实际启动的parallel／business／Owned选择器必须唯一且一致，不能以Owned覆盖长包或断链标志。
+协调记录的 `parallel_owned_contract_version=1` 绑定原始工作进程、
 旗标、阶段和现有Owned材料；聚合器重新核对原记录，不仅接受一个PASS字符串。
 
 完整判据仍由既有Owned校验器逐条匹配原审批／拒绝／owner退出和两端USB中的真实
@@ -63,4 +64,5 @@ Python或启动参数。协调记录的 `parallel_owned_contract_version=1` 绑�
 传输故障恢复、持续饱和时隔离、公平性、完整多通道或protected SSAP资格。
 
 缺少一端捕获、应用回执、原字段、必要阶段，或错误／超时／SKIP时均不能生成完整PASS。
-原失败及其源码身份保留，后续成功只属于新的准确运行。
+原失败及其源码身份保留，后续成功只属于新的准确运行。协调首因保留在原error字段，
+退出时额外管道事件等清理错误另记；它们仍使门禁失败，不能覆盖或吞掉首因。

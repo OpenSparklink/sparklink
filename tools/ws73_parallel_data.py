@@ -226,7 +226,10 @@ def run_parallel(args):
         if reader:
             while reader.watch.get_map():reader.pump(.01)
             reader.watch.close()
-            if any(reader.queue.values()):record.update(status='FAIL',error='extra barrier events')
+            if any(reader.queue.values()):
+                if record.get('status')=='FAIL':
+                    record.setdefault('cleanup_errors',[]).append('extra barrier events')
+                else:record.update(status='FAIL',error='extra barrier events')
         for n,p in enumerate(processes):
             path=output/f'pair-{n}/run.json'
             if path.is_file():record['workers'][n].update(run=json.loads(path.read_text()),artifact=file_record(path))
@@ -254,7 +257,7 @@ def verify_records(record):
     scope=OWNED_SCOPE if owned else BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE
     if (record.get('format_version')!=1 or record.get('scope')!=scope or record.get('status')!=PENDING
             or record.get('barrier_budget_seconds')!=BARRIER_SECONDS or len(record.get('workers',[]))!=2
-            or record.get('failure_shutdown') or any(record.get(k) is not False for k in
+            or record.get('failure_shutdown') or record.get('cleanup_errors') or any(record.get(k) is not False for k in
                 ['physical_unplug_acceptance','automatic_fault_recovery_acceptance','fault_isolation_acceptance'])):
         raise CaptureError('complete explicit positive business slice required')
     checked_expectation(record['policy_expectation']['data'])

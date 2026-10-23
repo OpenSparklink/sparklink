@@ -52,7 +52,7 @@ def summary_fixture():
         parallel_owned_contract_version=1,parallel_owned_control=owned_fixture(),owned_ssap_acceptance=True)
     p['owned_ssap']=owned_parallel_proof(p['pairs'])
     r.update(status='FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS',four_device_burst_requested=False,
-        four_device_owned_requested=True,four_owned_contract_version=1,qemu_args=['ws73.parallel_owned=1'])
+        four_device_owned_requested=True,four_owned_contract_version=1,qemu_args=['ws73.parallel=1 ws73.parallel_business=1 ws73.parallel_owned=1'])
     return r
 
 
@@ -91,7 +91,7 @@ class ParallelOwned(unittest.TestCase):
 
     def test_summary_requires_original_control_exact_boot_and_no_scope_upgrade(self):
         self.assertEqual(run_exit_code(summary_fixture()),0)
-        for case in ('missing-control','missing-boot','duplicate-boot','null-version','bool-version','proof-version','worker','missing-wire','forged-count','fault-claim','old-status','missing-request'):
+        for case in ('missing-control','missing-boot','duplicate-boot','null-version','bool-version','proof-version','worker','missing-wire','forged-count','fault-claim','old-status','missing-request','conflicting-burst','conflicting-disconnect','missing-business'):
             bad=summary_fixture();p=bad['parallel_corroboration']
             if case=='missing-control':p.pop('parallel_owned_control')
             elif case=='missing-boot':bad['qemu_args']=[]
@@ -104,6 +104,9 @@ class ParallelOwned(unittest.TestCase):
             elif case=='forged-count':p['owned_ssap']['request_response_exchanges']=81
             elif case=='fault-claim':p['fault_isolation_acceptance']=True
             elif case=='old-status':bad['status']='FOUR_DEVICE_PARALLEL_BUSINESS_PASS'
+            elif case=='conflicting-burst':bad['qemu_args'].append('ws73.parallel_burst=1')
+            elif case=='conflicting-disconnect':bad['qemu_args'].append('ws73.parallel_disconnect=1')
+            elif case=='missing-business':bad['qemu_args']=[v.replace('ws73.parallel_business=1','')for v in bad['qemu_args']]
             else:bad['four_device_owned_requested']=False
             with self.subTest(case=case):self.assertEqual(run_exit_code(bad),1)
 

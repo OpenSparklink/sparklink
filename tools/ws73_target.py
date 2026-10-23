@@ -3062,6 +3062,11 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         owned_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_owned=1']
         if owned_boot!=(['ws73.parallel_owned=1']if owned else[]):return 1
         if owned:
+            # The declared scope and actual guest selectors must agree. The
+            # shell must not pick Owned by silently overriding another mode.
+            words=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()]
+            if words.count('ws73.parallel=1')!=1 or words.count('ws73.parallel_business=1')!=1:return 1
+            if any(v in words for v in ['ws73.parallel_burst=1','ws73.parallel_disconnect=1']):return 1
             from ws73_parallel_data import verify_records,owned_parallel_proof
             try:
                 if type(record.get('four_owned_contract_version'))is not int or record['four_owned_contract_version']!=1:return 1

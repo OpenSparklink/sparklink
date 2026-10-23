@@ -66,6 +66,9 @@ Bond、service-only部署或完整协议安全。
 复用旧载体时，配置只能由其确切冻结slkd执行`--check-config --dump-ws73-policies`
 校验；guest的版本化绝对别名在私有root内解析。此操作不启动宿主daemon或安装服务。
 其他旧四设备模式不会自动接受自定义配置，也不会因配置不匹配降级为明文。
+此外显式提供`--native-verification-openssl /path/to/openssl`：准备阶段执行独立CMAC
+向量，封存guest校验器及动态库hash；与冻结运行库冲突则拒绝，不替换旧ELF依赖。
+运行前核对完整闭包；缺少该依赖时不得先运行业务后跳过安全证据校验。
 
 `four_delivery_contract_version=1`要求匹配的当前工具、可执行init、冻结见证ELF和应用
 产物；实际启动的parallel／business／delivery选择器必须唯一且一致。

@@ -70,7 +70,7 @@ def summary_fixture():
 
 class ParallelDelivery(unittest.TestCase):
     def test_preparation_binds_actual_files_init_config_and_witness(self):
-        for case in ('valid','version','source','init','config','probe','identity'):
+        for case in ('valid','version','source','init','config','probe','identity','no-oracle','stale-oracle'):
             with self.subTest(case=case),tempfile.TemporaryDirectory()as tmp:
                 path=Path(tmp);root=path/'root';share=root/'usr/share/sparklink/tools';share.mkdir(parents=True)
                 for name in ['ws73_parallel_data.py','ws73_channel_socket.py','ws73_connection_control.py','ws73_security_agent.py','ws73_ssap_update_delivery.py']:
@@ -80,12 +80,17 @@ class ParallelDelivery(unittest.TestCase):
                 witness=root/'bin/ws73-security-agent-probe';witness.parent.mkdir();witness.write_bytes(b'file identity fixture;never executed')
                 record=file_record(witness)
                 package=dict(four_delivery_contract_version=1,guest_files=[record],native_security_agent_probe=record)
+                oracle=root/'usr/bin/openssl';oracle.parent.mkdir(parents=True);oracle.write_bytes(b'file identity fixture;never executed')
+                oracle_record=file_record(oracle);package['guest_files'].append(oracle_record)
+                package['native_verification_openssl']=dict(guest_path='/usr/bin/openssl',validation_exit=0,source=oracle_record,files=[dict(guest_path='/usr/bin/openssl',sha256=oracle_record['sha256'])])
                 if case=='version':package['four_delivery_contract_version']=True
                 elif case=='source':(share/'ws73_parallel_data.py').write_text('old source')
                 elif case=='init':entry.chmod(0o644)
                 elif case=='config':config.write_text('[ssap]\nchannel_security = 0\n')
                 elif case=='probe':witness.write_bytes(b'changed')
                 elif case=='identity':package['native_security_agent_probe']=dict(sha256='0'*64)
+                elif case=='no-oracle':package.pop('native_verification_openssl')
+                elif case=='stale-oracle':oracle.write_bytes(b'changed')
                 if case=='valid':require_delivery_preparation(package,path)
                 else:
                     with self.assertRaises(ValueError):require_delivery_preparation(package,path)

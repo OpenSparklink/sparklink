@@ -182,6 +182,44 @@ def retained_daemon(root):
     return daemon
 
 
+def stage_numeric_verifier(source, root, manifest, copy_elf):
+    """Stage an explicit offline CMAC oracle without replacing frozen libraries."""
+    source=source.resolve(strict=True)
+    if not source.is_file()or not source.stat().st_mode&0o111:
+        raise ValueError('executable OpenSSL verifier required')
+    before=file_record(source)
+    version=subprocess.run([str(source),'version'],capture_output=True,text=True,check=True,timeout=15)
+    command=[str(source),'mac','-macopt','cipher:AES-128-CBC','-macopt',
+             'hexkey:2b7e151628aed2a6abf7158809cf4f3c','CMAC']
+    result=subprocess.run(command,input=b'',capture_output=True,check=True,timeout=15)
+    if result.stdout.strip().lower()!=b'bb1d6929e95937287fa37d129b756746':
+        raise ValueError('OpenSSL empty-message CMAC vector mismatch')
+    if file_record(source)!=before:raise ValueError('OpenSSL changed during validation')
+    with tempfile.TemporaryDirectory(prefix='ws73-verifier-')as tmp:
+        staged=Path(tmp)
+        copy_elf(source,staged/'usr/bin/openssl',staged)
+        files=sorted(p for p in staged.rglob('*')if p.is_file())
+        records=[];inputs=[]
+        for path in files:
+            relative=path.relative_to(staged);target=firmware_profile.inside(root,relative)
+            origin=source if relative==Path('usr/bin/openssl')else Path('/')/relative
+            identity=file_record(origin)
+            if digest(path)!=identity['sha256']:raise ValueError('verifier dependency changed')
+            if target.exists()and digest(target)!=identity['sha256']:
+                raise ValueError('verifier must not replace a frozen runtime library: '+str(relative))
+            records.append(dict(guest_path='/'+str(relative),sha256=identity['sha256']))
+            inputs.append(identity)
+        for path in files:
+            target=firmware_profile.inside(root,path.relative_to(staged))
+            if not target.exists():checked_copy(path,target)
+        if any(file_record(v['path'])!=v for v in inputs):raise ValueError('verifier inputs changed')
+    manifest['inputs'].extend(inputs)
+    manifest['native_verification_openssl']=dict(source=before,guest_path='/usr/bin/openssl',
+        files=records,version=version.stdout,validation_command=command,
+        validation_exit=result.returncode,validation_stdout=result.stdout.decode(),
+        scope='Independent public-transcript CMAC oracle only;not protocol/firmware or security qualification')
+
+
 def stage_discovery_config(source, daemon, root, manifest):
     """Freeze a private VM config and check it with the exact staged daemon.
 

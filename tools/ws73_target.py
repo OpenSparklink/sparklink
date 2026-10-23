@@ -97,6 +97,8 @@ def copy_elf(source, target, root):
 
 
 def prepare(args):
+    if getattr(args,'native_verification_openssl',None)is not None and getattr(args,'from_prepared',None)is None:
+        raise ValueError('explicit verifier staging requires --from-prepared')
     # Hold through copying/sealing binaries from the shared debug target too.
     with build_lock() as build_fd:
         if getattr(args, 'from_prepared', None) is not None:
@@ -238,6 +240,8 @@ def prepare_from_carrier(args):
         manifest['native_vm']['userspace_head'] = head
         if getattr(args,'native_discovery_config',None)is not None:
             native_vm.stage_discovery_config(args.native_discovery_config,native_vm.retained_daemon(root),root,manifest)
+        if getattr(args,'native_verification_openssl',None)is not None:
+            native_vm.stage_numeric_verifier(args.native_verification_openssl,root,manifest,copy_elf)
         ports = [s['host_port'] for s in selections]
         resources.check_firmware(manifest, ports, output)
         resources.check_board_configuration(manifest, ports, output)
@@ -2471,6 +2475,16 @@ def require_delivery_preparation(package,path):
     witness=delivery_probe_identity(root,package['guest_files'])
     if witness['sha256']!=package.get('native_security_agent_probe',{}).get('sha256'):
         raise ValueError('security witness must retain exact compiled artifact identity')
+    verifier=package.get('native_verification_openssl',{})
+    if verifier.get('guest_path')!='/usr/bin/openssl'or type(verifier.get('validation_exit'))is not int or verifier['validation_exit']!=0 or not verifier.get('files'):
+        raise ValueError('explicit validated guest CMAC oracle required')
+    if [r['sha256']for r in verifier['files']if r['guest_path']=='/usr/bin/openssl']!=[verifier.get('source',{}).get('sha256')]:
+        raise ValueError('exact validated OpenSSL binary must be in guest closure')
+    for row in verifier['files']:
+        entry=firmware_profile.inside(root,Path(row['guest_path'].lstrip('/')))
+        actual=file_record(entry)
+        if actual['sha256']!=row['sha256']or actual not in package['guest_files']:
+            raise ValueError('guest CMAC oracle closure differs from sealed inputs')
 
 
 def require_owned_preparation(package,path):
@@ -3244,6 +3258,7 @@ def main():
     pack.add_argument('--board-model',choices=['U','E'],help='explicit SDK110 single-model build inputs;no cold ROM auto selection')
     pack.add_argument('--from-prepared',type=Path,help='reuse an explicit retained Native carrier with separate compiled identity;no new compilation')
     pack.add_argument('--device-inputs',type=Path,help='version1 ordered leaf/model/firmware_dir/board_dir JSON plan;requires --from-prepared')
+    pack.add_argument('--native-verification-openssl',type=Path,help='explicit public-transcript CMAC oracle for retained carriers;validate vector and preserve frozen runtime libraries')
     pack.add_argument('--tcpdump',type=Path)
     pack.add_argument('--python',type=Path)
     for name in native_vm.OPTIONS:

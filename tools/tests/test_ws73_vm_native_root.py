@@ -11,7 +11,7 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack, freeze_policy_expectation
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack, freeze_policy_expectation, stage_numeric_verifier
 from ws73_north_star import file_record
 import ws73_firmware_profile as profile
 from test_ws73_firmware_profile import inputs as profile_inputs
@@ -29,6 +29,30 @@ def remove_boot_images(root):
 
 
 class NativeVMProfile(unittest.TestCase):
+    def test_actual_openssl_vector_closure_and_frozen_conflict(self):
+        # Actual installed OpenSSL/ldd/file copies;not Native/RF/security proof.
+        from ws73_target import copy_elf
+        selected=shutil.which('openssl');self.assertIsNotNone(selected)
+        with tempfile.TemporaryDirectory()as tmp:
+            root=Path(tmp);manifest={'inputs':[]}
+            stage_numeric_verifier(Path(selected),root,manifest,copy_elf)
+            proof=manifest['native_verification_openssl']
+            self.assertEqual(proof['validation_exit'],0)
+            self.assertEqual(proof['validation_stdout'].strip().lower(),'bb1d6929e95937287fa37d129b756746')
+            self.assertTrue((root/'usr/bin/openssl').is_file())
+            before={p:file_record(p)for p in root.rglob('*')if p.is_file()}
+            stage_numeric_verifier(Path(selected),root,{'inputs':[]},copy_elf)
+            self.assertEqual(before,{p:file_record(p)for p in root.rglob('*')if p.is_file()})
+            library=next(root/r['guest_path'].lstrip('/')for r in proof['files']if r['guest_path']!='/usr/bin/openssl')
+            library.write_bytes(b'explicit frozen mismatch')
+            bad={'inputs':[]}
+            with self.assertRaisesRegex(ValueError,'must not replace'):
+                stage_numeric_verifier(Path(selected),root,bad,copy_elf)
+            self.assertEqual(library.read_bytes(),b'explicit frozen mismatch')
+            self.assertNotIn('native_verification_openssl',bad)
+            with self.assertRaises(subprocess.CalledProcessError):
+                stage_numeric_verifier(Path('/bin/false'),root,{'inputs':[]},copy_elf)
+
     def test_readonly_policy_receipt_is_replaced_without_touching_old_inode(self):
         # Pure file/receipt test with an explicit prevalidated-result fixture;
         # no daemon, Native command, policy authority or successful peer stub.

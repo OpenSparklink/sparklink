@@ -309,6 +309,7 @@ def stage(args, manifest, root, source, copy_elf):
     service_path = args.native_service_bundle.resolve(strict=True)
     service = json.loads((service_path / 'manifest.json').read_text())
     if (service.get('status') != 'PRIVATE_NATIVE_SERVICE_FILES_STAGED'
+            or not re.fullmatch('[0-9a-f]{40}', service.get('userspace_head',''))
             or service['kernel_release'] != release or service['kernel_head'] != smoke['source_head']
             or service.get('firmware_input_contract_version') != 1
             or service.get('explicit_firmware') != manifest.get('explicit_firmware')
@@ -406,6 +407,10 @@ def stage(args, manifest, root, source, copy_elf):
         qemu_data.append(file_record(target))
     if not qemu_data:
         raise ValueError('explicit verified QEMU data snapshot required')
+    # This is the verified service build identity, not the current stager HEAD.
+    # A fresh Native carrier must satisfy the same reuse contract as a retained
+    # one without callers manually relabelling its manifest.
+    manifest['compiled_userspace_identity'] = service['userspace_head']
     manifest['native_vm'] = {'release': release, 'root_uuid': root_uuid,
                              'kernel_head': smoke['source_head'],
                              'qemu_data': qemu_data,

@@ -5,6 +5,10 @@ Managed 连接清理门禁当前逐字节要求 SLE 主动断链原因 `0x10`，
 `expected_cleanup_reason=0x13` 时按旧身份复核，当前执行器不从捕获内容自动放宽。
 真实 Disconnect OUT、Status、双端 Down 和原期限仍分别核对，原因值正确不代表对端已断链。
 
+新鲜 Native 载体的 `compiled_userspace_identity` 来自已核验 service bundle 的
+构建提交；准备工具的当前 HEAD 单独记录。复用入口仍要求明确编译身份，缺失时拒绝，
+不能用文档或工具提交给既有 ELF 重新标记身份。
+
 ## 显式链路发送载荷偏好
 
 可选 `--link-payload-preference reported-acb-maximum` 仅用于独立的双设备 Native

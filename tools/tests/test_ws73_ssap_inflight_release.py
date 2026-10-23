@@ -6,6 +6,9 @@ import json
 from pathlib import Path
 import struct
 import tempfile
+import subprocess
+import sys
+import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch,Mock
@@ -100,16 +103,21 @@ def terminal_hold(rows):
 class InflightRelease(unittest.TestCase):
     def test_receipt_callback_cannot_restart_original_observation_deadline(self):
         import ws73_ssap_update_delivery as delivery
+        from ws73_ssap_owned import observed_process,wait_text
         with tempfile.TemporaryDirectory()as tmp:
-            path=Path(tmp)/'owner.stdout';path.write_text('');process=Mock();clock=[0.0];events=[]
-            def write(command):
-                events.append(command)
-                with path.open('a')as out:out.write('SdkOwnedUpdate: {"fixture":1}\n')
-            process.stdin.write.side_effect=write
-            def before():events.append('barrier');clock[0]=6.0
-            with patch.object(delivery.time,'monotonic',side_effect=lambda:clock[0]):
-                with self.assertRaises(CaptureError):delivery.command_receipt(process,{'output_files':[str(path)]},'indicate','SdkOwnedUpdate',before_receipt=before)
-            self.assertEqual(events,['indicate\n','barrier']);self.assertEqual(path.read_text().count('SdkOwnedUpdate:'),1)
+            path=Path(tmp)/'owner.stdout';err=path.with_suffix('.stderr');clock=[0.0];events=[];item={}
+            # Real child text producer,not an SDK/Native/peer success stub.
+            program="import sys;print('ready',flush=True);assert input()=='indicate';print('Command: indicate',flush=True);print('SdkOwnedUpdate: {\"fixture\":1}',flush=True);assert input()=='quit'"
+            with observed_process([sys.executable,'-c',program],item,path,err,stdin=subprocess.PIPE,text=True)as process:
+                wait_text(process,path,'^ready$',time.monotonic()+2)
+                def before():
+                    wait_text(process,path,r'^SdkOwnedUpdate: (.+)$',4)
+                    events.append('barrier');clock[0]=6.0
+                with patch.object(delivery.time,'monotonic',side_effect=lambda:clock[0]):
+                    with self.assertRaises(CaptureError):delivery.command_receipt(process,item,'indicate','SdkOwnedUpdate',before_receipt=before)
+                process.stdin.write('quit\n');process.stdin.flush();process.wait(timeout=2)
+            self.assertEqual(events,['barrier']);self.assertEqual(item['stdout'].count('SdkOwnedUpdate:'),1)
+            self.assertEqual(item['stdout'].count('Command: indicate'),1)
 
     def test_same_coordinator_waits_for_actual_disable_capture_before_unhold(self):
         row,_=fixture();case=row['ssap_subscription'][0]['leases'][1]['inflight_release'];s=case['selection']

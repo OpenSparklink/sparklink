@@ -1897,7 +1897,9 @@ def _run(args):
                             for worker in control['workers']:
                                 data=worker['run']
                                 if data['artifacts']['security_agent_probe']!=delivery_probe_identity(args.prepared/'root',package['guest_files']):raise ValueError('executed Agent witness differs from sealed artifact')
-                                for row in data['channel_socket']:validate_update_tools(row['ssap_update_delivery_tools'],args.prepared/'root',package['guest_files'])
+                                for row in data['channel_socket']:
+                                    if type(row.get('ssap_update_delivery_output_contract_version'))is not int or row['ssap_update_delivery_output_contract_version']!=1:raise ValueError('current delivery requires original bounded pipe observations')
+                                    validate_update_tools(row['ssap_update_delivery_tools'],args.prepared/'root',package['guest_files'])
                         m['parallel_corroboration']=corroborate_parallel(control,capture)
                         m['parallel_control']=file_record(control_path)
                     if daemon_remove:
@@ -2463,7 +2465,7 @@ def require_delivery_preparation(package,path):
     if type(package.get('four_delivery_contract_version'))is not int or package['four_delivery_contract_version']!=1:
         raise ValueError('protected delivery requires freshly matched preparation')
     root=path/'root'
-    for name in ['ws73_parallel_data.py','ws73_channel_socket.py','ws73_connection_control.py','ws73_security_agent.py','ws73_ssap_update_delivery.py']:
+    for name in ['ws73_parallel_data.py','ws73_channel_socket.py','ws73_connection_control.py','ws73_security_agent.py','ws73_ssap_update_delivery.py','ws73_ssap_owned.py','ws73_dynamic_channels.py']:
         if file_record(root/'usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
             raise ValueError('protected delivery source mismatch: '+name)
     entry=root/'init'
@@ -2490,7 +2492,7 @@ def require_delivery_preparation(package,path):
 def require_owned_preparation(package,path):
     if type(package.get('four_owned_contract_version'))is not int or package['four_owned_contract_version']!=1:
         raise ValueError('Owned SSAP requires freshly matched explicit preparation')
-    for name in ['ws73_parallel_data.py','ws73_ssap_owned.py','ws73_channel_socket.py']:
+    for name in ['ws73_parallel_data.py','ws73_ssap_owned.py','ws73_channel_socket.py','ws73_dynamic_channels.py']:
         if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
             raise ValueError('Owned SSAP preparation/source mismatch: '+name)
     entry=path/'root/init'

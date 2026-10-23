@@ -12,7 +12,7 @@ import re
 import time
 from ws73_capture import CaptureError
 from ws73_channel_socket import credentials
-from ws73_ssap_owned import publisher,wait_text,value_snapshot,await_removed
+from ws73_ssap_owned import publisher,wait_text,value_snapshot,await_removed,output_text
 
 PROMPT=(r'^SsapAuthorizationPrompt: token=(\d+) request=(\d+) index=(\d+) generation=(\d+) lifetime=(\d+) handle=(\d+) epoch=(\d+) security=(\d+) property=(\d+) data_type=0 write=(true|false) bytes=(\d+) deadline_ns=(\d+); answer \'yes (\d+)\' or \'no (\d+)\'$')
 STATUS='OWNER_LIFECYCLE_USB_CUTC_EVIDENCE_PENDING'
@@ -154,7 +154,7 @@ def execute(run,row):
             if remaining>0:time.sleep(remaining)
             token=int(i['prompt_events'][1]['fields'][0]);i['late_input']=dict(token=token,wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns())
             owner.stdin.write(f'yes {token}\n');owner.stdin.flush();value_snapshot(owner,i,i['secret']);run.save()
-            if 'approved=true' in Path(i['output_files'][0]).read_text():raise CaptureError('old/late prompt decision granted authorization')
+            if 'approved=true' in output_text(owner,Path(i['output_files'][0])):raise CaptureError('old/late prompt decision granted authorization')
         value_snapshot(guard,g,g['secret']);g['other_owner_after_failed_request']=True;run.save()
     row['ssap_owner_lifecycle_status']=STATUS;run.save()
 

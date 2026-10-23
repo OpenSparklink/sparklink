@@ -121,7 +121,7 @@ class ParallelOwned(unittest.TestCase):
     def test_actual_staged_files_and_executable_init_must_match_new_source(self):
         with tempfile.TemporaryDirectory()as tmp:
             root=Path(tmp);tools=root/'root/usr/share/sparklink/tools';tools.mkdir(parents=True)
-            for name in ['ws73_parallel_data.py','ws73_ssap_owned.py','ws73_channel_socket.py']:(tools/name).write_bytes((HERE/name).read_bytes())
+            for name in ['ws73_parallel_data.py','ws73_ssap_owned.py','ws73_channel_socket.py','ws73_dynamic_channels.py']:(tools/name).write_bytes((HERE/name).read_bytes())
             entry=root/'root/init';entry.write_bytes((HERE/'ws73_target_init.sh').read_bytes());entry.chmod(0o755)
             require_owned_preparation(dict(four_owned_contract_version=1),root)
             for version in (None,True,'1',0):

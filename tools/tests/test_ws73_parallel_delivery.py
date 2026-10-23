@@ -73,7 +73,7 @@ class ParallelDelivery(unittest.TestCase):
         for case in ('valid','version','source','init','config','probe','identity','no-oracle','stale-oracle'):
             with self.subTest(case=case),tempfile.TemporaryDirectory()as tmp:
                 path=Path(tmp);root=path/'root';share=root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-                for name in ['ws73_parallel_data.py','ws73_channel_socket.py','ws73_connection_control.py','ws73_security_agent.py','ws73_ssap_update_delivery.py']:
+                for name in ['ws73_parallel_data.py','ws73_channel_socket.py','ws73_connection_control.py','ws73_security_agent.py','ws73_ssap_update_delivery.py','ws73_ssap_owned.py','ws73_dynamic_channels.py']:
                     (share/name).write_bytes((HERE/name).read_bytes())
                 entry=root/'init';entry.write_bytes((HERE/'ws73_target_init.sh').read_bytes());entry.chmod(0o755)
                 config=root/'etc/sparklink/main.conf';config.parent.mkdir(parents=True);config.write_text('[ssap]\nchannel_security = 2\n')

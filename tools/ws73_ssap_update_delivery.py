@@ -5,7 +5,6 @@ Actual SDK apps perform the receive/check/reply. This supervisor does not send
 SSAP,acknowledge a fake peer or implement a Host. Paired raw USB legs remain
 necessary and are checked independently against fixed packet bytes below.
 """
-from contextlib import ExitStack
 from pathlib import Path
 import json
 import os
@@ -16,7 +15,7 @@ import time
 import hashlib
 from ws73_capture import CaptureError
 from ws73_channel_socket import credentials
-from ws73_ssap_owned import publisher, wait_text, value_snapshot, await_removed
+from ws73_ssap_owned import publisher, wait_text, value_snapshot, await_removed, observed_process, output_text, verify_output
 from ws73_application_client import application_environment, owned_arguments, authorization_context
 
 LENGTHS=(32,2036,2037,2042)
@@ -61,7 +60,7 @@ def validate_tools(records,root,manifest):
 
 def command_receipt(process,item,command,prefix,*,limit=32,before_receipt=None):
     path=Path(item['output_files'][0]);pattern='^'+re.escape(prefix)+r': (.+)$'
-    count=len(re.findall(pattern,path.read_text(),re.M))
+    count=len(re.findall(pattern,output_text(process,path),re.M))
     start=time.monotonic_ns();wall=time.time_ns()
     deadline=time.monotonic()+5
     process.stdin.write(command+'\n');process.stdin.flush()
@@ -94,7 +93,7 @@ def discover(run,peer,item):
 def execute(run,row):
     if row.get('security_requirement')!=2 or not row.get('message_security_required'):
         raise CaptureError('update delivery requires actual protected2 baseline,not local approval')
-    row.update(ssap_update_delivery_required=True,ssap_update_delivery_version=2,ssap_update_delivery_lengths=list(LENGTHS),ssap_update_delivery=[],ssap_update_delivery_tools=tool_records());run.save()
+    row.update(ssap_update_delivery_required=True,ssap_update_delivery_version=2,ssap_update_delivery_output_contract_version=1,ssap_update_delivery_lengths=list(LENGTHS),ssap_update_delivery=[],ssap_update_delivery_tools=tool_records());run.save()
     for sender in (0,1):
         peer,server=row['owners'][sender],row['owners'][1-sender]
         api='c'if(row['phase']+sender)%2==0 else'python';peer_api='python'if api=='c'else'c'
@@ -115,9 +114,7 @@ def execute(run,row):
                 app=dict(api=peer_api,args=args,start_wall_ns=time.time_ns(),environment=application_environment(),output_files=[str(out),str(err)])
                 case['application']=app;run.save();process=None
                 try:
-                    with ExitStack() as files:
-                        process=subprocess.Popen(args,env=dict(os.environ,**application_environment()),
-                            stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
+                    with observed_process(args,app,out,err,env=dict(os.environ,**application_environment()),text=True)as process:
                         app.update(pid=process.pid,credentials=credentials(process.pid));run.save()
                         wait_text(process,out,r'^\{.*"stage"\s*:\s*"ssap_update_wait".*\}$',time.monotonic()+5)
                         case['enabled']=configuration(owner,item,mode,process);run.save()
@@ -125,9 +122,6 @@ def execute(run,row):
                         process.wait(timeout=10)
                         if process.returncode:raise CaptureError('ordinary peer application did not validate/reply')
                 finally:
-                    if process is not None:
-                        if process.poll()is None:process.kill();process.wait(timeout=2)
-                        app.update(exit=process.returncode,end_wall_ns=time.time_ns(),stdout=out.read_text(),stderr=err.read_text())
                     run.save()
                 case['disabled']=configuration(owner,item,0)
                 case['after']=value_snapshot(owner,item,reply)
@@ -171,6 +165,12 @@ def discovery_wire(item,peer,exchange):
 def corroborate(row,matched):
     if not row.get('ssap_update_delivery_required',False):return [],{0:0,1:0}
     items=row.get('ssap_update_delivery',[]);owners=row['owners'];proof=[];credit={0:0,1:0};fresh=set()
+    output_version=row.get('ssap_update_delivery_output_contract_version')
+    if output_version is not None:
+        if type(output_version)is not int or output_version!=1:raise CaptureError('explicit supported pipe output contract required')
+        for item in items:
+            verify_output(item)
+            for case in item.get('cases',[]):verify_output(case['application'])
     lengths=matrix(row);version=row.get('ssap_update_delivery_version',1)
     if version==2 and row.get('ssap_update_delivery_lengths')!=list(LENGTHS):raise CaptureError('complete explicit update length matrix required')
     if (row.get('ssap_update_delivery_status')!=STATUS or len(items)!=2

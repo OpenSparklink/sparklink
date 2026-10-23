@@ -12,6 +12,7 @@ import re
 import shutil
 import stat
 import subprocess
+import tempfile
 import uuid
 
 from ws73_native_root_smoke import digest

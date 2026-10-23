@@ -15,7 +15,7 @@ import time
 import hashlib
 from ws73_capture import CaptureError
 from ws73_channel_socket import credentials
-from ws73_ssap_owned import publisher, wait_text, value_snapshot, await_removed, observed_process, output_text, verify_output
+from ws73_ssap_owned import publisher, wait_text, value_snapshot, await_removed, observed_process, output_text, verify_output, wait_output
 from ws73_application_client import application_environment, owned_arguments, authorization_context
 
 LENGTHS=(32,2036,2037,2042)
@@ -119,14 +119,14 @@ def execute(run,row):
                         wait_text(process,out,r'^\{.*"stage"\s*:\s*"ssap_update_wait".*\}$',time.monotonic()+5)
                         case['enabled']=configuration(owner,item,mode,process);run.save()
                         case['send']=command_receipt(owner,item,'indicate'if mode==2 else'notify','SdkOwnedUpdate');run.save()
-                        process.wait(timeout=10)
+                        wait_output(process,10)
                         if process.returncode:raise CaptureError('ordinary peer application did not validate/reply')
                 finally:
                     run.save()
                 case['disabled']=configuration(owner,item,0)
                 case['after']=value_snapshot(owner,item,reply)
                 case['end_wall_ns']=time.time_ns();run.save()
-            owner.stdin.write('quit\n');owner.stdin.flush();owner.wait(timeout=2)
+            owner.stdin.write('quit\n');owner.stdin.flush();wait_output(owner,2)
             if owner.returncode:raise CaptureError('original provider unregister failed')
             item['cleanup']=await_removed(run,server,item['start']);run.save()
     row['ssap_update_delivery_status']=STATUS;run.save()

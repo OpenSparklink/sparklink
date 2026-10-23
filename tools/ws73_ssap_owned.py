@@ -68,6 +68,19 @@ def output_text(process,path):
     return item['stdout'if Path(path)==paths[0]else'stderr']
 
 
+def wait_output(process,timeout):
+    """Drain the same child pipes while waiting within one original budget."""
+    deadline=time.monotonic()+timeout
+    while True:
+        state=getattr(process,'ws73_observed_output',None)
+        if not isinstance(state,tuple)or len(state)!=3:raise CaptureError('observed child required')
+        state[0].drain()
+        result=process.poll()
+        if result is not None:return result
+        if time.monotonic()>=deadline:raise subprocess.TimeoutExpired(process.args,timeout)
+        time.sleep(.005)
+
+
 def verify_output(item):
     record=item.get('output_collection',{})
     if (record.get('method')!='bounded-child-pipes'or type(record.get('maximum_bytes_per_stream'))is not int

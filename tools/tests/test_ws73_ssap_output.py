@@ -6,6 +6,7 @@ Native syscall,wire parser,security decision or application delivery is stubbed.
 """
 import copy
 import errno
+import fcntl
 from pathlib import Path
 import subprocess
 import sys
@@ -15,11 +16,30 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 from ws73_capture import CaptureError
-from ws73_ssap_owned import observed_process,output_text,wait_text,verify_output,OUTPUT_MAXIMUM
+from ws73_ssap_owned import observed_process,output_text,wait_text,verify_output,OUTPUT_MAXIMUM,wait_output
 from ws73_ssap_update_delivery import command_receipt
 
 
 class SsapOutput(unittest.TestCase):
+    def test_exit_wait_drains_real_small_pipe_without_extending_deadline(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            out,err=[Path(tmp)/n for n in ('stdout','stderr')];item={}
+            program="import sys,os;print('ready',flush=True);assert input()=='write';os.write(1,b'x'*50000)"
+            with observed_process([sys.executable,'-c',program],item,out,err,stdin=subprocess.PIPE,text=True)as proc:
+                wait_text(proc,out,'^ready$',time.monotonic()+2)
+                fcntl.fcntl(proc.stdout.fileno(),fcntl.F_SETPIPE_SZ,4096)
+                proc.stdin.write('write\n');proc.stdin.flush()
+                with self.assertRaises(subprocess.TimeoutExpired):proc.wait(timeout=.05)
+                self.assertEqual(wait_output(proc,2),0)
+            verify_output(item);self.assertEqual(item['captured_bytes']['stdout'],50006)
+
+    def test_exit_wait_has_finite_original_budget(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            out,err=[Path(tmp)/n for n in ('stdout','stderr')];item={}
+            with self.assertRaises(subprocess.TimeoutExpired):
+                with observed_process([sys.executable,'-c',"input()"],item,out,err,stdin=subprocess.PIPE,text=True)as proc:
+                    wait_output(proc,.05)
+
     def test_real_pipe_receipt_does_not_reopen_live_evidence_file(self):
         with tempfile.TemporaryDirectory()as tmp:
             out,err=[Path(tmp)/n for n in ('stdout','stderr')];item={}

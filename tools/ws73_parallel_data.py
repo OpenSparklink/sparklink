@@ -3,8 +3,9 @@
 """Four real controllers, two live physical pairs and actual app replies.
 
 Reuses connection/socket/USB proofs. Barriers coordinate test workers, never
-fabricate controller events or data. Positive fixed-channel and controlled pair-Disconnect slices only;
-no transport-fault, dynamic-channel, protected SSAP or natural-recovery claim.
+fabricate controller events or data. Explicit fixed-channel, controlled pair-Disconnect
+and existing protected SSAP gates; no transport-fault, dynamic-channel, full
+security authentication or natural-recovery claim.
 """
 import argparse
 import hashlib
@@ -53,7 +54,7 @@ def subscription_case(record):
     enabled=record.get('shared_subscription_mode',False)
     if type(enabled)is not bool:raise CaptureError('typed subscription mode required')
     case=shared_case(dict(record,ssap_subscription_shared_required=enabled,ssap_subscription_shared_contract_version=record.get('parallel_subscription_contract_version')if enabled else None))
-    if case not in ('release','expiry','owner-exit'):raise CaptureError('separate four-pair shared case not implemented')
+    if case not in ('release','expiry','owner-exit','pressure'):raise CaptureError('separate four-pair shared case not implemented')
     return case
 
 
@@ -84,7 +85,7 @@ class BusinessPair(PairRun):
         if self.delivery:self.data.update(update_delivery_mode=True,parallel_delivery_contract_version=1)
         if self.subscription:self.data.update(shared_subscription_mode=True,parallel_subscription_contract_version=1)
         if self.subscription and getattr(args,'ssap_subscription_shared_case','release')!='release':
-            self.data.update(ssap_subscription_shared_case=args.ssap_subscription_shared_case,ssap_subscription_shared_lifetime_contract_version=1)
+            self.data.update(ssap_subscription_shared_case=args.ssap_subscription_shared_case,**{'ssap_subscription_shared_pressure_contract_version'if args.ssap_subscription_shared_case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
         subscription_case(self.data)
         if self.owned:
             self.data['owned_ssap_mode']=True
@@ -212,7 +213,7 @@ def run_parallel(args):
     if delivery:record.update(update_delivery_mode=True,parallel_delivery_contract_version=1)
     if subscription:record.update(shared_subscription_mode=True,parallel_subscription_contract_version=1)
     if subscription and args.ssap_subscription_shared_case!='release':
-        record.update(ssap_subscription_shared_case=args.ssap_subscription_shared_case,ssap_subscription_shared_lifetime_contract_version=1)
+        record.update(ssap_subscription_shared_case=args.ssap_subscription_shared_case,**{'ssap_subscription_shared_pressure_contract_version'if args.ssap_subscription_shared_case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
     case=subscription_case(record)
     def save():
         temp=output/'run.tmp';temp.write_text(json.dumps(record,indent=2)+'\n');temp.replace(output/'run.json')
@@ -570,7 +571,7 @@ def subscription_parallel_proof(pairs,*,case='release'):
     """Original full shared case matrix, per-pair root roles and wire oracle."""
     from ws73_ssap_subscription import valid_shared_summary,valid_shared_supervision,valid_snapshot_supervision
     from ws73_ssap_shared import valid_configuration_summary
-    if type(case)is not str or case not in ('release','expiry','owner-exit'):raise CaptureError('explicit supported four-pair shared case required')
+    if type(case)is not str or case not in ('release','expiry','owner-exit','pressure'):raise CaptureError('explicit supported four-pair shared case required')
     if len(pairs)!=2:raise CaptureError('two original shared subscription pairs required')
     supervisors=set();daemon=None
     for number,pair in enumerate(pairs):
@@ -585,7 +586,8 @@ def subscription_parallel_proof(pairs,*,case='release'):
         supervisors.add(identity);daemon=root['daemon']
     return dict(version=1,shared_contract_version=1,shared_case=case,security_requirement=2,
                 **(dict(shared_lifetime_contract_version=1,partial_expirations=16,expired_discarded=16)if case=='expiry'else dict(shared_lifetime_contract_version=1,partial_owner_exits=16,unconsumed_published=16)if case=='owner-exit'else{}),
-                updates=112,application_replies=192,shared_joins=32,retained_releases=16 if case=='owner-exit'else 32,last_disables=16,
+                **(dict(shared_pressure_contract_version=1,slow_notification_drops=8,slow_indication_refusals=8,healthy_losses=0,ordered_drains=16,resumed=16,healthy_replies=352)if case=='pressure'else{}),
+                updates=352 if case=='pressure'else 112,application_replies=656 if case=='pressure'else 192,shared_joins=32,retained_releases=16 if case=='owner-exit'else 32,last_disables=16,
                 readers=48,providers=8,reader_UID=1004,provider_UID=1005,numeric_agent_phases=4,
                 overlaps=protected_wire_overlaps(pairs,'ssap_subscription'),
                 whole_application_deployment=False,fault_isolation_acceptance=False,rf_cipher_attested=False,
@@ -665,14 +667,14 @@ def main():
     parser.add_argument('--slkd-pid',type=int,required=True);parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--policy-expectation',type=Path,required=True);parser.add_argument('--pair',type=int,choices=[0,1])
     parser.add_argument('--disconnect-isolation',action='store_true',help='alternate which physical pair disconnects while the other continues20 real replies; not natural fault recovery')
-    parser.add_argument('--shared-subscription',action='store_true',help='full shared-release matrix in bothpairs;actual readers1004/providers1005,closed root snapshots and original80socketreplies')
+    parser.add_argument('--shared-subscription',action='store_true',help='full selected shared case in bothpairs;actual readers1004/providers1005,closed root snapshots and original80socketreplies')
     parser.add_argument('--update-delivery',action='store_true',help='existing numeric protected2 and full updatev2 notification/indication/appreply matrix in bothpairs')
     parser.add_argument('--owned-ssap',action='store_true',help='existing Owned SSAP caller/Engine in both physical pairs;actual approvals,denials,owner loss and wire overlap')
     parser.add_argument('--burst',action='store_true',help='16 real2042-byte replies perpair perrole; actual queue pressure and scoped pool/NOCP observations')
-    parser.add_argument('--ssap-subscription-shared-case',choices=['release','expiry','owner-exit'],default='release',help='existing explicit release,original lease expiry or actual guest reader exit;separate full matrices')
+    parser.add_argument('--ssap-subscription-shared-case',choices=['release','expiry','owner-exit','pressure'],default='release',help='existing explicit release,original lease expiry,actual guest reader exit or bounded shared queue pressure;separate full matrices')
     args=parser.parse_args()
     if sum((args.burst,args.disconnect_isolation,args.owned_ssap,args.update_delivery,args.shared_subscription))>1:parser.error('select one explicit scope')
-    if args.ssap_subscription_shared_case!='release'and not args.shared_subscription:parser.error('shared lifetime case requires its dedicated mode')
+    if args.ssap_subscription_shared_case!='release'and not args.shared_subscription:parser.error('shared case requires its dedicated mode')
     if args.mode=='run':
         if args.pair is not None:parser.error('pair selector internal only')
         return run_parallel(args)

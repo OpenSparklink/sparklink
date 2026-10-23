@@ -90,8 +90,8 @@ fallback。新记录的`ssap_update_delivery_output_contract_version=1`要求每
 `--four-device-shared-subscription`复用现有shared-release调用者、唯一SSAP Engine、
 真实system bus角色probe和关闭后快照。准备要求`four_subscription_contract_version=1`，
 保留上述protected2配置、numeric Agent、独立CMAC校验器及准确冻结产物闭包。
-`parallel_subscription_contract_version=1`绑定实际请求和两个工作进程；使用原`--ssap-subscription-shared-case`显式选择`expiry`或`owner-exit`，默认仍为`release`。
-不接受pressure、单reader降级、减少原80次socket回复或放宽期限。
+`parallel_subscription_contract_version=1`绑定实际请求和两个工作进程；使用原`--ssap-subscription-shared-case`显式选择`expiry`、`owner-exit`或`pressure`，默认仍为`release`。
+不接受单reader降级、减少原80次socket回复或放宽期限。
 
 两个有限root监督器只各自读取固定`parallel-business/pair-0`或`pair-1`请求，
 校验选中的两个guest端口、完整controller／generation／Connection身份和实际产物。
@@ -99,7 +99,8 @@ fallback。新记录的`ssap_update_delivery_output_contract_version=1`要求每
 保留原32MiB tmpfs、每phase16MiB／64文件和每请求90秒／监督器180秒上限。
 不接受任意目录或跨组请求；退出只清理本VM已知子进程。
 
-每组保持原56次更新、96次应用校验回复、24个reader和4个publisher。reader实际
+release／expiry／owner-exit每组保持原56次更新、96次应用校验回复；pressure
+每组为原176次更新、328次应用校验回复。各case仍有24个reader和4个publisher。reader实际
 UID/GID1004、publisher1005，无附加组或capability；管理协调者仍为UID1000。
 部分释放后另一个reader继续实际校验回复，最后引用才产生真实disable。独立检查器
 核对完整原始输出、两phase快照hash、权限拒绝、enable／最终disable线上写入，
@@ -128,7 +129,17 @@ VM标记、原PID及UID1004后SIGKILL，实际wait必须为-9且早于原租约�
 完整原输出、实际凭据／退出／时间线、同行应用回复、后继隔离和线上配置都须核对。
 这不授kernel Grant撤销、daemon死亡、物理断链或自然设备故障恢复资格。
 
-此门禁不授整个部署仅应用权限、共享pressure、完整多通道、
+pressure要求独立`four_subscription_pressure_contract_version=1`、当前工具及可执行init，
+不接受旧lifetime准备字段代替。沿用既有22次更新／组、16包容量和30秒租约：慢a0
+先不消费，健康b持续实际校验回复；核对通知丢弃与指示拒绝分别记账、原16包有序
+排空并逐条应用回复、恢复接收、部分释放及后继独立token。两组总计352次更新、
+656次应用校验回复、8次通知丢弃、8次指示拒绝、16次排空及恢复；健康b共352次回复，
+零缺失。原80次socket往返、角色交换、关闭快照与物理配置检查同时成立。
+
+这只覆盖本地应用订阅有限队列，不能升级为controller data credit、USB池饱和、
+吞吐／时延、公平性、断链或owner退出资格。准确新artifact仍须单独实机验收。
+
+此门禁不授整个部署仅应用权限、完整多通道、
 故障隔离、公平性、Bond或射频密文资格。快照存储隔离是测试设施职责，不构成生产
 daemon进程故障域隔离；新模式存在也不代表准确新artifact的实机门禁已通过。
 

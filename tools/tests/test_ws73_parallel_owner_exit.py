@@ -54,7 +54,7 @@ class FourOriginalOwnerExit(unittest.TestCase):
         self.assertEqual(requested_shared_case(args,four_pair=True),'owner-exit')
         self.assertFalse(requested(args,passthrough=False))
         with self.assertRaises(ValueError):requested_shared_case(args)
-        for case in ('pressure',True,None,'unsupported'):
+        for case in (True,None,'unsupported'):
             with self.subTest(case=case),self.assertRaises(ValueError):requested_shared_case(SimpleNamespace(four_device_shared_subscription=True,ssap_subscription_shared_case=case),four_pair=True)
 
     def test_coordinator_worker_cli_phase_and_original_contract_must_match(self):

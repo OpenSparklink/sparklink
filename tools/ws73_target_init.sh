@@ -446,7 +446,7 @@ elif grep -q 'ws73.parallel_business=1' /proc/cmdline; then
     shared_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.subscription_shared_case=/){sub(/^ws73.subscription_shared_case=/,"",$i);print $i}}' /proc/cmdline)
     if [ -n "$shared_case" ]; then
         [ "$disconnect_arg" = '--shared-subscription' ] || fail 'shared case requires shared parallel mode'
-        case "$shared_case" in expiry|owner-exit) ;; *) fail 'supported explicit parallel shared case' ;; esac
+        case "$shared_case" in expiry|owner-exit|pressure) ;; *) fail 'supported explicit parallel shared case' ;; esac
         disconnect_arg="$disconnect_arg --ssap-subscription-shared-case $shared_case"
     fi
     /bin/busybox setsid -c /bin/su ws73 -s /bin/sh -c "/bin/python3 /usr/share/sparklink/tools/ws73_parallel_data.py run $disconnect_arg --ports 1-1 1-2 1-3 1-4 --slctl /bin/slctl --slkd-pid $daemon --output /evidence/application/parallel-business --policy-expectation /expected-discovery-policies.json" || fail 'four-device parallel business'

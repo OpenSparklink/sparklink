@@ -213,6 +213,7 @@ def prepare_from_carrier(args):
         manifest['four_delivery_contract_version']=1
         manifest['four_subscription_contract_version']=1
         manifest['four_subscription_lifetime_contract_version']=1
+        manifest['four_subscription_pressure_contract_version']=1
         inputs = [file_record(source / 'manifest.json'), file_record(source / 'root.btrfs'), plan_identity]
         # The current test entry point is source,not part of the frozen Rust ELF.
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
@@ -289,6 +290,7 @@ def prepare_locked(args, build_fd):
     manifest['four_delivery_contract_version'] = 1
     manifest['four_subscription_contract_version'] = 1
     manifest['four_subscription_lifetime_contract_version'] = 1
+    manifest['four_subscription_pressure_contract_version'] = 1
     manifest['managed_prefix_geometry_contract_version'] = 1
     manifest['firmware_evidence_contract_version'] = 1
     manifest['link_measurement_contract_version'] = 1
@@ -1405,7 +1407,7 @@ def _run(args):
             require_subscription_preparation(package,args.prepared,case=subscription_shared_case)
             m['four_subscription_contract_version']=1
             m['four_subscription_security_requirement']=2
-            if subscription_shared_case!='release':m['four_subscription_lifetime_contract_version']=1
+            if subscription_shared_case!='release':m['four_subscription_pressure_contract_version'if subscription_shared_case=='pressure'else'four_subscription_lifetime_contract_version']=1
         if parallel_delivery:
             require_delivery_preparation(package,args.prepared)
             m['four_delivery_contract_version']=1
@@ -2514,8 +2516,9 @@ def require_delivery_preparation(package,path):
 def require_subscription_preparation(package,path,*,case='release'):
     if type(package.get('four_subscription_contract_version'))is not int or package['four_subscription_contract_version']!=1:
         raise ValueError('shared subscriptions require explicit current preparation')
-    if type(case)is not str or case not in ('release','expiry','owner-exit'):raise ValueError('explicit supported four-pair shared case required')
-    if case!='release'and(type(package.get('four_subscription_lifetime_contract_version'))is not int or package['four_subscription_lifetime_contract_version']!=1):raise ValueError('shared lifetime requires fresh preparation')
+    if type(case)is not str or case not in ('release','expiry','owner-exit','pressure'):raise ValueError('explicit supported four-pair shared case required')
+    field='four_subscription_pressure_contract_version'if case=='pressure'else'four_subscription_lifetime_contract_version'
+    if case!='release'and(type(package.get(field))is not int or package[field]!=1):raise ValueError('selected shared case requires fresh preparation')
     require_delivery_preparation(package,path)
     for name in ['ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target_guest.py']:
         if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
@@ -3184,15 +3187,17 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 if control.get('shared_subscription_mode')is not True:return 1
                 case=parallel_case(control)
                 if case!=shared_case:return 1
-                if case!='release':
-                    if type(record.get('four_subscription_lifetime_contract_version'))is not int or record['four_subscription_lifetime_contract_version']!=1:return 1
-                elif 'four_subscription_lifetime_contract_version'in record:return 1
+                for field in ('four_subscription_lifetime_contract_version','four_subscription_pressure_contract_version'):
+                    expected=case=='pressure'if field=='four_subscription_pressure_contract_version'else case in ('expiry','owner-exit')
+                    if expected:
+                        if type(record.get(field))is not int or record[field]!=1:return 1
+                    elif field in record:return 1
                 verify_records(control)
                 if type(proof.get('parallel_subscription_contract_version'))is not int or proof['parallel_subscription_contract_version']!=1:return 1
                 if subscription_parallel_proof(proof['pairs'],case=case)!=proof.get('shared_subscription'):return 1
                 if any(p['subscription_supervision']['daemon']!=w['run']['daemon_before'] for p,w in zip(proof['pairs'],control['workers'],strict=True)):return 1
             except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
-        elif any(k in record for k in ['four_subscription_contract_version','four_subscription_lifetime_contract_version'])or any(k in proof for k in ['parallel_subscription_contract_version','parallel_subscription_control','shared_subscription']):return 1
+        elif any(k in record for k in ['four_subscription_contract_version','four_subscription_lifetime_contract_version','four_subscription_pressure_contract_version'])or any(k in proof for k in ['parallel_subscription_contract_version','parallel_subscription_control','shared_subscription']):return 1
         owned_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_owned=1']
         if owned_boot!=(['ws73.parallel_owned=1']if owned else[]):return 1
         if owned or delivery or subscription:

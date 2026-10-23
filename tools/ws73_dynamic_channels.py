@@ -19,6 +19,12 @@ from ws73_channel_socket import application_frames, credentials, burst_pressure_
 from ws73_credit_observation import observe_phase
 
 
+def output_error(app,record):
+    if 'output_collection_error'in app:
+        app.setdefault('output_collection_followup_errors',[]).append(record)
+    else:app['output_collection_error']=record
+
+
 class ApplicationOutput:
     """Bounded real child pipes, mirrored to artifacts; no live file tailing.
 
@@ -62,8 +68,8 @@ class ApplicationOutput:
                     app[stream['name']]+=stream['decoder'].decode(data,final=False)
                     operation='read-child-pipe'
             except BaseException as error:
-                app['output_collection_error']=dict(operation=operation,stream=stream['name'],errno=getattr(error,'errno',None),
-                    error_type=type(error).__name__,error=str(error),traceback=traceback.format_exc())
+                output_error(app,dict(operation=operation,stream=stream['name'],errno=getattr(error,'errno',None),
+                    error_type=type(error).__name__,error=str(error),traceback=traceback.format_exc()))
                 raise
 
     def final(self, app):
@@ -76,7 +82,7 @@ class ApplicationOutput:
                 if (actual.st_dev,actual.st_ino)!=(named.st_dev,named.st_ino) or named.st_size!=stream['bytes']:
                     raise CaptureError('application output artifact replaced or truncated')
             except BaseException as error:
-                app['output_collection_error']=dict(operation='final-artifact-identity',stream=stream['name'],errno=getattr(error,'errno',None),error_type=type(error).__name__,error=str(error),traceback=traceback.format_exc())
+                output_error(app,dict(operation='final-artifact-identity',stream=stream['name'],errno=getattr(error,'errno',None),error_type=type(error).__name__,error=str(error),traceback=traceback.format_exc()))
                 raise
 
     def close(self):

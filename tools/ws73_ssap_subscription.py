@@ -53,7 +53,7 @@ def requested(args,*,passthrough):
     requested_inflight_case(args)
     shared=getattr(args,'ssap_subscription_shared_verify',False)
     if type(shared)is not bool or shared and(not value or renewal or pressure or owner_loss or inflight):raise ValueError('shared owners require their separate protected subscription gate')
-    requested_shared_case(args)
+    requested_shared_case(args,four_pair=getattr(args,'four_device_shared_subscription',False)is True)
     if shared and(getattr(args,'channel_socket_rounds',4)!=4 or getattr(args,'channel_socket_bytes',61)!=61):raise ValueError('shared gate retains the ordinary4x61 baseline')
     if value and any(v for k,v in vars(args).items()if type(v)is bool and k not in {'passthrough','qmp_hotplug','connection_verify','channel_socket_verify','ssap_subscription_verify','ssap_subscription_renewal_verify','ssap_subscription_pressure_verify','ssap_subscription_owner_loss_verify','ssap_subscription_inflight_release_verify','ssap_subscription_shared_verify'}):raise ValueError('subscription excludes other test selectors')
     if value and (not passthrough or not getattr(args,'channel_socket_verify',False)
@@ -138,10 +138,13 @@ def shared_required(row):
     return value
 
 
-def requested_shared_case(args):
+def requested_shared_case(args,*,four_pair=False):
     case=getattr(args,'ssap_subscription_shared_case','release')
-    if type(case)is not str or case not in ('release','expiry','owner-exit','pressure')or case!='release'and getattr(args,'ssap_subscription_shared_verify',False)is not True:
-        raise ValueError('lifetime case requires its dedicated shared-owner gate')
+    parallel=four_pair and getattr(args,'four_device_shared_subscription',False)is True
+    if(type(four_pair)is not bool or type(case)is not str or case not in ('release','expiry','owner-exit','pressure')
+        or case!='release'and not(getattr(args,'ssap_subscription_shared_verify',False)is True or parallel)
+        or parallel and case not in ('release','expiry')):
+        raise ValueError('lifetime case requires its dedicated supported shared-owner gate')
     return case
 
 

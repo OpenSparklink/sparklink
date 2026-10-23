@@ -10,6 +10,7 @@ import copy
 import io
 import json
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -96,12 +97,36 @@ class PrepareInputs(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             _, _, _, allocation, args = fixture(Path(tmp))
             for field in ('board_model', 'firmware_dir', 'kernel_build', 'tcpdump', 'python', 'native_service_bundle',
-                          'native_discovery_config', 'native_channel_fd_probe', 'controller_directory_clients',
+                          'native_channel_fd_probe', 'controller_directory_clients',
                           'native_runtime_only'):
                 bad = copy.copy(args); setattr(bad, field, 'U')
                 with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'refuses'):
                     self.run_prepare(bad, allocation)
                 self.assertFalse(args.output.exists())
+
+    def test_retained_config_rejection_uses_real_process_and_does_not_pack(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source, _, package, allocation, args = fixture(Path(tmp))
+            root = source / 'root'
+            relative = 'usr/libexec/opensparklink/native-lab/000000000001/slkd'
+            binary = root / relative; binary.parent.mkdir(parents=True)
+            # Explicit rejecting executable, never a successful daemon/Native stub.
+            shutil.copy2('/bin/false', binary)
+            (root / 'bin/slkd').symlink_to('/' + relative)
+            package['guest_files'] = [file_record(p) for p in sorted(root.rglob('*'))
+                                      if p.is_file() and not p.is_symlink()]
+            (source / 'manifest.json').write_text(json.dumps(package))
+            before = target.carrier_root_files(root, package['guest_files'])
+            config = Path(tmp) / 'explicit.conf'; config.write_text('[ssap]\nchannel_security = 2\n')
+            args.native_discovery_config = config
+            def forbidden_pack(*unused):
+                self.fail('rejected config must never reach formatter')
+            self.assertEqual(self.run_prepare(args, allocation, forbidden_pack), 1)
+            failed = json.loads((args.output / 'manifest.json').read_text())
+            self.assertEqual(failed['status'], 'FAIL')
+            self.assertIn('staged slkd rejected', failed['error'])
+            self.assertFalse((args.output / 'root.btrfs').exists())
+            self.assertEqual(target.carrier_root_files(root, package['guest_files']), before)
 
     def test_wrong_plan_or_missing_plan_refuses_before_output(self):
         with tempfile.TemporaryDirectory() as tmp:

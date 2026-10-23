@@ -157,6 +157,20 @@ def freeze_policy_expectation(daemon, target, root, manifest, custom, command=No
     (root / 'expected-discovery-config-sha256').write_text(before + '\n')
 
 
+def retained_daemon(root):
+    """Resolve the versioned guest alias inside a sealed private root."""
+    entry=root/'bin/slkd'
+    if not entry.is_symlink():raise ValueError('retained versioned daemon alias required')
+    target=os.readlink(entry)
+    if not re.fullmatch(r'/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}/slkd',target):
+        raise ValueError('retained daemon must use the Native bundle prefix')
+    from ws73_firmware_profile import inside
+    daemon=inside(root,Path(target.lstrip('/')))
+    if daemon.is_symlink()or not daemon.is_file()or not daemon.stat().st_mode&0o111:
+        raise ValueError('retained executable daemon required')
+    return daemon
+
+
 def stage_discovery_config(source, daemon, root, manifest):
     """Freeze a private VM config and check it with the exact staged daemon.
 
@@ -197,6 +211,12 @@ def check_discovery_config_gate(package, args):
     silently inherit a custom configuration before their verifiers migrate.
     """
     if 'discovery_config' not in package:
+        return
+    if getattr(args,'four_device_update_delivery',False):
+        if (args.command!='run'or type(package.get('four_delivery_contract_version'))is not int
+                or package['four_delivery_contract_version']!=1
+                or package.get('policy_expectation',{}).get('data',{}).get('custom_configuration')is not True):
+            raise ValueError('protected parallel delivery requires explicit validated current configuration')
         return
     if (args.command != 'run'
             or not (getattr(args, 'qmp_hotplug', False) or getattr(args, 'parallel_pairs', False))

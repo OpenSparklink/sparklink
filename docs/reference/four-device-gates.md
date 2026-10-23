@@ -10,8 +10,9 @@
 | `--four-device-disconnect` | 每角色交替选择受害组4次、存活组20次61字节往返 | 共48次回复；存活组实际Disconnect前至少2次、双方Down后至少4次完整往返 |
 | `--four-device-burst` | 两组各两种角色，每角色16次2042字节往返 | 共64次回复、实际PB分片、有限队列背压与逐controller观测pool饱和后恢复 |
 | `--four-device-owned` | 原80次短消息，另运行两组／两角色／两方向的Owned审批和拒绝 | 16个真实拥有者、80次请求／回复交换，包含退出后远端拒绝；两组SSAP线上窗口重叠 |
+| `--four-device-update-delivery` | 原80次短消息，另执行protected2下的完整update-v2矩阵 | 两组／两角色／两方向，32／2036／2037／2042字节，notification及indication共64次更新、64次对端应用校验回复和128次CPCD决定；两组更新线上窗口重叠 |
 
-四个模式分别运行；不能混入QMP热插拔、故障注入或双设备参数。每条数据由对端应用
+五个模式分别运行；不能混入QMP热插拔、故障注入或双设备参数。每条数据由对端应用
 实际校验并回复；USB成功、NOCP、协议ACK和日志不能替代它。普通应用仍经slkd取得
 授权fd。实验协调者与只具应用组权限的部署资格分别验收，非root并不自动证明权限分离。
 
@@ -52,6 +53,25 @@ Python或启动参数。实际启动的parallel／business／Owned选择器必�
 真实业务重叠、原期限和清理同时成立。记录缺失、source／init不匹配或任一失败均拒绝。
 这只覆盖UID1000／caps0的control-role实验；不授service-only部署、密码身份、Bond、
 每个owner退出时同行持续业务、完整取消矩阵或设备故障隔离。
+
+## Protected2 更新交付
+
+此显式模式复用现有按controller隔离的numeric-approve Agent、relay／安装状态、
+唯一SSAP Engine和C／Python应用调用者。真实安全见证、Grant拒绝和线上关联先成立，
+再执行完整update-v2；本地批准、服务值替换、协议ACK或加密日志均不能替代对端应用回复。
+通知和指示各32次，发送方向及连接角色均交换。它不证明射频密文、密码身份认证、
+Bond、service-only部署或完整协议安全。
+
+准备时显式提供`--native-discovery-config`，要求冻结配置`ssap.channel_security=2`。
+复用旧载体时，配置只能由其确切冻结slkd执行`--check-config --dump-ws73-policies`
+校验；guest的版本化绝对别名在私有root内解析。此操作不启动宿主daemon或安装服务。
+其他旧四设备模式不会自动接受自定义配置，也不会因配置不匹配降级为明文。
+
+`four_delivery_contract_version=1`要求匹配的当前工具、可执行init、冻结见证ELF和应用
+产物；实际启动的parallel／business／delivery选择器必须唯一且一致。
+协调记录`parallel_delivery_contract_version=1`绑定两个原工作进程、实际numeric机制、
+安全等级、完整长度和原始材料。聚合器复用现有安全及update校验器，另核对真实物理
+连接期限内的两组更新窗口重叠。任一缺项或失败均拒绝，不退回明文Owned或缩减矩阵。
 
 ## 范围与拒绝
 

@@ -149,8 +149,18 @@ def freeze_policy_expectation(daemon, target, root, manifest, custom, command=No
     data = {'custom_configuration': custom, 'config_sha256': before,
             'daemon_dump': result.stdout, 'policies': normalized_dump(result.stdout)}
     path = root / 'expected-discovery-policies.json'
-    path.write_text(json.dumps(data, indent=2) + '\n')
-    path.chmod(0o444)
+    if path.is_symlink():
+        raise ValueError('policy expectation must not be a symlink')
+    # A retained carrier seals this receipt read-only. Replace it in the new
+    # private root instead of opening it for write or changing the old inode.
+    fd, temporary = tempfile.mkstemp(prefix='.expected-discovery-', dir=root)
+    try:
+        with os.fdopen(fd, 'w') as stream:
+            stream.write(json.dumps(data, indent=2) + '\n')
+            os.fchmod(stream.fileno(), 0o444)
+        os.replace(temporary, path)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
     manifest['policy_expectation'] = {'data': data, 'guest_sha256': digest(path),
                                       'validator': file_record(daemon), 'validation_command': command,
                                       'validation_exit': result.returncode}

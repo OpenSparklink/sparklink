@@ -11,7 +11,7 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack, freeze_policy_expectation
 from ws73_north_star import file_record
 import ws73_firmware_profile as profile
 from test_ws73_firmware_profile import inputs as profile_inputs
@@ -29,6 +29,27 @@ def remove_boot_images(root):
 
 
 class NativeVMProfile(unittest.TestCase):
+    def test_readonly_policy_receipt_is_replaced_without_touching_old_inode(self):
+        # Pure file/receipt test with an explicit prevalidated-result fixture;
+        # no daemon, Native command, policy authority or successful peer stub.
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);config=root/'main.conf';config.write_text('[ssap]\nchannel_security=2\n')
+            daemon=root/'daemon';daemon.write_bytes(b'identity fixture never executed')
+            path=root/'expected-discovery-policies.json';path.write_text('old frozen receipt');path.chmod(0o444)
+            old=root/'old-inode';os.link(path,old)
+            result=subprocess.CompletedProcess(['explicit-receipt-fixture'],0,
+                stdout='Ws73DefaultPolicy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n')
+            manifest={};freeze_policy_expectation(daemon,config,root,manifest,True,result=result)
+            self.assertEqual(old.read_text(),'old frozen receipt')
+            self.assertEqual(path.stat().st_mode&0o777,0o444)
+            self.assertNotEqual(path.stat().st_ino,old.stat().st_ino)
+            self.assertEqual(manifest['policy_expectation']['guest_sha256'],file_record(path)['sha256'])
+            self.assertFalse(list(root.glob('.expected-discovery-*')))
+            path.unlink();path.symlink_to(old)
+            with self.assertRaisesRegex(ValueError,'symlink'):
+                freeze_policy_expectation(daemon,config,root,{},True,result=result)
+            self.assertEqual(old.read_text(),'old frozen receipt')
+
     def test_nonexecutable_init_is_rejected_before_image_or_formatter(self):
         # Real filesystem mode reproduces the staged 0644 failure. No guest,
         # USB, firmware or fake boot success is involved.

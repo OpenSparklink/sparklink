@@ -1,5 +1,10 @@
 # VM 回归输入契约（集成／测试参考）
 
+Managed 连接清理门禁当前逐字节要求 SLE 主动断链原因 `0x10`，与 Native daemon
+一致；`0x13` 不是 SLE 的远端主动断链原因。历史捕获只在离线显式选择
+`expected_cleanup_reason=0x13` 时按旧身份复核，当前执行器不从捕获内容自动放宽。
+真实 Disconnect OUT、Status、双端 Down 和原期限仍分别核对，原因值正确不代表对端已断链。
+
 ## 显式链路发送载荷偏好
 
 可选 `--link-payload-preference reported-acb-maximum` 仅用于独立的双设备 Native

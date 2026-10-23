@@ -45,9 +45,11 @@ def stop(snapshot, identifier, operation):
     return SleDiscoverySubmit(version=1,profile=1,generation=snapshot.generation,request_id=identifier,operation=operation)
 
 
-def bound_disconnect(snapshot,link,identifier):
+def bound_disconnect(snapshot,link,identifier,*,reason=0x10):
+    if type(reason)is not int or reason not in (0x10,0x13):
+        raise ValueError('explicit current or historical SLE disconnect reason required')
     request=SleConnectionSubmit(version=2,profile=1,operation=2,generation=snapshot.generation,
-        request_id=identifier,timeout_ms=10000,handle=link.handle,reason=0x13,
+        request_id=identifier,timeout_ms=10000,handle=link.handle,reason=reason,
         expected_lifetime=link.lifetime,expected_address_type=link.address_type,expected_role=link.role)
     request.expected_address[:]=link.address
     return request
@@ -76,7 +78,9 @@ class ConnectedOutcomeCoordinator(LaterHostCoordinator):
         self.folder=Path(share)/'connected-file';self.path=f'/machine/peripheral/ws73_{index}'
 
 
-def verify_records(r):
+def verify_records(r,*,expected_cleanup_reason=0x10):
+    if type(expected_cleanup_reason)is not int or expected_cleanup_reason not in (0x10,0x13):
+        raise ValueError('explicit current or historical SLE cleanup reason required')
     if 'security_capabilities' in r:
         from ws73_security_capabilities import verify
         verify(r)
@@ -219,7 +223,7 @@ def verify_records(r):
         if [(v['mutation'],v['errno']) for v in r['binding_rejections']]!=expected:
             raise ValueError('all actual VFS peer/reference/version rejections required')
         for offset,row in enumerate(r['binding_rejections']):
-            value=bound_disconnect(snapshots[i],link,901+offset);mutate_reference(value,row['mutation'])
+            value=bound_disconnect(snapshots[i],link,901+offset,reason=expected_cleanup_reason);mutate_reference(value,row['mutation'])
             if row['input']!=bytes(value).hex() or row['author_result'] is not None:
                 raise ValueError('rejected reference must not admit a procedure or fabricate result')
         if r['binding_after']!=r['binding_before']:raise ValueError('failed reference must preserve current physical table')
@@ -233,7 +237,7 @@ def verify_records(r):
     return snapshots
 
 
-def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None):
+def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None,*,expected_cleanup_reason=0x10):
     if 'security_capabilities' in r:
         if hold is not None:raise CaptureError('limited capability gate excludes reply hold/recovery')
         from ws73_security_capabilities import corroborate as capability_corroborate
@@ -250,7 +254,7 @@ def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None
         proof=down_corroborate(r,capture)
         if 'prefix_hold' in r:proof['prefix_hold']=barrier_proof
         return proof
-    snapshots = verify_records(r); i=r['index']; p=1-i
+    snapshots = verify_records(r,expected_cleanup_reason=expected_cleanup_reason); i=r['index']; p=1-i
     def belongs(row,n,start,end):
         usb=r['usb'][n]
         return (row['bus'],row['device'])==(usb['bus'],usb['device']) and start<=row['wall_ns']<=end
@@ -296,7 +300,7 @@ def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None
         handle=int.from_bytes(bytes.fromhex(r['up'][i]['params'])[1:3],'little')
         if not r.get('reply_hold') and handle!=decode(SleConnectionResult,r['connected']).handle:
             raise CaptureError('author result must match actual physical handle')
-        if operation==2 and body!=handle.to_bytes(2,'little')+b'\x13':raise CaptureError('exact cleanup handle/reason required')
+        if operation==2 and body!=handle.to_bytes(2,'little')+bytes([expected_cleanup_reason]):raise CaptureError('exact cleanup handle/reason required')
         outcomes=[]
         for n in [i,p]:
             receipt=r[key][n]
@@ -355,11 +359,15 @@ def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None
     return proof
 
 
-def corroborate(r, capture, hold=None, stderr=None, expected=None):
+def corroborate(r, capture, hold=None, stderr=None, expected=None,*,expected_cleanup_reason=0x10):
+    # Historical receipts require an explicit old reason; never infer it from
+    # captured bytes and silently accept stale cleanup in a current execution.
+    if type(expected_cleanup_reason)is not int or expected_cleanup_reason not in (0x10,0x13):
+        raise CaptureError('explicit current or historical SLE cleanup reason required')
     from ws73_protected_grant import requirement,corroborate as protected_wire
     security=requirement(r)
     prelude=protected_wire(r,capture) if security else None
-    proof=_corroborate(r,capture,hold,stderr,expected,prelude)
+    proof=_corroborate(r,capture,hold,stderr,expected,prelude,expected_cleanup_reason=expected_cleanup_reason)
     if security:proof['protected_security']=prelude
     if r.get('channel_grant',{}).get('tx_constraint_required'):
         from ws73_channel_grant import verify_intents

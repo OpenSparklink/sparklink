@@ -37,7 +37,7 @@ def fixture():
         c['complete'].append(dict(**r['usb'][n],opcode=0x1812,status=0,value=(b'\0\0'+tx.to_bytes(2,'little')).hex(),wall_ns=when+5,record=62+n))
         c['native_events'].append(dict(**r['usb'][n],event=0x14,params=(b'\0\0'+rx.to_bytes(2,'little')+b'\x0a'+OFFER).hex(),wall_ns=230 if n==0 else 210,record=64+n))
         row['down'][n]['wall_ns']=360+n;c['native_events'].append(dict(**r['usb'][n],**row['down'][n],record=100+n))
-    c['commands'].append(dict(**r['usb'][0],opcode=0x1403,params='000013',wall_ns=355,completion={'record':90},record=89))
+    c['commands'].append(dict(**r['usb'][0],opcode=0x1403,params='000010',wall_ns=355,completion={'record':90},record=89))
     c['native_events'].append(dict(**r['usb'][0],event=1,params='03140100',wall_ns=358,record=91))
     for enabled,when in [(True,380),(False,400)]:
         c['commands'].append(dict(**r['usb'][1],opcode=0x1002,params=bytes([enabled,0]).hex(),wall_ns=when,completion={'record':110},record=109))

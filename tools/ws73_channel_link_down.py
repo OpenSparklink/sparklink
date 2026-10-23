@@ -84,7 +84,7 @@ def verify(r):
             ready=decode(SleControllerSnapshot,row[key][n])
             if ready.flags!=1 or ready.generation!=snapshots[n].generation:raise ValueError('same registered Ready controller required')
     request=decode(SleConnectionSubmit,row['input']);old=decode(SleLinkSnapshot,row['links_before'][i]).links[0]
-    if (request.version,request.operation,request.generation,request.request_id,request.handle,request.reason,request.expected_lifetime)!=(2,2,snapshots[i].generation,950,old.handle,0x13,old.lifetime) or bytes(request.expected_address)!=bytes(old.address) or request.expected_role!=old.role or request.expected_address_type!=old.address_type:raise ValueError('exact bound Disconnect input required')
+    if (request.version,request.operation,request.generation,request.request_id,request.handle,request.reason,request.expected_lifetime)!=(2,2,snapshots[i].generation,950,old.handle,0x10,old.lifetime) or bytes(request.expected_address)!=bytes(old.address) or request.expected_role!=old.role or request.expected_address_type!=old.address_type:raise ValueError('exact bound Disconnect input required')
     result=decode(SleConnectionResult,row['result'])
     if (result.version,result.profile,result.state,result.operation,result.generation,result.request_id,result.handle,result.flags,result.dev_index)!=(1,1,4,2,snapshots[i].generation,950,old.handle,7,i) or any([result.error,result.fault_error,result.command_status,result.outcome_status,*result.reserved]):raise ValueError('actual successful Disconnect result required')
     armed=g['armed'];witness=g['blocking_witness'];blocked=row['blocked_result']
@@ -107,7 +107,7 @@ def corroborate(r,capture):
     row=verify(r);g=r['channel_grant'];i=r['index'];sdus,legs=business_evidence(g,r,capture)
     owner=g['owners'][i];same=lambda v,n: (v['bus'],v['device'])==(r['usb'][n]['bus'],r['usb'][n]['device'])
     commands=[c for c in capture['commands'] if same(c,i) and c['opcode']==0x1403 and row['submit_before_wall_ns']<=c['wall_ns']<=row['checks_after_wall_ns']]
-    if len(commands)!=1 or commands[0]['params']!=(owner['handle'].to_bytes(2,'little')+b'\x13').hex() or not commands[0].get('completion'):raise CaptureError('one actual exact Disconnect USB submission required')
+    if len(commands)!=1 or commands[0]['params']!=(owner['handle'].to_bytes(2,'little')+b'\x10').hex() or not commands[0].get('completion'):raise CaptureError('one actual exact Disconnect USB submission required')
     statuses=[e for e in capture['native_events'] if same(e,i) and e['event']==1 and bytes.fromhex(e['params'])[:2]==b'\x03\x14' and commands[0]['wall_ns']<=e['wall_ns']<=row['checks_after_wall_ns']]
     if len(statuses)!=1 or bytes.fromhex(statuses[0]['params'])[3:]!=b'\0':raise CaptureError('one actual successful Disconnect Status required')
     for n,event in enumerate(row['down']):

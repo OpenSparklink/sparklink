@@ -36,7 +36,10 @@ class ConnectedFileGate(unittest.TestCase):
         link.address[:]=bytes.fromhex('0001093254f9')
         value=bound_disconnect(snapshot,link,901)
         self.assertEqual(ctypes.sizeof(value),128)
-        self.assertEqual((value.version,value.operation,value.generation,value.handle,value.expected_lifetime,value.expected_role,value.expected_address_type),(2,2,7,12,3,1,0))
+        self.assertEqual((value.version,value.operation,value.generation,value.handle,value.expected_lifetime,value.expected_role,value.expected_address_type,value.reason),(2,2,7,12,3,1,0,0x10))
+        self.assertEqual(bound_disconnect(snapshot,link,901,reason=0x13).reason,0x13)
+        for invalid in [True,False,0,0x11,256,'16']:
+            with self.subTest(reason=invalid),self.assertRaises(ValueError):bound_disconnect(snapshot,link,901,reason=invalid)
         self.assertEqual(bytes(value.expected_address),bytes(link.address))
         self.assertEqual(bytes(value.parameters),bytes(ctypes.sizeof(value.parameters)))
         for mutation in ['lifetime','type','address','role','zero','generation','version']:

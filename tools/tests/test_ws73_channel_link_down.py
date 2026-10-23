@@ -54,7 +54,7 @@ def fixture():
                 capture['acb_packets'].append(dict(**r['usb'][n],handle=0,direction=direction,data=data.hex(),boundary=0,wall_ns=100,record=ordinal));ordinal+=1
     data=b'\x1f\0\xfb\x07\xf1'+bytes.fromhex(g['armed']['prefix'])
     capture['acb_packets'].append(dict(**r['usb'][0],handle=0,direction='out',data=data[:254].hex(),boundary=1,completion={'record':20},record=19,wall_ns=225))
-    capture['commands'].append(dict(**r['usb'][0],opcode=0x1403,params='000013',wall_ns=235,record=21,completion={'record':22}))
+    capture['commands'].append(dict(**r['usb'][0],opcode=0x1403,params='000010',wall_ns=235,record=21,completion={'record':22}))
     capture['native_events'].append(dict(**r['usb'][0],event=1,params='03140100',wall_ns=245,record=23))
     for n,e in enumerate(row['down']):capture['native_events'].append(dict(**r['usb'][n],**e,record=24+n))
     for enabled,when in [(True,270),(False,290)]:

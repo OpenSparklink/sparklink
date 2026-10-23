@@ -813,6 +813,12 @@ Grant 撤销、断链、无编号回复复用、全部引用排空、多应用�
 
 ## 持续订阅的在途释放门禁
 
+当前执行复用已有短通道前缀门禁固定的两秒 IN81 fixture，记录实际 binary hash 与
+`fixture.version=1`、`hold_budget_ms=2000`、无协议匹配器的明确契约。旧 sequence
+fixture 的未版本化回执仅保留原身份的离线验证，不能作为当前执行的 fallback。
+当前 hash 缺少契约、契约与 hash 不符、八秒预算或未知 binary 均拒绝。身份与源码
+核对不是实际暂扣证明：后续 QMP、原始字节、双端 ACK／disable 和期限断言仍全部必需。
+
 `--ssap-subscription-inflight-release-verify` 是独立的 protected2／numeric-approve
 订阅场景，不与续租、满队列、进程退出或其他选择器组合。新 prepared 必须声明
 inflight-release contract1、闭合快照和准确新消费者／工具；仅接受现有固定 hash

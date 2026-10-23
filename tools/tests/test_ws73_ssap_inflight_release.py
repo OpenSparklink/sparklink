@@ -121,7 +121,7 @@ class InflightRelease(unittest.TestCase):
 
     def test_same_coordinator_waits_for_actual_disable_capture_before_unhold(self):
         row,_=fixture();case=row['ssap_subscription'][0]['leases'][1]['inflight_release'];s=case['selection']
-        with tempfile.TemporaryDirectory()as tmp,patch.object(hold_gate,'validate_qemu'):
+        with tempfile.TemporaryDirectory()as tmp,patch.object(hold_gate,'validate_qemu',return_value=hold_gate.CURRENT_QEMU_SHA256):
             root=Path(tmp);coordinator=hold_gate.Coordinator(root,root,{},root/'qemu',purpose='subscription-release')
             folder=coordinator.root/'phase-0';folder.mkdir(parents=True);raw=(json.dumps(s)+'\n').encode();(folder/'selection.json').write_bytes(raw);(folder/'hold-release_ready.json').write_text('{}')
             child=Mock();child.phase='release_ready';child.record=dict(selection=s,selection_sha256=hashlib.sha256(raw).hexdigest());coordinator.child=child

@@ -15,7 +15,7 @@ import re
 import time
 
 from ws73_capture import CaptureError, read_live_prefix, reassemble_acb
-from ws73_channel_prefix_hold import PrefixBarrier
+from ws73_channel_prefix_hold import PrefixBarrier, QEMU_SHA256 as CURRENT_QEMU_SHA256
 from ws73_diagnostic_hold import HoldCoordinator, PROPERTIES, corroborate_host_hold
 from ws73_ssap_initialization import SEQUENCE_QEMU_SHA256
 from ws73_ssap_owned import publisher, wait_text, value_snapshot, await_removed
@@ -80,8 +80,35 @@ def requested(args, *, passthrough):
 
 
 def validate_qemu(path):
-    if hashlib.sha256(Path(path).read_bytes()).hexdigest() != SEQUENCE_QEMU_SHA256:
-        raise ValueError('exact existing bounded2s real-IN81 QEMU required')
+    digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    if digest != CURRENT_QEMU_SHA256:
+        raise ValueError('exact current bounded2s real-IN81 QEMU required')
+    return digest
+
+
+def current_fixture(digest):
+    if digest != CURRENT_QEMU_SHA256:
+        raise ValueError('validated current bounded2s binary identity required')
+    return dict(version=1, qemu_sha256=digest, hold_budget_ms=2000,
+                kind='ORIGINAL_SUCCESSFUL_IN81_NO_PROTOCOL_MATCHER')
+
+
+def valid_fixture_record(record):
+    """Historical receipts stay historical; new execution has no hash fallback.
+
+    Source review found identical clear/release/timer/arm functions. The old
+    sequence fixture has optional protocol matchers; current usage retains the
+    original IN81 bytes and still requires independent ACK/disable witnesses.
+    Neither this identity contract nor a model is real hold/delivery evidence.
+    """
+    digest = record.get('qemu_sha256')
+    if digest == SEQUENCE_QEMU_SHA256:
+        return 'fixture' not in record
+    value = record.get('fixture')
+    return (digest == CURRENT_QEMU_SHA256 and isinstance(value, dict)
+            and type(value.get('version')) is int
+            and type(value.get('hold_budget_ms')) is int
+            and value == current_fixture(digest))
 
 
 def selection(row, item, start):
@@ -168,11 +195,11 @@ def selection_bytes(path,share):
 class Coordinator:
     def __init__(self, share, output, record, qemu,*,purpose='deadline'):
         if purpose not in HOLD_METHODS:raise CaptureError('fixed hold purpose required')
-        validate_qemu(qemu)
+        digest = validate_qemu(qemu)
         self.method=HOLD_METHODS[purpose]
         self.share=Path(share);self.root=self.share/'application/passthrough-control/sender-deadline-hold'
         self.output=Path(output);self.record=record;self.child=None;self.used=[]
-        record.update(method=self.method,qemu_sha256=SEQUENCE_QEMU_SHA256,phases=[],complete=False,
+        record.update(method=self.method,qemu_sha256=digest,fixture=current_fixture(digest),phases=[],complete=False,
                       physical_acceptance=False,automatic_fault_recovery_acceptance=False)
 
     def poll(self, monitor, owner):
@@ -473,7 +500,7 @@ def corroborate_holds(record,control,capture,stderr,*,cases=None,purpose='deadli
     if purpose not in HOLD_METHODS:raise CaptureError('fixed hold proof purpose required')
     method=HOLD_METHODS[purpose]
     if (record.get('method')!=method or record.get('complete')is not True
-            or record.get('qemu_sha256')!=SEQUENCE_QEMU_SHA256 or len(record.get('phases',[]))!=2):
+            or not valid_fixture_record(record) or len(record.get('phases',[]))!=2):
         raise CaptureError('two original bounded hold phases required')
     rows=[];sdus=reassemble_acb(capture)
     if cases is None:cases=[row[FIELD][0]['case']for row in control['channel_socket']]
@@ -551,7 +578,7 @@ def valid_hold_summary(record,proof,*,purpose='deadline'):
     try:
         if purpose not in HOLD_METHODS:return False
         method=HOLD_METHODS[purpose]
-        if (record['method']!=method or record['qemu_sha256']!=SEQUENCE_QEMU_SHA256
+        if (record['method']!=method or not valid_fixture_record(record)
                 or record['complete']is not True or record['physical_acceptance']is not False
                 or record['automatic_fault_recovery_acceptance']is not False
                 or len(record['phases'])!=2 or len(proof['phases'])!=2

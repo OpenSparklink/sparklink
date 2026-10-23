@@ -349,8 +349,10 @@ class SenderDeadline(unittest.TestCase):
             def execute(self,command,args):
                 slot=int(args['path'].rsplit('_',1)[1]);calls.append((slot,command,args['property']))
                 return self.monitors[slot].execute(command,args|dict(path='/machine/peripheral/ws73_0'))
-        with tempfile.TemporaryDirectory()as folder,patch.object(gate,'validate_qemu'):
+        with tempfile.TemporaryDirectory()as folder,patch.object(gate,'validate_qemu',return_value=gate.CURRENT_QEMU_SHA256):
             root=Path(folder);record={};c=gate.Coordinator(root,root,record,'fixture');m=Routed()
+            self.assertEqual(record['qemu_sha256'],gate.CURRENT_QEMU_SHA256)
+            self.assertEqual(record['fixture'],gate.current_fixture(gate.CURRENT_QEMU_SHA256))
             selected=c.root/'phase-0';selected.mkdir(parents=True)
             write_marker(selected/'selection.json',value);write_marker(selected/'hold-arm_ready.json',dict(hold_phase='arm_ready',wall_ns=1))
             c.poll(m,lambda slot:dict(bus=1,address=100+slot))
@@ -382,6 +384,18 @@ class SenderDeadline(unittest.TestCase):
             physical_acceptance=False,automatic_fault_recovery_acceptance=False,phases=phases)
         proof=dict(status='TWO_ORIGINAL_AUTHOR_DEADLINE_LATE_ACK_HOLDS_CORROBORATED',phases=proofs)
         self.assertTrue(gate.valid_hold_summary(record,proof))
+        current=copy.deepcopy(record)
+        current.update(qemu_sha256=gate.CURRENT_QEMU_SHA256,
+                       fixture=gate.current_fixture(gate.CURRENT_QEMU_SHA256))
+        self.assertTrue(gate.valid_hold_summary(current,proof))
+        for mutate in [lambda r:r.pop('fixture'),
+                       lambda r:r['fixture'].update(version=True),
+                       lambda r:r['fixture'].update(hold_budget_ms=8000),
+                       lambda r:r['fixture'].update(kind='SYNTHETIC_ACK'),
+                       lambda r:r['fixture'].update(qemu_sha256=gate.SEQUENCE_QEMU_SHA256),
+                       lambda r:r.update(qemu_sha256=gate.SEQUENCE_QEMU_SHA256)]:
+            bad=copy.deepcopy(current);mutate(bad)
+            self.assertFalse(gate.valid_hold_summary(bad,proof))
         for mutate in [lambda r:r['phases'].pop(),lambda r:r.update(complete=False),
             lambda r:r.update(qemu_sha256='0'*64),lambda r:r['phases'][0]['live_witness'].pop('ack_tx'),
             lambda r:r['phases'][0]['live_observations'][0].pop('sha256'),
@@ -389,3 +403,10 @@ class SenderDeadline(unittest.TestCase):
             lambda r:r['phases'][0]['observations'][2]['state'].update({'test-runtime-in-bounded-releases':1})]:
             bad=copy.deepcopy(record);mutate(bad);self.assertFalse(gate.valid_hold_summary(bad,proof))
         self.assertFalse(gate.valid_hold_summary(record,dict(status=proof['status'],phases=[])))
+
+    def test_current_fixture_contract_does_not_accept_legacy_or_unknown_execution(self):
+        for digest in (gate.SEQUENCE_QEMU_SHA256,'0'*64,None):
+            with self.assertRaises(ValueError):gate.current_fixture(digest)
+        self.assertTrue(gate.valid_fixture_record(dict(qemu_sha256=gate.SEQUENCE_QEMU_SHA256)))
+        self.assertFalse(gate.valid_fixture_record(dict(qemu_sha256=gate.CURRENT_QEMU_SHA256)))
+        self.assertFalse(gate.valid_fixture_record(dict(qemu_sha256='0'*64)))

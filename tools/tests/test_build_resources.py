@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Resource policy and real OS lock exclusion; no compiler or device access."""
 from pathlib import Path
+import json
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -82,6 +84,74 @@ class BuildResources(unittest.TestCase):
             finally:
                 child.communicate('finish\n', timeout=5)
             with build.build_lock(): pass
+
+    def test_busy_observation_preserves_inode_metadata_and_exclusion(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(build, 'workspace', return_value=Path(directory)):
+            path = Path(directory) / '.dev/main-build.lock'
+            with build.build_lock() as fd:
+                inode = path.stat().st_ino
+                original = path.read_bytes()
+                metadata = json.loads(original)
+                self.assertEqual(metadata['supervisor_pid'], build.os.getpid())
+                self.assertNotIn('command', metadata)
+                self.assertNotIn('environment', metadata)
+                with self.assertRaises(build.BuildLockBusy) as busy:
+                    with build.build_lock(): self.fail('occupied lock admitted')
+                self.assertFalse(busy.exception.observation['metadata_authoritative'])
+                self.assertEqual(busy.exception.observation['last_acquisition'], metadata)
+                self.assertEqual(path.read_bytes(), original)
+                self.assertEqual(path.stat().st_ino, inode)
+                self.assertEqual(build.os.fstat(fd).st_ino, inode)
+            # Old text is not a lock: reuse the exact same inode, never unlink.
+            with build.build_lock(): self.assertEqual(path.stat().st_ino, inode)
+
+    def test_invalid_metadata_and_unavailable_proc_do_not_bypass_real_lock(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(build, 'workspace', return_value=Path(directory)):
+            path = Path(directory) / '.dev/main-build.lock'
+            with build.build_lock() as fd:
+                build.os.ftruncate(fd, 0)
+                build.os.write(fd, b'not JSON')
+                real_open = Path.open
+                def restricted_open(path, *args, **kwargs):
+                    if str(path) == '/proc/locks':
+                        raise PermissionError('namespace fixture')
+                    return real_open(path, *args, **kwargs)
+                with patch.object(Path, 'open', restricted_open):
+                    with self.assertRaises(build.BuildLockBusy) as busy:
+                        with build.build_lock(): self.fail('invalid text bypassed flock')
+                self.assertEqual(busy.exception.observation['last_acquisition'], 'unavailable_or_invalid')
+                self.assertEqual(busy.exception.observation['kernel_lock_rows_unavailable'], 'PermissionError')
+            with build.build_lock(): self.assertEqual(json.loads(path.read_text())['schema_version'], 1)
+
+    def test_exited_supervisor_metadata_does_not_release_inherited_lock(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(build, 'workspace', return_value=Path(directory)):
+            root = Path(directory)
+            release = root/'release-child'
+            child_code = ('from pathlib import Path;import time\n'
+                          f'p=Path({str(release)!r});end=time.monotonic()+5\n'
+                          'while not p.exists() and time.monotonic()<end: time.sleep(0.01)\n')
+            script = ('import sys,subprocess\nfrom pathlib import Path\n'
+                      f'sys.path.insert(0,{str(Path(build.__file__).parent)!r})\n'
+                      f'import build_resources as b;b.workspace=lambda:Path({directory!r})\n'
+                      'with b.build_lock() as fd:\n'
+                      f' subprocess.Popen([sys.executable,"-c",{child_code!r}],pass_fds=(fd,),'
+                      'stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)\n')
+            supervisor = subprocess.run([sys.executable, '-c', script], timeout=3, check=True)
+            self.assertEqual(supervisor.returncode, 0)
+            try:
+                with self.assertRaises(build.BuildLockBusy) as busy:
+                    with build.build_lock(): self.fail('exited supervisor caused premature admission')
+                self.assertFalse(busy.exception.observation['metadata_authoritative'])
+                self.assertEqual(busy.exception.observation['last_acquisition']['entrypoint'], '-c')
+            finally:
+                release.touch()
+            deadline = time.monotonic()+3
+            while True:
+                try:
+                    with build.build_lock(): break
+                except build.BuildLockBusy:
+                    if time.monotonic() >= deadline: self.fail('child did not release real flock')
+                    time.sleep(0.01)
 
 
 if __name__ == '__main__': unittest.main()

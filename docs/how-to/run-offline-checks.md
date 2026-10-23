@@ -31,6 +31,12 @@ python3 tools/build_resources.py --record "$NEW_BUILD_RECORD" -- cargo +1.96.1 c
 锁被其它构建占用时，等待其结束再重做，不能另开绕过锁的12路构建。历史冻结脚本
 不受新锁保护，运行它们时须自行串行；不要把已接入的根 Makefile 再套一层 wrapper。
 
+占用错误附带同一锁文件的 device/inode、最后一次获取的 supervisor PID、启动身份和
+可见内核锁表。记录不包含命令参数或环境；PID namespace 或权限可能使持锁者不可见。
+这些都是诊断线索，不能据此释放锁：子进程继承的 fd 可在 supervisor 退出后继续持锁，
+而旧元数据也可留在已经释放的文件中。不要删除或重建锁文件，也不要仅凭 PID 消失
+终止其他任务；真正的准入条件仍是对原 inode 成功取得 `flock`。
+
 内核编译使用已配置的固定开发 `O=` 目录，例如本工作区
 `.dev/session-wake-kernel-build-v1`；每次源码提交不更换路径。直接内核 make 可用：
 

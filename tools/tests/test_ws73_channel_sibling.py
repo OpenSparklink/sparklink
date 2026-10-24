@@ -87,14 +87,17 @@ class SiblingGate(unittest.TestCase):
         here=Path(gate.__file__).parent
         with tempfile.TemporaryDirectory()as tmp:
             root=Path(tmp);tools=root/'root/usr/share/sparklink/tools';tools.mkdir(parents=True)
-            names=['ws73_channel_sibling.py','ws73_native_pair.py','ws73_channel_grant.py','ws73_connected_file_gate.py','ws73_channel_prefix_hold.py','ws73_target.py','ws73_target_init.sh']
+            names=['ws73_channel_sibling.py','ws73_native_pair.py','ws73_channel_grant.py','ws73_connected_file_gate.py','ws73_channel_prefix_hold.py']
             for n in names:(tools/n).write_bytes((here/n).read_bytes())
             init=root/'root/init';init.write_bytes((here/'ws73_target_init.sh').read_bytes());init.chmod(0o755)
-            gate.require_preparation(dict(channel_sibling_business_contract_version=1),root)
+            package=dict(channel_sibling_business_contract_version=1,inputs=[gate.file_record(here/'ws73_target.py')])
+            gate.require_preparation(package,root)
+            with self.assertRaisesRegex(ValueError,'host runner'):
+                gate.require_preparation(dict(package,inputs=[]),root)
             for value in(None,True,2):
                 with self.assertRaises(ValueError):gate.require_preparation(dict(channel_sibling_business_contract_version=value),root)
             init.chmod(0o644)
-            with self.assertRaisesRegex(ValueError,'executable'):gate.require_preparation(dict(channel_sibling_business_contract_version=1),root)
+            with self.assertRaisesRegex(ValueError,'executable'):gate.require_preparation(package,root)
         p=subprocess.run([sys.executable,str(here/'ws73_target.py'),'run','--help'],capture_output=True,text=True)
         self.assertEqual(p.returncode,0);self.assertIn('--managed-channel-sibling-business',p.stdout)
 

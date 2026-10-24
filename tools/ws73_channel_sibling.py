@@ -54,8 +54,10 @@ def require_preparation(package,path):
     if type(package.get('channel_sibling_business_contract_version'))is not int or package['channel_sibling_business_contract_version']!=1:
         raise ValueError('sibling business requires fresh explicit preparation contract1')
     here=Path(__file__).resolve().parent
-    for name in ['ws73_channel_sibling.py','ws73_native_pair.py','ws73_channel_grant.py','ws73_connected_file_gate.py','ws73_channel_prefix_hold.py','ws73_target.py','ws73_target_init.sh']:
+    for name in ['ws73_channel_sibling.py','ws73_native_pair.py','ws73_channel_grant.py','ws73_connected_file_gate.py','ws73_channel_prefix_hold.py']:
         if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(here/name)['sha256']:raise ValueError('sibling preparation/source mismatch: '+name)
+    if file_record(here/'ws73_target.py') not in package.get('inputs',[]):
+        raise ValueError('sibling preparation requires the exact host runner input')
     entry=path/'root/init'
     if entry.is_symlink()or not entry.is_file()or not entry.stat().st_mode&0o111 or file_record(entry)['sha256']!=file_record(here/'ws73_target_init.sh')['sha256']:
         raise ValueError('sibling business requires current executable VM init')

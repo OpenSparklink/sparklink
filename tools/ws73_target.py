@@ -222,7 +222,13 @@ def prepare_from_carrier(args):
         # The current test entry point is source,not part of the frozen Rust ELF.
         shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
         inputs.append(file_record(HERE/'ws73_target_init.sh'))
-        for path in sorted((root / 'usr/share/sparklink/tools').glob('*.py')):
+        tool_root = root / 'usr/share/sparklink/tools'
+        # Existing carriers predate these shared fixture helpers. A fresh
+        # preparation must stage the new dependency closure, not just refresh
+        # filenames already present in the retained root.
+        paths = set(tool_root.glob('*.py')) | {tool_root / name for name in
+            ('ws73_native_pair.py', 'ws73_channel_sibling.py')}
+        for path in sorted(paths):
             client = native_vm.STAGED_PYTHON_CLIENTS.get(path.name)
             current = HERE / (client if client is not None else path.name)
             if not current.is_file():

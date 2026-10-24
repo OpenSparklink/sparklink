@@ -31,7 +31,7 @@ class DeadlineCoordinator(HoldCoordinator):
         super().poll(monitor)
 
 
-def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect):
+def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect,*,sibling=None):
     i=r['index'];p=1-i;folder=Path('/evidence/channel-deadline');folder.mkdir(exist_ok=False)
     row=dict(status='STARTING',markers=[],acks=[],ack_receipts=[],management_before=[bytes(a.management_status()).hex() for a in observers],links_before=[bytes(a.link_snapshot()).hex() for a in observers],ready_before=[bytes(a.snapshot()).hex() for a in observers])
     r['data_deadline']=row;save()
@@ -52,13 +52,16 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,s
         row['primed']=True;grant.prime(count);stage('wait_held','held')
     grant.arm(sample_before_block=True)
     if not count:stage('wait_held','held')
+    if sibling:sibling.exchange('while_held')
     row['blocked_result']=receive(grant.parents[i]);row['timeout_observed_wall_ns']=time.time_ns();save()
     marker=b'DEADLINE'+secrets.token_bytes(32);send(grant.parents[i],dict(kind='deny',marker=marker.hex()));row['old_fd_before_release']=receive(grant.parents[i]);save()
     row['management_at_timeout']=[bytes(a.management_status()).hex() for a in observers]
     row['links_at_timeout']=[bytes(a.link_snapshot()).hex() for a in observers]
     row['ready_at_timeout']=[bytes(a.snapshot()).hex() for a in observers];save()
+    if sibling:sibling.exchange('after_deadline')
     stage('release_ready','released');time.sleep(.15)
     send(grant.parents[i],dict(kind='deny',marker=marker.hex()));row['old_fd_after_release']=receive(grant.parents[i]);row['post_release_checked_wall_ns']=time.time_ns();save()
+    if sibling:sibling.exchange('after_late_reply')
     # Physical link was not a fabricated timeout. End it explicitly for cleanup.
     link=decode(SleLinkSnapshot,row['links_at_timeout'][i]).links[0]
     req=bound_disconnect(snapshots[i],link,950);row['cleanup_disconnect_input']=bytes(req).hex();row['cleanup_before_wall_ns']=time.time_ns();writers[i].submit_connection(req)
@@ -74,6 +77,7 @@ def exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,s
     for identifier,op in [(104,2),(105,3),(106,4)]:
         request=standby(snapshots[p],identifier,'scanning') if op==3 else stop(snapshots[p],identifier,op);request.operation=op;discover(p,request)
     row['scan_checked_wall_ns']=time.time_ns()
+    if sibling:sibling.finish()
     for n in [i,p]:writers[n].release_management(leases[n],1)
     row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers];row['status']='ACTUAL_ORIGINAL_DEADLINE_PASS';r.update(status='DATA_DEADLINE_PASS',end_wall_ns=time.time_ns())
     try:verify(r)

@@ -412,14 +412,16 @@ C输出包含32条完整十六进制收发记录，版本3的每stdout/stderr预
 离线夹具使用生产receipt与credit观察函数，但USB形状和调度为fixture，
 不属于真实内核并发或空口资格。当前实现需在准确新编译artifact上另行VM实测。
 
-## 同内核的 Managed 撤权与同行业务
+## 同内核的撤权、断链、原期限与同行业务
 
 开发入口 `--managed-channel-sibling-business` 只接受独立的
 `--setup-release-verify --managed-connected-case close --managed-connected-index 0
 --managed-channel-grant --managed-channel-revoke-prefix` 组合。要求新准备清单的
-`channel_sibling_business_contract_version=2`、当前可执行 init 及一致的 helper hash。
-它使用本线程四个明确叶端口；不与 QMP hotplug 测试、daemon、benchmark、安全、Down、
-期限、queued-discard 或 Session 追踪组合。其中 case 必须显式选择 release、close 或 dup；其他 case／index 明确拒绝，不能由入口推导资格。
+`channel_sibling_business_contract_version=3`、当前可执行 init 及一致的 helper hash。
+它使用本线程四个明确叶端口；不与 QMP hotplug 测试、daemon、benchmark、安全、
+queued-discard 或 Session 追踪组合。其中 case 必须显式选择 release、close 或 dup；
+release 还可单独选择 `--managed-channel-link-down` 或 `--managed-channel-deadline`。
+两种 transition 互斥，也不能与 close／dup 混用；其他 case／index 明确拒绝。
 
 这是同一实验内核中、daemon 启动前的 Native 机制门禁。0／1 为原受控组，2／3 为
 独立业务组；controller ID 来自明确选择的真实快照，不能使用组内端点号或枚举顺序替代。
@@ -429,8 +431,15 @@ HCC 型号／总线和实际地址；需要 E 临时地址时仍须保存、设�
 
 dup 还要求第一次关闭管理 fd 后、最终关闭前，原 owner 保持、原物理连接未断，独立组实际双向回复；
 最后一次关闭仍须命中原受控屏障，不能把第一次 close 当成撤权。release／close 各六次同行往返，
-dup 八次，逐条关联原 worker、载荷和双端 USB。旧 contract1 的 R143 仅保留原 release0 资格；
-新 contract2 的实现与准确产物实测分别记录，不能把改名或扩展入口当作验收。
+dup 八次，逐条关联原 worker、载荷和双端 USB。旧 contract1 的 R143 和 contract2 的 R144
+保留原源码及限定资格；新 contract3 的实现与准确产物实测分别记录，不能由扩展入口推导通过。
+
+Down 沿用两秒真实 IN81 屏障，在原阻塞见证后、真实 Disconnect 前完成同行往返；
+双端 Down 和旧 fd 拒绝后再完成同行往返，共六次。原租约仍保持，不能称为 Managed 撤权。
+原期限使用独立八秒 fixture，PDU 原期限仍为五秒；在实际超时前、超时后但释放 held IN 前、
+实际释放后各做双向同行业务，加上建立后的基线共八次。释放后的阶段还须在主连接清理前完成。
+每个阶段与 guest 因果时间窗、原始回复、USB 两端证据绑定；过晚结果或自动有界释放一律失败，
+不延长协议期限。这些有限阶段不等于连续五秒满负载隔离、NOCP 硬件准确性或完整 drain 证明。
 
 门禁要求实际持有回复期间、以及目标 Managed 撤权后，独立组分别完成双向随机载荷
 校验回复，保留原 fd／lease／generation／lifetime 和原物理连接；复用双端 USB 校验。

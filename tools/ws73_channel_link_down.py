@@ -15,7 +15,7 @@ from ws73_management_setup import decode, setup, query
 from sparklink.structs import SleConnectionSubmit, SleConnectionResult, SleLinkSnapshot, SleControllerSnapshot
 
 
-def exercise(r, save, grant, observers, writers, snapshots, leases, discover, outcomes, standby, stop, bound_disconnect):
+def exercise(r, save, grant, observers, writers, snapshots, leases, discover, outcomes, standby, stop, bound_disconnect, *, sibling=None):
     i=r['index'];p=1-i
     row=dict(status='STARTING',management_before=[bytes(a.management_status()).hex() for a in observers],
              links_before=[bytes(a.link_snapshot()).hex() for a in observers],
@@ -25,6 +25,7 @@ def exercise(r, save, grant, observers, writers, snapshots, leases, discover, ou
     # The explicit Disconnect below does NOT revoke either Managed epoch.
     from ws73_channel_prefix_hold import PrefixBarrier
     barrier=PrefixBarrier(r,save);barrier.arm(grant,prime=True)
+    if sibling:sibling.exchange('while_held')
     link=decode(SleLinkSnapshot,row['links_before'][i]).links[0]
     request=bound_disconnect(snapshots[i],link,950)
     row.update(input=bytes(request).hex(),submit_before_wall_ns=time.time_ns());save()
@@ -46,12 +47,14 @@ def exercise(r, save, grant, observers, writers, snapshots, leases, discover, ou
     row['links_after']=[bytes(a.link_snapshot()).hex() for a in observers]
     row['management_after']=[bytes(a.management_status()).hex() for a in observers]
     row['ready_after']=[bytes(a.snapshot()).hex() for a in observers];save()
+    if sibling:sibling.exchange('after_down')
     # Physical link loss affects its peer, but cannot remove the peer's lease
     # or its independent controller-level scan capability.
     for identifier,operation in [(104,2),(105,3),(106,4)]:
         req=standby(snapshots[p],identifier,'scanning') if operation==3 else stop(snapshots[p],identifier,operation)
         req.operation=operation;discover(p,req)
     row['scan_checked_wall_ns']=time.time_ns()
+    if sibling:sibling.finish()
     for n in [i,p]:writers[n].release_management(leases[n],1)
     row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers]
     row.update(status='ACTUAL_LINK_DOWN_PASS',end_wall_ns=time.time_ns())

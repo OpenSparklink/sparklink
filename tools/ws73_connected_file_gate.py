@@ -351,7 +351,7 @@ def run(args):
     channel_gate=getattr(args,'channel_grant',False)
     if sibling_requested and (args.case not in ('release','close','dup')or args.index!=0 or not channel_gate or reply_hold
             or any(getattr(args,k,False)for k in ['link_snapshot','peer_binding','channel_scm_rights','channel_directions'])
-            or any(v.startswith(('ws73.channel_link_down=','ws73.channel_deadline=','ws73.channel_security=','ws73.channel_queued_discard=','ws73.session_service='))for v in Path('/proc/cmdline').read_text().split())):
+            or any(v.startswith(('ws73.channel_security=','ws73.channel_queued_discard=','ws73.session_service='))for v in Path('/proc/cmdline').read_text().split())):
         raise ValueError('sibling business supports standalone basic File index0 prefix only')
     protected=int(next((v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.channel_security=')), '0'))
     if protected not in (0,1,2):raise ValueError('unknown protected lifecycle requirement')
@@ -499,7 +499,7 @@ def run(args):
             grant.exchange('before')
             if sibling_requested:
                 from ws73_channel_sibling import Sibling
-                sibling=Sibling(r,save,args.output)
+                sibling=Sibling(r,save,args.output,transition='deadline'if data_deadline else'down'if link_down else'withdrawal')
             if idle_observer:idle_observer.idle(grant)
             if capabilities:
                 if numeric:r['numeric_comparison']=numeric
@@ -513,12 +513,12 @@ def run(args):
                 return
             if data_deadline:
                 from ws73_channel_deadline import exercise
-                exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect)
+                exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect,sibling=sibling)
                 grant.close();grant=None
                 return
             if link_down:
                 from ws73_channel_link_down import exercise
-                exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect)
+                exercise(r,save,grant,observers,writers,snapshots,leases,discover,outcomes,standby,stop,bound_disconnect,sibling=sibling)
                 grant.close();grant=None
                 return
         r['before_snapshots']=[bytes(a.snapshot()).hex() for a in observers]
@@ -615,6 +615,6 @@ if __name__=='__main__':
     parser.add_argument('--channel-scm-rights',action='store_true',help='transfer native channel fd after ordinary worker closes inherited authority')
     parser.add_argument('--channel-directions',action='store_true',help='real TX-only to RX-only scope, forbidden actions and protected request rejection')
     parser.add_argument('--channel-grant',action='store_true',help='ordinary duplicated sockets and witnessed blocking RX across actual control withdrawal')
-    parser.add_argument('--sibling-business',action='store_true',help='explicit same-kernel four-controller Native release0 prefix and independent ordinary sibling business')
+    parser.add_argument('--sibling-business',action='store_true',help='explicit same-kernel four-controller Native File/Down/deadline index0 prefix and independent ordinary sibling business')
     parser.add_argument('--output',type=Path,required=True)
     run(parser.parse_args())

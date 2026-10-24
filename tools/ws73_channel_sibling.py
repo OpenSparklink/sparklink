@@ -23,26 +23,73 @@ from ws73_diagnostic_hold import write_marker
 from ws73_north_star import file_record
 
 TOKEN='ws73.channel_sibling_business=1'
-STATUS='ACTUAL_NATIVE_WITHDRAWAL_WITH_SIBLING_BUSINESS_CORROBORATED'
+STATUS='ACTUAL_NATIVE_TRANSITION_WITH_SIBLING_BUSINESS_CORROBORATED'
 LABELS=('before_hold','while_held','after_withdrawal')
-CONTRACT_VERSION=2
+CONTRACT_VERSION=3
 
 
-def stage_labels(case):
-    if case not in ('release','close','dup'):raise ValueError('explicit Native File case required')
+def transition_flags(case,down=False,deadline=False):
+    if case not in ('release','close','dup')or type(down)is not bool or type(deadline)is not bool or (down and deadline)or ((down or deadline)and case!='release'):
+        raise ValueError('one explicit Native transition required')
+    return 'deadline'if deadline else'down'if down else'withdrawal'
+
+
+def stage_labels(case,transition='withdrawal'):
+    if transition not in ('withdrawal','down','deadline'):
+        raise ValueError('explicit Native transition required')
+    transition_flags(case,transition=='down',transition=='deadline')
+    if transition=='deadline':return ('before_hold','while_held','after_deadline','after_late_reply')
+    if transition=='down':return ('before_hold','while_held','after_down')
     return (LABELS[0],*(['after_first_control_close']if case=='dup'else[]),*LABELS[1:])
+
+
+def phase_bounds(outer):
+    transition=transition_flags(outer['case'],'data_link_down'in outer,'data_deadline'in outer)
+    samples=outer['channel_grant']['blocking_witness']
+    bounds=dict(before_limit=samples[0]['wall_ns'],held_start=samples[-1]['wall_ns'],
+        after_end=outer['sibling_business']['cleanup'][0]['start_wall_ns'])
+    if transition=='down':
+        d=outer['data_link_down'];bounds.update(held_end=d['submit_before_wall_ns'],after_start=d['checks_after_wall_ns'])
+    elif transition=='deadline':
+        d=outer['data_deadline'];bounds.update(held_start=max(bounds['held_start'],d['ack_receipts'][1]['wall_ns']),
+            held_end=d['blocked_result']['end_wall_ns'],after_start=d['timeout_observed_wall_ns'],
+            after_end=d['markers'][2]['wall_ns'],late_start=d['post_release_checked_wall_ns'],late_end=d['cleanup_before_wall_ns'])
+    else:
+        bounds.update(held_end=outer['release_before_wall_ns'],after_start=outer['release_after_wall_ns'])
+        if outer['case']=='dup':bounds.update(first_close=outer['first_close_wall_ns'],first_close_checked=outer['first_close_quiet_end_ns'])
+    return bounds
+
+
+def verify_stage_order(case,transition,business,bounds):
+    labels=stage_labels(case,transition)
+    if len(business)!=2*len(labels):raise CaptureError('complete sibling stage matrix required')
+    stages={label:business[2*i:2*i+2]for i,label in enumerate(labels)}
+    before,held,after=[stages[label]for label in ('before_hold','while_held',labels[-2]if transition=='deadline'else labels[-1])]
+    if not(before[-1]['end_wall_ns']<bounds['before_limit']<=bounds['held_start']<held[0]['start_wall_ns']
+        and held[-1]['end_wall_ns']<bounds['held_end']<=bounds['after_start']<after[0]['start_wall_ns']
+        and after[-1]['end_wall_ns']<bounds['after_end']):
+        raise CaptureError('actual sibling business must straddle the original controlled transition')
+    if transition=='deadline':
+        late=stages['after_late_reply']
+        if not bounds['after_end']<bounds['late_start']<late[0]['start_wall_ns']<=late[-1]['end_wall_ns']<bounds['late_end']:
+            raise CaptureError('actual sibling business must follow late reply release before cleanup')
+    if case=='dup':
+        first=stages['after_first_control_close']
+        if not(before[-1]['end_wall_ns']<bounds['first_close']<=bounds['first_close_checked']<first[0]['start_wall_ns']<=first[-1]['end_wall_ns']<bounds['before_limit']):
+            raise CaptureError('actual sibling replies after first dup close must precede the final-close barrier')
 
 
 def requested(args):
     value=getattr(args,'managed_channel_sibling_business',False)
     if type(value)is not bool:raise ValueError('boolean Native sibling request required')
+    if value:transition_flags(getattr(args,'managed_connected_case',None),getattr(args,'managed_channel_link_down',False),getattr(args,'managed_channel_deadline',False))
     if value and (getattr(args,'command',None)!='run'or getattr(args,'managed_connected_case',None)not in ('release','close','dup')
             or type(getattr(args,'managed_connected_index',0))is not int or getattr(args,'managed_connected_index',0)!=0
             or getattr(args,'managed_channel_grant',False)is not True
             or getattr(args,'managed_channel_revoke_prefix',False)is not True or getattr(args,'setup_release_verify',False)is not True
-            or any(getattr(args,k,False)for k in ['qmp_hotplug','fault_recovery','managed_channel_queued_discard','session_service_observe','managed_channel_idle_observe','managed_channel_security','managed_channel_scm_rights','managed_channel_directions','managed_channel_link_down','managed_channel_deadline','managed_security_capabilities','managed_link_snapshot','managed_peer_binding','parallel_pairs','four_device_business','four_device_dynamic_benchmark','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription','connection_verify'])
+            or any(getattr(args,k,False)for k in ['qmp_hotplug','fault_recovery','managed_channel_queued_discard','session_service_observe','managed_channel_idle_observe','managed_channel_security','managed_channel_scm_rights','managed_channel_directions','managed_security_capabilities','managed_link_snapshot','managed_peer_binding','parallel_pairs','four_device_business','four_device_dynamic_benchmark','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription','connection_verify'])
             or getattr(args,'managed_connected_reply',None)):
-        raise ValueError('sibling business supports dedicated basic release/close/dup index0 prefix only')
+        raise ValueError('sibling business supports dedicated basic File/Down/deadline index0 prefix only')
     return value
 
 
@@ -55,14 +102,20 @@ def boot_enabled(words):
     for word in ['ws73.channel_grant=1','ws73.channel_revoke_prefix=1','ws73.connected_case='+cases[0],'ws73.connected_index=0']:
         key=word.split('=')[0]
         if[w for w in words if w==key or w.startswith(key+'=')]!=[word]:raise ValueError('standalone index0 real-prefix sibling mode required')
+    flags=[]
+    for key in ('ws73.channel_link_down','ws73.channel_deadline'):
+        values=[w for w in words if w==key or w.startswith(key+'=')]
+        if values not in ([],[key+'=1']):raise ValueError('one explicit transition boot token required')
+        flags.append(bool(values))
+    transition_flags(cases[0],*flags)
     return True
 
 
 def require_preparation(package,path):
     if type(package.get('channel_sibling_business_contract_version'))is not int or package['channel_sibling_business_contract_version']!=CONTRACT_VERSION:
-        raise ValueError('sibling business requires fresh explicit preparation contract2')
+        raise ValueError('sibling business requires fresh explicit preparation contract3')
     here=Path(__file__).resolve().parent
-    for name in ['ws73_channel_sibling.py','ws73_native_pair.py','ws73_channel_grant.py','ws73_connected_file_gate.py','ws73_channel_prefix_hold.py']:
+    for name in ['ws73_channel_sibling.py','ws73_native_pair.py','ws73_channel_grant.py','ws73_connected_file_gate.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py']:
         if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(here/name)['sha256']:raise ValueError('sibling preparation/source mismatch: '+name)
     if file_record(here/'ws73_target.py') not in package.get('inputs',[]):
         raise ValueError('sibling preparation requires the exact host runner input')
@@ -72,10 +125,11 @@ def require_preparation(package,path):
 
 
 class Sibling:
-    def __init__(self,outer,save,folder):
+    def __init__(self,outer,save,folder,transition='withdrawal'):
         self.save=save;self.outer=outer;self.folder=Path(folder)/'sibling';self.folder.mkdir()
         self.handles=[];self.gate=None;self.closed=False
-        self.row=dict(version=CONTRACT_VERSION,case=outer['case'],status='STARTING',controller_ids=[2,3],index=0,initial_snapshots=[],usb=[],events=[[],[]],discovery=[],leases=[],hcc_observations=[])
+        stage_labels(outer['case'],transition)
+        self.row=dict(version=CONTRACT_VERSION,case=outer['case'],transition=transition,status='STARTING',controller_ids=[2,3],index=0,initial_snapshots=[],usb=[],events=[[],[]],discovery=[],leases=[],hcc_observations=[])
         outer['sibling_business']=self.row;save()
         self.observers=[];self.snapshots=[];self.writers=[]
         try:
@@ -135,7 +189,7 @@ class Sibling:
     def drain(self):drain_events(self.observers,self.row)
     def discover(self,n,request):discovery_operation(self.writers,self.observers,self.row,self.save,self.drain,n,request)
     def exchange(self,label):
-        if label not in stage_labels(self.row['case']):raise ValueError('explicit bounded sibling stage required')
+        if label not in stage_labels(self.row['case'],self.row['transition']):raise ValueError('explicit bounded sibling stage required')
         self.gate.exchange(label);self.save()
 
     def finish(self):
@@ -170,10 +224,12 @@ class Sibling:
 
 def verify(outer):
     row=outer['sibling_business'];g=row['channel_grant']
-    labels=stage_labels(outer['case'])
+    transition=transition_flags(outer['case'],'data_link_down'in outer,'data_deadline'in outer)
+    labels=stage_labels(outer['case'],transition)
+    if row.get('transition')!=transition:raise CaptureError('sibling transition must match actual primary record')
     if row.get('version')!=CONTRACT_VERSION or type(row['version'])is not int or row.get('case')!=outer['case']or row['status']!='SIBLING_NATIVE_BUSINESS_CONTINUITY_PASS'or checked_controller_ids(row['controller_ids'])!=[2,3]:raise CaptureError('complete actual sibling Native pair required')
     if len(g['owners'])!=2 or len(g['workers'])!=2 or len(g['business'])!=2*len(labels):raise CaptureError('complete two-endpoint sibling matrix required')
-    if type(outer['index'])is not int or outer['index']!=0 or outer.get('daemon_running')is not False or 'prefix_hold'not in outer:raise CaptureError('dedicated pre-daemon index0 prefix gate required')
+    if type(outer['index'])is not int or outer['index']!=0 or outer.get('daemon_running')is not False or ('data_deadline'if transition=='deadline'else'prefix_hold')not in outer:raise CaptureError('dedicated pre-daemon index0 prefix gate required')
     if row['management_before']!=row['management_after']or row['links_before']!=row['links_after']:raise CaptureError('same sibling files/links must remain live through withdrawal')
     if len(row['initial_snapshots'])!=2 or len(row['hcc_observations'])!=2 or len(row['cleanup'])!=2:raise CaptureError('complete sibling identity/HCC/cleanup matrix required')
     for n,index in enumerate((2,3)):
@@ -191,14 +247,7 @@ def verify(outer):
     if[g['owners'][n]['index']for n in range(2)]!=[2,3]or g.get('controller_ids')!=[2,3]or [x['label']for x in g['business']]!=[label for label in labels for _ in range(2)]:raise CaptureError('all original bidirectional sibling stages required')
     if g.get('tx_constraint_required')is not True:raise CaptureError('actual constrained sibling sends required')
     verify_intents(g,row)
-    stages={label:g['business'][2*i:2*i+2]for i,label in enumerate(labels)}
-    before,held,after=[stages[label]for label in LABELS]
-    samples=outer['channel_grant']['blocking_witness'];release=outer['release_before_wall_ns'];released=outer['release_after_wall_ns']
-    if not(before[-1]['end_wall_ns']<samples[0]['wall_ns']and samples[-1]['wall_ns']<held[0]['start_wall_ns']and held[-1]['end_wall_ns']<release<=released<after[0]['start_wall_ns']):raise CaptureError('actual sibling business must straddle the controlled withdrawal')
-    if outer['case']=='dup':
-        first=stages['after_first_control_close']
-        if not(before[-1]['end_wall_ns']<outer['first_close_wall_ns']<=outer['first_close_quiet_end_ns']<first[0]['start_wall_ns']<=first[-1]['end_wall_ns']<samples[0]['wall_ns']):
-            raise CaptureError('actual sibling replies after first dup close must precede the final-close barrier')
+    verify_stage_order(outer['case'],transition,g['business'],phase_bounds(outer))
     nonces=set();previous=0
     for business in g['business']:
         if not previous<business['start_wall_ns']<business['end_wall_ns']:raise CaptureError('ordered finite sibling business required')
@@ -236,14 +285,15 @@ def corroborate(outer,capture):
     links=[corroborate_transition(row,capture,snapshots,1,0x1401,row['connect_before_wall_ns'],row['connect_after_wall_ns'],'up'),corroborate_transition(row,capture,snapshots,2,0x1403,row['release_before_wall_ns'],row['end_wall_ns'],'down')]
     owners=[dict(row['usb'][n],controller=owner['index'],generation=owner['generation'],lifetime=owner['lifetime'],handle=owner['handle'])for n,owner in enumerate(g['owners'])]
     business=[{k:v[k]for k in ['label','initiator','payload','start_wall_ns','end_wall_ns']}for v in g['business']]
-    result=dict(version=CONTRACT_VERSION,case=outer['case'],status=STATUS,controllers=[2,3],owners=owners,business=business,round_trips=len(business),after_first_close_round_trips=2 if outer['case']=='dup'else 0,while_held_round_trips=2,after_withdrawal_round_trips=2,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,legs=legs,management_unchanged=True,links_unchanged=True,discovery=radio,heard=heard,links=links)
+    result=dict(version=CONTRACT_VERSION,case=outer['case'],transition=row['transition'],phase_bounds=phase_bounds(outer),status=STATUS,controllers=[2,3],owners=owners,business=business,round_trips=len(business),after_first_close_round_trips=2 if outer['case']=='dup'else 0,while_held_round_trips=2,after_withdrawal_round_trips=2 if row['transition']=='withdrawal'else 0,after_transition_round_trips=2,after_late_reply_round_trips=2 if row['transition']=='deadline'else 0,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,legs=legs,management_unchanged=True,links_unchanged=True,discovery=radio,heard=heard,links=links)
     return result
 
 
 def valid_summary(proof):
     try:
-        labels=stage_labels(proof['case']);count=2*len(labels)
-        expected=dict(version=CONTRACT_VERSION,status=STATUS,controllers=[2,3],round_trips=count,after_first_close_round_trips=2 if proof['case']=='dup'else 0,while_held_round_trips=2,after_withdrawal_round_trips=2,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,management_unchanged=True,links_unchanged=True)
+        transition=proof['transition'];labels=stage_labels(proof['case'],transition);count=2*len(labels)
+        verify_stage_order(proof['case'],transition,proof['business'],proof['phase_bounds'])
+        expected=dict(version=CONTRACT_VERSION,status=STATUS,controllers=[2,3],round_trips=count,after_first_close_round_trips=2 if proof['case']=='dup'else 0,while_held_round_trips=2,after_withdrawal_round_trips=2 if transition=='withdrawal'else 0,after_transition_round_trips=2,after_late_reply_round_trips=2 if transition=='deadline'else 0,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,management_unchanged=True,links_unchanged=True)
         if not(all(type(proof.get(k))is type(v)and proof[k]==v for k,v in expected.items())and type(proof['legs'])is list and len(proof['legs'])==4*count
             and len(proof['heard'])>=1 and len(proof['links'])==2 and len(proof['discovery'])>0):return False
         owners=proof['owners'];business=proof['business']

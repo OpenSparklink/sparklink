@@ -316,3 +316,17 @@ Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与
 作者不再收到成功结果。ACK、软件准入和对端应用实际处理继续分别表达。
 调用者退出后，未完成准入的更新继续监听原 owner 撤销；全部准入且作者已退出时
 停用该监听分支，保留 ACK 排空，避免重复通知导致空转。
+
+## 接收命令授权的原期限与终态
+
+接收端首片建立的原期限覆盖重组、队列等待和所有者授权。当前 Engine 在服务器
+义务到期后以 Failed 终止；命令没有响应，不能发 ErrorRsp 或 WriteRsp 冒充取消确认。
+已有调用者再查询 `GetSsapInfo` 会得到 D-Bus `Failed`，通用 SDK 错误映射为 EIO，
+不应将其当作发送端 SDK 自身期限耗尽的 ETIMEDOUT。具体原期限检查可能先发生在
+actor 定时器或授权结果消费处；两者都不得修改属性、重置期限或接受晚到批准。
+
+同一个物理 connection lifetime 不会因新 fd、重复查询或新的应用 deadline 隐式
+替换 Failed Engine。显式断链并建立新 lifetime 后，沿原初始化流程重新协商。
+普通 CUTC 属于同一 Native Session 的其他逻辑通道，其是否继续交付须以两端
+应用校验和回复验证。SSAP actor 退出不结算 Native 已开始的提交、credit 或 NOCP
+义务，也不等于完整物理清理已经完成。

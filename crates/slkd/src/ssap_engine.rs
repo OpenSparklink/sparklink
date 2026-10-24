@@ -2100,6 +2100,234 @@ async fn exchange_loop(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    struct CommandAuthorizationBarrier {
+        seen: mpsc::Sender<(
+            slk_contract::ssap::SsapAuthorizationPrompt,
+            oneshot::Sender<bool>,
+        )>,
+        returned: mpsc::Sender<u64>,
+    }
+    #[zbus::interface(name = "org.sparklink.SsapAuthorizer")]
+    impl CommandAuthorizationBarrier {
+        async fn authorize_value(
+            &self,
+            prompt: slk_contract::ssap::SsapAuthorizationPrompt,
+        ) -> bool {
+            let request_id = prompt.0;
+            let (decision, result) = oneshot::channel();
+            self.seen.send((prompt, decision)).await.unwrap();
+            let allow = result.await.unwrap_or(false);
+            self.returned.send(request_id).await.unwrap();
+            allow
+        }
+    }
+
+    #[tokio::test]
+    async fn command_owner_original_deadline_rejects_late_callback_and_late_completion() {
+        // Real private D-Bus, Owner watch and database, with explicit receipt
+        // metadata as function input. AF_UNIX cannot provide a Native context:
+        // timeout must win before that recheck. This is not the full actor,
+        // kernel submission/drain, production system bus or radio gate.
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let (seen, mut prompts) = mpsc::channel(1);
+        let (returned, mut callbacks) = mpsc::channel(1);
+        let caller = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .serve_at(
+                "/authorizer",
+                CommandAuthorizationBarrier { seen, returned },
+            )
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let database = std::sync::Arc::new(std::sync::Mutex::new(
+            crate::ssap_database::Database::default(),
+        ));
+        let slots = std::sync::Arc::new(tokio::sync::Semaphore::new(1));
+        let owner = crate::ssap_authorization::Owner::pin(
+            &server,
+            caller.unique_name().unwrap().to_string(),
+            zbus::zvariant::OwnedObjectPath::try_from("/authorizer").unwrap(),
+            &database,
+            slots.clone().try_acquire_owned().unwrap(),
+            Instant::now() + Duration::from_secs(5),
+        )
+        .await
+        .unwrap();
+        let (_, _, handles) = database
+            .lock()
+            .unwrap()
+            .register_owned(
+                vec![1, 0],
+                vec![(
+                    vec![2, 0],
+                    3,
+                    slk_protocol::ssap::access::SSAP_ACCESS_WRITE_AUTHORIZED,
+                    vec![7],
+                )],
+                owner.clone(),
+            )
+            .unwrap();
+        let handle = handles[0];
+        let (fd, peer) = transport_pair();
+        let wire = Wire::native(AsyncFd::new(fd).unwrap());
+
+        for (request_id, approve_before_deadline) in [(1, false), (2, true)] {
+            let original = Instant::now() + Duration::from_millis(400);
+            let constraint = slk_protocol::SleSendConstraint {
+                version: 1,
+                size: 48,
+                minimum: 0,
+                controller: 0,
+                generation: 7,
+                lifetime: 13,
+                handle: 1,
+                security_epoch: 41,
+                local_tcid: 10,
+                remote_tcid: 10,
+                pi: 0,
+                deadline_monotonic_ns: monotonic_deadline(original).unwrap(),
+                reserved: 0,
+            };
+            let packet = ServerPacket {
+                bytes: vec![12, 3, handle as u8, (handle >> 8) as u8, 0, 9],
+                deadline: original,
+                constraint: Some(constraint),
+                mtu: 249,
+                level: 0,
+                request_id,
+            };
+            // Time already spent waiting to run the front server obligation
+            // belongs to the same deadline, not a new callback budget.
+            tokio::time::sleep(Duration::from_millis(200)).await;
+            assert!(Instant::now() < original);
+            let task = tokio::spawn(authorize_server(packet, database.clone()));
+            let (prompt, allow) = tokio::time::timeout_at(original, prompts.recv())
+                .await
+                .expect("actual WriteCommand callback must start before its original deadline")
+                .unwrap();
+            assert_eq!(prompt.0, request_id);
+            assert_eq!(prompt.1, (0, 7, 13, 1, 41, 0, 10, 10, 0));
+            assert_eq!((prompt.2, prompt.3, prompt.6), (handle, true, 0));
+            assert_eq!(prompt.4, constraint.deadline_monotonic_ns);
+            assert_eq!(prompt.5, [9]);
+            let mut allow = Some(allow);
+            if approve_before_deadline {
+                allow.take().unwrap().send(true).unwrap();
+            }
+            // Watchdog slack is less than the consumed queue wait above, so
+            // restarting even the same 400 ms budget cannot pass this test.
+            let decision = tokio::time::timeout_at(original + Duration::from_millis(100), task)
+                .await
+                .expect("authorization must not start a fresh callback deadline")
+                .unwrap();
+            assert_eq!(decision.packet.deadline, original);
+            assert_eq!(decision.packet.constraint, Some(constraint));
+            assert_eq!(
+                decision.approvals.len(),
+                usize::from(approve_before_deadline)
+            );
+            if approve_before_deadline {
+                assert!(Instant::now() < original);
+                assert!(std::sync::Arc::ptr_eq(&decision.approvals[0].owner, &owner));
+                tokio::time::sleep_until(original).await;
+            } else {
+                assert!(Instant::now() >= original);
+            }
+            let error = complete_server(
+                &wire,
+                decision,
+                &database,
+                &mut crate::ssap_engine_config::ClientConfigurations::default(),
+            )
+            .err()
+            .unwrap();
+            assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+            assert_eq!(error.to_string(), "original SSAP authorization deadline");
+            assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+            if let Some(allow) = allow {
+                // The real D-Bus callback now returns true after its requester
+                // expired. It cannot retroactively become an Approval.
+                allow.send(true).unwrap();
+            }
+            assert_eq!(
+                tokio::time::timeout(Duration::from_secs(1), callbacks.recv())
+                    .await
+                    .unwrap(),
+                Some(request_id)
+            );
+            assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+            assert!(matches!(
+                prompts.try_recv(),
+                Err(mpsc::error::TryRecvError::Empty)
+            ));
+            let mut received = [0; 16];
+            assert_eq!(
+                receive_fixture(&peer, &mut received).unwrap_err().kind(),
+                io::ErrorKind::WouldBlock
+            );
+        }
+        owner.shutdown().await;
+        assert_eq!(slots.available_permits(), 1);
+    }
+
+    #[tokio::test]
+    async fn command_observer_original_deadline_never_enqueues_after_negotiation_wait() {
+        let (_state, state) = watch::channel(Status::Starting);
+        let (queries, mut incoming) = mpsc::channel(8);
+        let observer = Observer {
+            state,
+            queries: queries.clone(),
+        };
+        let original = Instant::now() + Duration::from_millis(30);
+        let result = tokio::time::timeout(
+            Duration::from_millis(250),
+            observer.write_command(17, vec![9], 0, original),
+        )
+        .await
+        .expect("WriteCommand must retain its deadline while waiting for negotiation");
+        assert_eq!(result.unwrap_err(), "SSAP command original deadline");
+        assert!(matches!(
+            incoming.try_recv(),
+            Err(mpsc::error::TryRecvError::Empty)
+        ));
+    }
+
+    #[tokio::test]
+    async fn command_failed_observer_never_restarts_or_enqueues_a_new_request() {
+        // Terminal watch state is an explicit fixture. This tests the actual
+        // public-in-daemon Observer entry, not the actor transition or Native
+        // obligation cleanup that produced Failed; those need the VM gate.
+        let failure = "original SSAP authorization deadline";
+        let (_state, state) = watch::channel(Status::Failed(failure.into()));
+        let (queries, mut incoming) = mpsc::channel(8);
+        for value in [vec![], vec![9], vec![8; 32]] {
+            let observer = Observer {
+                state: state.clone(),
+                queries: queries.clone(),
+            };
+            assert_eq!(
+                observer
+                    .write_command(17, value, 0, Instant::now() + Duration::from_secs(1))
+                    .await
+                    .unwrap_err(),
+                failure
+            );
+            assert!(matches!(&*state.borrow(), Status::Failed(error) if error == failure));
+            assert!(matches!(
+                incoming.try_recv(),
+                Err(mpsc::error::TryRecvError::Empty)
+            ));
+        }
+    }
+
     #[test]
     fn command_completion_is_local_all_fragment_admission_without_peer_reply() {
         for expire in [false, true] {

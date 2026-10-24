@@ -1180,6 +1180,43 @@ READ 和 WRITE_NO_RSP。非空值使用预先生成的序号和随机载荷；�
 artifact 的执行结果须单独记录。范围不含完整权限矩阵、多通道、四设备、
 性能、安全或自然恢复；这些原有验收条件继续保留。
 
+## Write Command 本地拒绝与所有者决策
+
+`--ssap-write-command-policy-verify` 是上述门禁的附加选择器，必须同时指定
+`--ssap-write-command-verify`，并保留原普通 socket、连接和 QMP 前置条件。
+它使用独立契约 1 和 guest token `ws73.ssap_command_policy=1`。缺少原正向门禁、
+重复或未知 token、请求与报告不一致均拒绝；原 Write Command 契约 1 的
+24 项正例、每阶段 4 轮 61 字节业务及其断言继续执行，不用 policy 结果代替。
+
+每个连接阶段在原正例后运行四个独立 policy 组，覆盖 C／Python 和两个发送方向。
+组内使用同一存活的 `slctl ssap-serve` Owned 注册、READ／WRITE_NO_RSP 能力及
+`ask` 策略。先由实际 SDK 拒绝 2043 字节值并 Read 原 32 字节值，再拒绝一次随机
+32 字节命令并 Read 原值，最后允许另一随机 32 字节命令并 Read 新值。两次命令值
+彼此不同，也不同于初值。每组核对两条命令、三条 Read 请求和三条 Read 响应，
+共八个双端配对的数据包组；两阶段合计八个 policy 组。
+拒绝之后必须通过另一次真实远端 Read 和原所有者本地读回确认值不变；允许之后
+也必须以两种读回确认新值。原注册不在两次决策之间注销、替换或重建。
+所有进程继续使用普通 UID 1000／无 capabilities 的现有测试身份，不据此新增
+apps-only 部署资格。
+
+监督器等待完整的新 `SsapAuthorizationPrompt`，核对接收端 controller、generation、
+connection lifetime／handle、security epoch、属性 handle、类型、方向、长度和原期限，
+然后向原进程的 stdin 发送 `yes <token>` 或 `no <token>`。CLI 的本地 token 与
+Engine request id 不同；不能预先灌入回答或将旧回答用于新提示。空值命令仍是
+`write=true`。提示行只显示值长度；完整随机载荷由两端 USB 证据核对，不能把提示
+日志描述为载荷校验。随后 Read 也需要独立批准，且拥有自己的原始请求期限。
+
+命令返回成功仍只代表发送端软件准入。拒绝测试必须先证明 opcode 12 在两端完整
+出现，随后 Read 返回旧值；缺少命令、缺少任一端捕获或观察窗口不完整不能算作
+“成功拒绝”。完整捕获中还要检查重复、残余、意外命令响应和额外协商，保留 PB／SSAP
+分片及 NOCP 记账。关于没有响应或没有额外包的结论仅适用于完整的本组观察窗口，
+不是无限期的不发生证明。
+
+连续性记录限定为相同连接 lifetime、原 Owned 注册／进程、连续的请求身份和没有
+观察到额外 ExchangeInfo；当前接口不提供 Engine 实例 ID，不据此声称直接证明
+对象实例从未重建。源码接线、离线回归和新选择器本身均不授实机资格；准确新产物
+仍须单独执行并登记其限定结果，原失败与其他未完成验收继续保留。
+
 ## 显式 HCC 原始观测
 
 未发布的 `--channel-benchmark-hcc-memory-observe` 是专用 VM 的诊断选项。它要求

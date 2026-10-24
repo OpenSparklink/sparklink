@@ -457,6 +457,8 @@ def verify_passthrough():
     owned_requested='ws73.ssap_owned=1' in Path('/proc/cmdline').read_text().split()
     from ws73_ssap_command import boot_requested as command_boot,validate_rows as command_rows
     command_rows(run.get('channel_socket',[]),command_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_command_policy import boot_requested as policy_boot,validate_rows as policy_rows
+    policy_rows(run.get('channel_socket',[]),policy_boot(Path('/proc/cmdline').read_text().split()))
     if any(bool(row.get('ssap_owned_required',False))!=owned_requested for row in run.get('channel_socket',[])) or (owned_requested and not run.get('channel_socket')):
         raise ValueError('explicit owned SSAP request and evidence must agree')
     if requested_connection:

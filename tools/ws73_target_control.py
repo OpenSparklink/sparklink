@@ -220,6 +220,7 @@ def main():
     parser.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester exit/physical reply drain and CUTC while owner prompt held')
     parser.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
     parser.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python no-response write,remote Read and original owner checks;dedicated ordinary socket gate')
+    parser.add_argument('--ssap-write-command-policy-verify',action='store_true',help='actual command refusal and same-owner deny/allow after original positive cases;requires --ssap-write-command-verify')
     parser.add_argument('--channel-socket-verify',action='store_true')
     parser.add_argument('--acb-transport-probe',action='store_true')
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
@@ -239,6 +240,9 @@ def main():
     args.ports=['1-1','1-2']
     from ws73_ssap_command import requested as command_requested
     try:command_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_command_policy import requested as command_policy_requested
+    try:command_policy_requested(args,passthrough=args.passthrough)
     except ValueError as error:parser.error(str(error))
     from ws73_connection_control import requested_down_failure_observation
     try:requested_down_failure_observation(args)

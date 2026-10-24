@@ -135,12 +135,14 @@ def validate_inputs(package):
             raise CaptureError('fresh exact Write Command guest input required: ' + name)
 
 
-def command_arguments(api, entry, handle, payload):
+def command_arguments(api, entry, handle, payload, *, mode="ssap-command"):
+    if mode not in ("ssap-command", "ssap-command-reject"):
+        raise CaptureError("explicit supported command helper mode required")
     if api not in APIS or type(handle) is not int or not 1 <= handle <= 65535:
         raise CaptureError('explicit command language/property required')
     prefix = ['/bin/ws73-application-client-c'] if api == 'c' else [
         '/bin/python3', '/usr/share/sparklink/tools/ws73-application-client.py']
-    return prefix + ['ssap-command', str(entry['owner']['index']), str(entry['owner']['generation']),
+    return prefix + [mode, str(entry['owner']['index']), str(entry['owner']['generation']),
                      entry['object']['path'], str(handle), payload, '0']
 
 
@@ -180,10 +182,12 @@ def admission(app, entry, handle, payload):
     return result
 
 
-def execute_command(run, row, case, entry):
+def execute_command(run, row, case, entry, *, rejected=False, label="write-command"):
+    if type(rejected) is not bool or label not in ("write-command", "command-policy-oversized", "command-policy-denied", "command-policy-allowed"):
+        raise CaptureError("explicit finite command invocation required")
     payload, api, handle = case['value'], case['api'], case['handle']
-    args = command_arguments(api, entry, handle, payload)
-    prefix = run.output / f'write-command-{row["phase"]}-{case["sequence"]}-{api}'
+    args = command_arguments(api, entry, handle, payload, mode="ssap-command-reject" if rejected else "ssap-command")
+    prefix = run.output / f'{label}-{row["phase"]}-{case["sequence"]}-{api}'
     out, err = Path(str(prefix) + '.stdout'), Path(str(prefix) + '.stderr')
     app = dict(api=api, args=args, environment=application_environment(), start_wall_ns=time.time_ns(),
                start_monotonic_ns=time.monotonic_ns())
@@ -201,7 +205,11 @@ def execute_command(run, row, case, entry):
             wait_output(process, max(.001, deadline - time.monotonic()))
     finally:
         run.save()
-    admission(app, entry, handle, payload)
+    if rejected:
+        from ws73_ssap_command_policy import rejection_receipt
+        rejection_receipt(app, entry, handle, payload)
+    else:
+        admission(app, entry, handle, payload)
 
 
 def negotiated(row):

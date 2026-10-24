@@ -12,7 +12,7 @@ pub fn modes(operations: SsapOperations) -> u8 {
 /// one implicit CPCD and a connected owner policy; no manager staging shortcut.
 pub fn supported_owned(operations: SsapOperations, has_authorizer: bool) -> bool {
     let bits = operations.bits();
-    bits & !(5 | 8 | 16 | 512) == 0
+    bits & !(7 | 8 | 16 | 512) == 0
         && (modes(operations) != 0) == operations.contains(SsapOperations::CLIENT_CFG_WR)
         && (modes(operations) == 0 || has_authorizer)
 }
@@ -32,6 +32,26 @@ pub fn decode(value: &[u8], supported: u8) -> Result<u8, ValueError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn command_permission_is_independent_and_does_not_open_other_operations() {
+        for bits in 0..=7 {
+            assert!(supported_owned(
+                SsapOperations::from_bits(bits).unwrap(),
+                false
+            ));
+        }
+        for bits in [32, 256, 1024, 7 | 32, 7 | 256, 7 | 1024] {
+            assert!(!supported_owned(
+                SsapOperations::from_bits(bits).unwrap(),
+                true
+            ));
+        }
+        for bits in [8 | 512, 16 | 512, 7 | 8 | 16 | 512] {
+            let operations = SsapOperations::from_bits(bits).unwrap();
+            assert!(!supported_owned(operations, false));
+            assert!(supported_owned(operations, true));
+        }
+    }
     #[test]
     fn exact_two_byte_little_endian_reserved_and_capability_checks() {
         for supported in 1..=3 {

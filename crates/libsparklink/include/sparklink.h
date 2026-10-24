@@ -538,7 +538,7 @@ int slk_connection_ssap_read(const struct SlkConnection *connection,
                              uint64_t deadline_ns);
 
 /**
- * Execute the existing short-write RPC, returning its exact protocol result
+ * Execute the existing bounded-write RPC, returning its exact protocol result
  * bytes. No long-write fallback, truncation, method echo or new Engine. The
  * daemon's actual negotiated size/security rules remain authoritative.
  * value_length<=65535 is a language memory budget, not long-write support;
@@ -558,6 +558,25 @@ int slk_connection_ssap_write(const struct SlkConnection *connection,
                               uintptr_t capacity,
                               uintptr_t *length,
                               uint64_t deadline_ns);
+
+/**
+ * Submit one property WRITE_NO_RSP via the existing Rust client and daemon.
+ * Returns0 only after all command fragments enter software socket queues,
+ * not USB/controller completion, peer receipt or application processing.
+ * No output bytes, implicit retry, descriptor/multi-item operation or new Engine.
+ * The original absolute deadline includes local queueing and the same5s
+ * ceiling as ssap_write. Failure may follow partial admission; remote effects
+ * remain uncertain. value_length<=65535 is a memory budget, not a wire limit.
+ * # Safety
+ * connection remains live without concurrent close (same fork rules as Client).
+ * value is an immutable value_length-byte readable region, NULL only when empty.
+ */
+int slk_connection_ssap_write_command(const struct SlkConnection *connection,
+                                      uint16_t handle,
+                                      uint32_t minimum,
+                                      const uint8_t *value,
+                                      uintptr_t value_length,
+                                      uint64_t deadline_ns);
 
 /**
  * Receive one property update through the existing Rust CPCD transaction.

@@ -144,12 +144,27 @@ int main(void) {
     memset(output,0xa5,sizeof output);length=99;
     assert(slk_connection_ssap_write(link,17,0,value,sizeof value,output,sizeof output,&length,deadline()) == -EINVAL);
     assert(slk_connection_ssap_write(link,17,0,oversized,sizeof oversized,output,sizeof output,&length,deadline()) == -EMSGSIZE);
+    /* Commands return no fake remote bytes:0 is software admission only. */
+    assert(slk_connection_ssap_write_command(link,17,1,value,sizeof value,deadline()) == 0);
+    assert(slk_connection_ssap_write_command(link,17,0,NULL,0,deadline()) == 0);
+    assert(slk_connection_ssap_write_command(link,17,0,value,sizeof value,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,21,0,value,sizeof value,deadline()) == -ETIMEDOUT);
+    /* Explicit daemon fixture rejection, not an FFI limit, negotiated MTU or RF test. */
+    uint8_t fixture_limit[2043];memset(fixture_limit,0xa5,sizeof fixture_limit);
+    assert(slk_connection_ssap_write_command(link,17,0,fixture_limit,sizeof fixture_limit,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,17,0,oversized,sizeof oversized,deadline()) == -EMSGSIZE);
+    assert(slk_connection_ssap_write_command(link,17,0,NULL,1,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(NULL,17,0,NULL,0,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,0,0,NULL,0,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,17,3,NULL,0,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,17,0,NULL,0,0) == -ETIMEDOUT);
     assert(slk_connection_ssap_read(link,18,0,output,sizeof output,&length,deadline()) == -EOVERFLOW);
     assert(length==99 && !memcmp(output,original,sizeof output));
     assert(slk_connection_ssap_read(link,20,0,output,sizeof output,&length,deadline()-2950000000ULL) == -ETIMEDOUT);
     assert(length==99 && !memcmp(output,original,sizeof output));
     assert(slk_connection_ssap_read(link,19,0,output,sizeof output,&length,deadline()) == -ESTALE);
     assert(slk_connection_ssap_read(link,17,2,output,sizeof output,&length,deadline()) == -ESTALE);
+    assert(slk_connection_ssap_write_command(link,17,0,NULL,0,deadline()) == -ESTALE);
     assert(length==99 && !memcmp(output,original,sizeof output));
     slk_connection_close(link);
     slk_connection_close(NULL);

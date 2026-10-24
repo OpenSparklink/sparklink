@@ -88,6 +88,30 @@ impl Link {
         }
         Ok(vec![0x90]) // Deliberately differs from input: no local method echo.
     }
+    async fn write_ssap_command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        if handle == 99 {
+            self.0.entered.notify_one();
+            self.0.release.notified().await;
+        } else if !matches!(
+            (handle, minimum, value.as_slice()),
+            (17, 1, [0x56, 0x12]) | (17, 0, [])
+        ) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "exact command fixture required".into(),
+            ));
+        }
+        // Finite RPC fixture: no wire response or remote-delivery claim.
+        Ok(())
+    }
     fn discover_ssap(
         &self,
         uuid: Vec<u8>,
@@ -320,6 +344,7 @@ async fn actual_owned_update_rpc_has_literal_signatures_and_distinct_stages() ->
             vec!["(yayay)"],
         ),
         ("GetOwnedSsapConfiguration", vec!["q", "(ttttt)"], vec!["y"]),
+        ("WriteSsapCommand", vec!["q", "ay", "u", "(ttttt)"], vec![]),
         (
             "ReceiveSsapUpdate",
             vec!["aq", "y", "(ttttt)"],
@@ -374,5 +399,95 @@ async fn actual_owned_update_rpc_has_literal_signatures_and_distinct_stages() ->
         matches!(remote.send_owned_update(18,false,deadline()).await,Err(ApplicationError::Bus(zbus::Error::MethodError(name,_,_))) if name.as_str()=="org.freedesktop.DBus.Error.AccessDenied")
     );
     assert_eq!(state.calls.load(Ordering::SeqCst), 4);
+    Ok(())
+}
+
+#[tokio::test]
+async fn command_has_unit_admission_and_no_retry_or_expired_identity_fallback() -> anyhow::Result<()>
+{
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let remote = link.ssap();
+    remote
+        .write_without_response(17, vec![0x56, 0x12], 1, deadline())
+        .await?;
+    remote
+        .write_without_response(17, vec![], 0, deadline())
+        .await?;
+    assert!(
+        matches!(remote.write_without_response(18, vec![], 0, deadline()).await,
+        Err(ApplicationError::Bus(zbus::Error::MethodError(name, _, _)))
+        if name.as_str() == "org.freedesktop.DBus.Error.NotSupported")
+    );
+    assert_eq!(state.calls.load(Ordering::SeqCst), 3);
+    let expired = libsparklink::Deadline::after(Duration::from_millis(1))?;
+    tokio::time::sleep(Duration::from_millis(5)).await;
+    assert!(
+        matches!(remote.write_without_response(17, vec![], 0, expired).await,
+        Err(ApplicationError::Io(error)) if error.raw_os_error() == Some(nix::libc::ETIMEDOUT))
+    );
+    state.role.store(1, Ordering::SeqCst);
+    assert!(matches!(
+        remote
+            .write_without_response(17, vec![], 0, deadline())
+            .await,
+        Err(ApplicationError::Identity(_))
+    ));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 3);
+    Ok(())
+}
+
+#[tokio::test]
+async fn command_late_reply_cannot_cross_connection_identity() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let call = async {
+        link.ssap()
+            .write_without_response(99, vec![1], 0, deadline())
+            .await
+    };
+    let interleave = async {
+        state.entered.notified().await;
+        state.generation.store(8, Ordering::SeqCst);
+        state.release.notify_one();
+    };
+    let (result, ()) = tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::join!(call, interleave)
+    })
+    .await?;
+    assert!(matches!(result, Err(ApplicationError::Identity(_))));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn command_wait_keeps_original_deadline_without_retrying_uncertain_admission()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let original = libsparklink::Deadline::after(Duration::from_millis(200))?;
+    let call = async {
+        link.ssap()
+            .write_without_response(99, vec![1], 0, original)
+            .await
+    };
+    let interleave = async {
+        state.entered.notified().await;
+        tokio::time::sleep(Duration::from_millis(300)).await;
+        state.release.notify_one();
+    };
+    let (result, ()) = tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::join!(call, interleave)
+    })
+    .await?;
+    assert!(matches!(result, Err(ApplicationError::Io(error))
+        if error.raw_os_error() == Some(nix::libc::ETIMEDOUT)));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 1);
     Ok(())
 }

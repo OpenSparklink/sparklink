@@ -25,7 +25,7 @@ SSAP_FIELDS=('ssap_language_required','ssap_language_clients','ssap_registration
     'ssap_owned_publishers_required','ssap_owned_publishers','ssap_value_required',
     'ssap_read_uuid_required','ssap_update_local_rejection_required','ssap_values',
     'ssap_local_registrations','ssap_discovery_required','ssap_discoveries','unsupported_incoming','role_ssap_commands')
-SSAP_PREFLIGHT=['ReadSsapValue','WriteSsapValue','ReceiveSsapUpdate',
+SSAP_PREFLIGHT=['ReadSsapValue','WriteSsapValue','WriteSsapCommand','ReceiveSsapUpdate',
                 'SubscribeSsapUpdates','ReadSsapUpdates','RenewSsapSubscription','CloseSsapSubscription']
 DENIALS=['StopControllerScan','SubmitDisconnect','DiscoverSsap','GetCachedSsap','ReadSsapByUuid',
          'GetSsapInfo','SendOwnedSsapUpdate','GetOwnedSsapConfiguration',

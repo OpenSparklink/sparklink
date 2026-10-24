@@ -116,10 +116,19 @@ with connection:
     assert ssap.write(17,b"",deadline_ns=deadline()) == b"\x91"
     error(errno.EINVAL, lambda: ssap.write(17,b"\x56\x12",deadline_ns=deadline()))
     error(errno.EMSGSIZE, lambda: ssap.write(17,b"x"*65536,deadline_ns=deadline()))
+    assert ssap.write_without_response(17,b"\x56\x12",minimum=1,deadline_ns=deadline()) is None
+    assert ssap.write_without_response(17,b"",deadline_ns=deadline()) is None
+    error(errno.EINVAL, lambda: ssap.write_without_response(17,b"\x56\x12",deadline_ns=deadline()))
+    error(errno.ETIMEDOUT, lambda: ssap.write_without_response(21,b"\x56\x12",deadline_ns=deadline()))
+    # Explicit daemon fixture rejection, not an SDK limit, negotiated MTU or RF test.
+    error(errno.EINVAL, lambda: ssap.write_without_response(17,b"\xa5"*2043,deadline_ns=deadline()))
+    error(errno.EMSGSIZE, lambda: ssap.write_without_response(17,b"x"*65536,deadline_ns=deadline()))
+    error(errno.ETIMEDOUT, lambda: ssap.write_without_response(17,b"",deadline_ns=1))
     error(errno.ETIMEDOUT, lambda: ssap.read(17,minimum=2,deadline_ns=1))
     error(errno.ETIMEDOUT, lambda: ssap.read(20,deadline_ns=time.monotonic_ns()+50_000_000))
     error(errno.ESTALE, lambda: ssap.read(19,deadline_ns=deadline()))
     error(errno.ESTALE, lambda: ssap.read(17,minimum=2,deadline_ns=deadline()))
+    error(errno.ESTALE, lambda: ssap.write_without_response(17,b"",deadline_ns=deadline()))
 try:
     ssap.read(17,minimum=2,deadline_ns=deadline())
 except ValueError:

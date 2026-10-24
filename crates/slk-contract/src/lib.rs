@@ -122,6 +122,9 @@ pub mod ssap {
     pub const READ_UUID: &str = "ReadSsapByUuid";
     pub const READ: &str = "ReadSsapValue";
     pub const WRITE: &str = "WriteSsapValue";
+    /// Empty return means all command fragments were admitted to the software
+    /// socket path, not controller completion or peer receipt/processing.
+    pub const WRITE_COMMAND: &str = "WriteSsapCommand";
     pub const EXCHANGE_INFO: &str = "GetSsapInfo";
     pub type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
     pub type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);

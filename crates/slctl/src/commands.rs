@@ -230,10 +230,10 @@ impl Context {
                 );
                 Ok(())
             }
-            "ssap-read" | "ssap-write" => {
+            "ssap-read" | "ssap-write" | "ssap-write-command" => {
                 let original = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
                 if (args[0] == "ssap-read" && !(3..=4).contains(&args.len()))
-                    || (args[0] == "ssap-write" && !(4..=5).contains(&args.len()))
+                    || (args[0] != "ssap-read" && !(4..=5).contains(&args.len()))
                 {
                     anyhow::bail!(
                         "SSAP value requires connection path, handle and write hex value"
@@ -242,6 +242,21 @@ impl Context {
                 let link = self.application_connection(args[1]).await?;
                 let object = link.ssap();
                 let handle: u16 = args[2].parse()?;
+                if args[0] == "ssap-write-command" {
+                    object
+                        .write_without_response(
+                            handle,
+                            parse_hex_bytes(args[3])?,
+                            args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                            original,
+                        )
+                        .await?;
+                    println!(
+                        "SsapCommandAdmission: path={} handle={} stage=software_socket_admission peer_delivery=unconfirmed",
+                        args[1], handle
+                    );
+                    return Ok(());
+                }
                 let value = if args[0] == "ssap-read" {
                     object
                         .read(

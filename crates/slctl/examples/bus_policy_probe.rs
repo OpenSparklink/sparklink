@@ -799,6 +799,18 @@ async fn ssap_application_preflight(
                 .await,
         ),
         (
+            "WriteSsapCommand",
+            connection
+                .call_method(
+                    Some(destination),
+                    path,
+                    Some(slk_contract::CONNECTION),
+                    "WriteSsapCommand",
+                    &(1u16, vec![0u8], 0u32, bad),
+                )
+                .await,
+        ),
+        (
             "ReceiveSsapUpdate",
             connection
                 .call_method(

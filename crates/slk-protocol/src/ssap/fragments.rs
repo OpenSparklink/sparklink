@@ -31,13 +31,13 @@ pub enum Error {
 }
 
 fn supported(op: u8) -> bool {
-    matches!(op, 8 | 9 | 11 | 13 | 14 | 15 | 16)
+    matches!(op, 8 | 9 | 11 | 12 | 13 | 14 | 15 | 16)
 }
 
 /// Requests, responses and updates retain independent partial streams.
 pub fn lane(opcode: u8) -> Option<usize> {
     match opcode & 0x7f {
-        8 | 13 => Some(0),
+        8 | 12 | 13 => Some(0),
         9 | 11 | 14 => Some(1),
         15 | 16 => Some(2),
         _ => None,
@@ -120,7 +120,10 @@ impl<'a> Plan<'a> {
             if !sequenced || !supported(raw[0]) || raw[1] & 3 != 3 {
                 return Err(Error::Unsupported);
             }
-            if raw[0] == 13 && raw[1] & 0x18 != 0 {
+            if matches!(raw[0], 12 | 13) && raw[1] & 0x18 != 0 {
+                return Err(Error::Control);
+            }
+            if raw[0] == 12 && raw[1] != 3 {
                 return Err(Error::Control);
             }
         }
@@ -154,7 +157,7 @@ impl<'a> Plan<'a> {
             } else {
                 1
             };
-        if self.raw[0] == 13 && !last {
+        if matches!(self.raw[0], 12 | 13) && !last {
             output[1] |= 8;
         }
         output[2] = if index == 0 || last {
@@ -240,7 +243,10 @@ impl<C: Copy + Eq, D: Copy + Ord> Reassembly<C, D> {
             return Err(Error::Length);
         }
         let mut control = raw[1] | 3;
-        if op == 13 {
+        if op == 12 && raw[1] & 0xe4 != 0 {
+            return Err(Error::Control);
+        }
+        if matches!(op, 12 | 13) {
             if raw[1] & 0x18 != if kind <= 1 { 8 } else { 0 } {
                 return Err(Error::Control);
             }
@@ -333,7 +339,7 @@ mod tests {
     use super::*;
     #[test]
     fn real_value_shapes_roundtrip_with_frozen_identity_and_first_deadline() {
-        for op in [8, 9, 11, 13, 14, 15, 16] {
+        for op in [8, 9, 11, 12, 13, 14, 15, 16] {
             for mtu in [6, 16, 249, 2042] {
                 for n in [5, 16, 32, 249, 250, 254, 255, 1024, 2042, 2047, 2048] {
                     let mut raw = vec![0xa5; n];
@@ -366,6 +372,53 @@ mod tests {
                     assert_eq!(rx.deadline(), None);
                 }
             }
+        }
+    }
+    #[test]
+    fn command_fragments_keep_partial_write_until_the_final_original_value() {
+        let mut raw = vec![0x5a; 2047];
+        raw[..5].copy_from_slice(&[12, 3, 17, 0, 0]);
+        assert_eq!(lane(12), Some(0));
+        assert!(Plan::new(&raw, 2042, false).is_err());
+        let plan = Plan::new(&raw, 2042, true).unwrap();
+        assert_eq!(plan.count(), 2);
+        let mut first = [0xa5; 2042];
+        let n = plan.encode(0, &mut first).unwrap();
+        assert_eq!(&first[..4], &[0x8c, 8, 2, 0]);
+        let mut last = [0xa5; 2042];
+        let m = plan.encode(1, &mut last).unwrap();
+        assert_eq!(&last[..4], &[0x8c, 2, 2, 0]);
+        for change in 0..4 {
+            let mut rx = Reassembly::default();
+            assert!(
+                rx.receive(&first[..n], 2042, true, 7, 0u64, 10)
+                    .unwrap()
+                    .is_none()
+            );
+            assert_eq!(rx.deadline(), Some(10));
+            let mut final_part = last[..m].to_vec();
+            let (context, now) = match change {
+                0 => (7, 1),
+                1 => (8, 1),
+                2 => (7, 10),
+                _ => {
+                    final_part[1] |= 8;
+                    (7, 1)
+                }
+            };
+            let result = rx.receive(&final_part, 2042, true, context, now, 1000);
+            if change == 0 {
+                let complete = result.unwrap().unwrap();
+                assert_eq!(complete.bytes, raw);
+                assert_eq!(complete.deadline, 10);
+            } else {
+                assert!(result.is_err());
+            }
+            assert_eq!(rx.deadline(), None);
+        }
+        for control in [7, 11, 19, 35] {
+            raw[1] = control;
+            assert!(Plan::new(&raw, 2042, true).is_err());
         }
     }
     #[test]

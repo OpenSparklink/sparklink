@@ -64,6 +64,22 @@ impl Link {
         }
         Ok(vec![0x90])
     }
+    fn write_ssap_command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
+        self.calls.fetch_add(1, Ordering::SeqCst);
+        if (handle, minimum, value) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "exact fixture command".into(),
+            ));
+        }
+        Ok(())
+    }
 }
 #[tokio::test]
 async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_success()
@@ -87,6 +103,13 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
     for (command, handle, rest, expected) in [
         ("ssap-read", "17", vec!["2"], Some("value=3478")),
         ("ssap-write", "17", vec!["5612", "1"], Some("value=90")),
+        (
+            "ssap-write-command",
+            "17",
+            vec!["5612", "1"],
+            Some("stage=software_socket_admission peer_delivery=unconfirmed"),
+        ),
+        ("ssap-write-command", "18", vec!["5612", "1"], None),
         ("ssap-read", "18", vec!["2"], None),
         ("ssap-read", "99", vec!["2"], None),
     ] {
@@ -104,9 +127,19 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
         if let Some(value) = expected {
             assert!(result.status.success(), "{stderr}");
             assert!(stdout.contains(value), "{stdout}");
+            if command == "ssap-write-command" {
+                assert!(stdout.contains("SsapCommandAdmission:"), "{stdout}");
+                assert!(
+                    !stdout.contains("SsapPeerValue:") && !stdout.contains("value="),
+                    "{stdout}"
+                );
+            }
         } else {
             assert!(!result.status.success());
-            assert!(!stdout.contains("SsapPeerValue:"), "{stdout}");
+            assert!(
+                !stdout.contains("SsapPeerValue:") && !stdout.contains("SsapCommandAdmission:"),
+                "{stdout}"
+            );
             assert!(
                 stderr.contains(if handle == "99" {
                     "controller generation"
@@ -117,6 +150,6 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
             );
         }
     }
-    assert_eq!(calls.load(Ordering::SeqCst), 4);
+    assert_eq!(calls.load(Ordering::SeqCst), 6);
     Ok(())
 }

@@ -381,6 +381,17 @@ enum ChannelKind {
     User,
     Dynamic(slk_native::channel::DynamicConfig),
 }
+/// A ready inner error may win Tokio's timeout poll at the deadline. Check
+/// the original clock before propagating either success or that inner error;
+/// callers then see Timeout consistently, without parsing diagnostic strings.
+fn finish_scoped_ssap_call<T>(
+    original: slk_channel::deadline::Deadline,
+    result: zbus::fdo::Result<T>,
+) -> zbus::fdo::Result<T> {
+    original.remaining().map_err(deadline_error)?;
+    result
+}
+
 impl ConnectionOwner {
     async fn bind_native(
         &self,
@@ -763,9 +774,8 @@ impl ConnectionIface {
             }),
         )
         .await
-        .map_err(|_| zbus::fdo::Error::Timeout("owned SSAP original deadline".into()))??;
-        original.remaining().map_err(deadline_error)?;
-        Ok(result)
+        .map_err(|_| zbus::fdo::Error::Timeout("owned SSAP original deadline".into()))?;
+        finish_scoped_ssap_call(original, result)
     }
 }
 
@@ -1544,6 +1554,36 @@ impl ConnectionIface {
         self.scoped_ssap_value(handle, Some(value), minimum, deadline, header, connection)
             .await
     }
+    /// No peer acknowledgement exists for Write Command. A successful call
+    /// reports complete software admission only, never a remote database write.
+    async fn write_ssap_command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> zbus::fdo::Result<()> {
+        if handle == 0 || minimum > 2 || value.len() > 2042 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "nonzero handle, mechanism minimum0..2 and value<=2042 required".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, _caller, original| async move {
+                observer
+                    .write_command(handle, value, minimum, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
     /// A stage1 receipt is software admission; stage2 is peer queue ACK only.
     /// The actual unique caller must still own the property at submission.
     async fn send_owned_ssap_update(
@@ -2263,6 +2303,30 @@ mod grant_tests {
     }
 
     #[tokio::test]
+    async fn original_deadline_precedes_ready_inner_success_or_error() {
+        let fresh =
+            slk_channel::deadline::Deadline::after(std::time::Duration::from_secs(1)).unwrap();
+        assert!(matches!(
+            finish_scoped_ssap_call::<()>(
+                fresh,
+                Err(zbus::fdo::Error::Failed("before deadline".into()))
+            ),
+            Err(zbus::fdo::Error::Failed(_))
+        ));
+        let expired =
+            slk_channel::deadline::Deadline::after(std::time::Duration::from_millis(5)).unwrap();
+        tokio::time::sleep_until(expired.instant().into()).await;
+        for result in [
+            Ok(()),
+            Err(zbus::fdo::Error::Failed("ready inner failure".into())),
+        ] {
+            assert!(matches!(
+                finish_scoped_ssap_call(expired, result),
+                Err(zbus::fdo::Error::Timeout(_))
+            ));
+        }
+    }
+    #[tokio::test]
     async fn actual_dbus_deadline_rejects_foreign_old_shape_and_expires_before_held_state() {
         // Actual producer handler/private bus/OS clock; held state and /dev/null
         // are explicit failure dependencies, never a successful Native backend.
@@ -2628,6 +2692,7 @@ mod grant_tests {
                 vec!["q", "ay", "u", "(ttttt)"],
                 vec!["ay"],
             ),
+            ("WriteSsapCommand", vec!["q", "ay", "u", "(ttttt)"], vec![]),
             (
                 "DiscoverSsap",
                 vec!["ay", "y"],

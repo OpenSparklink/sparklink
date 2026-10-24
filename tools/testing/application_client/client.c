@@ -122,6 +122,35 @@ done:
     if (status) perror("application-client-c-ssap");
     slk_connection_close(link);slk_client_close(client);return status;
 }
+/* Independent command mode: no response parser or fabricated peer value. */
+static int ssap_command_mode(int argc,char **argv) {
+    if ((argc!=7 && argc!=8) || !*argv[4] || strlen(argv[4])>256) return 2;
+    uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[5]);
+    uint64_t minimum=argc==8?number(argv[7]):0;
+    if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX || minimum>2) return 2;
+    uint8_t value[2042];size_t value_n=*argv[6]?bytes(argv[6],value):0;
+    const uint64_t deadline=now_ns()+5000000000ULL;
+    struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
+    struct SlkClient *client=NULL;struct SlkConnection *link=NULL;int status=1;
+    int error=slk_client_open_system(deadline,&client);
+    if (error) {errno=-error;goto done;}
+    error=slk_client_connection(client,&id,(const uint8_t *)argv[4],strlen(argv[4]),deadline,&link);
+    if (error) {errno=-error;goto done;}
+    slk_client_close(client);client=NULL;
+    printf("{\"stage\":\"ssap_command_start_barrier\",\"api\":\"c\",\"deadline_ns\":%"PRIu64",\"client_closed\":true}\n",deadline);fflush(stdout);
+    char start[6];
+    if (wait_fd(STDIN_FILENO,POLLIN,deadline) || read(STDIN_FILENO,start,sizeof start)!=(ssize_t)sizeof start || memcmp(start,"start\n",sizeof start)) {errno=EPROTO;goto done;}
+    uint64_t called=now_ns();
+    error=slk_connection_ssap_write_command(link,(uint16_t)handle,(uint32_t)minimum,value,value_n,deadline);
+    uint64_t returned=now_ns();
+    if (error) {errno=-error;goto done;}
+    printf("SSAP_COMMAND_ADMITTED: {\"api\":\"c\",\"handle\":%"PRIu64",\"value\":\"",handle);hex_print(value,value_n);
+    printf("\",\"minimum\":%"PRIu64",\"admission_only\":true,\"peer_delivery_confirmed\":false,\"deadline_ns\":%"PRIu64",\"call_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",minimum,deadline,called,returned);fflush(stdout);
+    status=0;
+done:
+    if (status) perror("application-client-c-ssap-command");
+    slk_connection_close(link);slk_client_close(client);return status;
+}
 /* Bounded external discovery consumer of the same SDK; no scanner/decoder. */
 static int discovery_mode(int argc,char **argv) {
     if (argc!=7) return 2;
@@ -496,6 +525,7 @@ int main(int argc,char **argv) {
     if (argc>1 && (!strcmp(argv[1],"update-peer") || !strcmp(argv[1],"update-error") || !strcmp(argv[1],"update-retired"))) return update_peer_mode(argc,argv);
     if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);
+    if (argc>1 && !strcmp(argv[1],"ssap-command")) return ssap_command_mode(argc,argv);
     if (argc!=7 || strlen(argv[3])>256) return 2;
     uint64_t index=number(argv[1]),generation=number(argv[2]),role=number(argv[4]);
     if (index>UINT16_MAX || !generation || role>1) return 2;

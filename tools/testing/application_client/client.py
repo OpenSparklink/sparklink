@@ -28,6 +28,7 @@ def main():
     if sys.argv[1:2] in (['update-peer'],['update-error'],['update-retired']):return update_peer_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
+    if sys.argv[1:2]==['ssap-command']:return ssap_command_mode()
     if len(sys.argv)!=7:raise ValueError("index generation connection role request reply required")
     index,generation=int(sys.argv[1]),int(sys.argv[2]);path=sys.argv[3];role=int(sys.argv[4])
     request,reply=bytes.fromhex(sys.argv[5]),bytes.fromhex(sys.argv[6])
@@ -102,6 +103,28 @@ def ssap_mode():
         if error_mode:raise AssertionError('negative scenario unexpectedly completed the operation')
         if actual!=expected:raise ValueError('actual peer SSAP result differs from expected random value')
         print(f'SsapPeerValue: operation={operation} path={path} handle={handle} value={actual.hex()}',flush=True)
+
+
+def ssap_command_mode():
+    if len(sys.argv) not in (7,8):raise ValueError('ssap-command index generation path handle value-hex [minimum]')
+    index,generation=int(sys.argv[2]),int(sys.argv[3]);path=sys.argv[4];handle=int(sys.argv[5])
+    minimum=int(sys.argv[7]) if len(sys.argv)==8 else 0
+    if not 1<=handle<=65535 or not 0<=minimum<=2 or not 0<=len(sys.argv[6])<=4084:raise ValueError('bounded command test inputs')
+    value=bytes.fromhex(sys.argv[6])
+    if not 0<=len(value)<=2042:raise ValueError('bounded command test value')
+    deadline=time.monotonic_ns()+5_000_000_000
+    with Client(deadline_ns=deadline) as client:
+        link=client.connection(ControllerId(index,generation),path,deadline_ns=deadline)
+    with link:
+        print(json.dumps(dict(stage='ssap_command_start_barrier',api='python',deadline_ns=deadline,client_closed=True)),flush=True)
+        wait(0,select.POLLIN,deadline)
+        if os.read(0,6)!=b'start\n':raise ValueError('explicit original command start barrier required')
+        called=time.monotonic_ns()
+        result=link.ssap().write_without_response(handle,value,minimum=minimum,deadline_ns=deadline)
+        returned=time.monotonic_ns()
+        if result is not None:raise ValueError('command must return software admission without response bytes')
+        print('SSAP_COMMAND_ADMITTED: '+json.dumps(dict(api='python',handle=handle,value=value.hex(),minimum=minimum,
+            admission_only=True,peer_delivery_confirmed=False,deadline_ns=deadline,call_ns=called,returned_ns=returned)),flush=True)
 
 
 def discovery_mode():

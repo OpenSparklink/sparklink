@@ -242,6 +242,31 @@ impl Link {
             )),
         }
     }
+    fn write_ssap_command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.1.fetch_add(1, Ordering::SeqCst);
+        match (handle, minimum, value.as_slice()) {
+            (17, 1, [0x56, 0x12]) | (17, 0, []) => Ok(()),
+            (17, 0, bytes) if bytes.len() == 2042 && bytes.iter().all(|v| *v == 0xa5) => Ok(()),
+            // An explicit finite daemon fixture, not a negotiated MTU or RF result.
+            (17, 0, bytes) if bytes.len() == 2043 => Err(zbus::fdo::Error::InvalidArgs(
+                "fixture-only 2043 command rejection; not negotiated MTU or hardware".into(),
+            )),
+            (21, 0, [0x56, 0x12]) => Err(zbus::fdo::Error::Timeout(
+                "explicit immediate command error fixture; not elapsed deadline".into(),
+            )),
+            _ => Err(zbus::fdo::Error::InvalidArgs(
+                "unmatched command fixture".into(),
+            )),
+        }
+    }
 }
 
 // Finite metadata and callback sender fixture,not a DB,wire or Native Engine.
@@ -804,7 +829,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     );
     assert_eq!(
         ssap_calls.load(Ordering::SeqCst),
-        14,
+        24,
         "exact finite RPC count; invalid, expired and retired inputs never retry"
     );
     lifetime.store(11, Ordering::SeqCst);
@@ -886,7 +911,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
             }
         }
     }
-    assert_eq!(ssap_calls.load(Ordering::SeqCst), 18);
+    assert_eq!(ssap_calls.load(Ordering::SeqCst), 28);
     // Actual C/Python VM consumers, including their new negative-result mode.
     // An immediate FDO Timeout tests errno mapping only: it must never qualify
     // the hardware gate's original five-second elapsed-time requirement.
@@ -947,8 +972,140 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     }
     assert_eq!(
         ssap_calls.load(Ordering::SeqCst),
-        26,
+        36,
         "eight added actual value calls; invalid expectations rejected before RPC"
+    );
+    // Actual new command helper entry points, with their own admission-only
+    // output schema. The service remains a finite RPC fixture, never peer RF.
+    for language in ["c", "python"] {
+        for scenario in [
+            "admitted",
+            "empty",
+            "boundary2042",
+            "rejected",
+            "eof",
+            "stale",
+            "invalid",
+            "oversized2043",
+        ] {
+            lifetime.store(11, Ordering::SeqCst);
+            let payload = match scenario {
+                "empty" => String::new(),
+                "boundary2042" => "a5".repeat(2042),
+                "oversized2043" => "a5".repeat(2043),
+                _ => "5612".to_owned(),
+            };
+            let minimum = match scenario {
+                "invalid" => 3,
+                "empty" | "boundary2042" | "oversized2043" => 0,
+                _ => 1,
+            };
+            let minimum_arg = minimum.to_string();
+            let admitted = matches!(scenario, "admitted" | "empty" | "boundary2042");
+            let invalid_input = matches!(scenario, "invalid" | "oversized2043");
+            let mut command = Command::new("timeout");
+            command.arg("20s");
+            if language == "c" {
+                command.arg(&sdk_probe);
+            } else {
+                command
+                    .arg("python3")
+                    .arg(root.join("tools/testing/application_client/client.py"));
+            }
+            let mut process = command
+                .args([
+                    "ssap-command",
+                    "2",
+                    "7",
+                    PATH,
+                    if scenario == "rejected" { "18" } else { "17" },
+                    &payload,
+                    &minimum_arg,
+                ])
+                .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+                .env("LIBSPARKLINK_PATH", &runtime_library)
+                .env("PYTHONPATH", root.join("bindings/python"))
+                .env("LD_LIBRARY_PATH", &directory)
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()?;
+            let mut stdout = std::io::BufReader::new(process.stdout.take().unwrap());
+            let mut barrier = String::new();
+            stdout.read_line(&mut barrier)?;
+            let barrier_value: Option<serde_json::Value> = if invalid_input {
+                assert!(barrier.is_empty(), "invalid input must not open the caller");
+                None
+            } else {
+                let value: serde_json::Value = serde_json::from_str(&barrier)?;
+                assert_eq!(value["stage"], "ssap_command_start_barrier");
+                assert_eq!(value["api"], language);
+                assert_eq!(value["client_closed"], true);
+                assert!(value["deadline_ns"].as_u64().is_some());
+                if scenario == "stale" {
+                    lifetime.store(12, Ordering::SeqCst);
+                }
+                if scenario == "eof" {
+                    drop(process.stdin.take());
+                } else {
+                    process.stdin.as_mut().unwrap().write_all(b"start\n")?;
+                }
+                Some(value)
+            };
+            let mut remaining = String::new();
+            stdout.read_to_string(&mut remaining)?;
+            let output = process.wait_with_output()?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-command-{scenario}.stdout")),
+                barrier + &remaining,
+            )?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-command-{scenario}.stderr")),
+                &output.stderr,
+            )?;
+            assert_eq!(output.status.success(), admitted, "{language}/{scenario}");
+            assert!(!remaining.contains("SsapPeerValue:"));
+            if admitted {
+                assert!(output.stderr.is_empty());
+                let line = remaining
+                    .strip_prefix("SSAP_COMMAND_ADMITTED: ")
+                    .expect("explicit admission receipt");
+                let receipt: serde_json::Value = serde_json::from_str(line)?;
+                assert_eq!(receipt["api"], language);
+                assert_eq!(receipt["handle"], 17);
+                assert_eq!(receipt["value"], payload);
+                assert_eq!(receipt["minimum"], minimum);
+                assert_eq!(receipt["admission_only"], true);
+                assert_eq!(receipt["peer_delivery_confirmed"], false);
+                assert_eq!(
+                    receipt["deadline_ns"],
+                    barrier_value.unwrap()["deadline_ns"]
+                );
+                let (called, returned, end) = (
+                    receipt["call_ns"].as_u64().unwrap(),
+                    receipt["returned_ns"].as_u64().unwrap(),
+                    receipt["deadline_ns"].as_u64().unwrap(),
+                );
+                assert!(called < returned && returned <= end);
+            } else {
+                assert!(
+                    remaining.is_empty(),
+                    "failure cannot emit an admission receipt"
+                );
+                if language == "c" && invalid_input {
+                    assert_eq!(output.status.code(), Some(2));
+                    assert!(output.stderr.is_empty(), "C syntax rejection is exit 2");
+                } else {
+                    assert!(!output.stderr.is_empty());
+                }
+            }
+        }
+    }
+    lifetime.store(11, Ordering::SeqCst);
+    assert_eq!(
+        ssap_calls.load(Ordering::SeqCst),
+        44,
+        "eight command RPCs including empty/2042; EOF/invalid/oversized/retired helper cases never enter the method"
     );
     authorization::lifecycle(
         &root,

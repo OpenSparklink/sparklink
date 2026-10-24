@@ -154,7 +154,9 @@ uses the sole Connection SSAP actor. Notification/indication sending, long write
 and full Profile delivery are not promised.
 
 .PP
-Connection ReadSsapValue(q handle,u minimum), WriteSsapValue(q handle,ay value,u minimum)
+Connection ReadSsapValue(q handle,u minimum,(ttttt) deadline),
+WriteSsapValue(q handle,ay value,u minimum,(ttttt) deadline),
+WriteSsapCommand(q handle,ay value,u minimum,(ttttt) deadline)
 and ReadSsapByUuid(q start,q end,y data_type,ay uuid,u minimum) use mechanism
 minimum 0..2 and the existing authorized SMTC fd. Initial requests and responses
 carry restrictive per-send epoch and original deadline constraints. Preparing
@@ -162,6 +164,10 @@ an intent does not renew authorization or reserve credit. Numeric comparison
 is not a named identity or Bond. Read denial error 8/10 and write denial leave
 protected values undisclosed or unchanged; timeout after admitted write does
 not imply rollback. Exact source/artifact qualification is separate.
+WriteSsapCommand has no result bytes: success only means all command fragments
+were admitted to software socket queues, not USB/controller completion, peer
+receipt or application processing. Partial admission may precede failure; no
+implicit retry or descriptor/multi-item interface is provided.
 
 .SS Remaining interfaces
 Controller exposes actual GetLinkSummary, GetControllerEventPosition and

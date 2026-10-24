@@ -299,6 +299,50 @@ impl<'a> RemoteSsap<'a> {
     ) -> Result<Vec<u8>> {
         self.value(handle, Some(value), minimum, original).await
     }
+    /// Submit one property WRITE_NO_RSP through the existing daemon actor.
+    /// Success means all command fragments entered the software socket path;
+    /// it is not USB/controller completion, peer receipt or application handling.
+    /// The original deadline includes identity/RPC queueing, with the same5s
+    /// ceiling as write. Failure may follow partial admission; never retry an
+    /// uncertain command implicitly. No descriptor or multi-item operation.
+    pub async fn write_without_response(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<()> {
+        let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
+        crate::client::bounded(
+            &self.link.client,
+            original,
+            self.current(async {
+                original.remaining()?;
+                let proxy = self
+                    .link
+                    .client
+                    .proxy(&self.link.path, contract::CONNECTION)
+                    .await?;
+                original.remaining()?;
+                let _: () = proxy
+                    .call(
+                        wire::WRITE_COMMAND,
+                        &(
+                            handle,
+                            value,
+                            minimum,
+                            contract::deadline_wire(original.stamp()),
+                        ),
+                    )
+                    .await?;
+                original.remaining()?;
+                Ok(())
+            }),
+        )
+        .await?;
+        original.remaining()?;
+        Ok(())
+    }
     /// Actual ExchangeInfo, never inferred service discovery or security.
     pub async fn exchange_info(&self) -> Result<wire::ExchangeInfo> {
         let value: wire::ExchangeInfo = self

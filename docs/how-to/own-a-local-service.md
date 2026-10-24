@@ -63,7 +63,7 @@ python3 owned_service.py "$INDEX" "$GENERATION"
 
 ## 从对端检查结果
 
-使用[连接级远端 SSAP API](../reference/interfaces.md#cpython连接级远端ssap读短写)，
+使用[连接级远端 SSAP API](../reference/interfaces.md#cpython连接级远端ssap读写与无响应写命令)，
 选择对端当前连接对象。先按实际 UUID/handle 读取并比对 `hello`，再写入一份随机值；
 发布进程回车后读取并核对同一份字节。本地登记回执只能证明本地配置，远端 API 返回、
 协议回复及发布应用实际读取是不同阶段。需要可靠业务确认时，由应用发送明确回复。

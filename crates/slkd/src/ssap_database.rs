@@ -250,16 +250,25 @@ impl Database {
         Ok(())
     }
     fn target(&self, handle: u16, level: u32, write: bool) -> Option<Target> {
-        let service = self
-            .services
-            .values()
-            .find(|s| s.properties.contains_key(&handle))?;
-        let p = service.properties.get(&handle)?;
         let operation = if write {
             SsapOperations::WRITE_WITH_RSP
         } else {
             SsapOperations::READ
         };
+        self.target_operation(handle, level, write, operation)
+    }
+    fn target_operation(
+        &self,
+        handle: u16,
+        level: u32,
+        write: bool,
+        operation: SsapOperations,
+    ) -> Option<Target> {
+        let service = self
+            .services
+            .values()
+            .find(|s| s.properties.contains_key(&handle))?;
+        let p = service.properties.get(&handle)?;
         if !p.operations.contains(operation)
             || p.access.check(level, write) != Err(9)
             || p.access
@@ -279,6 +288,17 @@ impl Database {
         })
     }
     pub(crate) fn value_targets(&self, request: ValuePdu<'_>, level: u32) -> Vec<Target> {
+        if let ValuePdu::WriteCommand {
+            handle,
+            data_type: 0,
+            ..
+        } = request
+        {
+            return self
+                .target_operation(handle, level, true, SsapOperations::WRITE_NO_RSP)
+                .into_iter()
+                .collect();
+        }
         if let ValuePdu::Write {
             handle,
             data_type: 2,
@@ -623,6 +643,81 @@ impl Database {
             .map(|p| p.value.clone())
             .ok_or_else(|| "unknown local property".into())
     }
+    /// Apply one complete command without constructing a normal or error PDU.
+    /// Error codes are local refusal reasons only; commands never owe a reply.
+    pub(crate) fn command_authorized(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<(), u8> {
+        if !matches!(request, ValuePdu::WriteCommand { .. }) {
+            return Err(2);
+        }
+        self.write_value(request, mtu, level, approvals)
+    }
+    /// Called under the database mutex after the Engine's original context
+    /// recheck. Permission remains specific to the request or command opcode.
+    fn write_value(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<(), u8> {
+        let (handle, data_type, value, operation) = match request {
+            ValuePdu::Write {
+                handle,
+                data_type,
+                value,
+                ..
+            } => (handle, data_type, value, SsapOperations::WRITE_WITH_RSP),
+            ValuePdu::WriteCommand {
+                handle,
+                data_type,
+                value,
+            } => (handle, data_type, value, SsapOperations::WRITE_NO_RSP),
+            _ => return Err(2),
+        };
+        let service = self
+            .services
+            .values()
+            .find(|s| s.properties.contains_key(&handle))
+            .ok_or(4u8)?;
+        if service.owner.as_ref().is_some_and(|owner| !owner.current()) {
+            return Err(4);
+        }
+        let property = service.properties.get(&handle).ok_or(4u8)?;
+        if data_type != 0 {
+            return Err(13);
+        }
+        if !property.operations.contains(operation) {
+            return Err(7);
+        }
+        property.access.check_authorization_result(
+            level,
+            true,
+            self.locally_authorized(handle, data_type, true, approvals),
+        )?;
+        let next =
+            budget::replacement_bytes(self.bytes, property.value.len(), value.len()).ok_or(5u8)?;
+        if value
+            .len()
+            .checked_add(5)
+            .is_none_or(|size| size > usize::from(mtu))
+        {
+            return Err(16);
+        }
+        let property = self
+            .services
+            .values_mut()
+            .find_map(|s| s.properties.get_mut(&handle))
+            .expect("checked property under DB mutex");
+        property.value = value.to_vec();
+        self.bytes = next;
+        Ok(())
+    }
     /// Returns a real protocol response. Mutates only on validated single-value
     /// writes with sufficient permission, value budget and negotiated PDU size.
     pub(crate) fn answer(
@@ -675,61 +770,16 @@ impl Database {
                 data_type,
                 value,
                 verify,
-            } => {
-                let error = match self.property(handle) {
-                    None => Some(4),
-                    Some(_) if data_type != 0 => Some(13),
-                    Some(p) if !p.operations.contains(SsapOperations::WRITE_WITH_RSP) => Some(7),
-                    Some(p)
-                        if p.access
-                            .check_authorization_result(
-                                level,
-                                true,
-                                self.locally_authorized(handle, data_type, true, approvals),
-                            )
-                            .is_err() =>
-                    {
-                        p.access
-                            .check_authorization_result(
-                                level,
-                                true,
-                                self.locally_authorized(handle, data_type, true, approvals),
-                            )
-                            .err()
-                    }
-                    Some(p)
-                        if budget::replacement_bytes(self.bytes, p.value.len(), value.len())
-                            .is_none() =>
-                    {
-                        Some(5)
-                    }
-                    _ => None,
-                };
-                if let Some(error) = error {
-                    ValuePdu::WriteError { handle, error }
-                } else {
-                    if value.len() + 5 > usize::from(mtu) {
-                        return Err("write exceeds negotiated PDU".into());
-                    }
-                    let p = self
-                        .services
-                        .values_mut()
-                        .find_map(|s| s.properties.get_mut(&handle))
-                        .expect("checked property");
-                    self.bytes = budget::replacement_bytes(self.bytes, p.value.len(), value.len())
-                        .expect("replacement admission checked under DB mutex");
-                    p.value = value.to_vec();
-                    if verify {
-                        ValuePdu::WrittenValue {
-                            handle,
-                            data_type,
-                            value,
-                        }
-                    } else {
-                        ValuePdu::Written
-                    }
-                }
-            }
+            } => match self.write_value(request, mtu, level, approvals) {
+                Err(16) => return Err("write exceeds negotiated PDU".into()),
+                Err(error) => ValuePdu::WriteError { handle, error },
+                Ok(()) if verify => ValuePdu::WrittenValue {
+                    handle,
+                    data_type,
+                    value,
+                },
+                Ok(()) => ValuePdu::Written,
+            },
             _ => return Err("not a value request".into()),
         };
         let size = response
@@ -742,6 +792,264 @@ impl Database {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn command_and_request_permissions_do_not_authorize_each_other() {
+        for operations in [1, 3, 5, 7] {
+            let mut database = Database::default();
+            let (_, _, handles) = database
+                .register(vec![1, 0], vec![(vec![2, 0], operations, 0, vec![1])])
+                .unwrap();
+            let handle = handles[0];
+            let command = ValuePdu::WriteCommand {
+                handle,
+                data_type: 0,
+                value: &[9, 8],
+            };
+            // The response-producing API must never render a command response.
+            assert!(database.answer(command, 249, 0).is_err());
+            assert_eq!(database.local_read(handle).unwrap(), [1]);
+            assert_eq!(
+                database.command_authorized(command, 249, 0, &[]),
+                if operations & 2 != 0 { Ok(()) } else { Err(7) }
+            );
+            let after_command = if operations & 2 != 0 {
+                vec![9, 8]
+            } else {
+                vec![1]
+            };
+            assert_eq!(database.local_read(handle).unwrap(), after_command);
+            let request = ValuePdu::Write {
+                handle,
+                data_type: 0,
+                value: &[6],
+                verify: true,
+            };
+            assert_eq!(database.command_authorized(request, 249, 0, &[]), Err(2));
+            assert_eq!(database.local_read(handle).unwrap(), after_command);
+            let response = database.answer(request, 249, 0).unwrap();
+            if operations & 4 != 0 {
+                assert_eq!(
+                    ValuePdu::decode(249, &response).unwrap(),
+                    ValuePdu::WrittenValue {
+                        handle,
+                        data_type: 0,
+                        value: &[6]
+                    }
+                );
+                assert_eq!(database.local_read(handle).unwrap(), [6]);
+            } else {
+                assert_eq!(
+                    ValuePdu::decode(249, &response).unwrap(),
+                    ValuePdu::WriteError { handle, error: 7 }
+                );
+                assert_eq!(database.local_read(handle).unwrap(), after_command);
+            }
+        }
+    }
+
+    #[test]
+    fn command_replaces_only_after_complete_length_type_and_budget_admission() {
+        let mut database = Database::default();
+        let (_, _, handles) = database
+            .register(vec![1, 0], vec![(vec![2, 0], 3, 0, vec![1, 2])])
+            .unwrap();
+        let handle = handles[0];
+        for (data_type, value, mtu, expected) in [
+            (2, vec![4], 249, 13),
+            (0, vec![4; 245], 249, 16),
+            (0, vec![4; 2043], 4096, 5),
+            (0, vec![], 4, 16),
+        ] {
+            let before = (database.bytes, database.local_read(handle).unwrap());
+            assert_eq!(
+                database.command_authorized(
+                    ValuePdu::WriteCommand {
+                        handle,
+                        data_type,
+                        value: &value
+                    },
+                    mtu,
+                    0,
+                    &[]
+                ),
+                Err(expected)
+            );
+            assert_eq!(
+                (database.bytes, database.local_read(handle).unwrap()),
+                before
+            );
+        }
+        let maximum = vec![0x5a; 2042];
+        assert_eq!(
+            database.command_authorized(
+                ValuePdu::WriteCommand {
+                    handle,
+                    data_type: 0,
+                    value: &maximum
+                },
+                2047,
+                0,
+                &[]
+            ),
+            Ok(())
+        );
+        assert_eq!(database.local_read(handle).unwrap(), maximum);
+        assert_eq!(database.bytes, 2042);
+        assert_eq!(
+            database.command_authorized(
+                ValuePdu::WriteCommand {
+                    handle,
+                    data_type: 0,
+                    value: &[]
+                },
+                5,
+                0,
+                &[]
+            ),
+            Ok(())
+        );
+        assert_eq!(database.local_read(handle).unwrap(), []);
+        assert_eq!(database.bytes, 0);
+        assert_eq!(
+            database.command_authorized(
+                ValuePdu::WriteCommand {
+                    handle: 0,
+                    data_type: 0,
+                    value: &[1]
+                },
+                249,
+                0,
+                &[]
+            ),
+            Err(4)
+        );
+
+        let mut full = Database::default();
+        let mut definitions = vec![(vec![2, 0], 3, 0, vec![1; 2042]); 4];
+        definitions.push((vec![2, 0], 3, 0, vec![1; 24]));
+        let (_, _, handles) = full.register(vec![1, 0], definitions).unwrap();
+        let handle = handles[4];
+        assert_eq!(full.bytes, 8192);
+        assert_eq!(
+            full.command_authorized(
+                ValuePdu::WriteCommand {
+                    handle,
+                    data_type: 0,
+                    value: &[2; 25]
+                },
+                249,
+                0,
+                &[]
+            ),
+            Err(5)
+        );
+        assert_eq!(full.local_read(handle).unwrap(), [1; 24]);
+        assert_eq!(full.bytes, 8192);
+    }
+
+    #[tokio::test]
+    async fn command_requires_the_registered_owner_approval_and_actual_security_level() {
+        // Real private-bus owner watches; supplied approvals exercise the DB
+        // predicate only, not an application callback or Native security proof.
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let caller = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let foreign = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let store = Arc::new(std::sync::Mutex::new(Database::default()));
+        let slots = Arc::new(tokio::sync::Semaphore::new(2));
+        let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(5);
+        let mut owners = Vec::new();
+        for connection in [&caller, &foreign] {
+            owners.push(
+                Owner::pin(
+                    &server,
+                    connection.unique_name().unwrap().to_string(),
+                    zbus::zvariant::OwnedObjectPath::try_from("/authorizer").unwrap(),
+                    &store,
+                    slots.clone().try_acquire_owned().unwrap(),
+                    deadline,
+                )
+                .await
+                .unwrap(),
+            );
+        }
+        {
+            let mut database = store.lock().unwrap();
+            let (_, _, handles) = database
+                .register_owned(
+                    vec![1, 0],
+                    vec![(vec![2, 0], 3, 6, vec![1])],
+                    owners[0].clone(),
+                )
+                .unwrap();
+            let handle = handles[0];
+            let command = ValuePdu::WriteCommand {
+                handle,
+                data_type: 0,
+                value: &[7, 8],
+            };
+            let targets = database.value_targets(command, 2);
+            assert_eq!(targets.len(), 1);
+            assert!(Arc::ptr_eq(&targets[0].owner, &owners[0]));
+            assert_eq!(database.command_authorized(command, 249, 2, &[]), Err(9));
+            let foreign_approval = Approval {
+                handle,
+                data_type: 0,
+                write: true,
+                owner: owners[1].clone(),
+            };
+            assert_eq!(
+                database.command_authorized(command, 249, 2, &[foreign_approval]),
+                Err(9)
+            );
+            let approval = Approval {
+                handle,
+                data_type: 0,
+                write: true,
+                owner: owners[0].clone(),
+            };
+            assert_eq!(
+                database.command_authorized(command, 249, 1, std::slice::from_ref(&approval)),
+                Err(8)
+            );
+            assert_eq!(database.local_read(handle).unwrap(), [1]);
+            assert_eq!(
+                database.command_authorized(command, 249, 2, std::slice::from_ref(&approval)),
+                Ok(())
+            );
+            assert_eq!(database.local_read(handle).unwrap(), [7, 8]);
+            owners[0].revoke();
+            assert_eq!(
+                database.command_authorized(
+                    ValuePdu::WriteCommand {
+                        handle,
+                        data_type: 0,
+                        value: &[9]
+                    },
+                    249,
+                    2,
+                    &[approval]
+                ),
+                Err(4)
+            );
+            assert_eq!(database.local_read(handle).unwrap(), [7, 8]);
+        }
+        for owner in owners {
+            owner.shutdown().await;
+        }
+    }
     #[test]
     fn attribute_security_checks_original_level_before_values_or_mutation() {
         use slk_protocol::ssap::read_uuid::{Request, decode};
@@ -1036,7 +1344,7 @@ mod tests {
         );
         assert_eq!(d.local_read(hs[0]).unwrap(), [4]);
         let before = (d.next, d.bytes, d.list());
-        for ops in [2, 3, 6, 7] {
+        for ops in [32, 256, 1024, 7 | 32] {
             assert!(
                 d.register(vec![1, 0], vec![(vec![2, 0], ops, 0, vec![])])
                     .is_err()

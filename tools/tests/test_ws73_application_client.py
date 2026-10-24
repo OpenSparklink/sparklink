@@ -221,7 +221,7 @@ class ApplicationClientEvidence(unittest.TestCase):
 
     def test_role_evidence_cannot_be_replaced_by_management_or_partial_success(self):
         from ws73_application_role import verify_probe
-        for kind in ['missing','manager','group','cap','denial','preflight','old-contract','float-contract','raw','path','exit','stderr','interval']:
+        for kind in ['missing','manager','group','cap','denial','preflight','command-preflight','old-contract','float-contract','raw','path','exit','stderr','interval']:
             run,_=fixture();row=run['application_clients'][0];probe=row['role_probe']
             if kind=='missing':row.pop('role_probe')
             elif kind=='manager':probe['credentials']['uids']=[1000]*4
@@ -229,6 +229,7 @@ class ApplicationClientEvidence(unittest.TestCase):
             elif kind=='cap':probe['credentials']['capabilities']['CapInh']='1'
             elif kind=='denial':probe['stdout']=probe['stdout'].replace('AUTH_DENIED: SubmitDisconnect\n','')
             elif kind=='preflight':probe['stdout']=probe['stdout'].replace('AUTH_SSAP_PREFLIGHT: ReadSsapValue\n','')
+            elif kind=='command-preflight':probe['stdout']=probe['stdout'].replace('AUTH_SSAP_PREFLIGHT: WriteSsapCommand\n','')
             elif kind=='old-contract':row['application_role_contract_version']=1
             elif kind=='float-contract':row['application_role_contract_version']=2.0
             elif kind=='raw':probe['stdout']=probe['stdout'].replace('KERNEL_ACCESS: denied','KERNEL_ACCESS: allowed')

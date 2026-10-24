@@ -107,7 +107,8 @@ Channel 的真实系统调用及截断/身份验证。它不是另一条业务�
 不存在的继承线程。输入指针须遵守 C 的有效区域/独占/生命周期契约；无效指针是
 调用者 UB，和内核 EFAULT 测试分开。
 
-### C/Python连接级远端SSAP读／短写
+(cpython连接级远端ssap读短写)=
+### C/Python连接级远端SSAP读写与无响应写命令
 
 `slk_client_connection(client, controller, path, path_length, deadline_ns, output)`
 创建opaque `SlkConnection`，沿用同一Rust `Client::connection`核对并固定原daemon、
@@ -121,6 +122,12 @@ generation、physical lifetime、handle和peer身份。它只是观察／调用�
 缓存或事务、不echo写入、不自动重试／降级。minimum为0..2，非零handle为u16。
 读写前后都沿用原身份检查，旧对象不因重连、handle复用或daemon更换复活。
 
+`slk_connection_ssap_write_command(connection, handle, minimum, value, value_length, deadline_ns)`
+复用同一客户端的`write_without_response`与唯一Engine，只有一个属性handle／value，不开放
+描述符或multi-item接口。返回0仅表示全部命令片已准入软件socket路径；没有输出buffer或
+伪造的协议响应，不证明USB完成、控制器完成、对端收到或应用处理。失败可能发生在部分片
+已经准入之后，不能自动重试或断言未产生远端影响。输入与原期限规则同write。
+
 输出参数为`buffer, capacity, length`，capacity必须1..65535。成功完整复制原返回
 字节；`ENOBUFS`只更新所需length，buffer不变，**远端操作已经执行，不能把它当作
 可安全重试的size query**。其他失败二者不变。超出65535的回复为EOVERFLOW。
@@ -128,7 +135,7 @@ write输入允许空值，长度超65535为EMSGSIZE；这个语言内存上限�
 支持，实际大小／安全要求继续由daemon及通道拒绝，不截断输入。
 权限继续按实际system bus策略逐方法拒绝；`sparklink-apps`开放只读
 `Connection.GetInfo` 预检与既有 `OpenChannel`／`OpenChannelScoped`／
-`PrepareDynamicChannel`，以及已有原期限约束的 `ReadSsapValue`、`WriteSsapValue`、
+`PrepareDynamicChannel`，以及已有原期限约束的 `ReadSsapValue`、`WriteSsapValue`、`WriteSsapCommand`、
 `ReceiveSsapUpdate` 和下方四个持续接收方法。原身份、远端权限与机制事实仍由唯一
 Engine 校验；组成员不是 Native Grant 或服务所有者。管理权未开放。`DiscoverSsap`、
 `GetCachedSsap`、`ReadSsapByUuid`、`GetSsapInfo` 尚未通过本批原期限／调用者审计，
@@ -141,6 +148,8 @@ Python `Client.connection(ControllerId, full_connection_path, deadline_ns=...)`
 返回可显式close或用`with`的`Connection`；`connection.ssap().read(handle, ...)`
 和`.write(handle, bytes_like, ...)`使用同一C ABI并返回相同字节。每次只执行一次，
 不按错误长度自动重试。关闭Connection后已有SSAP视图失效；不关闭物理连接。
+Python `.write_without_response(handle, bytes_like, deadline_ns=..., minimum=0)` 返回`None`，
+仅表示上述软件准入，其他异常通过同一C ABI传播；同样不自动重试或重连。
 
 **SSAP值读／短写**的原期限已传到现有daemon Query；e776产物只有分项正向与
 原路径保持资格，受控期限、退出、部分初始化及晚到义务仍须单列验收。Rust方法显式接收`libsparklink::Deadline`，C/Python仍接收绝对
@@ -241,7 +250,8 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 | `discover(uuid, kind)` | `DiscoverSsap`，条目及实际事务trace | 仅daemon当前支持的种类；不创建客户端缓存 |
 | `cached()` | `GetCachedSsap` | 该lifetime的建议性缓存，不能授予可用性/安全 |
 | `read(handle, minimum)` | `ReadSsapValue` | 原机制要求；错误原样传播，无弱化fallback |
-| `write(handle, value, minimum)` | `WriteSsapValue` | 原短写协议；不截断、不echo、不实现新长写 |
+| `write(handle, value, minimum, Deadline)` | `WriteSsapValue`，协议响应字节 | daemon当前协商的有界写；不截断、不echo、不另做分片 |
+| `write_without_response(handle, value, minimum, Deadline)` | `WriteSsapCommand`，空返回 | 单属性WRITE_NO_RSP；全部片软件准入不等于远端交付，失败可有部分副作用 |
 | `read_by_uuid(start, end, data_type, uuid, minimum)` | `ReadSsapByUuid` | 返回每项结果及原trace；不是本地构造成功 |
 | `receive_update(handles, modes, wait_ms)` / `receive_until(..., Deadline)` | `ReceiveSsapUpdate` | 单次CPCD启用/接收/验证停用；需真实认证及拥有者授权；不覆盖已有配置 |
 | `subscribe(handles, modes, duration_ms, Deadline)` | `SubscribeSsapUpdates` | 持有原 caller／lifetime 的有限接收租约；读取、续租与关闭复用同一 Engine，当前一 actor 一个租约 |
@@ -249,6 +259,12 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 | `owned_configuration(handle, Deadline)` | `GetOwnedSsapConfiguration` | 观察原caller属性在本Session的配置，不制造Ready、授权或新配置 |
 | `exchange_info()` | `GetSsapInfo` | 真实协商观察，核对返回完整身份；不是服务发现或安全资格 |
 | `connection.transport_status()` | `GetTransportStatus` | 只读现有Session，不能排空credit或证明复用屏障 |
+
+`WriteSsapCommand`输入签名为`q, ay, u, (ttttt)`，分别为handle、值、minimum和原期限，
+输出为空；与返回`ay`的`WriteSsapValue`明确区分。`slctl ssap-write-command CONNECTION HANDLE
+VALUE_HEX [MINIMUM]`只显示`SsapCommandAdmission`及`peer_delivery=unconfirmed`；
+`ssap-write`仍要求原协议响应。新入口的实机资格须独立取得，名字、空返回或离线fixture
+不构成对端交付证明。
 
 相应slctl远端命令通过这一客户端调用，CLI仅解析参数和显示结果；唯一wire Engine、
 事务/分片及服务数据库仍在slkd。共享wire元组由slk-contract提供，daemon直接消费契约，
@@ -513,7 +529,8 @@ actor回归仅显式test-only Wire，生产没有模拟上下文或域降级。�
 [当前资格](../../project/current-capabilities.md)，旧K8c接收资格不转授此新发送路径。
 
 ServiceManager新增明确本地 RegisterLocalService/ListLocalServices/ReadLocalValue/RemoveLocalService；
-Connection新增ReadSsapValue/WriteSsapValue经真实SMTC，写要求peer校验回复。
+Connection的ReadSsapValue/WriteSsapValue经唯一SMTC，WriteSsapValue要求协议回复；
+另有WriteSsapCommand无响应单属性写，仅返回全部片的软件socket准入。
 Connection 只读属性 `SsapSecurityRequirement`（D-Bus `u`）返回首次 SMTC 绑定前
 固定的最低机制要求 `0|1|2`；它不是当前安全等级。启动配置、延迟启动、拒绝及
 无降级/重绑行为见[SSAP权限与通道要求](ssap-permissions.md)。不改变本地 staging
@@ -933,8 +950,9 @@ Rust `message_security::prepare`、C `slk_channel_prepare_tx`、Python
 有效对齐存储。`slk_ssap_access_error` 是纯 access 谓词（0 或 SSAP 错误 8/9/10，
 非法输入 -EINVAL），不能接收应用伪造等级并据此授予实际权限。
 
-Connection.ReadSsapValue(handle,minimum)、WriteSsapValue(handle,value,minimum)
-及 ReadSsapByUuid(...,minimum) 是未发布的新签名。ServiceManager 属性注册/列表
+Connection.ReadSsapValue(handle,minimum,deadline)、WriteSsapValue(handle,value,minimum,deadline)、
+WriteSsapCommand(handle,value,minimum,deadline) 与 ReadSsapByUuid(...,minimum) 都是未发布接口。
+无响应写的空返回只表示软件准入；其中前三个方法的deadline形状见上文原期限契约。ServiceManager 属性注册/列表
 也增加独立 access 字段，详见[操作和访问要求](ssap-permissions.md)。只有唯一
 slkd Engine 的真实内核 RX 观察可用于生产值访问；管理 staging 仍拒绝授权位，
 逐请求本地授权经 Owned 注册接入，见[审批契约](ssap-permissions.md#应用拥有的本地服务与逐请求审批)。

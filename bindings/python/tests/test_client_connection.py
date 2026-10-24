@@ -44,6 +44,10 @@ class Boundary:
         ctypes.cast(args[7], ctypes.POINTER(ctypes.c_size_t))[0] = 1
         return 0
 
+    def slk_connection_ssap_write_command(self, *args):
+        self.calls.append(('command', args[1], args[2], bytes(args[3]), args[5]))
+        return 0
+
     def _update(self, args, stage):
         self.calls.append(('update', stage))
         v = _SsapUpdate()
@@ -183,3 +187,43 @@ class PythonConnectionBoundary(unittest.TestCase):
         connection.close()
         self.assertEqual(bridge.calls, [])
         self.assertEqual(bridge.closed, [123])
+
+
+class PythonCommandBoundary(unittest.TestCase):
+    def test_unit_result_empty_value_and_error_propagation_without_retry(self):
+        bridge = Boundary()
+        with caller(bridge) as client, client.connection(ControllerId(2, 7), '/fixture', deadline_ns=1) as connection:
+            remote = connection.ssap()
+            self.assertIsNone(remote.write_without_response(17, b'\x12', minimum=2, deadline_ns=1))
+            self.assertIsNone(remote.write_without_response(17, b'', deadline_ns=2))
+            def refuse(*args):
+                bridge.calls.append(('refused', args[1]))
+                return -errno.EACCES
+            bridge.slk_connection_ssap_write_command = refuse
+            with self.assertRaises(OSError) as caught:
+                remote.write_without_response(17, b'\x12', deadline_ns=3)
+            self.assertEqual(caught.exception.errno, errno.EACCES)
+        self.assertEqual(bridge.calls, [('command', 17, 2, b'\x12', 1), ('command', 17, 0, b'', 2), ('refused', 17)])
+        with self.assertRaises(ValueError):
+            remote.write_without_response(17, b'', deadline_ns=1)
+
+    def test_invalid_input_and_fork_never_reach_command_abi(self):
+        bridge = Boundary()
+        with caller(bridge) as client, client.connection(ControllerId(2, 7), '/fixture', deadline_ns=1) as connection:
+            remote = connection.ssap()
+            for handle in (0, True, -1, 65536):
+                with self.assertRaises(ValueError):
+                    remote.write_without_response(handle, b'', deadline_ns=1)
+            for minimum in (3, True, -1):
+                with self.assertRaises(ValueError):
+                    remote.write_without_response(17, b'', minimum=minimum, deadline_ns=1)
+            with self.assertRaises(TypeError):
+                remote.write_without_response(17, 42, deadline_ns=1)
+            for value in (b'x'*65536, memoryview(bytearray(65536)).cast('I')):
+                with self.assertRaises(OSError) as caught:
+                    remote.write_without_response(17, value, deadline_ns=1)
+                self.assertEqual(caught.exception.errno, errno.EMSGSIZE)
+            with patch('sparklink.client.os.getpid', return_value=connection._pid+1):
+                with self.assertRaises(RuntimeError):
+                    remote.write_without_response(17, b'', deadline_ns=1)
+        self.assertEqual(bridge.calls, [])

@@ -134,7 +134,29 @@ pub unsafe extern "C" fn slk_connection_ssap_read(
     unsafe { copy_result(result, buffer, capacity, length) }
 }
 
-/// Execute the existing short-write RPC, returning its exact protocol result
+// One bounded input/deadline path for acknowledged writes and commands.
+// The caller guarantees a live readable region when length is nonzero.
+unsafe fn write_input(
+    value: *const u8,
+    length: usize,
+    deadline_ns: u64,
+) -> Result<(Deadline, crate::Deadline, Vec<u8>), i32> {
+    if value.is_null() && length != 0 {
+        return Err(nix::libc::EINVAL);
+    }
+    if length > MAX_BUFFER {
+        return Err(nix::libc::EMSGSIZE);
+    }
+    let (deadline, original) = Deadline::from_monotonic_ns(deadline_ns)?.protocol()?;
+    let bytes = if length == 0 {
+        Vec::new()
+    } else {
+        unsafe { std::slice::from_raw_parts(value, length) }.to_vec()
+    };
+    Ok((deadline, original, bytes))
+}
+
+/// Execute the existing bounded-write RPC, returning its exact protocol result
 /// bytes. No long-write fallback, truncation, method echo or new Engine. The
 /// daemon's actual negotiated size/security rules remain authoritative.
 /// value_length<=65535 is a language memory budget, not long-write support;
@@ -164,21 +186,10 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
     {
         return -nix::libc::EINVAL;
     }
-    if value_length > MAX_BUFFER {
-        return -nix::libc::EMSGSIZE;
-    }
-    let deadline = match Deadline::from_monotonic_ns(deadline_ns) {
-        Ok(value) => value,
-        Err(e) => return -e,
-    };
-    let (deadline, original) = match deadline.protocol() {
-        Ok(value) => value,
+    let (deadline, original, value) = match unsafe { write_input(value, value_length, deadline_ns) }
+    {
+        Ok(input) => input,
         Err(error) => return -error,
-    };
-    let value = if value_length == 0 {
-        Vec::new()
-    } else {
-        unsafe { std::slice::from_raw_parts(value, value_length) }.to_vec()
     };
     let view = unsafe { &*connection };
     let link = view.link.clone();
@@ -186,6 +197,45 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
         link.ssap().write(handle, value, minimum, original).await
     });
     unsafe { copy_result(result, buffer, capacity, length) }
+}
+
+/// Submit one property WRITE_NO_RSP via the existing Rust client and daemon.
+/// Returns0 only when all command fragments are admitted to software socket
+/// queues, not USB/controller completion or peer receipt/processing. No output
+/// bytes, implicit retry, descriptor/multi-item operation or second Engine.
+/// The original absolute deadline includes local queueing and the same5s
+/// ceiling as ssap_write. Failure may follow partial admission; remote effects
+/// remain uncertain. value_length<=65535 is a memory budget, not a wire limit.
+/// # Safety
+/// connection remains live without concurrent close (same fork rules as Client).
+/// value is a live immutable value_length-byte region, NULL only when empty.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_write_command(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    value: *const u8,
+    value_length: usize,
+    deadline_ns: u64,
+) -> c_int {
+    if connection.is_null() || handle == 0 || minimum > 2 {
+        return -nix::libc::EINVAL;
+    }
+    let (deadline, original, value) = match unsafe { write_input(value, value_length, deadline_ns) }
+    {
+        Ok(input) => input,
+        Err(error) => return -error,
+    };
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    match view.inner.call(deadline, move |_| async move {
+        link.ssap()
+            .write_without_response(handle, value, minimum, original)
+            .await
+    }) {
+        Ok(()) => 0,
+        Err(error) => -error,
+    }
 }
 
 /// One bounded SSAP update receipt,not proof of application processing.

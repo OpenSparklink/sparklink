@@ -145,6 +145,16 @@ are removed. Use the distinct ssap-list/register/serve/remove/local-read
 operations for local state and ssap-discover/read/write with an exact
 Connection path for the implemented remote protocol. Local registration
 is not proof of remote delivery; Owned authorization is separate from pairing.
+.TP
+.BI ssap-write-command " connection-path handle value-hex [minimum]"
+Submit one property WRITE_NO_RSP through the ordinary application Client and
+existing daemon actor. Minimum is mechanism0..2. All command fragments must enter
+the software socket path before success; this does not confirm USB/controller
+completion, peer receipt or application handling. Output is SsapCommandAdmission,
+never a fabricated peer value. The original five-second deadline includes caller
+identity checks, queueing and negotiation. Failure may follow partial admission;
+no implicit retry. Descriptor and multi-item commands are not exposed.
+Use ssap-write when the supported operation requires a protocol response.
 .SS Statistics and Diagnostics
 .TP
 .B stats

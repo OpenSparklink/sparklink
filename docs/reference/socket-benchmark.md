@@ -66,6 +66,18 @@ Basic接收队列满可能丢弃；暂停应用读取不能被当成对端流控
 完整计数和零overrun／drop均为必需。实现及离线fixture通过不表示已取得实机或性能资格；
 准确结果只见唯一资格入口，失败保留原身份。
 
+四设备使用独立的显式入口 `--four-device-dynamic-benchmark
+--four-device-benchmark-case pressure`，不能与上述双设备选择器混用。它要求新准备清单
+的 `four_dynamic_benchmark_pressure_contract_version=1`，启动参数、两个worker、两个
+Root和聚合中的case及v4目标必须一致。默认四设备v2和短关闭v3不改变。
+
+两组各自交换物理连接角色，共336次对端校验回复、16个普通应用进程。四个“组／角色”
+分别要求长发起端实际EAGAIN、原载荷及时恢复、全部长请求回复及短通道进展；另核对
+两组实际USB业务区间重叠。xHCI仍为16MiB／CPU、64MiB文本上限和双组原始mono marker，
+缺失、覆盖、错组或旧预算不能通过。它不新增硬件credit、完整公平性或恢复承诺，不能
+从源码支持或离线fixture推导实机资格；SDK110每设备输入、HCC和E运行期临时地址保存／
+配置／读回／恢复仍独立验证。
+
 ## 报告字段与单位
 
 schema 版本、run id、源角色及 controller/generation/lifetime/channel 身份；

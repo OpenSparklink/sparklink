@@ -50,7 +50,7 @@ def parallel_pair(row):
     pair=row.get('parallel_pair')
     if (type(row.get(PAIR_FIELD)) is not int or row[PAIR_FIELD]!=1
             or type(pair) is not int or pair not in (0,1)
-            or row_channel(row) is None or row_channel(row).get('version')not in(2,3)
+            or row_channel(row) is None or row_channel(row).get('version')not in(2,3,4)
             or ssap_gate.selected(row) is not None):
         raise CaptureError('explicit canonical benchmark pair0/1 contract required')
     return pair

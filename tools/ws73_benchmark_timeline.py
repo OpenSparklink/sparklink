@@ -84,7 +84,7 @@ def phase_intervals(rows,cookie,*,pair=None):
 
 def check_xhci(share, mode,*,parallel=False,close_short=False,pressure=False):
     share=Path(share)
-    if type(parallel)is not bool or type(close_short)is not bool or type(pressure)is not bool or close_short and not parallel or pressure and parallel or (parallel or pressure)and mode!='on':raise CaptureError('explicit paired/pressure gate requires original enabled trace')
+    if type(parallel)is not bool or type(close_short)is not bool or type(pressure)is not bool or close_short and not parallel or pressure and close_short or (parallel or pressure)and mode!='on':raise CaptureError('explicit paired/pressure gate requires original enabled trace')
     if mode not in ('on','off'):raise CaptureError('explicit xHCI comparison mode')
     rows=[json.loads((share/f'benchmark-xhci-{name}.json').read_text()) for name in ['start','end']]
     cookie=rows[0].get('cookie')
@@ -201,11 +201,11 @@ def rx_resubmits(share,run,trace):
 
 def valid_trace_summary(proof,mode,*,parallel=False,close_short=False,pressure=False):
     try:
-        if(type(parallel)is not bool or type(close_short)is not bool or type(pressure)is not bool or close_short and not parallel or pressure and parallel or (parallel or pressure)and mode!='on'or mode not in('on','off')or proof['mode']!=mode or proof['status']!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED'or type(proof['trace_contract_version'])is not int or proof['trace_contract_version']!=(2 if parallel else 1)or proof['clock']!='mono'):return False
+        if(type(parallel)is not bool or type(close_short)is not bool or type(pressure)is not bool or close_short and not parallel or pressure and close_short or (parallel or pressure)and mode!='on'or mode not in('on','off')or proof['mode']!=mode or proof['status']!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED'or type(proof['trace_contract_version'])is not int or proof['trace_contract_version']!=(2 if parallel else 1)or proof['clock']!='mono'):return False
         if pressure and(proof.get('requested_buffer_kb')!=16384 or type(proof.get('trace',{}).get('bytes'))is not int or not 0<proof['trace']['bytes']<=64*1024*1024):return False
         phases=proof['phase_intervals']
         if parallel:
-            if proof.get('requested_buffer_kb')!=(16384 if close_short else 8192)or type(proof.get('trace',{}).get('bytes'))is not int or not 0<proof['trace']['bytes']<=(64 if close_short else 32)*1024*1024:return False
+            if proof.get('requested_buffer_kb')!=(16384 if close_short or pressure else 8192)or type(proof.get('trace',{}).get('bytes'))is not int or not 0<proof['trace']['bytes']<=(64 if close_short or pressure else 32)*1024*1024:return False
             if type(phases)is not list or len(phases)!=2 or any(type(p)is not dict or set(p)!={'pair','phases'}or type(p['pair'])is not int or p['pair']!=i for i,p in enumerate(phases)):return False
             groups=[p['phases']for p in phases]
             if not all(valid_phase_bounds(group)for group in groups):return False
@@ -222,7 +222,7 @@ def valid_phase_bounds(phases):
 def verify_paired_trace(control,trace):
     """Bind each original Root witness to its own sealed mono trace markers."""
     from ws73_parallel_data import benchmark_case
-    if not valid_trace_summary(trace,'on',parallel=True,close_short=benchmark_case(control)=='close-short'):raise CaptureError('complete paired enabled mono trace required')
+    if not valid_trace_summary(trace,'on',parallel=True,close_short=benchmark_case(control)=='close-short',pressure=benchmark_case(control)=='pressure'):raise CaptureError('complete paired enabled mono trace required')
     for number,worker in enumerate(control['workers']):
         rows=worker['run']['socket_benchmark']
         if len(rows)!=2:raise CaptureError('two original Root trace witnesses per pair required')

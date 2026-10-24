@@ -21,16 +21,18 @@ benchmark_trace_buffer_kb() {
     benchmark_parallel=0
     benchmark_close=0
     benchmark_pressure=0
+    benchmark_pair_pressure=0
     for benchmark_word do
         case "$benchmark_word" in
             ws73.parallel_benchmark=1) benchmark_parallel=1 ;;
             ws73.parallel_benchmark_case=close-short) benchmark_close=1 ;;
+            ws73.parallel_benchmark_case=pressure) benchmark_pair_pressure=1 ;;
             ws73.benchmark_pressure=1) benchmark_pressure=1 ;;
         esac
     done
     if [ "$benchmark_pressure" = 1 ]; then printf '16384'; return 0; fi
     if [ "$benchmark_parallel" = 1 ]; then
-        if [ "$benchmark_close" = 1 ]; then printf '16384'; else printf '8192'; fi
+        if [ "$benchmark_close" = 1 ] || [ "$benchmark_pair_pressure" = 1 ]; then printf '16384'; else printf '8192'; fi
         return 0
     fi
     printf '1024'
@@ -485,7 +487,7 @@ elif grep -q 'ws73.parallel_business=1' /proc/cmdline; then
     benchmark_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.parallel_benchmark_case=/){sub(/^ws73.parallel_benchmark_case=/,"",$i);print $i}}' /proc/cmdline)
     if [ -n "$benchmark_case" ]; then
         [ "$disconnect_arg" = '--dynamic-benchmark' ] || fail 'benchmark case requires dedicated parallel benchmark'
-        [ "$benchmark_case" = 'close-short' ] || fail 'supported explicit parallel benchmark case'
+        case "$benchmark_case" in close-short|pressure) ;; *) fail 'supported explicit parallel benchmark case' ;; esac
         disconnect_arg="$disconnect_arg --dynamic-benchmark-case $benchmark_case"
     fi
     shared_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.subscription_shared_case=/){sub(/^ws73.subscription_shared_case=/,"",$i);print $i}}' /proc/cmdline)

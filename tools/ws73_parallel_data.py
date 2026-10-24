@@ -75,27 +75,27 @@ def benchmark_mode(record):
 
 
 def benchmark_case(record):
-    """Default v2 is unchanged; v3 requires an explicit four-pair request."""
+    """Default v2 is unchanged; v3/v4 require an explicit four-pair case."""
     enabled=benchmark_mode(record)
     if 'parallel_benchmark_case'not in record:return 'parallel'
     case=record['parallel_benchmark_case']
-    if not enabled or type(case)is not str or case!='close-short':
+    if not enabled or type(case)is not str or case not in('close-short','pressure'):
         raise CaptureError('explicit supported four benchmark case required')
     return case
 
 
 def benchmark_channel(record):
     from ws73_socket_benchmark import parallel_channel
-    return parallel_channel(0,close_short=benchmark_case(record)=='close-short')
+    return parallel_channel(0,close_short=benchmark_case(record)=='close-short',pressure=benchmark_case(record)=='pressure')
 
 
 def benchmark_case_from_boot(words):
     key='ws73.parallel_benchmark_case'
     tokens=[w for w in words if w==key or w.startswith(key+'=')]
     if not tokens:return 'parallel'
-    if tokens!=[key+'=close-short']or words.count('ws73.parallel_benchmark=1')!=1:
-        raise CaptureError('one explicit paired benchmark close-short boot case required')
-    return 'close-short'
+    if len(tokens)!=1 or tokens[0]not in(key+'=close-short',key+'=pressure')or words.count('ws73.parallel_benchmark=1')!=1:
+        raise CaptureError('one explicit paired benchmark close-short/pressure boot case required')
+    return tokens[0].split('=',1)[1]
 
 
 def verify_benchmark_requests(run,pair):
@@ -425,7 +425,7 @@ def verify_records(record):
                     '--slctl',r['slctl']['path'],'--slkd-pid',str(daemon['pid'])]
         if argv.count('--dynamic-benchmark')!=int(benchmark):raise CaptureError('explicit worker dynamic benchmark selector required')
         selected=[argv[i+1]for i,v in enumerate(argv[:-1])if v=='--dynamic-benchmark-case']
-        if argv.count('--dynamic-benchmark-case')!=len(selected)or selected!=(['close-short']if benchmark_selected_case=='close-short'else[]):raise CaptureError('original worker benchmark case required')
+        if argv.count('--dynamic-benchmark-case')!=len(selected)or selected!=([benchmark_selected_case]if benchmark_selected_case!='parallel'else[]):raise CaptureError('original worker benchmark case required')
         if argv.count('--update-delivery')!=int(delivery):raise CaptureError('explicit worker protected delivery selector required')
         if argv.count('--shared-subscription')!=int(subscription):raise CaptureError('explicit worker shared subscription selector required')
         if argv.count('--ssap-subscription-shared-case')!=int(case!='release')or case!='release'and argv[argv.index('--ssap-subscription-shared-case')+1]!=case:raise CaptureError('explicit original worker shared case required')
@@ -585,8 +585,8 @@ def corroborate(record,capture,*,evidence=None):
     if benchmark:
         summary=benchmark_parallel_proof(pairs,record)
         from ws73_benchmark_timeline import check_xhci,verify_paired_trace
-        trace=check_xhci(evidence,'on',parallel=True,close_short=benchmark_case(record)=='close-short');verify_paired_trace(record,trace)
-        return dict(status='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED',parallel_benchmark_contract_version=1,parallel_benchmark_control=record,dynamic_benchmark=summary,paired_trace=trace,pairs=pairs,overlaps=overlaps,controller_count=4,round_trips=summary['round_trips'],ordinary_uid=1004,coordinator_uid=1000,fixed_basic_channel_business_acceptance=False,dynamic_channel_acceptance=True,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False,**(dict(channel_close_isolation_acceptance=True)if benchmark_case(record)=='close-short'else{}))
+        trace=check_xhci(evidence,'on',parallel=True,close_short=benchmark_case(record)=='close-short',pressure=benchmark_case(record)=='pressure');verify_paired_trace(record,trace)
+        return dict(status='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED',parallel_benchmark_contract_version=1,parallel_benchmark_control=record,dynamic_benchmark=summary,paired_trace=trace,pairs=pairs,overlaps=overlaps,controller_count=4,round_trips=summary['round_trips'],ordinary_uid=1004,coordinator_uid=1000,fixed_basic_channel_business_acceptance=False,dynamic_channel_acceptance=True,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False,**(dict(channel_close_isolation_acceptance=True)if benchmark_case(record)=='close-short'else{}) ,**(dict(software_backpressure_acceptance=True)if benchmark_case(record)=='pressure'else{}))
     return dict(status='FOUR_REAL_PARALLEL_SHARED_SUBSCRIPTION_CORROBORATED'if subscription else 'FOUR_REAL_PARALLEL_UPDATE_DELIVERY_CORROBORATED'if delivery else 'FOUR_REAL_PARALLEL_OWNED_SSAP_CORROBORATED'if owned else 'FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
                 **(dict(parallel_subscription_contract_version=1,parallel_subscription_control=record,shared_subscription=subscription_parallel_proof(pairs,case=subscription_case(record)),shared_subscription_acceptance=True)if subscription else{}),
                 **(dict(parallel_delivery_contract_version=1,parallel_delivery_control=record,update_delivery=delivery_parallel_proof(pairs),update_delivery_acceptance=True)if delivery else{}),
@@ -623,7 +623,7 @@ def benchmark_parallel_proof(pairs,control):
                 if type(pid)is not int or pid<=0 or pid in applications:raise CaptureError('16 distinct actual application processes required')
                 applications.add(pid)
     if len(applications)!=16:raise CaptureError('full twochannel/twopair/tworole app process matrix required')
-    return dict(version=1,pairs=2,physical_roles=2,channels_per_connection=2,round_trips=2*parallel_replies(channel),short_round_trips=4*channel['channels'][0]['config']['count'],long_round_trips=4*channel['channels'][1]['config']['count'],application_uid=1004,application_extra_groups=[],application_processes=16,root_supervisors=2,performance_qualified=False,fairness_acceptance=False,credit_correctness_proof=False,**(dict(channel_close_isolation_acceptance=True)if benchmark_case(control)=='close-short'else{}))
+    return dict(version=1,pairs=2,physical_roles=2,channels_per_connection=2,round_trips=2*parallel_replies(channel),short_round_trips=4*channel['channels'][0]['config']['count'],long_round_trips=4*channel['channels'][1]['config']['count'],application_uid=1004,application_extra_groups=[],application_processes=16,root_supervisors=2,performance_qualified=False,fairness_acceptance=False,credit_correctness_proof=False,**(dict(channel_close_isolation_acceptance=True)if benchmark_case(control)=='close-short'else{}),**(dict(software_backpressure_acceptance=True)if benchmark_case(control)=='pressure'else{}))
 
 
 def protected_pair_security(pair):
@@ -782,7 +782,7 @@ def main():
     parser.add_argument('--owned-ssap',action='store_true',help='existing Owned SSAP caller/Engine in both physical pairs;actual approvals,denials,owner loss and wire overlap')
     parser.add_argument('--burst',action='store_true',help='16 real2042-byte replies perpair perrole; actual queue pressure and scoped pool/NOCP observations')
     parser.add_argument('--dynamic-benchmark',action='store_true',help='existing Root supervised apps-only v2 short/long dynamic channels in bothpairs,144actualreplies;not performance or full fairness qualification')
-    parser.add_argument('--dynamic-benchmark-case',choices=['parallel','close-short'],default='parallel',help='explicit existing v3 short close/long continuity profile;336replies;default v2 unchanged')
+    parser.add_argument('--dynamic-benchmark-case',choices=['parallel','close-short','pressure'],default='parallel',help='explicit v3 short close or v4 actual software EAGAIN recovery;336 replies;default v2 unchanged')
     parser.add_argument('--ssap-subscription-shared-case',choices=['release','expiry','owner-exit','pressure'],default='release',help='existing explicit release,original lease expiry,actual guest reader exit or bounded shared queue pressure;separate full matrices')
     args=parser.parse_args()
     if sum((args.burst,args.disconnect_isolation,args.owned_ssap,args.update_delivery,args.shared_subscription,args.dynamic_benchmark))>1:parser.error('select one explicit scope')
@@ -800,6 +800,7 @@ def main():
         args.channel_benchmark='window';args.channel_benchmark_parallel=True
         args.channel_benchmark_active_endpoint=0;args.benchmark_parallel_pair=args.pair
         args.channel_benchmark_close_short=args.dynamic_benchmark_case=='close-short'
+        args.channel_benchmark_pressure=args.dynamic_benchmark_case=='pressure'
         args.artifact.extend(name+'='+str(Path(__file__).with_name(name+'.py').resolve())for name in ['ws73_socket_benchmark','ws73_benchmark','ws73_application_role','ws73_role_snapshot','ws73_benchmark_resources','ws73_benchmark_timeline','ws73_channel_fairness','ws73_dynamic_channels'])
     args.channel_socket_bytes=2042 if args.burst else 61
     args.channel_socket_burst=args.burst;args.connection_advertising='negotiable-t'

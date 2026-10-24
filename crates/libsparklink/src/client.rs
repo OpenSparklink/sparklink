@@ -29,14 +29,22 @@ pub(crate) async fn bounded<T>(
         return Err(ApplicationError::Identity("daemon owner replaced"));
     }
     let mut lost = client.owner_loss();
-    tokio::select! {
+    let result = tokio::select! {
         biased;
         _ = lost.changed() => Err(ApplicationError::Identity("daemon owner replaced")),
         result = tokio::time::timeout_at(deadline.instant().into(), work) => {
             result.map_err(|_| std::io::Error::from_raw_os_error(nix::libc::ETIMEDOUT))?
         },
-    }
+    };
+    // A ready inner result can win the timeout poll after the original clock
+    // expires. Apply the same terminal deadline check to success and errors.
+    deadline.remaining()?;
+    result
 }
+
+#[cfg(test)]
+#[path = "client_deadline_tests.rs"]
+mod deadline_tests;
 
 /// Holds one D-Bus caller identity and pins the unique daemon owner. It never
 /// silently follows a replacement daemon or opens the Native control device.

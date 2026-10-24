@@ -120,7 +120,7 @@ class ReportedGeometry(unittest.TestCase):
 
     def test_actual_sampler_uses_typed_source_receipts_and_rejects_bad_identity(self):
         r,_,_,_,_=reported_fixture();g=r['channel_grant'];w=g['workers'][0];o=g['owners'][0]
-        gate=object.__new__(Gate);gate.index=0;gate.parents=[object(),object()];gate.row=g;gate.save=lambda:None
+        gate=object.__new__(Gate);gate.index=0;gate.controllers=[0,1];gate.parents=[object(),object()];gate.row=g;gate.save=lambda:None
         value=SleChannelTxStatus(version=1,size=64,controller=0,generation=o['generation'],lifetime=o['lifetime'],handle=o['handle'],packet_maximum=1024,capacity=8)
         def receipt():return dict(stage='tx_status',pid=w['pid'],fd=w['fd'],value=bytes(value).hex(),wall_ns=time.time_ns())
         # IPC is a visible fixture; this executes the live sampler, not a

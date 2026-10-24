@@ -94,7 +94,8 @@ def healthy_receipt(receipt, original):
 def execute(run, row, business):
     need(callable(business) and base.negotiated(row) == 2042 and row.get('security_requirement', 0) == 0,
          'existing basic Engine and ordinary application runner required')
-    sender = row['phase']; api = base.APIS[sender]
+    # Connection control swaps caller/peer, so the caller is index 0 in both phases.
+    sender = 0; api = base.APIS[row['phase']]
     source, target = row['owners'][sender], row['owners'][1-sender]
     row.update(ssap_command_deadline_required=True, ssap_command_deadline_contract=VERSION,
                ssap_command_deadline_publishers=[], ssap_command_deadline_tools=base.tool_records())
@@ -164,10 +165,10 @@ def execute(run, row, business):
 
 
 def case_contract(row, case, owner):
-    sender = row['phase']; source, target = row['owners'][sender], row['owners'][1-sender]
+    sender = 0; source, target = row['owners'][sender], row['owners'][1-sender]
     program = owner['args'][0]; prompt = case['prompt']; p = prompt['fields']; handle = owner['handle']
     need(case['status'] == STATUS and type(case['sender']) is int and case['sender'] == sender
-         and case['target'] == 1-sender and case['api'] == owner['api'] == base.APIS[sender]
+         and case['target'] == 1-sender and case['api'] == owner['api'] == base.APIS[row['phase']]
          and type(case['sequence']) is int and case['sequence'] == row['phase']
          and case['handle'] == handle and owner['sender'] == sender and owner['target'] == 1-sender,
          'original finite role/API/Owner mapping required')
@@ -307,6 +308,33 @@ def corroborate(row, matched, sdus):
                  bounded_absence_only=True, automatic_recovery_qualification=False)], credit
 
 
+def verify_new_lifetime(first, second):
+    need(first[PREFIX][0]['case']['end_wall_ns'] < packet_interval(second['ssap_write_commands'][0]['wire'][0]['tx'])[0],
+         'new-lifetime positive commands must follow original terminal')
+    # The existing connection gate reverses caller/peer when roles exchange.
+    # Controller identity, not its position in that array, owns the lifetime.
+    def endpoints(row):
+        values = row['owners']
+        result = {(e['owner']['index'],e['owner']['generation']):e for e in values}
+        need(len(values) == len(result) == 2, 'two distinct original controllers required')
+        return result
+    old, new = endpoints(first), endpoints(second)
+    need(old.keys() == new.keys(), 'new physical lifetime on the same controllers required')
+    for key in old:
+        need(old[key]['object']['lifetime'] != new[key]['object']['lifetime'],
+             'actual new physical lifetime required')
+
+
+
+def verify_deadline_receivers(first, second):
+    receivers = []
+    for row in (first, second):
+        case = row[PREFIX][0]['case']
+        owner = row['owners'][case['target']]['owner']
+        receivers.append((owner['index'], owner['generation']))
+    need(receivers[0] != receivers[1], 'each physical controller must receive one expired command')
+
+
 def valid_summary(summary):
     try:
         need(policy.valid_summary(summary), 'original positive/policy paired evidence required')
@@ -317,7 +345,7 @@ def valid_summary(summary):
                  and proof['bounded_absence_only'] is True and proof['automatic_recovery_qualification'] is False,
                  'exact scoped deadline proof required')
             case, owner = proof['case'], proof['publisher']
-            receipts = [None, None]; receipts[phase] = proof['source_info_original']
+            receipts = [None, None]; receipts[case['sender']] = proof['source_info_original']
             context = dict(phase=phase, owners=row['owners'], ssap_receipts=receipts,
                 applications=proof['applications'], application_tool=proof['application_tool'],
                 rounds=4, message_bytes=61, channel_info_required=True, tx_status_required=True,
@@ -327,12 +355,8 @@ def valid_summary(summary):
             pdu = case_contract(context, case, owner)
             verify_wire(context, case, pdu, proof['wire'], proof['window_packets'])
             verify_business(context, case, row['legs'])
-        first, second = summary['proofs']
-        need(first[PREFIX][0]['case']['end_wall_ns'] < packet_interval(second['ssap_write_commands'][0]['wire'][0]['tx'])[0],
-             'new-lifetime positive commands must follow original terminal')
-        for old, new in zip(first['owners'], second['owners'], strict=True):
-            need(old['owner']['index'] == new['owner']['index'] and old['owner']['generation'] == new['owner']['generation']
-                 and old['object']['lifetime'] != new['object']['lifetime'], 'actual new physical lifetime required')
+        verify_new_lifetime(*summary['proofs'])
+        verify_deadline_receivers(*summary['proofs'])
         return True
     except (AttributeError, KeyError, ValueError, TypeError, IndexError, CaptureError):
         return False

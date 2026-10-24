@@ -1247,7 +1247,9 @@ root 诊断进程、普通业务应用和对端 SDK 调用分别记录身份；�
 `--ssap-write-command-deadline-verify` 追加原期限门禁，必须同时选择上述正向和
 policy 门禁。契约版本为 1，guest token 为 `ws73.ssap_command_deadline=1`；
 缺少依赖、重复或未知 token、缺少一阶段证据均拒绝。每个阶段完成原有正例与
-policy 用例后，再用原 C／Python SDK 各提交一次随机序号和载荷的 32 字节命令。
+policy 用例后，由该阶段的连接发起端提交一次随机序号和载荷的 32 字节命令：
+第一阶段使用原 C SDK，交换角色后第二阶段使用原 Python SDK。两阶段分别覆盖
+两个物理发送方向，各端接收一次到期命令；不是每种 API × 每个方向的完整矩阵。
 原 `ask` 所有者不答复，让接收端首片建立的五秒期限到期。
 
 门禁核对接收端 `GetSsapInfo` 的真实 D-Bus `Failed`，只接受生产的

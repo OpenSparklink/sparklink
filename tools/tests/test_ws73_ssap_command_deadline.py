@@ -26,6 +26,39 @@ from test_ws73_channel_socket import fixture as application_fixture
 PREFIX = 'ssap_command_deadline'
 
 
+def reverse_physical_identities(value):
+    """Rename only the two fixture physical identities, preserving role slots.
+
+    The imported positive/policy fixture is untouched. Its independent wire
+    bytes do not encode USB/controller identity; the packet envelope, object
+    paths, prompt fields and actual caller argv all receive the same renaming.
+    """
+    swaps={'index':{0:1,1:0},'device':{10:11,11:10},'handle':{3:4,4:3},
+           'lifetime':{21:22,22:21,121:122,122:121}}
+    if isinstance(value,dict):
+        return {key:swaps[key].get(item,item) if key in swaps and type(item)is int
+                else reverse_physical_identities(item) for key,item in value.items()}
+    if isinstance(value,list):
+        result=[reverse_physical_identities(item) for item in value]
+        # SDK helper controller index is a positional decimal argument; all
+        # other positional numbers (property, minimum, sizes) stay unchanged.
+        for mode in ('ssap-command','ssap-command-reject'):
+            if mode in result:
+                offset=result.index(mode)+1
+                if offset<len(result) and result[offset] in ('0','1'):
+                    result[offset]=str(1-int(result[offset]))
+        return result
+    if isinstance(value,str):
+        value=re.sub(r'slk([01])_g7',lambda m:f'slk{1-int(m[1])}_g7',value)
+        value=re.sub(r'peer_t00_01020304050([01])',lambda m:f'peer_t00_01020304050{1-int(m[1])}',value)
+        value=re.sub(r'/link_([0-9a-f]{16})',lambda m:'/link_'+f'{swaps["lifetime"].get(int(m[1],16),int(m[1],16)):016x}',value)
+        for key in ('index','handle','lifetime'):
+            value=re.sub(rf'\b({key}=)(\d+)\b',lambda m:m[1]+str(swaps[key].get(int(m[2]),int(m[2]))),value)
+            value=re.sub(rf'("{key}"\s*:\s*)(\d+)\b',lambda m:m[1]+str(swaps[key].get(int(m[2]),int(m[2]))),value)
+        return value
+    return value
+
+
 def ordinary_business(row, clock):
     """Independent existing application vectors plus complete raw ACB pairs.
 
@@ -108,6 +141,8 @@ def refresh_outputs(value):
 
 def fixture(phase=0):
     row, capture = policy_fixture(phase)
+    if phase:
+        row,capture=reverse_physical_identities(row),reverse_physical_identities(capture)
     # Old fixtures deliberately share identities. Here an actual second
     # physical lifetime is a mandatory, separately tested witness.
     row, capture = shift(row, phase * 20_000_000_000, phase), shift(capture, phase * 20_000_000_000, phase)
@@ -115,7 +150,7 @@ def fixture(phase=0):
     row['end_wall_ns'] = clock + 10_000_000_000
     for entry, info in zip(row['owners'], row['ssap_receipts'], strict=True):
         info.update(args=['/bin/slctl', '--adapter', entry['owner']['path'], 'ssap-info', entry['object']['path']], stderr='')
-    sender, api = phase, ('c', 'python')[phase]
+    sender, api = 0, ('c', 'python')[phase]
     source, target = row['owners'][sender], row['owners'][1-sender]
     handle = 101
     token = lambda key: hashlib.sha256(f'deadline/{phase}/{key}'.encode()).digest()
@@ -194,7 +229,7 @@ def corroborated():
         policies, _ = policy.corroborate(row, matched, packets)
         deadlines, credit = gate.corroborate(row, matched, packets)
         gate.verify_business(row,row[PREFIX+'_case'],row['fixture_business_legs'])
-        assert not packets and credit == {phase:1,1-phase:0}
+        assert not packets and credit == {0:1,1:0}
         summary['proofs'].append(dict(phase=phase, owners=row['owners'], ssap_write_commands=positives,
             ssap_command_policy=policies, ssap_command_deadline=deadlines,legs=row['fixture_business_legs']))
     return summary
@@ -209,6 +244,51 @@ def manifest(summary):
     return value
 
 
+class RoleSwapLifetime(unittest.TestCase):
+    """Identity-map regression, separate from the complete evidence fixture.
+
+    The actual connection runner reverses caller/peer array order. Sender0 is
+    the current caller in each phase, so the real gate targets each physical
+    receiver once. This is one direction per phase, not a full API/direction
+    matrix. This helper fixture validates only identity and temporal mapping.
+    """
+    @staticmethod
+    def phases():
+        old = [dict(owner=dict(index=i,generation=7,bus=1,device=10+i,path=f'/controller/{i}'),
+                    object=dict(generation=7,lifetime=21+i,handle=3+i,path=f'/connection/{i}')) for i in (0,1)]
+        new = copy.deepcopy(old[::-1])
+        for entry in new:entry['object']['lifetime']+=100
+        first=dict(owners=old,ssap_command_deadline=[dict(case=dict(end_wall_ns=100))])
+        second=dict(owners=new,ssap_write_commands=[dict(wire=[dict(tx=dict(
+            wall_ns=201,fragments=[dict(wall_ns=200),dict(wall_ns=201)]))])])
+        return first,second
+
+    def test_reversed_endpoint_order_preserves_unique_controller_mapping(self):
+        first,second=self.phases()
+        gate.verify_new_lifetime(first,second)
+        second['owners'].reverse()
+        gate.verify_new_lifetime(first,second)
+
+    def test_duplicate_missing_old_identity_and_preterminal_positive_are_rejected(self):
+        for name in ('duplicate-first','duplicate-second','missing-first','missing-second',
+                     'changed-index','changed-generation','old-lifetime','early-positive',
+                     'simultaneous-positive','first-fragment-early'):
+            first,second=self.phases()
+            if name=='duplicate-first':first['owners'][1]=copy.deepcopy(first['owners'][0])
+            elif name=='duplicate-second':second['owners'][1]=copy.deepcopy(second['owners'][0])
+            elif name=='missing-first':first['owners'].pop()
+            elif name=='missing-second':second['owners'].pop()
+            elif name=='changed-index':second['owners'][0]['owner']['index']=99
+            elif name=='changed-generation':second['owners'][0]['owner']['generation']=8
+            elif name=='old-lifetime':second['owners'][0]['object']['lifetime']=first['owners'][1]['object']['lifetime']
+            else:
+                tx=second['ssap_write_commands'][0]['wire'][0]['tx']
+                if name=='early-positive':tx.update(wall_ns=99,fragments=[dict(wall_ns=98),dict(wall_ns=99)])
+                elif name=='simultaneous-positive':tx.update(wall_ns=100,fragments=[dict(wall_ns=100)])
+                else:tx['fragments'][0]['wall_ns']=99
+            with self.subTest(name=name),self.assertRaises(CaptureError):gate.verify_new_lifetime(first,second)
+
+
 class CommandDeadlineGate(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -219,6 +299,7 @@ class CommandDeadlineGate(unittest.TestCase):
         gate.validate_rows(rows, True)
         for row in rows:
             case, owner = row[PREFIX+'_case'], row[PREFIX+'_publishers'][0]
+            self.assertEqual((case['sender'],case['target'],case['api']),(0,1,('c','python')[row['phase']]))
             self.assertEqual(gate.case_contract(row, case, owner), b'\x0c\x03e\x00\x00'+bytes.fromhex(case['value']))
         self.assertTrue(positive.valid_summary(self.summary))
         self.assertTrue(policy.valid_summary(self.summary))
@@ -227,6 +308,19 @@ class CommandDeadlineGate(unittest.TestCase):
         self.assertEqual(sum(len(p['ssap_write_commands']) for p in self.summary['proofs']),24)
         self.assertEqual(sum(len(p['ssap_command_policy']) for p in self.summary['proofs']),8)
         self.assertEqual(sum(len(p[PREFIX]) for p in self.summary['proofs']),2)
+        self.assertEqual([[e['owner']['index'] for e in row['owners']] for row in rows],[[0,1],[1,0]])
+
+    def test_repeating_one_physical_receiver_is_not_two_endpoint_coverage(self):
+        summary=copy.deepcopy(self.summary)
+        # Keep each complete phase internally coherent, including all original
+        # positive/policy/app/wire evidence; only the physical coverage changes.
+        summary['proofs'][1]=reverse_physical_identities(summary['proofs'][1])
+        self.assertTrue(positive.valid_summary(summary))
+        self.assertTrue(policy.valid_summary(summary))
+        gate.verify_new_lifetime(*summary['proofs'])
+        with self.assertRaises(CaptureError):gate.verify_deadline_receivers(*summary['proofs'])
+        self.assertFalse(gate.valid_summary(summary))
+        self.assertFalse(gate.valid_manifest(manifest(summary)))
 
     def test_selectors_and_row_identity_fail_closed(self):
         self.assertFalse(gate.boot_requested([]))

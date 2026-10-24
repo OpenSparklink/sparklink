@@ -36,6 +36,8 @@ python3 tools/build_resources.py --record "$NEW_BUILD_RECORD" -- cargo +1.96.1 c
 这些都是诊断线索，不能据此释放锁：子进程继承的 fd 可在 supervisor 退出后继续持锁，
 而旧元数据也可留在已经释放的文件中。不要删除或重建锁文件，也不要仅凭 PID 消失
 终止其他任务；真正的准入条件仍是对原 inode 成功取得 `flock`。
+若 stat 与内核锁表中的 device 编号不同，错误中也保留同 inode 的候选行。
+inode 数值可在不同文件系统重复；候选行必须再用实际 fd／路径独立确认，不能当作持有者。
 
 内核编译使用已配置的固定开发 `O=` 目录，例如本工作区
 `.dev/session-wake-kernel-build-v1`；每次源码提交不更换路径。直接内核 make 可用：

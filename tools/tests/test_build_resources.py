@@ -2,6 +2,7 @@
 """Resource policy and real OS lock exclusion; no compiler or device access."""
 from pathlib import Path
 import json
+import io
 import subprocess
 import sys
 import tempfile
@@ -152,6 +153,28 @@ class BuildResources(unittest.TestCase):
                 except build.BuildLockBusy:
                     if time.monotonic() >= deadline: self.fail('child did not release real flock')
                     time.sleep(0.01)
+
+    def test_inode_candidates_never_upgrade_to_matching_device_or_owner(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(build, 'workspace', return_value=Path(directory)):
+            with build.build_lock() as fd:
+                stat = build.os.fstat(fd)
+                exact = f'{build.os.major(stat.st_dev):02x}:{build.os.minor(stat.st_dev):02x}:{stat.st_ino}'
+                matching = f'1: FLOCK ADVISORY WRITE 111 {exact} 0 EOF'
+                candidate = f'2: FLOCK ADVISORY WRITE 222 ff:ff:{stat.st_ino} 0 EOF'
+                other = f'3: FLOCK ADVISORY WRITE 333 ff:ff:{stat.st_ino+1} 0 EOF'
+                real_open = Path.open
+                def proc_fixture(path, *args, **kwargs):
+                    if str(path) == '/proc/locks':
+                        return io.StringIO('\n'.join([matching, candidate, other]))
+                    return real_open(path, *args, **kwargs)
+                with patch.object(Path, 'open', proc_fixture):
+                    with self.assertRaises(build.BuildLockBusy) as busy:
+                        with build.build_lock(): self.fail('candidate bypassed actual lock')
+                observation = busy.exception.observation
+                self.assertEqual(observation['kernel_lock_rows'], [matching])
+                self.assertEqual(observation['kernel_inode_candidates'], [matching, candidate])
+                self.assertTrue(observation['inode_candidates_require_fd_path_confirmation'])
+                self.assertFalse(observation['metadata_authoritative'])
 
 
 if __name__ == '__main__': unittest.main()

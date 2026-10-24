@@ -98,6 +98,12 @@ def lock_observation(stream):
         result['kernel_lock_table_truncated'] = len(text) > 65536
         lines = text[:65536].splitlines()
         result['kernel_lock_rows'] = [line for line in lines if identity in line.split()]
+        # A translated/mounted view can expose another device number in
+        # procfs. Same inode alone is NOT file/owner identity: retain these
+        # merely as candidates for an independent fd/path observation.
+        result['kernel_inode_candidates'] = [line for line in lines
+            if any(field.endswith(':' + str(stat.st_ino)) for field in line.split())]
+        result['inode_candidates_require_fd_path_confirmation'] = True
     except OSError as error:
         result['kernel_lock_rows_unavailable'] = type(error).__name__
     return result

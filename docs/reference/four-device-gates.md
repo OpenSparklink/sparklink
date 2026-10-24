@@ -9,12 +9,12 @@
 | `--four-device-business` | 两组各两种连接角色，每角色20次61字节往返 | 共80次随机载荷校验回复；两组真实 USB 业务窗口重叠 |
 | `--four-device-disconnect` | 每角色交替选择受害组4次、存活组20次61字节往返 | 共48次回复；存活组实际Disconnect前至少2次、双方Down后至少4次完整往返 |
 | `--four-device-burst` | 两组各两种角色，每角色16次2042字节往返 | 共64次回复、实际PB分片、有限队列背压与逐controller观测pool饱和后恢复 |
+| `--four-device-dynamic-benchmark` | 两组各两种角色，复用v2动态双通道：短20×61／window4，长16×2042／window8 | 目标144次回复（80短／64长）、16个UID1004应用、两个独立Root监督器的封闭报告及两组实际USB业务重叠；接线与离线检查不等于新artifact实机通过 |
 | `--four-device-owned` | 原80次短消息，另运行两组／两角色／两方向的Owned审批和拒绝 | 16个真实拥有者、80次请求／回复交换，包含退出后远端拒绝；两组SSAP线上窗口重叠 |
 | `--four-device-update-delivery` | 原80次短消息，另执行protected2下的完整update-v2矩阵 | 两组／两角色／两方向，32／2036／2037／2042字节，notification及indication共64次更新、64次对端应用校验回复和128次CPCD决定；两组更新线上窗口重叠 |
-
 | `--four-device-shared-subscription` | 原80次短消息，另独立运行原共享订阅release／expiry／owner-exit矩阵 | protected2；两组／两角色／双向notify和indicate共112次更新、192次应用校验回复、32次共享加入、按case核对部分成员退出、16次最终disable；实际UID1004 reader／UID1005 publisher与两组线上窗口重叠 |
 
-六个模式分别运行；不能混入QMP热插拔、故障注入或双设备参数。每条数据由对端应用
+各模式分别运行；不能混入QMP热插拔、故障注入或双设备参数。每条数据由对端应用
 实际校验并回复；USB成功、NOCP、协议ACK和日志不能替代它。普通应用仍经slkd取得
 授权fd。实验协调者与只具应用组权限的部署资格分别验收，非root并不自动证明权限分离。
 
@@ -29,12 +29,24 @@
 
 ## 动态通道的接线边界
 
-当前四设备业务门禁使用固定 basic 通道。内部 benchmark supervisor 已复用订阅测试的
-pair0／1 隔离方式，分别绑定请求目录、临时存储、关闭后的产物和报告校验，并要求明确的
-版本、pair 与专用 VM token。没有增加收发循环、协议 codec 或 Host。
+原四设备业务模式使用固定basic通道。`--four-device-dynamic-benchmark`单独接通既有v2
+动态双通道profile和Root benchmark，复用原Session、fd授权、收发循环和codec。
+准备版本`four_dynamic_benchmark_contract_version=1`必须匹配当前工具和可执行init；
+运行选择器`ws73.parallel_benchmark=1`与`ws73.socket_benchmark_apps=1`明确启用两个
+pair0／1监督器。协调记录使用`parallel_benchmark_contract_version=1`，每个Root请求
+使用`benchmark_parallel_contract_version=1`和明确pair，绑定请求目录、临时存储、封闭
+快照与报告。未发布接口没有旧载体兼容承诺；旧资格按其原工具身份保留。
+
+首个Ready屏障仍在RF前核对四个不同观察；建链后的共用business-ready屏障在两个Root
+请求发布前释放，每组继续使用原四应用Armed／start／quiescent／finish屏障。应用期限、
+监督上限、内核协商期限和有限队列不因并行而延长。两种物理角色、两组业务窗口实际重叠、
+所有随机载荷的对端校验回复和完整Root快照均为必需项；缺任一组、短负载、跨pair报告、
+错误连接归属或重复Root进程均拒绝，不降级到固定通道。VM配置为3GiB／2vCPU，以容纳
+两个有界本地快照目录；它不是性能调优结论。
+
 这些目录仅隔离测试产物命名，不是同UID进程之间的权限沙箱或daemon故障隔离。
-这组原语仍未接通四设备动态通道 runner；离线路径隔离检查不授予动态多通道、公平性、
-性能或实机资格。普通两设备 benchmark 的无 pair 路径和原工作负载保留。
+当前接线的实机资格必须另以准确新artifact取得；离线检查不授予公平性、性能、credit硬件
+真值、排空或自然恢复资格。普通两设备benchmark的无pair路径和原工作负载保留。
 
 ## 受控断链的因果编排
 

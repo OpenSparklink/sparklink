@@ -337,6 +337,8 @@ def execute(run,phase):
     if service is not None:row[ssap_gate.FIELD]=service
     row['tools']=request_tools(row)
     validate_role_request(row,row['phase'],live=True);run.data.setdefault('socket_benchmark',[]).append(row);run.save()
+    barrier=getattr(run,'benchmark_barrier',None)
+    if barrier is not None:barrier(row)
     path=run.output/f'benchmark-role-{row["phase"]}.request.json';temporary=path.with_suffix('.tmp')
     with temporary.open('x')as f:json.dump(row,f)
     temporary.chmod(0o600);os.link(temporary,path);temporary.unlink()

@@ -423,7 +423,16 @@ if grep -qw ws73.ssap_subscription=1 /proc/cmdline; then
     fi
 fi
 if grep -qw ws73.socket_benchmark_apps=1 /proc/cmdline; then
-    /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" benchmark > /evidence/benchmark-role-supervisor.log 2>&1 & application_role_supervisor=$!
+    if grep -qw ws73.parallel_benchmark=1 /proc/cmdline; then
+        grep -qw ws73.parallel_business=1 /proc/cmdline || fail 'paired benchmark requires explicit four business mode'
+        parallel_role_supervisors=''
+        for pair in 0 1; do
+            /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" benchmark --parallel-pair "$pair" > "/evidence/benchmark-role-supervisor-pair-$pair.log" 2>&1 &
+            parallel_role_supervisors="$parallel_role_supervisors $!"
+        done
+    else
+        /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" benchmark > /evidence/benchmark-role-supervisor.log 2>&1 & application_role_supervisor=$!
+    fi
 fi
 if grep -qw ws73.application_clients=1 /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_application_role.py "$daemon" > /evidence/application-role-supervisor.log 2>&1 & application_role_supervisor=$!
@@ -443,6 +452,7 @@ elif grep -q 'ws73.parallel_business=1' /proc/cmdline; then
     if grep -q 'ws73.parallel_owned=1' /proc/cmdline; then disconnect_arg='--owned-ssap'; fi
     if grep -q 'ws73.parallel_delivery=1' /proc/cmdline; then disconnect_arg='--update-delivery'; fi
     if grep -qw ws73.parallel_subscription=1 /proc/cmdline; then disconnect_arg='--shared-subscription'; fi
+    if grep -qw ws73.parallel_benchmark=1 /proc/cmdline; then disconnect_arg='--dynamic-benchmark'; fi
     shared_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.subscription_shared_case=/){sub(/^ws73.subscription_shared_case=/,"",$i);print $i}}' /proc/cmdline)
     if [ -n "$shared_case" ]; then
         [ "$disconnect_arg" = '--shared-subscription' ] || fail 'shared case requires shared parallel mode'
@@ -638,7 +648,7 @@ if grep -q 'ws73.diagnostic=1' /proc/cmdline; then
     wait "$diagnostic" || fail 'diagnostic retired-fd gate'
 fi
 for role_pid in ${parallel_role_supervisors:-}; do
-    wait "$role_pid" || fail 'actual per-pair shared subscription roles'
+    wait "$role_pid" || fail 'actual per-pair application roles'
 done
 parallel_role_supervisors=''
 if [ -n "${application_role_supervisor:-}" ]; then

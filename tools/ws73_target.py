@@ -209,6 +209,7 @@ def prepare_from_carrier(args):
             manifest.pop(key, None)
         manifest.update(staged)
         manifest['four_disconnect_progress_contract_version']=1
+        manifest['four_dynamic_benchmark_contract_version']=1
         manifest['four_owned_contract_version']=1
         manifest['four_delivery_contract_version']=1
         manifest['four_subscription_contract_version']=1
@@ -286,6 +287,7 @@ def prepare_locked(args, build_fd):
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
     manifest['runtime_address_contract_version'] = 1
     manifest['four_disconnect_progress_contract_version'] = 1
+    manifest['four_dynamic_benchmark_contract_version'] = 1
     manifest['four_owned_contract_version'] = 1
     manifest['four_delivery_contract_version'] = 1
     manifest['four_subscription_contract_version'] = 1
@@ -780,7 +782,8 @@ def _run(args):
     parallel_owned=bool(getattr(args,'four_device_owned',False))
     parallel_delivery=bool(getattr(args,'four_device_update_delivery',False))
     parallel_subscription=bool(getattr(args,'four_device_shared_subscription',False))
-    business=parallel_subscription or parallel_delivery or parallel_owned or parallel_burst or disconnect_isolation or bool(getattr(args,'four_device_business',False))
+    parallel_benchmark=bool(getattr(args,'four_device_dynamic_benchmark',False))
+    business=parallel_benchmark or parallel_subscription or parallel_delivery or parallel_owned or parallel_burst or disconnect_isolation or bool(getattr(args,'four_device_business',False))
     if business:
         validate_business_mode(args)
     parallel=business or bool(getattr(args,'parallel_pairs',False))
@@ -1057,10 +1060,11 @@ def _run(args):
     m['four_device_owned_requested']=parallel_owned
     m['four_device_update_delivery_requested']=parallel_delivery
     m['four_device_shared_subscription_requested']=parallel_subscription
+    if parallel_benchmark:m['four_device_dynamic_benchmark_requested']=True
     if business:m['parallel_business_verifier']=file_record(HERE/'ws73_parallel_data.py')
     m['parallel_start_offset_ms']=parallel_offset
     if parallel:
-        m['scope']='four real WS73 two-pair protected shared subscriptions'if parallel_subscription else 'four real WS73 two-pair protected update delivery'if parallel_delivery else 'four real WS73 two-pair owned SSAP approvals and owner loss'if parallel_owned else 'four real WS73 two-pair 2042-byte burst and observed budgets' if parallel_burst else 'four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
+        m['scope']='four real WS73 two-pair dynamic short-long application benchmark'if parallel_benchmark else 'four real WS73 two-pair protected shared subscriptions'if parallel_subscription else 'four real WS73 two-pair protected update delivery'if parallel_delivery else 'four real WS73 two-pair owned SSAP approvals and owner loss'if parallel_owned else 'four real WS73 two-pair 2042-byte burst and observed budgets' if parallel_burst else 'four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
     if parallel:m['parallel_verifier']=file_record(HERE/'ws73_parallel.py')
     m['qmp_guest_hotplug']=passthrough
     m['connection_verify_requested']=connection_verify
@@ -1400,6 +1404,9 @@ def _run(args):
                 if file_record(staged)['sha256']!=file_record(HERE/name)['sha256']:
                     raise ValueError('current Disconnect preparation/source mismatch: '+name)
             m['four_disconnect_progress_contract_version']=1
+        if parallel_benchmark:
+            require_benchmark_preparation(package,args.prepared)
+            m['four_dynamic_benchmark_contract_version']=1
         if parallel_owned:
             require_owned_preparation(package,args.prepared)
             m['four_owned_contract_version']=1
@@ -1480,7 +1487,7 @@ def _run(args):
         if any(c in str(share) for c in [',','\n']):raise ValueError('QEMU evidence share path must not contain option delimiters')
         with tempfile.TemporaryDirectory(prefix='ws73-target-') as tmp:
             serial=Path(tmp)/'serial.sock';qmp=Path(tmp)/'qmp.sock'
-            command=[package['qemu']['path'],'-machine','q35,accel=kvm','-cpu','host','-m',('2048M'if benchmark_mode else'1024M'),'-smp',('1' if queued_gate else '2'),
+            command=[package['qemu']['path'],'-machine','q35,accel=kvm','-cpu','host','-m',('3072M'if parallel_benchmark else '2048M'if benchmark_mode else'1024M'),'-smp',('1' if queued_gate else '2'),
                      '-display','none','-monitor','none','-no-reboot','-nic','none',
                      '-chardev',f'socket,id=console,path={serial},server=on,wait=off','-serial','chardev:console',
                      '-qmp',f'unix:{qmp},server=on,wait=off','-kernel',str(args.prepared.resolve()/'bzImage'),
@@ -1496,6 +1503,7 @@ def _run(args):
                      (' ws73.parallel_business=1' if business else '')+
                      (' ws73.parallel_disconnect=1' if disconnect_isolation else '')+
                      (' ws73.parallel_burst=1' if parallel_burst else '')+
+                     (' ws73.parallel_benchmark=1 ws73.socket_benchmark_apps=1'if parallel_benchmark else '')+
                      (' ws73.parallel_owned=1'if parallel_owned else '')+
                      (' ws73.parallel_delivery=1'if parallel_delivery else '')+
                      (' ws73.parallel_subscription=1 ws73.ssap_subscription=1 ws73.ssap_subscription_shared=1 ws73.subscription_snapshot=1'if parallel_subscription else '')+
@@ -1904,6 +1912,10 @@ def _run(args):
                         if business:
                             from ws73_channel_socket import validate_application_tools
                             validate_application_tools(control,args.prepared/'root',package['guest_files'])
+                        if control.get('dynamic_benchmark_mode',False)is not parallel_benchmark:raise ValueError('explicit paired benchmark request/worker mismatch')
+                        if parallel_benchmark:
+                            from ws73_socket_benchmark import validate_role_tools
+                            for worker in control['workers']:validate_role_tools(worker['run'],args.prepared/'root',package['guest_files'])
                         if control.get('owned_ssap_mode',False)is not parallel_owned:raise ValueError('original Owned request and worker evidence mismatch')
                         if control.get('update_delivery_mode',False)is not parallel_delivery:raise ValueError('original protected delivery request/worker mismatch')
                         if control.get('shared_subscription_mode',False)is not parallel_subscription:raise ValueError('original shared subscription request/worker mismatch')
@@ -1925,7 +1937,7 @@ def _run(args):
                                 for row in data['channel_socket']:
                                     if type(row.get('ssap_update_delivery_output_contract_version'))is not int or row['ssap_update_delivery_output_contract_version']!=1:raise ValueError('current delivery requires original bounded pipe observations')
                                     validate_update_tools(row['ssap_update_delivery_tools'],args.prepared/'root',package['guest_files'])
-                        m['parallel_corroboration']=corroborate_parallel(control,capture,**({'evidence':share}if parallel_subscription else{}))
+                        m['parallel_corroboration']=corroborate_parallel(control,capture,**({'evidence':share}if parallel_subscription or parallel_benchmark else{}))
                         m['parallel_control']=file_record(control_path)
                     if daemon_remove:
                         from ws73_daemon_removal import corroborate as corroborate_removal
@@ -2344,7 +2356,7 @@ def _run(args):
                         # later qualification must not erase/mutate earlier evidence.
                         from ws73_daemon_removal import verify_sealed_record
                         verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                    m['status']='FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'if parallel_subscription else 'FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS'if parallel_delivery else 'FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS'if parallel_owned else 'FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_NUMERIC_COMPARISON_MECHANISM_PASS' if numeric else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                    m['status']='FOUR_DEVICE_PARALLEL_DYNAMIC_BENCHMARK_PASS'if parallel_benchmark else 'FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'if parallel_subscription else 'FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS'if parallel_delivery else 'FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS'if parallel_owned else 'FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_NUMERIC_COMPARISON_MECHANISM_PASS' if numeric else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
                     if timeout_seal is not None:
                         m['graceful_timeout']['state']='SEALED'
                         m['status']='FAIL'
@@ -2516,6 +2528,19 @@ def require_delivery_preparation(package,path):
             raise ValueError('guest CMAC oracle closure differs from sealed inputs')
 
 
+def require_benchmark_preparation(package,path):
+    if type(package.get('four_dynamic_benchmark_contract_version'))is not int or package['four_dynamic_benchmark_contract_version']!=1:
+        raise ValueError('four dynamic benchmark requires fresh explicit preparation')
+    from ws73_socket_benchmark import validate_role_sources
+    validate_role_sources(package,dynamic=True,parallel=True)
+    for name in ['ws73_parallel_data.py','ws73_parallel.py','ws73_connection_control.py']:
+        if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
+            raise ValueError('four benchmark preparation/source mismatch: '+name)
+    entry=path/'root/init'
+    if entry.is_symlink()or not entry.is_file()or not entry.stat().st_mode&0o111 or file_record(entry)['sha256']!=file_record(HERE/'ws73_target_init.sh')['sha256']:
+        raise ValueError('four benchmark requires current executable VM init')
+
+
 def require_subscription_preparation(package,path,*,case='release'):
     if type(package.get('four_subscription_contract_version'))is not int or package['four_subscription_contract_version']!=1:
         raise ValueError('shared subscriptions require explicit current preparation')
@@ -2542,9 +2567,9 @@ def require_owned_preparation(package,path):
 def validate_business_mode(args):
     # Dedicated positive gate: never silently combine injection, RF diagnostics
     # or two-device options with a four-controller business qualification.
-    if (args.command!='run' or sum(bool(getattr(args,k,False)) for k in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription'])!=1
+    if (args.command!='run' or sum(bool(getattr(args,k,False)) for k in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription','four_device_dynamic_benchmark'])!=1
             or any(v for k,v in vars(args).items()
-            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription'])
+            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription','four_device_dynamic_benchmark'])
             or getattr(args,'parallel_start_offset_ms',0)
             or any(getattr(args,k,None) for k in ['security_agent','daemon_hold_case',
                 'managed_partial_case','managed_connected_case','managed_connected_reply',
@@ -2553,6 +2578,48 @@ def validate_business_mode(args):
             or getattr(args,'channel_socket_bytes',61)!=61
             or getattr(args,'channel_socket_rounds',4)!=4):
         raise ValueError('four-device business requires dedicated real VM without other gates')
+
+
+def valid_parallel_benchmark(record):
+    """Only the dedicated complete four-pair contract can accept this scope."""
+    from ws73_parallel_data import verify_records,benchmark_parallel_proof,BENCHMARK_SCOPE
+    try:
+        if (record.get('status')!='FOUR_DEVICE_PARALLEL_DYNAMIC_BENCHMARK_PASS'
+                or record.get('scope')!=BENCHMARK_SCOPE
+                or type(record.get('four_dynamic_benchmark_contract_version'))is not int
+                or record['four_dynamic_benchmark_contract_version']!=1
+                or record.get('four_device_dynamic_benchmark_requested')is not True
+                or record.get('four_device_parallel_business')is not True
+                or record.get('four_device_parallel_rf')is not False
+                or any(record.get(k,False)is not False for k in ['four_device_disconnect_requested','four_device_burst_requested','four_device_owned_requested','four_device_update_delivery_requested','four_device_shared_subscription_requested'])
+                or record.get('qemu_exit')!=0):return False
+        words=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()]
+        for token in ['ws73.parallel=1','ws73.parallel_business=1','ws73.parallel_benchmark=1','ws73.socket_benchmark_apps=1']:
+            key=token.split('=')[0]
+            if [w for w in words if w==key or w.startswith(key+'=')]!=[token]:return False
+        if any(w.startswith(('ws73.parallel_burst=','ws73.parallel_disconnect=','ws73.parallel_owned=','ws73.parallel_delivery=','ws73.parallel_subscription=','ws73.benchmark_'))for w in words):return False
+        proof=record['parallel_corroboration'];control=proof['parallel_benchmark_control'];owners=verify_records(control)
+        if type(proof.get('parallel_benchmark_contract_version'))is not int or proof['parallel_benchmark_contract_version']!=1:return False
+        if len(owners)!=4 or proof.get('status')!='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED':return False
+        if proof['dynamic_benchmark']!=benchmark_parallel_proof(proof['pairs'],control):return False
+        for k,v in dict(controller_count=4,round_trips=144,ordinary_uid=1004,coordinator_uid=1000,dynamic_channel_acceptance=True,fixed_basic_channel_business_acceptance=False,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False).items():
+            if type(proof.get(k))is not type(v)or proof[k]!=v:return False
+        overlaps=proof['overlaps']
+        if len(overlaps)!=2:return False
+        from ws73_parallel_data import overlap_window
+        for phase,overlap in enumerate(overlaps):
+            if overlap['role_phase']!=phase or overlap['overlap_wall_ns']!=overlap_window(overlap['business_windows']):return False
+            expected=[]
+            for pair in proof['pairs']:
+                legs=pair['channel']['proofs'][phase]['legs']
+                if len(legs)!=72 or len(pair['connections'])!=2:return False
+                window=[min(v['tx']['wall_ns']for v in legs),max(v['rx']['wall_ns']for v in legs)]
+                steps=pair['connections'][phase]['steps']
+                if max(v['wall_ns']for v in steps[0]['outcomes'])>window[0]or min(v['wall_ns']for v in steps[1]['outcomes'])<window[1]:return False
+                expected.append(window)
+            if expected!=overlap['business_windows']:return False
+        return True
+    except(CaptureError,KeyError,TypeError,ValueError,IndexError,AttributeError):return False
 
 
 def valid_parallel_burst(proof):
@@ -3042,6 +3109,13 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or tx_phases.get('expired_intent_refusals')!=1 or tx_phases.get('retired_binding_refusals')!=2):return 1
     elif phase_boot or tx_phases.get('intent_phase_contract_version')is not None:return 1
     benchmark_role=record.get('socket_benchmark_role_contract_version')
+    four_benchmark=record.get('four_device_dynamic_benchmark_requested',False)
+    if type(four_benchmark)is not bool:return 1
+    four_benchmark_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_benchmark'or v.startswith('ws73.parallel_benchmark=')]
+    if four_benchmark:
+        if four_benchmark_boot!=['ws73.parallel_benchmark=1']or not valid_parallel_benchmark(record):return 1
+        if benchmark_role is not None or record.get('socket_benchmark_requested'):return 1
+    elif four_benchmark_boot or 'four_dynamic_benchmark_contract_version'in record or record.get('status')=='FOUR_DEVICE_PARALLEL_DYNAMIC_BENCHMARK_PASS':return 1
     import ws73_benchmark_ssap as benchmark_ssap
     try:
         service=benchmark_ssap.selected(record)
@@ -3077,7 +3151,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 if is_parallel(row_channel(record)):expected_names.add('ws73_channel_fairness.py')
             except(ValueError,KeyError,TypeError):return 1
         if len(names)!=5+len(expected_names) or set(names)!=expected_names|{'ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py'}:return 1
-    elif benchmark_boot or record.get('socket_benchmark_apps_acceptance')or record.get('socket_benchmark_role_supervision'):return 1
+    elif (benchmark_boot!=['ws73.socket_benchmark_apps=1']if four_benchmark else bool(benchmark_boot))or record.get('socket_benchmark_apps_acceptance')or record.get('socket_benchmark_role_supervision'):return 1
     extra_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close='))]
     if not record.get('socket_benchmark_requested')and extra_boot:return 1
     if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record or 'benchmark_channel_request'in record):return 1
@@ -3147,6 +3221,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 identity=fields.get(role,[])
                 if not isinstance(identity,(list,tuple)) or len(identity)!=11 or any(endpoint.get(k)!=v for k,v in zip(['controller','generation','lifetime','handle'],identity[:4])):return 1
                 if endpoint.get('capacity')!=5 or endpoint.get('wire_peak')!=5 or endpoint.get('wire_final_debt')!=0 or not 0<endpoint.get('usb_submissions',0)==endpoint.get('nocp_packets') or not endpoint.get('full_nocp_resume_intervals'):return 1
+    if four_benchmark:return 0  # complete dedicated proof checked above,after common gates
     if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS','FOUR_DEVICE_PARALLEL_BURST_PASS','FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS','FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS','FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS']:
         isolation=record['status']=='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS'
         burst=record['status']=='FOUR_DEVICE_PARALLEL_BURST_PASS'
@@ -3355,6 +3430,7 @@ def main():
             cmd.add_argument('--four-device-shared-subscription',action='store_true',help='two pairs/full shared release,original-expiry or reader-exit matrix with actual UID1004 readers/1005 publishers and closed snapshots;protected2/original80socketreplies')
             cmd.add_argument('--four-device-update-delivery',action='store_true',help='two real pairs/full update-v2 matrix after actual numeric protected2;original80socketreplies and real receivercheck/reply')
             cmd.add_argument('--four-device-owned',action='store_true',help='two real pairs/two roles;existing Owned SSAP approval,denial,owner loss and actual wire overlap plus original80shortreplies')
+            cmd.add_argument('--four-device-dynamic-benchmark',action='store_true',help='two pairs of existing Root supervised apps-only short/long dynamic channels;144actual peer replies/16applications;not performance or full fairness qualification')
             cmd.add_argument('--four-device-burst',action='store_true',help='two real pairs,2roles16replies2042bytes each:64actual app replies,USB fragmentation,finite-queue pressure and observed pool/NOCP resumption;not fairness or credit correctness proof')
             cmd.add_argument('--four-device-disconnect',action='store_true',help='dedicated four-real-device controlled pair Disconnect/Down while other pair continues actual replies; alternates victims, no fault/recovery claim')
             cmd.add_argument('--four-device-business',action='store_true',help='four real controllers, two physical pairs, two connection roles, 80 ordinary app round trips; positive fixed-channel slice only')

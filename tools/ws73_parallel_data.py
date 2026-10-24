@@ -4,8 +4,9 @@
 
 Reuses connection/socket/USB proofs. Barriers coordinate test workers, never
 fabricate controller events or data. Explicit fixed-channel, controlled pair-Disconnect
-and existing protected SSAP gates; no transport-fault, dynamic-channel, full
-security authentication or natural-recovery claim.
+existing protected SSAP gates,and a separate existing Root benchmark dynamic
+channel profile. No transport-fault,full security authentication,performance,
+full fairness or natural-recovery claim.
 """
 import argparse
 import hashlib
@@ -27,6 +28,7 @@ BURST_SCOPE = 'four real WS73 two-pair 2042-byte burst and observed budgets'
 OWNED_SCOPE = 'four real WS73 two-pair owned SSAP approvals and owner loss'
 DELIVERY_SCOPE = 'four real WS73 two-pair protected update delivery'
 SUBSCRIPTION_SCOPE = 'four real WS73 two-pair protected shared subscriptions'
+BENCHMARK_SCOPE = 'four real WS73 two-pair dynamic short-long application benchmark'
 PENDING = 'PARALLEL_BUSINESS_EVIDENCE_PENDING'
 SUCCESS = 'CONNECTED_PAIR_BUSINESS_EVIDENCE_PENDING'
 SEQUENCE = [('ready', 0), *[(kind, n) for n in range(2)
@@ -62,6 +64,30 @@ def rounds_for(isolation,pair,phase,burst=False):
     return 16 if burst else 4 if isolation and pair==phase else 20
 
 
+def benchmark_mode(record):
+    enabled=record.get('dynamic_benchmark_mode',False)
+    if type(enabled)is not bool:raise CaptureError('typed dynamic benchmark mode required')
+    version=record.get('parallel_benchmark_contract_version')
+    if enabled:
+        if type(version)is not int or version!=1:raise CaptureError('explicit four benchmark contract1 required')
+    elif 'parallel_benchmark_contract_version'in record:raise CaptureError('unrequested four benchmark contract')
+    return enabled
+
+
+def verify_benchmark_requests(run,pair):
+    from ws73_socket_benchmark import parallel_pair,row_channel,parallel_channel,configuration,PENDING as benchmark_pending
+    rows=run.get('socket_benchmark',[])
+    if run.get('channel_socket')or len(rows)!=2:raise CaptureError('two dedicated dynamic benchmark phases required')
+    for phase,row in enumerate(rows):
+        if (type(row.get('phase'))is not int or row['phase']!=phase or row['status']!=benchmark_pending
+                or parallel_pair(row)!=pair or row_channel(row)!=parallel_channel(0)
+                or row['config']!=configuration('window')):raise CaptureError('canonical paired twochannel workload required')
+        if row['owners']!=run['connection_control']['phases'][phase]['typed_objects']:
+            raise CaptureError('benchmark requests must bind original physical connection objects')
+        if [e['owner']for e in row['owners']]!=[run['initial'][phase],run['initial'][1-phase]]:
+            raise CaptureError('benchmark must preserve original controller role ownership')
+
+
 class BusinessPair(PairRun):
     SCOPE = SCOPE
     SUCCESS = SUCCESS
@@ -73,17 +99,20 @@ class BusinessPair(PairRun):
         self.owned=bool(getattr(args,'owned_ssap',False))
         self.delivery=bool(getattr(args,'update_delivery',False))
         self.subscription=bool(getattr(args,'shared_subscription',False))
-        if sum((self.isolation,self.burst,self.owned,self.delivery,self.subscription))>1:raise ValueError('separate explicit four-device scopes required')
+        self.benchmark=bool(getattr(args,'dynamic_benchmark',False))
+        if sum((self.isolation,self.burst,self.owned,self.delivery,self.subscription,self.benchmark))>1:raise ValueError('separate explicit four-device scopes required')
         if self.isolation:self.SCOPE=ISOLATION_SCOPE
         if self.burst:self.SCOPE=BURST_SCOPE
         if self.owned:self.SCOPE=OWNED_SCOPE
         if self.delivery:self.SCOPE=DELIVERY_SCOPE
         if self.subscription:self.SCOPE=SUBSCRIPTION_SCOPE
+        if self.benchmark:self.SCOPE=BENCHMARK_SCOPE
         super().__init__(args)
         self.data['disconnect_isolation']=self.isolation
         self.data['burst_mode']=self.burst
         if self.delivery:self.data.update(update_delivery_mode=True,parallel_delivery_contract_version=1)
         if self.subscription:self.data.update(shared_subscription_mode=True,parallel_subscription_contract_version=1)
+        if self.benchmark:self.data.update(dynamic_benchmark_mode=True,parallel_benchmark_contract_version=1)
         if self.subscription and getattr(args,'ssap_subscription_shared_case','release')!='release':
             self.data.update(ssap_subscription_shared_case=args.ssap_subscription_shared_case,**{'ssap_subscription_shared_pressure_contract_version'if args.ssap_subscription_shared_case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
         subscription_case(self.data)
@@ -107,6 +136,12 @@ class BusinessPair(PairRun):
     def channel_barrier(self, row):
         row['rounds']=rounds_for(self.isolation,self.args.pair,row['phase'],self.burst)
         self.barrier('business-ready', row['phase'])
+
+    def benchmark_barrier(self,row):
+        if not self.benchmark:raise CaptureError('unrequested benchmark barrier')
+        # Release both pair control roles before publishing either Root request.
+        # Existing Root application Armed barriers still enforce each channel start.
+        self.barrier('business-ready',row['phase'])
 
     def channel_completion(self,phase,finish):
         # Keep the one typed Disconnect implementation in connection_control.
@@ -203,8 +238,9 @@ def run_parallel(args):
     owned=bool(getattr(args,'owned_ssap',False))
     delivery=bool(getattr(args,'update_delivery',False))
     subscription=bool(getattr(args,'shared_subscription',False))
-    if sum((isolation,burst,owned,delivery,subscription))>1:raise ValueError('separate explicit four-device scopes required')
-    record=dict(format_version=1,scope=SUBSCRIPTION_SCOPE if subscription else DELIVERY_SCOPE if delivery else OWNED_SCOPE if owned else BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE,disconnect_isolation=isolation,burst_mode=burst,status='RUNNING',application_identity=ordinary_identity(),
+    benchmark=bool(getattr(args,'dynamic_benchmark',False))
+    if sum((isolation,burst,owned,delivery,subscription,benchmark))>1:raise ValueError('separate explicit four-device scopes required')
+    record=dict(format_version=1,scope=BENCHMARK_SCOPE if benchmark else SUBSCRIPTION_SCOPE if subscription else DELIVERY_SCOPE if delivery else OWNED_SCOPE if owned else BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE,disconnect_isolation=isolation,burst_mode=burst,status='RUNNING',application_identity=ordinary_identity(),
                 workers=[],stages=[],policy_expectation=policy_expectation(args.policy_expectation),
                 barrier_budget_seconds=BARRIER_SECONDS,physical_unplug_acceptance=False,
                 automatic_fault_recovery_acceptance=False,fault_isolation_acceptance=False)
@@ -212,6 +248,7 @@ def run_parallel(args):
     if owned:record.update(owned_ssap_mode=True,parallel_owned_contract_version=1)
     if delivery:record.update(update_delivery_mode=True,parallel_delivery_contract_version=1)
     if subscription:record.update(shared_subscription_mode=True,parallel_subscription_contract_version=1)
+    if benchmark:record.update(dynamic_benchmark_mode=True,parallel_benchmark_contract_version=1)
     if subscription and args.ssap_subscription_shared_case!='release':
         record.update(ssap_subscription_shared_case=args.ssap_subscription_shared_case,**{'ssap_subscription_shared_pressure_contract_version'if args.ssap_subscription_shared_case=='pressure'else'ssap_subscription_shared_lifetime_contract_version':1})
     case=subscription_case(record)
@@ -223,7 +260,7 @@ def run_parallel(args):
             argv=[sys.executable,str(Path(__file__).resolve()),'pair','--pair',str(pair),'--ports',
                   *args.ports[pair*2:pair*2+2],'--slctl',str(args.slctl),'--slkd-pid',str(args.slkd_pid),
                   '--output',str(output/f'pair-{pair}'),*(['--disconnect-isolation'] if isolation else []),*(['--burst'] if burst else []),*(['--owned-ssap']if owned else []),*(['--update-delivery']if delivery else []),*(['--shared-subscription']if subscription else []),*(['--ssap-subscription-shared-case',case]if case!='release'else []),
-                  '--policy-expectation',str(args.policy_expectation)]
+                  *(['--dynamic-benchmark']if benchmark else []),'--policy-expectation',str(args.policy_expectation)]
             row=dict(args=argv,start_wall_ns=time.time_ns(),stdout='',stderr='');record['workers'].append(row)
             p=subprocess.Popen(argv,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             processes.append(p);row['pid']=p.pid;save()
@@ -280,9 +317,10 @@ def verify_records(record):
     owned=record.get('owned_ssap_mode',False)
     delivery=record.get('update_delivery_mode',False)
     subscription=record.get('shared_subscription_mode',False)
+    benchmark=benchmark_mode(record)
     case=subscription_case(record)
     from ws73_ssap_subscription import shared_case
-    if any(type(v)is not bool for v in(isolation,burst,owned,delivery,subscription))or sum((isolation,burst,owned,delivery,subscription))>1:raise CaptureError('explicit exclusive scope booleans required')
+    if any(type(v)is not bool for v in(isolation,burst,owned,delivery,subscription,benchmark))or sum((isolation,burst,owned,delivery,subscription,benchmark))>1:raise CaptureError('explicit exclusive scope booleans required')
     version=record.get('disconnect_progress_contract_version')
     if 'disconnect_progress_contract_version'in record and (type(version)is not int or version!=1 or not isolation):raise CaptureError('explicit supported Disconnect progress contract required')
     progress=version==1
@@ -295,7 +333,7 @@ def verify_records(record):
     if subscription:
         if type(record.get('parallel_subscription_contract_version'))is not int or record['parallel_subscription_contract_version']!=1:raise CaptureError('explicit shared subscription contract required')
     elif 'parallel_subscription_contract_version'in record:raise CaptureError('unrequested shared subscription contract')
-    scope=SUBSCRIPTION_SCOPE if subscription else DELIVERY_SCOPE if delivery else OWNED_SCOPE if owned else BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE
+    scope=BENCHMARK_SCOPE if benchmark else SUBSCRIPTION_SCOPE if subscription else DELIVERY_SCOPE if delivery else OWNED_SCOPE if owned else BURST_SCOPE if burst else ISOLATION_SCOPE if isolation else SCOPE
     if (record.get('format_version')!=1 or record.get('scope')!=scope or record.get('status')!=PENDING
             or record.get('barrier_budget_seconds')!=BARRIER_SECONDS or len(record.get('workers',[]))!=2
             or record.get('failure_shutdown') or record.get('cleanup_errors') or any(record.get(k) is not False for k in
@@ -327,6 +365,7 @@ def verify_records(record):
                 raise CaptureError('survivor progress must release before victim Disconnect admission')
     for pair,w in enumerate(record['workers']):
         r=w['run']
+        if benchmark_mode(r)is not benchmark:raise CaptureError('worker benchmark mode mismatch')
         if subscription_case(r)!=case:raise CaptureError('original worker shared case mismatch')
         if w['exit'] or r['status']!=SUCCESS or r['scope']!=scope or r.get('disconnect_isolation',False)!=isolation or r.get('burst_mode',False)!=burst or r.get('owned_ssap_mode',False)is not owned or r.get('update_delivery_mode',False)is not delivery or r.get('shared_subscription_mode',False)is not subscription or r['pair']!=pair or r['application_identity']!=app:
             raise CaptureError('actual successful ordinary pair workers required')
@@ -355,6 +394,7 @@ def verify_records(record):
         daemon,bus=r['daemon_before'],r['bus_before']
         argv=w['args'];expected=['pair','--pair',str(pair),'--ports',*[v['port'] for v in r['initial']],
                     '--slctl',r['slctl']['path'],'--slkd-pid',str(daemon['pid'])]
+        if argv.count('--dynamic-benchmark')!=int(benchmark):raise CaptureError('explicit worker dynamic benchmark selector required')
         if argv.count('--update-delivery')!=int(delivery):raise CaptureError('explicit worker protected delivery selector required')
         if argv.count('--shared-subscription')!=int(subscription):raise CaptureError('explicit worker shared subscription selector required')
         if argv.count('--ssap-subscription-shared-case')!=int(case!='release')or case!='release'and argv[argv.index('--ssap-subscription-shared-case')+1]!=case:raise CaptureError('explicit original worker shared case required')
@@ -367,13 +407,15 @@ def verify_records(record):
         if (len(r['cleanup'])!=2 or any(v['status']!='STOP_CONFIRMED' for v in r['cleanup'])
                 or len(r['connection_cleanup'])!=2 or any(v['status']!='NO_CURRENT_QUERIED_LINKS' for v in r['connection_cleanup'])):
             raise CaptureError('all four actual owned cleanups required')
-        if len(r.get('channel_socket',[]))!=2 or any(x['rounds']!=rounds_for(isolation,pair,n,burst) or x['message_bytes']!=(2042 if burst else 61) or x.get('close_prefix') or x.get('burst',False)!=burst or x.get('boundary_check') for n,x in enumerate(r['channel_socket'])):
-            raise CaptureError('exact requested role/message-size/burst slice required')
-        if any(x.get('ssap_owned_required',False)is not owned or (owned and len(x.get('ssap_owned',[]))!=4)for x in r['channel_socket']):raise CaptureError('exact original Owned production cases required')
-        if any(x.get('ssap_update_delivery_required',False)is not delivery or (delivery and (x.get('security_requirement')!=2 or x.get('ssap_security_requirement')!=2 or x.get('ssap_update_delivery_version')!=2))for x in r['channel_socket']):raise CaptureError('original protected2 updatev2 matrix required')
-        for x in r['channel_socket']:
-            if x.get('ssap_subscription_required',False)is not subscription:raise CaptureError('explicit subscription request required')
-            if subscription and(x.get('ssap_subscription_shared_required')is not True or shared_case(x)!=case or type(x.get('parallel_pair'))is not int or x['parallel_pair']!=pair or x.get('security_requirement')!=2 or x.get('ssap_security_requirement')!=2):raise CaptureError('original protected shared case matrix and pair required')
+        if benchmark:verify_benchmark_requests(r,pair)
+        else:
+            if len(r.get('channel_socket',[]))!=2 or any(x['rounds']!=rounds_for(isolation,pair,n,burst) or x['message_bytes']!=(2042 if burst else 61) or x.get('close_prefix') or x.get('burst',False)!=burst or x.get('boundary_check') for n,x in enumerate(r['channel_socket'])):
+                raise CaptureError('exact requested role/message-size/burst slice required')
+            if any(x.get('ssap_owned_required',False)is not owned or (owned and len(x.get('ssap_owned',[]))!=4)for x in r['channel_socket']):raise CaptureError('exact original Owned production cases required')
+            if any(x.get('ssap_update_delivery_required',False)is not delivery or (delivery and (x.get('security_requirement')!=2 or x.get('ssap_security_requirement')!=2 or x.get('ssap_update_delivery_version')!=2))for x in r['channel_socket']):raise CaptureError('original protected2 updatev2 matrix required')
+            for x in r['channel_socket']:
+                if x.get('ssap_subscription_required',False)is not subscription:raise CaptureError('explicit subscription request required')
+                if subscription and(x.get('ssap_subscription_shared_required')is not True or shared_case(x)!=case or type(x.get('parallel_pair'))is not int or x['parallel_pair']!=pair or x.get('security_requirement')!=2 or x.get('ssap_security_requirement')!=2):raise CaptureError('original protected shared case matrix and pair required')
         sequence=[('ready',0)]
         for n in range(2):
             sequence.extend([('linked',n),('business-ready',n)])
@@ -440,16 +482,23 @@ def corroborate(record,capture,*,evidence=None):
     owners=verify_records(record);pairs=[];nonces=set();sequences=set()
     isolation=record.get('disconnect_isolation',False);burst=record.get('burst_mode',False);owned=record.get('owned_ssap_mode',False);delivery=record.get('update_delivery_mode',False)
     subscription=record.get('shared_subscription_mode',False)
-    if subscription and evidence is None:raise CaptureError('original root subscription artifacts required')
+    benchmark=benchmark_mode(record)
+    if (subscription or benchmark) and evidence is None:raise CaptureError('original root subscription artifacts required')
     for w in record['workers']:
         r=w['run'];subset=pair_capture(capture,r['initial'])
-        conn=connection_proof(r,subset);objects=object_proof(r,subset,conn);channel=channel_proof(r,subset)
-        if channel['round_trips']!=(32 if burst else 24 if isolation else 40):raise CaptureError('all actual peer replies per pair required')
+        conn=connection_proof(r,subset);objects=object_proof(r,subset,conn)
+        if benchmark:
+            from ws73_socket_benchmark import corroborate as benchmark_proof,verify_role_artifacts
+            channel=benchmark_proof(r,subset,evidence,pair=r['pair'])
+            supervision=verify_role_artifacts(r,evidence,pair=r['pair'])
+        else:channel=channel_proof(r,subset)
+        if channel['round_trips']!=(72 if benchmark else 32 if burst else 24 if isolation else 40):raise CaptureError('all actual peer replies per pair required')
         if burst and (channel.get('long_pdu_acceptance') is not True or channel.get('software_backpressure_acceptance') is not True):
             raise CaptureError('actual long-fragment and finite-queue pressure proofs required')
         corroborate_stops(r,subset)
-        for row in r['channel_socket']:
-            sent,_=application_frames(row)
+        for row in r['socket_benchmark'if benchmark else'channel_socket']:
+            if benchmark:sent=[bytes.fromhex(item['frame_hex'])for app in row['applications']for item in app['report']['outgoing']]
+            else:sent,_=application_frames(row)
             for raw in sent:
                 nonce=raw[8:24];sequence=int.from_bytes(raw[24:28],'little')
                 if nonce in nonces or sequence in sequences:raise CaptureError('fresh original payload identity across all pairs required')
@@ -474,6 +523,7 @@ def corroborate(record,capture,*,evidence=None):
                 for op,value in [(0x404,owner['version']),(0x402,struct.pack('<HBHB',*owner['buffers']).hex()),
                                  (0x403,owner['features']),(0x406,owner['address'].replace(':','').lower())]])
         entry=dict(connections=conn,objects=objects,channel=channel,metadata=metadata,policy_readbacks=policy_rows)
+        if benchmark:entry['benchmark_supervision']=supervision
         if delivery or subscription:
             from ws73_security_agent import corroborate as security_proof
             entry['security']=security_proof(r,subset)
@@ -491,7 +541,7 @@ def corroborate(record,capture,*,evidence=None):
         windows=[];lifetimes=[]
         for number,pair in enumerate(pairs):
             legs=pair['channel']['proofs'][n]['legs']
-            if len(legs)!=2*rounds_for(isolation,number,n,burst):raise CaptureError('exact bidirectional business message pairs required')
+            if len(legs)!=(72 if benchmark else 2*rounds_for(isolation,number,n,burst)):raise CaptureError('exact bidirectional business message pairs required')
             window=[min(v['tx']['wall_ns'] for v in legs),max(v['rx']['wall_ns'] for v in legs)]
             up=pair['connections'][n]['steps'][0]['outcomes'];down=pair['connections'][n]['steps'][1]['outcomes']
             if max(v['wall_ns'] for v in up)>window[0] or min(v['wall_ns'] for v in down)<window[1]:
@@ -500,6 +550,9 @@ def corroborate(record,capture,*,evidence=None):
         overlap=overlap_window(windows)
         if overlap[0]<max(v[0] for v in lifetimes) or overlap[1]>min(v[1] for v in lifetimes):raise CaptureError('both physical connections must coexist during real business')
         overlaps.append(dict(role_phase=n,business_windows=windows,overlap_wall_ns=overlap))
+    if benchmark:
+        summary=benchmark_parallel_proof(pairs,record)
+        return dict(status='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED',parallel_benchmark_contract_version=1,parallel_benchmark_control=record,dynamic_benchmark=summary,pairs=pairs,overlaps=overlaps,controller_count=4,round_trips=144,ordinary_uid=1004,coordinator_uid=1000,fixed_basic_channel_business_acceptance=False,dynamic_channel_acceptance=True,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False)
     return dict(status='FOUR_REAL_PARALLEL_SHARED_SUBSCRIPTION_CORROBORATED'if subscription else 'FOUR_REAL_PARALLEL_UPDATE_DELIVERY_CORROBORATED'if delivery else 'FOUR_REAL_PARALLEL_OWNED_SSAP_CORROBORATED'if owned else 'FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED',pairs=pairs,overlaps=overlaps,
                 **(dict(parallel_subscription_contract_version=1,parallel_subscription_control=record,shared_subscription=subscription_parallel_proof(pairs,case=subscription_case(record)),shared_subscription_acceptance=True)if subscription else{}),
                 **(dict(parallel_delivery_contract_version=1,parallel_delivery_control=record,update_delivery=delivery_parallel_proof(pairs),update_delivery_acceptance=True)if delivery else{}),
@@ -512,6 +565,30 @@ def corroborate(record,capture,*,evidence=None):
                 fixed_basic_channel_business_acceptance=True,fault_isolation_acceptance=False,
                 dynamic_channel_acceptance=False,automatic_fault_recovery_acceptance=False,
                 protected_ssap_acceptance=delivery or subscription,full_goal_complete=False)
+
+
+def benchmark_parallel_proof(pairs,control):
+    """Compose existing pair-bound Root and USB proofs,not another decoder."""
+    from ws73_socket_benchmark import valid_parallel_summary,parallel_channel,configuration
+    if not benchmark_mode(control)or len(pairs)!=2:raise CaptureError('two explicit dynamic benchmark pairs required')
+    supervisors=set();applications=set();daemon=None
+    for number,(pair,worker)in enumerate(zip(pairs,control['workers'],strict=True)):
+        run=worker['run'];root=pair['benchmark_supervision']
+        if not valid_parallel_summary(pair['channel'],parallel_channel(0),configuration('window'),root,pair=number):raise CaptureError('complete paired Root and dynamic short/long summary required')
+        if root['daemon']!=run['daemon_before']:raise CaptureError('Root and control require same physical daemon')
+        for row,phase in zip(run['socket_benchmark'],pair['channel']['proofs'],strict=True):
+            if phase['owners']!=row['owners']:raise CaptureError('wire proof and original Root request owner mismatch')
+        if daemon is not None and daemon!=root['daemon']:raise CaptureError('one shared daemon required')
+        daemon=root['daemon'];identity=tuple(root['supervisor'][k]for k in ('pid','start_ticks'))
+        if identity in supervisors or identity[0]==daemon['pid']:raise CaptureError('distinct Root supervisors required')
+        supervisors.add(identity)
+        for row in run['socket_benchmark']:
+            for app in row['applications']:
+                pid=app.get('pid')
+                if type(pid)is not int or pid<=0 or pid in applications:raise CaptureError('16 distinct actual application processes required')
+                applications.add(pid)
+    if len(applications)!=16:raise CaptureError('full twochannel/twopair/tworole app process matrix required')
+    return dict(version=1,pairs=2,physical_roles=2,channels_per_connection=2,round_trips=144,short_round_trips=80,long_round_trips=64,application_uid=1004,application_extra_groups=[],application_processes=16,root_supervisors=2,performance_qualified=False,fairness_acceptance=False,credit_correctness_proof=False)
 
 
 def protected_pair_security(pair):
@@ -669,9 +746,10 @@ def main():
     parser.add_argument('--update-delivery',action='store_true',help='existing numeric protected2 and full updatev2 notification/indication/appreply matrix in bothpairs')
     parser.add_argument('--owned-ssap',action='store_true',help='existing Owned SSAP caller/Engine in both physical pairs;actual approvals,denials,owner loss and wire overlap')
     parser.add_argument('--burst',action='store_true',help='16 real2042-byte replies perpair perrole; actual queue pressure and scoped pool/NOCP observations')
+    parser.add_argument('--dynamic-benchmark',action='store_true',help='existing Root supervised apps-only v2 short/long dynamic channels in bothpairs,144actualreplies;not performance or full fairness qualification')
     parser.add_argument('--ssap-subscription-shared-case',choices=['release','expiry','owner-exit','pressure'],default='release',help='existing explicit release,original lease expiry,actual guest reader exit or bounded shared queue pressure;separate full matrices')
     args=parser.parse_args()
-    if sum((args.burst,args.disconnect_isolation,args.owned_ssap,args.update_delivery,args.shared_subscription))>1:parser.error('select one explicit scope')
+    if sum((args.burst,args.disconnect_isolation,args.owned_ssap,args.update_delivery,args.shared_subscription,args.dynamic_benchmark))>1:parser.error('select one explicit scope')
     if args.ssap_subscription_shared_case!='release'and not args.shared_subscription:parser.error('shared case requires its dedicated mode')
     if args.mode=='run':
         if args.pair is not None:parser.error('pair selector internal only')
@@ -680,6 +758,11 @@ def main():
     args.artifact=[name+'='+str(Path(__file__).with_name(name+'.py').resolve()) for name in
                    ['ws73_credit_observation','ws73_parallel_data','ws73_connection_control','ws73_connection_objects','ws73_channel_socket','ws73_ssap_value','ws73_ssap_discovery']]
     args.start_offset_ms=0;args.channel_socket_verify=True;args.channel_socket_rounds=20
+    if args.dynamic_benchmark:
+        args.channel_socket_verify=False
+        args.channel_benchmark='window';args.channel_benchmark_parallel=True
+        args.channel_benchmark_active_endpoint=0;args.benchmark_parallel_pair=args.pair
+        args.artifact.extend(name+'='+str(Path(__file__).with_name(name+'.py').resolve())for name in ['ws73_socket_benchmark','ws73_benchmark','ws73_application_role','ws73_role_snapshot','ws73_benchmark_resources','ws73_benchmark_timeline','ws73_channel_fairness','ws73_dynamic_channels'])
     args.channel_socket_bytes=2042 if args.burst else 61
     args.channel_socket_burst=args.burst;args.connection_advertising='negotiable-t'
     args.security_agent='numeric-approve'if args.update_delivery or args.shared_subscription else None

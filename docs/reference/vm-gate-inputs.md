@@ -1152,7 +1152,10 @@ capability record for exact executed gates and remaining conditions.
 ## 无响应写命令的独立交付证据
 
 `--ssap-write-command-verify` 是现有双设备普通 socket VM 门禁的显式选项。
-它要求 `--qmp-hotplug --connection-verify --channel-socket-verify`，保持原
+它要求 `--qmp-hotplug --connection-verify --channel-socket-verify`；运行该交付门禁时
+显式选择 `--connection-advertising negotiable-t`，不要依赖 runner 的 `fixed-t` 默认值。
+`fixed-t` 保留为独立连接模式对照；模式选择及是否实际建链须分别记录，不能据此
+推定固件／空口故障根因或自动恢复通过。该门禁保持原
 4 轮、61 字节普通业务回归；不得与其他独立 SSAP、性能或故障选择器组合。
 guest 使用同一版本的 `ws73.ssap_write_command=1`，缺失、重复、未知版本或
 请求与报告不一致都拒绝验收。QMP 对照不代表物理拔插或自然恢复。

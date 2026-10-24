@@ -5,7 +5,11 @@ use crate::ffi_service_authorization::*;
 use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
 
 unsafe fn authorized(c: *const SlkClient) -> *mut SlkLocalService {
+    unsafe { authorized_operations(c, 5) }
+}
+unsafe fn authorized_operations(c: *const SlkClient, operations: u32) -> *mut SlkLocalService {
     let mut p = property();
+    p.operations = operations;
     p.access = 36;
     let mut out = std::ptr::null_mut();
     assert_eq!(
@@ -88,6 +92,59 @@ fn callback(
             .unwrap()
     })
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn command_only_property_actual_sdk_inbox_preserves_write_value_and_original_deadline() {
+    // Real C registration, D-Bus callback, shared SDK admission and policy inbox;
+    // the fixture supplies metadata only, not a daemon DB or Native transport.
+    let (_bus, server, s, c) = fixture_with_operations(3).await;
+    let v = unsafe { authorized_operations(c, 3) };
+    let fd = unsafe { notify_fd(v) };
+    for length in [0, 32, 2042] {
+        for allowed in [false, true] {
+            let deadline = ns();
+            let mut p = approval_prompt(deadline);
+            p.3 = true;
+            p.5 = vec![0xa5; length];
+            let message = callback(&server, &s, p);
+            wait_ready(&fd).await;
+            let r = unsafe { next(v) };
+            let snapshot = unsafe { info(r) };
+            assert_eq!(snapshot.write, 1);
+            assert_eq!(snapshot.data_type, 0);
+            assert_eq!(usize::from(snapshot.value_length), length);
+            assert_eq!(&snapshot.value[..length], vec![0xa5; length].as_slice());
+            assert_eq!(snapshot.deadline_ns, deadline);
+            assert_eq!(
+                unsafe { slk_authorization_request_reply(r, u32::from(allowed)) },
+                0
+            );
+            assert_eq!(message.await.unwrap(), allowed);
+            unsafe { slk_authorization_request_free(r) };
+            assert!(!ready(&fd));
+        }
+    }
+    for case in 0..3 {
+        let mut p = approval_prompt(ns());
+        p.3 = true;
+        match case {
+            0 => p.5 = vec![0; 2043],
+            1 => p.4 = 1,
+            _ => p.6 = 2, // Command-only property is not a descriptor grant.
+        }
+        assert!(!callback(&server, &s, p).await.unwrap());
+        assert!(
+            !ready(&fd),
+            "invalid command prompt must not enter the inbox"
+        );
+    }
+    assert_eq!(unsafe { slk_local_service_unregister(v, ns()) }, 0);
+    unsafe {
+        slk_local_service_free(v);
+        slk_client_close(c);
+    }
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn actual_inbox_answers_while_same_executor_is_blocked_and_holds_capacity_until_release() {
     let (_bus, server, s, c) = fixture().await;

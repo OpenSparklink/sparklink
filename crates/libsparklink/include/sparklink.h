@@ -746,7 +746,7 @@ void slk_discovery_free(struct SlkDiscovery *view);
 /**
  * Register one caller-owned service through the sole Rust LocalServices API.
  * uuid length2/16 with a nonzero byte; properties1..64, values0..2042. Only
- * READ/WRITE_WITH_RSP and owned NOTIFY/INDICATE+CLIENT_CFG_WR are supported.
+ * READ/WRITE_NO_RSP/WRITE_WITH_RSP and owned NOTIFY/INDICATE+CLIENT_CFG_WR are supported.
  * Update capabilities require authorization=1; CPCD write also requires a
  * genuinely authenticated Native Session,not this registration receipt.
  * authorization=0 has no policy inbox and

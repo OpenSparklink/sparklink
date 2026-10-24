@@ -10,6 +10,7 @@ const PATH: &str = "/org/sparklink/slk2_g7";
 #[derive(Default)]
 struct Script {
     mode: AtomicU8,
+    expected_operations: u32,
     registrations: AtomicU64,
     reads: AtomicU64,
     replacements: Mutex<Vec<(u16, Vec<u8>)>>,
@@ -58,7 +59,15 @@ impl Services {
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
         assert!(matches!(access, 0 | 36));
-        assert_eq!(properties, [(vec![2, 0], 5, access, vec![7, 8, 9])]);
+        assert_eq!(
+            properties,
+            [(
+                vec![2, 0],
+                self.0.expected_operations,
+                access,
+                vec![7, 8, 9]
+            )]
+        );
         assert_eq!(
             authorizer.as_str(),
             if access == 36 {
@@ -186,8 +195,16 @@ fn property() -> SlkServiceProperty {
     p
 }
 async fn fixture() -> (support::Bus, zbus::Connection, Arc<Script>, *mut SlkClient) {
+    fixture_with_operations(5).await
+}
+async fn fixture_with_operations(
+    operations: u32,
+) -> (support::Bus, zbus::Connection, Arc<Script>, *mut SlkClient) {
     let bus = support::Bus::start();
-    let script = Arc::new(Script::default());
+    let script = Arc::new(Script {
+        expected_operations: operations,
+        ..Script::default()
+    });
     let server = zbus::connection::Builder::address(bus.address.as_str())
         .unwrap()
         .name("org.sparklink")

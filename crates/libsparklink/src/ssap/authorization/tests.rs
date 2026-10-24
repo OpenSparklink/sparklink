@@ -116,7 +116,7 @@ fn approval_never_discharges_the_real_operation_or_security_requirements() {
     for bits in 0..=63 {
         for level in 0..=2 {
             for write in [false, true] {
-                for operations in [0, 1, 4, 5] {
+                for operations in 0..=7 {
                     let mut c = context();
                     c.access = SsapAccess::from_bits(bits).unwrap();
                     c.operations = SsapOperations::from_bits(operations).unwrap();
@@ -127,11 +127,11 @@ fn approval_never_discharges_the_real_operation_or_security_requirements() {
                         .access
                         .check_authorization_result(level, write, true)
                         .is_ok()
-                        && c.operations.contains(if write {
-                            SsapOperations::WRITE_WITH_RSP
+                        && if write {
+                            operations & 6 != 0
                         } else {
-                            SsapOperations::READ
-                        });
+                            operations & 1 != 0
+                        };
                     assert_eq!(
                         admit(&c, Some(":1.10"), &p).unwrap().is_some(),
                         expected,
@@ -140,6 +140,48 @@ fn approval_never_discharges_the_real_operation_or_security_requirements() {
                 }
             }
         }
+    }
+}
+
+#[test]
+fn command_only_property_writes_keep_value_identity_and_deadline_boundaries() {
+    // Actual shared admission function; these observation fixtures do not
+    // implement the daemon's separate opcode/registration/Native checks.
+    for operations in 0..=7 {
+        for length in [0, 32, 2042, 2043] {
+            let mut c = context();
+            c.operations = SsapOperations::from_bits(operations).unwrap();
+            let mut p = prompt();
+            p.3 = true;
+            p.5 = vec![0xa5; length];
+            assert_eq!(
+                admit(&c, Some(":1.10"), &p).unwrap().is_some(),
+                operations & 6 != 0 && length <= 2042,
+                "operations={operations} proposed_write_length={length}"
+            );
+            // Empty writes remain writes, never an implicit read permission.
+            p.3 = false;
+            assert_eq!(
+                admit(&c, Some(":1.10"), &p).unwrap().is_some(),
+                operations & 1 != 0 && length == 0,
+                "operations={operations} read_with_value_length={length}"
+            );
+        }
+    }
+    let mut c = context();
+    c.operations = SsapOperations::from_bits(3).unwrap();
+    for case in 0..6 {
+        let mut p = prompt();
+        p.3 = true;
+        match case {
+            0 => p.4 = 1, // Original deadline is not replaced for command writes.
+            1 => p.1.1 += 1,
+            2 => p.1.2 = 0,
+            3 => p.2 += 1,
+            4 => p.6 = 1,
+            _ => p.6 = 2, // Property capability is not a CPCD capability.
+        }
+        assert!(admit(&c, Some(":1.10"), &p).unwrap().is_none());
     }
 }
 

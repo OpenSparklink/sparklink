@@ -380,6 +380,85 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn command_only_property_cli_allow_and_deny_keep_write_value_boundaries() {
+        // The actual CLI callback and shared admission, with explicit local
+        // context fixtures; not a Native receipt or peer-delivery test.
+        for (policy, allowed) in [(Policy::Allow, true), (Policy::Deny, false)] {
+            let (mut owner, _alive, mut requests) = setup(policy);
+            owner.operations = SsapOperations::from_bits(3).unwrap();
+            for length in [0, 32, 2042, 2043] {
+                let mut p = prompt();
+                p.3 = true;
+                p.5 = vec![0xa5; length];
+                assert_eq!(
+                    owner
+                        .authorize_value(p.clone(), message(":1.10").header())
+                        .await
+                        .unwrap(),
+                    allowed && length <= 2042
+                );
+                p.4 = 1;
+                assert!(
+                    !owner
+                        .authorize_value(p, message(":1.10").header())
+                        .await
+                        .unwrap()
+                );
+                assert!(requests.try_recv().is_err());
+            }
+            assert_eq!(owner.slot.available_permits(), 1);
+        }
+    }
+
+    #[tokio::test]
+    async fn command_only_property_cli_ask_preserves_original_deadline_and_owner() {
+        for case in 0..4 {
+            let (mut authorizer, owner, mut requests) = setup(Policy::Ask);
+            authorizer.operations = SsapOperations::from_bits(3).unwrap();
+            let authorizer = Arc::new(authorizer);
+            let caller = authorizer.clone();
+            let mut p = prompt();
+            p.3 = true; // Empty proposed write must remain a write prompt.
+            if case == 2 {
+                p.4 = libsparklink::Deadline::after(std::time::Duration::from_millis(500))
+                    .unwrap()
+                    .stamp()
+                    .monotonic_ns;
+            }
+            let original = p.4;
+            let work = tokio::spawn(async move {
+                caller
+                    .authorize_value(p, message(":1.10").header())
+                    .await
+                    .unwrap()
+            });
+            let pending = tokio::time::timeout(std::time::Duration::from_secs(1), requests.recv())
+                .await
+                .expect("actual CLI command prompt must be dispatched")
+                .unwrap();
+            assert!(pending.prompt.3 && pending.prompt.5.is_empty());
+            assert_eq!(pending.prompt.4, original);
+            if case < 2 {
+                pending.reply.send(case == 0).unwrap();
+                assert_eq!(work.await.unwrap(), case == 0);
+            } else {
+                if case == 3 {
+                    owner.send_replace(true);
+                } // Otherwise keep the reply pending through original expiry.
+                assert!(
+                    !tokio::time::timeout(std::time::Duration::from_secs(2), work)
+                        .await
+                        .unwrap()
+                        .unwrap()
+                );
+                assert!(pending.reply.send(true).is_err());
+            }
+            assert_eq!(authorizer.slot.available_permits(), 1);
+            assert!(requests.try_recv().is_err());
+        }
+    }
+
+    #[tokio::test]
     async fn actual_cli_endpoint_keeps_one_pending_and_rechecks_receipt_after_policy() {
         let (authorizer, _owner, mut requests) = setup(Policy::Ask);
         let authorizer = Arc::new(authorizer);

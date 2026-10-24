@@ -49,11 +49,15 @@ pub fn admit(
                 .access
                 .check_authorization_result(id.5, prompt.3, true)
                 .is_ok()
-                && context.operations.contains(if prompt.3 {
-                    SsapOperations::WRITE_WITH_RSP
+                && if prompt.3 {
+                    // This callback describes the write direction, not its
+                    // wire opcode. The daemon checks the exact operation both
+                    // before dispatch and before committing the property.
+                    context.operations.contains(SsapOperations::WRITE_NO_RSP)
+                        || context.operations.contains(SsapOperations::WRITE_WITH_RSP)
                 } else {
-                    SsapOperations::READ
-                })
+                    context.operations.contains(SsapOperations::READ)
+                }
         }
         2 => {
             prompt.3

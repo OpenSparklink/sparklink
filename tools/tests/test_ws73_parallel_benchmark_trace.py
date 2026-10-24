@@ -10,11 +10,11 @@ from ws73_benchmark_timeline import check_xhci,phase_marker_text,valid_trace_sum
 from ws73_capture import CaptureError
 
 
-def paired_trace(root):
+def paired_trace(root,*,requested_kb=8192):
     fixtures.modern_trace(root);lines=[]
     from ws73_trace_layout import buffer_kib
     for edge in('start','end'):
-        path=root/f'benchmark-xhci-{edge}.json';cfg=json.loads(path.read_text());cfg['requested_buffer_kb']=8192;cfg['buffer_kb']=buffer_kib((root/f'benchmark-xhci-header-{edge}.txt').read_text(),8192,cfg['subbuffer_kb'])[0];path.write_text(json.dumps(cfg))
+        path=root/f'benchmark-xhci-{edge}.json';cfg=json.loads(path.read_text());cfg['requested_buffer_kb']=requested_kb;cfg['buffer_kb']=buffer_kib((root/f'benchmark-xhci-header-{edge}.txt').read_text(),requested_kb,cfg['subbuffer_kb'])[0];path.write_text(json.dumps(cfg))
     def add(t,s):lines.append(f' fixture-1 [000] ..... 0.{t:06d}: '+s)
     c=fixtures.COOKIE;add(1,'tracing_mark_write: SLK_BENCH_BEGIN:'+c)
     for phase,base in enumerate((10,40)):
@@ -41,9 +41,26 @@ class PairedTrace(unittest.TestCase):
         self.assertEqual(text.count('[ "$benchmark_trace" = 1 ]'),4)
         self.assertNotIn("grep -q 'ws73.benchmark_mode=' /proc/cmdline",text)
         buffer_function=re.search(r'^benchmark_trace_buffer_kb\(\) \{.*?^\}',text,re.M|re.S).group()
-        for words,expected in [([], '1024'),(['ws73.benchmark_mode=window'],'1024'),(['ws73.parallel_benchmark=1'],'8192')]:
+        for words,expected in [([], '1024'),(['ws73.benchmark_mode=window'],'1024'),(['ws73.parallel_benchmark=1'],'8192'),(['ws73.parallel_benchmark_case=close-short'],'1024'),(['ws73.parallel_benchmark=1','ws73.parallel_benchmark_case=close-short'],'16384'),(['ws73.parallel_benchmark_case=close-short','ws73.parallel_benchmark=1'],'16384')]:
             p=subprocess.run(['sh','-c',buffer_function+'\nbenchmark_trace_buffer_kb "$@"','fixture',*words],capture_output=True,text=True);self.assertEqual(p.returncode,0);self.assertEqual(p.stdout,expected)
         subprocess.run(['sh','-n',str(Path(__file__).resolve().parents[1]/'ws73_target_init.sh')],check=True)
+
+    def test_measured_close_workload_budget_is_exact_bounded_and_still_zero_loss(self):
+        from ws73_trace_layout import buffer_kib
+        for kb in (8192,16384):
+            with tempfile.TemporaryDirectory()as tmp:
+                root=Path(tmp);paired_trace(root,requested_kb=kb)
+                if kb==8192:
+                    with self.assertRaises(CaptureError):check_xhci(root,'on',parallel=True,close_short=True)
+                    continue
+                proof=check_xhci(root,'on',parallel=True,close_short=True)
+                with self.assertRaises(ValueError):buffer_kib((root/'benchmark-xhci-header-start.txt').read_text(),16385,4)
+                self.assertTrue(valid_trace_summary(proof,'on',parallel=True,close_short=True))
+                self.assertFalse(valid_trace_summary(proof,'on',parallel=True))
+                with self.assertRaises(CaptureError):check_xhci(root,'on',parallel=True)
+                bad=dict(proof,trace=dict(bytes=64*1024*1024+1));self.assertFalse(valid_trace_summary(bad,'on',parallel=True,close_short=True))
+                (root/'xhci-trace-stats.txt').write_text((root/'xhci-trace-stats.txt').read_text().replace('overrun: 0','overrun: 1',1))
+                with self.assertRaises(CaptureError):check_xhci(root,'on',parallel=True,close_short=True)
 
     def test_fixed_phase_markers_keep_legacy_and_pair_identity_separate(self):
         c=fixtures.COOKIE

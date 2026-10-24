@@ -2546,7 +2546,7 @@ def require_benchmark_preparation(package,path,*,case='parallel'):
         raise ValueError('four dynamic benchmark requires fresh explicit preparation')
     from ws73_socket_benchmark import validate_role_sources
     validate_role_sources(package,dynamic=True,parallel=True)
-    for name in ['ws73_parallel_data.py','ws73_parallel.py','ws73_connection_control.py']:
+    for name in ['ws73_parallel_data.py','ws73_parallel.py','ws73_connection_control.py','ws73_trace_layout.py']:
         if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
             raise ValueError('four benchmark preparation/source mismatch: '+name)
     entry=path/'root/init'

@@ -82,9 +82,9 @@ def phase_intervals(rows,cookie,*,pair=None):
     return result
 
 
-def check_xhci(share, mode,*,parallel=False):
+def check_xhci(share, mode,*,parallel=False,close_short=False):
     share=Path(share)
-    if type(parallel)is not bool or parallel and mode!='on':raise CaptureError('explicit paired gate requires original enabled trace')
+    if type(parallel)is not bool or type(close_short)is not bool or close_short and not parallel or parallel and mode!='on':raise CaptureError('explicit paired gate requires original enabled trace')
     if mode not in ('on','off'):raise CaptureError('explicit xHCI comparison mode')
     rows=[json.loads((share/f'benchmark-xhci-{name}.json').read_text()) for name in ['start','end']]
     cookie=rows[0].get('cookie')
@@ -94,13 +94,13 @@ def check_xhci(share, mode,*,parallel=False):
     headers=[(share/f'benchmark-xhci-header-{n}.txt').read_text() for n in ['start','end']]
     if headers[0]!=headers[1] or len(headers[0])>4096:raise CaptureError('same original trace page layout before/after')
     subbuffer=rows[0].get('subbuffer_kb')
-    requested_kb=8192 if parallel else 1024
+    requested_kb=16384 if close_short else 8192 if parallel else 1024
     try:actual_kb,payload=buffer_kib(headers[0],requested_kb,subbuffer)
     except ValueError as error:raise CaptureError(str(error)) from error
     expected=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=actual_kb,requested_buffer_kb=requested_kb,subbuffer_kb=subbuffer,cookie=cookie)
     if any(type(v.get(k)) is not int for v in rows for k in ['buffer_kb','requested_buffer_kb','subbuffer_kb']) or rows!=[expected,expected]:raise CaptureError('actual trace start/end configuration differs')
     path=share/'xhci-trace.log';text=path.read_text();stats=(share/'xhci-trace-stats.txt').read_text()
-    if len(text)>(32 if parallel else 8)*1024*1024 or 'LOST' in text.upper() or re.findall(r'^# tracer: (.*)$',text,re.M)!=['nop']:raise CaptureError('bounded loss-free nop event trace required')
+    if len(text)>(64 if close_short else 32 if parallel else 8)*1024*1024 or 'LOST' in text.upper() or re.findall(r'^# tracer: (.*)$',text,re.M)!=['nop']:raise CaptureError('bounded loss-free nop event trace required')
     header=re.findall(r'#\s*entries-in-buffer/entries-written:\s*(\d+)/(\d+)',text)
     if len(header)!=1 or header[0][0]!=header[0][1]:raise CaptureError('complete trace buffer required')
     for key in ['overrun','commit overrun','dropped events']:
@@ -199,12 +199,12 @@ def rx_resubmits(share,run,trace):
     return dict(status='HCD_RX_GIVEBACK_TO_RESUBMIT_ENTRY_OBSERVED',clock='mono',endpoints=results,scope='Only same-boot established-business phases, single observed RX URB/endpoint; boundary censoring explicit. Includes USB-core dispatch/callback and submit preparation before HCD queue. Not callback-only cost, full no-URB hardware window, generation/ref/drain proof, RF delay or bottleneck/optimization evidence.')
 
 
-def valid_trace_summary(proof,mode,*,parallel=False):
+def valid_trace_summary(proof,mode,*,parallel=False,close_short=False):
     try:
-        if(type(parallel)is not bool or parallel and mode!='on'or mode not in('on','off')or proof['mode']!=mode or proof['status']!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED'or type(proof['trace_contract_version'])is not int or proof['trace_contract_version']!=(2 if parallel else 1)or proof['clock']!='mono'):return False
+        if(type(parallel)is not bool or type(close_short)is not bool or close_short and not parallel or parallel and mode!='on'or mode not in('on','off')or proof['mode']!=mode or proof['status']!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED'or type(proof['trace_contract_version'])is not int or proof['trace_contract_version']!=(2 if parallel else 1)or proof['clock']!='mono'):return False
         phases=proof['phase_intervals']
         if parallel:
-            if proof.get('requested_buffer_kb')!=8192 or type(proof.get('trace',{}).get('bytes'))is not int or not 0<proof['trace']['bytes']<=32*1024*1024:return False
+            if proof.get('requested_buffer_kb')!=(16384 if close_short else 8192)or type(proof.get('trace',{}).get('bytes'))is not int or not 0<proof['trace']['bytes']<=(64 if close_short else 32)*1024*1024:return False
             if type(phases)is not list or len(phases)!=2 or any(type(p)is not dict or set(p)!={'pair','phases'}or type(p['pair'])is not int or p['pair']!=i for i,p in enumerate(phases)):return False
             groups=[p['phases']for p in phases]
             if not all(valid_phase_bounds(group)for group in groups):return False
@@ -220,7 +220,8 @@ def valid_phase_bounds(phases):
 
 def verify_paired_trace(control,trace):
     """Bind each original Root witness to its own sealed mono trace markers."""
-    if not valid_trace_summary(trace,'on',parallel=True):raise CaptureError('complete paired enabled mono trace required')
+    from ws73_parallel_data import benchmark_case
+    if not valid_trace_summary(trace,'on',parallel=True,close_short=benchmark_case(control)=='close-short'):raise CaptureError('complete paired enabled mono trace required')
     for number,worker in enumerate(control['workers']):
         rows=worker['run']['socket_benchmark']
         if len(rows)!=2:raise CaptureError('two original Root trace witnesses per pair required')

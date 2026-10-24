@@ -43,7 +43,7 @@ def fixture(root,*,close_short=False):
         pairs.append(dict(channel=proof,benchmark_supervision=supervision,connections=connections))
     proof=dict(status='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED',parallel_benchmark_contract_version=1,parallel_benchmark_control=control,pairs=pairs,dynamic_benchmark=gate.benchmark_parallel_proof(pairs,control),overlaps=[],controller_count=4,round_trips=336 if close_short else 144,ordinary_uid=1004,coordinator_uid=1000,dynamic_channel_acceptance=True,fixed_basic_channel_business_acceptance=False,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False)
     if close_short:proof['channel_close_isolation_acceptance']=True
-    proof['paired_trace']=dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode='on',trace_contract_version=2,clock='mono',cookie=cookie,requested_buffer_kb=8192,trace=dict(bytes=1000),phase_intervals=[dict(pair=i,phases=[dict(phase=0,begin_ns=10+i,end_ns=20+i),dict(phase=1,begin_ns=40+i,end_ns=50+i)])for i in(0,1)])
+    proof['paired_trace']=dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode='on',trace_contract_version=2,clock='mono',cookie=cookie,requested_buffer_kb=16384 if close_short else 8192,trace=dict(bytes=1000),phase_intervals=[dict(pair=i,phases=[dict(phase=0,begin_ns=10+i,end_ns=20+i),dict(phase=1,begin_ns=40+i,end_ns=50+i)])for i in(0,1)])
     for n in range(2):
         windows=[[min(v['tx']['wall_ns']for v in p['channel']['proofs'][n]['legs']),max(v['rx']['wall_ns']for v in p['channel']['proofs'][n]['legs'])]for p in pairs]
         proof['overlaps'].append(dict(role_phase=n,business_windows=windows,overlap_wall_ns=gate.overlap_window(windows)))
@@ -64,7 +64,7 @@ class FourDynamicBenchmark(unittest.TestCase):
 
     def test_prepare_uses_actual_copied_sources_and_executable_init(self):
         here=Path(gate.__file__).parent
-        names=['ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh','ws73_dynamic_channels.py','ws73_channel_fairness.py','ws73_parallel_data.py','ws73_parallel.py','ws73_connection_control.py']
+        names=['ws73_benchmark_resources.py','ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target.py','ws73_target_control.py','ws73_target_guest.py','ws73_target_init.sh','ws73_dynamic_channels.py','ws73_channel_fairness.py','ws73_parallel_data.py','ws73_parallel.py','ws73_connection_control.py','ws73_trace_layout.py']
         package=dict(four_dynamic_benchmark_contract_version=1,socket_benchmark_role_contract_version=1,benchmark_trace_contract_version=1,benchmark_process_resource_contract_version=1,inputs=[file_record(here/n)for n in names])
         with tempfile.TemporaryDirectory()as tmp:
             path=Path(tmp);dest=path/'root/usr/share/sparklink/tools';dest.mkdir(parents=True)
@@ -74,6 +74,9 @@ class FourDynamicBenchmark(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'fresh four benchmark close'):require_benchmark_preparation(package,path,case='close-short')
             current=dict(package,four_dynamic_benchmark_close_contract_version=1)
             require_benchmark_preparation(current,path,case='close-short')
+            (dest/'ws73_trace_layout.py').write_text('# stale bound\n')
+            with self.assertRaisesRegex(ValueError,'source mismatch'):require_benchmark_preparation(current,path,case='close-short')
+            (dest/'ws73_trace_layout.py').write_bytes((here/'ws73_trace_layout.py').read_bytes())
             (dest/'ws73_parallel_data.py').write_text('# stale source\n')
             with self.assertRaisesRegex(ValueError,'source mismatch'):require_benchmark_preparation(package,path)
             (dest/'ws73_parallel_data.py').write_bytes((here/'ws73_parallel_data.py').read_bytes());init.chmod(0o644)

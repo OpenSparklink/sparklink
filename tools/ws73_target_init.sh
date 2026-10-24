@@ -18,9 +18,18 @@ benchmark_trace_requested() {
     return 1
 }
 benchmark_trace_buffer_kb() {
+    benchmark_parallel=0
+    benchmark_close=0
     for benchmark_word do
-        case "$benchmark_word" in ws73.parallel_benchmark=1) printf '8192'; return 0 ;; esac
+        case "$benchmark_word" in
+            ws73.parallel_benchmark=1) benchmark_parallel=1 ;;
+            ws73.parallel_benchmark_case=close-short) benchmark_close=1 ;;
+        esac
     done
+    if [ "$benchmark_parallel" = 1 ]; then
+        if [ "$benchmark_close" = 1 ]; then printf '16384'; else printf '8192'; fi
+        return 0
+    fi
     printf '1024'
 }
 benchmark_trace=0

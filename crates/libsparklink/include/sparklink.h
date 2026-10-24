@@ -28,6 +28,18 @@
 #define SLK_SERVICE_AUTHORIZATION_REQUESTS 1
 
 /**
+ * This lease's routing and configuration ownership are released. Without
+ * REMOTE_RETAINED, the last remote CPCD configuration was verified off.
+ */
+#define SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED 1
+
+/**
+ * Other same-scope leases retained the remote CPCD at this terminal
+ * observation. Only valid with CLEANUP_CONFIRMED, not a current-state claim.
+ */
+#define SLK_SSAP_SUBSCRIPTION_REMOTE_RETAINED 2
+
+/**
  * One delivered request. Holds no caller/registration/Native fd. Freeing an
  * unanswered request denies it. Its slot is retained until callback drain AND
  * request release; old handles cannot approve a later request.
@@ -340,10 +352,6 @@ typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionPacket {
  * Cumulative counters and sequence gaps are not a lossless-delivery promise.
  * Only packets[0..count] are meaningful;all unused/reserved bytes are zero.
  */
-enum {
-    SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED = 1,
-    SLK_SSAP_SUBSCRIPTION_REMOTE_RETAINED = 2,
-};
 typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionBatch {
     struct SlkSsapSubscriptionInfo info;
     uint64_t last_sequence;
@@ -881,7 +889,8 @@ void slk_authorization_request_free(struct SlkAuthorizationRequest *request);
 
 /**
  * Acquire the existing remote SSAP receive lease. Count1..32 unique discovered
- * handles,modes1..3,duration250..60000ms;one lease per physical actor currently.
+ * handles,modes1..3,duration250..60000ms;scope-compatible leases share the
+ * existing physical actor,subject to bounded admission.
  * 0/-errno;output unchanged on failure. Original absolute deadline includes
  * executor queueing and is capped at5s before queueing. Timeout is uncertain;
  * no automatic retry. Parent Connection/Client close does not release this view.

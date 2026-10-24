@@ -200,15 +200,15 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
 }
 
 /// Submit one property WRITE_NO_RSP via the existing Rust client and daemon.
-/// Returns0 only when all command fragments are admitted to software socket
-/// queues, not USB/controller completion or peer receipt/processing. No output
-/// bytes, implicit retry, descriptor/multi-item operation or second Engine.
+/// Returns0 only after all command fragments enter software socket queues,
+/// not USB/controller completion, peer receipt or application processing.
+/// No output bytes, implicit retry, descriptor/multi-item operation or new Engine.
 /// The original absolute deadline includes local queueing and the same5s
 /// ceiling as ssap_write. Failure may follow partial admission; remote effects
 /// remain uncertain. value_length<=65535 is a memory budget, not a wire limit.
 /// # Safety
 /// connection remains live without concurrent close (same fork rules as Client).
-/// value is a live immutable value_length-byte region, NULL only when empty.
+/// value is an immutable value_length-byte readable region, NULL only when empty.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn slk_connection_ssap_write_command(
     connection: *const SlkConnection,

@@ -11,6 +11,15 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+/// This lease's routing and configuration ownership are released. Without
+/// REMOTE_RETAINED, the last remote CPCD configuration was verified off.
+pub const SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED: u32 = 1;
+/// Other same-scope leases retained the remote CPCD at this terminal
+/// observation. Only valid with CLEANUP_CONFIRMED, not a current-state claim.
+pub const SLK_SSAP_SUBSCRIPTION_REMOTE_RETAINED: u32 = 2;
+const _: () = assert!(SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED == wire::CLEANUP_CONFIRMED);
+const _: () = assert!(SLK_SSAP_SUBSCRIPTION_REMOTE_RETAINED == wire::REMOTE_RETAINED);
+
 /// Last validated lease observation; not Ready or future Native authorization.
 /// Handles after handle_count and reserved bytes are zero. State0..3 follows
 /// the Rust lease; token is scoped to the original bus owner/physical lifetime.
@@ -93,8 +102,11 @@ impl SlkSsapSubscriptionPacket {
     }
 }
 
-/// One bounded destructive-read result. flags bit0 means verified remote CPCD
-/// cleanup only,not complete callback/Native drain or application processing.
+/// One bounded destructive-read result. flags bit0 confirms this lease's
+/// routing/configuration ownership release. bit1 means other same-scope leases
+/// retained the remote CPCD at that terminal observation (only valid with bit0).
+/// bit0 without bit1 confirms the last remote CPCD was verified off. Neither
+/// means full callback/Native drain or application processing.
 /// Cumulative counters and sequence gaps are not a lossless-delivery promise.
 /// Only packets[0..count] are meaningful;all unused/reserved bytes are zero.
 #[repr(C, align(8))]
@@ -154,7 +166,8 @@ fn lock(view: &SlkSsapSubscription) -> Result<std::sync::MutexGuard<'_, ()>, c_i
 }
 
 /// Acquire the existing remote SSAP receive lease. Count1..32 unique discovered
-/// handles,modes1..3,duration250..60000ms;one lease per physical actor currently.
+/// handles,modes1..3,duration250..60000ms;scope-compatible leases share the
+/// existing physical actor,subject to bounded admission.
 /// 0/-errno;output unchanged on failure. Original absolute deadline includes
 /// executor queueing and is capped at5s before queueing. Timeout is uncertain;
 /// no automatic retry. Parent Connection/Client close does not release this view.
@@ -313,7 +326,8 @@ pub unsafe extern "C" fn slk_ssap_subscription_renew(
     }
 }
 
-/// Explicit remote cleanup receipt through the same Rust lease. Original<=5s;
+/// Explicit lease-release receipt through the same Rust lease. Original<=5s;
+/// inspect REMOTE_RETAINED: another lease can retain the physical CPCD.
 /// 0/-errno,output unchanged on failure. Failure/timeout is not confirmed cleanup;
 /// local admission may already be closed. Does not free the view or disconnect.
 /// # Safety
@@ -349,7 +363,8 @@ pub unsafe extern "C" fn slk_ssap_subscription_release(
 }
 
 /// Free local ownership only,NULL allowed. Not a cleanup receipt. Call release
-/// first to observe remote disable;otherwise original owner loss/finite lease
+/// first to observe lease release (remote off only without REMOTE_RETAINED);
+/// otherwise original owner loss/finite lease
 /// expiry bounds daemon cleanup. Final executor release joins bounded local work.
 /// # Safety
 /// view is NULL or one live owned pointer,freed once;no concurrent calls or later
